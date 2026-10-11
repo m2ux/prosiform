@@ -36,6 +36,9 @@ def context_spans(state, phase, items, index):
                 spans[source].append((1, len(source_lines(state['sources'][source]['text'])) or 1))
             unit = state['criteria'][criterion]
             spans[unit['source']].extend(canon_spans(state['sources'][unit['source']]['text'], unit['start'], unit['end']))
+            if phase in ('verify', 'evaluate'):
+                for cite in state['mappings'][key]['evidence']:
+                    spans[cite['source']].append((cite['start'], cite['end']))
         else:
             obligation = state['obligations'][key]
             if obligation.get('context_mode') == 'manifest':

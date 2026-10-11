@@ -1,10 +1,11 @@
 """Adversarial evidence, assignment and completion checks."""
 
 from copy import deepcopy
+from hashlib import sha256
 
 from audit_fixtures import AuditFixture
 from audit_common import AuditError, cell_index, read_json
-from audit_dispatch import packet, plan_assignments
+from audit_dispatch import estimate, packet, plan_assignments
 from audit_inventory import inventory
 from audit_state import bind, gate, ingest, refresh, reset
 from audit_surface import main, save
@@ -119,3 +120,77 @@ class LifecycleTests(AuditFixture):
         receipt['records'][0]['evidence'] = []
         with self.assertRaises(AuditError):
             ingest(self.state, receipt)
+
+
+class MappingEvidenceContextTests(AuditFixture):
+    def _map_relationship_with_extra_evidence(self, overlapping_fact='Overlapping fact.'):
+        source = 'corpus/demo/resources/evidence.md'
+        text = ('# Supporting Evidence\nFirst cited fact.\n' + overlapping_fact + '\n'
+                'Last overlapping fact.\nAdjacent cited fact.\nUncited gap.\n'
+                'Separate cited fact.\nUncited tail.\n')
+        self.write(source, text)
+        self.state = inventory(self.root, self.engine, self.spec, 'coordinator')
+        row = next(value for value in self.state['rows'].values()
+                   if value['kind'] == 'relationship'
+                   and value['source'] == 'corpus/demo/workflow.yaml'
+                   and set(value['sources']) == {'corpus/demo/workflow.yaml',
+                                                'corpus/demo/activities/start.yaml'})
+        # This cell needs the supporting source only through its mapping evidence.
+        self.state['rows'] = {row['id']: row}
+        self.state['criteria'] = {'dp:1': self.state['criteria']['dp:1']}
+        assignment = plan_assignments(self.state, 'map', self.budgets)['assignments'][0]
+        bind(self.state, assignment, 'mapper')
+        receipt = self.receipt(assignment, 'A', 'mapper')
+        receipt['records'][0]['evidence'].extend(
+            {'source': source, 'start': start, 'end': end}
+            for start, end in ((2, 3), (3, 4), (5, 5), (7, 7), (2, 3)))
+        self.state = ingest(self.state, receipt)
+        self.phase('inventory', 'verified', 'inventory-reviewer')
+        return deepcopy(self.state), next(iter(cell_index(self.state))), source, text
+
+    def test_mapping_evidence_spans_are_in_verification_and_evaluation_packets(self):
+        mapped, key, source, text = self._map_relationship_with_extra_evidence()
+        for phase in ('verify', 'evaluate'):
+            with self.subTest(phase=phase):
+                self.state = deepcopy(mapped)
+                if phase == 'evaluate':
+                    self.phase('verify', 'verified', 'map-reviewer')
+                assignment = plan_assignments(self.state, phase, self.budgets)['assignments'][0]
+                bind(self.state, assignment, 'packet-reviewer')
+                result = packet(self.state, assignment)
+                self.assertEqual(result['assignment']['items'], [key])
+                self.assertEqual(result['assignment']['estimate']['context'].get(source),
+                                 [[2, 5], [7, 7]])
+                excerpts = [item for item in result['source_excerpts'] if item['source'] == source]
+                self.assertEqual(excerpts, [
+                    {'source': source, 'start': 2, 'end': 5,
+                     'hash': sha256(text.encode()).hexdigest(),
+                     'text': 'First cited fact.\nOverlapping fact.\nLast overlapping fact.\nAdjacent cited fact.'},
+                    {'source': source, 'start': 7, 'end': 7,
+                     'hash': sha256(text.encode()).hexdigest(), 'text': 'Separate cited fact.'}])
+                for required in ('corpus/demo/workflow.yaml', 'corpus/demo/activities/start.yaml',
+                                 'corpus/canon/resources/design-principles.md'):
+                    original = (self.root / required).read_text()
+                    preserved = [item for item in result['source_excerpts'] if item['source'] == required]
+                    self.assertEqual(preserved, [
+                        {'source': required, 'start': 1, 'end': len(original.splitlines()),
+                         'hash': sha256(original.encode()).hexdigest(), 'text': original.rstrip('\n')}])
+
+    def test_known_mapping_evidence_can_exceed_dispatch_budget(self):
+        mapped, key, source, _ = self._map_relationship_with_extra_evidence('x' * 16384)
+        for phase in ('verify', 'evaluate'):
+            with self.subTest(phase=phase):
+                self.state = deepcopy(mapped)
+                if phase == 'evaluate':
+                    self.phase('verify', 'verified', 'map-reviewer')
+                without_dependency = deepcopy(self.state)
+                mapping = without_dependency['mappings'][key]
+                mapping['evidence'] = [cite for cite in mapping['evidence'] if cite['source'] != source]
+                baseline = estimate(without_dependency, phase, [key], self.budgets,
+                                    cell_index(without_dependency))
+                small = deepcopy(self.budgets)
+                small['context_tokens'] = (baseline['input_tokens_estimate']
+                                           + baseline['output_tokens_estimate']
+                                           + small['reserve_tokens'] + small['safety_tokens'] + 1024)
+                with self.assertRaisesRegex(AuditError, 'Indivisible context exceeds declared budgets'):
+                    plan_assignments(self.state, phase, small)
