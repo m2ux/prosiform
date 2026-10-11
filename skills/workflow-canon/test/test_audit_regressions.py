@@ -121,16 +121,21 @@ class GateRegressionTests(AuditFixture):
         self.state = inventory(self.root, self.engine, self.spec, 'coordinator')
         self.assertFalse(any(row['source'] == unselected for row in self.state['rows'].values()))
         planned = plan_assignments(self.state, 'inventory', self.budgets)
-        all_rows, all_criteria, all_sources = set(), set(), set()
+        all_rows, all_criteria, all_sources, all_supplemental, all_checks = set(), set(), set(), set(), set()
         for assignment in planned['assignments']:
             content = packet(self.state, assignment)
             all_rows.update(content['rows'])
             all_criteria.update(content['criteria'])
             all_sources.update(content.get('corpus_manifest', {}))
+            all_supplemental.update(content['supplemental'])
+            all_checks.update(content['required_checks'])
         self.assertEqual(all_rows, set(self.state['rows']))
         self.assertEqual(all_criteria, set(self.state['criteria']))
         self.assertTrue(set(self.state['sources']) <= all_sources)
         self.assertIn(unselected, all_sources)
+        self.assertEqual(all_supplemental, set(self.state['supplemental']))
+        self.assertEqual(all_checks, {key for key, item in self.state['obligations'].items()
+                                     if item['kind'] == 'check'})
 
     def test_evaluation_rejects_evidence_outside_row_or_criterion(self):
         self.verified_map()

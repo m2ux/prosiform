@@ -196,6 +196,10 @@ def packet_content(state, assignment, index):
                              'text': '\n'.join(lines[start - 1:end])})
     return {'assignment': assignment, 'scope': state['inputs']['spec'],
             'rows': rows, 'criteria': criteria, 'obligations': obligations,
+            'supplemental': {key: value for key, value in state['supplemental'].items()
+                             if value['source'] in inventory_sources},
+            'required_checks': sorted(key for key, value in state['obligations'].items()
+                                      if inventory_sources and value['kind'] == 'check'),
             'cells': {key: index[key] for key in assignment['items'] if key in index},
             'mappings': {key: state['mappings'][key] for key in assignment['items']
                          if assignment['phase'] in ('verify', 'evaluate') and key in state['mappings']},
