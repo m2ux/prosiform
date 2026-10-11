@@ -19,6 +19,8 @@ def covers(finding, expected, state):
     entries = {criterion['title']}
     if expected['criterion'].startswith('ap:'):
         entries.add(expected['criterion'].removeprefix('ap:'))
+    elif expected['criterion'].startswith('dp:'):
+        entries.add(re.sub(r'^\d+\.\s+', '', criterion['title']))
     # Both forms name the exact captured entry; an ordinal alone is insufficient.
     if finding['entry'] not in entries:
         return False
