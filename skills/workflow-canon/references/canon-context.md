@@ -42,7 +42,7 @@ Locate unresolved roots through [Find the Server Checkout](commands.md#find-the-
 
 ## Checks
 
-Read [Canon Check Conventions](commands.md#canon-check-conventions) before a selected canon check. A full audit prefers [Run Guards on the Delta](commands.md#run-guards-on-the-delta); draft and post-write checks use [Run Guard Suite](commands.md#run-guard-suite). A step-list, exit, gate or graph change also requires [Run Option Coverage](commands.md#run-option-coverage), baselined before editing. Select broader consumer coverage from [Workflows Coverage](coverage.md#workflows-coverage) when shared constructs are affected.
+Select checks from the task's declared check contract and the project's requirements before retrieving command specifications. Read [Canon Check Conventions](commands.md#canon-check-conventions) before a selected canon check. When the task supplies a checker for a bounded scope, read its interface and use [Run Project Check](commands.md#run-project-check); report the scope its observations establish. When the project's guard suite is required, use [Run Guards on the Delta](commands.md#run-guards-on-the-delta) with an identified base and candidate under equivalent conditions, or [Run Guard Suite](commands.md#run-guard-suite) for a single candidate or draft. An established step-list, exit, gate or graph change also requires [Run Option Coverage](commands.md#run-option-coverage), baselined before editing. Established shared-construct changes select broader consumer coverage through [Workflows Coverage](coverage.md#workflows-coverage).
 
 ## Edit Hook
 

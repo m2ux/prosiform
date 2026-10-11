@@ -269,7 +269,7 @@ gh api repos/{owner}/{repo}/pulls/950
 
 ### Run Project Check
 
-Run the check selected from the reviewed project's manifest, test configuration or CI job.
+Run the check selected by the task or by the reviewed project's manifest, test configuration or CI job.
 
 - Replace the command placeholder with that project's actual invocation, including its runtime, check arguments and explicit dependency paths.
 - Capture the working directory, input revisions, measured cases, skips, exit status and output. Assess the result against the active mode's requirements.
