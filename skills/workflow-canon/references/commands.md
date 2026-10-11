@@ -17,6 +17,130 @@ Each operation has one spec. Commands use example values that the caller replace
 - **Authored text.**
   Commit messages and PR bodies go through files.
 
+## Audit Command Conventions
+
+- **Runtime.**
+  Read [Conventions](#conventions) first. Use Python 3.10+ and Node with the paired engine's installed `yaml` package. Resolve `<skill-root>`, `<corpus-root>`, `<engine-root>` and the shared planning `<run>` directory to absolute paths. Apply the host's sandbox rules.
+- **Ownership.**
+  The coordinator invokes mutations sequentially; workers return files. Preserve failures and output in the planning record.
+- **Inputs.**
+  JSON files follow the [scope](../templates/audit-scope.json), [budget](../templates/audit-budgets.json) and [receipt](../templates/audit-receipt.json) contracts. Fill actual limits and measured calibration. Scope can include `base`, additional `rows` with source/address/section/start/end/context, and `relationships` with source/target/address/label/context.
+- **Exit status.**
+  Exit 0 means the operation succeeded; status with `--require` returns 2 when the requested gate is incomplete; exit 1 means invalid input or unavailable operation. Rendering and planning do not establish audit completion.
+
+## Audit Surface
+
+### Initialize Audit Surface
+
+Capture source bytes and render all four matrices with unresolved cells.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Paths are relative to a root containing `corpus/`. Use the actual inventory author identity and a new run directory.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py init --root <corpus-root> --engine <engine-root> --scope <scope.json> --actor <host-agent-id> --run <run>
+```
+
+### Check Audit Status
+
+Reconcile current evidence, rendered views and outstanding obligations.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Require `map` before evaluation and `complete` before claiming completion; omit `--require` for status only.
+- Output contains bounded counts, the generation identity and artifact paths. Read the relevant coverage section or assignment packet for individual residuals.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py status --run <run> --require <map-or-complete>
+```
+
+### Render Audit Surface
+
+Regenerate matrices, evidence and reports from canonical state.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Changed source evidence requires refresh.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py render --run <run>
+```
+
+### Plan Audit Assignments
+
+Compute disjoint residual assignments under declared budgets.
+
+- Read [Audit Command Conventions](#audit-command-conventions) and [Sizing](audit-dispatch.md#sizing). Select `inventory`, `map`, `verify`, `evaluate` or `obligations`. Unknown limits, unmet gates or indivisible oversized context refuse dispatch.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py plan --run <run> --phase <phase> --budgets <budgets.json>
+```
+
+### Bind Audit Agent
+
+Bind an assignment to its actual host agent identity.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Independent roles cannot own their authored work; retired assignments require a new residual plan.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py bind --run <run> --assignment <id> --actor <host-agent-id>
+```
+
+### Write Audit Packet
+
+Write captured context and ownership for one agent.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Give the packet and [return contract](audit-dispatch.md#returns) to the bound host agent. Serialized size must fit the plan.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py packet --run <run> --assignment <id> --out <packet.json>
+```
+
+### Submit Audit Results
+
+Validate a typed return and preserve its immutable receipt.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Invalid returns cannot partially change state; valid partial results leave the residual incomplete.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py submit --run <run> --receipt <receipt.json>
+```
+
+### Reset Audit Cells
+
+Reopen selected decisions and invalidate dependent evidence and assignments.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Supply a JSON array of cell IDs and the correction reason.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py reset --run <run> --items <items.json> --reason '<reason>'
+```
+
+### Refresh Audit Surface
+
+Capture current inputs and invalidate a changed generation.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Add `--scope <scope.json>` for inventory corrections. Identical generations retain evidence; changed generations archive prior state.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py refresh --run <run>
+```
+
+### Retry Audit Assignment
+
+Retire interrupted ownership so its unresolved work can be planned again.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Accepted items remain settled. Record why the worker stopped and recalibrate excessive estimates.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py retry --run <run> --assignment <id> --reason '<reason>'
+```
+
+### Run Audit Script Tests
+
+Run inventory, evidence-gate and assignment regressions with the paired parser.
+
+- Read [Audit Command Conventions](#audit-command-conventions). Run from the skill worktree. Synthetic judgments test coordination, not semantic corpus conformance.
+
+```bash
+CANON_TEST_ENGINE=<engine-root> python3 -m unittest discover -s skills/workflow-canon/test -p 'test_audit_*.py'
+```
+
 ## Revisions
 
 ### Resolve Ref
@@ -519,5 +643,5 @@ Drives the edit guard over seeded edits in temporary git repositories, with a st
 - Run from the workspace checkout containing the skill under revision.
 
 ```bash
-python3 -m unittest discover -s skills/workflow-canon/test
+python3 -m unittest discover -s skills/workflow-canon/test -p test_edit_guard.py
 ```

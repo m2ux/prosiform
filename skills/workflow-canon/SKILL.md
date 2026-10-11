@@ -26,11 +26,12 @@ Read the selected mode's file in full, then follow its links as each step needs 
 - **[Author](references/author-mode.md)**
   - Authoring definitions and specified changes
   - Closing confirmed findings with their prescribed fixes
-  - Draft walks and verification of written changes
+  - Mapped draft walks and verification of written changes
 - **[Audit](references/audit-mode.md)**
   - Canon questions and conformance of existing definitions
   - Attribution and verification of findings
-  - Reports with coverage ledgers
+  - Applicability matrices with independent verification
+  - Complete coverage reports
 - **[Review](references/review-mode.md)**
   - Scope and revision pairings for integrations
   - Tracing design and architecture through declarations and consumers
@@ -66,7 +67,9 @@ Read the selected mode's file in full, then follow its links as each step needs 
 - **Docker and Compose**
   Packaging checks build and exercise disposable images and containers when deployment behavior is affected.
 - **Python 3.10+**
-  The definition edit hook and its tests.
+  The definition edit hook, audit inventory/state/dispatch scripts and their tests.
+- **Paired YAML parser**
+  The audit adapter loads the paired engine's installed `yaml` package through Node; its identity is captured with the source snapshot.
 - **Agent host and sandbox**
   Repository access, local execution and artifact writing within the selected mode's authority. Independent sub-agents and observable tool results support audit slices and reading-path validation.
 - **Claude Code hooks**

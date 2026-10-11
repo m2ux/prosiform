@@ -23,11 +23,11 @@ Severity ranks urgency inside a band. The band says whether the finding gates.
 | Severity | Fires when |
 |----------|-----------|
 | `Critical` | Schema-invalid or structurally broken. Must not be committed. Every guard failure is Critical. |
-| `High` | An entry fires on a construct the change ships, and the defect propagates. Re-derive before it drives a fix |
-| `Medium` | An entry fires and the defect stays in that construct. Spot-confirm |
+| `High` | An entry fires on a construct the change ships, and the defect propagates |
+| `Medium` | An entry fires and the defect stays in that construct |
 | `Low` | Hygiene with no consumer consequence |
 
-An unmeasured guard records `blocked` coverage; the [canon check conventions](commands.md#canon-check-conventions) define its exit statuses.
+The [dispatch phases](audit-dispatch.md#phases) own finding confirmation. An unmeasured guard records `blocked` coverage; the [canon check conventions](commands.md#canon-check-conventions) define its exit statuses.
 
 ### Finding Rows
 
@@ -47,7 +47,7 @@ A row whose Evidence cannot name a construct is not a finding. Evidence and Loca
 
 ### Coverage Ledger
 
-Divergences only. A unit walked cleanly has no row.
+The generated [coverage state](change-surface.md#artifacts) accounts for every row–criterion cell, inventory, file read and supplemental obligation. The findings report summarizes divergences and links to that complete ledger.
 
 | Column | Carries |
 |--------|---------|
@@ -55,7 +55,7 @@ Divergences only. A unit walked cleanly has no row.
 | Unit | The section title or anchor, as the home spells it |
 | Status | `not-applicable` with the unit's own reason, or `blocked` with what prevented the walk |
 
-Total the `blocked` rows. That figure is the unit residual. A family `blocked` over most of the surface counts once, however many entries it holds. One row per unwalked unit of every home, accounted from the headings at the commit audited ([canon-map](canon-context.md#criteria)). A ledger that cannot account for every unit is a partial walk. Its status is the [coverage header](#coverage-header).
+Derive unknown, unverified, unevaluated and supplemental residuals from current state. Preserve each residual's identifiers. Display counts summarize those lists.
 
 ### File Coverage
 
@@ -72,13 +72,7 @@ List the `unread` paths. While any remain, the header's status is the [coverage 
 
 ### Coverage Header
 
-Whether the audit is finished.
-
-- **In progress.**
-  A header that still has unread paths or blocked criteria, including when its ledger does not account for every unit.
-  - The note is not the finished audit.
-- **Finished.**
-  Every change-surface path is `read`, and every criterion is `walked` or `not-applicable`.
+Use `finished` only when the shared [completion predicate](change-surface.md#completion) holds; otherwise use `in progress`. Include the captured generation, row and AP/DP counts, verified applicability, applicable-cell evaluations, unread sources and unresolved supporting obligations. Every count reconciles to the generated state.
 
 ## Which Report
 
@@ -91,9 +85,9 @@ In the chat, or in a file the user named:
 ~~~markdown
 # Canon Audit — `{target}`
 
-**Status:** in progress | finished · **Base ref:** `{ref}` · **Coverage:** N of N units × N of N paths — **N unit-paths walked of N** · **Change surface:** N files (touched: N · closure: N · consumers: N) · **Guards:** clean | N findings | N unmeasured
+**Status:** in progress | finished · **Base ref:** `{ref}` · **Snapshot:** `{hash}` · **Coverage:** N rows × N AP/DP criteria — N of N mappings independently verified, N of N applicable cells evaluated · **Change surface:** N files (touched: N · context: N · consumers: N) · **Guards:** clean | N findings | N unmeasured
 
-**Verdict:** Live N · Contract N · Hygiene N, at that coverage. Residual: **N files `unread`** of N, **N criteria units `blocked`** of N. Live and Contract converge to zero over the coverage measured. Hygiene ratchets against the prior pass's N.
+**Verdict:** Live N · Contract N · Hygiene N, at that coverage. Residual: N unknown mappings · N unverified mappings · N unevaluated applicable cells · N unverified inventory items · N supporting obligations · N unread files. Live and Contract converge to zero over the coverage measured. Hygiene ratchets against the prior pass's N.
 
 | Band | Open | Known | Prior pass |
 |------|-----:|------:|-----------:|
@@ -101,7 +95,7 @@ In the chat, or in a file the user named:
 | Contract | N | N | N |
 | Hygiene | N | N | N |
 
-## Change surface
+## Change Surface
 
 | Path | How it joined |
 |------|----------------|
@@ -127,7 +121,7 @@ read N · unread N.
 ## Known
 ~~~
 
-Omit an empty section. Order findings Critical → High → Medium → Low. Link the entry; the report holds no criteria prose. Say which Highs were withdrawn or downgraded. The header's units × paths bound every figure under it, and each header figure reconciles against a list in the body. Status is the [coverage header](#coverage-header). Live or Contract at zero over a partial grid is a statement about that part. A Live or Contract count that rose says a fix moved a defect.
+Omit an empty section. Order findings Critical → High → Medium → Low. Link the entry; the report holds no criteria prose. Say which Highs were withdrawn or downgraded. Every header figure reconciles against the generated ledger. Status is the [coverage header](#coverage-header). Live or Contract at zero over partial coverage is a statement about that part. A Live or Contract count that rose says a fix moved a defect.
 
 ## Workflow Reports
 

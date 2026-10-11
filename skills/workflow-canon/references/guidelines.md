@@ -16,9 +16,9 @@ The rules this skill's files follow beyond the [skill guidelines](../../guidelin
 Apply the shared [progressive disclosure](../../guidelines.md#progressive-disclosure) and [disclosure verification](../../guidelines.md#disclosure-verification) rules using the scenarios affected by the revision:
 
 - **Author.**
-  Draft a specified definition change with a contract consumer. Follow the shared canon prerequisites, construct lookup and relevant checks; preserve the draft walk, post-write check and commit gate.
+  Draft a specified definition change with a contract consumer. Follow the shared canon prerequisites, four section matrices, independent verification and relevant checks; preserve the draft walk, byte agreement and complete-surface commit gate. Repeat with a changed candidate invalidating prior evidence.
 - **Audit.**
-  Audit a definition with a closure-only consumer and prior residual. Include criterion and file coverage, attribution and report selection. Also trace a single canon question's bounded path.
+  Audit a definition with a closure-only consumer and prior residual. Include inventory and mapping verification, budgeted fan-out, partial returns, criterion/file coverage, attribution and report selection. Repeat with a disputed exclusion or stale source. Also trace a single canon question's bounded path.
 - **Review.**
   Select one affected branch product with a conditional check that does not apply. Confirm the report preserves missing evidence and the reads follow the selected coverage.
 - **Revise.**
@@ -44,3 +44,8 @@ Apply the shared [progressive disclosure](../../guidelines.md#progressive-disclo
 
 - **Location.**
   The planning guide owns location and naming rules for all modes; mode files reference the guide.
+
+## Complete Audits
+
+- **Authority.**
+  The [change-surface contract](change-surface.md) owns per-type matrices, independent applicability verification, evidence freshness and the full-surface completion gate. Author and Audit share it; dispatch and reporting consume its state.

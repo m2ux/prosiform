@@ -44,7 +44,7 @@ Locate unresolved roots through [Find the Server Checkout](commands.md#find-the-
 
 Read [Canon Check Conventions](commands.md#canon-check-conventions) before a selected canon check. A full audit prefers [Run Guards on the Delta](commands.md#run-guards-on-the-delta); draft and post-write checks use [Run Guard Suite](commands.md#run-guard-suite). A step-list, exit, gate or graph change also requires [Run Option Coverage](commands.md#run-option-coverage), baselined before editing. Select broader consumer coverage from [Workflows Coverage](coverage.md#workflows-coverage) when shared constructs are affected.
 
-### Edit Hook
+## Edit Hook
 
 The registered hook uses Python 3.10+ and the workspace's `.project/main` checkout with installed `tsx`. Its integration refs are the corpus tree's latest fetched `origin/workflows` and `origin/iNN/workflows`; it measures against their nearest merge-base. Read [Run the Edit Guard](commands.md#run-the-edit-guard) when handling its result or invoking it explicitly. The hook's operational contract also applies to a host without automatic registration.
 
