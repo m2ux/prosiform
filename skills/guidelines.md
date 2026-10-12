@@ -78,6 +78,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   A reference to another markdown file in the skill is a relative link, never a code span.
 - **Link text.**
   The link sits on the noun that names the thing: the mode, the guide, the command, the template.
+- **Repeated prerequisites.**
+  A prerequisite that every sibling spec cites links the verb and drops the section name: `[Read](#audit-commands) first.`
 - **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
 
 ## Commands
