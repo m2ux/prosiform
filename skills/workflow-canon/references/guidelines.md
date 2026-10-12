@@ -23,8 +23,8 @@ Apply the shared [progressive disclosure](../../guidelines.md#progressive-disclo
   Select one affected branch product with a conditional check that does not apply. Confirm the report preserves missing evidence and the reads follow the selected coverage.
 - **Revise.**
   Change a template with a consumer in another mode. Include its required consumer guidance, a command section with conventions, a parent section with subsections and the required whole-file guidelines.
-- **Command catalog.**
-  Select multiple operations, including a canon check. Confirm the shared conventions and any required subset conventions arrive before the first operation that needs them and are reused; unrelated operations stay outside the retrieved sections.
+- **Command routing.**
+  Select multiple operations across two modes, including a canon check. Confirm each procedure's commands and governing conventions arrive with its own file, the shared conventions arrive once, and the other mode's operations stay outside the retrieved files.
 
 ## Titles
 
@@ -38,7 +38,7 @@ Apply the shared [progressive disclosure](../../guidelines.md#progressive-disclo
 - **Currency.**
   Check project settings against current instructions and captured revisions. Counts, runtime versions, thresholds and branch pairings come from the sources that own them.
 - **Separation.**
-  Executable operations belong in the command catalog. Shared conventions form one bounded section; conventions applying to a subset of operations have their own section and explicit caller links.
+  An executable operation belongs to the file whose procedure runs it. Skill-wide conventions form one bounded file; conventions governing one procedure's commands sit in that procedure's file, ahead of its Commands section.
 
 ## Shared Planning
 

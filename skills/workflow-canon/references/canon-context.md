@@ -100,7 +100,7 @@ git rev-parse <ref>
 
 Validate the corpus roster, protocol and recorded paths with the paired engine.
 
-- ```bash
+```bash
 bash <corpus>/walks/check-roster.sh
 python3 <corpus>/walks/check-walk-protocol.py
 python3 <corpus>/walks/check-walk-protocol.py --self-test
@@ -112,7 +112,7 @@ WORKFLOWS_DIR=<corpus> npx vitest run tests/e2e/all-workflows-walk.test.ts
 
 Walk the current corpus roster and compare checkpoint reachability with its exceptions.
 
-- - Read the roster first and supply its walked IDs as a literal comma-separated value.
+- Read the roster first and supply its walked IDs as a literal comma-separated value.
 - An omitted scope walks the full roster. [Workflows Coverage](coverage.md#workflows-coverage) determines when a literal `WF_COVERAGE_SCOPE` narrows the walk.
 
 ```bash
@@ -196,7 +196,7 @@ rg -n "work-package/" corpus/ -g "*.md" -g "*.yaml"
 
 Runs the guard registry, or a named subset.
 
-- ```bash
+```bash
 WORKFLOWS_DIR=<corpus> npm run check:all
 WORKFLOWS_DIR=<corpus> npm run check:all -- --only <id>,<id>
 ```
@@ -205,7 +205,7 @@ WORKFLOWS_DIR=<corpus> npm run check:all -- --only <id>,<id>
 
 Runs the guard suite at the merge-base and on this tree, and attributes each failure by the difference.
 
-- ```bash
+```bash
 WORKFLOWS_DIR=<corpus> npm run check:delta -- --base <base-ref>
 ```
 
