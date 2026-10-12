@@ -59,6 +59,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - No bold words open a running sentence. A step such as "**Fetch** each issue" becomes the label "**Fetch.**" with "Fetch each issue …" beneath it.
 - **Sub-bullets.**
   An item that describes several discrete points lists them as sub-bullets. A single sentence, or a simple list within one sentence, stays as it is.
+- **Bounded prose.**
+  A run of prose under one heading is at most eight lines. Longer prose splits into named sub-sections, leaving the linked heading where it is. A list or table is one structure and is not split to meet this.
 
 ## Prose
 
