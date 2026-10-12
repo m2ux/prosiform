@@ -1,6 +1,7 @@
 """The shared skill-file check, over seeded skills in a temporary tree."""
 
 import io
+import os
 import shutil
 import sys
 import tempfile
@@ -206,6 +207,20 @@ class SkillFileChecks(unittest.TestCase):
         self.write('references/catalog.md', '# Catalog\n\n## Reference\n\n### Fetch issue\n\nA sentence.\n')
         self.write('references/plan.md', '# Plan\n\nSee [Fetch issue](catalog.md#fetch-issue) for it.\n')
         self.assertEqual(self.findings(), [])
+
+    def test_a_caller_under_another_root_is_reported(self):
+        elsewhere = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, elsewhere)
+        catalog = self.write('references/catalog.md', self.CATALOG)
+        plan = elsewhere / 'sibling' / 'references' / 'plan.md'
+        plan.parent.mkdir(parents=True)
+        target = os.path.relpath(catalog, plan.parent)
+        plan.write_text(f'# Plan\n\nRun [Fetch issue]({target}#fetch-issue) for it.\n')
+        printed = io.StringIO()
+        with redirect_stdout(printed):
+            status = checker.main([str(self.skill), str(elsewhere / 'sibling')])
+        self.assertEqual(status, 1)
+        self.assertIn('command specification with one caller', printed.getvalue())
 
     def test_a_conforming_mode_file_reports_nothing(self):
         self.write('references/plan-mode.md', self.MODE + self.PROCEDURE + self.RULES)

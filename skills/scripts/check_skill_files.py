@@ -51,6 +51,13 @@ def anchor_of(text):
     return re.sub(r'[\s_]+', '-', re.sub(r'[^\w\s-]', '', text.strip().lower()))
 
 
+def named(path, root):
+    """A path as a finding names it: relative to the root given where it lies
+    under it, and whole otherwise, since the roots checked together may have
+    different parents and a citation may cross between them."""
+    return path.relative_to(root) if path.is_relative_to(root) else path
+
+
 def scan(path):
     """Each line with the fence state it sits in, and the file's headings."""
     lines = path.read_text().splitlines()
@@ -151,7 +158,7 @@ def check(path, root, cache, used):
     for index, title in specifications(headings):
         citing = callers.get(anchor_of(title), ())
         if len(citing) == 1 and path not in citing:
-            caller = next(iter(citing)).relative_to(root)
+            caller = named(next(iter(citing)), root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
 
     # A mode file's top-level sections are a named set in a named order, so
