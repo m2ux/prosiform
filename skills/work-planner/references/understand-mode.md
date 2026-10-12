@@ -14,10 +14,10 @@ Before graph operations, also read [Graph Conventions](commands.md#graph-convent
    - The request names the pull request, by number or by URL. Run from [Sync Mode](sync-mode.md), it is the one behind the issue moving to In Review, as this mode's Grain rule states.
    - [Fetch Pull Request](commands.md#fetch-pull-request) for its title, its base branch and its head commit. Every code reference the overview carries is pinned to that head commit.
 2. **Bound the change.**
-   - [Create Pull Request Worktree](commands.md#create-pull-request-worktree) cuts a worktree at the head commit, which is where the graph reads the change.
+   - [Create Pull Request Worktree](#create-pull-request-worktree) cuts a worktree at the head commit, which is where the graph reads the change.
    - [Fetch Pull Request Files](#fetch-pull-request-files) for the files it changes.
 3. **Ready the graph.**
-   - [Index Status](#index-status) in that worktree. Where it reports the repository unindexed, or the index behind the head commit, [Index Repository](commands.md#index-repository) brings it current.
+   - [Index Status](#index-status) in that worktree. Where it reports the repository unindexed, or the index behind the head commit, [Index Repository](#index-repository) brings it current.
    - A measurement read off a stale index describes a structure the reviewer will not find, as this mode's Fresh index rule states.
 4. **Measure the structure.**
    - [Change Surface](#change-surface) reports the symbols the change touches and the flows they sit in.
@@ -33,7 +33,7 @@ Before graph operations, also read [Graph Conventions](commands.md#graph-convent
 9. **Publish.**
    Commit and push the engineering worktree, so the overview resolves from the engineering branch before the pull request links it.
 10. **Link it.**
-    - Add the References row to the pull request's body, as this mode's Reference row rule states, and write the body with [Patch Pull Request Body](commands.md#patch-pull-request-body).
+    - Add the References row to the pull request's body, as this mode's Reference row rule states, and write the body with [Patch Pull Request Body](#patch-pull-request-body).
     - A body carrying no References section takes one, in the place the [pull request template](../templates/pull-request.md) gives it.
 11. **Report.**
     The pull request, the record folder, the diagrams the overview carries, and the References row.
@@ -47,7 +47,7 @@ Before graph operations, also read [Graph Conventions](commands.md#graph-convent
   - An epic In Review takes each open [review pull request](work-breakdown.md#review-pull-request), one run per base. Its overview covers the change that base delivers.
   - An initiative takes none. Its epics' review pull requests each carry their own overview.
 - **Fresh index.**
-  Every measurement is read at the head commit, from an index current with it. A response reporting the index behind sends the run back to [Index Repository](commands.md#index-repository), and its numbers are discarded.
+  Every measurement is read at the head commit, from an index current with it. A response reporting the index behind sends the run back to [Index Repository](#index-repository), and its numbers are discarded.
 - **Measured structure.**
   The areas, their members and each flow's step order are the graph's, as steps 4 and 5 measure them, which SKILL.md's Measured claims rule requires of a chain. A sequence traced by hand is a defect.
 - **One overview per pull request.**
@@ -105,4 +105,33 @@ Reports one flow's symbols in step order, the structure a sequence diagram is dr
 
 ```bash
 gitnexus query --query "Queue Placement" --limit 1
+```
+
+### Patch Pull Request Body
+
+Replaces a pull request's body.
+
+- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
+
+```bash
+gh api --method PATCH repos/{owner}/{repo}/pulls/950 -F body=@pr-950.md --jq .html_url
+```
+
+### Create Pull Request Worktree
+
+Cuts the worktree [Understand Mode](understand-mode.md#procedure) measures a pull request in, at its head commit.
+
+- Run it in the checkout of the repository the pull request changes.
+- The worktree is detached at the head commit, so the graph reads the change as the reviewer meets it.
+
+```bash
+git fetch origin pull/950/head && git worktree add --detach .worktrees/review-950 FETCH_HEAD
+```
+
+### Index Repository
+
+Indexes the repository, which an unindexed or behind repository needs before any measurement.
+
+```bash
+gitnexus analyze
 ```

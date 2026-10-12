@@ -69,7 +69,7 @@ Command operations use the [command conventions](command-conventions.md), read b
 Decides which initiatives and epics on a theme board move between Backlog, Ready and In Progress, and prints the call for each Status and assignee change.
 
 - The rules are [Advance Mode](advance-mode.md).
-- `--items` is [Fetch Board Items with Status](commands.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
+- `--items` is [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
 - `--assignee` is the user [Find User](commands.md#find-user) prints.
 - Give an issue it reports unresolved with `--others`.
 - `--unplanned` names an initiative the user left with no priority, as a number or `owner/repo#number`.

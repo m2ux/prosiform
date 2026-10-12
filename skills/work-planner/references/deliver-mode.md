@@ -34,7 +34,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
    - Set each task issue of the unit, where one exists, to In Progress with [Set Item Status](commands.md#set-item-status), and its epic with it.
 8. **Dispatch.**
    For each held unit:
-   - [Create Task Worktree](commands.md#create-task-worktree), and write the [brief](#brief) to a file in that worktree.
+   - [Create Task Worktree](#create-task-worktree), and write the [brief](#brief) to a file in that worktree.
    - Start the unit's session with the sub-agent dispatch of the session this mode was called from.
    - The sub-agent works in the unit's worktree, reads the brief, and has the engineering worktree in reach for the planning record.
    - The session is left running.
@@ -62,7 +62,7 @@ What the prompt tells one session, written from the facts the `unit` line and th
 - **Open the pull request.**
   Open it with [Open Task Pull Request](#open-task-pull-request), which titles it for the epic, targets the epic base, fills the Test Plan table as [Test Coverage](work-breakdown.md#test-coverage) states, and links each task issue the unit delivers. Then run [Sync Epic](commands.md#sync-epic) for the unit's tasks and [Patch Body](commands.md#patch-body).
 - **Merge.**
-  Record check results with [Patch Pull Request Body](commands.md#patch-pull-request-body), following [Test Plan](work-breakdown.md#test-plan), then follow [Task Merge](work-breakdown.md#task-merge).
+  Record check results with [Patch Pull Request Body](understand-mode.md#patch-pull-request-body), following [Test Plan](work-breakdown.md#test-plan), then follow [Task Merge](work-breakdown.md#task-merge).
 - **Hoist arising issues.**
   Create each issue that arose during delivery as a standalone issue with [Create Issue](commands.md#create-issue), with no agent-engineering prefix. Then run [Hoist Mode](hoist-mode.md) for each such issue, prompting the user for its placement across open initiatives and epics.
 
@@ -125,4 +125,16 @@ Frees each named task row, by replacing the planning-folder link with its work-i
 
 ```bash
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
+```
+
+### Create Task Worktree
+
+Cuts the worktree and branch one unit's session works in, from the epic's base branch.
+
+- The worktree, the branch and the base are the ones [Find Available Work](commands.md#find-available-work) names, with the branch following the [Work Breakdown Guide](work-breakdown.md#delivery).
+- When the unit line names several bases, cut from the one for the long-lived branch the unit changes.
+- Run it in the checkout of the repository the work changes.
+
+```bash
+git fetch origin i07/e00/main && git worktree add .worktrees/i07-e00-w01 -b i07/e00/w01-queue-plan origin/i07/e00/main
 ```

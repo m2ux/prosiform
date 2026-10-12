@@ -79,10 +79,10 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 12. **Sync the board.**
     Sync it after the issues are patched and any closable issue is closed, fetching the issues again first. An open initiative or epic is set In Review as this mode's In Review rule states.
     - **Find it.**
-      - The board is the initiative's theme board, per SKILL.md's [Themes and Boards](../SKILL.md#themes-and-boards): run [Find Theme Board](commands.md#find-theme-board) with its theme.
-      - When no open board carries that theme, create it with [Create Board](commands.md#create-board), titled as [Themes and Boards](../SKILL.md#themes-and-boards) states, then sync it.
+      - The board is the initiative's theme board, per SKILL.md's [Themes and Boards](../SKILL.md#themes-and-boards): run [Find Theme Board](#find-theme-board) with its theme.
+      - When no open board carries that theme, create it with [Create Board](#create-board), titled as [Themes and Boards](../SKILL.md#themes-and-boards) states, then sync it.
     - **Plan.**
-      - Run [Fetch Board Fields](commands.md#fetch-board-fields) and [Find Status Field](commands.md#find-status-field), then [Fetch Board Items with Status](commands.md#fetch-board-items-with-status).
+      - Run [Fetch Board Fields](commands.md#fetch-board-fields) and [Find Status Field](#find-status-field), then [Fetch Board Items with Status](#fetch-board-items-with-status).
       - Run [Plan Board Changes](commands.md#plan-board-changes) with the user from [Find User](commands.md#find-user) and the issue links from [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links), which prints the call for each board and assignee change.
     - **Write.**
       - Run each call it prints.
@@ -141,4 +141,42 @@ Ticks confirmed criteria on an epic or an initiative, refusing any not ready to 
 ```bash
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
+```
+
+### Find Theme Board
+
+Prints the number of the open board for one theme, by the theme's name that opens its title.
+
+```bash
+gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | startswith("Canon: ")) | .number'
+```
+
+### Create Board
+
+Copies the Initiative Template into a new open board, links the copy to the repository, and prints the new board's number.
+
+- The template is the open board titled `Initiative Template`. The copy carries its Status options: Backlog, Ready, In Progress, In Review and Done.
+- The title is the new board's title: a theme board's title from [Themes and Boards](../SKILL.md#themes-and-boards).
+- The copy's JSON is one project, and `.number` is the new board.
+
+```bash
+gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Initiative Template") | .number'
+gh project copy 1 --source-owner {owner} --target-owner {owner} --title 'Canon: Definitions Checked Against the Design Canon' --format json --jq .number
+gh project link 13 --owner {owner} --repo {repo}
+```
+
+### Find Status Field
+
+Prints the id of a board's Status field.
+
+```bash
+gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" --jq '.[] | select(.name == "Status") | .id'
+```
+
+### Fetch Board Items with Status
+
+Saves a board's items with their Status, each carrying its issue whole.
+
+```bash
+gh api --paginate "users/{owner}/projectsV2/9/items?per_page=100&fields=419167630" > items.json
 ```

@@ -68,14 +68,6 @@ Replaces an issue's title.
 gh api --method PATCH repos/{owner}/{repo}/issues/943 -f title='[I07:E00] Name: Subtitle' --jq .title
 ```
 
-### List Labels
-
-Lists the labels that exist in the repository.
-
-```bash
-gh api "repos/{owner}/{repo}/labels?per_page=100" --jq '.[].name'
-```
-
 ### Add Labels
 
 Adds labels to an issue.
@@ -112,8 +104,6 @@ Reads and edits GitHub Development links through authenticated GitHub or an avai
 - Read the actual field, including every page and state; record repository and number for each link. A missing tool or inaccessible field is a blocker, not an empty link set.
 - Confirm the [Issue Closure](work-breakdown.md#issue-closure) repository prerequisite before linking or merging. Observe the repository setting, or obtain the user's explicit confirmation; an absent API field is unknown.
 - After a link edit, re-read the field to verify it. Removing a link follows [Issue Closure](work-breakdown.md#issue-closure).
-
-## Sources
 
 ## Pull Requests
 
@@ -156,16 +146,6 @@ Points a pull request at another base branch, such as its epic's base branch.
 
 ```bash
 gh api --method PATCH repos/{owner}/{repo}/pulls/950 -f base='i07/e00/main' --jq .base.ref
-```
-
-### Patch Pull Request Body
-
-Replaces a pull request's body.
-
-- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
-
-```bash
-gh api --method PATCH repos/{owner}/{repo}/pulls/950 -F body=@pr-950.md --jq .html_url
 ```
 
 ### Update Review Pull Request
@@ -215,63 +195,12 @@ Sets the [Issue links](work-breakdown.md#delivery) relation through [Development
 
 ## Project Boards
 
-### Find Theme Board
-
-Prints the number of the open board for one theme, by the theme's name that opens its title.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | startswith("Canon: ")) | .number'
-```
-
-### Create Board
-
-Copies the Initiative Template into a new open board, links the copy to the repository, and prints the new board's number.
-
-- The template is the open board titled `Initiative Template`. The copy carries its Status options: Backlog, Ready, In Progress, In Review and Done.
-- The title is the new board's title: a theme board's title from [Themes and Boards](../SKILL.md#themes-and-boards).
-- The copy's JSON is one project, and `.number` is the new board.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Initiative Template") | .number'
-gh project copy 1 --source-owner {owner} --target-owner {owner} --title 'Canon: Definitions Checked Against the Design Canon' --format json --jq .number
-gh project link 13 --owner {owner} --repo {repo}
-```
-
-### Create Proposals Board
-
-Copies the Proposals Template into a new open board, links the copy to the repository, and prints the new board's number.
-
-- The template is the open board titled `Proposals Template`. The copy carries its Status options, listed under Proposals in [Themes and Boards](../SKILL.md#themes-and-boards).
-- The title is `Proposals`.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Proposals Template") | .number'
-gh project copy 14 --source-owner {owner} --target-owner {owner} --title 'Proposals' --format json --jq .number
-gh project link 15 --owner {owner} --repo {repo}
-```
-
 ### Fetch Board Fields
 
 Saves a board's fields.
 
 ```bash
 gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" > fields.json
-```
-
-### Find Status Field
-
-Prints the id of a board's Status field.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" --jq '.[] | select(.name == "Status") | .id'
-```
-
-### Fetch Board Items with Status
-
-Saves a board's items with their Status, each carrying its issue whole.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2/9/items?per_page=100&fields=419167630" > items.json
 ```
 
 ### Set Item Status
@@ -298,44 +227,11 @@ Adds the folder for one planning record on the long-lived engineering worktree.
 mkdir -p artifacts/planning/<yyyy-mm-dd>[-<ref>]-<slug>
 ```
 
-## Sessions
-
-### Create Task Worktree
-
-Cuts the worktree and branch one unit's session works in, from the epic's base branch.
-
-- The worktree, the branch and the base are the ones [Find Available Work](#find-available-work) names, with the branch following the [Work Breakdown Guide](work-breakdown.md#delivery).
-- When the unit line names several bases, cut from the one for the long-lived branch the unit changes.
-- Run it in the checkout of the repository the work changes.
-
-```bash
-git fetch origin i07/e00/main && git worktree add .worktrees/i07-e00-w01 -b i07/e00/w01-queue-plan origin/i07/e00/main
-```
-
-### Create Pull Request Worktree
-
-Cuts the worktree [Understand Mode](understand-mode.md#procedure) measures a pull request in, at its head commit.
-
-- Run it in the checkout of the repository the pull request changes.
-- The worktree is detached at the head commit, so the graph reads the change as the reviewer meets it.
-
-```bash
-git fetch origin pull/950/head && git worktree add --detach .worktrees/review-950 FETCH_HEAD
-```
-
 ## Graph
 
 ### Graph Conventions
 
-Every graph command runs in the worktree [Create Pull Request Worktree](#create-pull-request-worktree) cut, and prints JSON carrying a `staleness` block. A block reporting the index behind sends the run back to [Index Repository](#index-repository), as [Understand Mode](understand-mode.md#rules) states under Fresh index.
-
-### Index Repository
-
-Indexes the repository, which an unindexed or behind repository needs before any measurement.
-
-```bash
-gitnexus analyze
-```
+Every graph command runs in the worktree [Create Pull Request Worktree](understand-mode.md#create-pull-request-worktree) cut, and prints JSON carrying a `staleness` block. A block reporting the index behind sends the run back to [Index Repository](understand-mode.md#index-repository), as [Understand Mode](understand-mode.md#rules) states under Fresh index.
 
 ## Scripts
 
@@ -446,7 +342,7 @@ cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/bo
 Reports each unit of work a theme board makes available, each row a session holds, and each row its dependencies block.
 
 - The rules are [Deliver Mode](deliver-mode.md).
-- `--items` is [Fetch Board Items with Status](#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
+- `--items` is [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
 - Give an issue it reports unresolved with `--others`.
 - `--project` is a checkout of the project, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. A base whose last segment is not one of those names is ignored.
 - `--bases` is the list [List Epic Bases](#list-epic-bases) prints for the board's epics, comma-separated.
@@ -462,7 +358,7 @@ cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/de
 
 ### Summarise Progress
 
-Prints the standup from [Fetch Board Items with Status](#fetch-board-items-with-status) and [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
+Prints the standup from [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status) and [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
 
 - `--links` is the file [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) writes for those pull requests, and is where the issue a pull request delivers is read. A call without it is refused.
 - `--since` opens the window on another date than a week before today.
