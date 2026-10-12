@@ -10,6 +10,12 @@ template it illustrates rather than to the document. A template's `{{...}}`
 stands for text the author supplies, so it is measured where it lands rather
 than here.
 
+A prerequisite citation is recognised by the canonical form the guidelines
+state, `Read [Name](target) first.`, which separates it from a selection
+link naming the next operation. A selection link points wherever its target
+sits; a prerequisite citation names a section the reader must already hold,
+so its target belongs in another file.
+
     python3 skills/scripts/check_skill_files.py skills/workflow-canon
 """
 
@@ -24,6 +30,7 @@ HEADING = re.compile(r'^(#{1,6})\s+(.*)$')
 LINK = re.compile(r'\[[^\]]*\]\(([^)]+)\)')
 CODE_SPAN = re.compile(r'`[^`]*`')
 PLACEHOLDER = re.compile(r'\{\{.*\}\}|\{[a-z_]+\}|^[.…\s]*$')
+PREREQUISITE = re.compile(r'Read ((?:\[[^\]]+\]\([^)]+\)(?:,\s*)?)+) first\.')
 BULLET = re.compile(r'^(\s*)-(\s*)(.*)$')
 BOLD_LEAD = re.compile(r'^\s*-\s+\*\*')
 BARE_LEAD = re.compile(r'^\s*-\s+\*\*[^*]+\*\*\s*$')
@@ -138,6 +145,18 @@ def check(path, root, cache, used):
         if (BOLD_LEAD.match(line) and not BARE_LEAD.match(line)
                 and '{{' not in line and len(line) > LEAD_WIDTH):
             report(index, 'inline bold lead too wide', f'{len(line)} characters, limit {LEAD_WIDTH}')
+
+        # A prerequisite citation asserts the reader already holds a section.
+        # Within one file position carries that, so the citation states an
+        # order the reader has passed and the section it names must be elsewhere.
+        for sentence in PREREQUISITE.findall(CODE_SPAN.sub('', line)):
+            for target in LINK.findall(sentence):
+                name, _, fragment = target.partition('#')
+                if not fragment or PLACEHOLDER.search(target):
+                    continue
+                destination = (path.parent / name).resolve() if name else path
+                if destination == path:
+                    report(index, 'prerequisite citation inside one file', target)
 
     # Bounded prose: consecutive prose lines, lists and tables excluded
     # because each is one structure and is not split to meet the limit.

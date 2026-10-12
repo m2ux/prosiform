@@ -128,6 +128,31 @@ class SkillFileChecks(unittest.TestCase):
         self.write('SKILL.md', '# Specimen\n\n- **Label.**\n  ' + 'word ' * 40 + '\n')
         self.assertEqual(self.findings(), [])
 
+    def test_a_prerequisite_citation_inside_one_file_is_reported(self):
+        self.write('SKILL.md', '# Specimen\n\n## Common\n\nOne.\n\n## Spec\n\n'
+                               'Read [Common](#common) first. Then run it.\n')
+        self.assertIn('prerequisite citation inside one file', self.kinds())
+
+    def test_a_prerequisite_citation_naming_its_own_file_is_reported(self):
+        self.write('references/guide.md', '# Guide\n\n## Common\n\nOne.\n\n## Spec\n\n'
+                                          'Read [Common](guide.md#common) first.\n')
+        self.assertIn('prerequisite citation inside one file', self.kinds())
+
+    def test_a_prerequisite_citation_crossing_a_file_is_allowed(self):
+        self.write('SKILL.md', '# Specimen\n\nRead [Terms](references/guide.md#terms) first.\n')
+        self.write('references/guide.md', '# Guide\n\n## Terms\n\nA sentence.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_selection_link_may_point_anywhere_in_its_file(self):
+        self.write('SKILL.md', '# Specimen\n\n## Route\n\nUse [Spec](#spec) for the run.\n\n'
+                               '## Spec\n\nA sentence.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_prerequisite_example_in_a_code_span_is_a_specimen(self):
+        self.write('SKILL.md', '# Specimen\n\n## Common\n\nOne.\n\n'
+                               '- **Rule.**  Cite it as `Read [Common](#common) first.` in the body.\n')
+        self.assertEqual(self.findings(), [])
+
     def test_a_trailing_blank_line_is_reported(self):
         self.write('SKILL.md', '# Specimen\n\nA sentence.\n\n')
         self.assertIn('trailing blank line', self.kinds())
