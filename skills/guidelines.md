@@ -78,8 +78,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   A reference to another markdown file in the skill is a relative link, never a code span.
 - **Link text.**
   The link sits on the noun that names the thing: the mode, the guide, the command, the template.
-- **Prerequisites.**
-  A section read after others cites them in reading order, as numbered links naming none: `Read [1](#common), [2](#audit-commands) first.` The index is the order, so a chain is visible where it is needed rather than discovered inside the first link.
+- **Prerequisite index.**
+  A section read after others cites them in reading order, as numbered links naming none: `Read [1](#common), [2](#audit-commands) first.` The index is the order, the number is the whole link text, and a chain states every step, so none is discovered inside an earlier one. Each operation carries its own, rather than a caller asserting that it supplies them.
 - **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
 
 ## Commands
@@ -105,7 +105,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Reading boundaries.**
   Link the smallest complete section the caller needs. The skill's reading rules define a heading link as that section and its subsections, stopping before the next heading of equal or higher level. Whole-file links identify required complete documents.
 - **Prerequisites.**
-  Provide or explicitly link the context needed to use each section, including conventions and mode authority. Split files when section routing still brings unrelated guidance into context.
+  Provide or explicitly link the context needed to use each section, including conventions and mode authority, citing them with a [prerequisite index](#links). Split files when section routing still brings unrelated guidance into context.
 - **Common context.**
   Group prerequisites shared by all specific sections into one named common section, with any common subsections nested beneath it. Specific sections sit outside that heading's boundary. Keep prerequisites used by only some sections with those sections or in a separately linked section.
 - **Caller routing.**

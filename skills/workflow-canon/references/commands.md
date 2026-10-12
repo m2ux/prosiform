@@ -385,6 +385,8 @@ git diff -- site
 
 Validate the corpus roster, protocol and recorded paths with the paired engine.
 
+- Read [1](#common), [2](#canon-check-conventions) first.
+
 ```bash
 bash <corpus>/walks/check-roster.sh
 python3 <corpus>/walks/check-walk-protocol.py
@@ -397,6 +399,7 @@ WORKFLOWS_DIR=<corpus> npx vitest run tests/e2e/all-workflows-walk.test.ts
 
 Walk the current corpus roster and compare checkpoint reachability with its exceptions.
 
+- Read [1](#common), [2](#canon-check-conventions) first.
 - Read the roster first and supply its walked IDs as a literal comma-separated value.
 - An omitted scope walks the full roster. [Workflows Coverage](coverage.md#workflows-coverage) determines when a literal `WF_COVERAGE_SCOPE` narrows the walk.
 
@@ -597,7 +600,7 @@ rg -n "work-package/" corpus/ -g "*.md" -g "*.yaml"
 
 Runs the guard registry, or a named subset.
 
-- The caller supplies the canon check conventions, including guard obligations.
+- Read [1](#common), [2](#canon-check-conventions) first.
 
 ```bash
 WORKFLOWS_DIR=<corpus> npm run check:all
@@ -608,7 +611,7 @@ WORKFLOWS_DIR=<corpus> npm run check:all -- --only <id>,<id>
 
 Runs the guard suite at the merge-base and on this tree, and attributes each failure by the difference.
 
-- The caller supplies the canon check conventions, including guard obligations.
+- Read [1](#common), [2](#canon-check-conventions) first.
 
 ```bash
 WORKFLOWS_DIR=<corpus> npm run check:delta -- --base <base-ref>

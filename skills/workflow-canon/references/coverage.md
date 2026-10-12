@@ -99,7 +99,7 @@ For changed documentation or site content, [Check Engine Documentation](commands
 
 ## Workflows Coverage
 
-Read [Canon Check Conventions](commands.md#canon-check-conventions), then [Run Guard Suite](commands.md#run-guard-suite) and [Run Corpus Checks](commands.md#run-corpus-checks) from the intended engine checkout for the registered guard sweep, roster and walk-protocol validation, snapshots and all-workflows drift. The corpus supplies definitions and baselines; its tooling comes from the paired engine.
+Use [Run Guard Suite](commands.md#run-guard-suite) and [Run Corpus Checks](commands.md#run-corpus-checks) from the intended engine checkout for the registered guard sweep, roster and walk-protocol validation, snapshots and all-workflows drift. The corpus supplies definitions and baselines; its tooling comes from the paired engine.
 
 - **Definition contracts.**
   Inspect schema agreement; steps, gates, actions, loops, checkpoints, exits and fans; value provenance and absence/null/falsy behavior; routine expansion; technique anatomy and inherited contracts; defaults, executable references and artifact persistence.
