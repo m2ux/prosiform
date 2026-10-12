@@ -45,7 +45,7 @@ The rules this skill's own files follow beyond the [skill guidelines](../../guid
 ## Commands
 
 - **Shared conventions.**
-  The [command conventions](commands.md#conventions) also hold how bodies go through files and where boards sit. Graph-only setup belongs in [Graph Conventions](commands.md#graph-conventions).
+  The [command conventions](command-conventions.md) also hold how bodies go through files and where boards sit. Graph-only setup belongs in [Graph Conventions](commands.md#graph-conventions).
 
 ## Progressive Disclosure
 

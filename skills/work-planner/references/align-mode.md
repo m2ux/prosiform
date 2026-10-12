@@ -4,7 +4,7 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 Before matching pull requests or syncing epics, read [Delivery State](commands.md#delivery-state).
 
@@ -28,7 +28,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 4. **Apply the mechanical fixes.**
    - Apply them without asking.
    - Read the diff to confirm it changes structure only, then [Patch Body](commands.md#patch-body) from `fixed-943.md`.
-   - Make the title and label changes the check names, with [Retitle Issue](commands.md#retitle-issue), [Add Labels](commands.md#add-labels) and [Remove Label](commands.md#remove-label).
+   - Make the title and label changes the check names, with [Retitle Issue](commands.md#retitle-issue), [Add Labels](commands.md#add-labels) and [Remove Label](#remove-label).
 5. **Check the rules.**
    Run the [Review Passes](review-passes.md) on the issues being aligned: the goal pass, the consistency pass, and the ordering pass.
    - A proposal, against [Propose Mode](propose-mode.md)'s Problem scope rule.
@@ -60,9 +60,9 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
    Put each of those to the user as an [Interview](interview.md). Verifying and ticking it is [Sync Mode](sync-mode.md). A Done change the fix file writes is applied with [Patch Body](commands.md#patch-body), without asking. The report follows [Coverage Reports](work-breakdown.md#coverage-reports).
 10. **Branches.**
     For an initiative being aligned, bring each open epic's branches to the structure the [Work Breakdown Guide](work-breakdown.md#delivery) states. Check [Epic prerequisites](work-breakdown.md#epic-prerequisites) before cutting a missing branch as [Missing branches](work-breakdown.md#missing-branches) states.
-    - [List Long-Lived Branches](commands.md#list-long-lived-branches) prints the names, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. When it reports them unevaluable, the branch step stops and that report is the finding.
+    - [List Long-Lived Branches](#list-long-lived-branches) prints the names, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. When it reports them unevaluable, the branch step stops and that report is the finding.
     - [Fetch Initiative Pull Requests](commands.md#fetch-initiative-pull-requests). [List Epic Bases](commands.md#list-epic-bases) for each open epic.
-    - Identify the long-lived branch with [List Long-Lived Branches](commands.md#list-long-lived-branches). A base of `main` or `i07/e00/main` names `main`.
+    - Identify the long-lived branch with [List Long-Lived Branches](#list-long-lived-branches). A base of `main` or `i07/e00/main` names `main`.
     - Point an open task pull request at its epic base with [Retarget Pull Request](commands.md#retarget-pull-request).
     - When that pull request is not mergeable, [Update Task Branch](commands.md#update-task-branch) merges the epic base into the task branch. A conflict is reported and the pull request stays open.
     - An open pull request whose head is an epic base targets its corresponding long-lived branch.
@@ -131,3 +131,25 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
   Apply [Review pull request](work-breakdown.md#review-pull-request).
 - **Table.**
   Repair Done cells under [Tables](work-breakdown.md#tables); resolve missing delivery evidence through the Coverage step.
+
+## Commands
+
+### Remove Label
+
+Removes one label from an issue.
+
+```bash
+gh api --method DELETE repos/{owner}/{repo}/issues/943/labels/type:initiative --jq '.[].name'
+```
+
+### List Long-Lived Branches
+
+Prints the long-lived branch names, one per line.
+
+- The names are as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
+- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py --names --project <checkout>
+```

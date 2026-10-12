@@ -4,7 +4,7 @@ The method for the goal pass, the consistency pass, and the ordering pass. The r
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 ## Goal Pass
 
@@ -52,7 +52,7 @@ Checks dependencies as a graph, then renumbers. A failure is one the [initiative
    Fix a backward reference by moving the task to the epic that owns its inputs. When the task duplicates work the later epic already does, remove it instead.
 6. **Renumber.**
    Renumber under [Numbering](work-breakdown.md#numbering), preserving the numbers of work already named by a pull request.
-   - Use [Renumber Epics](commands.md#renumber-epics) for epic numbers and [Renumber Tasks](commands.md#renumber-tasks) for one epic's tasks, with other initiatives' bodies after `--outside`.
+   - Use [Renumber Epics](#renumber-epics) for epic numbers and [Renumber Tasks](commands.md#renumber-tasks) for one epic's tasks, with other initiatives' bodies after `--outside`.
    - Then re-sort each table, check every range the script prints, and grep the prose for references it cannot see.
 7. **Depends on.**
    Check each initiative edge against the [whole-epic prerequisite rule](work-breakdown.md#tables), keeping narrower dependencies in task rows. Apply the corrections [Check Dependencies](commands.md#check-dependencies) reports, and re-run it until it reports no problems.
@@ -66,7 +66,7 @@ Each pass reads its inputs first.
 1. **Issues.**  Fetch each issue the pass reads, with [Fetch Issue](commands.md#fetch-issue) and [Fetch Body](commands.md#fetch-body).
 2. **Drafts.**  The goal pass that gates creation reads the local drafts.
 3. **Sources.**
-   Fetch each source the initiative's References mark, with [Fetch Source](commands.md#fetch-source). An epic's fetch takes its initiative's.
+   Fetch each source the initiative's References mark, with [Fetch Source](#fetch-source). An epic's fetch takes its initiative's.
 
 ## Report
 
@@ -87,3 +87,24 @@ A pass states each finding this way.
   In the planning record, add a table of findings and where each is resolved, plus the decisions taken with the review.
 - **Local files:**
   Patch every changed issue from its local file, and keep that file as the source for the next pass.
+
+## Commands
+
+### Fetch Source
+
+Saves a source an initiative's References mark, for the alignment the [Goal Pass](review-passes.md#goal-pass) runs. A path in the checkout is read where it sits. A blob permalink is read at the commit it pins, below. Any other URL is fetched with the harness's web fetch. A source that returns nothing is a finding the [Sources](review-criteria.md#sources) criteria name, and the review states it rather than passing over the criteria it binds.
+
+```bash
+gh api repos/{owner}/{repo}/contents/docs/spec.md?ref=4a217fe6 --jq .content | base64 -d > source-R1.md
+```
+
+### Renumber Epics
+
+Renumbers an initiative's epics by the map given, in the files given.
+
+- It rewrites files in place, and rewrites only this initiative's prefixed references in the bodies given after `--outside` (other initiatives' issues). Links keep their targets.
+- It refuses a map that collides or that renumbers work a pull request names: a task whose id links a pull request, open or merged, or an epic a pull request in `--prs` names.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-*.md
+```

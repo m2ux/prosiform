@@ -1,31 +1,6 @@
 # Commands
 
-## Conventions
-
-Every command the skill runs, one spec per operation. The mode files name a spec by linking to it.
-
-### Execution
-
-- **Session.**
-  Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
-- **Repository.**
-  `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
-- **Bodies.**
-  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
-  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
-  - Keep these files in a working directory outside the repository.
-- **Scripts.**
-  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
-- **Boards.**
-  A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
-- **Example values.**  Substitute the real ones:
-  - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
-  - `950` a pull request, `I07` and `I08` initiative numbers;
-  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
-  - `1` the Initiative Template board, `13` a board copied from it;
-  - `14` the Proposals Template, `15` the Proposals board;
-  - `m2ux` the user.
-  - `<checkout>` any checkout of the project, a linked worktree included.
+Every command that several of the skill's procedures run, one spec per operation. A procedure names a spec by linking to it.
 
 ## Issues
 
@@ -45,28 +20,12 @@ Saves an issue's body alone, for [Check Dependencies](#check-dependencies), the 
 gh api repos/{owner}/{repo}/issues/943 --jq .body > live-943.md
 ```
 
-### Fetch All Issues
-
-Saves every issue in the repository; the scripts skip the pull requests among them.
-
-```bash
-gh api --paginate "repos/{owner}/{repo}/issues?state=all&per_page=100" > issues.json
-```
-
 ### List Initiative Titles
 
 Lists every numbered initiative, epic and task title, for finding the next initiative number. A proposal has no prefix, so it is not listed.
 
 ```bash
 gh api --paginate "repos/{owner}/{repo}/issues?state=all&per_page=100" --jq '.[] | select(.pull_request==null) | .title' | grep '^\[I[0-9]'
-```
-
-### Find Initiative Issue
-
-Prints an initiative's issue number, found by its title's prefix.
-
-```bash
-gh api --paginate "repos/{owner}/{repo}/issues?state=all&per_page=100" --jq '.[] | select(.pull_request == null) | select(.title | startswith("[I08]")) | .number'
 ```
 
 ### Find User
@@ -109,36 +68,12 @@ Replaces an issue's title.
 gh api --method PATCH repos/{owner}/{repo}/issues/943 -f title='[I07:E00] Name: Subtitle' --jq .title
 ```
 
-### List Labels
-
-Lists the labels that exist in the repository.
-
-```bash
-gh api "repos/{owner}/{repo}/labels?per_page=100" --jq '.[].name'
-```
-
-### Create Label
-
-Creates a label. A proposal needs `type:proposal` when [List Labels](#list-labels) does not show it.
-
-```bash
-gh api --method POST repos/{owner}/{repo}/labels -f name='type:proposal' -f color='1D76DB' -f description='A goal proposed as an initiative' --jq .name
-```
-
 ### Add Labels
 
 Adds labels to an issue.
 
 ```bash
 gh api --method POST repos/{owner}/{repo}/issues/943/labels -f 'labels[]=type:epic' --jq '.[].name'
-```
-
-### Remove Label
-
-Removes one label from an issue.
-
-```bash
-gh api --method DELETE repos/{owner}/{repo}/issues/943/labels/type:initiative --jq '.[].name'
 ```
 
 ### Comment on Issue
@@ -154,7 +89,7 @@ gh api --method POST repos/{owner}/{repo}/issues/874/comments -F body=@comment-8
 
 Closes an issue whose normal delivery checks and [Issue Closure](work-breakdown.md#issue-closure) pass.
 
-- Refresh the evidence with [Capture Issue Development](#capture-issue-development) immediately before this call. Use absolute evidence paths when changing directory, and the issue's repository and number in the REST path.
+- Refresh the evidence with [Capture Issue Development](work-breakdown.md#capture-issue-development) immediately before this call. Use absolute evidence paths when changing directory, and the issue's repository and number in the REST path.
 - The closure gate must exit 0 before the PATCH executes. A sync report of closable supplies the normal delivery check, not permission to skip this gate.
 
 ```bash
@@ -170,62 +105,11 @@ Reads and edits GitHub Development links through authenticated GitHub or an avai
 - Confirm the [Issue Closure](work-breakdown.md#issue-closure) repository prerequisite before linking or merging. Observe the repository setting, or obtain the user's explicit confirmation; an absent API field is unknown.
 - After a link edit, re-read the field to verify it. Removing a link follows [Issue Closure](work-breakdown.md#issue-closure).
 
-### Capture Issue Development
-
-Records the issue's complete Development pull request list and its repository's verified auto-closing setting.
-
-- Use [Development Access](#development-access) for the complete issue link set and confirmed repository setting. Record the exact URLs in `pull_requests`; set `complete` to true only after the full read, and `auto_close_issues` to false only after confirmation.
-- Record `repo` and `number` for the issue being closed. Save the snapshot as `development-943.json`; `pull_requests: []` means the field was checked and is empty. Missing access or incomplete evidence leaves closure blocked.
-- Use [Fetch Issue](#fetch-issue) for the current criteria and [Fetch Pull Request](#fetch-pull-request) for every recorded URL. Save those REST records as JSON lines in `development-prs-943.json`, including merged and closed pull requests regardless of their titles or branches. Identify a pull request by repository and number.
-- Before closing, refresh the Development list and pull request records. If the list changes while checking, repeat the check with the current list.
-
-```json
-{
-  "repo": "owner/repo",
-  "number": 943,
-  "complete": true,
-  "auto_close_issues": false,
-  "pull_requests": [
-    "https://github.com/owner/repo/pull/980",
-    "https://github.com/owner/other/pull/981"
-  ]
-}
-```
-
-### Check Issue Closure
-
-Checks the final closure conditions in [Issue Closure](work-breakdown.md#issue-closure).
-
-- Inputs are the fresh records from [Capture Issue Development](#capture-issue-development). No network calls or writes occur.
-- Exit 0 means this gate passed; normal delivery checks must also pass. Exit 1 reports each blocker, including missing evidence, an unmerged linked pull request or unticked criteria.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
-```
-
-### Close as Not Planned
-
-Closes an issue whose work another issue tracks.
-
-```bash
-gh api --method PATCH repos/{owner}/{repo}/issues/874 -f state=closed -f state_reason=not_planned --jq .state
-```
-
-## Sources
-
-### Fetch Source
-
-Saves a source an initiative's References mark, for the alignment the [Goal Pass](review-passes.md#goal-pass) runs. A path in the checkout is read where it sits. A blob permalink is read at the commit it pins, below. Any other URL is fetched with the harness's web fetch. A source that returns nothing is a finding the [Sources](review-criteria.md#sources) criteria name, and the review states it rather than passing over the criteria it binds.
-
-```bash
-gh api repos/{owner}/{repo}/contents/docs/spec.md?ref=4a217fe6 --jq .content | base64 -d > source-R1.md
-```
-
 ## Pull Requests
 
 ### Fetch Pull Request
 
-Appends one pull request, as one JSON line, to the file [Match Pull Requests](#match-pull-requests) reads. A row that links a number that file does not hold is fetched this way.
+Appends one pull request, as one JSON line, to the file [Match Pull Requests](sync-mode.md#match-pull-requests) reads. A row that links a number that file does not hold is fetched this way.
 
 ```bash
 gh api repos/{owner}/{repo}/pulls/439 --jq . >> prs.json
@@ -237,15 +121,6 @@ Saves the task and epic pull requests that name one initiative's epics.
 
 ```bash
 gh api --paginate "repos/{owner}/{repo}/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
-```
-
-### Fetch All Initiative Pull Requests
-
-Saves the pull requests that name any initiative, appending each further repository's with `>>`.
-
-```bash
-gh api --paginate "repos/{owner}/{repo}/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' > prs.json
-gh api --paginate "repos/{owner}/{other}/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' >> prs.json
 ```
 
 ### Fetch Pull Request Issue Links
@@ -265,38 +140,12 @@ Saves each pull request's Development-linked issues as a JSON array for the scri
 ]
 ```
 
-### Retitle Pull Request
-
-Replaces a pull request's title.
-
-```bash
-gh api --method PATCH repos/{owner}/{repo}/pulls/950 -f title='[I07:E00] Purpose' --jq .title
-```
-
 ### Retarget Pull Request
 
 Points a pull request at another base branch, such as its epic's base branch.
 
 ```bash
 gh api --method PATCH repos/{owner}/{repo}/pulls/950 -f base='i07/e00/main' --jq .base.ref
-```
-
-### Fetch Pull Request Files
-
-Saves the paths a pull request changes, for the measurement [Understand Mode](understand-mode.md#procedure) bounds to them.
-
-```bash
-gh api --paginate repos/{owner}/{repo}/pulls/950/files --jq '.[].filename' > changed-files.txt
-```
-
-### Patch Pull Request Body
-
-Replaces a pull request's body.
-
-- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
-
-```bash
-gh api --method PATCH repos/{owner}/{repo}/pulls/950 -F body=@pr-950.md --jq .html_url
 ```
 
 ### Update Review Pull Request
@@ -314,31 +163,6 @@ gh api repos/{owner}/{repo}/pulls/980 --jq .body > review-980.md
 gh api --method PATCH repos/{owner}/{repo}/pulls/980 -F body=@review-980.md --jq .html_url
 ```
 
-### Merge Pull Request
-
-Merges a task pull request into its epic base.
-
-- Confirm the repository prerequisite in [Issue Closure](work-breakdown.md#issue-closure) before merging.
-- Run it as [Task Merge](work-breakdown.md#task-merge) specifies.
-- The merge method is a merge commit.
-
-```bash
-gh api --method PUT repos/{owner}/{repo}/pulls/950/merge -f merge_method='merge' --jq .merged
-```
-
-### Create Epic Base
-
-Cuts an epic's base branch from the tip of its long-lived branch on the remote.
-
-- Run inside a checkout of the repository, with full host permissions.
-- The push refuses a branch that already exists.
-- The base is the one the [Work Breakdown Guide](work-breakdown.md#delivery) names for that long-lived branch.
-- Run it only after [Epic prerequisites](work-breakdown.md#epic-prerequisites) hold.
-
-```bash
-git fetch origin main && git push origin origin/main:refs/heads/i07/e00/main
-```
-
 ### List Epic Bases
 
 Prints one epic's base branch names, one per line.
@@ -350,100 +174,16 @@ Prints one epic's base branch names, one per line.
 git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
 ```
 
-### List Long-Lived Branches
-
-Prints the long-lived branch names, one per line.
-
-- The names are as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
-- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
-- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py --names --project <checkout>
-```
-
-### Update Epic Base
-
-Merges the long-lived branch into the epic base.
-
-- Run it from the main working tree before [Merge Pull Request](#merge-pull-request) or [Merge Epic Pull Request](#merge-epic-pull-request), as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
-- A conflict stops the merge. The pull request stays open, and the conflict is reported.
-
-```bash
-git fetch origin main i07/e00/main && git worktree add --detach .worktrees/i07/e00/main origin/i07/e00/main && git -C .worktrees/i07/e00/main merge --no-edit origin/main && git -C .worktrees/i07/e00/main push origin HEAD:refs/heads/i07/e00/main && git worktree remove .worktrees/i07/e00/main
-```
-
 ### Update Task Branch
 
 Merges the epic base into the unit's task branch.
 
-- Run it in the unit's worktree when [Merge Pull Request](#merge-pull-request) is refused, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
-- Then run [Merge Pull Request](#merge-pull-request) again.
+- Run it in the unit's worktree when [Merge Pull Request](work-breakdown.md#merge-pull-request) is refused, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+- Then run [Merge Pull Request](work-breakdown.md#merge-pull-request) again.
 - A conflict stops the update. The pull request stays open, and the conflict is reported.
 
 ```bash
 git fetch origin i07/e00/main && git merge --no-edit origin/i07/e00/main && git push origin HEAD:refs/heads/i07/e00/w01-queue-plan
-```
-
-### Open Task Pull Request
-
-Opens the pull request that delivers a unit's work into its epic base.
-
-- Run it in the unit's worktree once the work is pushed, as [Deliver Mode](deliver-mode.md#brief) states.
-- The title is the epic's prefix and the unit's purpose: `[I07:E00] Purpose`.
-- The head is the unit's task branch and the base is the epic base it was cut from, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
-- The body is drafted from the [pull request template](../templates/pull-request.md), with its Test Plan filled as [Test Coverage](work-breakdown.md#test-coverage) specifies.
-- [Link Pull Request to Issue](#link-pull-request-to-issue) links each task issue the unit delivers once it is open, as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Issue links. A unit whose tasks carry no issue of their own links nothing.
-
-```bash
-gh api --method POST repos/{owner}/{repo}/pulls -f title='[I07:E00] Purpose' -f head='i07/e00/w01-queue-plan' -f base='i07/e00/main' -F body=@body.md --jq .html_url
-```
-
-### Open Epic Pull Request
-
-Opens the draft pull request that merges an epic base into its long-lived branch.
-
-- Run it when [Sync Epic](#sync-epic) reports a draft line, or reports that branch unmerged and names no pull request. The epic stays open until the pull request merges.
-- The title is the epic's prefix and name: `[I07:E00] Name`.
-- The head is the epic base and the base is the long-lived branch it was cut from, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
-- The body is drafted from the [pull request template](../templates/pull-request.md), in the shape [Review pull request](work-breakdown.md#review-pull-request) gives it: Overview, Changes and References, with no Test Plan. [Update Review Pull Request](#update-review-pull-request) carries each later merge into it.
-- Open it as a draft, including when the first sync finds an already complete epic. The user's readiness step is [Review pull request](work-breakdown.md#review-pull-request).
-- [Link Pull Request to Issue](#link-pull-request-to-issue) links the epic's issue once it is open, as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Issue links.
-
-```bash
-gh api --method POST repos/{owner}/{repo}/pulls -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
-```
-
-### Fetch Merge Readiness
-
-Reads the current epic pull request, its target's merge requirements, and its head's checks.
-
-- Run after [Update Epic Base](#update-epic-base). Replace `<head-sha>` with the literal head SHA in the fetched pull request, and `main` with its target.
-- Read the branch's protection and [active branch rules](https://docs.github.com/en/rest/repos/rules#get-rules-for-a-branch) together to identify required checks and reviews. A 404 on protection means that endpoint supplies no protection; active rules may still apply. An unreadable requirement leaves readiness unresolved.
-- The pull request must be open, ready, and mergeable, with every required check complete and passing for that head and every repository review requirement met. A missing check, pending calculation or blocked merge state leaves it open. The merge endpoint enforces the repository's requirements; use no bypass.
-- Fetch the pull request again after reading the checks. A different head requires fresh checks and verification.
-
-```bash
-gh api repos/{owner}/{repo}/pulls/980 > epic-pr.json
-gh api repos/{owner}/{repo}/branches/main/protection > protection.json
-gh api --paginate repos/{owner}/{repo}/rules/branches/main > branch-rules.json
-gh api --paginate 'repos/{owner}/{repo}/commits/<head-sha>/check-runs?per_page=100' > checks.json
-gh api --paginate 'repos/{owner}/{repo}/commits/<head-sha>/status?per_page=100' > status.json
-gh api --paginate 'repos/{owner}/{repo}/pulls/980/reviews?per_page=100' > reviews.json
-gh api repos/{owner}/{repo}/pulls/980 > epic-pr.json
-```
-
-### Merge Epic Pull Request
-
-Merges a completed epic into its long-lived branch at the verified head.
-
-- Run only when [Epic merge](work-breakdown.md#epic-merge) holds, using the literal head SHA verified by [Fetch Merge Readiness](#fetch-merge-readiness).
-- The merge method is a merge commit. The [merge endpoint](https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request) requires the supplied SHA to match the head.
-- The second call confirms `merged` and records `merge_commit_sha`. A refusal follows [Epic merge](work-breakdown.md#epic-merge).
-
-```bash
-gh api --method PUT repos/{owner}/{repo}/pulls/980/merge -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
-gh api repos/{owner}/{repo}/pulls/980 --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
 ```
 
 ### Link Pull Request to Issue
@@ -455,87 +195,12 @@ Sets the [Issue links](work-breakdown.md#delivery) relation through [Development
 
 ## Project Boards
 
-### Find Theme Board
-
-Prints the number of the open board for one theme, by the theme's name that opens its title.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | startswith("Canon: ")) | .number'
-```
-
-### Create Board
-
-Copies the Initiative Template into a new open board, links the copy to the repository, and prints the new board's number.
-
-- The template is the open board titled `Initiative Template`. The copy carries its Status options: Backlog, Ready, In Progress, In Review and Done.
-- The title is the new board's title: a theme board's title from [Themes and Boards](../SKILL.md#themes-and-boards).
-- The copy's JSON is one project, and `.number` is the new board.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Initiative Template") | .number'
-gh project copy 1 --source-owner {owner} --target-owner {owner} --title 'Canon: Definitions Checked Against the Design Canon' --format json --jq .number
-gh project link 13 --owner {owner} --repo {repo}
-```
-
-### Create Proposals Board
-
-Copies the Proposals Template into a new open board, links the copy to the repository, and prints the new board's number.
-
-- The template is the open board titled `Proposals Template`. The copy carries its Status options, listed under Proposals in [Themes and Boards](../SKILL.md#themes-and-boards).
-- The title is `Proposals`.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Proposals Template") | .number'
-gh project copy 14 --source-owner {owner} --target-owner {owner} --title 'Proposals' --format json --jq .number
-gh project link 15 --owner {owner} --repo {repo}
-```
-
-### Find Proposals Board
-
-Prints the number of the open board titled `Proposals`.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Proposals") | .number'
-```
-
 ### Fetch Board Fields
 
 Saves a board's fields.
 
 ```bash
 gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" > fields.json
-```
-
-### Find Status Field
-
-Prints the id of a board's Status field.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" --jq '.[] | select(.name == "Status") | .id'
-```
-
-### Fetch Board Items with Status
-
-Saves a board's items with their Status, each carrying its issue whole.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2/9/items?per_page=100&fields=419167630" > items.json
-```
-
-### Fetch Board Item
-
-Reads one board item, including its Status. The item list can lag a write. This read is what confirms a status just set.
-
-```bash
-gh api "users/{owner}/projectsV2/9/items/1001?fields=419167630"
-```
-
-### Add Issue to Board
-
-Adds an issue to a board and prints the new item's id. The issue's `id` comes from [Fetch Issue](#fetch-issue), not its number.
-
-```bash
-gh api --method POST users/{owner}/projectsV2/13/items -f type=Issue -F id=3040123456 --jq .id
 ```
 
 ### Set Item Status
@@ -562,82 +227,11 @@ Adds the folder for one planning record on the long-lived engineering worktree.
 mkdir -p artifacts/planning/<yyyy-mm-dd>[-<ref>]-<slug>
 ```
 
-## Sessions
-
-### Create Task Worktree
-
-Cuts the worktree and branch one unit's session works in, from the epic's base branch.
-
-- The worktree, the branch and the base are the ones [Find Available Work](#find-available-work) names, with the branch following the [Work Breakdown Guide](work-breakdown.md#delivery).
-- When the unit line names several bases, cut from the one for the long-lived branch the unit changes.
-- Run it in the checkout of the repository the work changes.
-
-```bash
-git fetch origin i07/e00/main && git worktree add .worktrees/i07-e00-w01 -b i07/e00/w01-queue-plan origin/i07/e00/main
-```
-
-### Create Pull Request Worktree
-
-Cuts the worktree [Understand Mode](understand-mode.md#procedure) measures a pull request in, at its head commit.
-
-- Run it in the checkout of the repository the pull request changes.
-- The worktree is detached at the head commit, so the graph reads the change as the reviewer meets it.
-
-```bash
-git fetch origin pull/950/head && git worktree add --detach .worktrees/review-950 FETCH_HEAD
-```
-
 ## Graph
 
 ### Graph Conventions
 
-Every graph command runs in the worktree [Create Pull Request Worktree](#create-pull-request-worktree) cut, and prints JSON carrying a `staleness` block. A block reporting the index behind sends the run back to [Index Repository](#index-repository), as [Understand Mode](understand-mode.md#rules) states under Fresh index.
-
-### Index Status
-
-Reports whether the repository is indexed, and how far behind the index sits.
-
-```bash
-gitnexus status
-```
-
-### Index Repository
-
-Indexes the repository, which an unindexed or behind repository needs before any measurement.
-
-```bash
-gitnexus analyze
-```
-
-### Change Surface
-
-Reports the symbols a pull request's diff touches and the flows they sit in, against the base branch.
-
-- `--base-ref` is the pull request's base, so the surface is the change rather than the branch's whole history.
-
-```bash
-gitnexus detect-changes --scope compare --base-ref main
-```
-
-### Symbol Context
-
-Reports one symbol's callers, its callees and the flows it sits in, each with the file it sits in.
-
-- Run it for each symbol [Change Surface](#change-surface) names. The files group into the areas the component diagram draws.
-
-```bash
-gitnexus context reserveRow
-```
-
-### Flow Trace
-
-Reports one flow's symbols in step order, the structure a sequence diagram is drawn from.
-
-- The flow is one [Change Surface](#change-surface) names. `process_symbols` carries each symbol's `step_index`, its file and its lines.
-
-```bash
-gitnexus query --query "Queue Placement" --limit 1
-```
+Every graph command runs in the worktree [Create Pull Request Worktree](understand-mode.md#create-pull-request-worktree) cut, and prints JSON carrying a `staleness` block. A block reporting the index behind sends the run back to [Index Repository](understand-mode.md#index-repository), as [Understand Mode](understand-mode.md#rules) states under Fresh index.
 
 ## Scripts
 
@@ -656,23 +250,12 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deps.py I=live-936.md E00=live-943.md E01=live-937.md
 ```
 
-### Renumber Epics
-
-Renumbers an initiative's epics by the map given, in the files given.
-
-- It rewrites files in place, and rewrites only this initiative's prefixed references in the bodies given after `--outside` (other initiatives' issues). Links keep their targets.
-- It refuses a map that collides or that renumbers work a pull request names: a task whose id links a pull request, open or merged, or an epic a pull request in `--prs` names.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-*.md
-```
-
 ### Renumber Tasks
 
 Renumbers one epic's tasks by the map given, in the files given.
 
 - It renumbers `E01 Wxx` and `E01:Wxx` everywhere, and bare `Wxx` inside E01's own body.
-- It rewrites and refuses as [Renumber Epics](#renumber-epics) does.
+- It rewrites and refuses as [Renumber Epics](review-passes.md#renumber-epics) does.
 
 ```bash
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
@@ -691,16 +274,6 @@ cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/fo
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/format.py issue-936.json --epic issue-943.json --epic issue-937.json --fix fixed-936.md
 ```
 
-### List Orphans
-
-Lists the hoist candidates, and the open initiatives and epics they could join.
-
-- It reads [Fetch All Issues](#fetch-all-issues).
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/orphans.py issues.json
-```
-
 ### Delivery State
 
 Shared report meanings and inputs for matching pull requests and syncing epics.
@@ -710,16 +283,6 @@ Shared report meanings and inputs for matching pull requests and syncing epics.
 - A linked pull request whose title names another epic is a conflict, and it delivers the task once it has merged.
 - A linked pull request absent from the given pull requests is reported and does not deliver the task. [Fetch Pull Request](#fetch-pull-request) appends it, and the command is run again.
 - `--links` is the file [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) writes for those pull requests, which every call given `--prs` carries.
-
-### Match Pull Requests
-
-Reports an epic's delivery state against the pull requests that name it.
-
-- Interpret results using [Delivery State](#delivery-state).
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json
-```
 
 ### Sync Task Issue
 
@@ -749,15 +312,6 @@ Links each named task's id to a pull request naming the epic, open or merged, an
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project <checkout> --fix fixed-943.md
 ```
 
-### Tick Criteria
-
-Ticks confirmed criteria on an epic or an initiative, refusing any not ready to verify, and ticks Done on a row once it is complete.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
-```
-
 ### Sync Initiative
 
 Reports an initiative's delivery state against its epics, and ticks Done on an epic row whose issue is closed as completed.
@@ -783,31 +337,12 @@ Derives each issue's Status and assignees, and prints the call for each issue to
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/board.py issue-936.json --epics issue-943.json issue-937.json --tasks issue-637.json --prs prs.json --links links.json --board users/{owner}/projectsV2/9 --fields fields.json --items items.json --out board/ --assignee m2ux
 ```
 
-### Plan Queue
-
-Decides which initiatives and epics on a theme board move between Backlog, Ready and In Progress, and prints the call for each Status and assignee change.
-
-- The rules are [Advance Mode](advance-mode.md).
-- `--items` is [Fetch Board Items with Status](#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests).
-- `--assignee` is the user [Find User](#find-user) prints.
-- Give an issue it reports unresolved with `--others`.
-- `--unplanned` names an initiative the user left with no priority, as a number or `owner/repo#number`.
-- An `order` line lists the initiatives for a parallel work map. The same priority number runs together.
-- An `ask` line names an initiative In Progress with no priority label.
-- An `order` or `ask` line is a question. The queue is not finished while one is printed. After the answer, fetch the items again and run the command again.
-- A `wait` line names an open pull request. That initiative stays In Progress. The highest set still moves to In Progress.
-- A `next` line names epics, as the Report rule in [Advance Mode](advance-mode.md#rules) says.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/advance.py --items items.json --prs prs.json --board users/{owner}/projectsV2/9 --fields fields.json --out board/ --assignee m2ux
-```
-
 ### Find Available Work
 
 Reports each unit of work a theme board makes available, each row a session holds, and each row its dependencies block.
 
 - The rules are [Deliver Mode](deliver-mode.md).
-- `--items` is [Fetch Board Items with Status](#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests).
+- `--items` is [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
 - Give an issue it reports unresolved with `--others`.
 - `--project` is a checkout of the project, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. A base whose last segment is not one of those names is ignored.
 - `--bases` is the list [List Epic Bases](#list-epic-bases) prints for the board's epics, comma-separated.
@@ -821,32 +356,9 @@ Reports each unit of work a theme board makes available, each row a session hold
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --items items.json --prs prs.json --project <checkout> --bases i07/e00/main,i07/e00/workflows
 ```
 
-### Reserve Row
-
-Holds each named task row for one session, by setting its record folder as the row's single link.
-
-- It refuses a row already held, and one whose id links a pull request or a commit.
-- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
-- The folder is the one [Find Available Work](#find-available-work) names, and `--date` is the day it is opened.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning --fix fixed-943.md
-```
-
-### Release Row
-
-Frees each named task row, by replacing the planning-folder link with its work-item file link.
-
-- It refuses a row that no session holds.
-- The file is the task id in lowercase within that folder, as [Task ids](work-breakdown.md#task-delivery) defines.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
-```
-
 ### Summarise Progress
 
-Prints the standup from [Fetch Board Items with Status](#fetch-board-items-with-status) and [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests).
+Prints the standup from [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status) and [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
 
 - `--links` is the file [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) writes for those pull requests, and is where the issue a pull request delivers is read. A call without it is refused.
 - `--since` opens the window on another date than a week before today.
@@ -859,12 +371,4 @@ cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/pr
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --initiatives issue-946.json
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --summary summary.txt
-```
-
-### Run Tests
-
-Runs the skill's script tests.
-
-```bash
-cd <workspace>/skills/work-planner && <workspace>/scripts/sbx python3 -m unittest discover -s test
 ```
