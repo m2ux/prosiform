@@ -105,14 +105,18 @@ def cited(paths):
 
 def specifications(headings):
     """Each command specification: a sub-section of a Commands section, or of a
-    catalog, whose title makes the whole file one."""
+    listing of a catalog, whose title makes the whole file one. A catalog's
+    Conventions section states how its commands run, so it lists none."""
     catalog = any(level == 1 and anchor_of(title) == 'commands' for _, level, title in headings)
     inside = catalog
     for index, level, title in headings:
         if level == 3 and inside:
             yield index, title
-        elif level < 3 and not catalog:
-            inside = level == 2 and anchor_of(title) == 'commands'
+        elif level == 2:
+            inside = (anchor_of(title) != 'conventions' if catalog
+                      else anchor_of(title) == 'commands')
+        elif level == 1 and not catalog:
+            inside = False
 
 
 def check(path, root, cache, used):

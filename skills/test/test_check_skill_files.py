@@ -154,6 +154,8 @@ class SkillFileChecks(unittest.TestCase):
         self.assertEqual(self.findings(), [])
 
     CATALOG = '# Catalog\n\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n'
+    LISTING = ('# Commands\n\n## Conventions\n\n### Execution\n\nWhere every command runs.\n'
+               '\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')
     MODE = '# Plan mode\n\nWhat the mode does.\n'
     PROCEDURE = '\n## Procedure\n\n1. **Open.**  The first step.\n'
     RULES = '\n## Rules\n\n- **Scope.**  One sentence.\n'
@@ -188,6 +190,16 @@ class SkillFileChecks(unittest.TestCase):
         self.write('references/commands.md',
                    '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')
         self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) first.\n')
+        self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_heading_of_a_catalogs_conventions_is_not_a_specification(self):
+        self.write('references/commands.md', self.LISTING)
+        self.write('references/plan.md', '# Plan\n\nSee [Execution](commands.md#execution) for it.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_heading_of_a_catalogs_listing_is_a_specification(self):
+        self.write('references/commands.md', self.LISTING)
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) for it.\n')
         self.assertIn('command specification with one caller', self.kinds())
 
     def test_a_heading_outside_a_commands_section_is_not_a_specification(self):
