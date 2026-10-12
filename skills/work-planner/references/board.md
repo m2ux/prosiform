@@ -4,7 +4,7 @@ How a mode chooses a theme board and reads it.
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 ## Select
 

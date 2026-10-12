@@ -4,7 +4,7 @@ Records work on an initiative, its epics and their task issues: links each task 
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 Before matching pull requests or syncing epics, read [Delivery State](commands.md#delivery-state).
 

@@ -4,7 +4,7 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 Before matching pull requests or syncing epics, read [Delivery State](commands.md#delivery-state).
 

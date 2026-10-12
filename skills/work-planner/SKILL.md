@@ -197,7 +197,7 @@ Every initiative belongs to one theme, and each theme has one project board. Eac
   - Once feedback on an issue is folded into its body, a comment mentions the reviewer and answers each of their points in turn, precisely and factually, with no thanks or filler. It is posted with [Comment on Issue](references/commands.md#comment-on-issue).
   - Each answer names what the body now says, by criterion id where one carries it, or the issue that takes the point.
 - **Commands**
-  Before the first command spec, read the [command conventions](references/commands.md#conventions). Reuse complete prerequisites already read at the same revision; retrieve specific operations where needed.
+  Before the first command spec, read the [command conventions](references/command-conventions.md). Reuse complete prerequisites already read at the same revision; retrieve specific operations where needed.
 
 ## Dependencies
 

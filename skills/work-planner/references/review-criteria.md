@@ -4,7 +4,7 @@ The requirements every review uses, scoped to the kind of issue and to the secti
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 ## Local
 

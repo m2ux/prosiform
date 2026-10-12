@@ -4,7 +4,7 @@ The method for the goal pass, the consistency pass, and the ordering pass. The r
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [command conventions](command-conventions.md), read before the first spec.
 
 ## Goal Pass
 
