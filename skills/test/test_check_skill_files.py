@@ -181,11 +181,40 @@ class SkillFileChecks(unittest.TestCase):
                    '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
         self.assertEqual(self.findings(), [])
 
-    def test_a_specification_its_own_file_and_one_other_cite_stands(self):
-        self.write('references/catalog.md',
-                   '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) too.\n')
+    def test_a_procedure_of_the_holding_file_counts_as_a_caller(self):
+        self.write('references/plan.md',
+                   '# Plan\n\n## Procedure\n\n1. **Open.**  Run [Fetch issue](#fetch-issue).\n'
+                   '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](plan.md#fetch-issue) too.\n')
         self.assertEqual(self.findings(), [])
+
+    def test_a_step_under_a_procedure_sub_section_counts_as_a_caller(self):
+        self.write('references/plan.md',
+                   '# Plan\n\n## Procedure\n\n### Open\n\n1. **Open.**  Run [Fetch issue](#fetch-issue).\n'
+                   '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](plan.md#fetch-issue) too.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_sibling_specification_of_a_catalog_is_not_a_caller(self):
+        self.write('references/commands.md',
+                   '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n'
+                   '\n### Close issue\n\nRun [Fetch issue](#fetch-issue) first.\n')
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) too.\n')
+        self.assertIn('command specification with one caller', self.kinds())
+
+    def test_reference_prose_of_the_holding_file_is_not_a_caller(self):
+        self.write('references/context.md',
+                   '# Context\n\n## Checks\n\nEvery check runs [Fetch issue](#fetch-issue).\n'
+                   '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](context.md#fetch-issue) too.\n')
+        self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_rules_section_of_the_holding_file_is_not_a_caller(self):
+        self.write('references/plan.md',
+                   '# Plan\n\n## Rules\n\n- **Scope.**  Run [Fetch issue](#fetch-issue) alone.\n'
+                   '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](plan.md#fetch-issue) too.\n')
+        self.assertIn('command specification with one caller', self.kinds())
 
     def test_a_catalog_entry_cited_from_one_file_is_reported(self):
         self.write('references/commands.md',
