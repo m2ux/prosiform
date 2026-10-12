@@ -1,38 +1,38 @@
 # Audit Mode
 
-Reviews existing definitions through independently verified change-surface matrices, evidence-backed evaluation, finding confirmation and a complete coverage gate. A single canon question uses the bounded procedure below.
+Reviews existing definitions through independently verified change-surface matrices, evidence-backed evaluation, finding confirmation and a complete coverage gate. A single canon question is answered at the procedure's first step.
 
 ## Prerequisites
 
 Read the [canon prerequisites](canon-context.md#prerequisites), then its [terms](canon-context.md#terms).
 
-## Canon Question
-
-For a single question about an entry, locate its [canon home](canon-context.md#homes), [fetch the entry](canon-context.md#fetch-unit) with its required context, answer and stop. The full audit procedure applies when the request calls for a conformance judgment over definitions.
-
 ## Procedure
 
-1. **Scope the surface.**
+1. **Answer a canon question.**
+   For a single question about an entry, locate its [canon home](canon-context.md#homes), [fetch the entry](canon-context.md#fetch-unit) with its required context, answer and stop. The steps below run when the request calls for a conformance judgment over definitions.
+2. **Scope the surface.**
    - Read the [criteria context](canon-context.md#criteria).
    - Resolve [scope](canon-context.md#scope), then follow the shared [change-surface lifecycle](change-surface.md).
-2. **Run the checks first.**
+3. **Run the checks first.**
    - Select the project's [checks](canon-context.md#checks), preferring a delta run when it can compare the base and candidate under equivalent conditions.
    - Capture structural check outcomes now for inventory review; submit their typed observations during the obligations phase after the map is verified. AP/DP evaluation waits for that gate.
-3. **Map and verify.**
+4. **Map and verify.**
    - Capture the full inventory and four section matrices, decide applicability and independently verify every decision through the shared lifecycle. Resolve all discrepancies before evaluation.
-4. **Evaluate.**
+5. **Evaluate.**
    - Use [bounded assignments](audit-dispatch.md#phases) for the verified applicable cells and supporting obligations. The coordinator reconciles typed returns and preserves pending work.
-5. **Attribute.**  Give each finding its origin per [Attribution](#attribution).
-6. **Verify findings.**
+6. **Attribute.**  Give each finding its origin per [Attribution](#attribution).
+7. **Verify findings.**
    - Dispatch independent confirmation through the [obligations phase](audit-dispatch.md#phases). Only confirmed findings drive fixes.
-7. **Report.**
+8. **Report.**
    - Read [Report Context](reporting.md#report-context) for bands, severity, row fields and coverage.
    - Report in the layout [Which Report](reporting.md#which-report) names.
-8. **File a mechanised Detect.**
+9. **File a mechanised Detect.**
    - A Detect applied by pattern is a guard candidate. Name what it keys on and record it against the registry in the report; external filing follows existing user authority.
    - The threshold is the second occurrence: twice in one walk, or once in each of two consecutive walks. A `fix` finding counts.
 
-## Attribution
+## Reference
+
+### Attribution
 
 - **`diff`**
   A touched file, or a break that exists because an I/O contract on the change surface changed, including a stale bind or Apply in an untouched referencer or consumer.

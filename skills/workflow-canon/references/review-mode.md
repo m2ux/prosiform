@@ -39,7 +39,9 @@ Before the first command spec, read the [command conventions](command-convention
 8. **Report.**
    Write the [integration review](../templates/integration-review.md) in the shared [planning record](planning.md), using [Verdicts](#verdicts) and [Findings](#findings). End with the smallest concrete actions that close the findings or evidence gaps.
 
-## Coverage
+## Reference
+
+### Coverage
 
 - **Requirements.**
   Each applicable requirement has an observable successful path, relevant boundary or negative behavior, the integration boundary exercised and the observation's limits.
@@ -56,7 +58,7 @@ Before the first command spec, read the [command conventions](command-convention
 - **Results.**
   Record executed, inspected and inferred evidence separately. A skipped test, unavailable dependency, cancelled run or pending check leaves its requirement unobserved.
 
-## Branch Coverage
+### Branch Coverage
 
 Select the section for every affected product and consumer before reading its check specifications:
 
@@ -67,11 +69,11 @@ Select the section for every affected product and consumer before reading its ch
 | Packaging | [Docker Coverage](coverage.md#docker-coverage) |
 | Workspace tooling | [Workspace Coverage](coverage.md#workspace-coverage) |
 
-## Findings
+### Findings
 
 Group findings by area of concern and order them by severity. Each finding states its trigger, expected behavior and source, observed behavior or reproduction, consequence, owning branch, suggested correction and confidence. Cite code and definitions with commit-pinned links where available. Distinguish a confirmed defect from a suspected one or an evidence gap; classify severity by consequence using the project's scale.
 
-## Verdicts
+### Verdicts
 
 | Verdict | Meaning |
 | --- | --- |
