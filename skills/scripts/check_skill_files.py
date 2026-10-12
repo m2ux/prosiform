@@ -14,7 +14,8 @@ Placement is judged by use. A command specification belongs to the procedure
 that runs it, so a specification exactly one file cites, that file not the
 one holding it, names a caller it should be sitting in. A mode file's
 top-level sections are the set the guidelines name, in the order they name
-them, so the reader knows what the file carries before opening it.
+them, Procedure and Rules among them, so the reader knows what the file
+carries before opening it.
 
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
@@ -44,6 +45,7 @@ INDENTED = re.compile(r'^\s+\S')
 PROSE_LIMIT = 8
 LEAD_WIDTH = 100
 MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
+MODE_REQUIRED = ('Procedure', 'Rules')
 
 
 def anchor_of(text):
@@ -161,21 +163,25 @@ def check(path, root, cache, used):
             caller = named(next(iter(citing)), root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
 
-    # A mode file's top-level sections are a named set in a named order, so
-    # the reader knows what the file carries before opening it.
+    # A mode file's top-level sections are a named set in a named order, and
+    # carry the two the guidelines make mandatory, so the reader knows what
+    # the file carries before opening it.
     if path.name.endswith('-mode.md'):
+        sections = [(index, title.strip()) for index, level, title in headings if level == 2]
         rank = -1
-        for index, level, title in headings:
-            if level != 2:
+        for index, title in sections:
+            if title not in MODE_SECTIONS:
+                report(index, 'section outside the mode set', title)
                 continue
-            if title.strip() not in MODE_SECTIONS:
-                report(index, 'section outside the mode set', title.strip())
-                continue
-            place = MODE_SECTIONS.index(title.strip())
+            place = MODE_SECTIONS.index(title)
             if place < rank:
                 report(index, 'mode sections out of order',
                        f'{MODE_SECTIONS[place]} after {MODE_SECTIONS[rank]}')
             rank = max(rank, place)
+        carried = {title for _, title in sections}
+        for required in MODE_REQUIRED:
+            if required not in carried:
+                report(0, 'mode section missing', required)
 
     for index, target in targets(path, lines, fenced):
         name, _, fragment = target.partition('#')

@@ -235,6 +235,19 @@ class SkillFileChecks(unittest.TestCase):
         self.write('references/plan-mode.md', self.MODE + self.RULES + self.PROCEDURE)
         self.assertIn('mode sections out of order', self.kinds())
 
+    def test_a_mode_file_without_a_procedure_is_reported(self):
+        self.write('references/plan-mode.md', self.MODE + self.RULES)
+        self.assertIn('mode section missing', self.kinds())
+
+    def test_a_mode_file_without_rules_is_reported(self):
+        self.write('references/plan-mode.md', self.MODE + self.PROCEDURE)
+        self.assertIn('mode section missing', self.kinds())
+
+    def test_a_mode_file_without_either_section_is_reported_for_each(self):
+        self.write('references/plan-mode.md', self.MODE)
+        self.assertEqual([kind for _, _, kind in self.findings()],
+                         ['mode section missing', 'mode section missing'])
+
     def test_a_file_that_is_not_a_mode_carries_any_section(self):
         self.write('references/guide.md', '# Guide\n\n## Findings\n\nOne sentence.\n')
         self.assertEqual(self.findings(), [])
