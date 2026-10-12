@@ -86,6 +86,6 @@ Coverage completion and conformance are separate. Confirmed violations can have 
 | `sources/` | Captured source and check-output bytes |
 | `worker-results/` | Immutable typed returns by assignment and attempt |
 | `generations/` | Prior state when the captured generation changes |
-| `audit-report.md` | Generated standalone findings and completion status |
+| `audit-report.md` | Generated findings and completion status |
 
 For a workflow-owned report, follow [Workflow Reports](reporting.md#workflow-reports) and transfer the generated counts, residuals and links into that guide's layout. The generated coverage remains authoritative.

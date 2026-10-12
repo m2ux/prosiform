@@ -39,8 +39,7 @@ The [dispatch phases](audit-dispatch.md#phases) own finding confirmation. An unm
 | Entry | As the catalog's entry-identity rule states. A principle by the title its file uses: an anchor that embeds the section ordinal breaks when a principle is inserted ahead of it |
 | Location | File and field, at the depth the evidence sits |
 | Evidence | The construct Detect keys on, quoted or named. A closure-only file says which contract it references |
-| Origin | `diff` or `pre-existing`, per [Attribution](audit-mode.md#attribution) |
-| Known | Set when a prior pass accepted this key |
+| Origin | The value [Attribution](audit-mode.md#attribution) assigns. A `known` row stays out of the decision surface |
 | Fix | The action the entry prescribes, in one line |
 
 A row whose Evidence cannot name a construct is not a finding. Evidence and Location cite any construct in a change-surface file.
@@ -110,6 +109,12 @@ In the chat, or in a file the user named:
 
 ## Coverage
 
+[Complete coverage ledger]({run}/audit-coverage.md)
+
+| Home | Unit | Status |
+|------|------|--------|
+| `{home}` | `{unit}` | not-applicable — `{reason}` |
+
 ## File Coverage
 
 read N · unread N.
@@ -118,10 +123,16 @@ read N · unread N.
 |-------------|-------|
 | `unread` | `{path}` |
 
+## Finding Confirmations
+
+| Finding | Outcome | Reason |
+|---------|---------|--------|
+| `{id}` | `{outcome}` | `{what reproduced}` |
+
 ## Known
 ~~~
 
-Omit an empty section. Order findings Critical → High → Medium → Low. Link the entry; the report holds no criteria prose. Say which Highs were withdrawn or downgraded. Every header figure reconciles against the generated ledger. Status is the [coverage header](#coverage-header). Live or Contract at zero over partial coverage is a statement about that part. A Live or Contract count that rose says a fix moved a defect.
+Omit an empty section. Order findings Critical → High → Medium → Low. Link the entry; the report holds no criteria prose. Known repeats the Findings columns for rows whose Origin is `known`, and the band table counts them apart from Open. Prior pass carries the previous report's figure; every other header count reconciles against the generated ledger. Status is the [coverage header](#coverage-header). Live or Contract at zero over partial coverage is a statement about that part. A Live or Contract count that rose says a fix moved a defect.
 
 ## Workflow Reports
 
