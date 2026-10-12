@@ -1,6 +1,7 @@
 """The shared skill-file check, over seeded skills in a temporary tree."""
 
 import io
+import os
 import shutil
 import sys
 import tempfile
@@ -154,6 +155,8 @@ class SkillFileChecks(unittest.TestCase):
         self.assertEqual(self.findings(), [])
 
     CATALOG = '# Catalog\n\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n'
+    LISTING = ('# Commands\n\n## Conventions\n\n### Execution\n\nWhere every command runs.\n'
+               '\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')
     MODE = '# Plan mode\n\nWhat the mode does.\n'
     PROCEDURE = '\n## Procedure\n\n1. **Open.**  The first step.\n'
     RULES = '\n## Rules\n\n- **Scope.**  One sentence.\n'
@@ -178,16 +181,46 @@ class SkillFileChecks(unittest.TestCase):
                    '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
         self.assertEqual(self.findings(), [])
 
+    def test_a_specification_its_own_file_and_one_other_cite_stands(self):
+        self.write('references/catalog.md',
+                   '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) too.\n')
+        self.assertEqual(self.findings(), [])
+
     def test_a_catalog_entry_cited_from_one_file_is_reported(self):
         self.write('references/commands.md',
                    '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')
         self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) first.\n')
         self.assertIn('command specification with one caller', self.kinds())
 
+    def test_a_heading_of_a_catalogs_conventions_is_not_a_specification(self):
+        self.write('references/commands.md', self.LISTING)
+        self.write('references/plan.md', '# Plan\n\nSee [Execution](commands.md#execution) for it.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_heading_of_a_catalogs_listing_is_a_specification(self):
+        self.write('references/commands.md', self.LISTING)
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) for it.\n')
+        self.assertIn('command specification with one caller', self.kinds())
+
     def test_a_heading_outside_a_commands_section_is_not_a_specification(self):
         self.write('references/catalog.md', '# Catalog\n\n## Reference\n\n### Fetch issue\n\nA sentence.\n')
         self.write('references/plan.md', '# Plan\n\nSee [Fetch issue](catalog.md#fetch-issue) for it.\n')
         self.assertEqual(self.findings(), [])
+
+    def test_a_caller_under_another_root_is_reported(self):
+        elsewhere = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, elsewhere)
+        catalog = self.write('references/catalog.md', self.CATALOG)
+        plan = elsewhere / 'sibling' / 'references' / 'plan.md'
+        plan.parent.mkdir(parents=True)
+        target = os.path.relpath(catalog, plan.parent)
+        plan.write_text(f'# Plan\n\nRun [Fetch issue]({target}#fetch-issue) for it.\n')
+        printed = io.StringIO()
+        with redirect_stdout(printed):
+            status = checker.main([str(self.skill), str(elsewhere / 'sibling')])
+        self.assertEqual(status, 1)
+        self.assertIn('command specification with one caller', printed.getvalue())
 
     def test_a_conforming_mode_file_reports_nothing(self):
         self.write('references/plan-mode.md', self.MODE + self.PROCEDURE + self.RULES)
@@ -201,6 +234,19 @@ class SkillFileChecks(unittest.TestCase):
     def test_mode_sections_out_of_order_are_reported(self):
         self.write('references/plan-mode.md', self.MODE + self.RULES + self.PROCEDURE)
         self.assertIn('mode sections out of order', self.kinds())
+
+    def test_a_mode_file_without_a_procedure_is_reported(self):
+        self.write('references/plan-mode.md', self.MODE + self.RULES)
+        self.assertIn('mode section missing', self.kinds())
+
+    def test_a_mode_file_without_rules_is_reported(self):
+        self.write('references/plan-mode.md', self.MODE + self.PROCEDURE)
+        self.assertIn('mode section missing', self.kinds())
+
+    def test_a_mode_file_without_either_section_is_reported_for_each(self):
+        self.write('references/plan-mode.md', self.MODE)
+        self.assertEqual([kind for _, _, kind in self.findings()],
+                         ['mode section missing', 'mode section missing'])
 
     def test_a_file_that_is_not_a_mode_carries_any_section(self):
         self.write('references/guide.md', '# Guide\n\n## Findings\n\nOne sentence.\n')

@@ -11,10 +11,11 @@ stands for text the author supplies, so it is measured where it lands rather
 than here.
 
 Placement is judged by use. A command specification belongs to the procedure
-that runs it, so a specification exactly one other file cites names a caller
-it should be sitting in. A mode file's top-level sections are the set the
-guidelines name, in the order they name them, so the reader knows what the
-file carries before opening it.
+that runs it, so a specification exactly one file cites, that file not the
+one holding it, names a caller it should be sitting in. A mode file's
+top-level sections are the set the guidelines name, in the order they name
+them, Procedure and Rules among them, so the reader knows what the file
+carries before opening it.
 
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
@@ -44,11 +45,19 @@ INDENTED = re.compile(r'^\s+\S')
 PROSE_LIMIT = 8
 LEAD_WIDTH = 100
 MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
+MODE_REQUIRED = ('Procedure', 'Rules')
 
 
 def anchor_of(text):
     """GitHub's slug for a heading, which is what a fragment link must match."""
     return re.sub(r'[\s_]+', '-', re.sub(r'[^\w\s-]', '', text.strip().lower()))
+
+
+def named(path, root):
+    """A path as a finding names it: relative to the root given where it lies
+    under it, and whole otherwise, since the roots checked together may have
+    different parents and a citation may cross between them."""
+    return path.relative_to(root) if path.is_relative_to(root) else path
 
 
 def scan(path):
@@ -105,14 +114,18 @@ def cited(paths):
 
 def specifications(headings):
     """Each command specification: a sub-section of a Commands section, or of a
-    catalog, whose title makes the whole file one."""
+    listing of a catalog, whose title makes the whole file one. A catalog's
+    Conventions section states how its commands run, so it lists none."""
     catalog = any(level == 1 and anchor_of(title) == 'commands' for _, level, title in headings)
     inside = catalog
     for index, level, title in headings:
         if level == 3 and inside:
             yield index, title
-        elif level < 3 and not catalog:
-            inside = level == 2 and anchor_of(title) == 'commands'
+        elif level == 2:
+            inside = (anchor_of(title) != 'conventions' if catalog
+                      else anchor_of(title) == 'commands')
+        elif level == 1 and not catalog:
+            inside = False
 
 
 def check(path, root, cache, used):
@@ -142,29 +155,33 @@ def check(path, root, cache, used):
             report(index, 'heading jump', f'h{previous} to h{level}')
         previous = level
 
-    # A specification belongs to the procedure that runs it, so a catalog
-    # entry one other file cites is a specification standing away from home.
+    # A specification belongs to the procedure that runs it, so one exactly
+    # one file cites, and that file not its own, stands away from home.
     for index, title in specifications(headings):
-        elsewhere = {caller for caller in callers.get(anchor_of(title), ()) if caller != path}
-        if len(elsewhere) == 1:
-            caller = elsewhere.pop().relative_to(root)
+        citing = callers.get(anchor_of(title), ())
+        if len(citing) == 1 and path not in citing:
+            caller = named(next(iter(citing)), root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
 
-    # A mode file's top-level sections are a named set in a named order, so
-    # the reader knows what the file carries before opening it.
+    # A mode file's top-level sections are a named set in a named order, and
+    # carry the two the guidelines make mandatory, so the reader knows what
+    # the file carries before opening it.
     if path.name.endswith('-mode.md'):
+        sections = [(index, title.strip()) for index, level, title in headings if level == 2]
         rank = -1
-        for index, level, title in headings:
-            if level != 2:
+        for index, title in sections:
+            if title not in MODE_SECTIONS:
+                report(index, 'section outside the mode set', title)
                 continue
-            if title.strip() not in MODE_SECTIONS:
-                report(index, 'section outside the mode set', title.strip())
-                continue
-            place = MODE_SECTIONS.index(title.strip())
+            place = MODE_SECTIONS.index(title)
             if place < rank:
                 report(index, 'mode sections out of order',
                        f'{MODE_SECTIONS[place]} after {MODE_SECTIONS[rank]}')
             rank = max(rank, place)
+        carried = {title for _, title in sections}
+        for required in MODE_REQUIRED:
+            if required not in carried:
+                report(0, 'mode section missing', required)
 
     for index, target in targets(path, lines, fenced):
         name, _, fragment = target.partition('#')
