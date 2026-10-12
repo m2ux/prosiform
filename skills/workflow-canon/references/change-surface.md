@@ -67,13 +67,13 @@ Coverage completion and conformance are separate. Confirmed violations can have 
 ## Freshness and Resume
 
 - **Inspect the run.**
-  Start with [status](#check-audit-status), which returns bounded counts, generation identity and artifact paths. Locate residuals through the coverage document's headings and assignment identifiers; issue the relevant [packet](#write-audit-packet) for source, mapping and ownership detail. The script-owned JSON ledger stores the complete dataset and is accessed through these projections.
+  Start with [status](#check-audit-status), which returns bounded counts, generation identity and artifact paths. Locate residuals through the coverage document's headings and assignment identifiers; issue the relevant [packet](audit-dispatch.md#write-audit-packet) for source, mapping and ownership detail. The script-owned JSON ledger stores the complete dataset and is accessed through these projections.
 - **Source generations.**
   Any corpus membership/byte change, scope correction, canon change, parser/engine change or audit-tool change blocks use of the captured generation. [Refresh](#refresh-audit-surface) captures the current generation and invalidates all its mapping, verification and evaluation evidence because cross-element dependency reach can exceed local source rows. An identical generation preserves its pending work. Archived state and immutable returns retain prior evidence.
 - **Mapping corrections.**
   [Reset](#reset-audit-cells) invalidates a selected mapping and its verification/evaluation, including intersecting assignments. A reason or evidence edit changes the mapping fingerprint. Renewed evaluation waits for the entire current map to be verified.
 - **Interrupted workers.**
-  Accepted partial work remains recorded. [Retry](#retry-audit-assignment) retires an assignment and [planning](#plan-audit-assignments) assigns its unresolved residual. A fresh agent can continue after the coordinator checks captured identities and current status.
+  Accepted partial work remains recorded. [Retry](#retry-audit-assignment) retires an assignment and [planning](audit-dispatch.md#plan-audit-assignments) assigns its unresolved residual. A fresh agent can continue after the coordinator checks captured identities and current status.
 - **Author byte agreement.**
   Before applying a verified draft, compare its captured source hashes with the bytes to write. After writing, capture the actual working tree and run its selected checks. Reuse evidence only for an identical generation; changed roots, contracts or candidate bytes require their current verification. A draft-only request makes no commit-completion claim.
 
@@ -134,36 +134,6 @@ Regenerate matrices, evidence and reports from canonical state.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py render --run <run>
-```
-
-### Plan Audit Assignments
-
-Compute disjoint residual assignments under declared budgets.
-
-- Read [Sizing](audit-dispatch.md#sizing) first. Select `inventory`, `map`, `verify`, `evaluate` or `obligations`. Unknown limits, unmet gates or indivisible oversized context refuse dispatch.
-
-```bash
-python3 <skill-root>/scripts/audit_surface.py plan --run <run> --phase <phase> --budgets <budgets.json>
-```
-
-### Bind Audit Agent
-
-Bind an assignment to its actual host agent identity.
-
-- Independent roles cannot own their authored work; retired assignments require a new residual plan.
-
-```bash
-python3 <skill-root>/scripts/audit_surface.py bind --run <run> --assignment <id> --actor <host-agent-id>
-```
-
-### Write Audit Packet
-
-Write captured context and ownership for one agent.
-
-- Give the packet and [return contract](audit-dispatch.md#returns) to the bound host agent. Serialized size must fit the plan.
-
-```bash
-python3 <skill-root>/scripts/audit_surface.py packet --run <run> --assignment <id> --out <packet.json>
 ```
 
 ### Submit Audit Results

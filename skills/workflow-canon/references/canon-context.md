@@ -17,7 +17,7 @@ Read the [command conventions](command-conventions.md#common) before the first c
 
 ## Criteria
 
-Use the [canon homes](#homes) at the captured revisions. Read the complete [canon map](canon-map.md) before the first unit for its enumeration and prior-judgment guidance. Fetch each required unit through [Fetch Unit](#fetch-unit).
+Use the [canon homes](#homes) at the captured revisions. Read the complete [canon map](canon-map.md) before the first unit for its enumeration and prior-judgment guidance. Fetch each required unit through [Fetch Unit](audit-mode.md#fetch-unit).
 
 Follow covering entries where their Detect reaches, and the owning principle for spellings beyond that Detect. Every walk follows the complete [walk rules](walk-rules.md).
 
@@ -162,26 +162,6 @@ rg -n "^## " corpus/canon/resources/anti-patterns.md
 rg -n "^### " corpus/canon/resources/anti-patterns.md
 ```
 
-### List Units for a Construct
-
-Prints every canon unit that fires on one construct id, with its file and line.
-
-- The id is a construct a draft writes: a bare kind, a field path, `resource`, `readme`, or `*`.
-- A unit is listed when it declares that id, a prefix of it, its bare kind, or `*`.
-- Runs in the server checkout. `--root` names the corpus tree. The listing is printed and not stored.
-
-```bash
-npx tsx guards/list-fires-on.ts 'activity.steps[].when' --root <corpus>
-```
-
-### Fetch Unit
-
-Reads one section or entry of a home.
-
-- **On disk.**
-  [List units](#list-units) for the range, then Read it. For one entry, list the `###` lines and read that block.
-- **In a workflow session.**  `get_resource` with `canon/<home>#<heading>`.
-
 ### Find Consumers
 
 Lists the references other workflows hold into the target.
@@ -231,14 +211,4 @@ Runs the corpus guards over an edited definition's corpus tree, and reports the 
 
 ```bash
 echo '{"tool_input": {"file_path": ".project/workflows/corpus/work-package/workflow.yaml"}}' | python3 skills/workflow-canon/scripts/edit_guard.py
-```
-
-### Run the Edit Guard Tests
-
-Drives the edit guard over seeded edits in temporary git repositories, with a stub guard runner in place of the server.
-
-- Run from the workspace checkout containing the skill under revision.
-
-```bash
-python3 -m unittest discover -s skills/workflow-canon/test -p test_edit_guard.py
 ```

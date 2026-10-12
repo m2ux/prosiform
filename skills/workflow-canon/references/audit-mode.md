@@ -9,11 +9,11 @@ Read the [canon prerequisites](canon-context.md#prerequisites), then its [terms]
 ## Procedure
 
 1. **Answer a canon question.**
-   For a single question about an entry, locate its [canon home](canon-context.md#homes), [fetch the entry](canon-context.md#fetch-unit) with its required context, answer and stop. The steps below run when the request calls for a conformance judgment over definitions.
+   For a single question about an entry, locate its [canon home](canon-context.md#homes), [fetch the entry](#fetch-unit) with its required context, answer and stop. The steps below run when the request calls for a conformance judgment over definitions.
 2. **Scope the surface.**
    - Read the [criteria context](canon-context.md#criteria).
    - Resolve [scope](canon-context.md#scope), its construct ids included.
-   - Run [List Units for a Construct](canon-context.md#list-units-for-a-construct) for each resolved id. The union of its results is the unit set the walk carries, under [file kinds](canon-map.md#file-kinds).
+   - Run [List Units for a Construct](#list-units-for-a-construct) for each resolved id. The union of its results is the unit set the walk carries, under [file kinds](canon-map.md#file-kinds).
    - Follow the shared [change-surface lifecycle](change-surface.md).
 3. **Run the checks first.**
    - Select the project's [checks](canon-context.md#checks), preferring a delta run when it can compare the base and candidate under equivalent conditions.
@@ -52,3 +52,25 @@ Read the [canon prerequisites](canon-context.md#prerequisites), then its [terms]
   Reconcile each return and continue the required residual through [dispatch](audit-dispatch.md#phases). An empty findings list is not coverage evidence.
 - **Stop.**
   Use the shared [completion predicate](change-surface.md#completion). A user stop preserves an incomplete, resumable run.
+
+## Commands
+
+### List Units for a Construct
+
+Prints every canon unit that fires on one construct id, with its file and line.
+
+- The id is a construct a draft writes: a bare kind, a field path, `resource`, `readme`, or `*`.
+- A unit is listed when it declares that id, a prefix of it, its bare kind, or `*`.
+- Runs in the server checkout. `--root` names the corpus tree. The listing is printed and not stored.
+
+```bash
+npx tsx guards/list-fires-on.ts 'activity.steps[].when' --root <corpus>
+```
+
+### Fetch Unit
+
+Reads one section or entry of a home.
+
+- **On disk.**
+  [List units](canon-context.md#list-units) for the range, then Read it. For one entry, list the `###` lines and read that block.
+- **In a workflow session.**  `get_resource` with `canon/<home>#<heading>`.
