@@ -11,7 +11,8 @@ Read the [command conventions](command-conventions.md#common) before the first c
 - **Unit**  One criterion at the level the [canon inventory](canon-map.md#unit-inventory) specifies.
 - **Entry**
   An anti-pattern unit: its Detect finds the defect, its Do not flag excuses a look-alike, and its Fix closes it.
-- **Walk**  Applying each unit to every file on the surface and recording its status.
+- **Walk**
+  Applying each unit to the surface files of the kinds its [fires-on line](canon-map.md#file-kinds) names, and recording its status.
 - **Change surface**  Touched files and their contract closure, resolved through [Scope](#scope).
 
 ## Criteria

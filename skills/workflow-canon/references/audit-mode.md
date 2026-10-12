@@ -14,7 +14,9 @@ For a single question about an entry, locate its [canon home](canon-context.md#h
 
 1. **Scope the surface.**
    - Read the [criteria context](canon-context.md#criteria).
-   - Resolve [scope](canon-context.md#scope), then follow the shared [change-surface lifecycle](change-surface.md).
+   - Resolve [scope](canon-context.md#scope), its construct ids included.
+   - Run [List Units for a Construct](canon-context.md#list-units-for-a-construct) for each resolved id. The union of its results is the unit set the walk carries, under [file kinds](canon-map.md#file-kinds).
+   - Follow the shared [change-surface lifecycle](change-surface.md).
 2. **Run the checks first.**
    - Select the project's [checks](canon-context.md#checks), preferring a delta run when it can compare the base and candidate under equivalent conditions.
    - Capture structural check outcomes now for inventory review; submit their typed observations during the obligations phase after the map is verified. AP/DP evaluation waits for that gate.
