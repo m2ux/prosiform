@@ -78,8 +78,12 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   A reference to another markdown file in the skill is a relative link, never a code span.
 - **Link text.**
   The link sits on the noun that names the thing: the mode, the guide, the command, the template.
+- **Selection links.**
+  A link naming the next operation, section or route points wherever that content sits, forward included. The reader chooses from it rather than needing to hold it already.
 - **Prerequisite citation.**
-  A citation earns its place only where the reader would not otherwise hold the target: another file, opened for its own reason. Inside one file it states an order the reader has already passed, so a file puts its conventions ahead of the procedures they govern and cites nothing. Name the cited section: `Read [Sizing](audit-dispatch.md#sizing) first.`
+  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Sizing](audit-dispatch.md#sizing) first.`
+  - Within one file, position carries the requirement and the citation is dropped: conventions sit ahead of the procedures and commands they govern.
+  - A prerequisite citation pointing further down its own file is a defect, whatever its wording. A sequential reader meets it after the point it was meant to serve.
 - **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
 
 ## Commands
