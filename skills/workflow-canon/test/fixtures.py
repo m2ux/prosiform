@@ -73,6 +73,16 @@ class Corpus(Repo):
     def file(self, rel: str) -> Path:
         return self.path / 'corpus' / 'demo' / rel
 
+    def submodule(self, rel: str, library: Repo) -> None:
+        """Mount library as a populated submodule at rel, with its gitlink staged."""
+        git(self.path, '-c', 'protocol.file.allow=always', 'submodule', 'add', '--quiet',
+            str(library.path), rel)
+
+    def point_submodule_at(self, rel: str, commit: str) -> None:
+        """Move the submodule at rel onto commit, leaving the new gitlink to be committed."""
+        git(self.path / rel, '-c', 'protocol.file.allow=always', 'fetch', '--quiet', 'origin')
+        git(self.path / rel, 'checkout', '--quiet', commit)
+
 
 def hook_input(file_path: str | Path, cwd: str | Path | None = None, tool: str = 'Edit') -> str:
     return json.dumps({'session_id': 'fixture', 'hook_event_name': 'PostToolUse', 'tool_name': tool,
