@@ -12,13 +12,15 @@ than here.
 
 Placement is judged by use. A command specification belongs to the procedure
 that runs it, so a specification exactly one file cites, that file not the
-one holding it, names a caller it should be sitting in. A file counts among
-its own specification's callers only where a Procedure section of it carries
-the citation: a step that runs the command stands with it, while a sibling
-specification or a passage of reference prose names it without running it.
-A mode file's
-top-level sections are the set the guidelines name, in the order they name
-them, Procedure and Rules among them, so the reader knows what the file
+one holding it, names a caller it should be sitting in. One test decides
+every citing file alike, the file holding the specification included: a file
+is a caller where a procedure of it carries the citation. A procedure is a
+top-level section carrying a numbered step, whatever its heading names it,
+so a sibling specification and a passage of reference prose name a command
+without running it. A skill's entry point holds no command of its own, so a
+specification standing there is reported wherever it is cited from. A mode
+file's top-level sections are the set the guidelines name, in the order they
+name them, Procedure and Rules among them, so the reader knows what the file
 carries before opening it.
 
 A prerequisite citation is recognised by the canonical form the guidelines
@@ -42,6 +44,7 @@ LINK = re.compile(r'\[[^\]]*\]\(([^)]+)\)')
 CODE_SPAN = re.compile(r'`[^`]*`')
 PLACEHOLDER = re.compile(r'\{\{.*\}\}|\{[a-z_]+\}|^[.…\s]*$')
 PREREQUISITE = re.compile(r'Read ((?:\[[^\]]+\]\([^)]+\)(?:,\s*)?)+) first\.')
+ORDERED = re.compile(r'^\s{0,3}\d+[.)]\s')
 BULLET = re.compile(r'^(\s*)-(\s*)(.*)$')
 BOLD_LEAD = re.compile(r'^\s*-\s+\*\*')
 BARE_LEAD = re.compile(r'^\s*-\s+\*\*[^*]+\*\*\s*$')
@@ -102,20 +105,6 @@ def targets(path, lines, fenced):
             yield index, target
 
 
-def cited(paths):
-    """Which files cite each fragment of each file, so use is judged by caller."""
-    found = {}
-    for path in paths:
-        lines, fenced, _ = scan(path)
-        for _, target in targets(path, lines, fenced):
-            name, _, fragment = target.partition('#')
-            if not fragment:
-                continue
-            destination = (path.parent / name).resolve() if name else path
-            found.setdefault(destination, {}).setdefault(anchor_of(fragment), set()).add(path)
-    return found
-
-
 def specifications(headings):
     """Each command specification: a sub-section of a Commands section, or of a
     listing of a catalog, whose title makes the whole file one. A catalog's
@@ -132,42 +121,58 @@ def specifications(headings):
             inside = False
 
 
-def procedure_spans(headings, total):
-    """Line indices held by the file's top-level Procedure sections. A section
-    runs until the next heading of its own level or above, so the steps of a
-    procedure include every sub-section beneath it."""
+def specification_spans(headings, total):
+    """Line indices held by the file's command specifications. A specification
+    states how one command runs, so a citation standing in it names a sibling
+    operation rather than running it, and its own numbered detail is part of
+    that statement."""
     spans = set()
-    start = None
-    for index, level, title in headings:
-        if start is not None and level <= 2:
-            spans.update(range(start, index))
-            start = None
-        if level == 2 and anchor_of(title) == 'procedure':
-            start = index
-    if start is not None:
-        spans.update(range(start, total))
+    for start, _ in specifications(headings):
+        end = next((index for index, level, _ in headings
+                    if index > start and level <= 3), total)
+        spans.update(range(start, end))
     return spans
 
 
-def run_here(path, lines, fenced, headings):
-    """Anchors of this file that a Procedure section of it cites, so the steps
-    that run a command are told apart from the prose and the sibling
-    specifications that merely name it."""
-    spans = procedure_spans(headings, len(lines))
-    found = set()
-    for index, target in targets(path, lines, fenced):
-        if index not in spans:
-            continue
-        name, _, fragment = target.partition('#')
-        if not fragment:
-            continue
-        destination = (path.parent / name).resolve() if name else path
-        if destination == path.resolve():
-            found.add(anchor_of(fragment))
-    return found
+def procedure_spans(lines, fenced, headings):
+    """Line indices held by the file's procedures. A procedure is a top-level
+    section carrying a numbered step, whatever its heading names it, and runs
+    until the next heading of its own level or above, so the steps under a
+    sub-heading belong to it. A command specification is neither, so its lines
+    are read out before the steps are counted."""
+    specifications_here = specification_spans(headings, len(lines))
+    tops = [index for index, level, _ in headings if level <= 2]
+    spans = set()
+    for position, start in enumerate(tops):
+        end = tops[position + 1] if position + 1 < len(tops) else len(lines)
+        body = [index for index in range(start, end) if index not in specifications_here]
+        if any(ORDERED.match(lines[index]) and not fenced[index] for index in body):
+            spans.update(body)
+    return spans
 
 
-def check(path, root, cache, used):
+def citations(paths):
+    """Which files cite each fragment of each file, and which of them run it.
+    A file is a caller where a procedure of it carries the citation, and the
+    same question is asked of every citing file."""
+    cited = {}
+    called = {}
+    for path in paths:
+        lines, fenced, headings = scan(path)
+        steps = procedure_spans(lines, fenced, headings)
+        for index, target in targets(path, lines, fenced):
+            name, _, fragment = target.partition('#')
+            if not fragment:
+                continue
+            destination = (path.parent / name).resolve() if name else path
+            anchor = anchor_of(fragment)
+            cited.setdefault(destination, {}).setdefault(anchor, set()).add(path)
+            if index in steps:
+                called.setdefault(destination, {}).setdefault(anchor, set()).add(path)
+    return cited, called
+
+
+def check(path, root, cache, cited, called):
     lines, fenced, headings = scan(path)
     skip = frontmatter(lines)
     where = path.relative_to(root)
@@ -181,13 +186,14 @@ def check(path, root, cache, used):
             cache[target] = {anchor_of(title) for _, _, title in scan(target)[2]}
         return cache[target]
 
-    callers = used.get(path, {})
+    citing_files = cited.get(path, {})
+    callers = called.get(path, {})
 
     seen = {}
     previous = 0
     for index, level, title in headings:
         slug = anchor_of(title)
-        if slug in seen and slug in callers:
+        if slug in seen and slug in citing_files:
             report(index, 'duplicate anchor is cited', f'{slug}, also at line {seen[slug] + 1}')
         seen.setdefault(slug, index)
         if previous and level > previous + 1:
@@ -195,16 +201,16 @@ def check(path, root, cache, used):
         previous = level
 
     # A specification belongs to the procedure that runs it, so one exactly
-    # one file cites, and that file not its own, stands away from home. The
-    # holding file counts as a caller only where a Procedure of it cites the
-    # specification; a sibling specification or reference prose names the
-    # command without running it.
-    steps = run_here(path, lines, fenced, headings)
+    # one procedure cites, in a file other than its own, stands away from
+    # home. The file holding the specification is read by that same test. A
+    # skill's entry point holds no command, so a specification there is
+    # reported whatever cites it, which is the one placement no caller count
+    # can reach.
     for index, title in specifications(headings):
-        anchor = anchor_of(title)
-        citing = set(callers.get(anchor, ()))
-        if anchor not in steps:
-            citing.discard(path)
+        if path.name == 'SKILL.md':
+            report(index, 'command specification in the entry point', title)
+            continue
+        citing = callers.get(anchor_of(title), ())
         if len(citing) == 1 and path not in citing:
             caller = named(next(iter(citing)), root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
@@ -298,11 +304,11 @@ def main(argv=None):
         root = Path(name).resolve()
         files += [(path, root.parent) for path in sorted(root.rglob('*.md'))]
 
-    used = cited([path for path, _ in files])
+    cited, called = citations([path for path, _ in files])
     cache = {}
     findings = []
     for path, root in files:
-        findings += check(path, root, cache, used)
+        findings += check(path, root, cache, cited, called)
 
     if not options.quiet:
         for where, line, kind, detail in findings:
