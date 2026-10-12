@@ -56,17 +56,30 @@ class Done(unittest.TestCase):
         self.assertIn(f"| [W01]({url('pull', 950)}) | Work | AC1 | | | ✓ |", fixed)
         self.assertIn('- [x] **AC1.**', fixed)
 
-    def test_a_further_pull_request_requires_another_task(self):
+    def test_a_further_pull_request_on_the_same_branch_requires_another_task(self):
         epic = issue(2, '[I01:E00] First: Epic', body=epic_body((f"[W01]({url('pull', 950)})", 'Work', '')))
-        pulls = [pr(950, '[I01:E00] Work', merged='2026-09-01T00:00:00Z'),
-                 pr(951, '[I01:E00] Rest', merged='2026-09-02T00:00:00Z')]
+        pulls = [pr(950, '[I01:E00] Work', merged='2026-09-01T00:00:00Z', base='i01/e00/main'),
+                 pr(951, '[I01:E00] Rest', merged='2026-09-02T00:00:00Z', base='i01/e00/main')]
         with self.assertRaisesRegex(AssertionError, 'further work needs another task'):
             synced(epic, pulls, '--link', 'W01=951')
 
-    def test_multiple_row_links_are_rejected_before_delivery(self):
-        ident = f"[W01]({url('pull', 950)}), [W01]({url('pull', 951)})"
+    def test_a_row_links_one_delivery_per_long_lived_branch(self):
+        epic = issue(2, '[I01:E00] First: Epic', body=epic_body((f"[W01]({url('pull', 950)})", 'Work', '')))
+        pulls = [pr(950, '[I01:E00] Work', merged='2026-09-01T00:00:00Z', base='i01/e00/main'),
+                 pr(951, '[I01:E00] Corpus', merged='2026-09-02T00:00:00Z', base='i01/e00/workflows')]
+        fixed = synced(epic, pulls, '--link', 'W01=951')
+        self.assertIn(f"| [W01]({url('pull', 950)}), [W01]({url('pull', 951)}) | Work | AC1 | | | |", fixed)
+
+    def test_a_repeated_row_link_is_rejected_before_delivery(self):
+        ident = f"[W01]({url('pull', 950)}), [W01]({url('pull', 950)})"
         epic = issue(2, '[I01:E00] First: Epic', body=epic_body((ident, 'Work', '')))
-        with self.assertRaisesRegex(AssertionError, 'a task row has one link'):
+        with self.assertRaisesRegex(AssertionError, 'links each delivery once'):
+            synced(epic, [pr(950, '[I01:E00] Work', merged='2026-09-01T00:00:00Z')])
+
+    def test_a_row_link_naming_another_row_is_rejected_before_delivery(self):
+        ident = f"[W01]({url('pull', 950)}), [W02]({url('pull', 951)})"
+        epic = issue(2, '[I01:E00] First: Epic', body=epic_body((ident, 'Work', '')))
+        with self.assertRaisesRegex(AssertionError, 'every link on a task row names that row'):
             synced(epic, [pr(950, '[I01:E00] Work', merged='2026-09-01T00:00:00Z'),
                           pr(951, '[I01:E00] Rest')])
 
