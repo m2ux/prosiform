@@ -54,4 +54,3 @@ Command operations use the [command conventions](commands.md#conventions), read 
   - carries no references, links, task ids or tool names;
   - leaves out work in progress and next;
   - with nothing completed, says so in one sentence.
-
