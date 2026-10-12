@@ -22,7 +22,7 @@ Each operation has one spec. Commands use example values that the caller replace
 ### Audit Commands
 
 - **Runtime.**
-  Read [Common](#common) first. Use Python 3.10+ and Node with the paired engine's installed `yaml` package. Resolve `<skill-root>`, `<corpus-root>`, `<engine-root>` and the shared planning `<run>` directory to absolute paths. Apply the host's sandbox rules.
+  Read [1](#common) first. Use Python 3.10+ and Node with the paired engine's installed `yaml` package. Resolve `<skill-root>`, `<corpus-root>`, `<engine-root>` and the shared planning `<run>` directory to absolute paths. Apply the host's sandbox rules.
 - **Ownership.**
   The coordinator invokes mutations sequentially; workers return files. Preserve failures and output in the planning record.
 - **Inputs.**
@@ -36,7 +36,7 @@ Each operation has one spec. Commands use example values that the caller replace
 
 Capture source bytes and render all four matrices with unresolved cells.
 
-- [Read](#audit-commands) first. Paths are relative to a root containing `corpus/`. Use the actual inventory author identity and a new run directory.
+- Read [1](#common), [2](#audit-commands) first. Paths are relative to a root containing `corpus/`. Use the actual inventory author identity and a new run directory.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py init --root <corpus-root> --engine <engine-root> --scope <scope.json> --actor <host-agent-id> --run <run>
@@ -46,7 +46,7 @@ python3 <skill-root>/scripts/audit_surface.py init --root <corpus-root> --engine
 
 Reconcile current evidence, rendered views and outstanding obligations.
 
-- [Read](#audit-commands) first. Require `map` before evaluation and `complete` before claiming completion; omit `--require` for status only.
+- Read [1](#common), [2](#audit-commands) first. Require `map` before evaluation and `complete` before claiming completion; omit `--require` for status only.
 - Output contains bounded counts, the generation identity and artifact paths. Read the relevant coverage section or assignment packet for individual residuals.
 
 ```bash
@@ -57,7 +57,7 @@ python3 <skill-root>/scripts/audit_surface.py status --run <run> --require <map-
 
 Regenerate matrices, evidence and reports from canonical state.
 
-- [Read](#audit-commands) first. Changed source evidence requires refresh.
+- Read [1](#common), [2](#audit-commands) first. Changed source evidence requires refresh.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py render --run <run>
@@ -67,7 +67,7 @@ python3 <skill-root>/scripts/audit_surface.py render --run <run>
 
 Compute disjoint residual assignments under declared budgets.
 
-- [Read](#audit-commands) and [Sizing](audit-dispatch.md#sizing) first. Select `inventory`, `map`, `verify`, `evaluate` or `obligations`. Unknown limits, unmet gates or indivisible oversized context refuse dispatch.
+- Read [1](#common), [2](#audit-commands), [3](audit-dispatch.md#sizing) first. Select `inventory`, `map`, `verify`, `evaluate` or `obligations`. Unknown limits, unmet gates or indivisible oversized context refuse dispatch.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py plan --run <run> --phase <phase> --budgets <budgets.json>
@@ -77,7 +77,7 @@ python3 <skill-root>/scripts/audit_surface.py plan --run <run> --phase <phase> -
 
 Bind an assignment to its actual host agent identity.
 
-- [Read](#audit-commands) first. Independent roles cannot own their authored work; retired assignments require a new residual plan.
+- Read [1](#common), [2](#audit-commands) first. Independent roles cannot own their authored work; retired assignments require a new residual plan.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py bind --run <run> --assignment <id> --actor <host-agent-id>
@@ -87,7 +87,7 @@ python3 <skill-root>/scripts/audit_surface.py bind --run <run> --assignment <id>
 
 Write captured context and ownership for one agent.
 
-- [Read](#audit-commands) first. Give the packet and [return contract](audit-dispatch.md#returns) to the bound host agent. Serialized size must fit the plan.
+- Read [1](#common), [2](#audit-commands) first. Give the packet and [return contract](audit-dispatch.md#returns) to the bound host agent. Serialized size must fit the plan.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py packet --run <run> --assignment <id> --out <packet.json>
@@ -97,7 +97,7 @@ python3 <skill-root>/scripts/audit_surface.py packet --run <run> --assignment <i
 
 Validate a typed return and preserve its immutable receipt.
 
-- [Read](#audit-commands) first. Invalid returns cannot partially change state; valid partial results leave the residual incomplete.
+- Read [1](#common), [2](#audit-commands) first. Invalid returns cannot partially change state; valid partial results leave the residual incomplete.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py submit --run <run> --receipt <receipt.json>
@@ -107,7 +107,7 @@ python3 <skill-root>/scripts/audit_surface.py submit --run <run> --receipt <rece
 
 Reopen selected decisions and invalidate dependent evidence and assignments.
 
-- [Read](#audit-commands) first. Supply a JSON array of cell IDs and the correction reason.
+- Read [1](#common), [2](#audit-commands) first. Supply a JSON array of cell IDs and the correction reason.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py reset --run <run> --items <items.json> --reason '<reason>'
@@ -117,7 +117,7 @@ python3 <skill-root>/scripts/audit_surface.py reset --run <run> --items <items.j
 
 Capture current inputs and invalidate a changed generation.
 
-- [Read](#audit-commands) first. Add `--scope <scope.json>` for inventory corrections. Identical generations retain evidence; changed generations archive prior state.
+- Read [1](#common), [2](#audit-commands) first. Add `--scope <scope.json>` for inventory corrections. Identical generations retain evidence; changed generations archive prior state.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py refresh --run <run>
@@ -127,7 +127,7 @@ python3 <skill-root>/scripts/audit_surface.py refresh --run <run>
 
 Retire interrupted ownership so its unresolved work can be planned again.
 
-- [Read](#audit-commands) first. Accepted items remain settled. Record why the worker stopped and recalibrate excessive estimates.
+- Read [1](#common), [2](#audit-commands) first. Accepted items remain settled. Record why the worker stopped and recalibrate excessive estimates.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py retry --run <run> --assignment <id> --reason '<reason>'
@@ -137,7 +137,7 @@ python3 <skill-root>/scripts/audit_surface.py retry --run <run> --assignment <id
 
 Run inventory, evidence-gate and assignment regressions with the paired parser.
 
-- [Read](#audit-commands) first. Run from the skill worktree. Synthetic judgments test coordination, not semantic corpus conformance.
+- Read [1](#common), [2](#audit-commands) first. Run from the skill worktree. Synthetic judgments test coordination, not semantic corpus conformance.
 
 ```bash
 CANON_TEST_ENGINE=<engine-root> python3 -m unittest discover -s skills/workflow-canon/test -p 'test_audit_*.py'
@@ -273,6 +273,7 @@ gh api repos/{owner}/{repo}/pulls/950
 
 Run the check selected by the task or by the reviewed project's manifest, test configuration or CI job.
 
+- Read [1](#common) first. A selected canon check also reads [Canon Check Conventions](#canon-check-conventions) before this operation; a checker the task supplies for a bounded scope does not.
 - Replace the command placeholder with that project's actual invocation, including its runtime, check arguments and explicit dependency paths.
 - Capture the working directory, input revisions, measured cases, skips, exit status and output. Assess the result against the active mode's requirements.
 
