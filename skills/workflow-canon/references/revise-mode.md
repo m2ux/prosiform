@@ -20,7 +20,7 @@ Before the first command spec, read the [command conventions](command-convention
    Read each changed file against both guidelines: discovery description, mode summaries, bold leads, one line per item, single rule homes, command links, resolved file links and anchors, and [progressive disclosure](../../guidelines.md#progressive-disclosure).
 6. **Verify.**
    - Confirm frontmatter opens and closes with `---`, contains the required fields and names the skill's folder.
-   - [Run Skill Checks](#run-skill-checks), [Check Skill Summaries](#check-skill-summaries) and [Run the Edit Guard Tests](canon-context.md#run-the-edit-guard-tests). A change to the shared check itself also runs [its tests](#run-the-skill-file-check-tests). Changes to shared rules or templates also run their affected consumer suites.
+   - [Run Skill Checks](#run-skill-checks), [Check Skill Summaries](#check-skill-summaries) and [Run the Edit Guard Tests](#run-the-edit-guard-tests). A change to the shared check itself also runs [its tests](#run-the-skill-file-check-tests). Changes to shared rules or templates also run their affected consumer suites.
    - Walk a representative request through each changed decision.
    - For every affected mode, apply [disclosure verification](../../guidelines.md#disclosure-verification) using the skill's [representative scenarios](guidelines.md#progressive-disclosure).
 7. **Deliver.**
@@ -124,4 +124,14 @@ Run the shared mode-summary tests from the checkout containing its skills.
 
 ```bash
 python3 -m unittest discover -s skills/work-planner/test -p test_modes.py
+```
+
+### Run the Edit Guard Tests
+
+Drives the edit guard over seeded edits in temporary git repositories, with a stub guard runner in place of the server.
+
+- Run from the workspace checkout containing the skill under revision.
+
+```bash
+python3 -m unittest discover -s skills/workflow-canon/test -p test_edit_guard.py
 ```

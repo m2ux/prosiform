@@ -19,11 +19,11 @@ Inventory and mapping can proceed together. Verification requires all mapping de
 ### Dispatch Route
 
 1. **Plan the assignments.**
-   Use [Plan Audit Assignments](change-surface.md#plan-audit-assignments).
+   Use [Plan Audit Assignments](#plan-audit-assignments).
 2. **Bind the agent.**
-   Use [Bind Audit Agent](change-surface.md#bind-audit-agent), binding the actual host agent identity.
+   Use [Bind Audit Agent](#bind-audit-agent), binding the actual host agent identity.
 3. **Write the packet and dispatch.**
-   Use [Write Audit Packet](change-surface.md#write-audit-packet), give the agent the packet and [return contract](#returns), and dispatch through the host.
+   Use [Write Audit Packet](#write-audit-packet), give the agent the packet and [return contract](#returns), and dispatch through the host.
 
 Scripts do not create agents or turn simulated judgments into semantic validation. Inventory packets carry proposed rows, AP/DP and supplemental criteria, required checks, diagnostics and corpus manifest slices; captured bytes for unselected sources remain inspectable.
 
@@ -69,3 +69,37 @@ Return a JSON file following the [receipt example](../templates/audit-receipt.js
   A measured check includes `check: {command: [program, arguments], cwd, exit_code, output}` where `output` names the captured output file. `pass` requires exit 0; a measured finding requires exit 1 and structured attribution. Exit 2 or unavailable execution remains blocked. The coordinator captures the output bytes alongside source evidence.
 - **Partial work.**
   A valid partial return keeps accepted items and leaves the residual incomplete. Failed or invalidated assignments cannot return; a new attempt cannot replace a previously returned item. Correction of an accepted decision uses [reset](change-surface.md#reset-audit-cells). [Retry](change-surface.md#retry-audit-assignment) releases residual ownership for a new bounded assignment.
+
+## Commands
+
+Read [Audit Command Conventions](change-surface.md#audit-command-conventions) first.
+
+### Plan Audit Assignments
+
+Compute disjoint residual assignments under declared budgets.
+
+- Select `inventory`, `map`, `verify`, `evaluate` or `obligations`. Unknown limits, unmet gates or indivisible oversized context refuse dispatch.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py plan --run <run> --phase <phase> --budgets <budgets.json>
+```
+
+### Bind Audit Agent
+
+Bind an assignment to its actual host agent identity.
+
+- Independent roles cannot own their authored work; retired assignments require a new residual plan.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py bind --run <run> --assignment <id> --actor <host-agent-id>
+```
+
+### Write Audit Packet
+
+Write captured context and ownership for one agent.
+
+- Give the packet and [return contract](#returns) to the bound host agent. Serialized size must fit the plan.
+
+```bash
+python3 <skill-root>/scripts/audit_surface.py packet --run <run> --assignment <id> --out <packet.json>
+```
