@@ -18,7 +18,14 @@ Inventory and mapping can proceed together. Verification requires all mapping de
 
 ### Dispatch Route
 
-Use [Plan Audit Assignments](change-surface.md#plan-audit-assignments), [Bind Audit Agent](change-surface.md#bind-audit-agent), then [Write Audit Packet](change-surface.md#write-audit-packet). Bind the actual host agent identity, give it the packet and [return contract](#returns), and dispatch through the host. Scripts do not create agents or turn simulated judgments into semantic validation. Inventory packets carry proposed rows, AP/DP and supplemental criteria, required checks, diagnostics and corpus manifest slices; captured bytes for unselected sources remain inspectable.
+1. **Plan the assignments.**
+   Use [Plan Audit Assignments](change-surface.md#plan-audit-assignments).
+2. **Bind the agent.**
+   Use [Bind Audit Agent](change-surface.md#bind-audit-agent), binding the actual host agent identity.
+3. **Write the packet and dispatch.**
+   Use [Write Audit Packet](change-surface.md#write-audit-packet), give the agent the packet and [return contract](#returns), and dispatch through the host.
+
+Scripts do not create agents or turn simulated judgments into semantic validation. Inventory packets carry proposed rows, AP/DP and supplemental criteria, required checks, diagnostics and corpus manifest slices; captured bytes for unselected sources remain inspectable.
 
 ## Sizing
 
