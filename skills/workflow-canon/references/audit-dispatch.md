@@ -12,21 +12,37 @@ The coordinator plans and reconciles bounded work; host agents read captured evi
 | `evaluate` | Every independently verified `A` cell | Audit worker with full source and relationship context |
 | `obligations` | Whole-file reads, supplemental units, selected checks and finding confirmation | Finding confirmer differs from its author |
 
+### Phase Order
+
 Inventory and mapping can proceed together. Verification requires all mapping decisions settled. Evaluation and audit obligations require the complete independently verified map. Plan finding confirmations after findings return. Critical and High findings are re-derived, Mediums spot-confirmed; downgrades state the resulting severity and band.
+
+### Dispatch Route
 
 Use [Plan Audit Assignments](commands.md#plan-audit-assignments), [Bind Audit Agent](commands.md#bind-audit-agent), then [Write Audit Packet](commands.md#write-audit-packet). Bind the actual host agent identity, give it the packet and [return contract](#returns), and dispatch through the host. Scripts do not create agents or turn simulated judgments into semantic validation. Inventory packets carry proposed rows, AP/DP and supplemental criteria, required checks, diagnostics and corpus manifest slices; captured bytes for unselected sources remain inspectable.
 
 ## Sizing
 
+### Budget Input
+
 Record actual host context/output limits, available child slots, prompt/tool reserve, safety reserve and work limit in the [budget input](../templates/audit-budgets.json). Reserve the coordinator and occupied slots once. The input contains estimates, never a promise of runtime capacity.
+
+### Calibration
 
 Calibrate each phase separately with a bounded pilot from its required work. Record measured packet/output sizes and elapsed time; retain useful pilot results. A pilot's maximum input and output must already fit the declared host limits. Unknown host limits block dispatch. Use the host tokenizer when available; the CLI's explicit bytes-per-token proxy requires a conservative ratio and safety reserve.
 
+### Slice Fit
+
 For each slice, the planner counts the serialized packet, including source/canon context, identifiers, mapping reasons and assignment metadata. Verification and evaluation include the exact source spans cited by their mappings, merged with required row and criterion context. It estimates output and elapsed work from the recorded phase calibration. It requires input + output ≤ context − prompt/tool reserve − safety reserve, output ≤ output limit, and work ≤ work limit. Output is counted once in the context equation. Use an effective combined context limit consistent with the host's input/output accounting.
+
+### Batched Reads
 
 Read packet fields and source excerpts in batches within the host's tool-return limit. Retain all owned identifiers, reasons and relationship context across those batches. Reuse source bytes already read at the same hash; retrieve every missing portion of a truncated return before making a judgment.
 
+### Bundles and Waves
+
 Bundles group criterion, source and section, with relationship context retained. Oversized bundles split into bounded item groups; a single item that cannot fit blocks dispatch. Largest bundles are packed first within their criterion or obligation kind, preferring shared context. This keeps an entry's walk together and bounds the planner's packing search. Each phase's assignments are disjoint and exactly cover its unassigned residual. The final list determines agent count `N`; free slots `K` determine concurrency `min(K,N)` and a lower bound of `ceil(N/K)` waves. Zero slots blocks dispatch. Lower concurrency changes elapsed time, never coverage.
+
+### Observed Work
 
 The coordinator observes actual work. When a worker exceeds its calibrated cost, retain accepted evidence, retire its unfinished assignment, recalibrate and plan the remaining work. Shared source context may overlap; primary items and file write ownership do not. Inventory closure is partitioned by manifest source so a large surface can fan out without one whole-corpus input packet.
 

@@ -34,19 +34,31 @@ Use [mapping assignments](audit-dispatch.md#phases) to decide every cell in the 
 | `N` | The criterion's excluding wording and source facts satisfying it |
 | `U` | The evidence or decision still missing |
 
+### Shared Reasons
+
 Shared reasons name the exact assigned row set and hold for every member. A clean result or a Do not flag exception is an evaluation under an applicable criterion; it does not by itself establish inapplicability. Blank cells are unresolved. Table pagination preserves every logical pair exactly once.
+
+### Cell Verification
 
 After all decisions are `A` or `N`, independent verifiers check every cell, including every exclusion, against the original criterion and source. They cannot verify cells they mapped. The receipt binds the exact mapping reason, disposition and evidence. Disputes return to the coordinator for correction through [reset](commands.md#reset-audit-cells) or [refresh](commands.md#refresh-audit-surface), then fresh verification. Open the evaluation gate only when [status requires the map](commands.md#check-audit-status) successfully.
 
 ## Evaluation
 
+### Worker Obligations
+
 Assign the verified applicable cells through [dispatch](audit-dispatch.md#phases). Workers follow the complete [walk rules](walk-rules.md), read the full source and required relationship context, and return evidence for each pass, finding or blockage. Reconcile returns through the typed [receipt](audit-dispatch.md#returns). Whole-file reads, supplemental units, selected project checks and independent finding confirmation are separate obligations. A command result carries its command, working directory, exit status and captured output; an unmeasured check stays blocked.
+
+### Remediation Authority
 
 The calling mode owns remediation authority. Corrections to definitions return through Author's draft procedure. Review-only audits report findings. Workers have read authority; authorized edits are serialized by the coordinator or assigned disjoint file ownership before execution.
 
 ## Completion
 
+### Required Evidence
+
 The audit is complete only when the current inventory is independently verified, every AP/DP cell has independently verified applicability, every applicable cell has an evidence-backed pass or finding, and every whole-file read, supplemental unit, required check and finding confirmation is settled. Unknown, disputed, stale, unread, unmeasured or blocked work keeps it incomplete. Every required item has one reconciled primary result; retries cannot overwrite accepted items. Use [status requiring completion](commands.md#check-audit-status) for the final claim.
+
+### Coverage and Conformance
 
 Coverage completion and conformance are separate. Confirmed violations can have complete coverage; [reporting](reporting.md#report-context) determines their bands and verdict. A user stop or resource limit leaves a saved incomplete run with its residual, never a finished audit.
 
