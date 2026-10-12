@@ -4,7 +4,7 @@ Changes the skill itself: its entry point, mode files, shared guides, commands a
 
 ## Prerequisites
 
-Before the first command spec, read the [command conventions](commands.md#conventions).
+Before the first command spec, read the [command conventions](commands.md#common).
 
 ## Procedure
 

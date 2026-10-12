@@ -4,7 +4,7 @@ Reviews the combined result of the requested integration and produces a report o
 
 ## Prerequisites
 
-Before the first command spec, read the [command conventions](commands.md#conventions).
+Before the first command spec, read the [command conventions](commands.md#common).
 
 ## Procedure
 

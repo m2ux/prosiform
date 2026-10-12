@@ -52,7 +52,7 @@ Read the selected mode's file in full, then follow its links as each step needs 
 - **Planning.**
   When creating or using artifacts, all modes follow [Planning](references/planning.md).
 - **Commands.**
-  Before the first command spec, read the [shared command conventions](references/commands.md#conventions) and any additional conventions linked by its caller. Reuse complete prerequisites already read at the same revision; retrieve each operation's spec at its point of use.
+  Before the first command spec, read the [shared command conventions](references/commands.md#common) and any additional conventions linked by its caller. Reuse complete prerequisites already read at the same revision; retrieve each operation's spec at its point of use.
 
 ## Dependencies
 

@@ -4,7 +4,7 @@ Author and Audit share the following context; Review follows the design sources 
 
 ## Prerequisites
 
-Read the [command conventions](commands.md#conventions) before the first command spec. Read the sections below as the task needs them.
+Read the [command conventions](commands.md#common) before the first command spec. Read the sections below as the task needs them.
 
 ## Terms
 
