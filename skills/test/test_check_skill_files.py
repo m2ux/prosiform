@@ -178,6 +178,12 @@ class SkillFileChecks(unittest.TestCase):
                    '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
         self.assertEqual(self.findings(), [])
 
+    def test_a_specification_its_own_file_and_one_other_cite_stands(self):
+        self.write('references/catalog.md',
+                   '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) too.\n')
+        self.assertEqual(self.findings(), [])
+
     def test_a_catalog_entry_cited_from_one_file_is_reported(self):
         self.write('references/commands.md',
                    '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')

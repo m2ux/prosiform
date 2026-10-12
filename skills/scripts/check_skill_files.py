@@ -11,10 +11,10 @@ stands for text the author supplies, so it is measured where it lands rather
 than here.
 
 Placement is judged by use. A command specification belongs to the procedure
-that runs it, so a specification exactly one other file cites names a caller
-it should be sitting in. A mode file's top-level sections are the set the
-guidelines name, in the order they name them, so the reader knows what the
-file carries before opening it.
+that runs it, so a specification exactly one file cites, that file not the
+one holding it, names a caller it should be sitting in. A mode file's
+top-level sections are the set the guidelines name, in the order they name
+them, so the reader knows what the file carries before opening it.
 
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
@@ -142,12 +142,12 @@ def check(path, root, cache, used):
             report(index, 'heading jump', f'h{previous} to h{level}')
         previous = level
 
-    # A specification belongs to the procedure that runs it, so a catalog
-    # entry one other file cites is a specification standing away from home.
+    # A specification belongs to the procedure that runs it, so one exactly
+    # one file cites, and that file not its own, stands away from home.
     for index, title in specifications(headings):
-        elsewhere = {caller for caller in callers.get(anchor_of(title), ()) if caller != path}
-        if len(elsewhere) == 1:
-            caller = elsewhere.pop().relative_to(root)
+        citing = callers.get(anchor_of(title), ())
+        if len(citing) == 1 and path not in citing:
+            caller = next(iter(citing)).relative_to(root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
 
     # A mode file's top-level sections are a named set in a named order, so
