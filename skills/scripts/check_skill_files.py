@@ -10,6 +10,12 @@ template it illustrates rather than to the document. A template's `{{...}}`
 stands for text the author supplies, so it is measured where it lands rather
 than here.
 
+Placement is judged by use. A command specification belongs to the procedure
+that runs it, so a specification exactly one other file cites names a caller
+it should be sitting in. A mode file's top-level sections are the set the
+guidelines name, in the order they name them, so the reader knows what the
+file carries before opening it.
+
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
 link naming the next operation. A selection link points wherever its target
@@ -37,6 +43,7 @@ BARE_LEAD = re.compile(r'^\s*-\s+\*\*[^*]+\*\*\s*$')
 INDENTED = re.compile(r'^\s+\S')
 PROSE_LIMIT = 8
 LEAD_WIDTH = 100
+MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
 
 
 def anchor_of(text):
@@ -83,7 +90,7 @@ def targets(path, lines, fenced):
 
 
 def cited(paths):
-    """Fragments each file is linked to by name, so ambiguity is judged by use."""
+    """Which files cite each fragment of each file, so use is judged by caller."""
     found = {}
     for path in paths:
         lines, fenced, _ = scan(path)
@@ -92,8 +99,20 @@ def cited(paths):
             if not fragment:
                 continue
             destination = (path.parent / name).resolve() if name else path
-            found.setdefault(destination, set()).add(anchor_of(fragment))
+            found.setdefault(destination, {}).setdefault(anchor_of(fragment), set()).add(path)
     return found
+
+
+def specifications(headings):
+    """Each command specification: a sub-section of a Commands section, or of a
+    catalog, whose title makes the whole file one."""
+    catalog = any(level == 1 and anchor_of(title) == 'commands' for _, level, title in headings)
+    inside = catalog
+    for index, level, title in headings:
+        if level == 3 and inside:
+            yield index, title
+        elif level < 3 and not catalog:
+            inside = level == 2 and anchor_of(title) == 'commands'
 
 
 def check(path, root, cache, used):
@@ -110,16 +129,42 @@ def check(path, root, cache, used):
             cache[target] = {anchor_of(title) for _, _, title in scan(target)[2]}
         return cache[target]
 
+    callers = used.get(path, {})
+
     seen = {}
     previous = 0
     for index, level, title in headings:
         slug = anchor_of(title)
-        if slug in seen and slug in used.get(path, set()):
+        if slug in seen and slug in callers:
             report(index, 'duplicate anchor is cited', f'{slug}, also at line {seen[slug] + 1}')
         seen.setdefault(slug, index)
         if previous and level > previous + 1:
             report(index, 'heading jump', f'h{previous} to h{level}')
         previous = level
+
+    # A specification belongs to the procedure that runs it, so a catalog
+    # entry one other file cites is a specification standing away from home.
+    for index, title in specifications(headings):
+        elsewhere = {caller for caller in callers.get(anchor_of(title), ()) if caller != path}
+        if len(elsewhere) == 1:
+            caller = elsewhere.pop().relative_to(root)
+            report(index, 'command specification with one caller', f'{title}, cited from {caller}')
+
+    # A mode file's top-level sections are a named set in a named order, so
+    # the reader knows what the file carries before opening it.
+    if path.name.endswith('-mode.md'):
+        rank = -1
+        for index, level, title in headings:
+            if level != 2:
+                continue
+            if title.strip() not in MODE_SECTIONS:
+                report(index, 'section outside the mode set', title.strip())
+                continue
+            place = MODE_SECTIONS.index(title.strip())
+            if place < rank:
+                report(index, 'mode sections out of order',
+                       f'{MODE_SECTIONS[place]} after {MODE_SECTIONS[rank]}')
+            rank = max(rank, place)
 
     for index, target in targets(path, lines, fenced):
         name, _, fragment = target.partition('#')

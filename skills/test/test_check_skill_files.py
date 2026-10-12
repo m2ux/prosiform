@@ -153,6 +153,59 @@ class SkillFileChecks(unittest.TestCase):
                                '- **Rule.**  Cite it as `Read [Common](#common) first.` in the body.\n')
         self.assertEqual(self.findings(), [])
 
+    CATALOG = '# Catalog\n\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n'
+    MODE = '# Plan mode\n\nWhat the mode does.\n'
+    PROCEDURE = '\n## Procedure\n\n1. **Open.**  The first step.\n'
+    RULES = '\n## Rules\n\n- **Scope.**  One sentence.\n'
+
+    def test_a_specification_cited_from_one_other_file_is_reported(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) first.\n')
+        self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_specification_several_files_cite_stands(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) first.\n')
+        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](catalog.md#fetch-issue) too.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_specification_nobody_cites_stands(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.assertEqual(self.findings(), [])
+
+    def test_a_specification_only_its_own_file_cites_stands(self):
+        self.write('references/catalog.md',
+                   '# Catalog\n\nRun [Fetch issue](#fetch-issue) for it.\n' + self.CATALOG[len('# Catalog\n'):])
+        self.assertEqual(self.findings(), [])
+
+    def test_a_catalog_entry_cited_from_one_file_is_reported(self):
+        self.write('references/commands.md',
+                   '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) first.\n')
+        self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_heading_outside_a_commands_section_is_not_a_specification(self):
+        self.write('references/catalog.md', '# Catalog\n\n## Reference\n\n### Fetch issue\n\nA sentence.\n')
+        self.write('references/plan.md', '# Plan\n\nSee [Fetch issue](catalog.md#fetch-issue) for it.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_conforming_mode_file_reports_nothing(self):
+        self.write('references/plan-mode.md', self.MODE + self.PROCEDURE + self.RULES)
+        self.assertEqual(self.findings(), [])
+
+    def test_a_mode_section_outside_the_set_is_reported(self):
+        self.write('references/plan-mode.md',
+                   self.MODE + self.PROCEDURE + '\n## Findings\n\nOne sentence.\n' + self.RULES)
+        self.assertIn('section outside the mode set', self.kinds())
+
+    def test_mode_sections_out_of_order_are_reported(self):
+        self.write('references/plan-mode.md', self.MODE + self.RULES + self.PROCEDURE)
+        self.assertIn('mode sections out of order', self.kinds())
+
+    def test_a_file_that_is_not_a_mode_carries_any_section(self):
+        self.write('references/guide.md', '# Guide\n\n## Findings\n\nOne sentence.\n')
+        self.assertEqual(self.findings(), [])
+
     def test_a_trailing_blank_line_is_reported(self):
         self.write('SKILL.md', '# Specimen\n\nA sentence.\n\n')
         self.assertIn('trailing blank line', self.kinds())
