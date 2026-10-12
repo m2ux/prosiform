@@ -41,7 +41,9 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 9. **Report.**
    Each pull request merged, and each left open by a conflict; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
 
-## Brief
+## Reference
+
+### Brief
 
 What the prompt tells one session, written from the facts the `unit` line and the epic carry.
 
