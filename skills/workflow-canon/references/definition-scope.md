@@ -6,27 +6,29 @@ The definition files, contracts and references that authoring and canon audits r
 
 - **Base ref.**  The ref the change is measured against.
 - **Surface files.**
-  `workflow.yaml`, `activities/`, `techniques/`, `resources/`, READMEs of the target.
+  `workflow.yaml`, `activities/`, `techniques/`, `routines/`, `resources/`, READMEs of the target.
 - **Touched.**
   Definition paths whose bytes differ from the base ref, each the whole file. Hunks discover membership.
 - **I/O contract.**
   - Technique `## Inputs` / `## Outputs`, including nested component and artifact declarations.
   - Activity inputs, outputs, and step binds that name those ids.
+  - Routine parameters, outputs, internals, nested reference sites and technique arguments.
   - Renames, additions, removals, optionality flips, and type or shape changes.
 - **Reference.**
   - `techniques[]`, step `technique` / `technique.name`, Protocol `Apply` / `::` / a markdown link to an op, or a resource or README cite that resolves to the op file.
   - Sweep the workflows tree. Resolve each to a file path.
+  - Resolve routine references and their full instantiation chains, graph entries, ancestors and shared resources through [surface identity](change-surface.md#identity).
 - **Closure.**
-  Every activity or technique that references a touched file whose I/O contract changed, in this workflow and others.
+  Affected elements and supporting sources reached through callers, consumers, invoked definitions and inherited contracts, including unchanged files across workflow boundaries.
 - **Change surface.**  Touched ∪ closure. The header reports the two subsets separately.
 - **Consumers.**
   - References other workflows hold into the target. Always computed.
   - A consumer joins the change surface when the file it names is on it.
-  - Start from [Find consumers](commands.md#find-consumers), then resolve binds and Apply links.
+  - Start from [Find consumers](canon-context.md#find-consumers), then resolve binds and Apply links.
 - **Reference workflows.**  Siblings of similar type, as convention conformance requires.
 - **Prior residual.**
   - `unread` paths in the latest findings register in the shared [planning record](planning.md).
-  - Re-derive the enumeration at this commit and inherit dispositions by path. A path absent from the tree leaves the worklist.
+  - Reconcile captured identities through [freshness](change-surface.md#freshness-and-resume). A deleted path remains a base-side obligation when the selected comparison includes it.
   - Reading starts at the residual. The walk follows [audit rules](audit-mode.md#rules). Paths a stop leaves unread are the next residual.
 - **Second entry.**
   - Where a graph gives one activity two entry points, both are on the surface.

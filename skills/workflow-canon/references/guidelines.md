@@ -16,15 +16,15 @@ The rules this skill's files follow beyond the [skill guidelines](../../guidelin
 Apply the shared [progressive disclosure](../../guidelines.md#progressive-disclosure) and [disclosure verification](../../guidelines.md#disclosure-verification) rules using the scenarios affected by the revision:
 
 - **Author.**
-  Draft a specified definition change with a contract consumer. Follow the shared canon prerequisites, construct lookup and relevant checks; preserve the draft walk, post-write check and commit gate.
+  Draft a specified definition change with a contract consumer. Follow the shared canon prerequisites, four section matrices, independent verification and relevant checks; preserve the draft walk, byte agreement and complete-surface commit gate. Repeat with a changed candidate invalidating prior evidence.
 - **Audit.**
-  Audit a definition with a closure-only consumer and prior residual. Include criterion and file coverage, attribution and report selection. Also trace a single canon question's bounded path.
+  Audit a definition with a closure-only consumer and prior residual. Include inventory and mapping verification, budgeted fan-out, partial returns, criterion/file coverage, attribution and report selection. Repeat with a disputed exclusion or stale source. Also trace a single canon question's bounded path.
 - **Review.**
   Select one affected branch product with a conditional check that does not apply. Confirm the report preserves missing evidence and the reads follow the selected coverage.
 - **Revise.**
   Change a template with a consumer in another mode. Include its required consumer guidance, a command section with conventions, a parent section with subsections and the required whole-file guidelines.
-- **Command catalog.**
-  Select multiple operations, including a canon check. Confirm the shared conventions and any required subset conventions arrive before the first operation that needs them and are reused; unrelated operations stay outside the retrieved sections.
+- **Command routing.**
+  Select multiple operations across two modes, including a canon check. Confirm each procedure's commands and governing conventions arrive with its own file, the shared conventions arrive once, and the other mode's operations stay outside the retrieved files.
 
 ## Titles
 
@@ -38,9 +38,14 @@ Apply the shared [progressive disclosure](../../guidelines.md#progressive-disclo
 - **Currency.**
   Check project settings against current instructions and captured revisions. Counts, runtime versions, thresholds and branch pairings come from the sources that own them.
 - **Separation.**
-  Executable operations belong in the command catalog. Shared conventions form one bounded section; conventions applying to a subset of operations have their own section and explicit caller links.
+  An executable operation belongs to the file whose procedure runs it. Skill-wide conventions form one bounded file; conventions governing one procedure's commands sit in that procedure's file, ahead of its Commands section.
 
 ## Shared Planning
 
 - **Location.**
   The planning guide owns location and naming rules for all modes; mode files reference the guide.
+
+## Complete Audits
+
+- **Authority.**
+  The [change-surface contract](change-surface.md) owns per-type matrices, independent applicability verification, evidence freshness and the full-surface completion gate. Author and Audit share it; dispatch and reporting consume its state.

@@ -15,26 +15,24 @@ Read the [canon prerequisites](canon-context.md#prerequisites), then its [terms]
    - What has moved is reported first. Where nothing remains to change, that is the finding.
 2. **Read what binds.**
    - Read the [design flow](design-flow.md). Structure is synthesised from expected behaviour. Exposed behaviour is derived from that structure and compared with the expected behaviour. A failed comparison reformulates the structure, the expected behaviour, or the function.
-   - Use [List Units for a Construct](commands.md#list-units-for-a-construct) to identify every unit that binds each construct the draft writes, then fetch and follow those units.
+   - Read the shared [change-surface lifecycle](change-surface.md). Intended items can have provisional planning rows; applicability and evaluation bind captured draft bytes.
    - When the change answers a finding, follow that entry's Fix and Do not flag.
 3. **Open a live sibling.**  Conformance compares against those files.
 4. **Preserve.**  Name what the entries require the change to preserve.
 5. **Walk the draft, then write.**
    - Each fix is a draft of its own: its replacement text is walked before it is written.
-   - Walk the prescribing entry, when there is one, then the units selected for the constructs the draft writes, splitting compound headings under the required walk rules.
+   - Capture the candidate in an isolated corpus tree, create all four matrices, and follow the shared lifecycle through independent inventory and mapping verification before evaluating the draft. Prioritize the prescribing entry without dropping any AP/DP cell.
    - Rewrite while an entry still fires.
-   - Then run the selected [checks](canon-context.md#checks).
+   - Before writing definitions, read the [edit hook](canon-context.md#edit-hook). Apply the evaluated bytes through [Author Byte Agreement](change-surface.md#freshness-and-resume), then run the selected [checks](canon-context.md#checks).
 6. **Check what the pass wrote.**
-   - Re-walk the lines this pass wrote, diffed against the commit the audit read or else the branch point, entry-major under the units selected for the constructs the draft writes. Read each file whole for context.
-   - Add the closure of any I/O contract the pass changed.
-   - A hit is a `fix` finding, per Audit's [Attribution](audit-mode.md#attribution). Close it by step 5 before any report, then check only the lines that closing wrote.
+   - Reconcile actual bytes and affected consumers using [freshness](change-surface.md#freshness-and-resume). Every correction receives its current inventory, mapping verification and evaluation.
+   - A hit is a `fix` finding, per Audit's [Attribution](audit-mode.md#attribution). Close it by step 5 before any report.
 7. **Stop on oscillation.**
    - Stop when an entry fires on text written to satisfy it, or when a round's `fix` findings do not fall below the round before.
    - Report the entries in conflict to the user as a canon defect, with the text each one rejected.
 8. **Audit.**
-   - A change that answers an audit of this base has its audit once step 6 finds nothing.
-   - Any other change takes an [Audit](audit-mode.md) from the branch point, each touched file whole. A finding there means the draft walk was skipped or the entry was misread.
-   - A draft not yet bound for a commit stops at step 5, and writes no findings register.
+   - Reconcile the current run through the shared [completion gate](change-surface.md#completion). Read [Report Context](reporting.md#report-context) before [report selection](reporting.md#which-report).
+   - A draft-only request stops with its measured draft coverage and writes no findings register for a commit.
 
 ## Rules
 
