@@ -22,7 +22,7 @@ Author and Audit use the same captured inventory, applicability matrices and evi
 - **Supporting material.**
   Resource and README rows belong to Workflow / Supporting Material under their actual namespace and source path. A namespace without a workflow definition remains a namespace. Shared content has one content row; referencing elements have relationship rows.
 - **Criteria.**
-  AP identity uses the canonical named entry; its current AP number is a display alias. DP aliases retain their numbered source headings and titles. Every row accounts for every captured AP and DP. Fires-on hints can order work; absent metadata or a missing lookup command cannot remove cells. The [canon inventory](canon-map.md#unit-inventory) also supplies family, creation-rule, convention and guard obligations.
+  AP identity uses the canonical named entry; its current AP number is a display alias. DP aliases retain their numbered source headings and titles. Every row accounts for every captured AP and DP. Each unit is carried against the files of the kinds its [fires-on line](canon-map.md#file-kinds) names; absent metadata or an unavailable lookup leaves the full product. The [canon inventory](canon-map.md#unit-inventory) also supplies family, creation-rule, convention and guard obligations.
 
 ## Applicability
 
@@ -33,6 +33,8 @@ Use [mapping assignments](audit-dispatch.md#phases) to decide every cell in the 
 | `A` | The criterion's scope and the construct that makes it apply |
 | `N` | The criterion's excluding wording and source facts satisfying it |
 | `U` | The evidence or decision still missing |
+
+A cell pairing a unit with a row whose source kind its [fires-on line](canon-map.md#file-kinds) does not name is `N`, its evidence that line and the row's kind. The remaining cells carry the walk.
 
 ### Shared Reasons
 

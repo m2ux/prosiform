@@ -7,6 +7,11 @@ The definition files, contracts and references that authoring and canon audits r
 - **Base ref.**  The ref the change is measured against.
 - **Surface files.**
   `workflow.yaml`, `activities/`, `techniques/`, `routines/`, `resources/`, READMEs of the target.
+- **Construct ids.**
+  - The ids the surface writes, resolved beside its paths: the bare kind of each definition file on it, the paths of the fields those files declare, and `resource` or `readme` for its supporting material.
+  - A listing covers the queried id and the ids above it, so a kind named alone leaves the units keyed to its fields unlisted.
+  - They narrow the unit side of the walk through [file kinds](canon-map.md#file-kinds).
+  - A surface the catalog keys on nowhere, such as walk records, ledgers and fixtures, carries no id and is judged against the contracts its own consumers enforce.
 - **Touched.**
   Definition paths whose bytes differ from the base ref, each the whole file. Hunks discover membership.
 - **I/O contract.**
