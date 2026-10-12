@@ -103,6 +103,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Local to the procedure.**
   - A specification sits in the file whose procedure runs it, in a `## Commands` section at the end of that file.
   - A single catalog holds only those specifications most of whose entries have several callers. Where a block of a catalog has one caller, it belongs to that caller.
+  - A caller is a procedure that runs the command. A sibling specification or a passage of reference prose naming a command does not make the file holding it a caller.
   - A specification with two owners has one home and a link from the other. A count of those links that keeps growing says the split is in the wrong place.
 - **Spec layout.**
   - Each spec opens with a one-line, succinct description of what the command does.
