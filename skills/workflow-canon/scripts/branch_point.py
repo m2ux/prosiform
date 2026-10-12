@@ -50,18 +50,76 @@ def branch_point(tree: Path) -> tuple[str, str]:
     return ref.removeprefix('refs/remotes/'), base
 
 
+def populated_submodules(tree: Path) -> list[str]:
+    """Paths of tree's submodules whose files are on disk.
+
+    `git submodule status` marks an uninitialised submodule with a leading `-`; every other
+    state has a working tree.
+    """
+    listing = git(tree, 'submodule', 'status') or ''
+    paths = []
+    for line in listing.splitlines():
+        if not line or line.startswith('-'):
+            continue
+        fields = line[1:].split()
+        if len(fields) >= 2:
+            paths.append(fields[1])
+    return paths
+
+
+def _remove_worktrees(worktrees: list[tuple[Path, Path]]) -> None:
+    for repository, path in worktrees:
+        subprocess.run(['git', 'worktree', 'remove', '--force', str(path)], cwd=repository,
+                       capture_output=True)
+
+
+def _fill_submodules(source: Path, target: Path) -> list[tuple[Path, Path]]:
+    """Give target the submodules source has, each at the commit target records.
+
+    A guard reads a corpus as a filesystem, so a target missing a submodule the source carries
+    holds a smaller corpus, and every guard that reads the missing files reports the difference
+    as the edit's doing. The commit comes from target, so a pointer bump between the two stands.
+
+    Returns each (submodule repository, worktree) pair for removal.
+    """
+    filled: list[tuple[Path, Path]] = []
+    for path in populated_submodules(source):
+        commit = git(target, 'rev-parse', f'HEAD:{path}')
+        if commit is None:
+            continue
+        destination = target / path
+        if destination.is_dir() and not any(destination.iterdir()):
+            destination.rmdir()
+        run = subprocess.run(
+            ['git', 'worktree', 'add', '--detach', '--quiet', str(destination), commit],
+            cwd=source / path, capture_output=True, text=True)
+        if run.returncode != 0:
+            _remove_worktrees(filled)
+            raise BranchPointError(
+                f'could not check out submodule {path} at {commit[:12]}: {run.stderr.strip()}')
+        filled.append((source / path, destination))
+    return filled
+
+
 @contextmanager
 def checked_out(tree: Path, commit: str) -> Iterator[Path]:
-    """A detached worktree of tree's repository at commit, removed on exit."""
+    """A detached worktree of tree's repository at commit, removed on exit.
+
+    Submodules tree carries are filled in at the commits that worktree records, so both sides of
+    a comparison hold the same corpus roots.
+    """
     holder = Path(tempfile.mkdtemp(prefix='workflow-canon-base-'))
     path = holder / 'tree'
     added = subprocess.run(['git', 'worktree', 'add', '--detach', '--quiet', str(path), commit],
                            cwd=tree, capture_output=True, text=True)
+    submodules: list[tuple[Path, Path]] = []
     try:
         if added.returncode != 0:
             raise BranchPointError(f'could not check out {commit[:12]}: {added.stderr.strip()}')
+        submodules = _fill_submodules(tree, path)
         yield path
     finally:
+        _remove_worktrees(submodules)
         if added.returncode == 0:
             subprocess.run(['git', 'worktree', 'remove', '--force', str(path)], cwd=tree,
                            capture_output=True)
