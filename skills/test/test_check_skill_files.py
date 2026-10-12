@@ -16,6 +16,12 @@ import check_skill_files as checker
 FENCE = chr(96) * 3
 
 
+def calling(title, target, heading='Procedure'):
+    """A file whose procedure runs the command the target names, which is what
+    makes a file a caller."""
+    return f'# {title}\n\n## {heading}\n\n1. **Fetch.**  Run [Fetch issue]({target}).\n'
+
+
 class SkillFileChecks(unittest.TestCase):
     def setUp(self):
         self.root = Path(tempfile.mkdtemp())
@@ -31,11 +37,11 @@ class SkillFileChecks(unittest.TestCase):
 
     def findings(self):
         files = sorted(self.skill.rglob('*.md'))
-        used = checker.cited(files)
+        cited, called = checker.citations(files)
         cache = {}
         out = []
         for path in files:
-            out += checker.check(path, self.root, cache, used)
+            out += checker.check(path, self.root, cache, cited, called)
         return [(Path(where).name, line, kind) for where, line, kind, _ in out]
 
     def kinds(self):
@@ -163,13 +169,13 @@ class SkillFileChecks(unittest.TestCase):
 
     def test_a_specification_cited_from_one_other_file_is_reported(self):
         self.write('references/catalog.md', self.CATALOG)
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) first.\n')
+        self.write('references/plan.md', calling('Plan', 'catalog.md#fetch-issue'))
         self.assertIn('command specification with one caller', self.kinds())
 
     def test_a_specification_several_files_cite_stands(self):
         self.write('references/catalog.md', self.CATALOG)
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](catalog.md#fetch-issue) first.\n')
-        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](catalog.md#fetch-issue) too.\n')
+        self.write('references/plan.md', calling('Plan', 'catalog.md#fetch-issue'))
+        self.write('references/sync.md', calling('Sync', 'catalog.md#fetch-issue'))
         self.assertEqual(self.findings(), [])
 
     def test_a_specification_nobody_cites_stands(self):
@@ -185,42 +191,80 @@ class SkillFileChecks(unittest.TestCase):
         self.write('references/plan.md',
                    '# Plan\n\n## Procedure\n\n1. **Open.**  Run [Fetch issue](#fetch-issue).\n'
                    '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
-        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](plan.md#fetch-issue) too.\n')
+        self.write('references/sync.md', calling('Sync', 'plan.md#fetch-issue'))
         self.assertEqual(self.findings(), [])
 
     def test_a_step_under_a_procedure_sub_section_counts_as_a_caller(self):
         self.write('references/plan.md',
                    '# Plan\n\n## Procedure\n\n### Open\n\n1. **Open.**  Run [Fetch issue](#fetch-issue).\n'
                    '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
-        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](plan.md#fetch-issue) too.\n')
+        self.write('references/sync.md', calling('Sync', 'plan.md#fetch-issue'))
+        self.assertEqual(self.findings(), [])
+
+    def test_a_procedure_under_a_heading_of_its_own_name_counts_as_a_caller(self):
+        self.write('references/plan.md',
+                   '# Plan\n\n## Delivery\n\n1. **Open.**  Run [Fetch issue](#fetch-issue).\n'
+                   '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/sync.md', calling('Sync', 'plan.md#fetch-issue'))
+        self.assertEqual(self.findings(), [])
+
+    def test_a_procedure_under_a_heading_of_its_own_name_in_another_file_is_a_caller(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.write('references/plan.md', calling('Plan', 'catalog.md#fetch-issue', 'Ordering Pass'))
+        self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_procedure_heading_over_prose_runs_no_command(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.write('references/guide.md',
+                   '# Guide\n\n## Procedure\n\n- **Sub-bullets.**  A step naming '
+                   '[Fetch issue](catalog.md#fetch-issue) is in sentence case.\n')
         self.assertEqual(self.findings(), [])
 
     def test_a_sibling_specification_of_a_catalog_is_not_a_caller(self):
         self.write('references/commands.md',
                    '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n'
                    '\n### Close issue\n\nRun [Fetch issue](#fetch-issue) first.\n')
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) too.\n')
+        self.write('references/plan.md', calling('Plan', 'commands.md#fetch-issue'))
         self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_sibling_specification_in_another_file_is_not_a_caller(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.write('references/plan.md',
+                   '# Plan\n\n## Commands\n\n### Close issue\n\nCloses one issue.\n'
+                   '\n- Run [Fetch issue](catalog.md#fetch-issue) first.\n')
+        self.assertEqual(self.findings(), [])
 
     def test_reference_prose_of_the_holding_file_is_not_a_caller(self):
         self.write('references/context.md',
                    '# Context\n\n## Checks\n\nEvery check runs [Fetch issue](#fetch-issue).\n'
                    '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](context.md#fetch-issue) too.\n')
+        self.write('references/plan.md', calling('Plan', 'context.md#fetch-issue'))
         self.assertIn('command specification with one caller', self.kinds())
+
+    def test_reference_prose_in_another_file_is_not_a_caller(self):
+        self.write('references/catalog.md', self.CATALOG)
+        self.write('references/context.md',
+                   '# Context\n\n## Checks\n\nEvery check runs [Fetch issue](catalog.md#fetch-issue).\n')
+        self.assertEqual(self.findings(), [])
 
     def test_a_rules_section_of_the_holding_file_is_not_a_caller(self):
         self.write('references/plan.md',
                    '# Plan\n\n## Rules\n\n- **Scope.**  Run [Fetch issue](#fetch-issue) alone.\n'
                    '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
-        self.write('references/sync.md', '# Sync\n\nRun [Fetch issue](plan.md#fetch-issue) too.\n')
+        self.write('references/sync.md', calling('Sync', 'plan.md#fetch-issue'))
         self.assertIn('command specification with one caller', self.kinds())
 
     def test_a_catalog_entry_cited_from_one_file_is_reported(self):
         self.write('references/commands.md',
                    '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n')
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) first.\n')
+        self.write('references/plan.md', calling('Plan', 'commands.md#fetch-issue'))
         self.assertIn('command specification with one caller', self.kinds())
+
+    def test_a_specification_in_the_entry_point_is_reported(self):
+        self.write('SKILL.md', '---\nname: specimen\n---\n\n# Specimen\n\n'
+                               '## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
+        self.write('references/plan.md', calling('Plan', '../SKILL.md#fetch-issue'))
+        self.assertEqual(self.kinds(), {'command specification in the entry point'})
 
     def test_a_heading_of_a_catalogs_conventions_is_not_a_specification(self):
         self.write('references/commands.md', self.LISTING)
@@ -229,12 +273,12 @@ class SkillFileChecks(unittest.TestCase):
 
     def test_a_heading_of_a_catalogs_listing_is_a_specification(self):
         self.write('references/commands.md', self.LISTING)
-        self.write('references/plan.md', '# Plan\n\nRun [Fetch issue](commands.md#fetch-issue) for it.\n')
+        self.write('references/plan.md', calling('Plan', 'commands.md#fetch-issue'))
         self.assertIn('command specification with one caller', self.kinds())
 
     def test_a_heading_outside_a_commands_section_is_not_a_specification(self):
         self.write('references/catalog.md', '# Catalog\n\n## Reference\n\n### Fetch issue\n\nA sentence.\n')
-        self.write('references/plan.md', '# Plan\n\nSee [Fetch issue](catalog.md#fetch-issue) for it.\n')
+        self.write('references/plan.md', calling('Plan', 'catalog.md#fetch-issue'))
         self.assertEqual(self.findings(), [])
 
     def test_a_caller_under_another_root_is_reported(self):
@@ -244,7 +288,7 @@ class SkillFileChecks(unittest.TestCase):
         plan = elsewhere / 'sibling' / 'references' / 'plan.md'
         plan.parent.mkdir(parents=True)
         target = os.path.relpath(catalog, plan.parent)
-        plan.write_text(f'# Plan\n\nRun [Fetch issue]({target}#fetch-issue) for it.\n')
+        plan.write_text(calling('Plan', f'{target}#fetch-issue'))
         printed = io.StringIO()
         with redirect_stdout(printed):
             status = checker.main([str(self.skill), str(elsewhere / 'sibling')])

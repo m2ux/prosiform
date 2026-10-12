@@ -117,17 +117,31 @@ def for_epic(prs: list[dict], initiative: str, epic: str) -> dict[int, dict]:
     return named
 
 
-def compose_id(task: str, text: str, url: str) -> str:
-    """Link one delivery, preserving an existing delivery reference."""
+def delivery_branch(pr: dict, initiative: str) -> str:
+    """The long-lived branch a pull request delivers to: its base, or the branch its epic base names."""
+    ref = (pr.get('base') or {}).get('ref') or ''
+    return epic_base(ref, initiative) or ref
+
+
+def compose_id(task: str, text: str, pr: dict, by_url: dict, initiative: str) -> str:
+    """Link one delivery per long-lived branch, keeping the deliveries the row holds on the others."""
+    url, branch = pr['html_url'], delivery_branch(pr, initiative)
+    kept = []
     for _, href in LINK.findall(text):
-        if ('/pull/' in href or '/commit/' in href) and href != url:
-            sys.exit(f'{task}: already links a delivery; further work needs another task')
-    return f'[{task}]({url})'
+        if href == url or ('/pull/' not in href and '/commit/' not in href):
+            continue
+        other = by_url.get(href)
+        if other is None or delivery_branch(other, initiative) == branch:
+            sys.exit(f'{task}: already links a delivery on {branch or "that branch"}; '
+                     'further work needs another task')
+        kept.append(href)
+    return ', '.join(f'[{task}]({href})' for href in [*kept, url])
 
 
 def epic_delivery(rows, header, named, links, task_paths, initiative, epic, report, prs):
     delivered, by_pr = {}, {}
     given = {p['number']: p for p in prs}
+    by_url = {p['html_url']: p for p in prs}
     issues = load_issues(task_paths)
     by_number = {issue['number']: issue for issue in issues}
     by_task = {}
@@ -146,7 +160,7 @@ def epic_delivery(rows, header, named, links, task_paths, initiative, epic, repo
             pr = named.get(links[task])
             if not pr:
                 sys.exit(f'--link {task}={links[task]}: no pull request naming this epic')
-            linked = compose_id(task, r[at], pr['html_url'])
+            linked = compose_id(task, r[at], pr, by_url, initiative)
             if linked != r[at].strip():
                 r[at] = linked
                 report['linked'].append(f"{task} → #{pr['number']}")
@@ -585,8 +599,11 @@ def table(sections):
     if 'Task' in grid[0]:
         for r in grid[2:]:
             ident = id_cell(grid[0], r)
-            if len(LINK.findall(ident)) > 1:
-                raise Unreadable(f'{row_id(ident)}: a task row has one link; resolve the extra links')
+            found = LINK.findall(ident)
+            if len({text for text, _ in found}) > 1:
+                raise Unreadable(f'{row_id(ident)}: every link on a task row names that row; resolve the others')
+            if len({href for _, href in found}) < len(found):
+                raise Unreadable(f'{row_id(ident)}: a task row links each delivery once; resolve the repeated links')
     return lines, start, end, grid
 
 
