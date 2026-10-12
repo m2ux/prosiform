@@ -24,7 +24,7 @@ The definition files, contracts and references that authoring and canon audits r
 - **Consumers.**
   - References other workflows hold into the target. Always computed.
   - A consumer joins the change surface when the file it names is on it.
-  - Start from [Find consumers](commands.md#find-consumers), then resolve binds and Apply links.
+  - Start from [Find consumers](canon-context.md#find-consumers), then resolve binds and Apply links.
 - **Reference workflows.**  Siblings of similar type, as convention conformance requires.
 - **Prior residual.**
   - `unread` paths in the latest findings register in the shared [planning record](planning.md).

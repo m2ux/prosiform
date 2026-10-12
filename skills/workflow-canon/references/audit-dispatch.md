@@ -18,7 +18,7 @@ Inventory and mapping can proceed together. Verification requires all mapping de
 
 ### Dispatch Route
 
-Use [Plan Audit Assignments](commands.md#plan-audit-assignments), [Bind Audit Agent](commands.md#bind-audit-agent), then [Write Audit Packet](commands.md#write-audit-packet). Bind the actual host agent identity, give it the packet and [return contract](#returns), and dispatch through the host. Scripts do not create agents or turn simulated judgments into semantic validation. Inventory packets carry proposed rows, AP/DP and supplemental criteria, required checks, diagnostics and corpus manifest slices; captured bytes for unselected sources remain inspectable.
+Use [Plan Audit Assignments](change-surface.md#plan-audit-assignments), [Bind Audit Agent](change-surface.md#bind-audit-agent), then [Write Audit Packet](change-surface.md#write-audit-packet). Bind the actual host agent identity, give it the packet and [return contract](#returns), and dispatch through the host. Scripts do not create agents or turn simulated judgments into semantic validation. Inventory packets carry proposed rows, AP/DP and supplemental criteria, required checks, diagnostics and corpus manifest slices; captured bytes for unselected sources remain inspectable.
 
 ## Sizing
 
@@ -48,7 +48,7 @@ The coordinator observes actual work. When a worker exceeds its calibrated cost,
 
 ## Returns
 
-Return a JSON file following the [receipt example](../templates/audit-receipt.json). The coordinator [submits it](commands.md#submit-audit-results); workers do not edit the canonical ledger.
+Return a JSON file following the [receipt example](../templates/audit-receipt.json). The coordinator [submits it](change-surface.md#submit-audit-results); workers do not edit the canonical ledger.
 
 - **Identity.**
   Copy the assignment ID, captured snapshot and host-bound actor. Give each attempt a unique safe name. Return only owned item IDs, once each. Group IDs only when the same source facts and reason hold for every member.
@@ -61,4 +61,4 @@ Return a JSON file following the [receipt example](../templates/audit-receipt.js
 - **Check observations.**
   A measured check includes `check: {command: [program, arguments], cwd, exit_code, output}` where `output` names the captured output file. `pass` requires exit 0; a measured finding requires exit 1 and structured attribution. Exit 2 or unavailable execution remains blocked. The coordinator captures the output bytes alongside source evidence.
 - **Partial work.**
-  A valid partial return keeps accepted items and leaves the residual incomplete. Failed or invalidated assignments cannot return; a new attempt cannot replace a previously returned item. Correction of an accepted decision uses [reset](commands.md#reset-audit-cells). [Retry](commands.md#retry-audit-assignment) releases residual ownership for a new bounded assignment.
+  A valid partial return keeps accepted items and leaves the residual incomplete. Failed or invalidated assignments cannot return; a new attempt cannot replace a previously returned item. Correction of an accepted decision uses [reset](change-surface.md#reset-audit-cells). [Retry](change-surface.md#retry-audit-assignment) releases residual ownership for a new bounded assignment.

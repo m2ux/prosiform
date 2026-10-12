@@ -79,7 +79,7 @@ Start with the engine's [architecture](https://github.com/m2ux/workflow-server/b
 
 ## Main Coverage
 
-For behavioral engine integration, [Install Engine Dependencies](commands.md#install-engine-dependencies), [Run Engine Checks](commands.md#run-engine-checks) and [Run Delivery Gate](commands.md#run-delivery-gate) establish the baseline. Use the locked runtime and dependency configuration. The checks include both TypeScript compilations, production build, generated schemas, corpus tool-call shapes and the full test suite.
+For behavioral engine integration, [Install Engine Dependencies](#install-engine-dependencies), [Run Engine Checks](#run-engine-checks) and [Run Delivery Gate](#run-delivery-gate) establish the baseline. Use the locked runtime and dependency configuration. The checks include both TypeScript compilations, production build, generated schemas, corpus tool-call shapes and the full test suite.
 
 Select additional observations for the affected behavior:
 
@@ -95,31 +95,31 @@ Select additional observations for the affected behavior:
 | Transports | MCP calls over the applicable transport, stdio output, HTTP lifecycle, health/readiness and shutdown |
 | Guards | Registration in the enforced sweep, correct corpus selection, finding/clean/unmeasured outcomes and detection of a known defect |
 
-For changed documentation or site content, [Check Engine Documentation](commands.md#check-engine-documentation) and compare examples and generated surfaces with their owners. Pure prose changes can use narrower runtime coverage under Review's [Coverage](review-mode.md#coverage).
+For changed documentation or site content, [Check Engine Documentation](#check-engine-documentation) and compare examples and generated surfaces with their owners. Pure prose changes can use narrower runtime coverage under Review's [Coverage](review-mode.md#coverage).
 
 ## Workflows Coverage
 
-Use [Run Guard Suite](commands.md#run-guard-suite) and [Run Corpus Checks](commands.md#run-corpus-checks) from the intended engine checkout for the registered guard sweep, roster and walk-protocol validation, snapshots and all-workflows drift. The corpus supplies definitions and baselines; its tooling comes from the paired engine.
+Use [Run Guard Suite](canon-context.md#run-guard-suite) and [Run Corpus Checks](canon-context.md#run-corpus-checks) from the intended engine checkout for the registered guard sweep, roster and walk-protocol validation, snapshots and all-workflows drift. The corpus supplies definitions and baselines; its tooling comes from the paired engine.
 
 - **Definition contracts.**
   Inspect schema agreement; steps, gates, actions, loops, checkpoints, exits and fans; value provenance and absence/null/falsy behavior; routine expansion; technique anatomy and inherited contracts; defaults, executable references and artifact persistence.
 - **Receiving roles.**
   Trace the actual content and resource sections delivered to each role, including review, interactive and headless paths when affected. Apply Review's [Coverage](review-mode.md#coverage) to separate instruction inspection from execution evidence.
 - **Option coverage.**
-  [Run Option Coverage](commands.md#run-option-coverage) over the full roster for shared engine behavior, meta definitions, common routines/contracts, routing, walker/policy or roster changes. A smaller scope needs evidence that its dependency analysis includes every affected consumer.
+  [Run Option Coverage](canon-context.md#run-option-coverage) over the full roster for shared engine behavior, meta definitions, common routines/contracts, routing, walker/policy or roster changes. A smaller scope needs evidence that its dependency analysis includes every affected consumer.
 - **Records and exceptions.**
   Inspect snapshots, roster membership, option-coverage exceptions and triage entries with the definitions they describe. Check stale keys, newly unobserved options, missing consumers and the rationale for each affected exception.
 - **Running sessions.**
-  Assess definition versions and the documented resume/seeding behavior. [Count Running Sessions](commands.md#count-running-sessions) where the relevant state is available; a local census establishes nothing about another deployment.
+  Assess definition versions and the documented resume/seeding behavior. [Count Running Sessions](#count-running-sessions) where the relevant state is available; a local census establishes nothing about another deployment.
 
 ## Docker Coverage
 
-[Check Shell Syntax](commands.md#check-shell-syntax) for changed helpers and [Validate Compose](commands.md#validate-compose) with disposable paths. For image/runtime changes, [Build Review Image](commands.md#build-review-image) with the reviewed Docker files and intended engine build context, then [Exercise Review Container](commands.md#exercise-review-container).
+[Check Shell Syntax](#check-shell-syntax) for changed helpers and [Validate Compose](#validate-compose) with disposable paths. For image/runtime changes, [Build Review Image](#build-review-image) with the reviewed Docker files and intended engine build context, then [Exercise Review Container](#exercise-review-container).
 
 - **Runtime.**
   Use a disposable container to observe HTTP health/readiness and an MCP interaction, production dependencies and schemas, non-root ownership, corpus read-only access, planning/state writes, configuration precedence and graceful stop.
 - **Durability.**
-  [Restart Review Container](commands.md#restart-review-container) with its state mount and observe signing-key and session continuity where affected. [Stop Review Container](commands.md#stop-review-container) after recording the evidence.
+  [Restart Review Container](#restart-review-container) with its state mount and observe signing-key and session continuity where affected. [Stop Review Container](#stop-review-container) after recording the evidence.
 - **Helpers.**
   Exercise changed install/start/stop/update behavior in disposable directories or controlled fixtures: existing checkouts, dirty trees, branch selection, quoted paths, repeat execution and failed prerequisites.
 - **Publishing.**
@@ -127,7 +127,7 @@ Use [Run Guard Suite](commands.md#run-guard-suite) and [Run Corpus Checks](comma
 
 ## Workspace Coverage
 
-[Check Skill Summaries](commands.md#check-skill-summaries) exercises a shared check alongside applicable Python suites, and [Check Shell Syntax](commands.md#check-shell-syntax) covers Bash syntax. Configuration is parsed with its actual consumer or format validator.
+[Check Skill Summaries](revise-mode.md#check-skill-summaries) exercises a shared check alongside applicable Python suites, and [Check Shell Syntax](#check-shell-syntax) covers Bash syntax. Configuration is parsed with its actual consumer or format validator.
 
 - **Hooks.**
   Exercise allowed, rejected and malformed tool inputs, path/quoting cases, registration and invocation, and the output contract through the hook's supported test entry point.
@@ -137,3 +137,120 @@ Use [Run Guard Suite](commands.md#run-guard-suite) and [Run Corpus Checks](comma
   Check file links, command availability, inputs/outputs, templates, host capabilities and behavioral walkthroughs. Mechanical tests cover only the claims they observe.
 - **Shared configuration.**
   Trace changed workspace paths and settings into engine configuration and container mounts. Engine tests alone do not cover this branch.
+
+## Commands
+
+### Install Engine Dependencies
+
+Install the captured lockfile with the runtime required by that revision's CI.
+
+- Installation needs the appropriate network permissions; it is not a network-free sandbox operation.
+
+```bash
+npm ci
+```
+
+### Run Engine Checks
+
+Check source/tooling types, production output, generated schemas and behavior against the intended corpus.
+
+```bash
+npm run typecheck
+npm run build
+npm run check:schemas
+npx tsx guards/check-tool-call-shape.ts --root <corpus>
+WORKFLOWS_DIR=<corpus> npm run test:ci
+```
+
+### Run Delivery Gate
+
+Measure fixture delivery against the recorded benchmark and threshold used by CI.
+
+```bash
+npm run --silent bench:token -- --workflow=delivery-fixture --fixture-corpus --label=review --context-mode=fresh --gate --reference=benchmark/fixtures/token-benchmark-baseline.json
+```
+
+### Check Engine Documentation
+
+Check site references and affected generated content against their source definitions.
+
+- Inspect generated diffs in the disposable tree; a link check alone does not prove generated content is current.
+
+```bash
+npm run check:site
+npm run check:svg
+npm run build:site
+git diff -- site
+```
+
+### Count Running Sessions
+
+List running sessions in the configured planning tree for an affected workflow.
+
+- Resolve the planning root holding the relevant session records; retain its identity in the evidence.
+
+```bash
+npm run sessions:census -- --root <session-planning-root> --workflow <workflow-id> --status running --list
+```
+
+### Check Shell Syntax
+
+Parse a changed Bash script without executing its operations.
+
+```bash
+bash -n <script-path>
+```
+
+### Validate Compose
+
+Resolve the reviewed Compose file with a disposable environment file.
+
+- The environment file supplies the required host paths and ports. Keep sensitive values out of saved output.
+
+```bash
+docker compose --env-file <scratch>/review.env -f <docker-tree>/docker-compose.yml config
+```
+
+### Build Review Image
+
+Build a local image using captured Docker files and engine content.
+
+- Use a disposable engine checkout as the context. Copy both the Dockerfile and ignore file so the actual build boundary is measured.
+- Container runtime checks use disposable mounts and an unused port according to the reviewed configuration.
+
+```bash
+cp <docker-tree>/Dockerfile <engine>/Dockerfile
+cp <docker-tree>/.dockerignore <engine>/.dockerignore
+docker build --file <engine>/Dockerfile --tag workflow-server:integration-review <engine>
+```
+
+### Exercise Review Container
+
+Start the reviewed image with disposable mounts and inspect its running behavior.
+
+- The override file selects the local review image and a unique container name. The environment file supplies unused ports and disposable corpus, project and state paths; inspect the resolved configuration before starting.
+- Probe the MCP endpoint with the client and protocol version documented by the reviewed engine. Record the interaction and response; health checks alone do not cover MCP.
+- Stop and restart with the same disposable state mount to observe durability when affected. Remove only this review's containers after recording evidence.
+
+```bash
+docker compose -p integration-review --env-file <scratch>/review.env -f <docker-tree>/docker-compose.yml -f <scratch>/review.override.yml up -d --no-build --pull never
+curl --fail http://127.0.0.1:<review-port>/health
+curl --fail http://127.0.0.1:<review-port>/ready
+docker compose -p integration-review --env-file <scratch>/review.env -f <docker-tree>/docker-compose.yml -f <scratch>/review.override.yml logs
+```
+
+### Restart Review Container
+
+Restart the review service while retaining its disposable state mount.
+
+```bash
+docker compose -p integration-review --env-file <scratch>/review.env -f <docker-tree>/docker-compose.yml -f <scratch>/review.override.yml restart
+```
+
+### Stop Review Container
+
+Remove the disposable review service after its evidence is recorded.
+
+```bash
+docker compose -p integration-review --env-file <scratch>/review.env -f <docker-tree>/docker-compose.yml -f <scratch>/review.override.yml down
+```

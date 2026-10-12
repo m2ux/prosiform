@@ -4,7 +4,7 @@ How each home is enumerated, and where a judgement already made is recorded.
 
 ## Unit Inventory
 
-Read the enumeration from the home at the commit audited, with [List units](commands.md#list-units).
+Read the enumeration from the home at the commit audited, with [List units](canon-context.md#list-units).
 
 | Home | Unit |
 |------|------|

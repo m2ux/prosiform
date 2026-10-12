@@ -27,7 +27,7 @@ Severity ranks urgency inside a band. The band says whether the finding gates.
 | `Medium` | An entry fires and the defect stays in that construct |
 | `Low` | Hygiene with no consumer consequence |
 
-The [dispatch phases](audit-dispatch.md#phases) own finding confirmation. An unmeasured guard records `blocked` coverage; the [canon check conventions](commands.md#canon-check-conventions) define its exit statuses.
+The [dispatch phases](audit-dispatch.md#phases) own finding confirmation. An unmeasured guard records `blocked` coverage; the [canon check conventions](canon-context.md#canon-check-conventions) define its exit statuses.
 
 ### Finding Rows
 

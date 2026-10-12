@@ -8,7 +8,7 @@ Read the [canon prerequisites](canon-context.md#prerequisites), then its [terms]
 
 ## Canon Question
 
-For a single question about an entry, locate its [canon home](canon-context.md#homes), [fetch the entry](commands.md#fetch-unit) with its required context, answer and stop. The full audit procedure applies when the request calls for a conformance judgment over definitions.
+For a single question about an entry, locate its [canon home](canon-context.md#homes), [fetch the entry](canon-context.md#fetch-unit) with its required context, answer and stop. The full audit procedure applies when the request calls for a conformance judgment over definitions.
 
 ## Procedure
 
