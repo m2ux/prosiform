@@ -2,7 +2,11 @@
 
 Severity, row shapes, and which report the run owes.
 
-## Bands
+## Report Context
+
+Read this section before selecting a report layout.
+
+### Bands
 
 | Band | Holds | Target |
 |---|---|---|
@@ -10,9 +14,9 @@ Severity, row shapes, and which report the run owes.
 | **Contract** | The defect propagates while the run still works — a second home for an owned fact, a constraint with no structural backing, a citation whose home lacks the claim | Zero, every pass |
 | **Hygiene** | Contained to the prose it sits in | A falling ratchet against the prior pass |
 
-State each band's count. The verdict is Live and Contract. Hygiene rises as fixes land, because replacement prose is walked by the same units.
+State each band's count. The verdict is Live and Contract. Text a fix writes is checked within its pass, so a pass reports no finding its own fixes made.
 
-## Severity
+### Severity
 
 Severity ranks urgency inside a band. The band says whether the finding gates.
 
@@ -23,25 +27,25 @@ Severity ranks urgency inside a band. The band says whether the finding gates.
 | `Medium` | An entry fires and the defect stays in that construct. Spot-confirm |
 | `Low` | Hygiene with no consumer consequence |
 
-A guard that exits 2 has not measured: `blocked`, not a pass.
+An unmeasured guard records `blocked` coverage; the [canon check conventions](commands.md#canon-check-conventions) define its exit statuses.
 
-## Finding rows
+### Finding Rows
 
 | Column | Carries |
 |--------|---------|
 | ID | Stable within the report |
 | Band | `Live`, `Contract`, or `Hygiene` |
 | Severity | The scale above |
-| Entry | As the catalog's entry-identity rule states |
+| Entry | As the catalog's entry-identity rule states. A principle by the title its file uses: an anchor that embeds the section ordinal breaks when a principle is inserted ahead of it |
 | Location | File and field, at the depth the evidence sits |
 | Evidence | The construct Detect keys on, quoted or named. A closure-only file says which contract it references |
-| Origin | `diff` or `pre-existing`, per SKILL.md § Audit → Attribute |
+| Origin | `diff` or `pre-existing`, per [Attribution](audit-mode.md#attribution) |
 | Known | Set when a prior pass accepted this key |
 | Fix | The action the entry prescribes, in one line |
 
 A row whose Evidence cannot name a construct is not a finding. Evidence and Location cite any construct in a change-surface file.
 
-## Coverage ledger
+### Coverage Ledger
 
 Divergences only. A unit walked cleanly has no row.
 
@@ -51,9 +55,9 @@ Divergences only. A unit walked cleanly has no row.
 | Unit | The section title or anchor, as the home spells it |
 | Status | `not-applicable` with the unit's own reason, or `blocked` with what prevented the walk |
 
-Total the `blocked` rows. That figure is the unit residual. A family `blocked` over most of the surface counts once, however many entries it holds. One row per unwalked unit of every home, accounted from the headings at the commit audited ([canon-map](./canon-map.md#unit-inventory)). A ledger that cannot account for every unit is a partial walk.
+Total the `blocked` rows. That figure is the unit residual. A family `blocked` over most of the surface counts once, however many entries it holds. One row per unwalked unit of every home, accounted from the headings at the commit audited ([canon-map](canon-context.md#criteria)). A ledger that cannot account for every unit is a partial walk. Its status is the [coverage header](#coverage-header).
 
-## File coverage
+### File Coverage
 
 Independent of the unit ledger: every unit can be `walked` while the surface stays unopened.
 
@@ -64,26 +68,30 @@ Independent of the unit ledger: every unit can be `walked` while the surface sta
 
 A scan hit is `read` only when the file was then inspected whole. A scan is evidence for a finding, not a path disposition. `read` and `unread` sum to the enumeration; where they do not, the report states the list that was walked.
 
-List the `unread` paths. The next audit starts there. An existence claim over a list that still has `unread` paths says so on the finding.
+List the `unread` paths. While any remain, the header's status is the [coverage header](#coverage-header). An existence claim over a list that still has `unread` paths says so on the finding.
 
-## Which report
+### Coverage Header
 
-**Inside workflow-authoring or workflow-design**, that run's guide owns the layout:
+Whether the audit is finished.
 
-| Artifact | Guide, on the corpus tree |
-|----------|---------------------------|
-| `findings-register.md` | `corpus/workflow-authoring/resources/findings-register.md` |
-| `compliance-review.md` / `post-update-review.md` | `corpus/workflow-design/resources/compliance-report.md` |
-| per-pass `*-findings.md` | `corpus/workflow-design/resources/findings-satellite.md` |
+- **In progress.**
+  A header that still has unread paths or blocked criteria, including when its ledger does not account for every unit.
+  - The note is not the finished audit.
+- **Finished.**
+  Every change-surface path is `read`, and every criterion is `walked` or `not-applicable`.
 
-Fetch the guide's `## Template` and fill it. Persist through the activity's `manage-artifacts::write-artifact` step.
+## Which Report
 
-**Standalone** — in the chat, or in a file the user named:
+Inside workflow-authoring or workflow-design, use [Workflow Reports](#workflow-reports). Otherwise use the [Standalone](#standalone) layout. Stored artifacts follow the shared [planning guide](planning.md).
+
+## Standalone
+
+In the chat, or in a file the user named:
 
 ~~~markdown
 # Canon Audit — `{target}`
 
-**Base ref:** `{ref}` · **Coverage:** N of N units × N of N paths — **N unit-paths walked of N** · **Change surface:** N files (touched: N · closure: N · consumers: N) · **Guards:** clean | N findings | N unmeasured
+**Status:** in progress | finished · **Base ref:** `{ref}` · **Coverage:** N of N units × N of N paths — **N unit-paths walked of N** · **Change surface:** N files (touched: N · closure: N · consumers: N) · **Guards:** clean | N findings | N unmeasured
 
 **Verdict:** Live N · Contract N · Hygiene N, at that coverage. Residual: **N files `unread`** of N, **N criteria units `blocked`** of N. Live and Contract converge to zero over the coverage measured. Hygiene ratchets against the prior pass's N.
 
@@ -108,7 +116,7 @@ Fetch the guide's `## Template` and fill it. Persist through the activity's `man
 
 ## Coverage
 
-## File coverage
+## File Coverage
 
 read N · unread N.
 
@@ -119,4 +127,16 @@ read N · unread N.
 ## Known
 ~~~
 
-Omit an empty section. Order findings Critical → High → Medium → Low. Link the entry; the report holds no criteria prose. Say which Highs were withdrawn or downgraded. The header's units × paths bound every figure under it, and each header figure reconciles against a list in the body. Live or Contract at zero over a partial grid is a statement about that part. A Live or Contract count that rose says a fix moved a defect.
+Omit an empty section. Order findings Critical → High → Medium → Low. Link the entry; the report holds no criteria prose. Say which Highs were withdrawn or downgraded. The header's units × paths bound every figure under it, and each header figure reconciles against a list in the body. Status is the [coverage header](#coverage-header). Live or Contract at zero over a partial grid is a statement about that part. A Live or Contract count that rose says a fix moved a defect.
+
+## Workflow Reports
+
+That run's guide owns the layout:
+
+| Artifact | Guide, on the corpus tree |
+|----------|---------------------------|
+| `findings-register.md` | `corpus/workflow-authoring/resources/findings-register.md` |
+| `compliance-review.md` / `post-update-review.md` | `corpus/workflow-design/resources/compliance-report.md` |
+| per-pass `*-findings.md` | `corpus/workflow-design/resources/findings-satellite.md` |
+
+Fetch the guide's `## Template` and fill it. Persist through the activity's `manage-artifacts::write-artifact` step.

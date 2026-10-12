@@ -1,22 +1,22 @@
 # Canon Map
 
-How to address each authority. Paths are in SKILL.md § Homes. What a home requires is in that home.
+How each home is enumerated, and where a judgement already made is recorded.
 
-## Unit inventory
+## Unit Inventory
 
-Read the enumeration from the home at the commit audited.
+Read the enumeration from the home at the commit audited, with [List units](commands.md#list-units).
 
-| Home | Unit | Read by |
-|------|------|---------|
-| Anti-Patterns | One `##` family; each `###` entry inside it | `grep -n "^## "`, then `grep -n "^### "` |
-| Design Principles | One `##` | `grep -n "^## "` |
-| Convention Conformance | One `##` | `grep -n "^## "` |
-| Guards | One registry entry | `guards/guards.ts` |
+| Home | Unit |
+|------|------|
+| Anti-Patterns | One `##` family; each `###` entry inside it |
+| Design Principles | One `##` |
+| Convention Conformance | One `##` |
+| Guards | One registry entry in `guards/guards.ts` |
 
 - Read the catalog through its last family. Appended entries share that family, so its title is not the end of the list.
-- The catalog's first family binds when the change edits `anti-patterns.md`. Otherwise it is `not-applicable`, with that reason.
+- The catalog's first family binds when the change edits a canon home: `anti-patterns.md`, `design-principles.md`, or `convention-conformance.md`. Otherwise it is `not-applicable`, with that reason.
 
-## Authorities beyond the prose homes
+## Prior Judgments
 
 An entry can fire against an instance a surface has already judged. Read that surface before hand-walking an entry whose registry line claims the check.
 
@@ -28,15 +28,6 @@ An entry can fire against an instance a surface has already judged. Read that su
 
 `EXEMPT_DATA_IDS` is compiled into the Zod variable schema and the published JSON schemas.
 
-## Fetching
+## File Kinds
 
-- **On disk** — `grep -n "^## "` for the range, then Read it. For one entry, `grep -n "^### "` and read that block.
-- **In a workflow session** — `get_resource` with `canon/<home>#<heading>`.
-
-## Which units bind a file kind
-
-Every unit binds until its own text excludes the file kind. `not-applicable` records that wording.
-
-## What to take
-
-Each home's overview states what an audit takes from it. Follow the overview. Where a principle names a covering entry, follow that entry for the spellings its Detect reaches, and follow the principle where it reaches a spelling the Detect does not.
+A unit binds the constructs its Fires-on line names. Author runs [List units for a construct](commands.md#list-units-for-a-construct) once for each construct a draft writes, and loads the units it prints. Audit walks every unit the [unit inventory](#unit-inventory) names, whatever the lines say. On an Audit, `not-applicable` records a unit's own wording that excludes the file in hand.

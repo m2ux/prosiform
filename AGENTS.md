@@ -5,7 +5,13 @@
 
 ## Project Instructions
 
-- You must read any target: PROJECT.md, AGENTS.md or CLAUDE.md file(s) in each of the first-level sub-folders of /.project (ie .project/<name>/<target>). Any instructions found in those files that *conflict* with those prescribed here *override* these instructions for *that* component.
+- You must adopt all content from .project/<folder> *when* working on content in that folder:
+  - .project/main/[AGENTS.md](http://AGENTS.md)
+
+- Any instructions found in those files that *conflict* with those prescribed here *override* these instructions for *that* component.
+- Follow the folder naming pattern at: /.engineering/artifacts/planning/ and use to store *all* planning artifacts
+
+
 
 ## Design principles
 
@@ -50,6 +56,7 @@
 ## Commits and pushes
 
 - Commit and push upon completion of any discrete user request to the current branch
+- **Work planner skill**. Prefer the use of the work planner skill for PR management. Issue and PR template included.
 - **A fix belongs in the pull request whose code it fixes.** A defect found while reviewing a branch is corrected on that branch, not carried onto a later one in a stack. Amend, rebase or force-push as needed to put it there — a branch with no other contributors is yours to rewrite.
 - **Commit incrementally while building.** Distinct work lands as its own commit, so the branch records how it was built. That is about not collapsing unrelated changes into one commit; it is never a reason to leave a fix in the wrong place.
 - **Push with plain** `git push`**.** When a push will not fast-forward on a branch someone else may hold, stop and ask rather than rewriting.
@@ -62,4 +69,3 @@
 - For multi-step work, use todos and mark them complete as you finish; only one todo in progress at a time.
 - Request permission before starting a new task or making changes outside the current request.
 - *ALWAYS* use a local work-tree when working on a branch
-

@@ -3,7 +3,12 @@
 
 Reads and routine writes are allowed by the common command policy. Sensitive
 endpoints and irreversible deletes require confirmation. HTTP methods account
-for explicit method flags and implicit POST from field/input arguments."""
+for explicit method flags and implicit POST from field/input arguments.
+
+Project board bookkeeping falls through under `orgs` and `users` alike, because
+one further call undoes adding a projectsV2 item or setting its field values.
+DELETE on an item requires confirmation, as does any write to the project itself
+or to its field definitions."""
 from __future__ import annotations
 
 from contracts import Decision
@@ -74,6 +79,33 @@ CHEAP_DELETES = (
     "user/starred/*/*",
     "user/subscriptions/*/*",
 )
+
+
+# Endpoints that read as routine despite living under a sensitive name. A
+# project board item carries an issue's position and field values; adding one
+# or setting a field is board bookkeeping, undone by one further call, and the
+# `orgs` namespace it sits in is there for membership and org secrets. Checked
+# ahead of SENSITIVE_SEGMENTS and only for methods other than DELETE, so
+# removing a card from a board still prompts.
+ROUTINE_ENDPOINTS = (
+    "orgs/*/projectsV2/*/items",
+    "orgs/*/projectsV2/*/items/*",
+    "users/*/projectsV2/*/items",
+    "users/*/projectsV2/*/items/*",
+)
+
+
+def path_matches(ep: str, pattern: str) -> bool:
+    """Glob an endpoint a segment at a time, so `*` stops at a `/`.
+
+    A pattern names an exact depth: `repos/*/*/issues/*/labels` matches that
+    path and not a longer one rooted at it.
+    """
+    segs = ep.split("/")
+    pats = pattern.split("/")
+    return len(segs) == len(pats) and all(
+        fnmatch.fnmatchcase(s, p) for s, p in zip(segs, pats)
+    )
 
 
 def _graphql_is_write(args: list[str]) -> bool:
@@ -170,14 +202,14 @@ def classify(args: list[str]) -> str | None:
     if ep is None:
         return "the endpoint is absent from the command line"
     segs = ep.split("/")
+    if method != "DELETE" and any(path_matches(ep, g) for g in ROUTINE_ENDPOINTS):
+        return None
     hit = next((s for s in segs if s.lower() in SENSITIVE_SEGMENTS), None)
     if hit is not None:
         return f"the path segment {hit!r} names a sensitive area"
     if len(segs) == 3 and segs[0] == "repos":
         return "this endpoint edits repository settings or deletes the repository"
-    if method == "DELETE" and not any(
-        fnmatch.fnmatchcase(ep, g) for g in CHEAP_DELETES
-    ):
+    if method == "DELETE" and not any(path_matches(ep, g) for g in CHEAP_DELETES):
         return "DELETE removes something that a single call does not recreate"
     return None
 

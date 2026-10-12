@@ -6,4 +6,4 @@
 /.codex/*
 !/.codex/hooks/
 !/.codex/scripts/
-__pycache__/
+*__pycache__

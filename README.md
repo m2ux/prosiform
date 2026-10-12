@@ -25,11 +25,12 @@ Claude Code, Cursor, and Codex use common rules, skills, and command policy. Har
 │   ├── fork-workspace.sh          # Create a fork from this checkout
 │   ├── deploy-engineering.sh      # Deploy engineering worktree
 │   ├── add-component.sh           # Add a project component from an external repo
-│   ├── bump-project.sh            # Fast-forward project worktrees
+│   ├── bump-project.sh            # Fast-forward workspace, engineering and project worktrees
 │   ├── update-workspace.sh        # Merge upstream workspace tempate updates into this checkout
 │   ├── submit-upstream.sh         # Raise a pull request to contribute local workspace changes to upstream
 │   └── raise-pr.sh                # Raise a pull request against a local feature worktree
 ├── cursor.code-workspace          # Cursor multi-root workspace
+├── .gitattributes                 # Marks fork-local paths upstream-exclude
 ├── .project/                      # Project component worktree root
 ├── .engineering/                  # Engineering artifacts worktree
 └── .worktrees/                    # Feature worktrees
@@ -65,7 +66,7 @@ Claude Code, Cursor, and Codex use common rules, skills, and command policy. Har
    ```
 > `<repo>` is owner/name or a git URL. The worktree at `.project/<name>` is the local checkout of `<branch>`. `<name>` defaults to `<branch>`. The project folder in the workspace file shows it.
 
-6. Fast-forward every worktree under `.project/` with:
+6. Fast-forward the workspace checkout, `.engineering/` and every worktree under `.project/` with:
 
    ```bash
    ./scripts/bump-project.sh
@@ -78,16 +79,16 @@ Fetches branch `workspace` from the `upstream` remote and merges it into the cur
 ./scripts/update-workspace.sh
 ```
 ### Open a pull request for this fork's commits against upstream `workspace`
-Pushes the current branch to `origin` and opens a pull request on the `upstream` repository. The base is branch `workspace`. When that pull request is already open, the script prints its URL.
+Replays the current branch's commits onto upstream `workspace` as branch `submit/<branch>`, pushes it, and opens a pull request on the `upstream` repository. Changes to paths that `.gitattributes` marks `upstream-exclude` stay out, so a fork versions its own copies of those files without submitting them; a commit touching only such paths drops out. The branch goes to `origin` when GitHub records `origin` as a fork of `upstream`, and to `upstream` otherwise, since GitHub accepts a cross-repository pull request only from the base repository's fork network. The base is branch `workspace`. When that pull request is already open, the script prints its URL.
 
 ```bash
 ./scripts/submit-upstream.sh
 ```
 ### Open a pull request for a feature worktree
 
-* `<slug>` is the directory under `.worktrees/`. The script finds the component under `.project/` that owns that worktree. The base is the branch checked out there. The head is the worktree branch. Without `--body`, the body is the commit list from the git log.
-* When `<slug>` is a checkout under `.project/`, that checkout's changes move to `.worktrees/<slug>-<datetime>` and the checkout returns to its upstream branch.
+`<slug>` is the directory under `.worktrees/`. The script finds the component under `.project/` that owns that worktree. The base is the branch checked out there. The head is the worktree branch. Without `--body`, the body is the commit list from the git log.
 
 ```bash
 ./scripts/raise-pr.sh <slug> [--body=TEXT]
 ```
+> When `<slug>` is a checkout under `.project/`, that checkout's changes move to `.worktrees/<slug>-<datetime>` and the checkout returns to its upstream branch.
