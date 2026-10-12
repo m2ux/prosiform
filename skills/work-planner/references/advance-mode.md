@@ -16,7 +16,7 @@ Command operations use the [command conventions](command-conventions.md), read b
    - [Fetch Board Fields](commands.md#fetch-board-fields).
    - [Find User](commands.md#find-user) for the assignee.
 4. **Plan.**
-   Run [Plan Queue](commands.md#plan-queue). Ask only from a line it prints. The queue is not finished while an `order` or `ask` line is printed.
+   Run [Plan Queue](#plan-queue). Ask only from a line it prints. The queue is not finished while an `order` or `ask` line is printed.
    - **Order.**
      The line lists the initiatives. Ask for a parallel work map: a positive integer on each, where every initiative with the same number runs together. One left unordered stays in Backlog.
    - **Ask.**
@@ -26,7 +26,7 @@ Command operations use the [command conventions](command-conventions.md), read b
    - **Next.**
      A `next` line names epics, as this mode's Report rule says.
    - Give an issue it reports unresolved with `--others`, then run it again.
-   - After an answer, add each label with [Add Labels](commands.md#add-labels), fetch the items again, and run [Plan Queue](commands.md#plan-queue) again.
+   - After an answer, add each label with [Add Labels](commands.md#add-labels), fetch the items again, and run [Plan Queue](#plan-queue) again.
 5. **Write.**
    - Run each call it prints.
    - Fetch the items again and re-run. Stop when it prints no `order` or `ask` line and nothing to do.
@@ -61,3 +61,24 @@ Command operations use the [command conventions](command-conventions.md), read b
   For an initiative In Progress, the `next` line names the epics that are Ready.
 - **The queue.**
   [Plan Board Changes](commands.md#plan-board-changes) leaves an initiative or an epic in Ready or Backlog when no pull request is open, and leaves In Progress when delivery has started. This mode is what moves them.
+
+## Commands
+
+### Plan Queue
+
+Decides which initiatives and epics on a theme board move between Backlog, Ready and In Progress, and prints the call for each Status and assignee change.
+
+- The rules are [Advance Mode](advance-mode.md).
+- `--items` is [Fetch Board Items with Status](commands.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
+- `--assignee` is the user [Find User](commands.md#find-user) prints.
+- Give an issue it reports unresolved with `--others`.
+- `--unplanned` names an initiative the user left with no priority, as a number or `owner/repo#number`.
+- An `order` line lists the initiatives for a parallel work map. The same priority number runs together.
+- An `ask` line names an initiative In Progress with no priority label.
+- An `order` or `ask` line is a question. The queue is not finished while one is printed. After the answer, fetch the items again and run the command again.
+- A `wait` line names an open pull request. That initiative stays In Progress. The highest set still moves to In Progress.
+- A `next` line names epics, as the Report rule in [Advance Mode](advance-mode.md#rules) says.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/advance.py --items items.json --prs prs.json --board users/{owner}/projectsV2/9 --fields fields.json --out board/ --assignee m2ux
+```

@@ -15,15 +15,15 @@ Before graph operations, also read [Graph Conventions](commands.md#graph-convent
    - [Fetch Pull Request](commands.md#fetch-pull-request) for its title, its base branch and its head commit. Every code reference the overview carries is pinned to that head commit.
 2. **Bound the change.**
    - [Create Pull Request Worktree](commands.md#create-pull-request-worktree) cuts a worktree at the head commit, which is where the graph reads the change.
-   - [Fetch Pull Request Files](commands.md#fetch-pull-request-files) for the files it changes.
+   - [Fetch Pull Request Files](#fetch-pull-request-files) for the files it changes.
 3. **Ready the graph.**
-   - [Index Status](commands.md#index-status) in that worktree. Where it reports the repository unindexed, or the index behind the head commit, [Index Repository](commands.md#index-repository) brings it current.
+   - [Index Status](#index-status) in that worktree. Where it reports the repository unindexed, or the index behind the head commit, [Index Repository](commands.md#index-repository) brings it current.
    - A measurement read off a stale index describes a structure the reviewer will not find, as this mode's Fresh index rule states.
 4. **Measure the structure.**
-   - [Change Surface](commands.md#change-surface) reports the symbols the change touches and the flows they sit in.
-   - [Symbol Context](commands.md#symbol-context) for each changed symbol reports its callers, its callees and the files they sit in. The areas those files group into are the component diagram's subgraphs, and the edges between them are its arrows.
+   - [Change Surface](#change-surface) reports the symbols the change touches and the flows they sit in.
+   - [Symbol Context](#symbol-context) for each changed symbol reports its callers, its callees and the files they sit in. The areas those files group into are the component diagram's subgraphs, and the edges between them are its arrows.
 5. **Measure the behaviour.**
-   [Flow Trace](commands.md#flow-trace) for each flow [Change Surface](commands.md#change-surface) names reports that flow's symbols in step order. Each trace is one sequence diagram, and its participants are the areas step 4 grouped.
+   [Flow Trace](#flow-trace) for each flow [Change Surface](#change-surface) names reports that flow's symbols in step order. Each trace is one sequence diagram, and its participants are the areas step 4 grouped.
 6. **Open the record.**
    [Add Planning Record](commands.md#add-planning-record), with the pull request's number as the ref and a slug from its title.
 7. **Write the overview.**
@@ -58,3 +58,51 @@ Before graph operations, also read [Graph Conventions](commands.md#graph-convent
   ```markdown
   - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.
   ```
+
+## Commands
+
+### Fetch Pull Request Files
+
+Saves the paths a pull request changes, for the measurement [Understand Mode](understand-mode.md#procedure) bounds to them.
+
+```bash
+gh api --paginate repos/{owner}/{repo}/pulls/950/files --jq '.[].filename' > changed-files.txt
+```
+
+### Index Status
+
+Reports whether the repository is indexed, and how far behind the index sits.
+
+```bash
+gitnexus status
+```
+
+### Change Surface
+
+Reports the symbols a pull request's diff touches and the flows they sit in, against the base branch.
+
+- `--base-ref` is the pull request's base, so the surface is the change rather than the branch's whole history.
+
+```bash
+gitnexus detect-changes --scope compare --base-ref main
+```
+
+### Symbol Context
+
+Reports one symbol's callers, its callees and the flows it sits in, each with the file it sits in.
+
+- Run it for each symbol [Change Surface](#change-surface) names. The files group into the areas the component diagram draws.
+
+```bash
+gitnexus context reserveRow
+```
+
+### Flow Trace
+
+Reports one flow's symbols in step order, the structure a sequence diagram is drawn from.
+
+- The flow is one [Change Surface](#change-surface) names. `process_symbols` carries each symbol's `step_index`, its file and its lines.
+
+```bash
+gitnexus query --query "Queue Placement" --limit 1
+```

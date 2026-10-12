@@ -20,10 +20,10 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
    - Confirm the repository prerequisite in [Issue closure](work-breakdown.md#issue-closure). Capture each issue's Development links and fetch linked pull requests absent from the initiative list before evaluating closure.
 3. **Unnamed deliveries.**
    - When the user says work has landed but no pull request names its epic, find the pull request and confirm it with the user.
-   - Give it the epic's reference, `[I07:E00] Purpose`, with [Retitle Pull Request](commands.md#retitle-pull-request).
+   - Give it the epic's reference, `[I07:E00] Purpose`, with [Retitle Pull Request](#retitle-pull-request).
    - Run [Fetch Initiative Pull Requests](commands.md#fetch-initiative-pull-requests) and [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links) again.
 4. **Match pull requests to tasks.**
-   - Run [Match Pull Requests](commands.md#match-pull-requests) for each epic.
+   - Run [Match Pull Requests](#match-pull-requests) for each epic.
    - **Unmatched.**  A merged pull request it reports names the epic, and no row links it yet.
    - **In flight.**  An open pull request it reports names the epic, and no row links it yet.
    - Read its changes and description against the tasks' Descriptions, and name the tasks it works on: one task, or tasks that name each other in Joins.
@@ -63,7 +63,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
    - Verify each criterion ready to verify on the branch the pull requests merged into, with the instrument the criterion names. What counts as coverage is [Coverage Reports](work-breakdown.md#coverage-reports).
    - A criterion that cannot be confirmed stays unticked, with what is missing. The further task that adopts it is [Align Mode](align-mode.md)'s Gap rule.
 8. **Tick.**
-   Tick the confirmed criteria with [Tick Criteria](commands.md#tick-criteria). It ticks Done as the [Work Breakdown Guide](work-breakdown.md#tables) defines.
+   Tick the confirmed criteria with [Tick Criteria](#tick-criteria). It ticks Done as the [Work Breakdown Guide](work-breakdown.md#tables) defines.
 9. **Patch.**
    Patch each changed body from its `--fix` file with [Patch Body](commands.md#patch-body).
 10. **Close.**
@@ -73,7 +73,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
     - [Close as Completed](commands.md#close-as-completed) each epic the re-run reports closable.
 11. **Sync the initiative.**
     - Run [Sync Initiative](commands.md#sync-initiative), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as the [Work Breakdown Guide](work-breakdown.md#tables) defines.
-    - It lists each criterion whose citing epics are all delivered as ready to verify. Verify each as step 7 does, and tick those that pass with [Tick Criteria](commands.md#tick-criteria).
+    - It lists each criterion whose citing epics are all delivered as ready to verify. Verify each as step 7 does, and tick those that pass with [Tick Criteria](#tick-criteria).
     - [Patch Body](commands.md#patch-body) the initiative from its `--fix` file when a tick changed it, so the board sync reads every criterion ticked.
     - [Close as Completed](commands.md#close-as-completed) the initiative when it reports closable, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
 12. **Sync the board.**
@@ -86,7 +86,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
       - Run [Plan Board Changes](commands.md#plan-board-changes) with the user from [Find User](commands.md#find-user) and the issue links from [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links), which prints the call for each board and assignee change.
     - **Write.**
       - Run each call it prints.
-      - Confirm each status write with [Fetch Board Item](commands.md#fetch-board-item). The item list lags a write, so a fresh list does not confirm it.
+      - Confirm each status write with [Fetch Board Item](#fetch-board-item). The item list lags a write, so a fresh list does not confirm it.
       - When the item still shows the previous status, run that write again and read the item again.
       - Fetch the issues and items again and re-run [Plan Board Changes](commands.md#plan-board-changes) to find anything not yet written. The board is current when that plan reports nothing to do and each confirmed item shows the status written.
       - An issue added in one pass gets its Status in the next.
@@ -105,3 +105,40 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
   - Select pull requests under [Understand Mode](understand-mode.md#rules)'s Grain rule.
   - An epic merging in the Close step gets its overview through [Epic merge](work-breakdown.md#epic-merge), before the board sync.
   - An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed.
+
+## Commands
+
+### Retitle Pull Request
+
+Replaces a pull request's title.
+
+```bash
+gh api --method PATCH repos/{owner}/{repo}/pulls/950 -f title='[I07:E00] Purpose' --jq .title
+```
+
+### Fetch Board Item
+
+Reads one board item, including its Status. The item list can lag a write. This read is what confirms a status just set.
+
+```bash
+gh api "users/{owner}/projectsV2/9/items/1001?fields=419167630"
+```
+
+### Match Pull Requests
+
+Reports an epic's delivery state against the pull requests that name it.
+
+- Interpret results using [Delivery State](commands.md#delivery-state).
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json
+```
+
+### Tick Criteria
+
+Ticks confirmed criteria on an epic or an initiative, refusing any not ready to verify, and ticks Done on a row once it is complete.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
+```

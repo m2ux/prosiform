@@ -118,23 +118,23 @@ Check these prerequisites before marking an unstarted epic Ready, cutting its ba
 Work Planner closes an issue as completed only after its normal delivery checks pass, all its criteria are verified and ticked, and every pull request currently linked in its Development field has merged. This applies to tasks, epics, initiatives and standalone issues.
 
 - **Repository prerequisite.**
-  GitHub's **Auto-close issues with merged linked pull requests** setting is disabled in repositories participating in delivery. Confirm this with [Capture Issue Development](commands.md#capture-issue-development) before linking or merging a delivery pull request. An enabled or unknown setting leaves those actions blocked until configuration is confirmed; changing repository settings requires explicit authorization.
+  GitHub's **Auto-close issues with merged linked pull requests** setting is disabled in repositories participating in delivery. Confirm this with [Capture Issue Development](#capture-issue-development) before linking or merging a delivery pull request. An enabled or unknown setting leaves those actions blocked until configuration is confirmed; changing repository settings requires explicit authorization.
 - **Complete link set.**
   Capture every Development-linked pull request, across repositories and all states. The issue's Development field supplies membership; titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
 - **Every merge.**
   An open, draft, closed without merge, or unreadable linked pull request keeps the issue open. An abandoned or incorrectly linked pull request needs the user's decision before its Development link is removed. A replacement pull request does not remove the requirement on a link still present.
 - **Final check.**
-  [Check Issue Closure](commands.md#check-issue-closure) checks a fresh Development snapshot, the confirmed setting, the issue's criteria and fresh REST records for every linked pull request. [Close as Completed](commands.md#close-as-completed) runs that gate before writing the issue state. A changed link set requires another check.
+  [Check Issue Closure](#check-issue-closure) checks a fresh Development snapshot, the confirmed setting, the issue's criteria and fresh REST records for every linked pull request. [Close as Completed](commands.md#close-as-completed) runs that gate before writing the issue state. A changed link set requires another check.
 
 ### Missing Branches
 
 For each long-lived branch the epic's tasks change:
 
-- Once [Epic prerequisites](#epic-prerequisites) hold, cut a missing epic base from the long-lived branch with [Create Epic Base](commands.md#create-epic-base).
+- Once [Epic prerequisites](#epic-prerequisites) hold, cut a missing epic base from the long-lived branch with [Create Epic Base](#create-epic-base).
 
 ### Review Pull Request
 
-When [Sync Epic](commands.md#sync-epic) reports a draft line, or an unmerged base with no open pull request, open that base with [Open Epic Pull Request](commands.md#open-epic-pull-request) as a draft and leave the epic open. The user marks the draft ready when the epic is complete. An agent leaves a draft pending that action.
+When [Sync Epic](commands.md#sync-epic) reports a draft line, or an unmerged base with no open pull request, open that base with [Open Epic Pull Request](#open-epic-pull-request) as a draft and leave the epic open. The user marks the draft ready when the epic is complete. An agent leaves a draft pending that action.
 
 - **The body states the branch.**
   - Overview is one paragraph on what the base carries. Changes holds one heading per area, with a bullet per functional change. References cites each task pull request merged into that base.
@@ -146,12 +146,12 @@ When [Sync Epic](commands.md#sync-epic) reports a draft line, or an unmerged bas
 
 ### Epic Merge
 
-[Sync Mode](sync-mode.md) and [Deliver Mode](deliver-mode.md) merge a ready epic pull request with [Merge Epic Pull Request](commands.md#merge-epic-pull-request), without asking for further confirmation, once all these conditions hold:
+[Sync Mode](sync-mode.md) and [Deliver Mode](deliver-mode.md) merge a ready epic pull request with [Merge Epic Pull Request](#merge-epic-pull-request), without asking for further confirmation, once all these conditions hold:
 
 - The repository prerequisite in [Issue closure](#issue-closure) is confirmed.
 - Every task is delivered, every epic criterion is verified and ticked, and the epic has no open questions or unresolved delivery discrepancies.
 - The user has marked the draft ready, and its head and target are the epic base and corresponding long-lived branch.
-- [Update Epic Base](commands.md#update-epic-base) has brought in the current target, the criteria still hold on that result, and [Fetch Merge Readiness](commands.md#fetch-merge-readiness) confirms required checks and repository review requirements pass for the current head.
+- [Update Epic Base](#update-epic-base) has brought in the current target, the criteria still hold on that result, and [Fetch Merge Readiness](#fetch-merge-readiness) confirms required checks and repository review requirements pass for the current head.
 - The review body describes the complete branch and cites its task merges. [Understand Mode](understand-mode.md) supplies its architecture overview before the merge.
 
 A draft, conflict, failed or pending check, unmet criterion, or repository review requirement leaves the pull request open with the blocker reported. A changed head requires fresh verification. A merge refusal returns to the readiness checks; a repeated refusal is reported without retrying.
@@ -221,7 +221,7 @@ Merge each open task pull request whose [Test Plan](#test-plan) has passed, both
 1. **Check.**
    Confirm the repository prerequisite in [Issue Closure](#issue-closure) and the task pull request's epic base.
 2. **Update and merge.**
-   Run [Update Epic Base](commands.md#update-epic-base), then [Merge Pull Request](commands.md#merge-pull-request). If refused, run [Update Task Branch](commands.md#update-task-branch) and retry the merge. A conflict or repeated refusal leaves the pull request open with the blocker reported.
+   Run [Update Epic Base](#update-epic-base), then [Merge Pull Request](#merge-pull-request). If refused, run [Update Task Branch](commands.md#update-task-branch) and retry the merge. A conflict or repeated refusal leaves the pull request open with the blocker reported.
 3. **Record delivery.**
    Fetch the merged pull request, then run [Sync Task Issue](commands.md#sync-task-issue) for its task issues and [Sync Epic](commands.md#sync-epic). Verify criteria before ticking them, patch changed issue bodies, and complete eligible issues through [Close as Completed](commands.md#close-as-completed).
 4. **Update the review.**
@@ -267,3 +267,121 @@ The file uses the epic template's Overview, Problem, Proposal, and Work Breakdow
   Longest chains, ordering reviews and their reasons go in the planning record.
 - **Change.**
   How the plan changed is left out, as the skill's [Rules](../SKILL.md#rules) state.
+
+## Commands
+
+### Capture Issue Development
+
+Records the issue's complete Development pull request list and its repository's verified auto-closing setting.
+
+- Use [Development Access](commands.md#development-access) for the complete issue link set and confirmed repository setting. Record the exact URLs in `pull_requests`; set `complete` to true only after the full read, and `auto_close_issues` to false only after confirmation.
+- Record `repo` and `number` for the issue being closed. Save the snapshot as `development-943.json`; `pull_requests: []` means the field was checked and is empty. Missing access or incomplete evidence leaves closure blocked.
+- Use [Fetch Issue](commands.md#fetch-issue) for the current criteria and [Fetch Pull Request](commands.md#fetch-pull-request) for every recorded URL. Save those REST records as JSON lines in `development-prs-943.json`, including merged and closed pull requests regardless of their titles or branches. Identify a pull request by repository and number.
+- Before closing, refresh the Development list and pull request records. If the list changes while checking, repeat the check with the current list.
+
+```json
+{
+  "repo": "owner/repo",
+  "number": 943,
+  "complete": true,
+  "auto_close_issues": false,
+  "pull_requests": [
+    "https://github.com/owner/repo/pull/980",
+    "https://github.com/owner/other/pull/981"
+  ]
+}
+```
+
+### Check Issue Closure
+
+Checks the final closure conditions in [Issue Closure](work-breakdown.md#issue-closure).
+
+- Inputs are the fresh records from [Capture Issue Development](#capture-issue-development). No network calls or writes occur.
+- Exit 0 means this gate passed; normal delivery checks must also pass. Exit 1 reports each blocker, including missing evidence, an unmerged linked pull request or unticked criteria.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
+```
+
+### Merge Pull Request
+
+Merges a task pull request into its epic base.
+
+- Confirm the repository prerequisite in [Issue Closure](work-breakdown.md#issue-closure) before merging.
+- Run it as [Task Merge](work-breakdown.md#task-merge) specifies.
+- The merge method is a merge commit.
+
+```bash
+gh api --method PUT repos/{owner}/{repo}/pulls/950/merge -f merge_method='merge' --jq .merged
+```
+
+### Create Epic Base
+
+Cuts an epic's base branch from the tip of its long-lived branch on the remote.
+
+- Run inside a checkout of the repository, with full host permissions.
+- The push refuses a branch that already exists.
+- The base is the one the [Work Breakdown Guide](work-breakdown.md#delivery) names for that long-lived branch.
+- Run it only after [Epic prerequisites](work-breakdown.md#epic-prerequisites) hold.
+
+```bash
+git fetch origin main && git push origin origin/main:refs/heads/i07/e00/main
+```
+
+### Update Epic Base
+
+Merges the long-lived branch into the epic base.
+
+- Run it from the main working tree before [Merge Pull Request](#merge-pull-request) or [Merge Epic Pull Request](#merge-epic-pull-request), as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+- A conflict stops the merge. The pull request stays open, and the conflict is reported.
+
+```bash
+git fetch origin main i07/e00/main && git worktree add --detach .worktrees/i07/e00/main origin/i07/e00/main && git -C .worktrees/i07/e00/main merge --no-edit origin/main && git -C .worktrees/i07/e00/main push origin HEAD:refs/heads/i07/e00/main && git worktree remove .worktrees/i07/e00/main
+```
+
+### Open Epic Pull Request
+
+Opens the draft pull request that merges an epic base into its long-lived branch.
+
+- Run it when [Sync Epic](commands.md#sync-epic) reports a draft line, or reports that branch unmerged and names no pull request. The epic stays open until the pull request merges.
+- The title is the epic's prefix and name: `[I07:E00] Name`.
+- The head is the epic base and the base is the long-lived branch it was cut from, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+- The body is drafted from the [pull request template](../templates/pull-request.md), in the shape [Review pull request](work-breakdown.md#review-pull-request) gives it: Overview, Changes and References, with no Test Plan. [Update Review Pull Request](commands.md#update-review-pull-request) carries each later merge into it.
+- Open it as a draft, including when the first sync finds an already complete epic. The user's readiness step is [Review pull request](work-breakdown.md#review-pull-request).
+- [Link Pull Request to Issue](commands.md#link-pull-request-to-issue) links the epic's issue once it is open, as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Issue links.
+
+```bash
+gh api --method POST repos/{owner}/{repo}/pulls -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
+```
+
+### Fetch Merge Readiness
+
+Reads the current epic pull request, its target's merge requirements, and its head's checks.
+
+- Run after [Update Epic Base](#update-epic-base). Replace `<head-sha>` with the literal head SHA in the fetched pull request, and `main` with its target.
+- Read the branch's protection and [active branch rules](https://docs.github.com/en/rest/repos/rules#get-rules-for-a-branch) together to identify required checks and reviews. A 404 on protection means that endpoint supplies no protection; active rules may still apply. An unreadable requirement leaves readiness unresolved.
+- The pull request must be open, ready, and mergeable, with every required check complete and passing for that head and every repository review requirement met. A missing check, pending calculation or blocked merge state leaves it open. The merge endpoint enforces the repository's requirements; use no bypass.
+- Fetch the pull request again after reading the checks. A different head requires fresh checks and verification.
+
+```bash
+gh api repos/{owner}/{repo}/pulls/980 > epic-pr.json
+gh api repos/{owner}/{repo}/branches/main/protection > protection.json
+gh api --paginate repos/{owner}/{repo}/rules/branches/main > branch-rules.json
+gh api --paginate 'repos/{owner}/{repo}/commits/<head-sha>/check-runs?per_page=100' > checks.json
+gh api --paginate 'repos/{owner}/{repo}/commits/<head-sha>/status?per_page=100' > status.json
+gh api --paginate 'repos/{owner}/{repo}/pulls/980/reviews?per_page=100' > reviews.json
+gh api repos/{owner}/{repo}/pulls/980 > epic-pr.json
+```
+
+### Merge Epic Pull Request
+
+Merges a completed epic into its long-lived branch at the verified head.
+
+- Run only when [Epic merge](work-breakdown.md#epic-merge) holds, using the literal head SHA verified by [Fetch Merge Readiness](#fetch-merge-readiness).
+- The merge method is a merge commit. The [merge endpoint](https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request) requires the supplied SHA to match the head.
+- The second call confirms `merged` and records `merge_commit_sha`. A refusal follows [Epic merge](work-breakdown.md#epic-merge).
+
+```bash
+gh api --method PUT repos/{owner}/{repo}/pulls/980/merge -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
+gh api repos/{owner}/{repo}/pulls/980 --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
+```

@@ -27,7 +27,7 @@ Command operations use the [command conventions](command-conventions.md), read b
    - Every link and anchor resolving;
    - [Progressive disclosure](../../guidelines.md#progressive-disclosure), including complete common sections and caller prerequisites.
 6. **Verify.**
-   - [Run Tests](commands.md#run-tests) when a script, template or test changed.
+   - [Run Tests](#run-tests) when a script, template or test changed.
    - Confirm SKILL.md's frontmatter still opens and closes with `---` and holds `name` and `description`.
    - Apply [disclosure verification](../../guidelines.md#disclosure-verification) to every affected mode, using this skill's [representative scenarios](guidelines.md#progressive-disclosure).
 7. **Deliver.**  Commit, push, and report what changed in each file.
@@ -38,3 +38,13 @@ Command operations use the [command conventions](command-conventions.md), read b
 
 - **Complete.**
   A change that departs from the [skill guidelines](../../guidelines.md) or this skill's [guidelines](guidelines.md) is not complete.
+
+## Commands
+
+### Run Tests
+
+Runs the skill's script tests.
+
+```bash
+cd <workspace>/skills/work-planner && <workspace>/scripts/sbx python3 -m unittest discover -s test
+```

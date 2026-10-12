@@ -20,7 +20,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 4. **Survey.**
    The long-lived branches are as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. List each epic's bases with [List Epic Bases](commands.md#list-epic-bases), then run [Find Available Work](commands.md#find-available-work) with those names and `--project` set to a checkout of the project. Give an issue it reports unresolved with `--others`, and run it again.
    - **Held work.**
-     Put each `hold` line to the user as an [Interview](interview.md) before any unit is dispatched, with the record it links and whether a session is still running. The user releases it or leaves it. A released row goes through [Release Row](commands.md#release-row) and [Patch Body](commands.md#patch-body), and the command runs again.
+     Put each `hold` line to the user as an [Interview](interview.md) before any unit is dispatched, with the record it links and whether a session is still running. The user releases it or leaves it. A released row goes through [Release Row](#release-row) and [Patch Body](commands.md#patch-body), and the command runs again.
    - **Blocked work.**
      A `blocked` line is reported, not asked. Its dependencies decide when it becomes available.
 5. **Merge.**
@@ -30,7 +30,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 7. **Hold.**
    For each confirmed unit, before its session starts:
    - Add its record with [Add Planning Record](commands.md#add-planning-record), named as the `unit` line gives it, and commit and push the engineering worktree.
-   - Run [Reserve Row](commands.md#reserve-row) for the unit's tasks and [Patch Body](commands.md#patch-body) with the body it writes.
+   - Run [Reserve Row](#reserve-row) for the unit's tasks and [Patch Body](commands.md#patch-body) with the body it writes.
    - Set each task issue of the unit, where one exists, to In Progress with [Set Item Status](commands.md#set-item-status), and its epic with it.
 8. **Dispatch.**
    For each held unit:
@@ -60,7 +60,7 @@ What the prompt tells one session, written from the facts the `unit` line and th
 - **Implement.**
   Deliver the work in the worktree, with every test the work item names, as the [Work Breakdown Guide](work-breakdown.md#tables) states.
 - **Open the pull request.**
-  Open it with [Open Task Pull Request](commands.md#open-task-pull-request), which titles it for the epic, targets the epic base, fills the Test Plan table as [Test Coverage](work-breakdown.md#test-coverage) states, and links each task issue the unit delivers. Then run [Sync Epic](commands.md#sync-epic) for the unit's tasks and [Patch Body](commands.md#patch-body).
+  Open it with [Open Task Pull Request](#open-task-pull-request), which titles it for the epic, targets the epic base, fills the Test Plan table as [Test Coverage](work-breakdown.md#test-coverage) states, and links each task issue the unit delivers. Then run [Sync Epic](commands.md#sync-epic) for the unit's tasks and [Patch Body](commands.md#patch-body).
 - **Merge.**
   Record check results with [Patch Pull Request Body](commands.md#patch-pull-request-body), following [Test Plan](work-breakdown.md#test-plan), then follow [Task Merge](work-breakdown.md#task-merge).
 - **Hoist arising issues.**
@@ -87,3 +87,42 @@ What the prompt tells one session, written from the facts the `unit` line and th
   This mode sets a dispatched unit's task issue and its epic to In Progress. The queue stays [Advance Mode](advance-mode.md)'s.
 - **Arising issues.**
   Issues arising from the delivery of a single work item are raised as standalone issues and hoisted through [Hoist Mode](hoist-mode.md) once the pull request is open and the epic synced.
+
+## Commands
+
+### Open Task Pull Request
+
+Opens the pull request that delivers a unit's work into its epic base.
+
+- Run it in the unit's worktree once the work is pushed, as [Deliver Mode](deliver-mode.md#brief) states.
+- The title is the epic's prefix and the unit's purpose: `[I07:E00] Purpose`.
+- The head is the unit's task branch and the base is the epic base it was cut from, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+- The body is drafted from the [pull request template](../templates/pull-request.md), with its Test Plan filled as [Test Coverage](work-breakdown.md#test-coverage) specifies.
+- [Link Pull Request to Issue](commands.md#link-pull-request-to-issue) links each task issue the unit delivers once it is open, as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Issue links. A unit whose tasks carry no issue of their own links nothing.
+
+```bash
+gh api --method POST repos/{owner}/{repo}/pulls -f title='[I07:E00] Purpose' -f head='i07/e00/w01-queue-plan' -f base='i07/e00/main' -F body=@body.md --jq .html_url
+```
+
+### Reserve Row
+
+Holds each named task row for one session, by setting its record folder as the row's single link.
+
+- It refuses a row already held, and one whose id links a pull request or a commit.
+- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
+- The folder is the one [Find Available Work](commands.md#find-available-work) names, and `--date` is the day it is opened.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning --fix fixed-943.md
+```
+
+### Release Row
+
+Frees each named task row, by replacing the planning-folder link with its work-item file link.
+
+- It refuses a row that no session holds.
+- The file is the task id in lowercase within that folder, as [Task ids](work-breakdown.md#task-delivery) defines.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
+```

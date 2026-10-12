@@ -13,8 +13,8 @@ Command operations use the [command conventions](command-conventions.md), read b
 
 ## Procedure
 
-1. **Fetch.**  Fetch every issue with [Fetch All Issues](commands.md#fetch-all-issues).
-2. **List candidates.**  Run [List Orphans](commands.md#list-orphans). It prints:
+1. **Fetch.**  Fetch every issue with [Fetch All Issues](#fetch-all-issues).
+2. **List candidates.**  Run [List Orphans](#list-orphans). It prints:
    - The orphans;
    - The cited standalone issues, each with its labels, the agent-engineering issues citing it and any planning folder it links;
    - The open initiatives and epics a placement can name.
@@ -50,7 +50,7 @@ Command operations use the [command conventions](command-conventions.md), read b
      - When its body needs rewriting, post the original-body comment, then rewrite it by a standalone issue's rules with [Patch Body](commands.md#patch-body), carrying its content into the template's sections.
    - **Subsumed.**
      - Cite the orphan under the taking issue's References (`- **Rn.** [Element Shape](…/issues/874) — The operations surveyed and their prose entries.`), and any planning it references as its own entry.
-     - Close it: [Comment on Issue](commands.md#comment-on-issue) with `Tracked in [I07:E01](…/issues/937) W04.`, then [Close as Not Planned](commands.md#close-as-not-planned).
+     - Close it: [Comment on Issue](commands.md#comment-on-issue) with `Tracked in [I07:E01](…/issues/937) W04.`, then [Close as Not Planned](#close-as-not-planned).
      - The work stays planned in the taking issue, which is where that work is tracked.
 6. **Review.**
    - Run [Check Format](commands.md#check-format) on every issue the hoist changed or created.
@@ -102,3 +102,31 @@ A placement is the choice of where an orphan's work goes. The table states what 
 
 - **Already stated.**
   A candidate whose work an existing criterion already states is subsumed into the issue holding that criterion, with no new row. For a cited standalone issue, that issue is usually the one citing it.
+
+## Commands
+
+### Fetch All Issues
+
+Saves every issue in the repository; the scripts skip the pull requests among them.
+
+```bash
+gh api --paginate "repos/{owner}/{repo}/issues?state=all&per_page=100" > issues.json
+```
+
+### Close as Not Planned
+
+Closes an issue whose work another issue tracks.
+
+```bash
+gh api --method PATCH repos/{owner}/{repo}/issues/874 -f state=closed -f state_reason=not_planned --jq .state
+```
+
+### List Orphans
+
+Lists the hoist candidates, and the open initiatives and epics they could join.
+
+- It reads [Fetch All Issues](#fetch-all-issues).
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/orphans.py issues.json
+```

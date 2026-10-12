@@ -37,7 +37,7 @@ Command operations use the [command conventions](command-conventions.md), read b
      - The reference letters: I Initiative, E Epic and W Work Item.
      - Each line's opening mark: ✅ done, 🔄 in progress (an initiative or epic open and not In Review), 👀 in review, 📝 draft, ▶️ ready.
 5. **Give the initiatives off the board.**
-   For each `unresolved` line naming an initiative not on the board (`I08 in owner/repo`), find its issue with [Find Initiative Issue](commands.md#find-initiative-issue) in that repository, take it with [Fetch Issue](commands.md#fetch-issue), and re-run [Summarise Progress](commands.md#summarise-progress) with `--initiatives`.
+   For each `unresolved` line naming an initiative not on the board (`I08 in owner/repo`), find its issue with [Find Initiative Issue](#find-initiative-issue) in that repository, take it with [Fetch Issue](commands.md#fetch-issue), and re-run [Summarise Progress](commands.md#summarise-progress) with `--initiatives`.
 6. **Write the paragraph for management.**
    Write it from the Initiatives and Completed sections, to this mode's The paragraph rule, and re-run [Summarise Progress](commands.md#summarise-progress) with the same arguments and `--summary`.
 7. **Report.**
@@ -54,3 +54,13 @@ Command operations use the [command conventions](command-conventions.md), read b
   - carries no references, links, task ids or tool names;
   - leaves out work in progress and next;
   - with nothing completed, says so in one sentence.
+
+## Commands
+
+### Find Initiative Issue
+
+Prints an initiative's issue number, found by its title's prefix.
+
+```bash
+gh api --paginate "repos/{owner}/{repo}/issues?state=all&per_page=100" --jq '.[] | select(.pull_request == null) | select(.title | startswith("[I08]")) | .number'
+```
