@@ -46,9 +46,15 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 ## Mode files
 
 - **Opening.**  `# <Name> mode`, then a paragraph on what the mode does.
+- **Top-level sections.**
+  - Prerequisites, Procedure, Reference, Rules and Commands, in that order, each optional but for Procedure and Rules.
+  - Anything else the mode needs is a sub-section under one of them, so a diverse title names a part of a known whole.
+- **What the reader does with a heading places it.**
+  - Reference holds what a step consults or produces: a table, an output shape, a vocabulary.
+  - Rules holds what binds the mode whatever step it is on.
+  - An alternative way into the mode is a step of the Procedure.
 - **Procedure.**
-  - A `## Procedure` of numbered steps, each opening with a bold label.
-  - A section the procedure draws on sits beside it, under a heading of its own.
+  A `## Procedure` of numbered steps, each opening with a bold label.
 - **Rules.**  A statement that binds only this mode goes in the mode's `## Rules`.
 
 ## Layout
