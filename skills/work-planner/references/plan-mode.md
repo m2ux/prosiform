@@ -73,7 +73,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 ## Rules
 
 - **Criteria at creation.**
-  - An acceptance criterion complies with [Requirement characteristics](requirement-characteristics.md), the [shared acceptance criteria](review-criteria.md#shared-acceptance-criteria), and, for an initiative, its [Acceptance Criteria](review-criteria.md#acceptance-criteria), when it is written.
+  - An acceptance criterion complies with [Requirement characteristics](requirement-characteristics.md), the [shared acceptance criteria](review-criteria.md#shared-acceptance-criteria), and, for an initiative, its [Acceptance Criteria](review-criteria.md#initiative-acceptance-criteria), when it is written.
   - The issue that carries it is created only after the criterion complies.
 - **The discussion PR.**
   Merging it is the user's call.

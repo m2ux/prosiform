@@ -22,7 +22,7 @@
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** {{One invariant, a condition that holds or does not, meeting the [initiative criteria](../references/review-criteria.md#acceptance-criteria): SMART, no stale counts, local, whole, and verifiable. It ends by naming its instrument, as the [Verified](../references/review-criteria.md#verified) rule defines.}}
+- [ ] **AC1.** {{One invariant, a condition that holds or does not, meeting the [initiative criteria](../references/review-criteria.md#initiative-acceptance-criteria): SMART, no stale counts, local, whole, and verifiable. It ends by naming its instrument, as the [Verified](../references/review-criteria.md#verified) rule defines.}}
 
 ## Non-Goals
 

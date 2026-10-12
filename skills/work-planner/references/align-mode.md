@@ -99,9 +99,9 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 - **Task grain.**
   Apply the [Epic](review-criteria.md#epic) Work Breakdown criteria for a task that delivers more than three criteria.
 - **Local criterion.**
-  Apply the initiative [Acceptance Criteria](review-criteria.md#acceptance-criteria) Local rule.
+  Apply the [Initiative Acceptance Criteria](review-criteria.md#initiative-acceptance-criteria) Local rule.
 - **Counted criterion.**
-  Apply the initiative [Acceptance Criteria](review-criteria.md#acceptance-criteria) No counts rule.
+  Apply the [Initiative Acceptance Criteria](review-criteria.md#initiative-acceptance-criteria) No counts rule.
 - **Instrument.**
   Apply the initiative [Verified](review-criteria.md#verified) rule.
 - **Description.**
