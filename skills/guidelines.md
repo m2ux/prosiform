@@ -23,6 +23,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **References.**
   - `references/` holds one `<mode>-mode.md` per mode, `command-conventions.md` when the skill runs commands, `guidelines.md` when the skill has rules of its own, and each guide the modes share.
   - Templates, scripts and tests each have a folder of their own.
+- **Shared.**
+  `skills/` holds this file beside the `scripts/` and `test/` folders for checks that every skill runs. A check binding one skill lives in that skill's own folders.
 
 ## SKILL.md structure
 
@@ -38,7 +40,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   A statement that binds every mode goes in Rules, never as loose prose in another section.
 - **Dependencies.**
   Every tool, sandbox, runtime, branch and harness capability the skill relies on is named in Dependencies, with what it is needed for.
-- **Commands.**  SKILL.md links the shared command conventions on a required path and holds no command of its own.
+- **Commands.**
+  SKILL.md links the shared command conventions on a required path and holds no command of its own.
 
 ## Mode files
 
@@ -148,4 +151,4 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Stale claims.**
   After a behaviour change, search the skill for any description of the old behaviour and restate it.
 - **Verified.**
-  The skill's tests pass, every link resolves and [disclosure verification](#disclosure-verification) is recorded before the change is committed.
+  The skill's tests pass, `skills/scripts/check_skill_files.py` reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed.
