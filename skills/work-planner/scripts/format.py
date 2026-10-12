@@ -557,8 +557,13 @@ class Review:
         if 'Task' in header:
             for r in rows:
                 ident = id_cell(header, r)
-                if len(LINK.findall(ident)) > 1:
-                    self.decide.append(f'{row_id(ident)}: a task row has one link; resolve the extra links')
+                found = LINK.findall(ident)
+                if len({text for text, _ in found}) > 1:
+                    self.decide.append(
+                        f'{row_id(ident)}: every link on a task row names that row; resolve the others')
+                if len({href for _, href in found}) < len(found):
+                    self.decide.append(
+                        f'{row_id(ident)}: a task row links each delivery once; resolve the repeated links')
         if 'Done' in header:
             at = header.index('Done')
             for r in rows:
