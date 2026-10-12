@@ -25,12 +25,17 @@ class AuditFixture(unittest.TestCase):
         self.engine = Path(engine)
         self.write('corpus/canon/resources/anti-patterns.md',
                    '# Anti-patterns\n\n## Structural\n\n### AP-01. missing-contract\n'
+                   'An output stated with no contract.\n\n**Fires on:** `technique.outputs`\n\n'
                    'Detect: An output lacks a contract.\nDo not flag: none.\nFix: define it.\n\n'
-                   '### AP-02. unsafe-binding\nDetect: The consumer binds the wrong output.\n')
+                   '### AP-02. unsafe-binding\nA bind naming another step output.\n\n'
+                   '**Fires on:** `activity.steps`\n\n'
+                   'Detect: The consumer binds the wrong output.\n')
         self.write('corpus/canon/resources/design-principles.md',
-                   '# Principles\n\n## 1. Define contracts\nEvery output has one contract.\n')
+                   '# Principles\n\n## 1. Define contracts\nEvery output has one contract.\n\n'
+                   '**Fires on:** `technique`, `routine`\n')
         self.write('corpus/canon/resources/convention-conformance.md',
-                   '# Conformance\n\n## Sibling convention\nInspect a sibling.\n')
+                   '# Conformance\n\n## Sibling convention\n\n**Fires on:** `resource`\n\n'
+                   'Inspect a sibling.\n')
         self.write('corpus/demo/workflow.yaml',
                    'id: demo\nname: Demo\ninitialActivity: start\ngraph:\n  start:\n    done: null\n')
         self.write('corpus/demo/activities/start.yaml',
