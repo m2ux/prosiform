@@ -129,6 +129,15 @@ test verifies filesystem and network restrictions using disposable files and a
 local listener. Classifier scripts also accept `--test`; for example, pass
 command text on stdin to `hooks/block_dynamic_shell.py --test`.
 
+One suite measures the adapters against the preceding six-hook Claude pipeline.
+It extracts that revision into a temporary checkout, sends one request corpus to
+both registrations, and compares the effective outcome: the merged hook verdict,
+or the allow-list match where every hook abstains. The permission file must
+therefore carry every grant the Claude settings template carried, and a `:*`
+command pattern grants nothing, because `matches_rule` honours a trailing ` *`
+alone. A request the adapter cannot read is denied; the preceding pipeline
+stayed silent, and the suite records that outcome.
+
 The Codex runtime check starts a local app-server without a model turn and reads
 its hook inventory and effective configuration. It exits unsuccessfully if the
 workspace hooks are missing, disabled, or untrusted, or the loaded instructions
