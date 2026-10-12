@@ -15,9 +15,13 @@ that runs it, so a specification exactly one file cites, that file not the
 one holding it, names a caller it should be sitting in. One test decides
 every citing file alike, the file holding the specification included: a file
 is a caller where a procedure of it carries the citation. A procedure is a
-top-level section carrying a numbered step, whatever its heading names it,
-so a sibling specification and a passage of reference prose name a command
-without running it. A skill's entry point holds no command of its own, so a
+top-level section carrying a numbered step, whatever its heading names it:
+the step is the author stating that the reader performs these, in this
+order, and is the only place a file records that. Prose runs nothing
+whatever its mood, order or count, so a sibling specification, a statement
+of what a command does, and a sentence routing three commands in sequence
+all name a command without running it. A skill's entry point holds no
+command of its own, so a
 specification standing there is reported wherever it is cited from. A mode
 file's top-level sections are the set the guidelines name, in the order they
 name them, Procedure and Rules among them, so the reader knows what the file

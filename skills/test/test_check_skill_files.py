@@ -220,6 +220,32 @@ class SkillFileChecks(unittest.TestCase):
                    '[Fetch issue](catalog.md#fetch-issue) is in sentence case.\n')
         self.assertEqual(self.findings(), [])
 
+    ROUTE_CATALOG = ('# Catalog\n\n## Commands\n\n### Plan assignments\n\nPlans them.\n'
+                     '\n### Bind agent\n\nBinds one.\n\n### Write packet\n\nWrites one.\n')
+    ROUTE_CALLER = ('# Plan\n\n## Procedure\n\n'
+                    '1. **Plan.**  Run [Plan assignments](catalog.md#plan-assignments).\n'
+                    '2. **Bind.**  Run [Bind agent](catalog.md#bind-agent).\n'
+                    '3. **Write.**  Run [Write packet](catalog.md#write-packet).\n')
+
+    def test_a_prose_route_naming_commands_in_order_runs_none(self):
+        self.write('references/catalog.md', self.ROUTE_CATALOG)
+        self.write('references/plan.md', self.ROUTE_CALLER)
+        self.write('references/dispatch.md',
+                   '# Dispatch\n\n## Dispatch Route\n\nUse [Plan assignments](catalog.md#plan-assignments), '
+                   '[Bind agent](catalog.md#bind-agent), then [Write packet](catalog.md#write-packet).\n')
+        self.assertEqual([kind for _, _, kind in self.findings()],
+                         ['command specification with one caller'] * 3)
+
+    def test_the_same_route_stated_as_steps_runs_each_command(self):
+        self.write('references/catalog.md', self.ROUTE_CATALOG)
+        self.write('references/plan.md', self.ROUTE_CALLER)
+        self.write('references/dispatch.md',
+                   '# Dispatch\n\n## Dispatch Route\n\n'
+                   '1. **Plan.**  Run [Plan assignments](catalog.md#plan-assignments).\n'
+                   '2. **Bind.**  Run [Bind agent](catalog.md#bind-agent).\n'
+                   '3. **Write.**  Run [Write packet](catalog.md#write-packet).\n')
+        self.assertEqual(self.findings(), [])
+
     def test_a_sibling_specification_of_a_catalog_is_not_a_caller(self):
         self.write('references/commands.md',
                    '# Commands\n\n## Issues\n\n### Fetch issue\n\nFetches one issue.\n'
