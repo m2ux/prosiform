@@ -1,5 +1,6 @@
 {
   "paths": ["corpus/example/techniques/operation.md"],
+  "base": null,
   "checks": ["guards"],
   "rows": [],
   "relationships": []

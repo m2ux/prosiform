@@ -7,6 +7,10 @@
   "slots": null,
   "bytes_per_token": null,
   "calibration": {
-    "map": {"output_tokens_per_item": null, "seconds_per_item": null, "evidence": ""}
+    "inventory": {"output_tokens_per_item": null, "seconds_per_item": null, "evidence": ""},
+    "map": {"output_tokens_per_item": null, "seconds_per_item": null, "evidence": ""},
+    "verify": {"output_tokens_per_item": null, "seconds_per_item": null, "evidence": ""},
+    "evaluate": {"output_tokens_per_item": null, "seconds_per_item": null, "evidence": ""},
+    "obligations": {"output_tokens_per_item": null, "seconds_per_item": null, "evidence": ""}
   }
 }
