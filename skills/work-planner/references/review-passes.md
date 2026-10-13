@@ -6,7 +6,9 @@ The method for the goal pass, the consistency pass, and the ordering pass. The r
 
 Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
-## Goal Pass
+## Procedure
+
+### Goal Pass
 
 Tests the drafts against the [review criteria](review-criteria.md) for the issue's kind. It runs on the drafts before any issue is created, and again whenever the goal, a criterion, a Problem, a Proposal, or an epic changes.
 
@@ -26,14 +28,14 @@ Tests the drafts against the [review criteria](review-criteria.md) for the issue
    - Rank the gaps, and flag the few that most threaten the goal.
    - Record the trace table in the planning record, or give it to the user when the change has none.
 
-## Consistency Pass
+### Consistency Pass
 
 Runs after every round of edits. Check each section of the issue against the [review criteria](review-criteria.md) for its kind.
 
 1. **Format.**
    Run [Check Format](commands.md#check-format) on every issue the round changed.
 
-## Ordering Pass
+### Ordering Pass
 
 Checks dependencies as a graph, then renumbers. A failure is one the [initiative](review-criteria.md#initiative) or [epic](review-criteria.md#epic) Work Breakdown criteria name.
 
@@ -59,7 +61,7 @@ Checks dependencies as a graph, then renumbers. A failure is one the [initiative
 8. **Chains.**
    Record the longest chains from its output in the planning record. Name each whole-epic edge whose binding row is on a chain: that edge sets the chain's length. Issue bodies do not narrate order or its reasons.
 
-## Fetch
+### Fetch
 
 Each pass reads its inputs first.
 
@@ -68,7 +70,7 @@ Each pass reads its inputs first.
 3. **Sources.**
    Fetch each source the initiative's References mark, with [Fetch Source](#fetch-source). An epic's fetch takes its initiative's.
 
-## Report
+### Report
 
 A pass states each finding this way.
 
@@ -77,7 +79,7 @@ A pass states each finding this way.
 3. **Verify.**  Verify every finding against its source before stating it, and quote the file:line that establishes it.
 4. **Decide.**  Put findings that need a decision to the user as an [Interview](interview.md).
 
-## Folding Findings
+### Folding Findings
 
 - **Small finding:**
   Edit the owning epic's Proposal, Work Breakdown and acceptance criteria, and cite any new or renumbered criterion in the Coverage of the row that delivers it.
