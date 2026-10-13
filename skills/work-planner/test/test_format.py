@@ -6,7 +6,7 @@ import re
 import sys
 import unittest
 
-from fixtures import SCRIPTS, issue
+from fixtures import SCRIPTS, issue, pr
 
 sys.path.insert(0, str(SCRIPTS))
 from format import Review  # noqa: E402
@@ -309,4 +309,45 @@ class References(unittest.TestCase):
                          labels=('type:initiative', 'theme:mechanical')), epics=[epic])
         r.run()
         self.assertTrue(any('References: names' in item and '#2' in item for item in r.decide))
+
+
+WANTED = 'no criterion is the corpus audit'
+
+
+def corpus_review(criterion: str, base: str, corpus: str | None = 'workflows') -> Review:
+    """An epic whose one pull request targets base, reviewed for the corpus audit criterion."""
+    body = ('## Work Breakdown\n\n| Task | Description | Coverage | Depends on | Joins | Done |\n'
+            '| --- | --- | --- | --- | --- | --- |\n| W01 | Work | AC1 | | | |\n\n'
+            f'## Acceptance Criteria\n\n- [ ] **AC1.** {criterion}\n')
+    epic = issue(2, '[I01:E00] First: Epic', body=body, labels=('type:epic', 'theme:mechanical'))
+    r = Review(epic, prs=[pr(950, '[I01:E00] Work', base=base)], corpus=corpus)
+    r.run()
+    return r
+
+
+class CorpusAudit(unittest.TestCase):
+    def test_an_epic_reaching_the_corpus_states_the_audit(self):
+        r = corpus_review('Holds.', 'i01/e00/workflows')
+        self.assertTrue(any(WANTED in item for item in r.decide))
+
+    def test_an_epic_reaching_the_corpus_through_its_long_lived_branch_states_it(self):
+        r = corpus_review('Holds.', 'workflows')
+        self.assertTrue(any(WANTED in item for item in r.decide))
+
+    def test_an_epic_reaching_the_corpus_through_an_initiative_branch_states_it(self):
+        r = corpus_review('Holds.', 'i01/workflows')
+        self.assertTrue(any(WANTED in item for item in r.decide))
+
+    def test_the_audit_criterion_answers_the_check(self):
+        r = corpus_review("The definitions this epic changes carry no outstanding confirmed finding, "
+                          "as the canon audit's coverage report shows.", 'i01/e00/workflows')
+        self.assertFalse(any(WANTED in item for item in r.decide))
+
+    def test_an_epic_off_the_corpus_states_nothing(self):
+        r = corpus_review('Holds.', 'i01/e00/main')
+        self.assertFalse(any(WANTED in item for item in r.decide))
+
+    def test_an_unnamed_corpus_branch_leaves_the_reach_unevaluable(self):
+        r = corpus_review('Holds.', 'i01/e00/workflows', corpus=None)
+        self.assertFalse(any(WANTED in item for item in r.decide))
 

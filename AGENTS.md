@@ -48,7 +48,7 @@
 - Prefer bullet points instead of large blocks of prose when responding to the user
 - For responses that concern system design should split by area of concern in the system eg corpus, guards, tests, source. 
 - Each area of conern should be titled and sub-divided into a bulletted list of problem/solution pairs with one plain-language paragraph for each of the problem solution. Jargon should be disambiguated. Use two space seperators between title items.
-- When user input is required to reconcile outstanding issues or design choices, present the user a sequence of questions, one-at-a-time, interview-style. Each question should have multiple choice answers with a recommended option. Each question should be preceded by a plain-language paragraph worded to aid the decision kaing process.
+- After completing any user request taht results in residual unaddressed work, present the user a sequence of questions, one-at-a-time, interview-style to reconcile outstanding issues or design choices. Each question should have multiple choice answers with a recommended option. Each question should be preceded by a plain-language paragraph worded to aid the decision kaing process.
 - Always treat user requests at the start of a new chat as an incomplete specification. Use the interview style to illicit further information fromf the user until you are confident you have sufficient understanding to properly proceed.
 
 
@@ -56,13 +56,10 @@
 ## Commits and pushes
 
 - Commit and push upon completion of any discrete user request to the current branch
+- **Work planner skill**. Prefer the use of the work planner skill for PR management. Issue and PR template included.
 - **A fix belongs in the pull request whose code it fixes.** A defect found while reviewing a branch is corrected on that branch, not carried onto a later one in a stack. Amend, rebase or force-push as needed to put it there — a branch with no other contributors is yours to rewrite.
 - **Commit incrementally while building.** Distinct work lands as its own commit, so the branch records how it was built. That is about not collapsing unrelated changes into one commit; it is never a reason to leave a fix in the wrong place.
 - **Push with plain** `git push`**.** When a push will not fast-forward on a branch someone else may hold, stop and ask rather than rewriting.
-- **A pull request delivering initiative work starts its title with the epic reference:** `[I07:E00] Purpose`.
-- **Long-lived branches are the subfolder names of `.project`.** Here those are `docker`, `main` and `workflows`.
-- **A pull request delivering a task targets the epic's base branch** for that long-lived branch, such as `i07/e00/main`. A completed epic's pull request targets the initiative integration branch, such as `i07/main`. Each integration branch merges into its long-lived branch once the initiative closes.
-- **Any other pull request lands on a long-lived branch.** One aimed at another branch is a stack: it merges, reads as delivered, and reaches no long-lived branch until its base lands. Re-target a stacked request the moment its base lands.
 
 
 
@@ -72,4 +69,3 @@
 - For multi-step work, use todos and mark them complete as you finish; only one todo in progress at a time.
 - Request permission before starting a new task or making changes outside the current request.
 - *ALWAYS* use a local work-tree when working on a branch
-

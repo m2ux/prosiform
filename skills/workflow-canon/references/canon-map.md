@@ -2,9 +2,9 @@
 
 How each home is enumerated, and where a judgement already made is recorded.
 
-## Unit inventory
+## Unit Inventory
 
-Read the enumeration from the home at the commit audited, with [List units](commands.md#list-units).
+Read the enumeration from the home at the commit audited, with [List units](canon-context.md#list-units).
 
 | Home | Unit |
 |------|------|
@@ -16,7 +16,7 @@ Read the enumeration from the home at the commit audited, with [List units](comm
 - Read the catalog through its last family. Appended entries share that family, so its title is not the end of the list.
 - The catalog's first family binds when the change edits a canon home: `anti-patterns.md`, `design-principles.md`, or `convention-conformance.md`. Otherwise it is `not-applicable`, with that reason.
 
-## Prior judgements
+## Prior Judgments
 
 An entry can fire against an instance a surface has already judged. Read that surface before hand-walking an entry whose registry line claims the check.
 
@@ -28,10 +28,15 @@ An entry can fire against an instance a surface has already judged. Read that su
 
 `EXEMPT_DATA_IDS` is compiled into the Zod variable schema and the published JSON schemas.
 
-## File kinds
+## File Kinds
 
-A unit binds the constructs its Fires-on line names. Author runs [List units for a construct](commands.md#list-units-for-a-construct) once for each construct a draft writes, and loads the units it prints. Audit walks every unit the [unit inventory](#unit-inventory) names, whatever the lines say. On an Audit, `not-applicable` records a unit's own wording that excludes the file in hand.
+Author and Audit establish applicability through the shared [matrix contract](change-surface.md#applicability). The complete [unit inventory](#unit-inventory) supplies the matrix and supplemental obligations.
 
-## Covering entries
-
-Where a principle names a covering entry, follow that entry for the spellings its Detect reaches, and follow the principle where it reaches a spelling the Detect does not.
+- **Fires-on line.**
+  Each entry, principle and convention section names the constructs it reads. A unit reaches only the file kinds its line names, resolved through [List Units for a Construct](audit-mode.md#list-units-for-a-construct).
+- **A unit carrying no line.**
+  It is walked by the rule governing its family. The Creation Rules exempt two families from the line: the catalog's `##` family headings, and the Creation Rules themselves, which bind as the [first family](#unit-inventory) does.
+- **An unavailable lookup.**
+  Where the command cannot run, or a home carries no fires-on lines, the walk is the full unit-file product and the report names that, so a narrowed walk is never read as a full one.
+- **Coverage.**
+  Fires-on narrows which files a unit is carried against. Every cell of the full product stays in the coverage the report accounts for.

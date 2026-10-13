@@ -228,10 +228,13 @@ def colon_refs(text: str) -> str:
 
 
 class Review:
-    def __init__(self, issue: dict, initiative: dict | None = None, epics: list[dict] | None = None):
+    def __init__(self, issue: dict, initiative: dict | None = None, epics: list[dict] | None = None,
+                 prs: list[dict] | None = None, corpus: str | None = None):
         self.issue = issue
         self.initiative = initiative
         self.epics = {e['number']: epic_name(e['title']) for e in epics or []}
+        self.prs = prs or []
+        self.corpus = corpus
         self.fixed: list[str] = []
         self.apply: list[str] = []
         self.decide: list[str] = []
@@ -515,6 +518,32 @@ class Review:
                                        'tasks one pull request each can deliver')
         for n in sorted(wanted - delivered):
             self.decide.append(f'AC{n} is delivered by no Work Breakdown row')
+        if self.kind == 'epic':
+            self.check_corpus_audit(by_name.get('Acceptance Criteria', []))
+
+    def check_corpus_audit(self, criteria: list[str]) -> None:
+        """An epic whose pull requests reach the corpus branch carries the corpus audit criterion.
+
+        The reach is measured from the pull requests naming this epic. Without them, or without the
+        branch, it is unevaluable and nothing is reported."""
+        if not self.prs or not self.corpus:
+            return
+        found = PREFIX.match(self.issue['title'])
+        parts = re.findall(r'[EW]\d\d', found[2]) if found else []
+        if not found or len(parts) != 1:
+            return
+        prefix = f'[{found[1]}:{parts[0]}]'
+        reaches = False
+        for pr in self.prs:
+            if not (pr.get('title') or '').startswith(prefix):
+                continue
+            ref = (pr.get('base') or {}).get('ref') or ''
+            base = re.fullmatch(r'i\d\d/(?:e\d\d/)?(.+)', ref)
+            if (base[1] if base else ref) == self.corpus:
+                reaches = True
+        if reaches and not any(re.search(r'canon audit', line, re.IGNORECASE) for line in criteria):
+            self.decide.append('its pull requests reach the corpus and no criterion is the corpus '
+                               'audit; add it with the task row that delivers it')
 
     def reorder(self, sections: list[list], template: Template) -> list[list]:
         groups: list[list[list]] = []
@@ -554,6 +583,16 @@ class Review:
         if unknown:
             self.decide.append(f'Work Breakdown column not in the template: {", ".join(unknown)}')
             return lines
+        if 'Task' in header:
+            for r in rows:
+                ident = id_cell(header, r)
+                found = LINK.findall(ident)
+                if len({text for text, _ in found}) > 1:
+                    self.decide.append(
+                        f'{row_id(ident)}: every link on a task row names that row; resolve the others')
+                if len({href for _, href in found}) < len(found):
+                    self.decide.append(
+                        f'{row_id(ident)}: a task row links each delivery once; resolve the repeated links')
         if 'Done' in header:
             at = header.index('Done')
             for r in rows:
@@ -811,12 +850,15 @@ def main() -> int:
     parser.add_argument('--epic', action='append', help="initiative: an epic's issue JSON, whose title "
                         'names its row; repeat for each epic')
     parser.add_argument('--fix', help='write the mechanically fixed body here')
+    parser.add_argument('--prs', help='epic: pull requests as JSON lines, for the corpus audit check')
+    parser.add_argument('--corpus', help='epic: the long-lived branch the corpus lives on')
     args = parser.parse_args()
 
     issue = json.loads(Path(args.issue).read_text())
     initiative = json.loads(Path(args.initiative).read_text()) if args.initiative else None
     epics = [json.loads(Path(e).read_text()) for e in args.epic or []]
-    review = Review(issue, initiative, epics)
+    prs = [json.loads(l) for l in Path(args.prs).read_text().splitlines() if l.strip()] if args.prs else None
+    review = Review(issue, initiative, epics, prs, args.corpus)
     fixed = review.run()
     kind = getattr(review, 'kind', None) or 'unknown kind'
     print(f"#{issue.get('number')} {kind} ({issue.get('state')}): {len(review.fixed)} fixed, "

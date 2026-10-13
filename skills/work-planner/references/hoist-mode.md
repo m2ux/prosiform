@@ -7,7 +7,61 @@ Brings the tracker's standalone issues into the agent-engineering structure: eac
   - Open agent-engineering issues link them, as a reference or in prose, yet they sit outside the structure. An investigation an epic cites is one.
   - When the citing epic's criteria already carry its work, the investigation is subsumed into that epic.
 
-## Placements
+## Prerequisites
+
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
+
+## Procedure
+
+1. **Fetch.**  Fetch every issue with [Fetch All Issues](#fetch-all-issues).
+2. **List candidates.**  Run [List Orphans](#list-orphans). It prints:
+   - The orphans;
+   - The cited standalone issues, each with its labels, the agent-engineering issues citing it and any planning folder it links;
+   - The open initiatives and epics a placement can name.
+3. **Triage.**
+   Read each orphan whole, with its comments from [Fetch Comments](commands.md#fetch-comments), and the bodies of the initiatives and epics whose themes and criteria it touches. Note any planning folder it references, in its body or its comments. For each orphan, draft:
+   - The placements that fit, best first, each naming its target and whether the orphan is kept or subsumed, as [Placements](#placements) defines them;
+   - For a placement in an existing epic, the row it would add (Description, criteria, Depends on, Joins), or the existing task that already delivers it;
+   - Leave, when no initiative's goal covers it, or when it is not planned work.
+
+   A candidate whose work an existing criterion already states follows this mode's Already stated rule.
+4. **Offer.**
+   - Offer each orphan as an [Interview](interview.md). The grounding paragraph says what the orphan asks and where it fits. Leave is last.
+   - Placing an orphan in another initiative's issue needs that answer as its approval.
+5. **Apply.**  Apply each choice in turn:
+   - **Existing task.**
+     - Add the orphan's outcomes to the task issue's criteria and its design to the Proposal.
+     - Where they reach past the epic's criteria, add epic criteria too, cited by the task's row.
+     - Subsume the orphan.
+   - **New task.**
+     - Draft the row and its criteria in the epic.
+     - Number it where it can start, with [Renumber Tasks](commands.md#renumber-tasks) when a task no pull request names must move.
+     - Keep or subsume the orphan.
+   - **New epic.**
+     - Draft the epic from the [epic template](../templates/epic.md) and its row in the initiative, with the initiative criteria it serves.
+     - Follow [Plan Mode](plan-mode.md)'s steps for creating and linking an epic.
+     - Keep or subsume the orphan.
+   - **New initiative.**
+     Run [Plan Mode](plan-mode.md) with the orphan as its input. Keep or subsume the orphan.
+   - **Kept.**
+     Post the original-body comment, then rewrite the orphan by its kind's rules with [Retitle Issue](commands.md#retitle-issue), [Add Labels](commands.md#add-labels) and [Patch Body](commands.md#patch-body), carrying its evidence into Problem and its design into Proposal.
+   - **Leave.**
+     - Run [Check Format](commands.md#check-format) on the orphan.
+     - When its body needs rewriting, post the original-body comment, then rewrite it by a standalone issue's rules with [Patch Body](commands.md#patch-body), carrying its content into the template's sections.
+   - **Subsumed.**
+     - Cite the orphan under the taking issue's References (`- **Rn.** [Element Shape](…/issues/874) — The operations surveyed and their prose entries.`), and any planning it references as its own entry.
+     - Close it: [Comment on Issue](commands.md#comment-on-issue) with `Tracked in [I07:E01](…/issues/937) W04.`, then [Close as Not Planned](#close-as-not-planned).
+     - The work stays planned in the taking issue, which is where that work is tracked.
+6. **Review.**
+   - Run [Check Format](commands.md#check-format) on every issue the hoist changed or created.
+   - Run [Check Dependencies](commands.md#check-dependencies) on each initiative that gained a task or epic.
+   - Fold every finding in.
+7. **Report.**
+   Report each orphan's placement, the issues changed, created or closed, and the orphans left.
+
+## Reference
+
+### Placements
 
 A placement is the choice of where an orphan's work goes. The table states what that work becomes and whether the orphan issue is kept, subsumed, or left open.
 
@@ -22,7 +76,7 @@ A placement is the choice of where an orphan's work goes. The table states what 
 - **Kept.**
   - The orphan becomes the new task, epic or initiative issue.
   - It takes every formatting rule of that kind: the title form, the labels, its template, and the scheme's rules for bodies, code references and succinct items.
-  - The issue that lists it links it: a task's row id, or an epic's row in its initiative.
+  - An initiative row links its epic issue. Task rows follow [Task ids](work-breakdown.md#task-delivery); a task issue's Development field links its delivery pull request.
 - **Original body.**
   - A kept or left orphan's body is rewritten, so its body before the rewrite goes to a comment on the orphan first.
   - The comment opens with a line naming the layout it took: `The body before this issue took the [I07:E01:W04] layout:`, or `the standalone layout:` for a left orphan.
@@ -44,54 +98,35 @@ A placement is the choice of where an orphan's work goes. The table states what 
   - A kept orphan's body reads as if it had always been its task, epic or initiative.
   - What the orphan said before lives in the original-body comment, never in the body.
 
-## Procedure
-
-1. **Fetch.**  Fetch every issue with [Fetch All Issues](commands.md#fetch-all-issues).
-2. **List candidates.**  Run [List Orphans](commands.md#list-orphans). It prints:
-   - The orphans;
-   - The cited standalone issues, each with its labels, the agent-engineering issues citing it and any planning folder it links;
-   - The open initiatives and epics a placement can name.
-3. **Triage.**
-   Read each orphan whole, with its comments from [Fetch Comments](commands.md#fetch-comments), and the bodies of the initiatives and epics whose themes and criteria it touches. Note any planning folder it references, in its body or its comments. For each orphan, draft:
-   - The placements that fit, best first, each naming its target and whether the orphan is kept or subsumed;
-   - For a placement in an existing epic, the row it would add (Description, criteria, Depends on, Joins), or the existing task that already delivers it;
-   - Leave, when no initiative's goal covers it, or when it is not planned work.
-
-   A candidate whose work an existing criterion already states follows this mode's Already stated rule.
-4. **Offer.**
-   - Offer each orphan as an [Interview](interview.md). The grounding paragraph says what the orphan asks and where it fits. Leave is last.
-   - Placing an orphan in another initiative's issue needs that answer as its approval.
-5. **Apply.**  Apply each choice in turn:
-   - **Existing task.**
-     - Add the orphan's outcomes to the task issue's criteria and its design to the Proposal.
-     - Where they reach past the epic's criteria, add epic criteria too, cited by the task's row.
-     - Subsume the orphan.
-   - **New task.**
-     - Draft the row and its criteria in the epic.
-     - Number it where it can start, with [Renumber Tasks](commands.md#renumber-tasks) when a task no pull request names must move.
-     - Keep or subsume the orphan.
-   - **New epic.**
-     - Draft the epic from the [epic template](../templates/epic.md) and its row in the initiative, with the initiative criteria it serves.
-     - Follow [Plan Mode](plan-mode.md)'s steps for creating and linking an epic.
-     - Keep or subsume the orphan.
-   - **New initiative.**  Run [Plan Mode](plan-mode.md) with the orphan as its input. Keep or subsume the orphan.
-   - **Kept.**
-     Post the original-body comment, then rewrite the orphan by its kind's rules with [Retitle Issue](commands.md#retitle-issue), [Add Labels](commands.md#add-labels) and [Patch Body](commands.md#patch-body), carrying its evidence into Problem and its design into Proposal.
-   - **Leave.**
-     - Run [Check Format](commands.md#check-format) on the orphan.
-     - When its body needs rewriting, post the original-body comment, then rewrite it by a standalone issue's rules with [Patch Body](commands.md#patch-body), carrying its content into the template's sections.
-   - **Subsumed.**
-     - Cite the orphan under the taking issue's References (`- **Rn.** [Element Shape](…/issues/874) — The operations surveyed and their prose entries.`), and any planning it references as its own entry.
-     - Close it: [Comment on Issue](commands.md#comment-on-issue) with `Tracked in [I07:E01](…/issues/937) W04.`, then [Close as Not Planned](commands.md#close-as-not-planned).
-     - The work stays planned in the taking issue, which is where that work is tracked.
-6. **Review.**
-   - Run [Check Format](commands.md#check-format) on every issue the hoist changed or created.
-   - Run [Check Dependencies](commands.md#check-dependencies) on each initiative that gained a task or epic.
-   - Fold every finding in.
-7. **Report.**
-   Report each orphan's placement, the issues changed, created or closed, and the orphans left.
-
 ## Rules
 
 - **Already stated.**
   A candidate whose work an existing criterion already states is subsumed into the issue holding that criterion, with no new row. For a cited standalone issue, that issue is usually the one citing it.
+
+## Commands
+
+### Fetch All Issues
+
+Saves every issue in the repository; the scripts skip the pull requests among them.
+
+```bash
+gh api --paginate "repos/{owner}/{repo}/issues?state=all&per_page=100" > issues.json
+```
+
+### Close as Not Planned
+
+Closes an issue whose work another issue tracks.
+
+```bash
+gh api --method PATCH repos/{owner}/{repo}/issues/874 -f state=closed -f state_reason=not_planned --jq .state
+```
+
+### List Orphans
+
+Lists the hoist candidates, and the open initiatives and epics they could join.
+
+- It reads [Fetch All Issues](#fetch-all-issues).
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/orphans.py issues.json
+```

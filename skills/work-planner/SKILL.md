@@ -1,16 +1,7 @@
 ---
 name: work-planner
 description: >-
-  Plans and maintains agent-engineering work on GitHub: proposal issues, [Ixx] initiative
-  issues, their [Ixx:Eyy] epics and [Ixx:Eyy:Wzz] tasks, each theme's project board, and the
-  Proposals board. Use to propose work, scope the problem, or raise a proposal; to plan the work,
-  scope the solution, or break down work, or write a work plan or work breakdown; to raise, plan, restructure, align or
-  renumber an initiative or epic; to check an issue's format, its compliance with the rules, its criteria or its dependency
-  order, or a Done column that disagrees with its delivery, or a merged task that still carries an unmet criterion; to fold review findings into issues; to sync an initiative or epic with completed work; to advance a board or decide what moves to ready;
-  to deliver the work on a board, start the work it makes available, or dispatch sessions for ready tasks;
-  to understand or explain a pull request's changes, write an architecture overview of one, or diagram what a change does for its reviewer;
-  to hoist or triage orphan issues into an initiative; for a standup or a status update in Slack;
-  or to revise or update the work-planner skill itself.
+  Plans and maintains agent-engineering work on GitHub: proposals, initiatives, epics, tasks and theme boards. Use to propose work or scope a problem; plan or break down work; raise, restructure, align or renumber an initiative or epic; check issue format, criteria, dependencies or delivery; fold review findings into issues; sync completed work; advance a board or decide what moves to ready; deliver board work or dispatch ready tasks; explain a pull request, write its architecture overview or diagram its changes; hoist or triage orphan issues; produce a standup or Slack status update; or revise the work-planner skill itself.
 ---
 
 # Work Planner
@@ -27,7 +18,7 @@ Each theme's project board shows where its items stand. The Proposals board hold
 
 ## Modes
 
-Read the file for the mode the request calls for:
+Read the selected mode's file in full, then follow its links as each step needs them:
 
 - **[Propose](references/propose-mode.md)**
   - Scoping the problem: the friction, the evidence, and the boundary
@@ -52,12 +43,12 @@ Read the file for the mode the request calls for:
   - Repair of a work-breakdown cell that disagrees with its delivery
   - Epic bases for an initiative in progress, and open task pull requests pointed at them
   - A row for a task issue the epic table does not list
-  - A review pull request for an epic whose tasks are delivered and whose criteria are ticked
+  - Draft review pull requests for epic bases with merged tasks
 - **[Sync](references/sync-mode.md)**
   - Links from each task that has a pull request to that pull request, open or merged
   - Ticks for the criteria that hold, and for each Work Breakdown row once it is complete
   - Closure of complete task issues, epics and initiatives
-  - Pull requests merging a completed epic's bases into its initiative's integration branches
+  - Automatic merges of completed epics into their long-lived branches once their drafts are marked ready
   - The theme board brought current with its issues
 - **[Advance](references/advance-mode.md)**
   - Sync of the board's open initiatives
@@ -72,8 +63,7 @@ Read the file for the mode the request calls for:
   - A session per unit, in a worktree of its own
   - A test for each criterion a unit delivers, of the kind that criterion can be observed by
   - A test plan table mapping each test to the parent epic criteria it covers
-  - A merge, on each run, of an open pull request whose test plan has passed
-  - A merge of the unit's pull request into the epic base once its test plan has passed
+  - Merging task pull requests through the shared delivery procedure
   - Hoisting of issues arising from the delivery of a unit
 - **[Understand](references/understand-mode.md)**
   - An architecture overview of one pull request, for the engineer who reviews it
@@ -141,9 +131,9 @@ Every issue the skill writes follows this scheme: its title, labels and body.
 - **Next number.**
   Find the next initiative number with [List Initiative Titles](references/commands.md#list-initiative-titles).
 - **Labels.**
-  - Besides the type and theme, add `enhancement`, `bug`, `tech-debt` and `priority:` with a positive integer as they apply. A larger number is higher. There is no maximum.
+  - Besides the type and theme, add `enhancement`, `bug` and `tech-debt` as they apply. Priority labels follow [Advance Mode](references/advance-mode.md#rules).
   - **Example.**  workflow-server adds `workflows`.
-  - Only labels that exist, as [List Labels](references/commands.md#list-labels) shows.
+  - Only labels that exist, as [List Labels](references/propose-mode.md#list-labels) shows.
 
 ## Themes and Boards
 
@@ -170,7 +160,7 @@ Every initiative belongs to one theme, and each theme has one project board. Eac
 - **Proposals.**
   - The board is titled `Proposals`. It holds proposal issues, the incoming funnel for work that may become an initiative.
   - Its copy source is the open board titled `Proposals Template`. That template carries Priority: High, Medium and Low, and its view is a board grouped by Status.
-  - When no open board is titled `Proposals`, [Create Proposals Board](references/commands.md#create-proposals-board) creates it.
+  - When no open board is titled `Proposals`, [Create Proposals Board](references/propose-mode.md#create-proposals-board) creates it.
   - **Suggested.**
     Raised, and nobody has taken it up. A new proposal lands here, with no assignee.
   - **Considering.**
@@ -183,32 +173,16 @@ Every initiative belongs to one theme, and each theme has one project board. Eac
     It will not become an initiative. It has no assignee.
 - **A new theme.**
   - It needs its label and its board before an initiative takes it.
-  - [Create Board](references/commands.md#create-board) copies the Initiative Template, titles the copy as above, and links it to the repository.
-
-## Dependencies
-
-- **GitHub CLI (`gh`).**
-  - Logged in through its keyring, with the `repo` scope for issues and pull requests and the `project` scope for project boards.
-  - Issue and pull request calls go through REST (`gh api`), and every call needs full host permissions. What REST does not expose, such as a pull request's Development field, goes through `gh api graphql`: [Link Pull Request to Issue](references/commands.md#link-pull-request-to-issue) sets that link and [Fetch Pull Request Issue Links](references/commands.md#fetch-pull-request-issue-links) reads it.
-  - A board is created with `gh project`, as [Create Board](references/commands.md#create-board) and [Create Proposals Board](references/commands.md#create-proposals-board) specify.
-- **Sandbox.**
-  `scripts/sbx` in the workspace checkout, the one holding this skill, runs the skill's scripts under bubblewrap with no network. `<workspace>` in the mode files stands for that checkout.
-- **Python 3.10 or later.**
-  Standard library only, for the scripts in `scripts/` and their tests in `test/`.
-- **git.**
-  - For the planning record: [Add Planning Record](references/commands.md#add-planning-record).
-  - For delivery: each initiative's integration branches and each epic's base branches, per the [Work Breakdown Guide](references/work-breakdown.md#delivery).
-  - For dispatch: a worktree per unit of work, as [Create Task Worktree](references/commands.md#create-task-worktree) cuts it.
-  - For understanding a change: a worktree at a pull request's head commit, as [Create Pull Request Worktree](references/commands.md#create-pull-request-worktree) cuts it.
-- **GitNexus.**
-  The `gitnexus` command, for the structure [Understand Mode](references/understand-mode.md) measures over a change. It indexes the repository under review itself, as [Index Repository](references/commands.md#index-repository) runs it, so an unindexed repository costs that run rather than blocking the mode.
-- **Sub-agents.**
-  The dispatch of the session this skill runs in. [Deliver Mode](references/deliver-mode.md#rules) starts each unit's session with it, and [Plan Mode](references/plan-mode.md) delegates a broad evidence sweep to it.
+  - [Create Board](references/sync-mode.md#create-board) copies the Initiative Template, titles the copy as above, and links it to the repository.
 
 ## Rules
 
+- **Linked sections.**
+  Read a heading-linked section and its subsections, stopping before the next heading of equal or higher level. Follow required prerequisites; preserve each boundary in batched reads and recover truncated output. Explicit whole-document requirements still apply.
 - **Work Breakdown Guide.**
   Every mode reads the [Work Breakdown Guide](references/work-breakdown.md): the columns, numbering, references and delivery of the Work Breakdown tables, and what a [Problem and a Proposal](references/work-breakdown.md#problem-and-proposal) hold.
+- **Issue closure.**
+  Every completion follows [Issue Closure](references/work-breakdown.md#issue-closure), including its repository prerequisite before linking or merging delivery pull requests.
 - **Decisions.**
   - Ask them one at a time, as an [Interview](references/interview.md).
   - Record each answer in the affected issues and, when there is one, the planning record.
@@ -218,9 +192,54 @@ Every initiative belongs to one theme, and each theme has one project board. Eac
   - How the plan evolved goes in the planning record and in commit and pull request bodies.
 - **Other initiatives.**  Editing another initiative's issue needs the user's explicit approval.
 - **References.**
-  The References section does not link issues or pull requests on the same board. Relational logic is communicated by the GitHub project, not by bare links.
+  An issue's References section does not link issues or pull requests on the same board. The GitHub project holds those relationships. Pull request References follow [Review pull request](references/work-breakdown.md#review-pull-request) and [Understand Mode](references/understand-mode.md#rules).
 - **Replies to feedback.**
   - Once feedback on an issue is folded into its body, a comment mentions the reviewer and answers each of their points in turn, precisely and factually, with no thanks or filler. It is posted with [Comment on Issue](references/commands.md#comment-on-issue).
   - Each answer names what the body now says, by criterion id where one carries it, or the issue that takes the point.
 - **Commands**
-  Every command one spec in [Commands](references/commands.md), with the conventions they share.
+  Every command spec runs under the [Command Conventions](#command-conventions) below. Reuse complete prerequisites already read at the same revision; retrieve specific operations where needed.
+
+## Command Conventions
+
+How every command of this skill runs, held here because selecting a mode already opens this file.
+
+- **Session.**
+  Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
+- **Repository.**
+  `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
+- **Bodies.**
+  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
+  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Keep these files in a working directory outside the repository.
+- **Scripts.**
+  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Boards.**
+  A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
+- **Example values.**  Substitute the real ones:
+  - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
+  - `950` a pull request, `I07` and `I08` initiative numbers;
+  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - `1` the Initiative Template board, `13` a board copied from it;
+  - `14` the Proposals Template, `15` the Proposals board;
+  - `m2ux` the user.
+  - `<checkout>` any checkout of the project, a linked worktree included.
+
+## Dependencies
+
+- **GitHub CLI (`gh`).**
+  - Logged in through its keyring, with the `repo` scope for issues and pull requests and the `project` scope for project boards.
+  - Issue and pull request API calls use REST (`gh api`), with full host permissions. Development links use [Development Access](references/commands.md#development-access).
+  - A board is created with `gh project`, as [Create Board](references/sync-mode.md#create-board) and [Create Proposals Board](references/propose-mode.md#create-proposals-board) specify.
+- **Sandbox.**
+  `scripts/sbx` in the workspace checkout, the one holding this skill, runs the skill's scripts under bubblewrap with no network. `<workspace>` in the mode files stands for that checkout.
+- **Python 3.10 or later.**
+  Standard library only, for the scripts in `scripts/` and their tests in `test/`.
+- **git.**
+  - For the planning record: [Add Planning Record](references/commands.md#add-planning-record).
+  - For delivery: each epic's base branches, per the [Work Breakdown Guide](references/work-breakdown.md#delivery).
+  - For dispatch: a worktree per unit of work, as [Create Task Worktree](references/deliver-mode.md#create-task-worktree) cuts it.
+  - For understanding a change: a worktree at a pull request's head commit, as [Create Pull Request Worktree](references/understand-mode.md#create-pull-request-worktree) cuts it.
+- **GitNexus.**
+  The `gitnexus` command, for the structure [Understand Mode](references/understand-mode.md) measures over a change. It indexes the repository under review itself, as [Index Repository](references/understand-mode.md#index-repository) runs it, so an unindexed repository costs that run rather than blocking the mode.
+- **Sub-agents.**
+  The dispatch of the session this skill runs in. [Deliver Mode](references/deliver-mode.md#rules) starts each unit's session with it, and [Propose Mode](references/propose-mode.md) delegates a broad evidence sweep to it.

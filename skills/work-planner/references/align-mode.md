@@ -1,6 +1,12 @@
 # Align Mode
 
-Aligns existing proposal, initiative, epic, task and standalone issues with their templates and with the rules that bind them, and fixes them. For an initiative in progress, it also brings that initiative's branches to the structure the [Work Breakdown Guide](work-breakdown.md#delivery) states.
+Aligns existing proposal, initiative, epic, task and standalone issues with their templates and with the rules that bind them, and fixes them. It also brings each epic's branches to the structure the [Work Breakdown Guide](work-breakdown.md#delivery) states.
+
+## Prerequisites
+
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
+
+Before matching pull requests or syncing epics, read [Delivery State](commands.md#delivery-state).
 
 ## Procedure
 
@@ -22,7 +28,7 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
 4. **Apply the mechanical fixes.**
    - Apply them without asking.
    - Read the diff to confirm it changes structure only, then [Patch Body](commands.md#patch-body) from `fixed-943.md`.
-   - Make the title and label changes the check names, with [Retitle Issue](commands.md#retitle-issue), [Add Labels](commands.md#add-labels) and [Remove Label](commands.md#remove-label).
+   - Make the title and label changes the check names, with [Retitle Issue](commands.md#retitle-issue), [Add Labels](commands.md#add-labels) and [Remove Label](#remove-label).
 5. **Check the rules.**
    Run the [Review Passes](review-passes.md) on the issues being aligned: the goal pass, the consistency pass, and the ordering pass.
    - A proposal, against [Propose Mode](propose-mode.md)'s Problem scope rule.
@@ -46,21 +52,20 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
      A row that links a pull request the fetch did not return is fetched with [Fetch Pull Request](commands.md#fetch-pull-request), and the sync is run again.
    - **Unlinked.**
      A criterion ticked while its row links no pull request and no commit: link the one delivery [Fetch Comments](commands.md#fetch-comments) names, a path taken as the commit that holds it, then run the sync again. Several candidates, or none, go to the user as an [Interview](interview.md).
-   For an initiative being aligned, [Fetch Initiative Pull Requests](commands.md#fetch-initiative-pull-requests), [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links), and run [Sync Initiative](commands.md#sync-initiative) with `--fix` and every epic its table links.
+   For an initiative being aligned, run [Sync Initiative](commands.md#sync-initiative) with `--fix` and every epic its table links.
    - **Ready to verify.**
      An initiative criterion [Sync Mode](sync-mode.md) reports ready to verify: every epic that cites it is delivered, and the criterion is unticked.
    - **Ticked early.**
      An initiative criterion [Sync Mode](sync-mode.md) reports ticked early: it is ticked while an epic that cites it is undelivered.
    Put each of those to the user as an [Interview](interview.md). Verifying and ticking it is [Sync Mode](sync-mode.md). A Done change the fix file writes is applied with [Patch Body](commands.md#patch-body), without asking. The report follows [Coverage Reports](work-breakdown.md#coverage-reports).
 10. **Branches.**
-    For an initiative being aligned, bring each open epic's branches to the structure the [Work Breakdown Guide](work-breakdown.md#delivery) states. Cut each missing branch as [Missing branches](work-breakdown.md#missing-branches) states.
-    - [List Long-Lived Branches](commands.md#list-long-lived-branches) prints the names, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. When it reports them unevaluable, the branch step stops and that report is the finding.
+    For an initiative being aligned, bring each open epic's branches to the structure the [Work Breakdown Guide](work-breakdown.md#delivery) states. Check [Epic prerequisites](work-breakdown.md#epic-prerequisites) before cutting a missing branch as [Missing branches](work-breakdown.md#missing-branches) states.
+    - [List Long-Lived Branches](#list-long-lived-branches) prints the names, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. When it reports them unevaluable, the branch step stops and that report is the finding.
     - [Fetch Initiative Pull Requests](commands.md#fetch-initiative-pull-requests). [List Epic Bases](commands.md#list-epic-bases) for each open epic.
-    - The long-lived branch a pull request base names is the last segment of that base when the segment is a long-lived branch, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. `i07/main`, `main`, and `i07/e00/main` all name `main`.
-    - An epic base is cut from the integration branch's tip, so it carries what that branch already holds.
-    - An open pull request that delivers the epic's tasks, and whose base is the integration branch or the long-lived branch, is pointed at that epic base with [Retarget Pull Request](commands.md#retarget-pull-request).
+    - Identify the long-lived branch with [List Long-Lived Branches](#list-long-lived-branches). A base of `main` or `i07/e00/main` names `main`.
+    - Point an open task pull request at its epic base with [Retarget Pull Request](commands.md#retarget-pull-request).
     - When that pull request is not mergeable, [Update Task Branch](commands.md#update-task-branch) merges the epic base into the task branch. A conflict is reported and the pull request stays open.
-    - An open pull request whose head is an epic base keeps the integration branch as its base. One whose head is an integration branch keeps the long-lived branch as its base.
+    - An open pull request whose head is an epic base targets its corresponding long-lived branch.
     - A merged pull request is left as merged.
     - A base that is none of these is put to the user as an [Interview](interview.md).
 11. **Unplaced task issues.** Handle each one as [Unplaced](work-breakdown.md#unplaced) states.
@@ -94,9 +99,9 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
 - **Task grain.**
   Apply the [Epic](review-criteria.md#epic) Work Breakdown criteria for a task that delivers more than three criteria.
 - **Local criterion.**
-  Apply the initiative [Acceptance Criteria](review-criteria.md#acceptance-criteria) Local rule.
+  Apply the [Initiative Acceptance Criteria](review-criteria.md#initiative-acceptance-criteria) Local rule.
 - **Counted criterion.**
-  Apply the initiative [Acceptance Criteria](review-criteria.md#acceptance-criteria) No counts rule.
+  Apply the [Initiative Acceptance Criteria](review-criteria.md#initiative-acceptance-criteria) No counts rule.
 - **Instrument.**
   Apply the initiative [Verified](review-criteria.md#verified) rule.
 - **Description.**
@@ -110,7 +115,7 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
 - **Work Breakdown prose.**
   Prose in the Work Breakdown outside its table fails the [Work Breakdown Guide](work-breakdown.md#rules) Order rule. Move any design content into the Proposal.
 - **Depends on.**
-  Apply the [Epic](review-criteria.md#epic) or [Initiative](review-criteria.md#initiative) Work Breakdown criteria for Depends on. For an initiative, the cell takes the epics [Check Dependencies](commands.md#check-dependencies) derives with `I=`.
+  Apply the [Epic](review-criteria.md#epic) or [Initiative](review-criteria.md#initiative) Work Breakdown criteria for Depends on. Use [Check Dependencies](commands.md#check-dependencies) to identify initiative edges that fail the [whole-epic prerequisite rule](work-breakdown.md#tables); keep their narrower task dependencies when correcting the initiative table.
 - **Title.**
   Apply the [Any issue](review-criteria.md#any-issue) Title criteria, and the [Epic](review-criteria.md#epic) Title criteria for an epic. The initiative row takes the epic's new name.
 - **Several tasks.**
@@ -120,12 +125,31 @@ Aligns existing proposal, initiative, epic, task and standalone issues with thei
   - On acceptance, add the row and take those criteria off the delivered task's Coverage.
   - Run [Sync Epic](commands.md#sync-epic) again. It ticks Done on the delivered task, as the [Work Breakdown Guide](work-breakdown.md#tables) defines.
   - A criterion the user confirms already holds is ticked in [Sync Mode](sync-mode.md), and it stays on the delivered task.
-- **Branches.**
-  An initiative in progress has the integration branches and epic bases the [Work Breakdown Guide](work-breakdown.md#delivery) defines, and an open pull request that delivers its tasks targets the epic base. A retarget that leaves the pull request unmergeable is followed by [Update Task Branch](commands.md#update-task-branch).
 - **Unplaced.**
   Apply [Unplaced](work-breakdown.md#unplaced).
 - **Review pull request.**
   Apply [Review pull request](work-breakdown.md#review-pull-request).
 - **Table.**
-  A Done cell that disagrees with whether its row is complete, as the [Work Breakdown Guide](work-breakdown.md#tables) defines, is repaired. A ticked criterion whose row links no delivery is linked when the comments name one delivery, a path taken as the commit that holds it. Several candidates, or none, are decided with the user.
+  Repair Done cells under [Tables](work-breakdown.md#tables); resolve missing delivery evidence through the Coverage step.
 
+## Commands
+
+### Remove Label
+
+Removes one label from an issue.
+
+```bash
+gh api --method DELETE repos/{owner}/{repo}/issues/943/labels/type:initiative --jq '.[].name'
+```
+
+### List Long-Lived Branches
+
+Prints the long-lived branch names, one per line.
+
+- The names are as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
+- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py --names --project <checkout>
+```

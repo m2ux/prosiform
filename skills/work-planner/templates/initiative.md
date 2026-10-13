@@ -18,11 +18,11 @@
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/{{OWNER}}/{{REPO}}/issues/{{EPIC_ISSUE}}) | {{The epic's title name, the part before the colon}} | AC{{n}}, AC{{m}} | {{[Exx](…), the other epics this epic's tasks depend on}} | |
+| [E00](https://github.com/{{OWNER}}/{{REPO}}/issues/{{EPIC_ISSUE}}) | {{The epic's title name, the part before the colon}} | AC{{n}}, AC{{m}} | {{[Exx](…), whole-epic prerequisites under the Work Breakdown Guide}} | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** {{One invariant, a condition that holds or does not, meeting the [initiative criteria](../references/review-criteria.md#acceptance-criteria): SMART, no stale counts, local, whole, and verifiable. It ends by naming its instrument, as the [Verified](../references/review-criteria.md#verified) rule defines.}}
+- [ ] **AC1.** {{One invariant, a condition that holds or does not, meeting the [initiative criteria](../references/review-criteria.md#initiative-acceptance-criteria): SMART, no stale counts, local, whole, and verifiable. It ends by naming its instrument, as the [Verified](../references/review-criteria.md#verified) rule defines.}}
 
 ## Non-Goals
 

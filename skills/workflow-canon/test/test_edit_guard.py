@@ -117,6 +117,46 @@ class NearestBranchPoint(Workspace):
         self.assertIn('origin/workflows', run.stderr)
 
 
+class JoinedCorpus(Workspace):
+    """A corpus that joins a library as a submodule, as the Midnight tree joins the public corpus."""
+
+    def setUp(self):
+        super().setUp()
+        self.library = Repo(self.tmp / 'library')
+        self.library.write('corpus/shared/resources/guide.md', '# Guide\n')
+        self.library.commit('Library')
+
+    def join(self, text: str) -> None:
+        """Mount the library at corpus/upstream with guide.md holding text, and cut a branch."""
+        self.library.write('corpus/shared/resources/guide.md', text)
+        self.library.commit('Library content')
+        self.corpus.submodule('corpus/upstream', self.library)
+        self.from_workflows()
+
+    def assertNoSubmoduleWorktree(self):
+        self.assertEqual(self.library.worktrees(), 1,
+                         'a branch-point submodule worktree is left registered')
+
+    def test_failure_inside_the_submodule_at_the_branch_point_passes(self):
+        self.join('TEXT-DEFECT standing in the library\n')
+        self.corpus.write('corpus/demo/activities/start.yaml', 'id: start\nsteps:\n  - two\n')
+        run = self.edit('activities/start.yaml')
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertEqual(self.calls(), ['tree', 'base'])
+        self.assertNoSubmoduleWorktree()
+
+    def test_a_pointer_bump_that_adds_a_failure_blocks(self):
+        self.join('# Guide\n')
+        self.library.write('corpus/shared/resources/guide.md', 'TEXT-DEFECT arriving with the bump\n')
+        bumped = self.library.commit('Advance the library')
+        self.corpus.point_submodule_at('corpus/upstream', bumped)
+        self.corpus.commit('Bump the pointer')
+        run = self.edit('activities/start.yaml')
+        self.assertEqual(run.returncode, 2)
+        self.assertIn('TEXT-DEFECT arriving with the bump', run.stderr)
+        self.assertNoSubmoduleWorktree()
+
+
 class Unmeasured(Workspace):
     """A run that cannot measure blocks with its reason, never passes."""
 

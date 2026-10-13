@@ -2,6 +2,10 @@
 
 The requirements every review uses, scoped to the kind of issue and to the section under review. A pass or a mode checks the section against its criteria here, and does not restate them.
 
+## Prerequisites
+
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
+
 ## Local
 
 Criteria that apply to one kind of issue. A review of that kind uses its section, and the sections under it.
@@ -34,7 +38,7 @@ An initiative states the goal as criteria and lists the epics that deliver them.
 - A Problem states the friction as it is now, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A Problem that describes the plan is a finding.
 
-#### Proposal
+#### Initiative Proposal
 
 - A Proposal states the design, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A Proposal names no epic, task, or acceptance criterion of its own initiative.
@@ -57,12 +61,12 @@ A marked source in References is a document the initiative's criteria answer to.
 #### Work Breakdown
 
 - An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
-- Depends on names epics only, never tasks, and only the epics this epic's tasks depend on that another named epic does not already cover.
-- An initiative Depends on cell that names a task, or that differs from the epics the epics' tasks depend on, is unsound.
+- Depends on satisfies the whole-epic prerequisite test in the [Work Breakdown Guide](work-breakdown.md#tables).
+- An initiative dependency that only some tasks need, or that requires only part of its prerequisite epic, is overbroad. The output and its producing tasks must justify the edge; [Check Dependencies](commands.md#check-dependencies) reports graph disagreements.
 - An epic depending on a later epic is a backward reference.
 - Numbering that does not follow start order is advisory.
 
-#### Acceptance Criteria
+#### Initiative Acceptance Criteria
 
 An initiative criterion meets the [shared acceptance criteria](#shared-acceptance-criteria), and:
 
@@ -71,7 +75,7 @@ An initiative criterion meets the [shared acceptance criteria](#shared-acceptanc
 - **SMART.**
   Each initiative criterion is **specific** about what holds; **measurable** by a named check or baseline; **achievable** by the epics that cite it; **relevant**, tracing to a clause and to the Problem; and **time-bound** by a release tag or another named milestone outside the initiative's own work, where one exists, and otherwise by the epics that cite it.
 - **Local.**
-  An initiative criterion names no initiative, epic, task or issue, and is solution-agnostic: Description cells link epics to criteria, never the reverse. One that holds only through another initiative's work is not local: restate what this initiative achieves, or drop it.
+  An initiative criterion names no initiative, epic, task or issue, and is solution-agnostic: Coverage cells link epics to criteria, never the reverse. One that holds only through another initiative's work is not local: restate what this initiative achieves, or drop it.
 #### Whole
 
 An initiative criterion states what the initiative achieves as a whole. One that restates a single epic's criterion is a duplicate: raise it to what the epics achieve together, or leave it to the epic.
@@ -111,7 +115,7 @@ An epic states one slice of the initiative's design and lists the tasks that del
 - A Problem states the friction of this epic, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A Problem that describes the plan is a finding.
 
-#### Proposal
+#### Epic Proposal
 
 - A Proposal states the design of this epic, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A boundary with a sibling epic is plain language in the Proposals, not a non-goal.
@@ -139,7 +143,7 @@ An epic states one slice of the initiative's design and lists the tasks that del
 
 A task covers at least one acceptance criterion. A criterion more than one row cites is imprecise: split it into the invariant each task makes true, and cite each from the row that delivers it.
 
-#### Acceptance Criteria
+#### Epic Acceptance Criteria
 
 An epic criterion meets the [shared acceptance criteria](#shared-acceptance-criteria). Contradictions between acceptance criteria in one epic are findings.
 
@@ -161,11 +165,11 @@ A task states one pull request's worth of its epic's design.
 
 - A Problem states the friction of this task, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 
-#### Proposal
+#### Task Proposal
 
 - A Proposal states the design of this task, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 
-#### Acceptance Criteria
+#### Task Acceptance Criteria
 
 A task criterion meets the [shared acceptance criteria](#shared-acceptance-criteria).
 
@@ -192,7 +196,7 @@ These criteria bind every issue, whatever its kind.
 
 #### References
 
-- References does not link issues or pull requests on the same board; relational logic is communicated by the GitHub project.
+- References follows the skill's [References rule](../SKILL.md#rules).
 - A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
 
 #### Body
@@ -208,7 +212,7 @@ An initiative criterion, an epic criterion, and a task criterion each meet these
 - Names or implies the instrument that observes it: a test, a guard, a command or a measure.
 - Is unambiguous, so two readers agree on whether it holds.
 - **One invariant.**
-  Each criterion states a single condition that holds or does not. One joining several is split, and the Description cells cite the new ones. A condition over a list of subjects is one condition.
+  Each criterion states a single condition that holds or does not. One joining several is split, and the Coverage cells cite the new ones. A condition over a list of subjects is one condition.
 
 #### Verifiable
 
