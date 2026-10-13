@@ -22,10 +22,11 @@ whatever its mood, order or count, so a sibling specification, a statement
 of what a command does, and a sentence routing three commands in sequence
 all name a command without running it. A skill's entry point holds no
 command of its own, so a
-specification standing there is reported wherever it is cited from. A mode
-file's top-level sections are the set the guidelines name, in the order they
-name them, Procedure and Rules among them, so the reader knows what the file
-carries before opening it.
+specification standing there is reported wherever it is cited from. The
+top-level sections of a file carrying a procedure are the set the guidelines
+name, in the order they name them, Procedure among them, so the reader knows
+what the file carries before opening it. A file carrying no procedure keeps
+its own shape, and a mode file carries Rules as well.
 
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
@@ -55,8 +56,7 @@ BARE_LEAD = re.compile(r'^\s*-\s+\*\*[^*]+\*\*\s*$')
 INDENTED = re.compile(r'^\s+\S')
 PROSE_LIMIT = 8
 LEAD_WIDTH = 100
-MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
-MODE_REQUIRED = ('Procedure', 'Rules')
+SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
 
 
 def anchor_of(text):
@@ -219,25 +219,30 @@ def check(path, root, cache, cited, called):
             caller = named(next(iter(citing)), root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
 
-    # A mode file's top-level sections are a named set in a named order, and
-    # carry the two the guidelines make mandatory, so the reader knows what
-    # the file carries before opening it.
-    if path.name.endswith('-mode.md'):
+    # The top-level sections of a file carrying a procedure are a named set in
+    # a named order, and its procedure is the one named Procedure, so the reader
+    # knows what the file holds before opening it. What the file carries selects
+    # it: a catalog, a context file and a contract file state what a procedure
+    # consults, and nothing about them is a sequence. A skill's entry point
+    # takes the structure the guidelines give it whatever it carries, and a mode
+    # states what binds it whatever step it is on, so a mode file carries Rules.
+    mode = path.name.endswith('-mode.md')
+    if mode or (path.name != 'SKILL.md' and procedure_spans(lines, fenced, headings)):
         sections = [(index, title.strip()) for index, level, title in headings if level == 2]
         rank = -1
         for index, title in sections:
-            if title not in MODE_SECTIONS:
-                report(index, 'section outside the mode set', title)
+            if title not in SECTIONS:
+                report(index, 'section outside the set', title)
                 continue
-            place = MODE_SECTIONS.index(title)
+            place = SECTIONS.index(title)
             if place < rank:
-                report(index, 'mode sections out of order',
-                       f'{MODE_SECTIONS[place]} after {MODE_SECTIONS[rank]}')
+                report(index, 'sections out of order',
+                       f'{SECTIONS[place]} after {SECTIONS[rank]}')
             rank = max(rank, place)
         carried = {title for _, title in sections}
-        for required in MODE_REQUIRED:
+        for required in ('Procedure', 'Rules') if mode else ('Procedure',):
             if required not in carried:
-                report(0, 'mode section missing', required)
+                report(0, 'section missing', required)
 
     for index, target in targets(path, lines, fenced):
         name, _, fragment = target.partition('#')

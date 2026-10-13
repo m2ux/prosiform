@@ -43,18 +43,27 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Commands.**
   SKILL.md links the shared command conventions on a required path and holds no command of its own.
 
+## Procedure files
+
+- **What the file carries selects the set.**
+  - A procedure is a top-level section carrying a numbered step, whatever its heading names it, as [Commands](#commands) defines it.
+  - A file carrying one takes the sections below. A catalog, a context file and a contract file state what a procedure consults, and nothing about them is a sequence, so each keeps its own shape.
+  - A skill's entry point takes [its own structure](#skillmd-structure) whatever it carries.
+- **Top-level sections.**
+  - Prerequisites, Procedure, Reference, Rules and Commands, in that order, each optional but for Procedure.
+  - Anything else the file needs is a sub-section under one of them, so a diverse title names a part of a known whole.
+- **What the reader does with a heading places it.**
+  - Reference holds what a step consults or produces: a table, an output shape, a vocabulary.
+  - Rules holds what binds the file whatever step it is on.
+  - An alternative way in is a step of the Procedure.
+- **Procedure.**
+  A `## Procedure` of numbered steps, each opening with a bold label. Where the file holds several procedures, each is a sub-section of it.
+
 ## Mode files
 
 - **Opening.**  `# <Name> mode`, then a paragraph on what the mode does.
-- **Top-level sections.**
-  - Prerequisites, Procedure, Reference, Rules and Commands, in that order, each optional but for Procedure and Rules.
-  - Anything else the mode needs is a sub-section under one of them, so a diverse title names a part of a known whole.
-- **What the reader does with a heading places it.**
-  - Reference holds what a step consults or produces: a table, an output shape, a vocabulary.
-  - Rules holds what binds the mode whatever step it is on.
-  - An alternative way into the mode is a step of the Procedure.
-- **Procedure.**
-  A `## Procedure` of numbered steps, each opening with a bold label.
+- **Sections.**
+  A mode carries a procedure, so a mode file takes the [procedure-file sections](#procedure-files) and their order, and carries Rules as well as Procedure.
 - **Rules.**  A statement that binds only this mode goes in the mode's `## Rules`.
 
 ## Layout

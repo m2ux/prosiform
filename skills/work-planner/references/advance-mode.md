@@ -51,16 +51,16 @@ Command operations use the [Command Conventions](../SKILL.md#command-conventions
     - An epic that is next, and has not started, moves to Ready.
     - Any other Ready epic of it moves to Backlog.
     - An epic In Review or Done is left as it stands.
-  - An epic is next when [Epic prerequisites](work-breakdown.md#epic-prerequisites) hold and its Open Questions section is empty. Delivered is the reading [Plan Board Changes](commands.md#plan-board-changes) uses.
+  - An epic is next when [Epic prerequisites](work-breakdown.md#epic-prerequisites) hold and its Open Questions section is empty. Delivered is the reading [Plan Board Changes](sync-mode.md#plan-board-changes) uses.
   - Partly completed means a delivered task row on an epic that is not closed as completed.
   - On an initiative that moves to Backlog, its epics move to Backlog.
   - A Ready epic of an initiative that is not In Progress moves to Backlog.
 - **Tasks.**
-  A task is Ready only when its epic is Ready or In Progress. [Plan Board Changes](commands.md#plan-board-changes) follows that. This mode does not move task issues.
+  A task is Ready only when its epic is Ready or In Progress. [Plan Board Changes](sync-mode.md#plan-board-changes) follows that. This mode does not move task issues.
 - **Report.**
   For an initiative In Progress, the `next` line names the epics that are Ready.
 - **The queue.**
-  [Plan Board Changes](commands.md#plan-board-changes) leaves an initiative or an epic in Ready or Backlog when no pull request is open, and leaves In Progress when delivery has started. This mode is what moves them.
+  [Plan Board Changes](sync-mode.md#plan-board-changes) leaves an initiative or an epic in Ready or Backlog when no pull request is open, and leaves In Progress when delivery has started. This mode is what moves them.
 
 ## Commands
 

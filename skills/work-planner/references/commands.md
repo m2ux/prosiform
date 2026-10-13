@@ -148,27 +148,12 @@ Points a pull request at another base branch, such as its epic's base branch.
 gh api --method PATCH repos/{owner}/{repo}/pulls/950 -f base='i07/e00/main' --jq .base.ref
 ```
 
-### Update Review Pull Request
-
-Adds a merged task pull request's change to the review pull request that merges the epic base it landed in.
-
-- Run it after [Sync Epic](#sync-epic), on the session that merged, as the [Work Breakdown Guide](work-breakdown.md#review-pull-request) states.
-- The first call prints the review pull request's number, by the epic base as head. It prints nothing while no pull request merges that base, and the base opens as a draft first.
-- The second writes the current body to a file. The unit's change goes under Changes, beneath the heading for its area or a new one, and its pull request is appended to References as the next R number.
-- The third replaces the body with that file.
-
-```bash
-gh api "repos/{owner}/{repo}/pulls?state=open&head={owner}:i07/e00/main" --jq '.[0].number'
-gh api repos/{owner}/{repo}/pulls/980 --jq .body > review-980.md
-gh api --method PATCH repos/{owner}/{repo}/pulls/980 -F body=@review-980.md --jq .html_url
-```
-
 ### List Epic Bases
 
 Prints one epic's base branch names, one per line.
 
 - A base is `i07/e00/<name>` whose `<name>` is a long-lived branch, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
-- [Find Available Work](#find-available-work) takes these names as `--bases`.
+- [Find Available Work](deliver-mode.md#find-available-work) takes these names as `--bases`.
 
 ```bash
 git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
@@ -185,13 +170,6 @@ Merges the epic base into the unit's task branch.
 ```bash
 git fetch origin i07/e00/main && git merge --no-edit origin/i07/e00/main && git push origin HEAD:refs/heads/i07/e00/w01-queue-plan
 ```
-
-### Link Pull Request to Issue
-
-Sets the [Issue links](work-breakdown.md#delivery) relation through [Development Access](#development-access).
-
-- Open the issue's Development selector, select the pull request's repository and pull request, and verify the saved link.
-- Refresh [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) after the edit.
 
 ## Project Boards
 
@@ -322,54 +300,4 @@ Reports an initiative's delivery state against its epics, and ticks Done on an e
 
 ```bash
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
-```
-
-### Plan Board Changes
-
-Derives each issue's Status and assignees, and prints the call for each issue to add, item to remove, Status to set and assignee to add or remove.
-
-- Give an issue it reports unresolved with `--others`.
-- `--assignee` is the user [Find User](#find-user) prints.
-- `--links` is the file [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) writes for those pull requests, and is where the issue a pull request delivers is read. A call without it is refused.
-- An open initiative or epic whose criteria are all ticked is In Review. An epic with an open pull request and a criterion unticked is In Progress.
-- An initiative or an epic with no open pull request and unticked criteria keeps Ready or Backlog, and keeps In Progress when delivery has started. In Review then becomes In Progress. One not yet on the board is added at Backlog, or at In Progress when delivery has started. [Advance Mode](advance-mode.md#rules) sets the queue.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/board.py issue-936.json --epics issue-943.json issue-937.json --tasks issue-637.json --prs prs.json --links links.json --board users/{owner}/projectsV2/9 --fields fields.json --items items.json --out board/ --assignee m2ux
-```
-
-### Find Available Work
-
-Reports each unit of work a theme board makes available, each row a session holds, and each row its dependencies block.
-
-- The rules are [Deliver Mode](deliver-mode.md).
-- `--items` is [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
-- Give an issue it reports unresolved with `--others`.
-- `--project` is a checkout of the project, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. A base whose last segment is not one of those names is ignored.
-- `--bases` is the list [List Epic Bases](#list-epic-bases) prints for the board's epics, comma-separated.
-- A `unit` line names the tasks of one session's work, their coverage, and the record folder, branch, base and worktree their ids and Description give them. One base is `base i07/e00/main`. Several are `bases i07/e00/main i07/e00/workflows`.
-- A `hold` line names a row a session holds, and the record it links.
-- A `blocked` line names a free row whose dependencies are undelivered, or whose joined task is unavailable.
-- A `merge` line names an open pull request whose test plan has passed, and the epic base it targets. [Deliver Mode](deliver-mode.md) merges it on the run.
-- `--date` opens the records on another day than today.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --items items.json --prs prs.json --project <checkout> --bases i07/e00/main,i07/e00/workflows
-```
-
-### Summarise Progress
-
-Prints the standup from [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status) and [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
-
-- `--links` is the file [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) writes for those pull requests, and is where the issue a pull request delivers is read. A call without it is refused.
-- `--since` opens the window on another date than a week before today.
-- `--initiative I08` limits it to one initiative, or `owner/repo:I08` where that number names initiatives in several repositories.
-- `--initiatives` gives the initiatives off the board, each from [Fetch Issue](#fetch-issue).
-- `--summary` gives the paragraph for management.
-
-```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --initiatives issue-946.json
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --summary summary.txt
 ```
