@@ -206,7 +206,7 @@ class SkillFileChecks(unittest.TestCase):
                    '# Plan\n\n## Delivery\n\n1. **Open.**  Run [Fetch issue](#fetch-issue).\n'
                    '\n## Commands\n\n### Fetch issue\n\nFetches one issue.\n')
         self.write('references/sync.md', calling('Sync', 'plan.md#fetch-issue'))
-        self.assertEqual(self.findings(), [])
+        self.assertNotIn('command specification with one caller', self.kinds())
 
     def test_a_procedure_under_a_heading_of_its_own_name_in_another_file_is_a_caller(self):
         self.write('references/catalog.md', self.CATALOG)
@@ -244,7 +244,7 @@ class SkillFileChecks(unittest.TestCase):
                    '1. **Plan.**  Run [Plan assignments](catalog.md#plan-assignments).\n'
                    '2. **Bind.**  Run [Bind agent](catalog.md#bind-agent).\n'
                    '3. **Write.**  Run [Write packet](catalog.md#write-packet).\n')
-        self.assertEqual(self.findings(), [])
+        self.assertNotIn('command specification with one caller', self.kinds())
 
     def test_a_sibling_specification_of_a_catalog_is_not_a_caller(self):
         self.write('references/commands.md',
@@ -328,27 +328,58 @@ class SkillFileChecks(unittest.TestCase):
     def test_a_mode_section_outside_the_set_is_reported(self):
         self.write('references/plan-mode.md',
                    self.MODE + self.PROCEDURE + '\n## Findings\n\nOne sentence.\n' + self.RULES)
-        self.assertIn('section outside the mode set', self.kinds())
+        self.assertIn('section outside the set', self.kinds())
 
     def test_mode_sections_out_of_order_are_reported(self):
         self.write('references/plan-mode.md', self.MODE + self.RULES + self.PROCEDURE)
-        self.assertIn('mode sections out of order', self.kinds())
+        self.assertIn('sections out of order', self.kinds())
 
     def test_a_mode_file_without_a_procedure_is_reported(self):
         self.write('references/plan-mode.md', self.MODE + self.RULES)
-        self.assertIn('mode section missing', self.kinds())
+        self.assertIn('section missing', self.kinds())
 
     def test_a_mode_file_without_rules_is_reported(self):
         self.write('references/plan-mode.md', self.MODE + self.PROCEDURE)
-        self.assertIn('mode section missing', self.kinds())
+        self.assertIn('section missing', self.kinds())
 
     def test_a_mode_file_without_either_section_is_reported_for_each(self):
         self.write('references/plan-mode.md', self.MODE)
         self.assertEqual([kind for _, _, kind in self.findings()],
-                         ['mode section missing', 'mode section missing'])
+                         ['section missing', 'section missing'])
 
-    def test_a_file_that_is_not_a_mode_carries_any_section(self):
+    def test_a_reference_file_carrying_a_procedure_takes_the_set(self):
+        self.write('references/dispatch.md',
+                   '# Dispatch\n\n## Phases\n\n1. **Open.**  The first step.\n')
+        self.assertEqual({kind for _, _, kind in self.findings()},
+                         {'section outside the set', 'section missing'})
+
+    def test_a_reference_file_whose_sections_are_the_set_reports_nothing(self):
+        self.write('references/dispatch.md', '# Dispatch\n\nWhat it does.\n' + self.PROCEDURE)
+        self.assertEqual(self.findings(), [])
+
+    def test_a_reference_file_carrying_a_procedure_needs_no_rules(self):
+        self.write('references/dispatch.md',
+                   '# Dispatch\n\nWhat it does.\n\n## Prerequisites\n\nOne sentence.\n'
+                   + self.PROCEDURE)
+        self.assertEqual(self.findings(), [])
+
+    def test_a_reference_file_with_sections_out_of_order_is_reported(self):
+        self.write('references/dispatch.md',
+                   '# Dispatch\n\nWhat it does.\n' + self.RULES + self.PROCEDURE)
+        self.assertIn('sections out of order', self.kinds())
+
+    def test_a_file_carrying_no_procedure_carries_any_section(self):
         self.write('references/guide.md', '# Guide\n\n## Findings\n\nOne sentence.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_step_under_a_sub_section_selects_the_file(self):
+        self.write('references/dispatch.md',
+                   '# Dispatch\n\n## Phases\n\n### Route\n\n1. **Open.**  The first step.\n')
+        self.assertIn('section outside the set', self.kinds())
+
+    def test_the_entry_point_keeps_its_own_structure(self):
+        self.write('SKILL.md', '---\nname: specimen\n---\n\n# Specimen\n\n'
+                               '## Modes\n\n1. **Plan.**  The first mode.\n')
         self.assertEqual(self.findings(), [])
 
     def test_a_trailing_blank_line_is_reported(self):
