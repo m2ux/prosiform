@@ -21,7 +21,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 
 - **SKILL.md.**  The skill's entry point, at the top of its folder.
 - **References.**
-  - `references/` holds one `<mode>-mode.md` per mode, `command-conventions.md` when the skill runs commands, `guidelines.md` when the skill has rules of its own, and each guide the modes share.
+  - `references/` holds one `<mode>-mode.md` per mode, `guidelines.md` when the skill has rules of its own, and each guide the modes share.
   - Templates, scripts and tests each have a folder of their own.
 - **Shared.**
   `skills/` holds this file beside the `scripts/` and `test/` folders for checks that every skill runs. A check binding one skill lives in that skill's own folders.
@@ -115,7 +115,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - Prose names a spec by linking to its sub-section, mid-sentence: "run [Check format](work-planner/references/commands.md#check-format) on each epic".
   - A command body is inlined only in the file that owns the spec.
 - **Conventions.**
-  - Session setup, execution location, example values and other skill-wide prerequisites live in `command-conventions.md`, linked once from SKILL.md.
+  - Session setup, execution location, example values and other skill-wide prerequisites stand where a procedure reaching them opens no further file: SKILL.md, which selects the mode, or the file holding the operations those procedures open anyway.
   - Conventions governing one procedure's commands sit in that procedure's file, ahead of its Commands section.
 
 ## Progressive Disclosure
