@@ -115,9 +115,12 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 - [ ] **ACn.** The definitions this epic changes carry no outstanding confirmed finding, as the canon audit's coverage report shows.
 ```
 
-- **The row is the epic's last**, named `Canon audit of the changed definitions`, depending on the rows whose definitions it audits, and covering this criterion alone. [Deliver Mode](deliver-mode.md) dispatches it as its own unit.
-- **A finding closes by a fix on this epic's branch or by an issue that takes it.** Outstanding means neither.
-- **The epic changes definitions** when a task row's work reaches the long-lived branch the corpus lives on. A row that only changes the engine, continuous integration or the workspace does not bring the criterion.
+- **The row is the epic's last.**
+  It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone. [Deliver Mode](deliver-mode.md) dispatches it as its own unit.
+- **A finding closes by a fix on this epic's branch or by an issue that takes it.**
+  Outstanding means neither.
+- **Definitions change when a task row's work reaches the branch the corpus lives on.**
+  A row that only changes the engine, continuous integration or the workspace does not bring the criterion.
 - [Check Format](commands.md#check-format) reports a corpus epic whose criteria omit it.
 
 ### Epic Prerequisites
