@@ -34,7 +34,8 @@ from collections import Counter
 from datetime import date as day
 from pathlib import Path
 
-from board import Board, key_of, label, pages, rows, status_of
+from board import Board, rows
+from statuses import key_of, label, pages, status_of
 from format import LINK, TICK, cell, done_mark, id_cell, join_sections, row, row_id, split_sections
 from sync import Unreadable, long_lived_names, plan_rows, pull_requests, table
 

@@ -93,10 +93,13 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 13. **Explain each change entering review.**
     Run [Understand Mode](understand-mode.md) for each task and epic whose confirmed status in step 12 is In Review and whose previous status was not, against the pull request this mode's Overviews rule names. A reviewer meets the overview on the pull request it explains.
 14. **Report.**
+    When this mode was not reached from [Advance Mode](advance-mode.md), close the report with the queue as this mode's Queue rule states.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](work-breakdown.md#coverage-reports). A test plan disagreement is reported as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Test plan.
 
 ## Rules
 
+- **Queue.**
+  This mode decides no queue, and leaves Ready and Backlog as [Advance Mode](advance-mode.md#rules)'s The queue rule states. A run this mode closes on its own reports the queue unevaluated and names [Advance Mode](advance-mode.md) as what decides it, and does not run it.
 - **Open questions.**
   An epic is not synced while its Open Questions section remains. Ready it in [Plan Mode](plan-mode.md) first.
 - **In Review.**

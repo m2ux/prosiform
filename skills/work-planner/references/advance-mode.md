@@ -61,6 +61,7 @@ Command operations use the [Command Conventions](../SKILL.md#command-conventions
   For an initiative In Progress, the `next` line names the epics that are Ready.
 - **The queue.**
   [Plan Board Changes](sync-mode.md#plan-board-changes) leaves an initiative or an epic in Ready or Backlog when no pull request is open, and leaves In Progress when delivery has started. This mode is what moves them.
+  - The two modes write one Status field, so each is held to its own part of it. A Status change outside the calling mode's part is refused with the issue it names: [Plan Board Changes](sync-mode.md#plan-board-changes) may not move an initiative or an epic between Ready and Backlog, and [Plan Queue](#plan-queue) may not set In Review or Done, nor move a task.
 
 ## Commands
 
