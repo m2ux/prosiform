@@ -99,7 +99,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Selection links.**
   A link naming the next operation, section or route points wherever that content sits, forward included. The reader chooses from it rather than needing to hold it already.
 - **Prerequisite citation.**
-  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Sizing](audit-dispatch.md#sizing) first.`
+  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Audit Command Conventions](change-surface.md#audit-command-conventions) first.`
   - Within one file, position carries the requirement and the citation is dropped: conventions sit ahead of the procedures and commands they govern.
   - A prerequisite citation pointing further down its own file is a defect, whatever its wording. A sequential reader meets it after the point it was meant to serve.
 - **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
