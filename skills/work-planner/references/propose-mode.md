@@ -4,7 +4,7 @@ Scopes the problem: the friction, the evidence, and the boundary, and states the
 
 ## Prerequisites
 
-Command operations use the [command conventions](command-conventions.md), read before the first spec.
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
 ## Procedure
 

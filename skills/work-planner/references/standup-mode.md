@@ -4,7 +4,7 @@ Summarises a project board as a standup, in Slack markup for pasting into a chan
 
 ## Prerequisites
 
-Command operations use the [command conventions](command-conventions.md), read before the first spec.
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
 ## Procedure
 

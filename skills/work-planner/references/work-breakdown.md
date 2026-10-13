@@ -4,7 +4,7 @@ How the Work Breakdown tables are written, read and kept current, what a plan or
 
 ## Prerequisites
 
-Command operations use the [command conventions](command-conventions.md), read before the first spec.
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
 Before matching pull requests or syncing epics, read [Delivery State](commands.md#delivery-state).
 

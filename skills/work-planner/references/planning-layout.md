@@ -10,7 +10,7 @@ A planning record is the folder [Add Planning Record](commands.md#add-planning-r
 
 ## Prerequisites
 
-Command operations use the [command conventions](command-conventions.md), read before the first spec.
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
 ## README.md
 
