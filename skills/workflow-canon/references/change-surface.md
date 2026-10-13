@@ -2,7 +2,20 @@
 
 Author and Audit use the same captured inventory, applicability matrices and evidence gates. Scripts establish structural coverage; independent agents establish semantic accuracy.
 
-## Capture
+## Prerequisites
+
+### Audit Command Conventions
+
+- **Runtime.**
+  Use Python 3.10+ and Node with the paired engine's installed `yaml` package. Resolve `<skill-root>`, `<corpus-root>`, `<engine-root>` and the shared planning `<run>` directory to absolute paths. Apply the host's sandbox rules.
+- **Ownership.**
+  The coordinator invokes mutations sequentially; workers return files. Preserve failures and output in the planning record.
+- **Inputs.**
+  JSON files follow the [scope](../templates/audit-scope.json), [budget](../templates/audit-budgets.json) and [receipt](../templates/audit-receipt.json) contracts. Fill actual limits and measured calibration. Scope can include `base`, additional `rows` with source/address/section/start/end/context, and `relationships` with source/target/address/label/context.
+- **Exit status.**
+  Exit 0 means the operation succeeded; status with `--require` returns 2 when the requested gate is incomplete; exit 1 means invalid input or unavailable operation. Rendering and planning do not establish audit completion.
+
+## Procedure
 
 1. **Locate the record.**
    Resolve the shared [planning record](planning.md), corpus root and paired engine. Each run has its own directory beneath that record.
@@ -13,7 +26,9 @@ Author and Audit use the same captured inventory, applicability matrices and evi
 4. **Check the proposed inventory.**
    Read [Identity](#identity), then assign [independent inventory verification](audit-dispatch.md#phases). Verifiers derive expected items and relationships from captured sources and the corpus manifest. They compare the proposed rows, complete AP/DP inventory, diagnostics and unselected files against those expectations. Automated extraction is a candidate inventory, including unresolved reference candidates; it does not establish completeness.
 
-## Identity
+## Reference
+
+### Identity
 
 - **Items.**
   Rows use the source path and native section, rule, input, output or step identifier. Nested steps retain their full ancestry and duplicate occurrences. Positional prose, paragraphs and candidate clauses use revision-bound source addresses. Independently testable constraints sharing one line need separate clause rows; verifiers add any missed boundary through the scope input's `rows` list. Whole-section, whole-element, missing-structure and relationship rows retain checks that span items.
@@ -24,7 +39,7 @@ Author and Audit use the same captured inventory, applicability matrices and evi
 - **Criteria.**
   AP identity uses the canonical named entry; its current AP number is a display alias. DP aliases retain their numbered source headings and titles. Every row accounts for every captured AP and DP. Each unit is carried against the files of the kinds its [fires-on line](canon-map.md#file-kinds) names; absent metadata or an unavailable lookup leaves the full product. The [canon inventory](canon-map.md#unit-inventory) also supplies family, creation-rule, convention and guard obligations.
 
-## Applicability
+### Applicability
 
 Use [mapping assignments](audit-dispatch.md#phases) to decide every cell in the full row × AP/DP product. Each cell links to source evidence and exactly one disposition:
 
@@ -36,48 +51,48 @@ Use [mapping assignments](audit-dispatch.md#phases) to decide every cell in the 
 
 A cell pairing a unit with a row whose source kind its [fires-on line](canon-map.md#file-kinds) does not name is `N`, its evidence that line and the row's kind. The remaining cells carry the walk.
 
-### Shared Reasons
+#### Shared Reasons
 
 Shared reasons name the exact assigned row set and hold for every member. A clean result or a Do not flag exception is an evaluation under an applicable criterion; it does not by itself establish inapplicability. Blank cells are unresolved. Table pagination preserves every logical pair exactly once.
 
-### Cell Verification
+#### Cell Verification
 
 After all decisions are `A` or `N`, independent verifiers check every cell, including every exclusion, against the original criterion and source. They cannot verify cells they mapped. The receipt binds the exact mapping reason, disposition and evidence. Disputes return to the coordinator for correction through [reset](#reset-audit-cells) or [refresh](#refresh-audit-surface), then fresh verification. Open the evaluation gate only when [status requires the map](#check-audit-status) successfully.
 
-## Evaluation
+### Evaluation
 
-### Worker Obligations
+#### Worker Obligations
 
 Assign the verified applicable cells through [dispatch](audit-dispatch.md#phases). Workers follow the complete [walk rules](walk-rules.md), read the full source and required relationship context, and return evidence for each pass, finding or blockage. Reconcile returns through the typed [receipt](audit-dispatch.md#returns). Whole-file reads, supplemental units, selected project checks and independent finding confirmation are separate obligations. A command result carries its command, working directory, exit status and captured output; an unmeasured check stays blocked.
 
-### Remediation Authority
+#### Remediation Authority
 
 The calling mode owns remediation authority. Corrections to definitions return through Author's draft procedure. Review-only audits report findings. Workers have read authority; authorized edits are serialized by the coordinator or assigned disjoint file ownership before execution.
 
-## Completion
+### Completion
 
-### Required Evidence
+#### Required Evidence
 
 The audit is complete only when the current inventory is independently verified, every AP/DP cell has independently verified applicability, every applicable cell has an evidence-backed pass or finding, and every whole-file read, supplemental unit, required check and finding confirmation is settled. Unknown, disputed, stale, unread, unmeasured or blocked work keeps it incomplete. Every required item has one reconciled primary result; retries cannot overwrite accepted items. Use [status requiring completion](#check-audit-status) for the final claim.
 
-### Coverage and Conformance
+#### Coverage and Conformance
 
 Coverage completion and conformance are separate. Confirmed violations can have complete coverage; [reporting](reporting.md#report-context) determines their bands and verdict. A user stop or resource limit leaves a saved incomplete run with its residual, never a finished audit.
 
-## Freshness and Resume
+### Freshness and Resume
 
 - **Inspect the run.**
-  Start with [status](#check-audit-status), which returns bounded counts, generation identity and artifact paths. Locate residuals through the coverage document's headings and assignment identifiers; issue the relevant [packet](#write-audit-packet) for source, mapping and ownership detail. The script-owned JSON ledger stores the complete dataset and is accessed through these projections.
+  Start with [status](#check-audit-status), which returns bounded counts, generation identity and artifact paths. Locate residuals through the coverage document's headings and assignment identifiers; issue the relevant [packet](audit-dispatch.md#write-audit-packet) for source, mapping and ownership detail. The script-owned JSON ledger stores the complete dataset and is accessed through these projections.
 - **Source generations.**
   Any corpus membership/byte change, scope correction, canon change, parser/engine change or audit-tool change blocks use of the captured generation. [Refresh](#refresh-audit-surface) captures the current generation and invalidates all its mapping, verification and evaluation evidence because cross-element dependency reach can exceed local source rows. An identical generation preserves its pending work. Archived state and immutable returns retain prior evidence.
 - **Mapping corrections.**
   [Reset](#reset-audit-cells) invalidates a selected mapping and its verification/evaluation, including intersecting assignments. A reason or evidence edit changes the mapping fingerprint. Renewed evaluation waits for the entire current map to be verified.
 - **Interrupted workers.**
-  Accepted partial work remains recorded. [Retry](#retry-audit-assignment) retires an assignment and [planning](#plan-audit-assignments) assigns its unresolved residual. A fresh agent can continue after the coordinator checks captured identities and current status.
+  Accepted partial work remains recorded. [Retry](#retry-audit-assignment) retires an assignment and [planning](audit-dispatch.md#plan-audit-assignments) assigns its unresolved residual. A fresh agent can continue after the coordinator checks captured identities and current status.
 - **Author byte agreement.**
   Before applying a verified draft, compare its captured source hashes with the bytes to write. After writing, capture the actual working tree and run its selected checks. Reuse evidence only for an identical generation; changed roots, contracts or candidate bytes require their current verification. A draft-only request makes no commit-completion claim.
 
-## Artifacts
+### Artifacts
 
 | Artifact | Role |
 | --- | --- |
@@ -91,17 +106,6 @@ Coverage completion and conformance are separate. Confirmed violations can have 
 | `audit-report.md` | Generated findings and completion status |
 
 For a workflow-owned report, follow [Workflow Reports](reporting.md#workflow-reports) and transfer the generated counts, residuals and links into that guide's layout. The generated coverage remains authoritative.
-
-## Audit Command Conventions
-
-- **Runtime.**
-  Use Python 3.10+ and Node with the paired engine's installed `yaml` package. Resolve `<skill-root>`, `<corpus-root>`, `<engine-root>` and the shared planning `<run>` directory to absolute paths. Apply the host's sandbox rules.
-- **Ownership.**
-  The coordinator invokes mutations sequentially; workers return files. Preserve failures and output in the planning record.
-- **Inputs.**
-  JSON files follow the [scope](../templates/audit-scope.json), [budget](../templates/audit-budgets.json) and [receipt](../templates/audit-receipt.json) contracts. Fill actual limits and measured calibration. Scope can include `base`, additional `rows` with source/address/section/start/end/context, and `relationships` with source/target/address/label/context.
-- **Exit status.**
-  Exit 0 means the operation succeeded; status with `--require` returns 2 when the requested gate is incomplete; exit 1 means invalid input or unavailable operation. Rendering and planning do not establish audit completion.
 
 ## Commands
 
@@ -134,36 +138,6 @@ Regenerate matrices, evidence and reports from canonical state.
 
 ```bash
 python3 <skill-root>/scripts/audit_surface.py render --run <run>
-```
-
-### Plan Audit Assignments
-
-Compute disjoint residual assignments under declared budgets.
-
-- Read [Sizing](audit-dispatch.md#sizing) first. Select `inventory`, `map`, `verify`, `evaluate` or `obligations`. Unknown limits, unmet gates or indivisible oversized context refuse dispatch.
-
-```bash
-python3 <skill-root>/scripts/audit_surface.py plan --run <run> --phase <phase> --budgets <budgets.json>
-```
-
-### Bind Audit Agent
-
-Bind an assignment to its actual host agent identity.
-
-- Independent roles cannot own their authored work; retired assignments require a new residual plan.
-
-```bash
-python3 <skill-root>/scripts/audit_surface.py bind --run <run> --assignment <id> --actor <host-agent-id>
-```
-
-### Write Audit Packet
-
-Write captured context and ownership for one agent.
-
-- Give the packet and [return contract](audit-dispatch.md#returns) to the bound host agent. Serialized size must fit the plan.
-
-```bash
-python3 <skill-root>/scripts/audit_surface.py packet --run <run> --assignment <id> --out <packet.json>
 ```
 
 ### Submit Audit Results

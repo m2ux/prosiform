@@ -4,7 +4,7 @@ The requirements every review uses, scoped to the kind of issue and to the secti
 
 ## Prerequisites
 
-Command operations use the [command conventions](commands.md#conventions), read before the first spec.
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
 ## Local
 
@@ -38,7 +38,7 @@ An initiative states the goal as criteria and lists the epics that deliver them.
 - A Problem states the friction as it is now, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A Problem that describes the plan is a finding.
 
-#### Proposal
+#### Initiative Proposal
 
 - A Proposal states the design, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A Proposal names no epic, task, or acceptance criterion of its own initiative.
@@ -66,7 +66,7 @@ A marked source in References is a document the initiative's criteria answer to.
 - An epic depending on a later epic is a backward reference.
 - Numbering that does not follow start order is advisory.
 
-#### Acceptance Criteria
+#### Initiative Acceptance Criteria
 
 An initiative criterion meets the [shared acceptance criteria](#shared-acceptance-criteria), and:
 
@@ -115,7 +115,7 @@ An epic states one slice of the initiative's design and lists the tasks that del
 - A Problem states the friction of this epic, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A Problem that describes the plan is a finding.
 
-#### Proposal
+#### Epic Proposal
 
 - A Proposal states the design of this epic, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 - A boundary with a sibling epic is plain language in the Proposals, not a non-goal.
@@ -143,7 +143,7 @@ An epic states one slice of the initiative's design and lists the tasks that del
 
 A task covers at least one acceptance criterion. A criterion more than one row cites is imprecise: split it into the invariant each task makes true, and cite each from the row that delivers it.
 
-#### Acceptance Criteria
+#### Epic Acceptance Criteria
 
 An epic criterion meets the [shared acceptance criteria](#shared-acceptance-criteria). Contradictions between acceptance criteria in one epic are findings.
 
@@ -165,11 +165,11 @@ A task states one pull request's worth of its epic's design.
 
 - A Problem states the friction of this task, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 
-#### Proposal
+#### Task Proposal
 
 - A Proposal states the design of this task, as the [Work Breakdown Guide](work-breakdown.md#problem-and-proposal) defines.
 
-#### Acceptance Criteria
+#### Task Acceptance Criteria
 
 A task criterion meets the [shared acceptance criteria](#shared-acceptance-criteria).
 
