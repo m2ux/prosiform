@@ -43,7 +43,7 @@ Read the selected mode's file in full, then follow its links as each step needs 
   - The theme board brought current with its issues
 - **[Advance](references/advance-mode.md)**
   - Forward-looking, scoped to one board
-  - The initiatives and epics that move to Ready or In Progress
+  - Placement of initiatives and epics as In Progress or as Ready
   - A parallel work map for initiatives with no priority
 - **[Deliver](references/deliver-mode.md)**
   - Forward-looking, scoped to one board
