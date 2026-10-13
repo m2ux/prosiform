@@ -107,6 +107,19 @@ Tables write references with colons (`E01:W03`, `I05:E00:W02`), the form the scr
   - When the first task merges into an epic base, the pull request that merges that base into its long-lived branch opens as a draft, as [Review pull request](#review-pull-request) states.
   - [Epic merge](#epic-merge) delivers each completed epic. The epic stays open until every base has merged into its long-lived branch.
 
+### Corpus Audit
+
+An epic whose tasks change workflow definitions carries this criterion, and a final task row delivers it:
+
+```markdown
+- [ ] **ACn.** The definitions this epic changes carry no outstanding confirmed finding, as the canon audit's coverage report shows.
+```
+
+- **The row is the epic's last**, named `Canon audit of the changed definitions`, depending on the rows whose definitions it audits, and covering this criterion alone. [Deliver Mode](deliver-mode.md) dispatches it as its own unit.
+- **A finding closes by a fix on this epic's branch or by an issue that takes it.** Outstanding means neither.
+- **The epic changes definitions** when a task row's work reaches the long-lived branch the corpus lives on. A row that only changes the engine, continuous integration or the workspace does not bring the criterion.
+- [Check Format](commands.md#check-format) reports a corpus epic whose criteria omit it.
+
 ### Epic Prerequisites
 
 An epic starts implementation only when every prerequisite epic named by its task rows or its initiative row is closed as completed, after all of that prerequisite's bases have merged into their long-lived branches. A dependency on one task of another epic waits for that entire epic's delivery. Task-level references retain which output is consumed; initiative rows follow the dependency rule in [Tables](#tables).

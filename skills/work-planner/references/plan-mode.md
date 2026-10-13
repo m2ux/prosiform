@@ -75,6 +75,8 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
 - **Criteria at creation.**
   - An acceptance criterion complies with [Requirement characteristics](requirement-characteristics.md), the [shared acceptance criteria](review-criteria.md#shared-acceptance-criteria), and, for an initiative, its [Acceptance Criteria](review-criteria.md#acceptance-criteria), when it is written.
   - The issue that carries it is created only after the criterion complies.
+- **The corpus audit.**
+  An epic whose tasks change workflow definitions carries the [corpus audit criterion](work-breakdown.md#corpus-audit), with a final task row that delivers it.
 - **The discussion PR.**
   Merging it is the user's call.
 - **Pull request bodies.**
