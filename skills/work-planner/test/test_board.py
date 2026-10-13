@@ -12,7 +12,8 @@ from pathlib import Path
 from fixtures import SCRIPTS, epic_body, initiative_body, issue, item, links, pr, run, url
 
 sys.path.insert(0, str(SCRIPTS))
-from board import Board, assignee_calls  # noqa: E402
+from board import Board  # noqa: E402
+from statuses import assignee_calls  # noqa: E402
 
 KEY = ('o/r', 12)
 PATH = 'repos/o/r/issues/12/assignees'

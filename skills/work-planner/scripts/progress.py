@@ -72,7 +72,8 @@ from collections.abc import Callable
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
-from board import Board, Key, PREFIX, PULL_REF, key_of, label, linked_issue, pages, status_of
+from board import Board, PREFIX, PULL_REF, linked_issue
+from statuses import Key, key_of, label, pages, status_of
 from format import LINK, cell, epic_name, id_cell, phrase
 from sync import PR_REF, PULL_URL, Unreadable, attach_links, links_issue, pull_requests
 

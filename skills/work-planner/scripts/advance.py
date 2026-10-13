@@ -8,7 +8,8 @@ items.json is the board's items with the Status field, as board.py reads them. p
 sync.py reads it. fields.json is the board's fields. An issue the rows depend on that is not on
 the board is given with --others.
 
-The moves are the Advance mode rules. Printed: the gh call for each Status and assignee change,
+The moves are the Advance mode rules, rendered by statuses.py within the QUEUE jurisdiction, which
+refuses In Review, Done and any task. Printed: the gh call for each Status and assignee change,
 an order line for each kind when nothing is In Progress and no initiative has a priority, an ask
 line for an initiative In Progress with no priority, a tie line when labelled initiatives share
 the highest rank, a wait line for an open pull request, and a next line for epics.
@@ -23,14 +24,14 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from board import Board, assignee_calls, key_of, label, linked_issue, open_questions, option_name, pages, rows, status_of
+from board import Board, linked_issue, open_questions, rows
 from format import cell, id_cell, row_id
+from statuses import PLACED, QUEUE, Changes, Jurisdiction, StatusField, board_items, key_of, label
 from sync import PR_REF, Unreadable, pull_requests
 
 PREFIX = re.compile(r'^\[I(\d\d)(?::E(\d\d))?(?::W(\d\d))?\]')
 RANK = re.compile(r'^priority: ([1-9]\d*)$')
 PULL_HOME = re.compile(r'github\.com/([^/]+/[^/]+)/pull/\d+')
-PLACED = ('Backlog', 'Ready', 'In Progress')
 
 
 def label_names(issue: dict) -> set[str]:
@@ -290,61 +291,30 @@ def main() -> int:
         given = json.loads(Path(path).read_text())
         issues[key_of(given)] = given
     status, item_ids = {}, {}
-    for item in pages(args.items):
-        content = item.get('content') or {}
-        if item.get('content_type') != 'Issue' or not content.get('repository_url'):
-            continue
-        key = key_of(content)
+    for key, item_id, held, content in board_items(args.items):
         issues[key] = content
-        status[key] = status_of(item)
-        item_ids[key] = item['id']
+        status[key] = held
+        item_ids[key] = item_id
     home = Counter(key[0] for key in issues).most_common(1)[0][0] if issues else ''
     queue = Queue(issues, status, pull_requests(args.prs), home,
                   named_keys(args.unplanned, issues, status, 'unplanned'))
     queue.decide()
 
-    field = next((item for item in pages(args.fields) if item.get('name') == 'Status'), None)
-    if not field:
-        sys.exit('the board has no Status field')
-    options = {option_name(option['name']): option['id'] for option in field.get('options', [])}
-    missing = [name for name in PLACED if name not in options]
-    if missing:
-        sys.exit(f"the board's Status field lacks {', '.join(missing)}")
-    out = Path(args.out).resolve()
-    out.mkdir(parents=True, exist_ok=True)
-    bodies = {}
-    for name in PLACED:
-        path = out / f"status-{name.lower().replace(' ', '-')}.json"
-        path.write_text(json.dumps({'fields': [{'id': field['id'], 'value': options[name]}]}))
-        bodies[name] = path
-
-    print(f"{args.board}: Status field {field['id']}")
-    current = todo = 0
+    field = StatusField(args.fields, args.out, PLACED)
+    changes = Changes(QUEUE, args.board, field, args.assignee, ' (the queue is current)')
     governed = [key for key, issue in issues.items() if key in status and (is_initiative(issue) or key in queue.parents)]
     for key in sorted(governed):
-        title = queue.line(key)
         new = queue.wanted.get(key)
-        if new is None or new == status.get(key):
-            current += 1
+        if new is None:
+            changes.current += 1
             continue
-        calls = assignee_calls(key, new, issues[key], args.assignee)
-        body = bodies[new]
-        print(f"  set {title}: {status.get(key) or 'no Status'} → {new}: "
-              f'gh api --method PATCH {args.board}/items/{item_ids[key]} --input {body}')
-        for call in calls:
-            print(f'  assign {title} ({new}): {call}')
-        todo += 1
-    for note in queue.notes:
-        print(note)
-    for note in dict.fromkeys(queue.board.unresolved):
-        print(f'  unresolved: {note}')
-    open_question = any(note.strip().startswith(('order', 'ask')) for note in queue.notes)
-    print(f'  current: {current}, to do: {todo}' + ('' if todo or open_question else ' (the queue is current)'))
-    return 0
+        changes.place(key, queue.line(key), issues[key], status.get(key), new, item_ids[key], home)
+    asking = any(note.strip().startswith(('order', 'ask')) for note in queue.notes)
+    return changes.report(notes=queue.notes, unresolved=queue.board.unresolved, asking=asking)
 
 
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except Unreadable as exc:
-        sys.exit(str(exc))
+    except (Unreadable, Jurisdiction) as refused:
+        sys.exit(str(refused))
