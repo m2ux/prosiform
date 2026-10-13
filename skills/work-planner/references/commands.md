@@ -268,9 +268,10 @@ Checks one issue against its template, and with `--fix` writes the body with the
 - It reads the format from `templates/`, and checks that every criterion is delivered by a Work Breakdown row.
 - An epic's check takes its initiative's JSON, which lists the epic issues its references link to.
 - An initiative's takes each epic's JSON with `--epic`, whose title names its row.
+- An epic's check also takes `--prs` and `--corpus`, the long-lived branch the corpus lives on, which report a [corpus epic](work-breakdown.md#corpus-audit) whose criteria omit the audit. The reach is read from the base of each pull request naming the epic, through an epic base or an initiative branch. Without both, the reach is unevaluable and nothing is reported.
 
 ```bash
-cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/format.py issue-943.json --initiative issue-936.json --fix fixed-943.md
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/format.py issue-943.json --initiative issue-936.json --prs prs.json --corpus workflows --fix fixed-943.md
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/format.py issue-936.json --epic issue-943.json --epic issue-937.json --fix fixed-936.md
 ```
 
