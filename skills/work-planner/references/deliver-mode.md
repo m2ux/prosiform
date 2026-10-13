@@ -18,7 +18,7 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
    - [Fetch Board Fields](commands.md#fetch-board-fields).
    - [Find User](commands.md#find-user) for the assignee.
 4. **Survey.**
-   The long-lived branches are as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. List each epic's bases with [List Epic Bases](commands.md#list-epic-bases), then run [Find Available Work](commands.md#find-available-work) with those names and `--project` set to a checkout of the project. Give an issue it reports unresolved with `--others`, and run it again.
+   The long-lived branches are as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. List each epic's bases with [List Epic Bases](commands.md#list-epic-bases), then run [Find Available Work](#find-available-work) with those names and `--project` set to a checkout of the project. Give an issue it reports unresolved with `--others`, and run it again.
    - **Held work.**
      Put each `hold` line to the user as an [Interview](interview.md) before any unit is dispatched, with the record it links and whether a session is still running. The user releases it or leaves it. A released row goes through [Release Row](#release-row) and [Patch Body](commands.md#patch-body), and the command runs again.
    - **Blocked work.**
@@ -78,7 +78,7 @@ What the prompt tells one session, written from the facts the `unit` line and th
 - **One unit, one session.**
   A unit is a task row, or the tasks that name each other in Joins, as the [Work Breakdown Guide](work-breakdown.md#tables) defines. One unit is one pull request's work.
 - **Task branches.**
-  A unit works on the branch [Find Available Work](commands.md#find-available-work) names, cut from the epic base, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
+  A unit works on the branch [Find Available Work](#find-available-work) names, cut from the epic base, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
 - **Release is the user's call.**
   A held row is released only on the user's word. This mode reads no clock and reclaims nothing on its own.
 - **Dispatch is confirmed.**
@@ -98,7 +98,7 @@ Opens the pull request that delivers a unit's work into its epic base.
 - The title is the epic's prefix and the unit's purpose: `[I07:E00] Purpose`.
 - The head is the unit's task branch and the base is the epic base it was cut from, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines.
 - The body is drafted from the [pull request template](../templates/pull-request.md), with its Test Plan filled as [Test Coverage](work-breakdown.md#test-coverage) specifies.
-- [Link Pull Request to Issue](commands.md#link-pull-request-to-issue) links each task issue the unit delivers once it is open, as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Issue links. A unit whose tasks carry no issue of their own links nothing.
+- [Link Pull Request to Issue](sync-mode.md#link-pull-request-to-issue) links each task issue the unit delivers once it is open, as the [Work Breakdown Guide](work-breakdown.md#delivery) states under Issue links. A unit whose tasks carry no issue of their own links nothing.
 
 ```bash
 gh api --method POST repos/{owner}/{repo}/pulls -f title='[I07:E00] Purpose' -f head='i07/e00/w01-queue-plan' -f base='i07/e00/main' -F body=@body.md --jq .html_url
@@ -110,7 +110,7 @@ Holds each named task row for one session, by setting its record folder as the r
 
 - It refuses a row already held, and one whose id links a pull request or a commit.
 - `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
-- The folder is the one [Find Available Work](commands.md#find-available-work) names, and `--date` is the day it is opened.
+- The folder is the one [Find Available Work](#find-available-work) names, and `--date` is the day it is opened.
 
 ```bash
 cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning --fix fixed-943.md
@@ -131,10 +131,29 @@ cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/de
 
 Cuts the worktree and branch one unit's session works in, from the epic's base branch.
 
-- The worktree, the branch and the base are the ones [Find Available Work](commands.md#find-available-work) names, with the branch following the [Work Breakdown Guide](work-breakdown.md#delivery).
+- The worktree, the branch and the base are the ones [Find Available Work](#find-available-work) names, with the branch following the [Work Breakdown Guide](work-breakdown.md#delivery).
 - When the unit line names several bases, cut from the one for the long-lived branch the unit changes.
 - Run it in the checkout of the repository the work changes.
 
 ```bash
 git fetch origin i07/e00/main && git worktree add .worktrees/i07-e00-w01 -b i07/e00/w01-queue-plan origin/i07/e00/main
+```
+
+### Find Available Work
+
+Reports each unit of work a theme board makes available, each row a session holds, and each row its dependencies block.
+
+- The rules are this mode's [Rules](#rules).
+- `--items` is [Fetch Board Items with Status](sync-mode.md#fetch-board-items-with-status). `--prs` is [Fetch All Initiative Pull Requests](board.md#fetch-all-initiative-pull-requests).
+- Give an issue it reports unresolved with `--others`.
+- `--project` is a checkout of the project, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines. A base whose last segment is not one of those names is ignored.
+- `--bases` is the list [List Epic Bases](commands.md#list-epic-bases) prints for the board's epics, comma-separated.
+- A `unit` line names the tasks of one session's work, their coverage, and the record folder, branch, base and worktree their ids and Description give them. One base is `base i07/e00/main`. Several are `bases i07/e00/main i07/e00/workflows`.
+- A `hold` line names a row a session holds, and the record it links.
+- A `blocked` line names a free row whose dependencies are undelivered, or whose joined task is unavailable.
+- A `merge` line names an open pull request whose test plan has passed, and the epic base it targets. This mode merges it on the run.
+- `--date` opens the records on another day than today.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/deliver.py --items items.json --prs prs.json --project <checkout> --bases i07/e00/main,i07/e00/workflows
 ```

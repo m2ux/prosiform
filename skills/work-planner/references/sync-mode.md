@@ -45,9 +45,9 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
    - **Unmerged.**
      An epic base its pull requests target that has not merged into its long-lived branch, once every task is delivered and every criterion is ticked. The Close step follows [Review pull request](work-breakdown.md#review-pull-request) and [Epic merge](work-breakdown.md#epic-merge).
    - **References.**
-     A review pull request citing a set of pull requests that differs from the task pull requests merged into its base. Bring the body up to the merges with [Update Review Pull Request](commands.md#update-review-pull-request), as [Review pull request](work-breakdown.md#review-pull-request) states.
+     A review pull request citing a set of pull requests that differs from the task pull requests merged into its base. Bring the body up to the merges with [Update Review Pull Request](#update-review-pull-request), as [Review pull request](work-breakdown.md#review-pull-request) states.
    - **Uncited.**
-     A linked pull request whose task has its own issue and does not link it, or the review pull request where it does not link the epic's issue. Set the link with [Link Pull Request to Issue](commands.md#link-pull-request-to-issue), then [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links) again.
+     A linked pull request whose task has its own issue and does not link it, or the review pull request where it does not link the epic's issue. Set the link with [Link Pull Request to Issue](#link-pull-request-to-issue), then [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links) again.
    - **Note.**  A row links its task issue. Link the pull request as in step 4.
    - **Unplaced.**
      A task issue of this epic whose id is not a row. [Plan Mode](plan-mode.md) adds the row, as the [Work Breakdown Guide](work-breakdown.md#delivery) defines, then this sync is run again.
@@ -83,12 +83,12 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
       - When no open board carries that theme, create it with [Create Board](#create-board), titled as [Themes and Boards](../SKILL.md#themes-and-boards) states, then sync it.
     - **Plan.**
       - Run [Fetch Board Fields](commands.md#fetch-board-fields) and [Find Status Field](#find-status-field), then [Fetch Board Items with Status](#fetch-board-items-with-status).
-      - Run [Plan Board Changes](commands.md#plan-board-changes) with the user from [Find User](commands.md#find-user) and the issue links from [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links), which prints the call for each board and assignee change.
+      - Run [Plan Board Changes](#plan-board-changes) with the user from [Find User](commands.md#find-user) and the issue links from [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links), which prints the call for each board and assignee change.
     - **Write.**
       - Run each call it prints.
       - Confirm each status write with [Fetch Board Item](#fetch-board-item). The item list lags a write, so a fresh list does not confirm it.
       - When the item still shows the previous status, run that write again and read the item again.
-      - Fetch the issues and items again and re-run [Plan Board Changes](commands.md#plan-board-changes) to find anything not yet written. The board is current when that plan reports nothing to do and each confirmed item shows the status written.
+      - Fetch the issues and items again and re-run [Plan Board Changes](#plan-board-changes) to find anything not yet written. The board is current when that plan reports nothing to do and each confirmed item shows the status written.
       - An issue added in one pass gets its Status in the next.
 13. **Explain each change entering review.**
     Run [Understand Mode](understand-mode.md) for each task and epic whose confirmed status in step 12 is In Review and whose previous status was not, against the pull request this mode's Overviews rule names. A reviewer meets the overview on the pull request it explains.
@@ -179,4 +179,40 @@ Saves a board's items with their Status, each carrying its issue whole.
 
 ```bash
 gh api --paginate "users/{owner}/projectsV2/9/items?per_page=100&fields=419167630" > items.json
+```
+
+### Update Review Pull Request
+
+Adds a merged task pull request's change to the review pull request that merges the epic base it landed in.
+
+- Run it after [Sync Epic](commands.md#sync-epic), on the session that merged, as the [Work Breakdown Guide](work-breakdown.md#review-pull-request) states.
+- The first call prints the review pull request's number, by the epic base as head. It prints nothing while no pull request merges that base, and the base opens as a draft first.
+- The second writes the current body to a file. The unit's change goes under Changes, beneath the heading for its area or a new one, and its pull request is appended to References as the next R number.
+- The third replaces the body with that file.
+
+```bash
+gh api "repos/{owner}/{repo}/pulls?state=open&head={owner}:i07/e00/main" --jq '.[0].number'
+gh api repos/{owner}/{repo}/pulls/980 --jq .body > review-980.md
+gh api --method PATCH repos/{owner}/{repo}/pulls/980 -F body=@review-980.md --jq .html_url
+```
+
+### Link Pull Request to Issue
+
+Sets the [Issue links](work-breakdown.md#delivery) relation through [Development Access](commands.md#development-access).
+
+- Open the issue's Development selector, select the pull request's repository and pull request, and verify the saved link.
+- Refresh [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links) after the edit.
+
+### Plan Board Changes
+
+Derives each issue's Status and assignees, and prints the call for each issue to add, item to remove, Status to set and assignee to add or remove.
+
+- Give an issue it reports unresolved with `--others`.
+- `--assignee` is the user [Find User](commands.md#find-user) prints.
+- `--links` is the file [Fetch Pull Request Issue Links](commands.md#fetch-pull-request-issue-links) writes for those pull requests, and is where the issue a pull request delivers is read. A call without it is refused.
+- An open initiative or epic whose criteria are all ticked is In Review. An epic with an open pull request and a criterion unticked is In Progress.
+- An initiative or an epic with no open pull request and unticked criteria keeps Ready or Backlog, and keeps In Progress when delivery has started. In Review then becomes In Progress. One not yet on the board is added at Backlog, or at In Progress when delivery has started. [Advance Mode](advance-mode.md#rules) sets the queue.
+
+```bash
+cd <workspace> && <workspace>/scripts/sbx python3 skills/work-planner/scripts/board.py issue-936.json --epics issue-943.json issue-937.json --tasks issue-637.json --prs prs.json --links links.json --board users/{owner}/projectsV2/9 --fields fields.json --items items.json --out board/ --assignee m2ux
 ```
