@@ -1,7 +1,7 @@
 ---
 name: work-planner
 description: >-
-  Plans and maintains agent-engineering work on GitHub: proposals, initiatives, epics, tasks and theme boards. Use to propose work or scope a problem; plan or break down work; raise, restructure, align or renumber an initiative or epic; check issue format, criteria, dependencies or delivery; fold review findings into issues; sync completed work; advance a board or decide what moves to ready; deliver board work or dispatch ready tasks; explain a pull request, write its architecture overview or diagram its changes; hoist or triage orphan issues; produce a standup or Slack status update; or revise the work-planner skill itself.
+  Plans and maintains agent-engineering work on GitHub: proposals, initiatives, epics, tasks and theme boards. Use to propose work or scope a problem; plan or break down work; raise, restructure, align or renumber an initiative or epic; check issue format, criteria, dependencies or delivery; fold review findings into issues; sync completed work and close what is finished; advance a board, decide what moves to ready or what to pick up next; deliver board work or dispatch ready tasks; explain a pull request, write its architecture overview or diagram its changes; hoist, triage or find a home for orphan issues; produce a standup or Slack status update; or revise the work-planner skill itself.
 ---
 
 # Work Planner
@@ -22,77 +22,49 @@ Read the selected mode's file in full, then follow its links as each step needs 
 
 - **[Propose](references/propose-mode.md)**
   - Forward-looking, scoped to one problem
-  - Scoping the problem: the friction, the evidence, and the boundary
-  - Stating the goal as clauses someone could observe
-  - Raising one proposal issue
-  - Placing it on the Proposals board
+  - Scoping a problem nothing is planned against yet
+  - Raising one proposal issue on the Proposals board
 - **[Plan](references/plan-mode.md)**
   - Forward-looking, scoped to one initiative and its epics
-  - Taking a proposal's problem and goal as the scope it plans
-  - Raising, planning and restructuring initiatives and epics
-  - Acceptance criteria that comply with the goal pass when they are written
-  - Review passes of a plan against its goal
-  - Dependency checks
+  - Turning an approved proposal into an initiative
+  - Raising, breaking down and restructuring initiatives and epics
+  - Review passes of a plan against its goal, dependencies included
   - Renumbering of epics and tasks
   - Folding review findings into issues
 - **[Align](references/align-mode.md)**
   - Backward-looking, scoped to one initiative's issues
-  - Checks of existing issues against the templates and against the rules that bind them
-  - Fixes for each issue that departs from its template or from those rules
-  - A check of every acceptance criterion against the verifiable rule
-  - An alignment of every acceptance criterion with the sources the initiative marks
-  - A further task that adopts each criterion a merged pull request leaves unticked
-  - A scan for an initiative criterion still unticked, or ticked early, against the epics that cite it
-  - Repair of a work-breakdown cell that disagrees with its delivery
-  - Epic bases for an initiative in progress, and open task pull requests pointed at them
-  - A row for a task issue the epic table does not list
-  - Draft review pull requests for epic bases with merged tasks
+  - Checks of existing issues against their templates and the rules that bind them, with fixes
+  - Acceptance criteria checked for verifiability and against the sources the initiative marks
+  - Epic branch structure and task pull request bases brought to the delivery shape
 - **[Sync](references/sync-mode.md)**
   - Backward-looking, scoped to one initiative
-  - Links from each task that has a pull request to that pull request, open or merged
-  - Ticks for the criteria that hold, and for each Work Breakdown row once it is complete
+  - Delivery recorded against the issues that planned it
   - Closure of complete task issues, epics and initiatives
-  - Automatic merges of completed epics into their long-lived branches once their drafts are marked ready
   - The theme board brought current with its issues
 - **[Advance](references/advance-mode.md)**
   - Forward-looking, scoped to one board
-  - Sync of the board's open initiatives
+  - Placement of initiatives and epics as In Progress or as Ready
   - A parallel work map for initiatives with no priority
-  - Placement of the highest set as In Progress and the next set as Ready
-  - Placement of a partly completed epic as In Progress and the next unstarted epic as Ready
 - **[Deliver](references/deliver-mode.md)**
   - Forward-looking, scoped to one board
   - Delivery of a theme board's work, each unit planned, implemented and raised as a pull request
-  - Advance of the board the work is taken from
-  - The units of work its epics make available, and the rows a session holds
-  - A planning record and a row's link that hold each unit for one session
-  - A session per unit, in a worktree of its own
-  - A test for each criterion a unit delivers, of the kind that criterion can be observed by
-  - A test plan table mapping each test to the parent epic criteria it covers
+  - Dispatch of one session per unit of work
   - Merging task pull requests through the shared delivery procedure
-  - Hoisting of issues arising from the delivery of a unit
 - **[Understand](references/understand-mode.md)**
   - Backward-looking, scoped to one pull request
-  - An architecture overview of one pull request, for the engineer who reviews it
-  - A structural and a functional diagram, drawn from the structure the graph measures over the change
+  - An architecture overview of one pull request
+  - Structural and functional diagrams of its changes
   - The order to read the diff in
-  - A planning record of its own, held by the pull request's number
-  - A References row on the pull request linking the overview
 - **[Hoist](references/hoist-mode.md)**
   - Forward-looking, scoped to a repository's orphan issues
   - Discovery of orphan issues
   - Placements for each in an existing or new initiative, epic or task
-  - Migration or subsumption of the orphans the user places
-  - Formatting of orphans with target's rules and deprecating body
 - **[Standup](references/standup-mode.md)**
   - Backward-looking, scoped to one board's reporting window
   - Standup summaries of a theme's board for a Slack channel
-  - A paragraph for management on what the window accomplished
-  - What completed, what is in progress and what is next
 - **[Revise](references/revise-mode.md)**
   - Forward-looking, scoped to this skill's own files
   - Changes to SKILL.md, its references, templates and scripts
-  - Conformance with the [skill guidelines](../guidelines.md) and the skill's own [guidelines](references/guidelines.md)
 
 ## Formatting Scheme
 

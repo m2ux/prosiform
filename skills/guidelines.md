@@ -32,11 +32,13 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   One sentence on what the skill does, then a bulleted list with one item for each thing it acts on.
 - **Modes.**
   - Each mode is its bold name, without the word "mode", linking to its reference file.
-  - Beneath it, a bulleted summary of the work the mode does:
+  - Beneath it, a bulleted list that selects the mode, since the reader holds a request and picks one mode from this list alone:
     - The first item states the mode's direction and what it is scoped to, and nothing else: `Backward-looking, scoped to one initiative`.
-    - Each further item is one line: a noun phrase or a gerund phrase that names one capability.
+    - Each further item is one line: a noun phrase or a gerund phrase naming a request this mode answers.
+    - An item earns its place only where a request reaches this mode because of it. At most five follow the first.
+    - A step the mode takes once selected stays in the mode file, as does a distinction from another mode.
+    - A mode the mode runs for itself goes unnamed, since naming it routes that mode's own requests here.
     - It has no trailing full stop, no purpose clause, and no board status outside that phrase.
-    - A distinction from another mode stays in the file that owns it.
 - **Rules.**
   A statement that binds every mode goes in Rules, never as loose prose in another section.
 - **Dependencies.**
