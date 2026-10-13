@@ -197,7 +197,32 @@ Every initiative belongs to one theme, and each theme has one project board. Eac
   - Once feedback on an issue is folded into its body, a comment mentions the reviewer and answers each of their points in turn, precisely and factually, with no thanks or filler. It is posted with [Comment on Issue](references/commands.md#comment-on-issue).
   - Each answer names what the body now says, by criterion id where one carries it, or the issue that takes the point.
 - **Commands**
-  Before the first command spec, read the [command conventions](references/command-conventions.md). Reuse complete prerequisites already read at the same revision; retrieve specific operations where needed.
+  Every command spec runs under the [Command Conventions](#command-conventions) below. Reuse complete prerequisites already read at the same revision; retrieve specific operations where needed.
+
+## Command Conventions
+
+How every command of this skill runs, held here because selecting a mode already opens this file.
+
+- **Session.**
+  Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
+- **Repository.**
+  `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
+- **Bodies.**
+  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
+  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Keep these files in a working directory outside the repository.
+- **Scripts.**
+  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Boards.**
+  A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
+- **Example values.**  Substitute the real ones:
+  - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
+  - `950` a pull request, `I07` and `I08` initiative numbers;
+  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - `1` the Initiative Template board, `13` a board copied from it;
+  - `14` the Proposals Template, `15` the Proposals board;
+  - `m2ux` the user.
+  - `<checkout>` any checkout of the project, a linked worktree included.
 
 ## Dependencies
 

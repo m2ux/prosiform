@@ -4,7 +4,7 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 
 ## Prerequisites
 
-Command operations use the [command conventions](command-conventions.md), read before the first spec.
+Command operations use the [Command Conventions](../SKILL.md#command-conventions), read before the first spec.
 
 Before matching pull requests or syncing epics, read [Delivery State](commands.md#delivery-state).
 
