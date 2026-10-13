@@ -142,6 +142,29 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
   A row that only changes the engine, continuous integration or the workspace does not bring the criterion.
 - [Check Format](commands.md#check-format) reports a corpus epic whose criteria omit it.
 
+#### Technical Debt
+
+A standing technical-debt initiative holds the debt a theme's delivery defers. Its title name is `Technical Debt` and its subtitle names the debt it takes; it carries the theme's label, `tech-debt` and a priority label, and one is raised with the theme's board. It carries this criterion, which every epic row of it covers:
+
+```markdown
+- [ ] **AC1.** The technical debt this theme's delivery defers is fixed, as the Done column of the Work Breakdown shows.
+```
+
+- **It opens with no work.**
+  Its Work Breakdown is the header row alone. A theme that defers nothing leaves it there, and the initiative stays open.
+- **Its priority keeps it waiting.**
+  Its number sits below the board's planned work, so [Advance Mode](advance-mode.md) holds it in Backlog until the user raises it, which is how a clear-up is scheduled rather than run against the work in flight. Where a board carries several, their numbers rank them against each other.
+- **A board carries at least one, and takes more.**
+  Each has its own subtitle, priority and epics, and the user names which one an item goes to where a board carries several. One alone needs no asking.
+- **An epic per source initiative.**
+  The debt one initiative defers is one epic, raised when that initiative defers its first item. Its title name is that initiative's, so the row reads as the work the debt came out of, and each deferred item is a task row with the criteria that state what fixing it makes true.
+- **It takes the debt its own delivery defers.**
+  Debt a unit of this initiative finds in resolving its row becomes a further row of the epic holding that row, so the clear-up absorbs what fixing it uncovers.
+- **Its epics deliver like any other.**
+  Each takes its bases from the long-lived branches its rows change, and [Issue Closure](#issue-closure) closes it. The initiative stays open across its epics, since the theme goes on deferring debt.
+
+[Deliver Mode](deliver-mode.md#rules) states what qualifies as deferred debt and how it arrives.
+
 #### Epic Prerequisites
 
 An epic starts implementation only when every prerequisite epic named by its task rows or its initiative row is closed as completed, after all of that prerequisite's bases have merged into their long-lived branches. A dependency on one task of another epic waits for that entire epic's delivery. Task-level references retain which output is consumed; initiative rows follow the dependency rule in [Tables](#tables).

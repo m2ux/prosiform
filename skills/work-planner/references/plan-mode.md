@@ -77,6 +77,8 @@ Before matching pull requests or syncing epics, read [Delivery State](commands.m
   - The issue that carries it is created only after the criterion complies.
 - **The corpus audit.**
   An epic whose tasks change workflow definitions carries the [corpus audit criterion](work-breakdown.md#corpus-audit), with a final task row that delivers it.
+- **Technical-debt initiatives.**
+  A [technical-debt initiative](work-breakdown.md#technical-debt) is raised with its theme's board, carrying the criterion and labels that section states, and a further one wherever the user wants another. Each epic of one is raised when the initiative it is named for defers its first item.
 - **The discussion PR.**
   Merging it is the user's call.
 - **Pull request bodies.**

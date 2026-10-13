@@ -102,6 +102,8 @@ A placement is the choice of where an orphan's work goes. The table states what 
 
 - **Already stated.**
   A candidate whose work an existing criterion already states is subsumed into the issue holding that criterion, with no new row. For a cited standalone issue, that issue is usually the one citing it.
+- **A placement the caller carries.**
+  A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
 
 ## Commands
 
