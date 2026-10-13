@@ -2,7 +2,7 @@
 
 Every command that several of the skill's procedures run, one spec per operation. A procedure names a spec by linking to it.
 
-## Issues
+## GitHub Issues
 
 ### Fetch Issue
 
@@ -105,7 +105,7 @@ Reads and edits GitHub Development links through authenticated GitHub or an avai
 - Confirm the [Issue Closure](work-breakdown.md#issue-closure) repository prerequisite before linking or merging. Observe the repository setting, or obtain the user's explicit confirmation; an absent API field is unknown.
 - After a link edit, re-read the field to verify it. Removing a link follows [Issue Closure](work-breakdown.md#issue-closure).
 
-## Pull Requests
+## GitHub Pull Requests
 
 ### Fetch Pull Request
 
@@ -148,6 +148,26 @@ Points a pull request at another base branch, such as its epic's base branch.
 gh api --method PATCH repos/{owner}/{repo}/pulls/950 -f base='i07/e00/main' --jq .base.ref
 ```
 
+## GitHub Project Boards
+
+### Fetch Board Fields
+
+Saves a board's fields.
+
+```bash
+gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" > fields.json
+```
+
+### Set Item Status
+
+Sets one board item's Status. The body names the Status field id and the option id, both taken from [Fetch Board Fields](#fetch-board-fields): `{"fields":[{"id":419167630,"value":"OPTION"}]}`.
+
+```bash
+gh api --method PATCH users/{owner}/projectsV2/13/items/1001 --input status-backlog.json --jq .id
+```
+
+## Git
+
 ### List Epic Bases
 
 Prints one epic's base branch names, one per line.
@@ -169,24 +189,6 @@ Merges the epic base into the unit's task branch.
 
 ```bash
 git fetch origin i07/e00/main && git merge --no-edit origin/i07/e00/main && git push origin HEAD:refs/heads/i07/e00/w01-queue-plan
-```
-
-## Project Boards
-
-### Fetch Board Fields
-
-Saves a board's fields.
-
-```bash
-gh api --paginate "users/{owner}/projectsV2/9/fields?per_page=100" > fields.json
-```
-
-### Set Item Status
-
-Sets one board item's Status. The body names the Status field id and the option id, both taken from [Fetch Board Fields](#fetch-board-fields): `{"fields":[{"id":419167630,"value":"OPTION"}]}`.
-
-```bash
-gh api --method PATCH users/{owner}/projectsV2/13/items/1001 --input status-backlog.json --jq .id
 ```
 
 ## Planning records
