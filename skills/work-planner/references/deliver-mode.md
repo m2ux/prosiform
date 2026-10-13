@@ -1,6 +1,6 @@
 # Deliver mode
 
-Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, and hoist arising issues.
+Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds.
 
 ## Prerequisites
 
@@ -63,6 +63,8 @@ What the prompt tells one session, written from the facts the `unit` line and th
   Open it with [Open Task Pull Request](#open-task-pull-request), which titles it for the epic, targets the epic base, fills the Test Plan table as [Test Coverage](work-breakdown.md#test-coverage) states, and links each task issue the unit delivers. Then run [Sync Epic](commands.md#sync-epic) for the unit's tasks and [Patch Body](commands.md#patch-body).
 - **Merge.**
   Record check results with [Patch Pull Request Body](understand-mode.md#patch-pull-request-body), following [Test Plan](work-breakdown.md#test-plan), then follow [Task Merge](work-breakdown.md#task-merge).
+- **Defer the technical debt the validation found.**
+  Classify each item as this mode's Technical debt rule states and confirm it with the user. A deferred item is created as a standalone issue with [Create Issue](commands.md#create-issue) and hoisted with [Hoist Mode](hoist-mode.md), its placement a new task in the epic a [technical-debt initiative](work-breakdown.md#technical-debt) of the board holds for this initiative.
 - **Hoist arising issues.**
   Create each issue that arose during delivery as a standalone issue with [Create Issue](commands.md#create-issue), with no agent-engineering prefix. Then run [Hoist Mode](hoist-mode.md) for each such issue, prompting the user for its placement across open initiatives and epics.
 
@@ -87,6 +89,14 @@ What the prompt tells one session, written from the facts the `unit` line and th
   This mode sets a dispatched unit's task issue and its epic to In Progress. The queue stays [Advance Mode](advance-mode.md)'s.
 - **Arising issues.**
   Issues arising from the delivery of a single work item are raised as standalone issues and hoisted through [Hoist Mode](hoist-mode.md) once the pull request is open and the epic synced.
+- **Technical debt the validation finds.**
+  Technical debt a unit finds while validating its work — running its tests, auditing the definitions it changed, reviewing its pull request — is classified, and the classification decides where it is fixed:
+  - **Blocking.**
+    The unit's own criteria cannot be verified without it, so the unit fixes it, whatever its size.
+  - **Trivial.**  It blocks nothing and needs no work item of its own, so the unit fixes it.
+  - **Non-trivial.**
+    It blocks nothing and would warrant a work item of its own. The unit defers it to a [technical-debt initiative](work-breakdown.md#technical-debt) of the board, and the epic in hand keeps the scope it was planned with.
+  - The session classifies each item and puts it to the user as an [Interview](interview.md), its classification the recommended answer, before the fix or the deferral.
 
 ## Commands
 
