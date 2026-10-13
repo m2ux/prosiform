@@ -48,7 +48,7 @@
 - Prefer bullet points instead of large blocks of prose when responding to the user
 - For responses that concern system design should split by area of concern in the system eg corpus, guards, tests, source. 
 - Each area of conern should be titled and sub-divided into a bulletted list of problem/solution pairs with one plain-language paragraph for each of the problem solution. Jargon should be disambiguated. Use two space seperators between title items.
-- When user input is required to reconcile outstanding issues or design choices, present the user a sequence of questions, one-at-a-time, interview-style. Each question should have multiple choice answers with a recommended option. Each question should be preceded by a plain-language paragraph worded to aid the decision kaing process.
+- After completing any user request taht results in residual unaddressed work, present the user a sequence of questions, one-at-a-time, interview-style to reconcile outstanding issues or design choices. Each question should have multiple choice answers with a recommended option. Each question should be preceded by a plain-language paragraph worded to aid the decision kaing process.
 - Always treat user requests at the start of a new chat as an incomplete specification. Use the interview style to illicit further information fromf the user until you are confident you have sufficient understanding to properly proceed.
 
 
