@@ -21,11 +21,13 @@ Each theme's project board shows where its items stand. The Proposals board hold
 Read the selected mode's file in full, then follow its links as each step needs them:
 
 - **[Propose](references/propose-mode.md)**
+  - Forward-looking, scoped to one problem
   - Scoping the problem: the friction, the evidence, and the boundary
   - Stating the goal as clauses someone could observe
   - Raising one proposal issue
   - Placing it on the Proposals board
 - **[Plan](references/plan-mode.md)**
+  - Forward-looking, scoped to one initiative and its epics
   - Taking a proposal's problem and goal as the scope it plans
   - Raising, planning and restructuring initiatives and epics
   - Acceptance criteria that comply with the goal pass when they are written
@@ -34,6 +36,7 @@ Read the selected mode's file in full, then follow its links as each step needs 
   - Renumbering of epics and tasks
   - Folding review findings into issues
 - **[Align](references/align-mode.md)**
+  - Backward-looking, scoped to one initiative's issues
   - Checks of existing issues against the templates and against the rules that bind them
   - Fixes for each issue that departs from its template or from those rules
   - A check of every acceptance criterion against the verifiable rule
@@ -45,17 +48,20 @@ Read the selected mode's file in full, then follow its links as each step needs 
   - A row for a task issue the epic table does not list
   - Draft review pull requests for epic bases with merged tasks
 - **[Sync](references/sync-mode.md)**
+  - Backward-looking, scoped to one initiative
   - Links from each task that has a pull request to that pull request, open or merged
   - Ticks for the criteria that hold, and for each Work Breakdown row once it is complete
   - Closure of complete task issues, epics and initiatives
   - Automatic merges of completed epics into their long-lived branches once their drafts are marked ready
   - The theme board brought current with its issues
 - **[Advance](references/advance-mode.md)**
+  - Forward-looking, scoped to one board
   - Sync of the board's open initiatives
   - A parallel work map for initiatives with no priority
   - Placement of the highest set as In Progress and the next set as Ready
   - Placement of a partly completed epic as In Progress and the next unstarted epic as Ready
 - **[Deliver](references/deliver-mode.md)**
+  - Forward-looking, scoped to one board
   - Delivery of a theme board's work, each unit planned, implemented and raised as a pull request
   - Advance of the board the work is taken from
   - The units of work its epics make available, and the rows a session holds
@@ -66,22 +72,26 @@ Read the selected mode's file in full, then follow its links as each step needs 
   - Merging task pull requests through the shared delivery procedure
   - Hoisting of issues arising from the delivery of a unit
 - **[Understand](references/understand-mode.md)**
+  - Backward-looking, scoped to one pull request
   - An architecture overview of one pull request, for the engineer who reviews it
   - A structural and a functional diagram, drawn from the structure the graph measures over the change
   - The order to read the diff in
   - A planning record of its own, held by the pull request's number
   - A References row on the pull request linking the overview
 - **[Hoist](references/hoist-mode.md)**
+  - Forward-looking, scoped to a repository's orphan issues
   - Discovery of orphan issues
   - Placements for each in an existing or new initiative, epic or task
   - Migration or subsumption of the orphans the user places
   - Formatting of orphans with target's rules and deprecating body
 - **[Standup](references/standup-mode.md)**
+  - Backward-looking, scoped to one board's reporting window
   - Standup summaries of a theme's board for a Slack channel
   - A paragraph for management on what the window accomplished
   - What completed, what is in progress and what is next
 - **[Revise](references/revise-mode.md)**
-  - To make changes to this skill's own files
+  - Forward-looking, scoped to this skill's own files
+  - Changes to SKILL.md, its references, templates and scripts
   - Conformance with the [skill guidelines](../guidelines.md) and the skill's own [guidelines](references/guidelines.md)
 
 ## Formatting Scheme
