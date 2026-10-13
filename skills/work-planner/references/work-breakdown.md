@@ -115,9 +115,12 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 - [ ] **ACn.** The definitions this epic changes carry no outstanding confirmed finding, as the canon audit's coverage report shows.
 ```
 
-- **The row is the epic's last**, named `Canon audit of the changed definitions`, depending on the rows whose definitions it audits, and covering this criterion alone. [Deliver Mode](deliver-mode.md) dispatches it as its own unit.
-- **A finding closes by a fix on this epic's branch or by an issue that takes it.** Outstanding means neither.
-- **The epic changes definitions** when a task row's work reaches the long-lived branch the corpus lives on. A row that only changes the engine, continuous integration or the workspace does not bring the criterion.
+- **The row is the epic's last.**
+  It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone. [Deliver Mode](deliver-mode.md) dispatches it as its own unit.
+- **A finding closes by a fix on this epic's branch or by an issue that takes it.**
+  Outstanding means neither.
+- **Definitions change when a task row's work reaches the branch the corpus lives on.**
+  A row that only changes the engine, continuous integration or the workspace does not bring the criterion.
 - [Check Format](commands.md#check-format) reports a corpus epic whose criteria omit it.
 
 ### Epic Prerequisites
@@ -159,7 +162,7 @@ When [Sync Epic](commands.md#sync-epic) reports a draft line, or an unmerged bas
 
 ### Epic Merge
 
-[Sync Mode](sync-mode.md) and [Deliver Mode](deliver-mode.md) merge a ready epic pull request with [Merge Epic Pull Request](#merge-epic-pull-request), without asking for further confirmation, once all these conditions hold:
+[Sync Mode](sync-mode.md) and [Deliver Mode](deliver-mode.md) merge a ready epic pull request with [Merge Epic Pull Request](#merge-epic-pull-request), without asking for further confirmation, once all these conditions hold. Where the target branch requires an approving review, the merge is the reviewer's, as [Approval](#approval) states:
 
 - The repository prerequisite in [Issue closure](#issue-closure) is confirmed.
 - Every task is delivered, every epic criterion is verified and ticked, and the epic has no open questions or unresolved delivery discrepancies.
@@ -167,10 +170,23 @@ When [Sync Epic](commands.md#sync-epic) reports a draft line, or an unmerged bas
 - [Update Epic Base](#update-epic-base) has brought in the current target, the criteria still hold on that result, and [Fetch Merge Readiness](#fetch-merge-readiness) confirms required checks and repository review requirements pass for the current head.
 - The review body describes the complete branch and cites its task merges. [Understand Mode](understand-mode.md) supplies its architecture overview before the merge.
 
-A draft, conflict, failed or pending check, unmet criterion, or repository review requirement leaves the pull request open with the blocker reported. A changed head requires fresh verification. A merge refusal returns to the readiness checks; a repeated refusal is reported without retrying.
+A draft, conflict, failed or pending check, or unmet criterion leaves the pull request open with the blocker reported. An unmet review requirement leaves it ready for approval, as [Approval](#approval) states. A changed head requires fresh verification. A merge refusal returns to the readiness checks; a repeated refusal is reported without retrying.
 
 - After each successful merge, fetch the pull request again to confirm its merged state and commit, then re-run [Sync Epic](commands.md#sync-epic) with fresh pull requests and the issue.
 - Close the epic only after every base has merged and [Issue closure](#issue-closure) passes, then sync its initiative. Initiative completion does not gate an epic's merge.
+
+### Approval
+
+A branch whose protection or active rules require an approving review takes that review from a person. An agent cannot approve a pull request it opened, so on such a branch every merge condition can hold and the merge still belongs to the reviewer.
+
+- **Read the requirement before claiming a merge.**
+  [Fetch Merge Readiness](#fetch-merge-readiness) names the required reviews alongside the required checks.
+- **Report the pull request as ready for approval, naming what was verified.**
+  That is a finished outcome, not a blocker to work around, and no further merge attempt follows it.
+- **Never seek approval from elsewhere to clear the requirement.**
+  Not another account, not an administrative bypass, not a setting change. Changing a repository's protection needs the user's explicit authorization, asked for separately.
+- **Example.**
+  workflow-server's `main` requires one approving review, so an agent carries an epic to ready and stops.
 
 ### Task Delivery
 
@@ -229,7 +245,7 @@ A draft, conflict, failed or pending check, unmet criterion, or repository revie
 
 ### Task Merge
 
-Merge each open task pull request whose [Test Plan](#test-plan) has passed, both on a delivery run that finds it and in the session that opened it, without further confirmation.
+Merge each open task pull request whose [Test Plan](#test-plan) has passed, both on a delivery run that finds it and in the session that opened it, without further confirmation. A task pull request targets an epic base, which carries no review requirement of its own; where one applies, [Approval](#approval) governs.
 
 1. **Check.**
    Confirm the repository prerequisite in [Issue Closure](#issue-closure) and the task pull request's epic base.
