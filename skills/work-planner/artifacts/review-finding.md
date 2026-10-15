@@ -10,10 +10,11 @@ One finding verified against its supplied source.
 
 **Inputs:** Area, severity, problem, proposed solution, source text and file:line, decision requirement and any confirmed answer.
 
-1. Verify the problem against the supplied source; return missing or contradictory evidence for the caller to resolve.
-2. Populate the finding with its source quotation.
+1. Verify the problem against the supplied source.
+2. If evidence is missing or contradictory, return that finding for the caller to resolve.
+3. Populate the finding with its source quotation.
    - It must meet [Finding Content](#finding-content) and [Decision State](#decision-state).
-3. Return the finding and any pending decision.
+4. Return the finding and any pending decision.
 
 ## Fields
 

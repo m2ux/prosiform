@@ -21,10 +21,13 @@ One epic body and its local validation findings.
 1. Populate the body from the [Template](#template) at the supplied output path.
    - Every section must meet [Fields](#fields).
    - Shared content must meet the common [body conditions](issue-body.md#fields).
-2. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table), then fill the epic-specific cells.
+2. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table).
+3. Fill the epic-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown).
-3. Return the draft rows and their dependency references for the caller's cross-body ordering check.
-4. Call [Build Body Snapshot](issue-body.md#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body). Return its findings with the draft. Identify unresolved publication links separately; they remain pending until tracker identities exist.
+4. Call [Build Body Snapshot](issue-body.md#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
+5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
+6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
+7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
 ### Record Epic Delivery
 
@@ -42,7 +45,8 @@ Verified criteria and completed rows in one epic body.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
 
-- Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify. Return the body and refused criteria; complete rows receive Done ticks.
+1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+2. Return the body and refused criteria. Complete rows receive Done ticks.
 
 ### Reserve Task Rows
 
@@ -51,7 +55,8 @@ Task rows held for one confirmed delivery session.
 **Inputs:** Epic JSON, confirmed task ids, supplied planning-folder identity, planning-records base URL, record date and output body file.
 
 1. Require the caller's confirmed unit and existing planning folder. Refuse a row already held or linked to a pull request or commit.
-2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
+2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
+3. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
 ### Release Task Rows
 
@@ -60,7 +65,8 @@ Held task rows returned to their work-item links.
 **Inputs:** Epic JSON, task ids, explicit user decision releasing the hold and output body file.
 
 1. Require the supplied release decision and refuse any row that is not held.
-2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
+2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
+3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
 ### Validate Epic Body
 
@@ -68,7 +74,10 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
 
-- Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file. Supply initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable. Return a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers. Return the corrected body, mechanical diff and unresolved findings for the caller.
+1. Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
+3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
+4. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### Revise Epic Rows
 
@@ -77,7 +86,8 @@ One epic body with confirmed task-grain and coverage corrections.
 **Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
 
 1. Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
-   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown). Split a task exceeding the allowed criterion grain into the confirmed tasks.
+   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
+   - Split a task exceeding the allowed criterion grain into the confirmed tasks.
 2. Return the revised body and any cross-body numbering or dependency changes for the caller.
 
 ## Fields

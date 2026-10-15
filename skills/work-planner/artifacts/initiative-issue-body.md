@@ -38,7 +38,8 @@ One initiative body, scoped to one proposal.
 3. Write the acceptance criteria before the Work Breakdown, so each row's Coverage can cite them.
    - Each criterion must come from a confirmed clause and meet [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
    - The criteria must come from the requirements sources the proposal references. Where the proposal references none, they must come from the proposal's body alone.
-4. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table), then fill the initiative-specific cells.
+4. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table).
+5. Fill the initiative-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown).
    - An item a test cannot observe must stay named as [Coverage Reports](issue-body.md#coverage-reports) define.
 
@@ -48,7 +49,8 @@ One initiative body with its epic delivery recorded.
 
 **Inputs:** Initiative JSON, every linked epic's current JSON and optional output body file.
 
-- Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`; supply `--fix` when an output body is requested. Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
+1. Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
+2. Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
 ### Record Initiative Criteria
 
@@ -56,7 +58,8 @@ Verified criteria and completed rows in one initiative body.
 
 **Inputs:** Initiative JSON, every linked epic's current JSON, verified criterion ids and output body file.
 
-- Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify. Return the body and refused criteria; complete rows receive Done ticks.
+1. Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+2. Return the body and refused criteria. Complete rows receive Done ticks.
 
 ### Validate Initiative Body
 
@@ -64,7 +67,10 @@ The body's local format and field findings.
 
 **Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
 
-- Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file. Supply each linked epic as `--epic`; use its current title for the initiative row. Return excluded names in Problem and Proposal and criterion/source departures. Return the corrected body, mechanical diff and unresolved findings for the caller.
+1. Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying each linked epic as `--epic`.
+2. Use its current title for the initiative row.
+3. Include excluded names in Problem and Proposal and criterion/source departures in the findings.
+4. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### Read Requirement Sources
 
@@ -72,8 +78,11 @@ The requirements evidence used to validate an initiative's criteria.
 
 **Inputs:** Initiative References, checkout, authenticated source access and destination files.
 
-1. Read each local source at its checkout path. For a pinned GitHub blob, run [Fetch Source](#fetch-source) with its repository, path, pinned revision and output file. Fetch other URLs through the harness's web access.
-2. Return each source's contents and identity. Report an unreadable or empty source as a [Sources](#sources) finding; its criteria remain unevaluated.
+1. Read each local source at its checkout path.
+2. For a pinned GitHub blob, run [Fetch Source](#fetch-source) with its repository, path, pinned revision and output file.
+3. Fetch other URLs through the harness's web access.
+4. Record an unreadable or empty source as a [Sources](#sources) finding; its criteria remain unevaluated.
+5. Return each source's contents and identity with those findings.
 
 ## Fields
 

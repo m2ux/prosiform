@@ -10,8 +10,10 @@ The required label definitions available for issue publication.
 
 **Inputs:** Repository and required label names, colours and descriptions.
 
-1. Run [List Labels](#list-labels) for the repository and compare it with the supplied required names.
-2. Run [Create Label](#create-label) for each absent required definition. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+1. Run [List Labels](#list-labels) for the repository.
+2. Compare the returned labels with the supplied required names.
+3. Run [Create Label](#create-label) for each absent required definition.
+4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
 
 ### Read Repository Labels
 
@@ -19,7 +21,8 @@ The current label definitions available for issue publication.
 
 **Inputs:** Repository.
 
-- Run [List Labels](#list-labels) for the supplied repository and return the available names.
+1. Run [List Labels](#list-labels) for the supplied repository.
+2. Return the available names.
 
 ## Fields
 

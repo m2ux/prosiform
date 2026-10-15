@@ -10,7 +10,13 @@ One planning directory and its artifact inventory.
 
 **Inputs:** Record identity, folder path and supplied artifact files and links.
 
-1. For a new record, create the folder with [Add Planning Record](#add-planning-record) and populate README.md from the [Template](#template). For an existing record, read its README and retain its creation date, other artifacts and links; update only the supplied content.
+1. Prepare the selected record:
+   - For a new record:
+     - Create the folder with [Add Planning Record](#add-planning-record).
+     - Populate README.md from the [Template](#template).
+   - For an existing record:
+     - Read its README, retaining its creation date, other artifacts and links.
+     - Update only the supplied content.
    - The folder must meet [Layout](#layout).
    - All populated README fields must meet [Fields](#fields).
 2. Register the artifact files supplied by the caller, using their chosen names.

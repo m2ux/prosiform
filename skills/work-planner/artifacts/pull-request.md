@@ -17,10 +17,13 @@ One task or epic pull request's merge result, or its handoff for human approval.
 **Inputs:** Pull request identity, delivery kind, verified head, target requirements, current passing readiness evidence and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
 
 1. Read the supplied target branch's current required reviews and checks alongside the verified head. A branch whose protection or active rules require an approving review takes that review from a person. An agent cannot approve a pull request it opened; on such a branch, the merge belongs to the reviewer even when every other condition holds.
-   - Report the pull request as ready for approval, naming what was verified, and stop merge attempts. This handoff is a finished outcome.
+   - Report the pull request as ready for approval, naming what was verified.
+   - Stop merge attempts. This handoff is a finished outcome.
    - Keep approval with that reviewer. Another account, an administrative bypass or a setting change cannot supply it. Changing repository protection requires the user's explicit authorization, asked for separately.
    - For example, workflow-server's `main` requires one approving review, so carry an epic to ready and stop.
-2. When approval permits the agent to merge, call [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic. Pass the verified readiness evidence and authorization result; for an epic, also pass the target requirements and exact verified head SHA. Return a refusal to the caller for fresh verification.
+2. When approval permits the agent to merge:
+   - Call [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
+   - If the merge is refused, return the refusal to the caller for fresh verification.
 3. Return the merge result, including its merge commit when supplied, for the caller's readback.
 
 ### Access Development Links
@@ -29,9 +32,17 @@ The observed or updated Development relation for a pull request.
 
 **Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](issue.md#close-tracker-issue).
 
-1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set. Return the complete relation for a read-only request.
-2. For a link edit, confirm the supplied repository prerequisite by observing the setting or obtaining the user's explicit confirmation; an absent API field is unknown. For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities. For removal of an abandoned or incorrect link, require the supplied user decision and run [Remove Development Link](#remove-development-link) with those identities.
-3. Run [Read Development Links](#read-development-links) again for the same pull request and compare the field with the intended edit. Return the verified relation or discrepancy.
+1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
+2. Return the complete relation for a read-only request.
+3. For a link edit:
+   - Confirm the supplied repository prerequisite by observing the setting or obtaining the user's explicit confirmation; an absent API field is unknown.
+   - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
+   - For removal of an abandoned or incorrect link:
+     - Require the supplied user decision.
+     - Run [Remove Development Link](#remove-development-link) with those identities.
+4. Run [Read Development Links](#read-development-links) again for the same pull request.
+5. Compare the field with the intended edit.
+6. Return the verified relation or discrepancy.
 
 ### Fetch Pull Request Issue Links
 
@@ -39,8 +50,11 @@ The complete issue-link snapshot for a supplied set of pull requests.
 
 **Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
 
-1. For every pull request in `prs.json`, run [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete. Repeat this read after a link changes.
-2. If any relation is unreadable, return the incomplete result. Otherwise run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`. Include one entry per pull request and every linked issue's repository and number. Return the snapshot for the scripts' `--links` input.
+1. For every pull request in `prs.json`, run [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+2. Repeat that read after a link changes.
+3. If any relation is unreadable, return the incomplete result.
+4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
+5. Return the snapshot for the scripts' `--links` input.
 
 ### Link Pull Request to Issue
 
@@ -48,8 +62,10 @@ The verified delivery-issue relation for a pull request.
 
 **Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
 
-1. Run [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite. Stop on a blocker or an unverified edit.
-2. Run [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit. Return the verified relation and refreshed snapshot.
+1. Run [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+2. Stop on a blocker or an unverified edit.
+3. Run [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
+4. Return the verified relation and refreshed snapshot.
 
 ### Merge Epic Pull Request
 
@@ -57,8 +73,11 @@ The epic's verified merge into its long-lived target.
 
 **Inputs:** Pull request identity, verified head SHA, target requirements, current passing readiness evidence and confirmed authorization for the agent to merge.
 
-1. Require the supplied target requirements, readiness evidence and authorization. Run [Submit Epic Merge](#submit-epic-merge) with the exact head whose checks and target requirements were verified. Return a refusal without continuing.
-2. Run [Read Merge Result](#read-merge-result) for that pull request. Confirm the merged state, merge commit, verified head and target, then return the result or discrepancy.
+1. Require the supplied target requirements, readiness evidence and authorization.
+2. Run [Submit Epic Merge](#submit-epic-merge) with the exact head whose checks and target requirements were verified; return a refusal without continuing.
+3. Run [Read Merge Result](#read-merge-result) for that pull request.
+4. Confirm the merged state, merge commit, verified head and target.
+5. Return the result or discrepancy.
 
 ### Fetch All Initiative Pull Requests
 
@@ -66,8 +85,11 @@ The pull request collection covering every supplied board repository.
 
 **Inputs:** Ordered repository list and destination JSON-lines file.
 
-1. Run [Fetch Repository Initiative Pull Requests](#fetch-repository-initiative-pull-requests) for the first repository and destination `prs.json`. This replaces the destination with a fresh collection. Stop on failure.
-2. Run [Append Repository Initiative Pull Requests](#append-repository-initiative-pull-requests) for each further repository, passing the same destination. Return the complete collection only after every fetch succeeds; report a failed fetch as incomplete evidence.
+1. Run [Fetch Repository Initiative Pull Requests](#fetch-repository-initiative-pull-requests) for the first repository and destination `prs.json`. This replaces the destination with a fresh collection.
+2. Stop on failure.
+3. Run [Append Repository Initiative Pull Requests](#append-repository-initiative-pull-requests) for each further repository, passing the same destination.
+4. If any fetch failed, return incomplete evidence.
+5. Return the complete collection only after every fetch succeeds.
 
 ### Read Initiative Pull Requests
 
@@ -75,7 +97,8 @@ The current delivery pull requests for one initiative.
 
 **Inputs:** Repository, initiative prefix and destination collection file.
 
-- Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file. Return the collection or an incomplete-fetch finding.
+1. Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
+2. Return the collection or an incomplete-fetch finding.
 
 ### Read Pull Request State
 
@@ -84,7 +107,8 @@ One current pull request and its requested supporting records.
 **Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
 
 1. Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
-2. Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records. Return the snapshots or missing evidence.
+2. Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
+3. Return the snapshots or missing evidence.
 
 ### Publish Pull Request
 
@@ -92,9 +116,10 @@ One pull request created or updated from supplied content and metadata.
 
 **Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes.
 
-1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base. Supply required issue-link evidence for delivery. Preserve epic and discussion draft state.
+1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, supplying required issue-link evidence for delivery and preserving epic and discussion draft state.
 2. For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
-3. Re-read through [Read Pull Request State](#read-pull-request-state) and return the saved state or discrepancy.
+3. Re-read through [Read Pull Request State](#read-pull-request-state).
+4. Return the saved state or discrepancy.
 
 ### Locate Review Pull Request
 
@@ -102,7 +127,8 @@ The review pull request for a supplied epic base.
 
 **Inputs:** Repository and epic-base head.
 
-- Run [Find Review Pull Request](#find-review-pull-request) with the supplied head. Return its number or an absent-review finding.
+1. Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
+2. Return its number or an absent-review finding.
 
 ### Read Head Evidence
 
@@ -110,8 +136,9 @@ The check-run and status evidence for one literal head commit.
 
 **Inputs:** Repository, verified head SHA and destination files.
 
-1. Run [Fetch Head Check Runs](#fetch-head-check-runs) and [Fetch Head Status](#fetch-head-status) for the supplied literal SHA.
-2. Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
+1. Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
+2. Run [Fetch Head Status](#fetch-head-status) for the same SHA.
+3. Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 
 ## Fields
 

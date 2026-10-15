@@ -24,6 +24,8 @@ These rules apply to mode procedures and artifact operations.
   A procedure with multiple steps uses consecutive numbers starting at `1.`. Supporting bullets and command blocks are indented beneath their step. A single-step procedure has no numbering or bold action label.
 - **Sub-bullets.**
   A sub-bullet under a numbered procedure step is in sentence case. The first word is capitalized, and a name keeps its own capitals.
+- **Separate actions.**
+  In every procedure step, put each sentence that advances the sequence in its own bullet. Split comma- and semicolon-separated actions the same way. Keep numbered steps as the outer sequence; use bullets for the actions within a step. Put a shared condition or iteration above its nested actions, preserving order, inputs, validation gates and return points. Keep an input list, action condition or explanatory sentence with the action it qualifies; these are not separate sequence elements.
 
 ## Prose
 

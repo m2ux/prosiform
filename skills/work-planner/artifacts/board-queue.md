@@ -16,7 +16,7 @@ Derives the queue from supplied board and delivery snapshots and confirmed decis
 
 **Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities. The caller supplies the delivery state.
 
-1. Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, and the output directory as `--out`. Pass every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
+1. Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
    - The queue must meet [Fields](#fields).
    - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
 2. Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.

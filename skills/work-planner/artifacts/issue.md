@@ -19,10 +19,13 @@ One populated body and its metadata, written to the tracker.
 
 **Inputs:** Repository, optional existing issue number, populated body file, title and existing labels for creation; selected body or metadata changes for an existing issue. Optional comment file.
 
-1. Take the supplied body and metadata. For an existing issue, preserve each field the caller does not change. Return a missing-label result when an assignment names a label the repository does not contain.
-2. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
-3. Run [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
-4. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue) and compare the saved fields with the intended body and metadata.
+1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
+2. Return a missing-label result when an assignment names a label the repository does not contain.
+3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
+4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
+5. Run [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
+6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+7. Compare the saved fields with the intended body and metadata.
 
 ### Close Tracker Issue
 
@@ -30,13 +33,15 @@ Verified completion of an issue and its linked delivery.
 
 **Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
 
-1. Run [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
+1. Run [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
+2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
    - Confirm GitHub's **Auto-close issues with merged linked pull requests** setting is disabled before any delivery pull request is linked or merged. An enabled or unknown setting blocks those actions until configuration is confirmed. Changing repository settings requires explicit authorization.
    - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
-2. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
+4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
    - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
    - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
-3. Run [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
+5. Run [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
 ### Close Transferred Work
 
@@ -46,7 +51,8 @@ An issue whose work is tracked by another issue.
 
 1. Confirm the supplied destination contains the work and cites its source issue.
 2. Run [Comment on Issue](#comment-on-issue) with the destination reference and supplied comment file.
-3. Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body. Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
+3. Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
+4. Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
 
 ### Comment on Issue
 
@@ -54,7 +60,11 @@ The supplied discussion text saved on one issue.
 
 **Inputs:** Repository, issue number and exact comment text or file; reviewer identity and addressed feedback when replying to a review.
 
-- When replying to feedback already folded into the body, mention the reviewer and answer each point precisely and factually, with no thanks or filler. Name what the body now says, by criterion id where one carries it, or the issue that takes the point. For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text. For a longer comment, run [Post Comment File](#post-comment-file) with the complete file. Return the saved comment URL.
+1. When replying to feedback already folded into the body, compose a precise, factual reply addressing each point and mentioning the reviewer, with no thanks or filler. Name what the body now says, by criterion id where one carries it, or the issue that takes the point.
+2. Publish the supplied comment:
+   - For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
+   - For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
+3. Return the saved comment URL.
 
 ### Close as Completed
 
@@ -62,9 +72,12 @@ An issue closed after its final evidence check.
 
 **Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
 
-1. Run [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths. Compare its links with the supplied fresh pull request records. Return a changed link set or missing evidence to the caller for refresh.
-2. Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files. Use absolute evidence paths when changing directory. Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
-3. Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence. Return the saved state or failure.
+1. Run [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
+2. Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
+3. Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
+4. Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
+5. Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
+6. Return the saved state or failure.
 
 ### Capture Issue Development
 
@@ -73,8 +86,10 @@ The issue's current content and complete Development snapshot.
 **Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
 
 1. Run [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
-2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path. Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
-3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
+2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
+   - Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
+3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
+4. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
 ### Read Issue Development
 
@@ -82,7 +97,8 @@ The Development links observed for one issue through authenticated GitHub.
 
 **Inputs:** Issue identity and authenticated access.
 
-- Read every page and state, across repositories, recording each linked pull request's identity. Return the observed links and whether the entire field was readable.
+1. Read every page and state, across repositories, recording each linked pull request's identity.
+2. Return the observed links and whether the entire field was readable.
 
 ### Read Repository Issues
 
@@ -90,7 +106,8 @@ The issue collection used for repository-wide selection.
 
 **Inputs:** Repository and destination JSON file.
 
-- Run [Fetch All Issues](#fetch-all-issues), saving the complete collection. Return it with pull requests distinguishable from issues.
+1. Run [Fetch All Issues](#fetch-all-issues), saving the complete collection.
+2. Return it with pull requests distinguishable from issues.
 
 ### Locate Initiative Issue
 
@@ -98,7 +115,8 @@ The tracker identity matching one initiative prefix.
 
 **Inputs:** Repository and initiative prefix.
 
-- Run [Find Initiative Issue](#find-initiative-issue) with the supplied repository and prefix. Return its issue number or an unresolved identity.
+1. Run [Find Initiative Issue](#find-initiative-issue) with the supplied repository and prefix.
+2. Return its issue number or an unresolved identity.
 
 ### Select Initiative Number
 
@@ -107,7 +125,9 @@ The next unused initiative number in the repository.
 **Inputs:** Repository and existing initiative titles.
 
 1. Run [List Initiative Titles](#list-initiative-titles) for the supplied repository, covering all issue states.
-2. Read the highest initiative prefix and return the following number, or `00` when there is none. Confirm the number remains unused before creation.
+2. Read the highest initiative prefix.
+3. Confirm the following number, or `00` when there is no prefix, remains unused before creation.
+4. Return the confirmed number.
 
 ## Fields
 

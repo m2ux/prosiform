@@ -17,7 +17,8 @@ One delivery plan from supplied board and delivery evidence.
 
 **Inputs:** Board items, pull request records, complete issue-link snapshot, project checkout, epic-base names, resolved off-board issue files and optional record date.
 
-- Run [Compute Available Work](#compute-available-work), mapping each supplied input to its named command parameter. Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch, and supplies missing evidence for another pass.
+1. Run [Compute Available Work](#compute-available-work), mapping each supplied input to its named command parameter.
+2. Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch, and supplies missing evidence for another pass.
 
 ## Fields
 

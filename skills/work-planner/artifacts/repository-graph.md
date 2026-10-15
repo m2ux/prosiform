@@ -10,9 +10,18 @@ Current graph evidence for the supplied change.
 
 **Inputs:** Worktree, verified head commit and base branch.
 
-1. Run [Index Status](#index-status) in the supplied worktree. If the repository is unindexed or behind the verified head, run [Index Repository](#index-repository) and confirm freshness. Every graph command runs in that worktree.
-2. Run [Change Surface](#change-surface) against the supplied base using `--base-ref`. For each changed symbol run [Symbol Context](#symbol-context); for each reported flow run [Flow Trace](#flow-trace).
-3. Inspect the staleness block on every response. Discard measurements from a behind index, reindex and repeat the affected measurements. Return only evidence current with the supplied head, meeting [Fields](#fields), or a freshness blocker.
+1. Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
+2. If the repository is unindexed or behind the verified head:
+   - Run [Index Repository](#index-repository).
+   - Confirm freshness.
+3. Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
+4. For each changed symbol, run [Symbol Context](#symbol-context).
+5. For each reported flow, run [Flow Trace](#flow-trace).
+6. Inspect the staleness block on every response. For a behind index:
+   - Discard its measurements.
+   - Reindex.
+   - Repeat the affected measurements.
+7. Return only evidence current with the supplied head, meeting [Fields](#fields), or a freshness blocker.
 
 ## Fields
 

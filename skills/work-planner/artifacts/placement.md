@@ -10,9 +10,10 @@ One placement option from the supplied orphan and candidate destinations.
 
 **Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
 
-1. Identify an existing task, a new task, a new epic, a new initiative, or Leave. Record the destination and the work it takes, meeting [Fields](#fields).
-2. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions). Include the reason, the original-body preservation requirement and any planning record reference.
-3. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
+1. Identify an existing task, a new task, a new epic, a new initiative, or Leave.
+2. Record the destination and the work it takes, meeting [Fields](#fields).
+3. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
+4. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
 
 ### Find Placement Candidates
 
@@ -20,7 +21,8 @@ The issue candidates and available destinations from supplied records.
 
 **Inputs:** Complete repository issue collection.
 
-- Run [List Orphans](#list-orphans) with the supplied issue file. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
+1. Run [List Orphans](#list-orphans) with the supplied issue file.
+2. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
 
 ## Fields
 

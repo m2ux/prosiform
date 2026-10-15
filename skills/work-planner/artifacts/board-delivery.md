@@ -17,8 +17,9 @@ The board changes implied by supplied delivery state.
 
 **Inputs:** Initiative JSON, epic and task records, pull request records, complete issue-link snapshot, board identity, fields and items, output directory, assignee login and resolved off-board issue files.
 
-1. Require the complete pull-request issue-link snapshot; refuse the computation without it. Run [Compute Board Changes](#compute-board-changes), mapping the supplied records and board context to its parameters.
-2. Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms their live state.
+1. Require the complete pull-request issue-link snapshot; refuse the computation without it.
+2. Run [Compute Board Changes](#compute-board-changes), mapping the supplied records and board context to its parameters.
+3. Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms their live state.
 
 ## Fields
 

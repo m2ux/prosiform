@@ -36,8 +36,9 @@ One body checked against its supplied kind and template.
 
 **Inputs:** Issue JSON, kind field conditions, required related evidence and output body file.
 
-1. Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`. Return the [Format Findings](#format-findings) and mechanical diff.
-2. Review the body against the supplied field conditions. Return missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument as findings. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
+1. Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
+2. Review the body against the supplied field conditions.
+3. Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
 
 ### Apply Body Corrections
 
@@ -45,10 +46,14 @@ One body rewritten from confirmed local findings.
 
 **Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
 
-1. Populate missing sections from the supplied issue and related context. Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template. Return a required tracker-kind change for the caller.
-2. Restate historical narration as the current design, and apply confirmed criterion changes.
+1. Populate missing sections from the supplied issue and related context.
+2. Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template.
+3. Record a required tracker-kind change for the caller.
+4. Restate historical narration as the current design.
+5. Apply confirmed criterion changes.
    - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
-3. Return the corrected file and any required cross-body or metadata changes for the caller. Validate the body through [Validate Issue Body](#validate-issue-body).
+6. Validate the body through [Validate Issue Body](#validate-issue-body).
+7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
 ### Build Body Snapshot
 
@@ -56,7 +61,10 @@ A local issue-shaped record for body validation.
 
 **Inputs:** Current body file, title, labels, optional existing issue JSON and destination JSON path.
 
-- Write the body's exact text, title and labels to the destination as JSON. Preserve the existing issue's identity and state when supplied. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name. Return the JSON path for validation. No tracker issue is created by this operation.
+1. Write the body's exact text, title and labels to the destination as JSON.
+2. Preserve the existing issue's identity and state when supplied.
+3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
+4. Return the JSON path for validation. No tracker issue is created by this operation.
 
 ## Fields
 

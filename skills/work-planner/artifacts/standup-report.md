@@ -10,10 +10,13 @@ The copyable report and any missing-evidence findings.
 
 **Inputs:** Board items, pull request records, complete issue-link snapshot, optional window start, initiative filter, resolved off-board initiative records and output paths.
 
-1. Require the complete issue-link snapshot. Run [Summarise Progress](#summarise-progress), passing items as `--items`, pull requests as `--prs`, links as `--links`, the selected start as `--since`, the filter as `--initiative` and every resolved initiative as `--initiatives`. Return unresolved initiative references for the caller to supply.
-2. Write the management paragraph from the rendered Initiatives and Completed sections.
+1. Require the complete issue-link snapshot.
+2. Run [Summarise Progress](#summarise-progress), passing items as `--items`, pull requests as `--prs`, links as `--links`, the selected start as `--since`, the filter as `--initiative` and every resolved initiative as `--initiatives`.
+3. If initiative references remain unresolved, return them for the caller to supply.
+4. Write the management paragraph from the rendered Initiatives and Completed sections.
    - It must meet [Management Paragraph](#management-paragraph).
-3. Run [Summarise Progress](#summarise-progress) with the same inputs and the paragraph file as `--summary`. Return the report and separate unresolved findings.
+5. Run [Summarise Progress](#summarise-progress) with the same inputs and the paragraph file as `--summary`.
+6. Return the report and separate unresolved findings.
    - The report must meet [Fields](#fields).
 
 ## Fields

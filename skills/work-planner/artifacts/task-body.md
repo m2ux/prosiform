@@ -29,7 +29,8 @@ One task body with its confirmed delivery and verified criteria recorded.
 
 **Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids and output body file.
 
-- Run [Sync Task Issue](#sync-task-issue) with the task JSON, records as `--prs`, snapshot as `--links`, delivery number as `--pr`, verified ids as `--tick` and output as `--fix`. Tick only criteria the caller has verified. Return the body and eligibility findings; the caller publishes comments and closes the tracker issue.
+1. Run [Sync Task Issue](#sync-task-issue) with the task JSON, records as `--prs`, snapshot as `--links`, delivery number as `--pr`, verified ids as `--tick` and output as `--fix`. Tick only criteria the caller has verified.
+2. Return the body and eligibility findings; the caller publishes comments and closes the tracker issue.
 
 ## Fields
 

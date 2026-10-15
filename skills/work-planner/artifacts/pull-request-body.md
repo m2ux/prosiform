@@ -16,7 +16,7 @@ One pull request body from supplied change and validation evidence.
 
 **Inputs:** Change summary, supplied delivery scope, validation evidence, optional current body and output path.
 
-1. Populate the body from the [Template](#template) using the change and its evidence. For an epic review, use [Populate Review Body](#populate-review-body).
+1. Populate the body from the [Template](#template) using the change and its evidence, using [Populate Review Body](#populate-review-body) for an epic review.
    - All populated fields must meet [Fields](#fields).
 2. Verify each result link against [Test Plan](#test-plan) before publishing the body.
 3. Return the complete body file and any unresolved evidence links to the caller for publication.
@@ -29,7 +29,10 @@ The current change carried by one epic base.
 
 1. Populate the review body from the [Template](#template) using the actual task merges into the base.
    - All populated fields must meet [Fields](#fields), including the review-specific requirements in [Review Body](#review-body).
-2. For a later task merge, add its functional change under the corresponding area and cite the merged task pull request as the next reference. Return the complete updated body file to the caller.
+2. For a later task merge:
+   - Add its functional change under the corresponding area.
+   - Cite the merged task pull request as the next reference.
+3. Return the complete updated body file to the caller.
 
 ### Link Architecture Overview
 
@@ -37,13 +40,14 @@ One pull request body referencing its published overview.
 
 **Inputs:** Current body, published overview URL on the engineering branch and output body path.
 
-1. Add the Architecture Overview reference to the body's References section, creating that section in its [Template](#template) position when absent. Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
+1. Add the Architecture Overview reference to the body's References section, creating that section in its [Template](#template) position when absent.
+2. Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
 
       ```markdown
       - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.
       ```
 
-2. Return the complete updated body file for publication.
+3. Return the complete updated body file for publication.
 
 ## Fields
 
