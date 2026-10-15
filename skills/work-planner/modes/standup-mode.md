@@ -39,10 +39,10 @@ The main path meets [Outcomes](#outcomes).
 4. **Compose.**
    - Call [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the board items, initiative pull request records, complete issue-link snapshot, selected window and initiative filter, resolved off-board initiative records and output paths.
 5. **Resolve evidence.**
-   - For each unresolved initiative:
-     - Call [Locate Initiative Issue](../artifacts/issue.md#locate-initiative-issue).
-     - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its current JSON.
-     - Repeat [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with all resolved initiative records, retaining the board items, pull requests, links, selected window and filter. An unavailable record remains a reported gap.
+   For each unresolved initiative:
+   - Call [Locate Initiative Issue](../artifacts/issue.md#locate-initiative-issue).
+   - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its current JSON.
+   - Repeat [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with all resolved initiative records, retaining the board items, pull requests, links, selected window and filter. An unavailable record remains a reported gap.
 6. **Report.**
    - Present the returned report verbatim in a fenced block for copying.
    - Put unresolved findings beneath it.

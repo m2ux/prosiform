@@ -35,11 +35,11 @@ The main path meets [Outcomes](#outcomes).
    - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the selected board identity, current board items with Status, initiative pull request records, board fields, assignee login and an output directory such as `board/`.
    - Include every resolved off-board issue file and confirmed unplanned initiative identity.
 5. **Resolve missing evidence.**
-   - For each unresolved issue reference:
-     - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) into a file.
-     - Add it to the resolved off-board issue files.
-     - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the current board items, initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved issue file and confirmed unplanned initiative identity.
-     - Repeat while references remain unresolved; an unavailable issue leaves the queue pending.
+   For each unresolved issue reference:
+   - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) into a file.
+   - Add it to the resolved off-board issue files.
+   - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the current board items, initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved issue file and confirmed unplanned initiative identity.
+   - Repeat while references remain unresolved; an unavailable issue leaves the queue pending.
 6. **Resolve queue decisions.**
    - Ask only from an `order` or `ask` line in [Report Lines](../artifacts/board-queue.md#report-lines).
    - Follow the interview rules in the [guidelines](../guidelines.md#modes).

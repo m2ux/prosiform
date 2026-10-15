@@ -49,12 +49,12 @@ The main path meets [Outcomes](#outcomes).
    - Capture each issue's Development links.
    - Fetch linked pull requests absent from the initiative list before evaluating closure.
 3. **Unnamed deliveries.**
-   - When the user says work has landed but no pull request names its epic:
-     - Find the pull request.
-     - Confirm it with the user.
-     - Give it the epic's reference, `[I07:E00] Purpose`, with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request).
-     - Run [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests) again.
-     - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) again.
+   When the user says work has landed but no pull request names its epic:
+   - Find the pull request.
+   - Confirm it with the user.
+   - Give it the epic's reference, `[I07:E00] Purpose`, with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request).
+   - Run [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests) again.
+   - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) again.
 4. **Match pull requests to tasks.**
    - Run [Inspect Epic Delivery](../artifacts/epic.md#inspect-epic-delivery) for each epic.
    - Use the unmatched and in-flight results defined in [Delivery Findings](../artifacts/epic.md#delivery-findings).
@@ -127,9 +127,9 @@ The main path meets [Outcomes](#outcomes).
     - Run [Copy Project Board](../artifacts/board.md#copy-project-board) if it is absent.
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
-    - For each task or epic newly confirmed In Review by the board step:
-      - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
-      - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains.
+    For each task or epic newly confirmed In Review by the board step:
+    - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
+    - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains.
 14. **Report.**
     - Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
@@ -194,8 +194,8 @@ The draft pull request and body for one epic base's delivered changes.
 2. **Populate.**
    Pass the existing body when present and the actual task merges into the base to [Populate Review Body](../artifacts/pull-request-body.md#populate-review-body).
 3. **Publish.**
-   - When the first task merges, a draft is reported or an unmerged base has no review:
-     - Pass the returned file to [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), supplying its number for an existing review. The epic stays open; the user marks the draft ready when the epic is complete.
+   When the first task merges, a draft is reported or an unmerged base has no review:
+   - Pass the returned file to [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), supplying its number for an existing review. The epic stays open; the user marks the draft ready when the epic is complete.
 4. **Confirm.**
    - Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for the published review.
    - Compare its complete body with the published file.
@@ -215,14 +215,14 @@ The task and epic records after one confirmed task merge.
 2. **Review.**
    Follow [Maintain Review Pull Request](#maintain-review-pull-request) for the affected epic base.
 3. **Complete when ready.**
-   - When every task and criterion is complete:
-     - Follow [Integrate Epic Delivery](deliver-mode.md#integrate-epic-delivery) with the epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
+   When every task and criterion is complete:
+   - Follow [Integrate Epic Delivery](deliver-mode.md#integrate-epic-delivery) with the epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
 4. **Close the epic.**
-   - After every epic base has merged:
-     - Refresh the evidence.
-     - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, project checkout, and output body file.
-     - Follow [Close Delivered Issue](#close-delivered-issue) when eligible.
-     - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative and every linked epic record. Initiative completion does not gate an epic merge. A task merge alone does not sync the initiative or board.
+   After every epic base has merged:
+   - Refresh the evidence.
+   - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, project checkout, and output body file.
+   - Follow [Close Delivered Issue](#close-delivered-issue) when eligible.
+   - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative and every linked epic record. Initiative completion does not gate an epic merge. A task merge alone does not sync the initiative or board.
 
 ### Record Board Delivery
 

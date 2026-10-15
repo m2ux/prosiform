@@ -124,12 +124,12 @@ The main path meets [Outcomes](#outcomes).
     - A merged pull request is left as merged.
     - A base that is none of these is put to the user.
 11. **Unplaced task issues.**
-    - For each task issue returned as unplaced by [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery):
-      - Draft its row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
-      - Confirm it with the user; an unanswered placement stays pending.
-      - Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
-      - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-      - Repeat Record Epic Delivery with the saved epic JSON, current task records, pull request records, complete issue-link snapshot and the same output body file. An unanswered placement stays pending.
+    For each task issue returned as unplaced by [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery):
+    - Draft its row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
+    - Confirm it with the user; an unanswered placement stays pending.
+    - Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
+    - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+    - Repeat Record Epic Delivery with the saved epic JSON, current task records, pull request records, complete issue-link snapshot and the same output body file. An unanswered placement stays pending.
 12. **Review pull requests.**
     - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) for each open epic.
     - Open a reported base as a draft review pull request.
@@ -155,10 +155,10 @@ The saved format corrections for one issue and any unresolved content findings.
    - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
    - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
 3. **Resolve local content.**
-   - For a non-mechanical finding confined to this body:
-     - Obtain the user's decision.
-     - Run [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
-     - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+   For a non-mechanical finding confined to this body:
+   - Obtain the user's decision.
+   - Run [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
+   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
 4. **Confirm and return.**
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved issue.
    - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.

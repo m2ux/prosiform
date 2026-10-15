@@ -75,38 +75,38 @@ The main path meets [Outcomes](#outcomes).
    - Save the corrected bodies.
    - Update the planning record with evidence, decisions and issue links.
 7. **Keep the goal current.**
-   - When the goal, a criterion, a Problem, a Proposal or an epic changes:
-     - Repeat Review Initiative Goal with the revised bodies and current sources.
-     - Run Report Review Finding for each finding.
-     - Apply confirmed resolutions.
-     - Repeat that review until clear.
-     - After each round, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) on affected bodies.
-     - Whenever tasks or edges change, repeat Check Dependencies and Numbering.
-     - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
-     - Keep local body files as the source for the next pass.
-     - Update work-item files and the README inventory for added, renamed or removed tasks.
-     - Update the discussion pull request body and planning record.
-     - Commit.
-     - Push.
+   When the goal, a criterion, a Problem, a Proposal or an epic changes:
+   - Repeat Review Initiative Goal with the revised bodies and current sources.
+   - Run Report Review Finding for each finding.
+   - Apply confirmed resolutions.
+   - Repeat that review until clear.
+   - After each round, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) on affected bodies.
+   - Whenever tasks or edges change, repeat Check Dependencies and Numbering.
+   - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
+   - Keep local body files as the source for the next pass.
+   - Update work-item files and the README inventory for added, renamed or removed tasks.
+   - Update the discussion pull request body and planning record.
+   - Commit.
+   - Push.
 8. **Prepare epic delivery.**
-   - Before any task starts:
-     - Resolve every Open Question with the user.
-     - Record the answer.
-     - Update the affected bodies, removing each settled question.
-     - Split multi-condition criteria at the end of the list.
-     - Update Coverage for the split criteria.
-     - Run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) with current initiative and prerequisite evidence; stop on a failed or incomplete result.
-     - After prerequisites pass, call [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases).
-     - Run [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request) to retarget each affected open task pull request to its epic base.
-     - Repeat goal and ordering review on changed bodies before returning readiness.
+   Before any task starts:
+   - Resolve every Open Question with the user.
+   - Record the answer.
+   - Update the affected bodies, removing each settled question.
+   - Split multi-condition criteria at the end of the list.
+   - Update Coverage for the split criteria.
+   - Run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) with current initiative and prerequisite evidence; stop on a failed or incomplete result.
+   - After prerequisites pass, call [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases).
+   - Run [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request) to retarget each affected open task pull request to its epic base.
+   - Repeat goal and ordering review on changed bodies before returning readiness.
 9. **Record delivered work.**
-   - When work has landed:
-     - Run [Sync Mode](sync-mode.md) for the affected initiative.
-     - For an unplaced task issue:
-       - Add its row through Populate Epic Issue Body.
-       - Save that body.
-       - Repeat Sync Mode with the refreshed epic.
-     - Return the saved delivery state or blockers.
+   When work has landed:
+   - Run [Sync Mode](sync-mode.md) for the affected initiative.
+   - For an unplaced task issue:
+     - Add its row through Populate Epic Issue Body.
+     - Save that body.
+     - Repeat Sync Mode with the refreshed epic.
+   - Return the saved delivery state or blockers.
 
 ### Report Review Finding
 
