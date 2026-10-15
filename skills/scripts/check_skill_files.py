@@ -26,7 +26,10 @@ specification standing there is reported wherever it is cited from. The
 top-level sections of a file carrying a procedure are the set the guidelines
 name, in the order they name them, Procedure among them, so the reader knows
 what the file carries before opening it. A file carrying no procedure keeps
-its own shape, and a mode file carries Rules as well.
+its own shape, and a mode file in references carries Rules as well. Files in
+modes use Procedure and Outcomes; artifacts use Operations and Fields. Their
+directory selects that contract. Artifact commands belong to their subject,
+including when only one external procedure calls them.
 
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
@@ -42,7 +45,7 @@ import re
 import sys
 from pathlib import Path
 
-FENCE = re.compile(r'^\s*(```|~~~)')
+FENCE = re.compile(r'^\s*(`{3,}|~{3,})')
 RULE = re.compile(r'^\s*(-{3,}|\*{3,}|_{3,})\s*$')
 HEADING = re.compile(r'^(#{1,6})\s+(.*)$')
 LINK = re.compile(r'\[[^\]]*\]\(([^)]+)\)')
@@ -57,6 +60,8 @@ INDENTED = re.compile(r'^\s+\S')
 PROSE_LIMIT = 8
 LEAD_WIDTH = 100
 SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
+MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Outcomes', 'Guidance', 'Operations')
+ARTIFACT_SECTIONS = ('Prerequisites', 'Operations', 'Fields', 'Guidance', 'Commands')
 
 
 def anchor_of(text):
@@ -75,13 +80,18 @@ def scan(path):
     """Each line with the fence state it sits in, and the file's headings."""
     lines = path.read_text().splitlines()
     fenced = []
-    inside = False
+    inside = None
     for line in lines:
-        if FENCE.match(line):
+        if inside:
             fenced.append(True)
-            inside = not inside
+            if re.fullmatch(r'\s*' + re.escape(inside[0]) + '{' + str(len(inside)) + r',}\s*', line):
+                inside = None
             continue
-        fenced.append(inside)
+        if match := FENCE.match(line):
+            fenced.append(True)
+            inside = match[1]
+            continue
+        fenced.append(False)
     headings = [(index, len(match.group(1)), match.group(2))
                 for index, line in enumerate(lines)
                 if not fenced[index] and (match := HEADING.match(line))]
@@ -109,7 +119,7 @@ def targets(path, lines, fenced):
             yield index, target
 
 
-def specifications(headings):
+def specifications(headings, section='commands'):
     """Each command specification: a sub-section of a Commands section, or of a
     listing of a catalog, whose title makes the whole file one. A catalog's
     Conventions section states how its commands run, so it lists none."""
@@ -120,37 +130,39 @@ def specifications(headings):
             yield index, title
         elif level == 2:
             inside = (anchor_of(title) != 'conventions' if catalog
-                      else anchor_of(title) == 'commands')
+                      else anchor_of(title) == section)
         elif level == 1 and not catalog:
             inside = False
 
 
-def specification_spans(headings, total):
+def specification_spans(headings, total, section='commands'):
     """Line indices held by the file's command specifications. A specification
     states how one command runs, so a citation standing in it names a sibling
     operation rather than running it, and its own numbered detail is part of
     that statement."""
     spans = set()
-    for start, _ in specifications(headings):
+    for start, _ in specifications(headings, section):
         end = next((index for index, level, _ in headings
                     if index > start and level <= 3), total)
         spans.update(range(start, end))
     return spans
 
 
-def procedure_spans(lines, fenced, headings):
+def procedure_spans(lines, fenced, headings, directory=None):
     """Line indices held by the file's procedures. A procedure is a top-level
     section carrying a numbered step, whatever its heading names it, and runs
     until the next heading of its own level or above, so the steps under a
     sub-heading belong to it. A command specification is neither, so its lines
     are read out before the steps are counted."""
-    specifications_here = specification_spans(headings, len(lines))
+    specifications_here = specification_spans(headings, len(lines),
+                                             'operations' if directory == 'modes' else 'commands')
     tops = [index for index, level, _ in headings if level <= 2]
     spans = set()
     for position, start in enumerate(tops):
         end = tops[position + 1] if position + 1 < len(tops) else len(lines)
         body = [index for index in range(start, end) if index not in specifications_here]
-        if any(ORDERED.match(lines[index]) and not fenced[index] for index in body):
+        artifact_operation = directory == 'artifacts' and lines[start] == '## Operations'
+        if artifact_operation or any(ORDERED.match(lines[index]) and not fenced[index] for index in body):
             spans.update(body)
     return spans
 
@@ -163,7 +175,7 @@ def citations(paths):
     called = {}
     for path in paths:
         lines, fenced, headings = scan(path)
-        steps = procedure_spans(lines, fenced, headings)
+        steps = procedure_spans(lines, fenced, headings, path.parent.name)
         for index, target in targets(path, lines, fenced):
             name, _, fragment = target.partition('#')
             if not fragment:
@@ -210,12 +222,13 @@ def check(path, root, cache, cited, called):
     # skill's entry point holds no command, so a specification there is
     # reported whatever cites it, which is the one placement no caller count
     # can reach.
-    for index, title in specifications(headings):
+    directory = path.parent.name
+    for index, title in specifications(headings, 'operations' if directory == 'modes' else 'commands'):
         if path.name == 'SKILL.md':
             report(index, 'command specification in the entry point', title)
             continue
         citing = callers.get(anchor_of(title), ())
-        if len(citing) == 1 and path not in citing:
+        if directory != 'artifacts' and len(citing) == 1 and path not in citing:
             caller = named(next(iter(citing)), root)
             report(index, 'command specification with one caller', f'{title}, cited from {caller}')
 
@@ -226,23 +239,29 @@ def check(path, root, cache, cited, called):
     # consults, and nothing about them is a sequence. A skill's entry point
     # takes the structure the guidelines give it whatever it carries, and a mode
     # states what binds it whatever step it is on, so a mode file carries Rules.
-    mode = path.name.endswith('-mode.md')
-    if mode or (path.name != 'SKILL.md' and procedure_spans(lines, fenced, headings)):
+    mode = directory == 'modes' or path.name.endswith('-mode.md')
+    structured = directory in ('modes', 'artifacts')
+    allowed = (MODE_SECTIONS if directory == 'modes' else
+               ARTIFACT_SECTIONS if directory == 'artifacts' else SECTIONS)
+    required = (('Procedure', 'Outcomes') if directory == 'modes' else
+                ('Fields',) if directory == 'artifacts' else
+                ('Procedure', 'Rules') if mode else ('Procedure',))
+    if structured or mode or (path.name != 'SKILL.md' and procedure_spans(lines, fenced, headings)):
         sections = [(index, title.strip()) for index, level, title in headings if level == 2]
         rank = -1
         for index, title in sections:
-            if title not in SECTIONS:
+            if title not in allowed:
                 report(index, 'section outside the set', title)
                 continue
-            place = SECTIONS.index(title)
+            place = allowed.index(title)
             if place < rank:
                 report(index, 'sections out of order',
-                       f'{SECTIONS[place]} after {SECTIONS[rank]}')
+                       f'{allowed[place]} after {allowed[rank]}')
             rank = max(rank, place)
         carried = {title for _, title in sections}
-        for required in ('Procedure', 'Rules') if mode else ('Procedure',):
-            if required not in carried:
-                report(0, 'section missing', required)
+        for title in required:
+            if title not in carried:
+                report(0, 'section missing', title)
 
     for index, target in targets(path, lines, fenced):
         name, _, fragment = target.partition('#')
