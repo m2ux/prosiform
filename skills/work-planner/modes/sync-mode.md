@@ -147,8 +147,6 @@ The main path meets [Outcomes](#outcomes).
 
 The pull requests and issue links that establish current delivery.
 
-**Inputs:** Selected repositories and initiative prefix, current epic JSON, authenticated access and destination files for pull request records and the complete issue-link snapshot.
-
 1. **Fetch.**
    - Run [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests).
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links).
@@ -169,8 +167,6 @@ The pull requests and issue links that establish current delivery.
 ### Record Issue Delivery
 
 The issue bodies associated with a pull request's delivery.
-
-**Inputs:** Delivered unit, current task and epic JSON, pull request records, complete issue-link snapshot, confirmed matches, verification evidence, project checkout and output body paths.
 
 1. **Task issues.**
    Verify each criterion with its named instrument before passing its id to [Record Task Delivery](../artifacts/task-body.md#record-task-delivery).
@@ -193,8 +189,6 @@ The issue bodies associated with a pull request's delivery.
 
 The draft pull request and body for one epic base's delivered changes.
 
-**Inputs:** Epic identity and JSON, epic base and long-lived target, current task-merge records, complete issue-link snapshot, optional review identity and output body path.
-
 1. **Find.**
    Use the review number in the supplied delivery findings.
    - When it is absent:
@@ -216,8 +210,6 @@ The draft pull request and body for one epic base's delivered changes.
 
 The task and epic records after one confirmed task merge.
 
-**Inputs:** Confirmed task merge result, delivered unit, current task and epic records, issue-link snapshot, criterion evidence, base worktree and target, initiative context and output paths.
-
 1. **Read and record.**
    Follow [Read Delivery Evidence](#read-delivery-evidence).
    - Run [Record Issue Delivery](#record-issue-delivery) for the delivered unit.
@@ -237,8 +229,6 @@ The task and epic records after one confirmed task merge.
 ### Record Board Delivery
 
 The board's status and assignees after its issues record delivery.
-
-**Inputs:** Saved initiative, epic and task identities, theme board identity, board and delivery snapshot paths, output directory and resolved dependency records.
 
 1. **Read.**
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
@@ -267,8 +257,6 @@ The board's status and assignees after its issues record delivery.
 
 Fresh closure evidence assembled across the issue and its linked pull requests.
 
-**Inputs:** Issue identity and kind, successful delivery findings, current body and criterion evidence, related delivery records, repository prerequisite and snapshot output paths.
-
 1. **Issue.**
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the issue selected by the delivery checks.
    - Run [Capture Issue Development](../artifacts/issue.md#capture-issue-development) for that issue.
@@ -295,8 +283,6 @@ Fresh closure evidence assembled across the issue and its linked pull requests.
 
 The verification evidence for a supplied set of criteria whose delivery is ready.
 
-**Inputs:** Current issue body, selected criterion ids, current delivery findings, delivery revisions and the instruments named by those criteria.
-
 1. **Check the evidence.**
    Confirm the supplied delivery findings establish readiness for each selected criterion.
    - Return an undelivered or unreadable dependency as a blocker for that criterion.
@@ -310,8 +296,6 @@ The verification evidence for a supplied set of criteria whose delivery is ready
 ### Tick Verified Criteria
 
 The confirmed criteria and completed rows recorded in an epic or initiative body.
-
-**Inputs:** Current issue JSON, verified criterion ids, destination body file, and either pull request and link snapshots for an epic or every linked epic's current JSON for an initiative.
 
 1. **Record the criteria.**
    - For an epic, run [Record Epic Criteria](../artifacts/epic-issue-body.md#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.

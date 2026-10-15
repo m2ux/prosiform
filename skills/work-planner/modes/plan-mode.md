@@ -112,8 +112,6 @@ The main path meets [Outcomes](#outcomes).
 
 The verified findings presented for resolution.
 
-**Inputs:** Findings with their scope, evidence, proposed resolutions and decision state.
-
 1. **Prepare.**
    Call [Populate Review Finding](../artifacts/review-finding.md#populate-review-finding) with the area, severity, problem, solution and source evidence.
    - Resolve any evidence gap before reporting it.
@@ -127,8 +125,6 @@ The verified findings presented for resolution.
 ### Check Dependencies and Numbering
 
 The task graph and the row numbers it permits.
-
-**Inputs:** Initiative and epic identities, current body files or unpublished drafts, current pull request references, confirmed epic- or task-number maps, and explicitly authorized outside-initiative files.
 
 1. **Check.**
    - Use the supplied local drafts when reviewing unpublished work.
@@ -156,8 +152,6 @@ The task graph and the row numbers it permits.
 ### Review Initiative Goal
 
 The draft checked against the initiative outcomes.
-
-**Inputs:** Confirmed goal clauses, current initiative and epic drafts, epic format results, marked requirement sources, output body path and optional planning-record location.
 
 1. **Clauses.**
    Take the goal the user stated and confirmed, as clauses, each an outcome someone could observe.
@@ -188,8 +182,6 @@ The draft checked against the initiative outcomes.
 ### Check Outside Threats
 
 An item the draft leaves open is a gap.
-
-**Inputs:** Current initiative and epic drafts, named consumers, interfaces, measurements and relevant in-flight work.
 
 1. **Consumers.**
    Check for anything outside the plan that reads, builds or ships what the plan changes or removes.

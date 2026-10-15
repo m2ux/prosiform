@@ -34,7 +34,7 @@ These rules apply to mode procedures and artifact operations.
 ## Prose
 
 - **Input labels.**
-  Every input declaration starts with the bold label **Inputs:**. The input description uses normal text.
+  Artifact operation and command input declarations start with the bold label **Inputs:**. The input description uses normal text.
 
 - **One home per rule.**
   A rule is stated once. Its home is the field or outcome it constrains, the procedure step it binds, or the Modes, Artifacts, or References section below. Operation inputs name the evidence that the caller must supply for those preconditions.
@@ -90,7 +90,7 @@ Read this before adding or changing a mode.
 - **Prerequisites.**
   Prerequisites open with `Read these files first.` They list every file the mode's Procedure, Outcomes or Operations link to, including another mode that step runs. They do not list a family common the mode does not link to. Reading the body artifact includes the common file, because that artifact lists it. Recalculate the list after changing calls or references: retain direct dependencies, including files owning called subsections; remove entries whose last direct use is gone. Caller attribution and descriptions of another mode's internals do not create dependencies for the callee.
 - **Procedure steps.**
-  Each numbered step opens with a bold sentence-case action label, with its instructions on the next line.
+  Each numbered step opens with a bold sentence-case action label, with its instructions on the next line. Mode procedures identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**

@@ -54,8 +54,6 @@ The main path meets [Outcomes](#outcomes).
 
 One selected destination for an orphan's work.
 
-**Inputs:** Confirmed placement, source issue and body, current destination bodies and planning-record references.
-
 1. **Apply confirmed placement.**
    Execute only the branch matching the confirmed destination:
    - **Existing task.**
@@ -85,8 +83,6 @@ One selected destination for an orphan's work.
 
 The selected layout, with the original wording preserved for readers.
 
-**Inputs:** Source issue identity and live body, confirmed kept or left disposition, selected kind, destination context, planning-record references and output body path.
-
 1. **Preserve.**
    Fetch the body live with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Post it word for word through [Comment on Issue](../artifacts/issue.md#comment-on-issue), preceded by the line in [Original Body](../artifacts/placement.md#original-body) and a blank line.
@@ -102,8 +98,6 @@ The selected layout, with the original wording preserved for readers.
 ### Subsume Orphan Work
 
 The work remains tracked by the taking issue.
-
-**Inputs:** Source issue, confirmed saved destination, transferred outcomes and design, planning-record references and exact closure comment file.
 
 1. **Transfer.**
    - Make each outcome a criterion of one invariant.

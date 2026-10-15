@@ -149,8 +149,6 @@ The main path meets [Outcomes](#outcomes).
 
 The saved format corrections for one issue and any unresolved content findings.
 
-**Inputs:** Issue identity, current issue JSON, kind template and field conditions, required related evidence and output body path.
-
 1. **Validate the body.**
    Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
    - Return an unreadable source as a blocker before editing.
@@ -171,8 +169,6 @@ The saved format corrections for one issue and any unresolved content findings.
 ### Plan Gap Task
 
 The agreed disposition of criteria a delivered row left unmet.
-
-**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery findings and records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
 
 1. **Decide the disposition.**
    Present each unmet criterion and its missing evidence to the user.

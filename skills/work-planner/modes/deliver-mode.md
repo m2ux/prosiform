@@ -111,8 +111,6 @@ The main path meets [Outcomes](#outcomes).
 
 The confirmed unit carried from its supplied brief through implementation and delivery.
 
-**Inputs:** Published delivery brief, confirmed unit, reserved planning folder, task and epic identities, worktrees and selected branches.
-
 1. **Read the brief.**
    Read the supplied [Delivery Brief](../artifacts/delivery-brief.md).
    - Use its confirmed unit, criteria, tests, selected branch and bases, worktree and planning-folder identity.
@@ -154,8 +152,6 @@ The confirmed unit carried from its supplied brief through implementation and de
 
 Merges each open task pull request whose test plan has passed, on a delivery run that finds it and in the session that opened it.
 
-**Inputs:** Task pull request identities, current test results, epic-base and task worktrees, target branches, repository prerequisite and evidence output paths.
-
 1. **Check.**
    Confirm the repository prerequisite in [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue) and the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](../artifacts/pull-request.md#merge-delivery-pull-request) governs.
 2. **Update and merge.**
@@ -174,8 +170,6 @@ Merges each open task pull request whose test plan has passed, on a delivery run
 ### Integrate Epic Delivery
 
 Coordinates current branch, epic and pull-request evidence for one epic-base integration.
-
-**Inputs:** Epic identity and current body, review pull request identity, epic-base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence.
 
 1. **Prepare the evidence.**
    - Confirm the repository prerequisite in [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue).
@@ -205,8 +199,6 @@ Coordinates current branch, epic and pull-request evidence for one epic-base int
 ### Fetch Merge Readiness
 
 The current pull request's readiness against its target requirements and head checks.
-
-**Inputs:** Repository, pull request number, target branch and evidence output paths.
 
 1. **Read the head.**
    Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
