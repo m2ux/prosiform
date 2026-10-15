@@ -37,7 +37,7 @@ The main path meets [Outcomes](#outcomes).
 5. **Resolve missing evidence.**
    For each unresolved issue reference:
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) into a file.
-   - Add it to the resolved off-board issue files.
+     - Add the returned file to the resolved off-board issue files.
    - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the current board items, initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved issue file and confirmed unplanned initiative identity.
    - Repeat while references remain unresolved; an unavailable issue leaves the queue pending.
 6. **Resolve queue decisions.**
