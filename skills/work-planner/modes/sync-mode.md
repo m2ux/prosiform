@@ -158,9 +158,11 @@ The pull requests and issue links that establish current delivery.
    - Fetch any linked pull request absent from the input with [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
    - Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
 3. **Repair a name.**
-   - When the user confirms a delivery whose title omits its epic:
-     - Run [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request) with the confirmed epic prefix and purpose.
-     - Repeat the fetch and match steps with the saved title before returning.
+   When the user confirms a delivery whose title omits its epic:
+   - Run [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request) with the confirmed epic prefix and purpose.
+   - Repeat the fetch and match steps with the saved title before returning.
+
+   With or without a title correction:
    - Return the current pull request records, complete issue-link snapshot and per-epic findings to the caller, reporting incomplete evidence as a blocker.
 
 ### Record Issue Delivery

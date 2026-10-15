@@ -27,7 +27,7 @@ These rules apply to mode procedures and artifact operations.
 - **Separate actions.**
   In every procedure step, put each sentence that advances the sequence in its own bullet, including sequences written as a paragraph. Split comma- and semicolon-separated actions the same way. Keep numbered steps as the outer sequence; use bullets for the actions within a step. Put a shared condition or iteration above its nested actions, preserving order, inputs, validation gates and return points. Keep an input list, action condition or explanatory sentence with the action it qualifies; these are not separate sequence elements.
 - **Single introduction.**
-  A sole leading line introducing a step's action list is plain text, with the action bullets directly beneath it. Retain an introductory bullet when it is one of several sibling conditions or groups.
+  A sole leading line introducing a step's action list is plain text, with the action bullets directly beneath it. When unconditional actions follow, give them an explicit continuation outside that scope. Retain an introductory bullet when it is one of several sibling conditions or groups.
 - **Branch headers.**
   Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Each header is a bold label on its own line, with its instructions in child bullets. Mutually exclusive choices share one decision step. Place actions common to all branches after the branch group at the enclosing sequence level, including a shared return to the caller.
 

@@ -111,10 +111,12 @@ The main path meets [Outcomes](#outcomes).
    - Apply a Done change in the output body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
    - Report criterion evidence as [Coverage Reports](../artifacts/issue-body.md#coverage-reports) defines.
 10. **Branches.**
-    - For each open epic of the selected initiative:
-      - Run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) with the current initiative and epic bodies and prerequisite issue and base-merge records.
-      - Pass only a confirmed result, project checkout, epic identity and changed long-lived branches to [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases).
-      - Return missing prerequisite evidence before creating a base.
+    For each open epic of the selected initiative:
+    - Run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) with the current initiative and epic bodies and prerequisite issue and base-merge records.
+    - Pass only a confirmed result, project checkout, epic identity and changed long-lived branches to [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases).
+    - Return missing prerequisite evidence before creating a base.
+
+    After preparing the bases, align the selected initiative's pull requests:
     - Read the pull requests through [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests).
     - Read each open epic's branches through [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches). Unevaluable branch names stop this step with a finding.
     - Use the returned long-lived target; for example, `main` and `i07/e00/main` identify the same target.
@@ -135,10 +137,12 @@ The main path meets [Outcomes](#outcomes).
     - Open a reported base as a draft review pull request.
     - Leave the epic open. The user marks the draft ready when the epic is complete.
 13. **Re-run.**
-    - After a published correction:
-      - Fetch the changed bodies.
-      - Repeat steps 3–12 for the affected issues with refreshed delivery evidence.
-      - Stop when the checks are clear or every remaining finding is one the user chose to keep. A finding from the criteria check is not one the user keeps. The alignment is not clear while a criterion that fails [Requirement Characteristics](../references/requirement-characteristics.md) remains.
+    After a published correction:
+    - Fetch the changed bodies.
+    - Repeat steps 3–12 for the affected issues with refreshed delivery evidence.
+    - Stop when the checks are clear or every remaining finding is one the user chose to keep. A finding from the criteria check is not one the user keeps. The alignment is not clear while a criterion that fails [Requirement Characteristics](../references/requirement-characteristics.md) remains.
+
+    With or without a correction:
     - Report what changed on each issue, including each finding the criteria check reported.
 
 ### Repair Issue Format
