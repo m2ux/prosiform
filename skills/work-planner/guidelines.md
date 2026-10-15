@@ -29,7 +29,7 @@ These rules apply to mode procedures and artifact operations.
 - **Single introduction.**
   A sole leading line introducing a step's action list is plain text, with the action bullets directly beneath it. Retain an introductory bullet when it is one of several sibling conditions or groups.
 - **Branch headers.**
-  Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Put each header's instructions in child bullets. Keep these branches separate from the main action sequence.
+  Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Put each header's instructions in child bullets. Keep these branches separate from the main action sequence; mutually exclusive choices share one decision step.
 
 ## Prose
 

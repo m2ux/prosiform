@@ -56,32 +56,30 @@ One selected destination for an orphan's work.
 
 **Inputs:** Confirmed placement, source issue and body, current destination bodies and planning-record references.
 
-Only the numbered branch matching the confirmed destination executes. Its result is the saved destination and confirmed disposition; the calling apply step performs the rewrite or closure.
-
-1. **Existing task.**
-   - Add the orphan's outcomes to the task criteria.
-   - Add its design to Proposal.
-   - When they exceed the epic's criteria, add epic criteria cited by the task row.
-   - Publish the affected bodies through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Return their identities.
-2. **New task.**
-   - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
-   - Number the row where it can start.
-   - When movable rows change number, run [Check Dependencies and Numbering](plan-mode.md#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
-   - Publish the checked bodies through Save Tracker Issue.
-   - Return the destination epic and row.
-3. **New epic.**
-   - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body).
-   - Populate the covering row through [Draft Initiative Issue Body](../artifacts/initiative-issue-body.md#draft-initiative-issue-body).
-   - Publish the epic through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Link its issue in the initiative row.
-   - Return the saved destination and confirmed disposition to the caller.
-4. **New initiative.**
-   - Run [Populate Initiative Issue Body](../artifacts/initiative-issue-body.md#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
-   - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Return the saved destination and confirmed disposition to the caller.
-5. **Leave.**
-   Return the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
+1. **Apply confirmed placement.**
+   Execute only the branch matching the confirmed destination:
+   - **Existing task.**
+     - Add the orphan's outcomes to the task criteria.
+     - Add its design to Proposal.
+     - When they exceed the epic's criteria, add epic criteria cited by the task row.
+     - Publish the affected bodies through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+   - **New task.**
+     - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
+     - Number the row where it can start.
+     - When movable rows change number, run [Check Dependencies and Numbering](plan-mode.md#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
+     - Publish the checked bodies through Save Tracker Issue.
+   - **New epic.**
+     - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body).
+     - Populate the covering row through [Draft Initiative Issue Body](../artifacts/initiative-issue-body.md#draft-initiative-issue-body).
+     - Publish the epic through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+     - Link its issue in the initiative row.
+   - **New initiative.**
+     - Run [Populate Initiative Issue Body](../artifacts/initiative-issue-body.md#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
+     - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+   - **Leave.**
+     - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
+2. **Return placement.**
+   Return the saved destination, the identities of all affected bodies and the confirmed disposition to the calling apply step, including the destination epic and row for a new task. The caller performs the rewrite or closure.
 
 ### Rewrite Orphan Issue
 
