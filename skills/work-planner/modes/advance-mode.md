@@ -18,11 +18,11 @@ Read these files first.
 The main path meets [Outcomes](#outcomes).
 
 1. **Select the board.**
-   - Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
+   Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
    - Use the returned owner and board number for the sync and fetch steps.
    - Resolve a pending theme selection before continuing.
 2. **Sync.**
-   - Run [Sync Mode](sync-mode.md) for each open initiative on the selected board.
+   Run [Sync Mode](sync-mode.md) for each open initiative on the selected board.
    - Wait for its saved delivery results before the fetch step.
    - Return any blocker that prevents current delivery from being established.
 3. **Fetch.**
@@ -32,7 +32,7 @@ The main path meets [Outcomes](#outcomes).
    - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration) for the board fields.
    - Run [Read Board Assignee](../artifacts/board.md#read-board-assignee) for the assignee login.
 4. **Plan.**
-   - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the selected board identity, current board items with Status, initiative pull request records, board fields, assignee login and an output directory such as `board/`.
+   Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the selected board identity, current board items with Status, initiative pull request records, board fields, assignee login and an output directory such as `board/`.
    - Include every resolved off-board issue file and confirmed unplanned initiative identity.
 5. **Resolve missing evidence.**
    For each unresolved issue reference:
@@ -41,7 +41,7 @@ The main path meets [Outcomes](#outcomes).
    - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the current board items, initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved issue file and confirmed unplanned initiative identity.
    - Repeat while references remain unresolved; an unavailable issue leaves the queue pending.
 6. **Resolve queue decisions.**
-   - Ask only from an `order` or `ask` line in [Report Lines](../artifacts/board-queue.md#report-lines).
+   Ask only from an `order` or `ask` line in [Report Lines](../artifacts/board-queue.md#report-lines).
    - Follow the interview rules in the [guidelines](../guidelines.md#modes).
    - For `order`, ask for the [parallel work map](../artifacts/board-queue.md#priority-sets): a positive integer on each listed initiative, or leave it unordered.
    - For `ask`:
@@ -54,7 +54,7 @@ The main path meets [Outcomes](#outcomes).
    - Resolve any further missing evidence through step 5.
    - Repeat this step while a decision is pending. An unanswered question leaves the queue pending.
 7. **Write.**
-   - Once the queue is [complete](../artifacts/board-queue.md#completeness), run each proposed Status and assignee call it returned.
+   Once the queue is [complete](../artifacts/board-queue.md#completeness), run each proposed Status and assignee call it returned.
    - Run [Read Board State](../artifacts/board.md#read-board-state) again.
    - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved off-board issue file and confirmed unplanned initiative identity.
    - Resolve new missing evidence or decisions through steps 5 and 6.

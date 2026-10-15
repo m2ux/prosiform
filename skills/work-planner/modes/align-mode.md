@@ -33,7 +33,7 @@ The main path meets [Outcomes](#outcomes).
    - Naming another initiative's issue approves format edits to it.
    - An open standalone issue that an aligned initiative, epic, or task cites is aligned with it.
 2. **Fetch.**
-   - Fetch each issue whole, with its initiative when it is an epic, its epics when it is an initiative, and the standalone issues it cites.
+   Fetch each issue whole, with its initiative when it is an epic, its epics when it is an initiative, and the standalone issues it cites.
    - Use [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its JSON and body.
    - An initiative's fetch includes every epic its table links, closed epics included, as supplied context for [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body).
    - The fetch includes each source the initiative's References mark, for an epic as for the initiative.
@@ -44,14 +44,14 @@ The main path meets [Outcomes](#outcomes).
    - Supply the fetched context and output files.
    - Route the returned [Format Findings](../artifacts/issue-body.md#format-findings) through the following steps.
 4. **Publish mechanical fixes.**
-   - Confirm the returned diff changes structure only.
+   Confirm the returned diff changes structure only.
    - Publish that body and the returned title or label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
 5. **Review the goal.**
    - For initiative or epic scope, follow [Review Initiative Goal](plan-mode.md#review-initiative-goal) with the current initiative and epic evidence, confirmed goal clauses and marked sources.
    - For proposal, task or standalone scope, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) with the selected body, its kind's field conditions and format inputs; skip initiative goal review when no initiative is in scope.
    - Present each finding through [Report Review Finding](plan-mode.md#report-review-finding). Numbering changes affect only rows no pull request names.
 6. **Resolve content decisions.**
-   - Decide each non-mechanical finding with the user.
+   Decide each non-mechanical finding with the user.
    - Pass confirmed local resolutions to [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections), using the selected kind's template and field conditions.
    - Move initiative boundaries found as Non-Goals in an epic or task into the initiative's Non-Goals.
    - Remove the misplaced section.
@@ -68,7 +68,7 @@ The main path meets [Outcomes](#outcomes).
    - Publish returned bodies and metadata through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Validate the affected bodies again.
 7. **Check criteria.**
-   - Check every acceptance criterion of the issues being aligned against [Requirement Characteristics](../references/requirement-characteristics.md), through [Verifiable](../artifacts/issue-body.md#verifiable).
+   Check every acceptance criterion of the issues being aligned against [Requirement Characteristics](../references/requirement-characteristics.md), through [Verifiable](../artifacts/issue-body.md#verifiable).
    - Report each that fails it. The alignment is not clear while a criterion that fails the characteristics remains, and a finding from this check is not one the user keeps.
    - Align the criteria with the sources the initiative's References mark, as [Sources](../artifacts/initiative-issue-body.md#sources) defines.
    - Report each departure and each gap.
@@ -77,13 +77,13 @@ The main path meets [Outcomes](#outcomes).
    - The alignment is not clear while a marked source stays unread. A source whose link is dead is repaired, or the mark is removed and the criteria it bound are decided with the user.
    - A departure from a marked source is corrected in the criterion, unless the user records the departure as a Non-Goal.
 8. **Check dependencies.**
-   - Check them whenever an initiative or epic is aligned.
+   Check them whenever an initiative or epic is aligned.
    - Take the initiative's body and every epic's body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Follow [Check Dependencies and Numbering](plan-mode.md#check-dependencies-and-numbering) with those bodies, current pull request records, confirmed maps when any, and explicitly authorized outside-initiative files.
    - Resume this alignment with its checked bodies or unresolved findings.
    - Put each problem it reports to the user. An initiative Depends on cell takes the epics it derives, as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
 9. **Coverage.**
-   - When no initiative or epic is selected, continue at step 13, Re-run.
+   When no initiative or epic is selected, continue at step 13, Re-run.
    - For initiative or epic scope, run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the selected initiative and epics.
    - Continue with its returned records.
    - For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file:
@@ -133,7 +133,7 @@ The main path meets [Outcomes](#outcomes).
     - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
     - Repeat Record Epic Delivery with the saved epic JSON, current task records, pull request records, complete issue-link snapshot and the same output body file. An unanswered placement stays pending.
 12. **Review pull requests.**
-    - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) for each open epic.
+    Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) for each open epic.
     - Open a reported base as a draft review pull request.
     - Leave the epic open. The user marks the draft ready when the epic is complete.
 13. **Re-run.**
@@ -152,10 +152,10 @@ The saved format corrections for one issue and any unresolved content findings.
 **Inputs:** Issue identity, current issue JSON, kind template and field conditions, required related evidence and output body path.
 
 1. **Validate the body.**
-   - Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
+   Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
    - Return an unreadable source as a blocker before editing.
 2. **Save mechanical corrections.**
-   - Review the returned diff.
+   Review the returned diff.
    - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
    - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
 3. **Resolve local content.**
@@ -164,7 +164,7 @@ The saved format corrections for one issue and any unresolved content findings.
    - Run [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
    - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
 4. **Confirm and return.**
-   - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved issue.
+   Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved issue.
    - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
    - Return the saved body, whether a correction was made, and the validation result to the calling step. A remaining failure is a blocker; this subsection does not enter the main alignment procedure.
 
@@ -175,7 +175,7 @@ The agreed disposition of criteria a delivered row left unmet.
 **Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery findings and records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
 
 1. **Decide the disposition.**
-   - Present each unmet criterion and its missing evidence to the user.
+   Present each unmet criterion and its missing evidence to the user.
    - For criteria the user confirms already hold:
      - Run [Verify Selected Criteria](sync-mode.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments.
      - Pass returned verified ids to [Tick Verified Criteria](sync-mode.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path.
@@ -185,12 +185,12 @@ The agreed disposition of criteria a delivered row left unmet.
    - If no criteria need further work, return the saved results and pending findings to the caller.
    - Continue to the draft step with only the criteria the user confirms need further work, using the saved body.
 2. **Draft and apply.**
-   - Draft a further task for the criteria selected for further work, meeting [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
+   Draft a further task for the criteria selected for further work, meeting [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
    - Confirm the draft with the user.
    - On acceptance, call [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
    - Return an unanswered draft as pending without continuing to the reconcile step.
 3. **Reconcile and return.**
-   - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the revised epic and the supplied delivery evidence.
+   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the revised epic and the supplied delivery evidence.
    - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Return the saved row and criterion disposition to the caller. Done follows [Tables](../artifacts/issue-body.md#tables).
 

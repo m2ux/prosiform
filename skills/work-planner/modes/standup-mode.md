@@ -19,7 +19,7 @@ Read these files first.
 The main path meets [Outcomes](#outcomes).
 
 1. **Select the scope.**
-   - Run [Select Project Board](../artifacts/board.md#select-project-board) for the requested board, each requested board when the scope is all, or the theme board of the named initiative.
+   Run [Select Project Board](../artifacts/board.md#select-project-board) for the requested board, each requested board when the scope is all, or the theme board of the named initiative.
    - Retain the selected window and initiative filter.
    - Complete steps 2–6 separately for each selected board.
 2. **Bring delivery current.**
@@ -37,14 +37,14 @@ The main path meets [Outcomes](#outcomes).
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) for those records.
    - Pass the returned snapshots to Compose Standup Report.
 4. **Compose.**
-   - Call [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the board items, initiative pull request records, complete issue-link snapshot, selected window and initiative filter, resolved off-board initiative records and output paths.
+   Call [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the board items, initiative pull request records, complete issue-link snapshot, selected window and initiative filter, resolved off-board initiative records and output paths.
 5. **Resolve evidence.**
    For each unresolved initiative:
    - Call [Locate Initiative Issue](../artifacts/issue.md#locate-initiative-issue).
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its current JSON.
    - Repeat [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with all resolved initiative records, retaining the board items, pull requests, links, selected window and filter. An unavailable record remains a reported gap.
 6. **Report.**
-   - Present the returned report verbatim in a fenced block for copying.
+   Present the returned report verbatim in a fenced block for copying.
    - Put unresolved findings beneath it.
    - For an unreadable epic body:
      - Run [Repair Issue Format](align-mode.md#repair-issue-format) with the epic identity, current JSON, [epic template and field conditions](../artifacts/epic-issue-body.md#fields), required related evidence and output body path.

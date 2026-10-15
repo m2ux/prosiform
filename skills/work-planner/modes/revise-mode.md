@@ -16,24 +16,24 @@ The main path meets [Outcomes](#outcomes).
 1. **Read the guidelines.**
    Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](../guidelines.md) whole before the first edit.
 2. **Understand the request.**
-   - Interview the user, as an [Interview](../guidelines.md#modes), until the change and its scope are clear.
+   Interview the user, as an [Interview](../guidelines.md#modes), until the change and its scope are clear.
    - Find every file the change touches: the rule's home, each file that cites it, and any script, docstring or test that states it.
 3. **Work in a worktree.**
-   - Branch a worktree for the change.
+   Branch a worktree for the change.
    - Commit each distinct change as its own commit.
 4. **Revise.**
-   - Make the change in the rule's one home.
+   Make the change in the rule's one home.
    - Link to it from every other file that needs it.
    - Write it to the guidelines' layout, prose, link and command rules as it is written, not in a later pass.
    - When the user states a new writing rule, add it to the applicable shared or skill-specific guidelines before validation and delivery.
 5. **Check against the guidelines.**
-   - Read every changed file against the [shared skill guidelines](../../guidelines.md) and [skill guidelines](../guidelines.md), checking:
-     - The description, when the skill's reach changed.
-     - One line per item, bold leads on their own line, and sub-bullets for discrete points.
-     - Each rule stated once, and no description of replaced behaviour left anywhere.
-     - Every command linked to its operation section.
-     - Every link and anchor resolving.
-     - [Progressive disclosure](../../guidelines.md#progressive-disclosure), including complete common sections and caller prerequisites.
+   Read every changed file against the [shared skill guidelines](../../guidelines.md) and [skill guidelines](../guidelines.md), checking:
+   - The description, when the skill's reach changed.
+   - One line per item, bold leads on their own line, and sub-bullets for discrete points.
+   - Each rule stated once, and no description of replaced behaviour left anywhere.
+   - Every command linked to its operation section.
+   - Every link and anchor resolving.
+   - [Progressive disclosure](../../guidelines.md#progressive-disclosure), including complete common sections and caller prerequisites.
    - Fix each departure.
 6. **Verify.**
    - Run [Run Tests](#run-tests) when an executable script, its consumed template or a test changed.

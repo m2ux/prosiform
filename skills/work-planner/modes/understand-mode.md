@@ -18,12 +18,12 @@ Read these files first.
 The main path meets [Outcomes](#outcomes).
 
 1. **Select the change.**
-   - Require the pull request number or URL.
+   Require the pull request number or URL.
    - Ask and stop when none is supplied. Do not infer it from the current branch.
    - For several supplied pull requests, complete one overview per pull request. An initiative has no overview of its own.
    - Read the pull request identity, title, base and verified head through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
 2. **Prepare the evidence.**
-   - Call [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree) with the repository checkout, pull request number, verified head and worktree path.
+   Call [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree) with the repository checkout, pull request number, verified head and worktree path.
    - On a changed-head finding:
      - Repeat Read Pull Request State for the same pull request.
      - Repeat Create Pull Request Worktree using its new verified head.
@@ -36,7 +36,7 @@ The main path meets [Outcomes](#outcomes).
      - Rebuild the worktree evidence.
    - Return any unresolved freshness blocker before writing the overview.
 3. **Write the overview.**
-   - Locate any existing overview record for this pull request number before creating a record.
+   Locate any existing overview record for this pull request number before creating a record.
    - Reuse its folder identity when one exists; otherwise choose a planning-folder identity whose reference is the pull request number and whose slug comes from its title.
    - Call [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) to prepare that folder.
    - Run [Populate Architecture Overview](../artifacts/architecture-overview.md#populate-architecture-overview) with the measured structure and flows, verified head, pinned code links and overview path. A repeat replaces its overview while preserving the record's other content.
@@ -48,7 +48,7 @@ The main path meets [Outcomes](#outcomes).
    - Call [Link Architecture Overview](../artifacts/pull-request-body.md#link-architecture-overview) with the current body and published overview URL.
    - Publish the returned file through [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request).
 6. **Report.**
-   - Report the pull request, record folder, diagrams and References row.
+   Report the pull request, record folder, diagrams and References row.
 
 ## Outcomes
 

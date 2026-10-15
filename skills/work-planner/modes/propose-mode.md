@@ -16,7 +16,7 @@ Read these files first.
 The main path meets [Outcomes](#outcomes).
 
 1. **Understand the problem.**
-   - Ask the user until the friction and the boundary are clear.
+   Ask the user until the friction and the boundary are clear.
    - State the goal back as clauses meeting [Goal](../artifacts/proposal-body.md#goal).
    - Have the user confirm those clauses.
 2. **Gather evidence.**
@@ -28,20 +28,20 @@ The main path meets [Outcomes](#outcomes).
    - The goal clauses are the clauses the user confirmed. The Non-Goals are the boundary.
    - The design, the acceptance criteria, and the breakdown belong to a later goal.
 4. **Validate.**
-   - Call [Validate Proposal Body](../artifacts/proposal-body.md#validate-proposal-body) with the draft issue JSON and output file.
+   Call [Validate Proposal Body](../artifacts/proposal-body.md#validate-proposal-body) with the draft issue JSON and output file.
    - Resolve each finding.
    - Update the draft.
    - Repeat Validate Proposal Body with the revised JSON and the same output path. Proceed to publication only when validation passes.
 5. **Publish.**
-   - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the proposal's required label definitions.
+   Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the proposal's required label definitions.
    - Pass the validated body, title and labels to [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), leaving it unassigned.
 6. **Confirm placement.**
-   - Ask whether to add the issue to the proposals board.
+   Ask whether to add the issue to the proposals board.
    - On acceptance, continue to the place step.
    - On a decline, skip placement and continue to the report step with the issue URL.
    - Wait for an unanswered decision.
 7. **Place.**
-   - Call [Locate Project Board](../artifacts/board.md#locate-project-board) for proposals.
+   Call [Locate Project Board](../artifacts/board.md#locate-project-board) for proposals.
    - Create an absent board through [Create Proposals Board](../artifacts/board.md#create-proposals-board).
    - Read the saved issue id through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Run [Place Issue on Board](../artifacts/board.md#place-issue-on-board) with that id and initial status Suggested.

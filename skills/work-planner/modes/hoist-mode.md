@@ -23,19 +23,19 @@ The main path meets [Outcomes](#outcomes).
 1. **Fetch.**
    Fetch every issue with [Read Repository Issues](../artifacts/issue.md#read-repository-issues).
 2. **List candidates.**
-   - Call [Find Placement Candidates](../artifacts/placement.md#find-placement-candidates) with the complete issue collection.
+   Call [Find Placement Candidates](../artifacts/placement.md#find-placement-candidates) with the complete issue collection.
    - Use its candidates and available destinations for triage.
 3. **Triage.**
-   - Read each candidate's body and discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue), with the initiative and epic bodies whose themes or criteria it touches.
+   Read each candidate's body and discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue), with the initiative and epic bodies whose themes or criteria it touches.
    - Supply that evidence and planning-record references to [Draft Issue Placement](../artifacts/placement.md#draft-issue-placement) for each option.
    - Present the returned options best first, with Leave last.
 4. **Offer.**
-   - Offer each orphan as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
+   Offer each orphan as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
    - Leave is last.
    - Placing an orphan in another initiative's issue needs that answer as its approval.
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
 5. **Apply.**
-   - Run [Apply Issue Placement](#apply-issue-placement) with each confirmed placement and its current source and destination records.
+   Run [Apply Issue Placement](#apply-issue-placement) with each confirmed placement and its current source and destination records.
    - After it returns the saved destination, run exactly one disposition procedure with the returned destination and source records: [Rewrite Orphan Issue](#rewrite-orphan-issue) for kept or left issues, or [Subsume Orphan Work](#subsume-orphan-work) for work taken by another issue.
    - Resume review.
 6. **Review.**
@@ -88,13 +88,13 @@ The selected layout, with the original wording preserved for readers.
 **Inputs:** Source issue identity and live body, confirmed kept or left disposition, selected kind, destination context, planning-record references and output body path.
 
 1. **Preserve.**
-   - Fetch the body live with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
+   Fetch the body live with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Post it word for word through [Comment on Issue](../artifacts/issue.md#comment-on-issue), preceded by the line in [Original Body](../artifacts/placement.md#original-body) and a blank line.
 2. **Populate.**
-   - Use the selected [Populate Task Body](../artifacts/task-body.md#populate-task-body), [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body), [Populate Initiative Issue Body](../artifacts/initiative-issue-body.md#populate-initiative-issue-body) or [Populate Standalone Body](../artifacts/standalone-body.md#populate-standalone-body) body.
+   Use the selected [Populate Task Body](../artifacts/task-body.md#populate-task-body), [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body), [Populate Initiative Issue Body](../artifacts/initiative-issue-body.md#populate-initiative-issue-body) or [Populate Standalone Body](../artifacts/standalone-body.md#populate-standalone-body) body.
    - Carry evidence into Problem and design into Proposal.
 3. **Publish.**
-   - Run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) with the populated body and selected kind conditions before publishing.
+   Run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) with the populated body and selected kind conditions before publishing.
    - Resolve findings.
    - Run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the validated body, title and labels.
    - Return the saved identity to the caller.
@@ -112,7 +112,7 @@ The work remains tracked by the taking issue.
 2. **Explain.**
    Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
 3. **Close.**
-   - Run [Close Transferred Work](../artifacts/issue.md#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
+   Run [Close Transferred Work](../artifacts/issue.md#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
    - Return the confirmed closure or blocker to the calling apply step.
 
 ## Outcomes

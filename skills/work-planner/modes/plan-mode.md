@@ -40,14 +40,14 @@ The main path meets [Outcomes](#outcomes).
    - For a new initiative, obtain its proposed prefix through [Select Initiative Number](../artifacts/issue.md#select-initiative-number).
    - Run [Draft Initiative Issue Body](../artifacts/initiative-issue-body.md#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path. The epics' acceptance criteria carry the detail that makes the initiative's criteria true.
 4. **Populate the epics.**
-   - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
+   Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
    - Call [Populate Work Item](../artifacts/work-item.md#populate-work-item) for each task with its scope, design, criteria and test requirements.
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
    - Run [Check Dependencies and Numbering](#check-dependencies-and-numbering) across the drafts.
    - Return each epic draft and its format results to the review step.
 5. **Review the drafts.**
-   - Follow [Review Initiative Goal](#review-initiative-goal).
+   Follow [Review Initiative Goal](#review-initiative-goal).
    - Run [Report Review Finding](#report-review-finding) for each returned finding, with its scope, evidence and proposed resolution.
    - Apply each confirmed resolution to the drafts:
      - For a local epic finding, call Populate Epic Issue Body with the confirmed Proposal, row and criterion changes, including every new or renumbered criterion in Coverage.
@@ -115,11 +115,11 @@ The verified findings presented for resolution.
 **Inputs:** Findings with their scope, evidence, proposed resolutions and decision state.
 
 1. **Prepare.**
-   - Call [Populate Review Finding](../artifacts/review-finding.md#populate-review-finding) with the area, severity, problem, solution and source evidence.
+   Call [Populate Review Finding](../artifacts/review-finding.md#populate-review-finding) with the area, severity, problem, solution and source evidence.
    - Resolve any evidence gap before reporting it.
    - Group the returned findings by area.
 2. **Decide.**
-   - Put each pending decision to the user, one question at a time.
+   Put each pending decision to the user, one question at a time.
    - Wait for the answer.
    - Record the confirmed answer on the finding.
    - Return each confirmed resolution to the calling procedure for application to its selected issue kind. A pending decision returns without applying a change.
@@ -135,7 +135,7 @@ The task graph and the row numbers it permits.
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Run [Check Dependencies](#check-dependencies) with the initiative body and every epic body.
 2. **Correct.**
-   - Resolve each finding with the user.
+   Resolve each finding with the user.
    - Preserve task edges when correcting a whole-epic edge.
    - Name the producing row for each consumed output.
    - Retain a whole-epic edge only when every prerequisite row is required.
@@ -143,7 +143,7 @@ The task graph and the row numbers it permits.
    - Account for every independent pair in Joins or the planning record.
    - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
 3. **Renumber.**
-   - Preserve numbers already named by pull requests.
+   Preserve numbers already named by pull requests.
    - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
    - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
    - Re-sort rewritten tables.
@@ -162,25 +162,25 @@ The draft checked against the initiative outcomes.
 1. **Clauses.**
    Take the goal the user stated and confirmed, as clauses, each an outcome someone could observe.
 2. **Trace.**
-   - Build a trace table: goal clause, the initiative criteria that make it true, the epics whose Coverage cells cite those criteria, and the epic criteria that deliver them.
-     - Every goal clause has an initiative criterion that makes it true.
-     - Every initiative criterion is delivered by an epic, and that epic's criteria make the criterion wholly true.
-     - Every initiative criterion traces to a goal clause.
+   Build a trace table: goal clause, the initiative criteria that make it true, the epics whose Coverage cells cite those criteria, and the epic criteria that deliver them.
+   - Every goal clause has an initiative criterion that makes it true.
+   - Every initiative criterion is delivered by an epic, and that epic's criteria make the criterion wholly true.
+   - Every initiative criterion traces to a goal clause.
    - Remove one that traces to none, or put that scope to the user.
    - Record any criterion no task row delivers as a gap from the supplied epic format results.
 3. **Align.**
-   - Call [Read Requirement Sources](../artifacts/initiative-issue-body.md#read-requirement-sources) with the initiative References, checkout, authenticated access and output files.
+   Call [Read Requirement Sources](../artifacts/initiative-issue-body.md#read-requirement-sources) with the initiative References, checkout, authenticated access and output files.
    - Extend the trace table with the source requirement each criterion answers to. Each unmatched requirement, each criterion that departs from the one it cites, and each source that could not be read is a gap [Sources](../artifacts/initiative-issue-body.md#sources) names.
 4. **Criteria.**
    Check each criterion against the [shared acceptance criteria](../artifacts/issue-body.md#shared-acceptance-criteria) and [Initiative Acceptance Criteria](../artifacts/initiative-issue-body.md#initiative-acceptance-criteria).
 5. **Validate the body.**
-   - Call [Build Body Snapshot](../artifacts/issue-body.md#build-body-snapshot) for each supplied local draft with its title, labels and existing identity when present.
+   Call [Build Body Snapshot](../artifacts/issue-body.md#build-body-snapshot) for each supplied local draft with its title, labels and existing identity when present.
    - Use the returned initiative and epic JSON for [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body) with the initiative JSON, every linked epic's current JSON, source evidence and output file.
    - Incorporate its local findings into this review.
 6. **Outside threats.**
    Follow [Check Outside Threats](#check-outside-threats).
 7. **Rank.**
-   - Rank the gaps.
+   Rank the gaps.
    - Flag the few that most threaten the goal.
    - Record the trace table in the planning record, or give it to the user when the change has none.
    - Return the trace and ranked findings to the calling review step.

@@ -27,7 +27,7 @@ Read these files first.
 The main path meets [Outcomes](#outcomes).
 
 1. **Select.**
-   - Select an initiative with its open epics, or the epics the user names.
+   Select an initiative with its open epics, or the epics the user names.
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for each selected issue before inspecting its Open Questions or format.
    - Use the returned current JSON and body in the following checks.
    - For an epic with Open Questions:
@@ -56,20 +56,21 @@ The main path meets [Outcomes](#outcomes).
    - Run [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests) again.
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) again.
 4. **Match pull requests to tasks.**
-   - Run [Inspect Epic Delivery](../artifacts/epic.md#inspect-epic-delivery) for each epic.
+   Run [Inspect Epic Delivery](../artifacts/epic.md#inspect-epic-delivery) for each epic.
    - Use the unmatched and in-flight results defined in [Delivery Findings](../artifacts/epic.md#delivery-findings).
    - Read its changes and description against the tasks' Descriptions.
    - Name the tasks it works on: one task, or tasks that name each other in Joins.
    - Put any match that is not clear to the user.
 5. **Sync each task issue.**
-   - For a task delivered by a merged pull request, run [Verify Selected Criteria](#verify-selected-criteria) with its current body, selected criteria, delivery evidence, revisions and named instruments.
+   For a task delivered by a merged pull request, run [Verify Selected Criteria](#verify-selected-criteria) with its current body, selected criteria, delivery evidence, revisions and named instruments.
    - Run [Record Task Delivery](../artifacts/task-body.md#record-task-delivery) with the task JSON, pull request records, complete issue-link snapshot, delivering pull request number, returned verified criterion ids and output body path.
    - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) before closure.
    - Record the pull request on it with [Comment on Issue](../artifacts/issue.md#comment-on-issue): `Delivered by #950.`
    - [Close Delivered Issue](#close-delivered-issue) when it reports closable.
 6. **Sync each epic.**
-   - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues:
-     Linking a pull request replaces the planning-record link on that task.
+   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues:
+   Linking a pull request replaces the planning-record link on that task.
+   - Handle the returned delivery findings:
      - **Conflict.**
        - Put it to the user.
      - **Unmatched.**
@@ -104,7 +105,7 @@ The main path meets [Outcomes](#outcomes).
        - Continue recording links, verified criteria and Done despite the reported coverage disagreement.
    - After applying the returned findings, repeat Record Epic Delivery with the revised epic body and refreshed delivery records, retaining the complete issue-link snapshot and output body path. Recording the epic's delivery is finished when unmatched, in flight, uncited, note, and unplaced are clear, apart from a pull request the user leaves unmatched.
 7. **Verify.**
-   - Run [Verify Selected Criteria](#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
+   Run [Verify Selected Criteria](#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
    - Retain the returned verified criterion ids and evidence for the tick step.
    - For an unresolved epic criterion requiring further work:
      - Follow [Plan Gap Task](align-mode.md#plan-gap-task) with the current epic JSON and body, delivered task row, criterion ids, findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
@@ -122,7 +123,7 @@ The main path meets [Outcomes](#outcomes).
     - Re-run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery).
     - [Close Delivered Issue](#close-delivered-issue) each epic the re-run reports closable.
 11. **Sync the initiative.**
-    - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
+    Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
     - For returned criteria ready to verify:
       - Run [Verify Selected Criteria](#verify-selected-criteria) with their ids, current initiative body, delivery findings, delivery revisions and named instruments.
       - Pass returned verified ids to [Tick Verified Criteria](#tick-verified-criteria) with the initiative JSON, every linked epic record and output body file.
@@ -130,7 +131,7 @@ The main path meets [Outcomes](#outcomes).
     - [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) the initiative from its output body file when a tick changed it, so the board sync reads every criterion ticked.
     - [Close Delivered Issue](#close-delivered-issue) the initiative when it reports closable.
 12. **Sync the board.**
-    - Select the initiative's theme board.
+    Select the initiative's theme board.
     - Run [Copy Project Board](../artifacts/board.md#copy-project-board) if it is absent.
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
@@ -138,7 +139,7 @@ The main path meets [Outcomes](#outcomes).
     - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains.
 14. **Report.**
-    - Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
+    Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](../artifacts/issue-body.md#coverage-reports).
 
@@ -172,19 +173,19 @@ The issue bodies associated with a pull request's delivery.
 **Inputs:** Delivered unit, current task and epic JSON, pull request records, complete issue-link snapshot, confirmed matches, verification evidence, project checkout and output body paths.
 
 1. **Task issues.**
-   - Verify each criterion with its named instrument before passing its id to [Record Task Delivery](../artifacts/task-body.md#record-task-delivery).
+   Verify each criterion with its named instrument before passing its id to [Record Task Delivery](../artifacts/task-body.md#record-task-delivery).
    - Supply the issue JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids, and output body file.
 2. **Epic rows.**
-   - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout, and output body file.
+   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout, and output body file.
    - Interpret the returned [Delivery Findings](../artifacts/epic.md#delivery-findings).
 
    - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for a confirmed unplaced task.
    - Repeat Record Epic Delivery with the refreshed epic JSON and the same pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout, and output body file.
 3. **Coverage agreement.**
-   - Report the coverage disagreements returned in [Delivery Findings](../artifacts/epic.md#delivery-findings), including each pull request and row.
+   Report the coverage disagreements returned in [Delivery Findings](../artifacts/epic.md#delivery-findings), including each pull request and row.
    - Continue recording links, verified criteria and Done.
 4. **Criteria and bodies.**
-   - For the epic, run [Tick Verified Criteria](#tick-verified-criteria) with its current JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body path.
+   For the epic, run [Tick Verified Criteria](#tick-verified-criteria) with its current JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body path.
    - Publish that returned epic body and each task body returned by Record Task Delivery through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Return the saved identities and findings to the caller.
 
@@ -195,7 +196,7 @@ The draft pull request and body for one epic base's delivered changes.
 **Inputs:** Epic identity and JSON, epic base and long-lived target, current task-merge records, complete issue-link snapshot, optional review identity and output body path.
 
 1. **Find.**
-   - Use the review number in the supplied delivery findings.
+   Use the review number in the supplied delivery findings.
    - When it is absent:
      - Run [Locate Review Pull Request](../artifacts/pull-request.md#locate-review-pull-request) with the repository and epic base as head.
      - Use its returned number or absence result.
@@ -206,7 +207,7 @@ The draft pull request and body for one epic base's delivered changes.
    When the first task merges, a draft is reported or an unmerged base has no review:
    - Pass the returned file to [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), supplying its number for an existing review. The epic stays open; the user marks the draft ready when the epic is complete.
 4. **Confirm.**
-   - Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for the published review.
+   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for the published review.
    - Compare its complete body with the published file.
    - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the current epic and refreshed review and task-merge records.
    - Return its cited-versus-actual merge findings with the review identity. The session recording each task merge owns this update.
@@ -218,7 +219,7 @@ The task and epic records after one confirmed task merge.
 **Inputs:** Confirmed task merge result, delivered unit, current task and epic records, issue-link snapshot, criterion evidence, base worktree and target, initiative context and output paths.
 
 1. **Read and record.**
-   - Follow [Read Delivery Evidence](#read-delivery-evidence).
+   Follow [Read Delivery Evidence](#read-delivery-evidence).
    - Run [Record Issue Delivery](#record-issue-delivery) for the delivered unit.
    - Close an eligible task issue through [Close Delivered Issue](#close-delivered-issue).
 2. **Review.**
@@ -248,17 +249,17 @@ The board's status and assignees after its issues record delivery.
    - Run [Read Board Assignee](../artifacts/board.md#read-board-assignee) for the assignment login.
    - Pass these returned snapshots to Plan Board Changes.
 2. **Plan.**
-   - Run [Plan Board Changes](../artifacts/board-delivery.md#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
+   Run [Plan Board Changes](../artifacts/board-delivery.md#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
    - Fetch each unresolved issue.
    - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
 3. **Write.**
-   - Run each emitted call.
+   Run each emitted call.
    - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
    - If that item still shows the preceding status:
      - Repeat its write.
      - Repeat the same item read. The item list can lag a write.
 4. **Repeat.**
-   - Fetch the issues and items again.
+   Fetch the issues and items again.
    - Run [Plan Board Changes](../artifacts/board-delivery.md#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
    - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
@@ -272,7 +273,7 @@ Fresh closure evidence assembled across the issue and its linked pull requests.
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the issue selected by the delivery checks.
    - Run [Capture Issue Development](../artifacts/issue.md#capture-issue-development) for that issue.
 2. **Pull requests.**
-   - Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for every captured link, across repositories and all states.
+   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for every captured link, across repositories and all states.
    - Use a fresh destination file so an earlier snapshot cannot supply membership.
 3. **Check delivery completion.**
    - For an epic:
@@ -284,7 +285,7 @@ Fresh closure evidence assembled across the issue and its linked pull requests.
      - Run [Check Initiative Completion](../artifacts/initiative.md#check-initiative-completion) with the current initiative JSON, all linked epic records, criterion verification evidence and captured Development-link and pull-request records. A task retains its task delivery result.
    - Return any incomplete or failed result before closure.
 4. **Close.**
-   - Pass the successful normal delivery result, issue JSON, complete Development snapshot, confirmed repository setting and fresh pull request records to [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue).
+   Pass the successful normal delivery result, issue JSON, complete Development snapshot, confirmed repository setting and fresh pull request records to [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue).
    - If the operation reports a changed link set or missing evidence:
      - Refresh those inputs.
      - Repeat the completion check before trying again.
@@ -297,13 +298,13 @@ The verification evidence for a supplied set of criteria whose delivery is ready
 **Inputs:** Current issue body, selected criterion ids, current delivery findings, delivery revisions and the instruments named by those criteria.
 
 1. **Check the evidence.**
-   - Confirm the supplied delivery findings establish readiness for each selected criterion.
+   Confirm the supplied delivery findings establish readiness for each selected criterion.
    - Return an undelivered or unreadable dependency as a blocker for that criterion.
 2. **Verify each criterion.**
-   - Run its named instrument on the branch or branches the delivering pull requests merged into.
+   Run its named instrument on the branch or branches the delivering pull requests merged into.
    - Record the result against the tested revisions, meeting [Coverage Reports](../artifacts/issue-body.md#coverage-reports). A failed, unavailable or inconclusive instrument leaves the criterion unverified.
 3. **Return the findings.**
-   - Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
+   Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
    - Leave body publication and further planning to the caller.
 
 ### Tick Verified Criteria
