@@ -247,7 +247,8 @@ class References(unittest.TestCase):
         self.assertFalse(any('References:' in item for item in r.decide))
 
     def test_an_epic_written_from_the_template_has_no_references_finding(self):
-        template = (SCRIPTS.parent / 'templates' / 'epic.md').read_text()
+        from format import template_body
+        template = template_body('epic')
         filled = template
         for key, value in (('PLANNING_RECORD_URL',
                             'https://github.com/o/r/blob/workspace/.engineering/artifacts/planning/record'),

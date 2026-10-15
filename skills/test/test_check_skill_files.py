@@ -386,6 +386,69 @@ class SkillFileChecks(unittest.TestCase):
         self.write('SKILL.md', '# Specimen\n\nA sentence.\n\n')
         self.assertIn('trailing blank line', self.kinds())
 
+    def test_modes_directory_uses_outcomes_and_operations(self):
+        self.write('modes/plan-mode.md', '# Plan\n\n## Procedure\n\n'
+                   '1. **Check.**\n   Run [Check files](#check-files).\n\n'
+                   '## Outcomes\n\nThe files conform.\n\n## Operations\n\n'
+                   '### Check Files\n\nChecks files.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_modes_directory_requires_procedure_and_outcomes(self):
+        self.write('modes/plan.md', '# Plan\n')
+        self.assertEqual([kind for _, _, kind in self.findings()],
+                         ['section missing', 'section missing'])
+
+    def test_directory_layout_is_not_selected_by_filename_alone(self):
+        self.write('references/plan-mode.md', self.MODE + self.PROCEDURE + '\n## Outcomes\n\nDone.\n')
+        self.assertIn('section outside the set', self.kinds())
+        self.assertIn('section missing', self.kinds())
+
+    def test_artifacts_directory_accepts_single_step_and_command_only_contracts(self):
+        self.write('artifacts/issue.md', '# Issue\n\n## Operations\n\n### Read Tracker Issue\n\n'
+                   '- Run [Fetch issue](#fetch-issue).\n\n## Fields\n\nNumber.\n\n'
+                   '## Commands\n\n### Fetch Issue\n\nFetches it.\n')
+        self.write('artifacts/source.md', '# Source\n\n## Fields\n\nText.\n\n'
+                   '## Commands\n\n### Fetch Source\n\nFetches it.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_an_artifact_command_keeps_its_subject_with_one_external_caller(self):
+        self.write('artifacts/issue.md', '# Issue\n\n## Fields\n\nNumber.\n\n'
+                   '## Commands\n\n### Fetch Issue\n\nFetches it.\n')
+        self.write('modes/plan.md', calling('Plan', '../artifacts/issue.md#fetch-issue') +
+                   '\n## Outcomes\n\nThe issue is read.\n')
+        self.assertEqual(self.findings(), [])
+
+    def test_a_single_step_artifact_operation_is_a_caller(self):
+        path = self.write('artifacts/issue.md', '# Issue\n\n## Operations\n\n'
+                          '### Read Tracker Issue\n\n- Run [Fetch issue](#fetch-issue).\n\n'
+                          '## Fields\n\nNumber.\n\n## Commands\n\n### Fetch Issue\n\nFetches it.\n')
+        _, called = checker.citations([path])
+        self.assertEqual(called[path]['fetch-issue'], {path})
+
+    def test_mode_operations_are_specifications_not_procedures(self):
+        path = self.write('modes/plan.md', '# Plan\n\n## Procedure\n\n'
+                          '1. **Check.**\n   Run [Check files](#check-files).\n\n'
+                          '## Outcomes\n\nDone.\n\n## Operations\n\n### Check Files\n\n'
+                          '1. A specimen naming [another](#other).\n\n### Other\n\nA command.\n')
+        _, called = checker.citations([path])
+        self.assertNotIn('other', called[path])
+
+    def test_directory_sections_reject_wrong_order_and_rules(self):
+        self.write('artifacts/issue.md', '# Issue\n\n## Fields\n\nNumber.\n\n'
+                   '## Operations\n\n### Read Tracker Issue\n\n- Read it.\n\n## Rules\n\nOne.\n')
+        self.assertIn('sections out of order', self.kinds())
+        self.assertIn('section outside the set', self.kinds())
+
+    def test_an_artifact_without_fields_fails_even_without_steps(self):
+        self.write('artifacts/issue.md', '# Issue\n')
+        self.assertIn('section missing', self.kinds())
+
+    def test_a_nested_fence_keeps_template_headings_and_links_out_of_the_scan(self):
+        self.write('artifacts/issue.md', '# Issue\n\n## Fields\n\n### Template\n\n' +
+                   FENCE + '`markdown\n## Template Heading\n' + FENCE + 'bash\nexample\n' +
+                   FENCE + '\n## Another Heading\n[missing](absent.md)\n~~~\n' + FENCE + '`\n')
+        self.assertEqual(self.findings(), [])
+
     def run_command(self):
         with redirect_stdout(io.StringIO()):
             return checker.main([str(self.skill), '--quiet'])

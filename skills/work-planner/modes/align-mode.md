@@ -1,0 +1,126 @@
+# Align Mode
+
+Brings existing proposal, initiative, epic, task, and standalone issues into line with the plan they state, and fixes them. It also brings each epic's branches to the delivery structure.
+
+Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review.
+
+## Prerequisites
+
+Read these files first.
+
+- [Issue](../artifacts/issue.md)
+- [Initiative Issue Body](../artifacts/initiative-issue-body.md)
+- [Proposal Body](../artifacts/proposal-body.md)
+- [Epic Issue Body](../artifacts/epic-issue-body.md)
+- [Issue Body](../artifacts/issue-body.md)
+- [Task Body](../artifacts/task-body.md)
+- [Standalone Body](../artifacts/standalone-body.md)
+- [Plan Mode](plan-mode.md)
+- [Requirement Characteristics](../references/requirement-characteristics.md)
+- [Sync Mode](sync-mode.md)
+- [Pull Request](../artifacts/pull-request.md)
+- [Initiative](../artifacts/initiative.md)
+- [Epic](../artifacts/epic.md)
+- [Delivery Branches](../artifacts/delivery-branches.md)
+
+## Procedure
+
+The main path meets [Outcomes](#outcomes).
+
+1. **Select.**
+   Align the issues the user names, or an initiative with its open epics.
+   - Alignment covers open issues only. A closed issue is aligned only when named.
+   - Naming another initiative's issue approves format edits to it.
+   - An open standalone issue that an aligned initiative, epic, or task cites is aligned with it.
+2. **Fetch.**
+   Fetch each issue whole, with its initiative when it is an epic, its epics when it is an initiative, and the standalone issues it cites. Use [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its JSON and body.
+   - An initiative's fetch includes every epic its table links, closed epics included, as supplied context for [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body).
+   - The fetch includes each source the initiative's References mark, for an epic as for the initiative.
+   - A closed epic's own body is checked only when the epic is named.
+3. **Validate the bodies.**
+   Call [Validate Proposal Body](../artifacts/proposal-body.md#validate-proposal-body), [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body) or [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) for that kind. Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with [task field conditions](../artifacts/task-body.md#fields) or [standalone field conditions](../artifacts/standalone-body.md#fields) for those bodies. Supply the fetched context and output files. Route the returned [Format Findings](../artifacts/issue-body.md#format-findings) through the following steps.
+4. **Publish mechanical fixes.**
+   Confirm the returned diff changes structure only. Publish that body and the returned title or label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
+5. **Review the goal.**
+   For initiative or epic scope, follow [Review Initiative Goal](plan-mode.md#review-initiative-goal) with the current initiative and epic evidence, confirmed goal clauses and marked sources. For proposal, task or standalone scope, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) with the selected body, its kind's field conditions and format inputs; skip initiative goal review when no initiative is in scope. Present each finding through [Report Review Finding](plan-mode.md#report-review-finding). Numbering changes affect only rows no pull request names.
+6. **Resolve content decisions.**
+   Decide each non-mechanical finding with the user. Pass confirmed local resolutions to [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections), using the selected kind's template and field conditions. Coordinate these changes across affected records:
+   - Move initiative boundaries found as Non-Goals in an epic or task into the initiative's Non-Goals, then remove the misplaced section. For a standalone body, call [Revise Standalone Body](../artifacts/standalone-body.md#revise-standalone-body).
+   - Pass confirmed task splits and Coverage corrections to [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows). Preserve narrower task dependencies when correcting whole-epic dependencies through the dependency step.
+   - For a wrong-kind body, confirm either its rewrite to the intended template or its tracker kind/title change. Keep the initiative row consistent with any epic title change.
+   - When several row ids link one issue, confirm one issue per task, or remove the row links and cite that issue under the epic's References.
+   Publish returned bodies and metadata through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), then validate the affected bodies again.
+7. **Check criteria.**
+   Check every acceptance criterion of the issues being aligned against [Requirement Characteristics](../references/requirement-characteristics.md), through [Verifiable](../artifacts/issue-body.md#verifiable), and report each that fails it. The alignment is not clear while a criterion that fails the characteristics remains, and a finding from this check is not one the user keeps.
+   - Align the criteria with the sources the initiative's References mark, as [Sources](../artifacts/initiative-issue-body.md#sources) defines, and report each departure and each gap. Draft the criterion a gap calls for, and decide it with the user.
+   - The alignment is not clear while a marked source stays unread. A source whose link is dead is repaired, or the mark is removed and the criteria it bound are decided with the user.
+   - A departure from a marked source is corrected in the criterion, unless the user records the departure as a Non-Goal.
+8. **Check dependencies.**
+   - Check them whenever an initiative or epic is aligned. Take the initiative's body and every epic's body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue), and follow [Check Dependencies and Numbering](plan-mode.md#check-dependencies-and-numbering) with those bodies, current pull request records, confirmed maps when any, and explicitly authorized outside-initiative files. Resume this alignment with its checked bodies or unresolved findings.
+   - Put each problem it reports to the user. An initiative Depends on cell takes the epics it derives, as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
+9. **Coverage.**
+   For initiative or epic scope, run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the selected initiative and epics, then continue with its returned records. When no initiative or epic is selected, continue at step 13, Re-run.
+   For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
+   - **Unmet.**
+     Each task [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) reports unmet is a gap. Follow [Plan Gap Task](#plan-gap-task).
+   - **Repair.**
+     When the preceding Record Epic Delivery call reports a row done, or a tick cleared, [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) from the output body file, without asking. Repair Done cells as [Tables](../artifacts/issue-body.md#tables) states.
+   - **Absent.**
+     Fetch a linked pull request missing from the records with [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state), then repeat Record Epic Delivery with the refreshed records and the same output body file.
+   - **Unlinked.**
+     A criterion ticked while its row links no pull request and no commit: request issue discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) and link the one delivery it names, a path taken as the commit that holds it, then repeat Record Epic Delivery with the corrected evidence and the same output body file. Several candidates, or none, go to the user.
+   For an initiative being aligned, run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative JSON, every linked epic's current JSON and an output body file. Present the returned [Delivery Findings](../artifacts/initiative.md#delivery-findings) to the user.
+   - When the user chooses to verify ready criteria now, run [Verify Selected Criteria](sync-mode.md#verify-selected-criteria) with those criterion ids, current initiative body, delivery findings, delivery revisions and named instruments. Pass only returned verified ids to [Tick Verified Criteria](sync-mode.md#tick-verified-criteria), with the current initiative JSON, all linked epic records and output body file. Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), then continue to the branches step with the saved records. Report failed verification or deferred findings as pending; no criterion is ticked for them.
+   Apply a Done change in the output body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking. Report criterion evidence as [Coverage Reports](../artifacts/issue-body.md#coverage-reports) defines.
+10. **Branches.**
+    For each open epic of the selected initiative, run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) with the current initiative and epic bodies and prerequisite issue and base-merge records. Pass only a confirmed result, project checkout, epic identity and changed long-lived branches to [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases). Return missing prerequisite evidence before creating a base.
+    - Read the pull requests through [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests) and each open epic's branches through [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches). Unevaluable branch names stop this step with a finding. Use the returned long-lived target; for example, `main` and `i07/e00/main` identify the same target.
+    - Point an open task pull request at its epic base with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request).
+    - When that pull request is not mergeable, [Update Task Branch](../artifacts/delivery-branches.md#update-task-branch) merges the epic base into the task branch. A conflict is reported and the pull request stays open.
+    - An open pull request whose head is an epic base targets its corresponding long-lived branch.
+    - A merged pull request is left as merged.
+    - A base that is none of these is put to the user.
+11. **Unplaced task issues.**
+    For each task issue returned as unplaced by [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), draft its row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown) and confirm it with the user. Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows), then publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue). Repeat Record Epic Delivery with the saved epic JSON, current task records, pull request records, complete issue-link snapshot and the same output body file. An unanswered placement stays pending.
+12. **Review pull requests.**
+    Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) for each open epic, and open a reported base as a draft review pull request. Leave the epic open. The user marks the draft ready when the epic is complete.
+13. **Re-run.**
+    - After a published correction, fetch the changed bodies and repeat steps 3–12 for the affected issues with refreshed delivery evidence. Stop when the checks are clear or every remaining finding is one the user chose to keep. A finding from the criteria check is not one the user keeps. The alignment is not clear while a criterion that fails [Requirement Characteristics](../references/requirement-characteristics.md) remains.
+    - Report what changed on each issue, including each finding the criteria check reported.
+
+### Repair Issue Format
+
+The saved format corrections for one issue and any unresolved content findings.
+
+**Inputs:** Issue identity, current issue JSON, kind template and field conditions, required related evidence and output body path.
+
+1. **Validate the body.**
+   Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path. Return an unreadable source as a blocker before editing.
+2. **Save mechanical corrections.**
+   Review the returned diff. Publish wording-preserving format, title and label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking. Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
+3. **Resolve local content.**
+   For a non-mechanical finding confined to this body, obtain the user's decision, run [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path, then publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+4. **Confirm and return.**
+   Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved issue, then repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path. Return the saved body, whether a correction was made, and the validation result to the calling step. A remaining failure is a blocker; this subsection does not enter the main alignment procedure.
+
+### Plan Gap Task
+
+The agreed disposition of criteria a delivered row left unmet.
+
+**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery findings and records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
+
+1. **Decide the disposition.**
+   Present each unmet criterion and its missing evidence to the user. For criteria the user confirms already hold, run [Verify Selected Criteria](sync-mode.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments. Pass returned verified ids to [Tick Verified Criteria](sync-mode.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path, then publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue). Retain verified criteria on the delivered task and record failed verification or unanswered decisions as pending. Continue to the draft step with only the criteria the user confirms need further work, using the saved body. If there are none, return the saved results and pending findings to the caller.
+2. **Draft and apply.**
+   Draft a further task for the criteria selected for further work, meeting [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown), and confirm the draft with the user. On acceptance, call [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage. Return an unanswered draft as pending without continuing to the reconcile step.
+3. **Reconcile and return.**
+   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the revised epic and the supplied delivery evidence, then publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue). Return the saved row and criterion disposition to the caller. Done follows [Tables](../artifacts/issue-body.md#tables).
+
+## Outcomes
+
+- **Issues brought into line.**
+  The issues the user named, or an initiative and its open epics, agree with the plan they state, and the user has decided what still needs a judgement.
+- **Delivery brought into line.**
+  Each epic's recorded delivery matches the pull requests that landed, and a gap the user accepts is drafted with them.
+- **Branches brought into line.**
+  Each open epic's branches follow the delivery structure.
