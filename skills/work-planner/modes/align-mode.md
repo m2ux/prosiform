@@ -86,20 +86,20 @@ The main path meets [Outcomes](#outcomes).
    - When no initiative or epic is selected, continue at step 13, Re-run.
    - For initiative or epic scope, run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the selected initiative and epics.
    - Continue with its returned records.
-   For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
-   - **Unmet.**
-     - Each task [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) reports unmet is a gap.
-     - Follow [Plan Gap Task](#plan-gap-task).
-   - **Repair.**
-     - Repair Done cells as [Tables](../artifacts/issue-body.md#tables) states.
-     - When the preceding Record Epic Delivery call reports a row done, or a tick cleared, run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) from the output body file, without asking.
-   - **Absent.**
-     - Fetch a linked pull request missing from the records with [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-     - Repeat Record Epic Delivery with the refreshed records and the same output body file.
-   - **Unlinked.**
-     - For a criterion ticked while its row links no pull request and no commit, request issue discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
-     - Link the one delivery that discussion names, taking a path as the commit that holds it. Several candidates, or none, go to the user before linking.
-     - Repeat Record Epic Delivery with the corrected evidence and the same output body file.
+   - For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file:
+     - **Unmet.**
+       - Each task [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) reports unmet is a gap.
+       - Follow [Plan Gap Task](#plan-gap-task).
+     - **Repair.**
+       - Repair Done cells as [Tables](../artifacts/issue-body.md#tables) states.
+       - When the preceding Record Epic Delivery call reports a row done, or a tick cleared, run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) from the output body file, without asking.
+     - **Absent.**
+       - Fetch a linked pull request missing from the records with [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
+       - Repeat Record Epic Delivery with the refreshed records and the same output body file.
+     - **Unlinked.**
+       - For a criterion ticked while its row links no pull request and no commit, request issue discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
+       - Link the one delivery that discussion names, taking a path as the commit that holds it. Several candidates, or none, go to the user before linking.
+       - Repeat Record Epic Delivery with the corrected evidence and the same output body file.
    - For an initiative being aligned:
      - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative JSON, every linked epic's current JSON and an output body file.
      - Present the returned [Delivery Findings](../artifacts/initiative.md#delivery-findings) to the user.

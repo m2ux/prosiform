@@ -53,16 +53,16 @@ The main path meets [Outcomes](#outcomes).
    - For delivery discrepancies:
      - Run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the affected initiative and epics.
      - Resume the survey with its returned records.
-   - **Held work.**
-     - Put each `hold` line to the user as an [Interview](../guidelines.md#modes) before any unit is dispatched, with the record it links and whether a session is still running. The user releases it or leaves it. This mode reads no clock and reclaims nothing on its own.
-     - When the user releases a row:
-       - Run [Release Task Rows](../artifacts/epic-issue-body.md#release-task-rows).
-       - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-       - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, complete issue-link snapshot, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
-   - **Blocked work.**
-     A `blocked` line is reported, not asked. Its dependencies decide when it becomes available.
-   - **One unit.**
-     Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
+   - Handle the returned availability findings:
+     - **Held work.**
+       - Put each `hold` line to the user as an [Interview](../guidelines.md#modes) before any unit is dispatched, with the record it links and whether a session is still running. The user releases it or leaves it. This mode reads no clock and reclaims nothing on its own.
+       - When the user releases a row:
+         - Run [Release Task Rows](../artifacts/epic-issue-body.md#release-task-rows).
+         - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+         - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, complete issue-link snapshot, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
+     - **Blocked work.**
+       - Report a `blocked` line without asking. Its dependencies decide when it becomes available.
+   - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
 5. **Merge.**
    - Follow [Merge Task Pull Requests](#merge-task-pull-requests) for each `merge` line.
    - Run [Record Task Merge](sync-mode.md#record-task-merge) for each confirmed merge result.
@@ -98,11 +98,11 @@ The main path meets [Outcomes](#outcomes).
      - Resume the delivery session with their placement results.
    - Technical debt a unit finds while validating its work — running its tests, auditing the definitions it changed, reviewing its pull request — is classified, and the classification decides where it is fixed.
      - **Blocking.**
-       The unit's own criteria cannot be verified without it, so the unit fixes it, whatever its size.
+       - The unit's own criteria cannot be verified without it, so the unit fixes it, whatever its size.
      - **Trivial.**
-       It blocks nothing and needs no work item of its own, so the unit fixes it.
+       - It blocks nothing and needs no work item of its own, so the unit fixes it.
      - **Non-trivial.**
-       It blocks nothing and would warrant a work item of its own. The unit defers it to this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt), and the epic in hand keeps the scope it was planned with.
+       - It blocks nothing and would warrant a work item of its own. The unit defers it to this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt), and the epic in hand keeps the scope it was planned with.
      - The session classifies each item and puts it to the user as an [Interview](../guidelines.md#modes), its classification the recommended answer, before the fix or the deferral.
 9. **Report.**
    Each pull request merged, and each left open by a conflict; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.

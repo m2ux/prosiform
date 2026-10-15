@@ -68,34 +68,41 @@ The main path meets [Outcomes](#outcomes).
    - Record the pull request on it with [Comment on Issue](../artifacts/issue.md#comment-on-issue): `Delivered by #950.`
    - [Close Delivered Issue](#close-delivered-issue) when it reports closable.
 6. **Sync each epic.**
-   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues. Linking a pull request replaces the planning-record link on that task.
-   - **Conflict.** Put it to the user.
-   - **Unmatched.** Match them as in the match step.
-   - **In flight.** Match them as in the match step.
-   - **Draft.**
-     - Open it as a draft review pull request.
-     - Leave the epic open until the user marks the draft ready.
-   - **Unmerged.** The close step opens or merges that pull request.
-   - **References.**
-     Bring the body up to the merges with [Maintain Review Pull Request](#maintain-review-pull-request).
-   - **Uncited.**
-     - Set the link with [Link Pull Request to Issue](../artifacts/pull-request.md#link-pull-request-to-issue).
-     - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) again.
-   - **Note.** Link the pull request as in the match step.
-   - **Unplaced.**
-     - Draft the missing task row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
-     - Confirm it with the user; an unanswered placement stays pending.
-     - Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
-     - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-     - Repeat Record Epic Delivery with the saved epic and refreshed task records. An unanswered placement stays pending.
-   - **Open questions.**
-     - Return to the select step for this epic.
-     - Resolve the questions there.
-     - Fetch the saved body before repeating Record Epic Delivery.
-   - **Ticked early.** Untick them, or link the missing delivery.
-   - **Disagreement.**
-     Continue recording links, verified criteria and Done despite the reported coverage disagreement.
-   After applying the returned findings, repeat Record Epic Delivery with the revised epic body and refreshed delivery records, retaining the complete issue-link snapshot and output body path. Recording the epic's delivery is finished when unmatched, in flight, uncited, note, and unplaced are clear, apart from a pull request the user leaves unmatched.
+   - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues:
+     Linking a pull request replaces the planning-record link on that task.
+     - **Conflict.**
+       - Put it to the user.
+     - **Unmatched.**
+       - Match them as in the match step.
+     - **In flight.**
+       - Match them as in the match step.
+     - **Draft.**
+       - Open it as a draft review pull request.
+       - Leave the epic open until the user marks the draft ready.
+     - **Unmerged.**
+       - The close step opens or merges that pull request.
+     - **References.**
+       - Bring the body up to the merges with [Maintain Review Pull Request](#maintain-review-pull-request).
+     - **Uncited.**
+       - Set the link with [Link Pull Request to Issue](../artifacts/pull-request.md#link-pull-request-to-issue).
+       - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) again.
+     - **Note.**
+       - Link the pull request as in the match step.
+     - **Unplaced.**
+       - Draft the missing task row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
+       - Confirm it with the user; an unanswered placement stays pending.
+       - Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
+       - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+       - Repeat Record Epic Delivery with the saved epic and refreshed task records. An unanswered placement stays pending.
+     - **Open questions.**
+       - Return to the select step for this epic.
+       - Resolve the questions there.
+       - Fetch the saved body before repeating Record Epic Delivery.
+     - **Ticked early.**
+       - Untick them, or link the missing delivery.
+     - **Disagreement.**
+       - Continue recording links, verified criteria and Done despite the reported coverage disagreement.
+   - After applying the returned findings, repeat Record Epic Delivery with the revised epic body and refreshed delivery records, retaining the complete issue-link snapshot and output body path. Recording the epic's delivery is finished when unmatched, in flight, uncited, note, and unplaced are clear, apart from a pull request the user leaves unmatched.
 7. **Verify.**
    - Run [Verify Selected Criteria](#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
    - Retain the returned verified criterion ids and evidence for the tick step.
