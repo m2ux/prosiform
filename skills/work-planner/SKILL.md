@@ -16,9 +16,15 @@ Work Planner plans work as GitHub issues and keeps the plan current until the wo
 
 Each theme's project board shows where its items stand. The Proposals board holds proposals. A planning record holds what an initiative leaves out: the evidence, the decisions and each review.
 
+## Prerequisites
+
+Read all first:
+
+* [Command Conventions](#command-conventions).
+
 ## Modes
 
-Read [Command Conventions](#command-conventions), then the selected mode's file and its Prerequisites in full. Follow its operation links as each step needs them:
+Select the mode as appropriate to fulfill the user request:
 
 - **[Propose](modes/propose-mode.md)**
   - Forward-looking, scoped to one problem
