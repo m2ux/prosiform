@@ -25,19 +25,19 @@ Select the mode as appropriate to fulfill the user request:
   - Scoping a problem nothing is planned against yet
   - Raising a proposal issue with optional board placement
 - **[Plan](modes/plan-mode.md)**
-  - Forward-looking, scoped to an approved proposal and its initiatives
+  - Forward-looking, scoped to one approved proposal
   - Turning an approved proposal into initiatives
   - Raising, breaking down and restructuring initiatives and epics
   - Review passes of a plan against its goal, dependencies included
   - Renumbering of epics and tasks
   - Folding review findings into issues
 - **[Align](modes/align-mode.md)**
-  - Backward-looking, scoped to one initiative's issues
+  - Backward-looking, scoped to one epic, initiative or board
   - Checks of existing issues against their templates and the rules that bind them, with fixes
   - Acceptance criteria checked for verifiability and against the sources the initiative marks
   - Epic branch structure and task pull request bases brought to the delivery shape
 - **[Sync](modes/sync-mode.md)**
-  - Backward-looking, scoped to one initiative
+  - Backward-looking, scoped to one epic, initiative or board
   - Delivery recorded against the issues that planned it
   - Closure of complete task issues, epics and initiatives
   - The theme board brought current with its issues
