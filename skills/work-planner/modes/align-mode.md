@@ -27,8 +27,8 @@ Read these files first.
 
 The main path meets [Outcomes](#outcomes).
 
-1. **Select.**
-   Align the issues the user names, an initiative with its open epics or a board with it's complete set of initiatives and epics.
+1. **Scope.**
+   Discover the issues the user names, an initiative with its open epics or a board with it's complete set of initiatives and epics.
    - Alignment covers open issues only. A closed issue is aligned only when named.
    - Naming another initiative's issue approves format edits to it.
    - An open standalone issue that an aligned initiative, epic, or task cites is aligned with it.
