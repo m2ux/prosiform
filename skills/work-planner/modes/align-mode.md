@@ -1,6 +1,6 @@
 # Align Mode
 
-Brings one or more existing proposal, initiative, epic, task, and standalone issues into line with the plan they state, and fixes them. It also brings each epic's branches to the delivery structure.
+Brings one or more existing proposal, initiative, epic, task, and standalone issues and/or PRs into line with the plan they belong to and structurally aligns them with the guidelines they are held to. 
 
 Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review.
 
