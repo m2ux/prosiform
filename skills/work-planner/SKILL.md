@@ -77,8 +77,6 @@ Select the mode as appropriate to fulfill the user request:
 
 ## Conventions
 
-How every command of this skill runs, held here because selecting a mode already opens this file.
-
 - **Session.**
   Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
 - **Repository.**
