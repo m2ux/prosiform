@@ -29,13 +29,14 @@ The main path meets [Outcomes](#outcomes).
 
 1. **Scope.**
    Discover the issues the user names, an initiative with its open epics or a board with it's complete set of initiatives and epics.
-   - Alignment covers open issues only. A closed issue is aligned only when named.
+   - Open issues only. A closed issue is aligned only when named.
    - Naming another initiative's issue approves format edits to it.
    - An open standalone issue that an aligned initiative, epic, or task cites is aligned with it.
 2. **Fetch.**
-   Fetch each issue whole, with its initiative when it is an epic, its epics when it is an initiative, and the standalone issues it cites.
+   Fetch each issue whole.
    - Use [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its JSON and body.
-   - An initiative's fetch includes every epic its table links, closed epics included, as supplied context for [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body).
+   - A board fetch includes every initiative it holds.
+   - An initiative's fetch includes every epic its table links, closed epics included, as supplied context for validation.
    - The fetch includes each source the initiative's References mark, for an epic as for the initiative.
    - A closed epic's own body is checked only when the epic is named.
 3. **Validate the bodies.**
