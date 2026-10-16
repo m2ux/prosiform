@@ -16,12 +16,6 @@ Work Planner plans work as GitHub issues and keeps the plan current until the wo
 
 Each theme's project board shows where its items stand. The Proposals board holds proposals. A planning record holds what an initiative leaves out: the evidence, the decisions and each review.
 
-## Prerequisites
-
-Read all first:
-
-* [Command Conventions](#command-conventions).
-
 ## Modes
 
 Select the mode as appropriate to fulfill the user request:
@@ -78,13 +72,10 @@ Select the mode as appropriate to fulfill the user request:
   Read a heading-linked section and its subsections, stopping before the next heading of equal or higher level. Read that file's Prerequisites first; reading prerequisites does not execute procedures. Preserve boundaries in batched reads and recover truncated output. Reuse complete prerequisites already read at the same revision. Explicit whole-document requirements still apply.
 - **Decisions.**
   Ask one at a time, following the [interview rules](guidelines.md#modes). Record each answer in the affected issues and, when there is one, the planning record.
-- **Other initiatives.**  Editing another initiative's issue needs the user's explicit approval.
 - **Execution.**
   A mode coordinates artifact operations through their named inputs. Run another mode or its named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
-- **Commands.**
-  Every command follows [Command Conventions](#command-conventions). Read them before the selected mode; reuse them across its operations.
 
-## Command Conventions
+## Conventions
 
 How every command of this skill runs, held here because selecting a mode already opens this file.
 
@@ -112,19 +103,8 @@ How every command of this skill runs, held here because selecting a mode already
 ## Dependencies
 
 - **GitHub CLI (`gh`).**
-  - Logged in through its keyring, with the `repo` scope for issues and pull requests and the `project` scope for project boards.
-  - Issue and pull request API calls use REST (`gh api`), with full host permissions. Development links use [Access Development Links](artifacts/pull-request.md#access-development-links).
-  - A board is created with `gh project`, as [Create Theme Board](artifacts/board.md#create-theme-board) and [Create Proposals Board](artifacts/board.md#create-proposals-board) specify.
-- **Sandbox.**
-  `scripts/sbx` in the workspace checkout, the one holding this skill, runs the skill's scripts under bubblewrap with no network. `<workspace>` in the mode files stands for that checkout.
+- **Sandbox.** (`scripts/sbx`).
 - **Python 3.10 or later.**
-  Standard library only, for the scripts in `scripts/` and their tests in `test/`.
 - **git.**
-  - For the planning record: [Populate Planning Record](artifacts/planning-record.md#populate-planning-record).
-  - For delivery: each epic's base branches, per the [Delivery Branches](artifacts/delivery-branches.md#branches).
-  - For dispatch: a worktree per unit of work, as [Create Task Worktree](artifacts/delivery-branches.md#create-task-worktree) cuts it.
-  - For understanding a change: a worktree at a pull request's head commit, as [Create Pull Request Worktree](artifacts/delivery-branches.md#create-pull-request-worktree) cuts it.
 - **GitNexus.**
-  The `gitnexus` command, for the structure [Understand Mode](modes/understand-mode.md) measures over a change. It indexes the repository under review itself, as [Index Repository](artifacts/repository-graph.md#index-repository) runs it, so an unindexed repository costs that run rather than blocking the mode.
 - **Sub-agents.**
-  The dispatch of the session this skill runs in. [Deliver Mode](modes/deliver-mode.md#procedure) starts each unit's session with it, and [Propose Mode](modes/propose-mode.md) delegates a broad evidence sweep to it.
