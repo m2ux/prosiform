@@ -1,0 +1,551 @@
+# md-compose: revised v1 design
+
+md-compose is intended for agent skills and other instruction sets authored as collections of linked Markdown documents. Authors can keep procedures, shared rules, prerequisites, and reference material in separate, reusable sections rather than duplicating them in every operation. An agent typically enters through a document such as `SKILL.md` and selects a linked procedure to carry out.
+
+The problem addressed here is the gap between that modular authoring structure and the complete context needed to perform an operation. A document or section link identifies a destination, but does not itself establish which content is retrieved, whether its dependencies are followed, or whether the resulting context is complete. Leaving those decisions to the agent makes retrieval part of the reasoning task, with opportunities for missed prerequisites, unnecessarily broad reads, and inconsistent handling of repeated or recursive references.
+
+md-compose moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level, and heading-only ancestors preserve the outline of partial selections; qualified internal anchors resolve the included document links. It validates the complete candidate before publication, either returning the composite or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
+
+The intended guarantee is complete, validated composition of the explicitly linked content under a declared Markdown profile, not control over agent execution. md-compose does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown resources are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
+
+## Design status
+
+The selected implementation language is Rust, with `pulldown-cmark` as the first parser candidate subject to the verification gates below. This document specifies the approved behaviour and initial defaults; no implementation has been started or authorized by this design update.
+
+## Input and output contract
+
+- **Entry references:** Accept one or more local document or document-plus-fragment references and an explicit allowed source root.
+- **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its preamble, subject to frontmatter stripping and the documented syntax transformations below.
+- **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. Supported custom anchors resolve to their owning eligible section.
+- **Recursive composition:** Traverse supported Markdown links within selected content until every reachable local Markdown target has been resolved and included.
+- **Continuous Markdown:** Emit one composite Markdown document with one generated H1 per contributing source file and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
+- **Source grouping:** Use the normalized root-relative filename, including its extension, as the H1's visible text. Emit each file once, preserving source order among its selected content and required heading-only ancestors.
+- **Dependency order:** File groups need not follow argument or discovery order. Use a deterministic group order for reproducibility; do not reorder sections within a file.
+- **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
+
+## Parser and source-preserving edits
+
+Use `pulldown-cmark` as the first semantic-parser candidate, behind a version-pinned source-range adapter. Retain original source bytes and apply edits to identified spans instead of regenerating the whole document.
+
+Its `into_offset_iter()` exposes Markdown events paired with source ranges, and `reference_definitions()` exposes the reference-definition map ([pulldown-cmark parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)). These APIs are a starting point, not a guarantee that every destination, definition, or nested edit already has the exact span required by this specification.
+
+- **Parsing authority:** Let the parser identify headings, links, images, definitions, code examples, and HTML nodes.
+- **Source positions:** Build the source-range adapter around offset events and reference-definition data. Verify and retain the original spans needed for headings, link/image uses, definitions, and supported anchor nodes; do not equate an enclosing event range with a precise destination span without validation.
+- **Source model:** Derive block ancestry, eligible section boundaries, and link ownership from the event stream while retaining canonical source identities and provenance ranges.
+- **Coordinate mapping:** Map ranges in the parser's input view back to original UTF-8 bytes, including any BOM/frontmatter preprocessing, CRLF, tabs, escapes, and Unicode. Preserve original diagnostic coordinates.
+- **Edits:** Apply validated non-overlapping edits. Handle constructs such as an image inside a link through a defined parent-edit strategy rather than overlapping replacements.
+- **Untouched content:** Preserve original bytes and newline spelling, including code examples. Generated anchors and separators may use LF; do not globally reformat sources.
+- **Validation:** Reparse the candidate with the same explicit profile and check the declared source-to-output invariants.
+
+The source-range adapter is an unproven implementation dependency, not an existing capability claim. It must pass fixtures for multiline references, reference-style images, tables, nested containers, escaped destinations, Unicode, and CRLF before this approach is considered validated; definition removal must cover unused as well as referenced definitions.
+
+### Mandatory parser viability gates
+
+Two additional acceptance gates apply before selecting a production parser version or publishing any composite.
+
+- **Complete definition occurrences:** Collect every reference-definition occurrence and its source range, separately from the winning-definition map used for resolution. Cover unused definitions, later duplicate definitions, case-fold-equivalent labels, multiline definitions, and supported container contexts. Preserve original first-definition resolution while removing all selected definition occurrences.
+- **Observable reference-resolution suppression:** Detect when an internal parser resource limit prevents a reference lookup and fail with `E_PARSER_REFERENCE_LIMIT`, including the first affected source span when available. A successfully exhausted budget with no later suppressed lookup is not itself evidence that a reference was omitted.
+
+A retained definition's span does not prove that duplicate occurrences can be enumerated. Similarly, an event stream that omits a suppressed reference cannot establish completeness merely by agreeing with a second parse.
+
+If the public API is insufficient, require parser-aware occurrence collection, narrowly scoped parser instrumentation, an upstream change, or a different candidate. Any preflight used instead of a suppression signal must prove the relevant bound conservatively without confusing legitimate literal bracketed text with failed links.
+
+Do not disable the parser's resource protections to satisfy these gates. A general broken-reference callback is not an adequate exhaustion signal unless the pinned implementation demonstrably invokes it for every limit-suppressed lookup.
+
+Do not fall back to regex-only rewriting when an edit span is unavailable. Fail the unsupported case or explicitly revisit the parser/editing approach; do not silently switch to whole-document formatting or another authoritative parser.
+
+Pin exact Rust dependency versions after the fixtures pass. Do not regenerate the whole document through an HTML or Markdown formatter; if the first parser candidate cannot satisfy the fixture gate, revisit the parser choice without weakening the behavioural contract.
+
+## Markdown and source-heading profile
+
+Use a versioned `skill-markdown-v1` profile based on CommonMark, with pipe tables and double-tilde strikethrough enabled and source task-list markers preserved. Configure parser options explicitly rather than enabling every available extension; `pulldown-cmark` supports option-controlled event parsing ([parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)).
+
+- **Core syntax:** Support ATX/Setext headings, paragraphs, lists, blockquotes, code spans and blocks, inline/reference links and images, thematic breaks, and ordinary CommonMark autolinks.
+- **Task lists:** Preserve `[ ]`, `[x]`, and `[X]` markers without generating checkbox HTML. Recognize marker positions so reference definitions cannot turn them into links.
+- **HTML:** Parse HTML so anchor and reference policies can be enforced. Retain only content passing those policies and boundary checks; this is not an HTML-sanitization guarantee.
+- **Typography:** Disable smart quotes, typographic substitutions, and formatting cleanup.
+- **Bare text:** Do not infer dependencies from ordinary paths in prose. Bare URLs may remain text; browser-specific rendering is outside the guaranteed profile.
+- **Unsupported extensions:** Footnotes, wiki links, heading-attribute syntax, and include/transclusion directives are not v1 composition features. Reject recognized unsupported dependency or anchor constructs in selected content, but do not guess every possible extension from ordinary prose.
+- **File suffixes:** Recognize `.md` and `.markdown` case-insensitively for classification while preserving filesystem spelling and case semantics. An explicit entry with another suffix fails.
+- **Encoding:** Require valid UTF-8. Tolerate and remove one leading UTF-8 BOM as source transport metadata.
+
+Pin the parser configuration and definition-handling rules as part of the profile. Later extension changes must not silently change the interpretation of existing source.
+
+### Source-heading resolution
+
+Use a fixture-validated Rust adapter for GitHub-compatible source-heading slugs and duplicate tracking, with fresh state per complete source document. Select or implement the Rust slugging component against the compatibility fixtures; no specific slugger crate is selected yet.
+
+Derive visible heading text from parser events: text/code content, link labels, image alternative text, decoded entities, and normalized line-break spacing, excluding formatting delimiters and HTML tags. Enumerate headings in original source order, including container-nested headings when needed for duplicate numbering.
+
+Test punctuation, repeated spaces, markup, Unicode, duplicates, and collisions between naturally suffixed headings and generated suffixes. Source-fragment lookup remains separate from the `mdc-…` output-ID algorithm; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
+
+The pinned adapter and compatibility fixtures define the supported profile. Do not promise perfect parity with every future renderer change.
+
+## CLI contract
+
+Expose one command, with composed Markdown on stdout and diagnostics on stderr. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+
+```text
+md-compose --root DIR [OPTIONS] REF [REF ...]
+```
+
+| Option | Behavior |
+| --- | --- |
+| `--root DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
+| `--from DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
+| `-o, --output FILE` | Atomically publish validated output to a file; default or `-` means stdout. |
+| `--check` | Discover, compose, and validate without emitting or publishing the composite. |
+| `--resource-base URL` | HTTPS directory URL mapping source-root-relative resource paths for stdout output. |
+| `--diagnostics text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
+| `--version` | Report tool version and profile identifier. |
+| `--help` | Show usage, defaults, and exit-status meanings. |
+
+Allow `--check --output FILE` to validate rebasing for that destination without writing it. Optional manifests and dependency explanations can be added later without changing the core invocation.
+
+### Usage examples
+
+```bash
+# Whole document and recursive dependencies.
+md-compose --root skills/work-planner SKILL.md
+
+# Multiple selected targets.
+md-compose --root skills/work-planner \
+  'artifacts/epic-issue-body.md#record-epic-delivery' \
+  'artifacts/epic.md#delivery-findings'
+
+# A referring document supplies context for a bare fragment only.
+md-compose --root skills/work-planner \
+  --from artifacts/epic-issue-body.md \
+  '#record-epic-delivery'
+
+# Full compilation and validation, without publication.
+md-compose --root skills/work-planner --check \
+  'artifacts/epic-issue-body.md#record-epic-delivery'
+```
+
+These examples describe the agreed interface; no command has been implemented or executed. Missing references produce the specified diagnostics.
+
+## Explicitly composable source structure
+
+Common rules, file-level prerequisites, and shared SKILL.md instructions will be refactored into addressable sections. Operations must link to the sections that govern them, so the compositor can obtain the required context through explicit links.
+
+- **Generic composition:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; heading-only scaffolding supplies structure, not additional governing instructions.
+- **Explicit dependencies:** A section's author is responsible for linking any required shared rules or context. Such references are part of the recursive dependency graph.
+- **Reading versus execution:** Inclusion makes material available; it does not authorize executing every included procedure. Execution verbs and call boundaries remain part of the authored instructions.
+
+## Section extraction and output hierarchy
+
+Only headings that are direct children of the document are selectable section roots in v1. Both ATX and Setext headings are eligible when recognized by the configured parser; heading-like text in code is not.
+
+- **Boundary:** Include subsequent document-level blocks until the next document-level heading of equal or higher level.
+- **Subsections:** Include deeper document-level headings and their content.
+- **Containers:** Headings inside lists, blockquotes, or other containers do not terminate a document-level section.
+- **Nested target:** A fragment targeting a container-nested heading fails with `E_NESTED_SECTION_TARGET`.
+- **Enclosing inclusion:** Container-nested headings may be retained when their whole document or enclosing eligible section is selected. Shift their heading levels along with other emitted source headings, while preserving the containing list/quote and other non-heading content.
+- **Source anchor index:** Include all renderer-recognized source headings in the original anchor index, including nested headings if the profile numbers them. Extraction eligibility must not change another heading's original fragment.
+
+### File-scoped hierarchy
+
+Emit exactly one document-level H1 for each contributing source file, using its normalized root-relative filename. Escape the filename as literal heading text so punctuation in a path cannot create links, images, or inline HTML.
+
+All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents with the same basename in different directories remain distinguishable by their root-relative paths.
+
+- **Uniform shift:** Every emitted source heading moves down exactly one level: H1 becomes H2, H2 becomes H3, and so on. Preserve visible heading text and relative depth; do not renormalize selected roots independently.
+- **Heading syntax:** Shift ATX headings by editing their heading syntax. Convert Setext headings to equivalent ATX headings when required, preserving their visible text and inline semantics, including multiline source forms.
+- **Containers:** Apply the same level shift to real headings within retained containers without removing or changing the container structure. Heading-like text inside code remains untouched.
+- **Preamble:** A selected document's preamble appears after its filename H1 and before its first retained source heading.
+- **Source order:** Within each file group, emit selected regions and structural ancestors in their original source order.
+- **Depth overflow:** Fail with `E_HEADING_DEPTH_OVERFLOW` before publication if any emitted source heading or structural ancestor would require a level beyond H6. Do not flatten it, clamp its level, or emit H7-like text as if it were a heading.
+
+The hierarchy guarantee is the original selected source outline beneath one additional file level. File headings isolate source documents, while qualified IDs and destination validation independently provide link-collision protection.
+
+### Heading-only ancestor scaffolding
+
+For each selected section, retain the chain of eligible ancestor headings needed to preserve its original outline. Emit only those ancestors' headings, not their body text, unselected siblings, or other descendants.
+
+Scaffolding is generated structural content, not dependency inclusion:
+
+- **Heading text:** Render a scaffold's original visible title as escaped text, without live source links, images, or HTML. Do not traverse references from a scaffold-only heading or import its body.
+- **Provenance:** Record scaffold headings separately from selected content, retaining their canonical source-heading identities and original levels for validation.
+- **Deduplication:** Emit each structural ancestor once. If dependency discovery later selects that ancestor as content, replace its scaffold with the normally transformed source heading and selected body rather than adding a second copy.
+- **Targets:** A scaffold is not a substitute for selecting the corresponding source section. A real link to that ancestor must expand closure to include the section normally; do not satisfy it solely because the ancestor's title is already displayed.
+- **Depth:** Shift scaffold levels by the same plus-one rule. Do not compress skipped levels or invent missing headings that did not exist in the source.
+
+For example, selecting `Alpha` and `Detail` from a source whose original outline is `## Alpha`, `## Beta`, `### Detail` requires a heading-only `Beta` in the composite:
+
+```markdown
+# guide.md
+
+### Alpha
+Selected Alpha content.
+
+### Beta
+#### Detail
+Selected Detail content.
+```
+
+`Beta`'s body is not included unless it is independently selected or reached as a dependency. Scaffolding preserves the parent-child relationship without importing unlinked prerequisites.
+
+### Block boundaries
+
+Insert blank-line separation between maximal emitted regions and reparse the candidate. Reject boundaries that merge or absorb content into unintended code fences, lists, quotes, HTML blocks, or other non-heading containers.
+
+Do not silently close fences or repair code examples. Report unsafe boundaries with `E_UNSAFE_COMPOSITION_BOUNDARY`, identifying the source regions and conflicting output boundary.
+
+## Original custom anchors
+
+Support empty standalone HTML anchors with one destination attribute, `name` or `id`, immediately preceding an eligible heading. Blank lines and other supported empty anchors may intervene; prose or another substantive block prevents association.
+
+```markdown
+<a name="delivery"></a>
+
+### Record Epic Delivery
+```
+
+The custom anchor and the heading's ordinary source fragment are aliases of one canonical section. Selecting either includes the same section, and both rewrite to one qualified destination.
+
+- **Alias self-reference:** A section linking to its own alias fails as a direct self-reference.
+- **Unsupported target:** An arbitrary-position custom anchor, including one midway through a paragraph, fails as a target with `E_UNSUPPORTED_ANCHOR_TARGET`.
+- **Selected markup:** Unsupported anchor-producing markup in emitted content fails rather than introducing uncontrolled IDs. Non-anchor HTML remains subject to the syntax and boundary policy.
+- **Ambiguity:** A required source fragment with multiple destinations fails with `E_AMBIGUOUS_SOURCE_ANCHOR`.
+- **Emission:** Remove supported original custom-anchor nodes from selected content and emit the qualified anchor at the associated heading. Do not retain old unqualified aliases.
+
+Keep original alias-to-section mappings for target validation. Anchor-node replacement is an explicitly permitted transformation.
+
+## Qualified composite destinations
+
+Resolve fragments against the original complete source document before assigning composite identities. Reserve `mdc-` for generated destinations and derive their IDs from stable source identities, not traversal positions or discovery order.
+
+```text
+mdc-{path-slug}--{target-slug}--{digest12}
+```
+
+- **Path slug:** Lowercase ASCII slug of the normalized root-relative document path without its Markdown extension; replace non-ASCII-alphanumeric runs with a hyphen, trim hyphens, and use `doc` if empty.
+- **Target slug:** Apply the same readable-slug transformation to the canonical source heading fragment; use `document` for whole-document destinations.
+- **Identity digest:** First 12 lowercase hexadecimal characters of SHA-256 over UTF-8 `root-relative-path + NUL + target-kind + NUL + canonical-source-fragment`. Use distinct document and section kinds; the document fragment is empty.
+- **Aliases:** Use the owning section's canonical source fragment rather than the alias spelling.
+- **Collision:** Distinct identities producing the same final ID fail with `E_OUTPUT_ANCHOR_COLLISION`. The explicit check, not an assumption about digest uniqueness, establishes correctness.
+- **Source identity:** Resolve duplicate-heading suffixes and source aliases before composition. The readable output-slug algorithm must not replace the configured source-heading slug rules.
+- **Internal links:** Rewrite both cross-file and fragment-only links using the same destination map.
+- **Visible headings:** Preserve selected source heading text while shifting levels by one. Add qualified destinations as explicit HTML anchors; file grouping does not replace source-fragment resolution or collision checks.
+- **Output profile:** Target a GitHub-compatible renderer that preserves explicit named anchors, using `<a name="QUALIFIED-ID"></a>` at each destination. Verify this behavior in compatibility tests; do not promise correct anchor navigation in every Markdown renderer.
+- **Document destinations:** Place a source document's qualified start anchor at its generated filename H1, distinct from its first original source heading. A file group may contain only selected sections; the presence of its wrapper or anchor does not mean the whole document was included. A whole-document reference still requires full-body inclusion under the established transformation rules.
+
+### Full namespace validation
+
+Validate generated destinations against all supported output anchor-producing constructs, including automatically generated IDs for filename headings, shifted source headings, and structural ancestors. Reject emitted source/scaffold headings whose automatic anchors start with `mdc-`, reject source custom anchors in that namespace, remove supported old anchors, and verify that each generated destination occurs exactly once.
+
+Generated-input detection applies file-wide as specified below. The namespace is a reserved convention, not proof of origin.
+
+## Source-local reference interpretation
+
+Parse each source independently after frontmatter recognition and before selecting output regions. Resolve reference-style links and images using only that source's definition environment, including definitions outside the selected region.
+
+1. Convert resolved reference-style uses in selected content to inline links or images.
+2. Preserve visible link text, image alternative content, and optional titles with the necessary Markdown escaping.
+3. Rewrite local Markdown destinations to qualified anchors; preserve or rebase other destinations under the resource policy.
+4. Remove all original link-reference definition nodes from emitted content, including unused definitions.
+5. Preserve unresolved bracketed text as literal text; do not infer a dependency from text the source parser did not recognize as a link.
+6. Leave examples inside code spans and code blocks unchanged.
+
+For example, a literal `[runner]` in one source must remain literal even if another source defines `[runner]: tools.md#run`. Convert the latter source's resolved use to an inline link and omit its definition from the composite.
+
+Definition removal is an allowed non-rendered-syntax transformation. Fail if the parser/editing strategy cannot preserve these distinctions; footnotes and other document-global definition systems require separately declared support.
+
+## Compile before publishing
+
+Composition is a compile-and-validate process rather than streaming concatenation. No success output is published until the complete candidate has been constructed and validated.
+
+1. Resolve entry references and allowed source paths.
+2. Read and parse each distinct source file once during discovery, capturing its identity and content hash and excluding leading frontmatter from composed content.
+3. Index source headings, custom-anchor aliases, links, definitions, ownership, and eligible section boundaries.
+4. Discover the recursive dependency graph and expand included source coverage to a fixed point.
+5. Consolidate selections, group them by source file, and derive required heading-only ancestors. Check shifted heading depths and assign collision-free destinations without treating scaffolds as new dependencies.
+6. Apply source-local reference conversions and anchor replacements, rewrite destinations and heading syntax, and construct the candidate with one filename H1 per source.
+7. Reparse in candidate-validation mode and compare with selected source constructs, including target integrity, unintended new references, coverage, namespaces, and block boundaries. Do not reload the candidate through source-input validation.
+8. Recheck every source against its captured content hash and canonical path identity; fail if a source has changed, disappeared, or resolved elsewhere.
+9. Publish the validated document; otherwise fail with actionable diagnostics.
+
+**Expanding coverage:** If a later reference includes an ancestor section or whole document, replace narrower duplicate selections with the larger region. Traverse dependencies in newly included content before declaring compilation complete.
+
+Keep parsed-file caching separate from included-region tracking. Reach a fixed point before final emission, and retain mappings from all selected targets to their consolidated destinations.
+
+## Self-reference and ancestor-reference behavior
+
+Direct self-reference is invalid, while a nested reference back to an ancestor resolves to the existing ancestor destination. This distinction is confirmed and is evaluated using source-section identity, not merely file identity or the scope of the entry argument.
+
+- **Direct self-reference:** A link from section A to the same canonical section A is a compile error.
+- **Ancestor reference:** During traversal A → B → A, B's reference to A becomes an internal link to the existing A destination. Do not expand or duplicate A.
+- **Shared dependency:** A → C and B → C include C once; both links resolve to its destination.
+- **Different section in the same file:** A link to a distinct section is not a direct self-reference solely because the file is the same.
+- **Equivalent references:** Determine identity after canonical path and fragment resolution, rather than comparing the literal link strings.
+- **Link ownership:** Assign each link to the innermost eligible source section containing its position, including inline content in that heading. Links in nested containers belong to that enclosing eligible section. Ownership does not change when a whole document or ancestor section is selected.
+- **Whole-document selection:** Selecting `guide.md` does not make its links to `guide.md#section` self-references. A document node and its heading-section nodes are distinct identities.
+- **Preamble ownership:** Content before the first eligible heading belongs to the document node. A link from that preamble to the same whole-document node is a direct self-reference; a heading-section link back to its whole document is an ancestor inclusion, not a direct section-to-itself link.
+
+Store link ownership separately from selected inclusion ranges. Consolidating a child section into a larger region must not change whether one of its links is a direct self-reference.
+
+## Frontmatter policy
+
+Strip leading source frontmatter from every included document, including whole-document entries. Use deterministic delimiter scanning, without parsing or executing YAML.
+
+1. Accept and remove one optional leading UTF-8 BOM.
+2. If the first physical line after the BOM is exactly `---`, excluding its LF or CRLF terminator, treat it as the frontmatter opener.
+3. Close at the next physical line exactly equal to `---` or `...`, excluding its terminator.
+4. Strip the opening line, metadata content, closing line, and the closing line's terminator when present.
+5. Preserve subsequent body content, including following blank lines.
+6. Fail with `E_UNTERMINATED_FRONTMATTER` when a recognized opener lacks a closing delimiter.
+
+Do not recognize indented delimiters, trailing spaces on delimiters, TOML `+++`, or JSON metadata as v1 frontmatter. A document intended to begin with a literal horizontal rule must use another spelling, such as `***`, rather than the reserved leading `---`.
+
+A BOM is allowed before the opener, but an actual leading blank line means the following `---` is body content. Keep original source coordinates for diagnostics, and do not strip YAML examples in code blocks or non-leading thematic breaks.
+
+Discard metadata without validating YAML values. Count it toward input-size limits, but never discover dependencies in it or emit or execute it.
+
+## Link classification and resource handling
+
+Classify references before traversal. The compositor guarantees internal resolution for supported local Markdown document links, not offline availability of every resource mentioned in the composed text.
+
+- **Local Markdown document links:** Resolve, recursively compose, and rewrite to qualified internal destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
+- **Fragment-only links:** Resolve against the original source document's heading and anchor index, then apply the same composition and rewriting rules.
+- **Images and non-Markdown resources:** Do not recursively include them. Preserve their meaning through the resource-location policy below.
+- **Web URLs:** Preserve them without fetching or interpreting them as local dependencies. A GitHub URL remains a web URL unless an explicit URL-to-checkout feature is introduced later.
+- **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
+- **Other URI schemes:** Maintain an explicit allowlist for pass-through references and reject unsupported schemes. Do not treat an unrecognized scheme as a filesystem path.
+- **Examples:** Do not follow apparent links or anchors inside code spans, fenced code blocks, or other literal example content.
+
+## Reference normalization and path identity
+
+Require an explicit allowed source root and canonicalize that root once. Command-line document paths are relative to the root; links inside sources are relative to their originating document's directory.
+
+A fragment-only command-line reference requires `--from DOC`; otherwise it fails. File-naming positional references remain root-relative even when `--from` is present. A fragment-only source link uses its source document automatically.
+
+### Resolution sequence
+
+1. For authored Markdown links, obtain the destination from the parser with Markdown escapes and entities interpreted once. CLI reference arguments enter directly as URI-reference strings.
+2. Split URI components before percent-decoding so encoded `#` and `?` remain filename characters rather than becoming delimiters.
+3. Classify scheme and authority. Pass through supported external references under their policy; reject unsupported schemes.
+4. Reject any query component on local Markdown document references, including an explicitly empty query.
+5. Strictly validate percent escapes and decode path and fragment exactly once as UTF-8. Look up the decoded source fragment exactly; do not lowercase or re-slug it.
+6. Reject NULs, control characters, decoded path separators originating from escapes, and remaining backslash separators. Local paths use forward slashes in v1.
+7. Normalize `.` and `..` relative to the proper reference base. Permit normalized internal `..`, but reject paths outside the allowed root.
+8. Enforce no-symlink source access and require a supported regular Markdown file.
+9. Treat absent and empty fragments as whole-document references; otherwise resolve to the canonical eligible section identity.
+
+Do not apply additional Unicode normalization to filesystem names beyond what the operating system requires. Distinct normalized source paths remain distinct source documents even if their contents or inode happen to be shared.
+
+| Reference | Required interpretation |
+| --- | --- |
+| `guide.md` | Whole document with the documented transformations. |
+| `guide.md#` | Same whole-document target. |
+| `#run` within `guide.md` | Original section `run` in that document. |
+| `guide.md?view=raw#run` | Fail: unsupported local Markdown query. |
+| `notes%23draft.md#run` | Section `run` in literal filename `notes#draft.md`. |
+| `notes%2523draft.md#run` | Section `run` in literal filename `notes%23draft.md`; no second decoding. |
+| `sub/../guide.md#run` | Normalize to `guide.md#run` when confined to the root. |
+| A normalized path outside the root | Fail with `E_SOURCE_OUTSIDE_ROOT`. |
+
+Root-relative URL paths beginning with `/`, filesystem absolute reference paths, protocol-relative URLs, and platform-specific drive paths are outside the local-reference profile and fail explicitly. This restriction applies to document references, not to the configuration path naming the allowed source root.
+
+### No-symlink source policy
+
+Reject Markdown source paths containing symlinks below the canonical source root with `E_SOURCE_SYMLINK`. Do not let dependency bases vary according to which logical alias was discovered first.
+
+Use rooted, no-follow access or equivalent safeguards, not merely a pre-open string check. Platforms unable to enforce the policy must fail or declare a narrower supported environment rather than silently weakening root confinement.
+
+Non-Markdown resource links are not opened as source dependencies. They remain governed by the resource policy.
+
+## Resource-location policy
+
+Rebase relative image and non-Markdown resource URLs against their original source location when writing to a specified output file. Preserve any applicable query or fragment; do not modify shell commands, code examples, or prose containing filesystem paths.
+
+- **File output:** Resolve `--output` relative to the process working directory, independently of source references. Compute resource URLs relative to that destination's directory and reject outputs that overwrite an input source.
+- **Stdout with an explicit resource base:** Require an HTTPS directory URL ending in `/`, with no credentials, query, or fragment. Append the percent-encoded source-root-relative resource path and preserve the resource reference's own query or fragment.
+- **Mapping failures:** Resources outside the source root have no mapping under `--resource-base` and fail rather than acquiring invented URLs.
+- **Conflicting modes:** Reject `--resource-base` with a real output file, including validation-only file-output context. Permit it for stdout or validation-only stdout semantics.
+- **Stdout without a resource base:** Leave resource references unchanged and warn on stderr that resource portability is not guaranteed. A successful Markdown dependency composition does not imply that those resources are portable.
+- **Unrepresentable resource references:** If a requested rebasing cannot be performed safely, fail with a diagnostic rather than inventing a destination.
+
+Never fetch resource-base URLs or add authentication capabilities. A portability warning alone does not turn successful compilation into failure.
+
+## Resource limits
+
+Use deterministic configurable limits and fail rather than truncate. These are approved initial engineering defaults, not benchmark-derived limits or guarantees about an agent's context capacity.
+
+| Option | Default | Counting rule |
+| --- | --- | --- |
+| `--max-files` | `256` | Distinct normalized source-document identities opened. |
+| `--max-file-bytes` | `1,048,576` | Raw bytes in one source, including frontmatter and any BOM. |
+| `--max-input-bytes` | `16,777,216` | Sum of raw source bytes, once per source identity. |
+| `--max-output-bytes` | `262,144` | Complete UTF-8 composite, including filename headings, structural ancestors, generated anchors, and separators. |
+| `--max-targets` | `4,096` | Distinct canonical document/section targets discovered, even if later subsumed. |
+| `--max-links` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
+| `--max-nesting` | `64` | Supported syntactic container nesting; exceeding the limit is an error. |
+
+Accept positive decimal integer overrides; zero must not mean unlimited. Traverse iteratively without a separate recursive-call-depth cap that rejects otherwise valid cyclic graphs.
+
+Enforce `--max-nesting` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
+
+The wrapper must enforce any smaller transport limit; 256 KiB is not universally safe for agent delivery. Do not estimate tokens by dividing bytes by a constant; future token budgets must name and pin the tokenizer.
+
+## Source consistency
+
+Read each distinct source once during discovery and keep its parsed content, canonical identity, and content hash for the entire compile. Before publication, recheck all sources and fail with a retry message if any content or identity has changed.
+
+This is change detection, not a transactional filesystem snapshot: files can change again after a check. When strict reproducibility is required, compose from an immutable source snapshot; do not claim that hashing alone supplies cross-file atomicity.
+
+## Generated input policy
+
+Recomposition of md-compose output is unsupported in v1. Reject an input document containing a parser-recognized explicit anchor in the reserved `mdc-` namespace with `E_GENERATED_OR_RESERVED_INPUT`, even when the requested subsection excludes that anchor.
+
+Every produced document has at least one generated anchor, so the convention identifies ordinary unmodified output without adding metadata wrappers. Anchor-like examples in code remain literal and do not trigger detection.
+
+This is not proof of origin or a security signature. Removing or altering the anchors defeats this convention; do not claim detection of arbitrary modified derivatives.
+
+## Agent delivery contract
+
+Successful compilation establishes that the complete candidate passed validation. It does not establish that a downstream tool transport delivered every byte to the calling agent.
+
+- **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
+- **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a delivery failure rather than a truncated apparent success.
+- **Clean Markdown:** Keep success stdout limited to the composite document. Completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, not per-section Markdown envelopes.
+- **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
+- **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
+
+## Validation scope
+
+Validate link resolution, self-reference, supported selected syntax, and resource rules within the selected dependency closure. Parsing a complete file for indexing does not make its unselected sibling sections dependencies; scaffold-only headings undergo structural, depth, and namespace checks but not dependency traversal.
+
+Whole-file checks are limited to facts needed for safe access or correct interpretation: source identity and encoding, raw-byte and required parsing-resource limits, frontmatter, source-change detection, original heading enumeration, definitions needed by selected uses, ambiguity of requested fragments, and generated-input detection.
+
+An unrelated broken link or self-link in an unselected sibling must not fail composition. If closure expands to include that sibling, its links become subject to validation.
+
+An opened file can nevertheless fail because an unselected construct exceeds a declared file-wide parsing-safety limit. Diagnose this as inability to safely index the containing source, not as an inferred dependency on that sibling.
+
+Keep `--max-links` scoped to authored occurrences in the selected closure. If full-file indexing needs another work budget or instrumentation, specify it separately rather than silently changing that option's meaning.
+
+### Source and candidate validation modes
+
+Use the same declared Markdown grammar where applicable, but separate the policy context for source validation from candidate validation.
+
+- **Source mode:** Enforce source-root and generated-input rules, original custom-anchor restrictions, source-fragment resolution, and source-owned self-reference checks.
+- **Candidate mode:** Accept expected generated anchors, filename headings, shifted headings, and structural ancestors. Validate destinations, coverage, reconstructed outlines, block structure, and reference invariants against source provenance.
+- **Ownership:** Retain original source ownership independently of output heading levels. Validate the reconstructed outline against that model rather than assigning synthetic file/scaffold headings executable ownership.
+- **Preprocessing:** Do not pass the candidate back through source frontmatter stripping, dependency discovery, or generated-input rejection.
+- **Reuse:** The producer's candidate may pass candidate validation, while that same document supplied to a later invocation remains invalid under the generated-input policy.
+
+## Validation and failure contract
+
+Validation is mandatory. Failures must give the calling agent enough information to explain the problem to the user or halt safely.
+
+- **Resolution:** Every supported local Markdown reference resolves to a known document or section.
+- **Target integrity:** Every rewritten link points to the intended source-derived destination, not just an anchor that happens to exist.
+- **Uniqueness:** Composite destination identities are unambiguous.
+- **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
+- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, custom-anchor replacement, destination rewriting/rebasing, plus-one heading shifts and necessary Setext conversion, generated filename headings and heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
+- **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
+- **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands or fetch remote URLs implicitly.
+- **Publication:** Compile failures return nonzero status and no composite on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation.
+
+### Post-compilation invariants
+
+Validate the completed document against the source-to-output mapping, not only its surface syntax.
+
+- **One intended destination:** Each rewritten link resolves to exactly one explicit destination corresponding to its intended original document or section.
+- **Reference preservation:** Each link/image use in selected source content retains its visible content and title and reaches its intended destination under the resource policy. Scaffold-only titles intentionally contain no live source links or images.
+- **No new links:** Source text parsed as literal bracketed text must not become a new link or image through composition.
+- **No definition leakage:** No original link-reference definition nodes survive emission; literal examples of definitions remain unchanged.
+- **Exactly-once coverage:** Each selected source region's content is represented once after unioning overlaps, excluding a removed leading BOM, stripped frontmatter, removed reference definitions, and replaced custom-anchor nodes. Parent inclusion satisfies child inclusion without another copy.
+- **No accidental omissions:** Selected-content coverage equals the resolved dependency closure under the documented transformations. Track generated structure separately so it cannot conceal a missing selected region.
+- **No accidental expansion:** The only unselected source-derived content emitted is required heading-only ancestry. Never include an unselected ancestor's body or siblings merely to supply structure.
+- **Ownership stability:** Link ownership and direct-self-reference classification remain the same before and after overlap consolidation.
+- **Block-syntax preservation:** Generated anchors and region boundaries must not absorb content into unintended non-heading containers.
+- **File isolation:** Each contributing source has exactly one filename H1, and its emitted source headings remain beneath it rather than entering another file's outline.
+- **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under the plus-one shift, using scaffolds where needed. Validate this against the original source outline.
+- **Depth safety:** No emitted heading exceeds H6; overflow produces a failure, not a success with altered depth.
+
+Use provenance ranges and distinct generated-structure records to check these properties. Repeated identical prose in different source regions is not duplication by itself, and string counting is not a sufficient exactly-once test; neither filename wrappers nor scaffolds may count as selected body content.
+
+These checks establish named syntax, reference, and coverage invariants. They do not prove natural-language instruction equivalence or successful agent execution.
+
+Illustrative diagnostic, not an existing command result:
+
+```text
+E_ANCHOR_NOT_FOUND: cannot resolve local Markdown target
+  source: artifacts/epic-issue-body.md:42
+  link: epic.md#delivery-findings
+  resolved file: artifacts/epic.md
+  missing fragment: delivery-findings
+  inclusion chain:
+    modes/sync-mode.md
+    → artifacts/epic-issue-body.md#record-epic-delivery
+    → artifacts/epic.md#delivery-findings
+  action: correct the link or restore the target heading
+  result: compilation failed; no composite emitted
+```
+
+Diagnostics should include a stable error code, referring source location, original reference, relevant resolved identity, inclusion chain, and a practical remedy when one can be stated accurately.
+
+### Exit status and JSON diagnostics
+
+Use stable error codes for individual defects and the following exit-status categories. Warnings may accompany success.
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | Successful compilation, validation, or informational CLI response. |
+| `1` | Input, dependency, policy, safety, or resource-limit failure. |
+| `2` | Invalid CLI usage or option combination. |
+| `3` | Output publication or delivery failure, including a detected broken pipe. |
+| `4` | Unexpected internal error; do not misreport it as a source-document defect. |
+
+With `--diagnostics json`, emit one JSON object per stderr line, including `severity`, `code`, `message`, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate. Do not mix JSON diagnostics with progress prose.
+
+## Adversarial acceptance fixtures
+
+Before broad implementation, create small fixtures with exact expected composites or expected failures.
+
+- **Identity:** Whole-file composition with internal section links; direct self-links through heading names and aliases; ancestor back-references; preamble-to-document self-links; same-file cross-section links.
+- **Coverage:** Child-first then parent inclusion; whole-document inclusion discovered late; shared dependencies; multi-file cycles; different entry argument orders.
+- **Anchors:** Duplicate heading text, same-basename paths, slug and digest collisions, heading-associated aliases, arbitrary-position targets, reserved namespaces, and renderer-generated anchor collisions.
+- **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
+- **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
+- **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
+- **File hierarchy:** Same-basename sources in different directories; filenames needing Markdown escaping; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
+- **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor scaffolds; original skipped heading levels; scaffold promotion after dependency expansion; and no ancestor-body or scaffold-link dependency leakage.
+- **Wrapper identity:** A partial file group's document anchor does not satisfy a whole-document dependency without expanding its selected content.
+- **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.
+- **Resources:** Images and script links rebased for file output, stdout with and without a resource base, and unchanged relative paths inside command examples.
+- **Consistency:** Source modification, deletion, or changed canonical identity during compilation.
+- **Validation scope:** Unselected broken/self-referential siblings do not fail a narrow composition but do fail when later included.
+- **Generated inputs:** Reject actual reserved anchors anywhere in a source, while ignoring reserved-anchor examples in code.
+- **Delivery:** Nonzero process exit, output-budget failure, broken output pipe, and wrapper rejection of transport-oversized output.
+- **Parser fidelity:** Exact ranges for multiline references, reference-style images, nested image/link edits, tables, tabs, Unicode, escapes, CRLF, and original diagnostic coordinates.
+- **Definition inventory:** Remove every selected definition occurrence, including duplicates, unused labels, case-fold-equivalent labels, multiline definitions, and supported containers, without changing original winner selection.
+- **Parser exhaustion:** Trigger reference-expansion suppression below the compositor's public input/output limits and require an explicit failure. Include a case that consumes the budget on its last valid reference with no later lookup, which must not falsely claim omitted references.
+- **Validation modes:** Candidate validation accepts expected generated anchors and preserves saved source ownership; a subsequent source invocation rejects the generated document.
+- **File-wide safety:** Excessive parsing depth in an unselected sibling can fail with a file-indexing resource diagnostic, while an ordinary unselected broken link does not.
+- **Profile:** Task markers protected from definitions, disabled typographic rewriting, Markdown suffix classification, and explicit rejection of unsupported selected dependency constructs.
+- **Frontmatter:** Optional BOM, exact opening/closing delimiters, `...` termination, leading-blank-line distinction, malformed delimiters, and missing closers.
+- **CLI:** Root versus `--from` resolution, `--check` with output rebasing but no publication, resource-base conflicts, clean JSON diagnostics, and documented exit statuses.
+- **Limits:** Every limit fails at the first exceeded boundary without truncation; zero/negative overrides fail; parser nesting cannot silently fall back to different syntax.
+
+## Implementation verification and residual policy detail
+
+- **Source-range adapter:** Rust and the first parser candidate are selected, but range fidelity, complete occurrence coverage, observable reference-resolution suppression, and nested-edit handling must be proven after implementation is authorized.
+- **Dependency pins:** Choose an appropriate Rust slugging component and exact tested dependency versions; compatibility fixtures, not assumptions about upstream behavior, establish the supported profile.
+- **URI pass-through allowlist:** The exact set of additional non-HTTP schemes remains to be specified. Do not silently authorize arbitrary schemes; ordinary web references and HTTPS resource-base behavior are defined above.
+- **Calibration:** Revisit numerical defaults only with measured fixture and real-skill data. The approved initial limits are not performance claims.
+- **Upstream route:** Keep the possible contribution recorded in the note below. No issue or PR drafting, implementation, or publication is authorized.
+
+The implementation should remain a deterministic local Markdown compiler. Workflow state, authorization, semantic instruction rewriting, and remote document ingestion are separate concerns, not implicit parts of composition.
+
+### Upstream follow-up reference
+
+If parser verification demonstrates a need, consider two narrowly scoped pulldown-cmark contributions: observable reference-resolution suppression and opt-in access to every reference-definition occurrence. Preserve default rendering, first-definition resolution, and existing resource protections.
+
+- **Definition access:** Review the earlier source-tooling discussion and definition-tracker work in [issue #423](https://github.com/pulldown-cmark/pulldown-cmark/issues/423), which was closed through PR #512.
+- **Expansion protection:** Preserve the quadratic-growth mitigation introduced in [PR #845](https://github.com/pulldown-cmark/pulldown-cmark/pull/845); propose observability rather than disabling the limit.
+- **Offset-iterator regression:** Track the existing report and fix/backport discussion in [issue #1129](https://github.com/pulldown-cmark/pulldown-cmark/issues/1129) rather than opening a duplicate.
+- **Contribution process:** Consult the project's [contribution guidance](https://raw.githubusercontent.com/pulldown-cmark/pulldown-cmark/main/CONTRIBUTING.md), which requests advance discussion for larger changes.
+
+This is a deferred design reference only. Do not draft an upstream issue or PR, or take external action, unless the user later requests it.
