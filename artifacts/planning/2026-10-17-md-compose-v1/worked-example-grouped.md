@@ -3042,11 +3042,25 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-637.json --prs prs.json --links links.json --pr 950 --tick AC1 --fix fixed-637.md
 ```
 
-# modes/align-mode
+# Modes
+
+## Propose Mode
+
+Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
+
+## Sync Mode
+
+Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
+
+## Understand Mode
+
+Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
 ## Procedure
 
-### Repair Issue Format
+### Align Mode
+
+#### Repair Issue Format
 
 The saved format corrections for one issue and any unresolved content findings.
 
@@ -3067,7 +3081,7 @@ The saved format corrections for one issue and any unresolved content findings.
    - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
    - Return the saved body, whether a correction was made, and the validation result to the calling step. A remaining failure is a blocker; this subsection does not enter the main alignment procedure.
 
-### Plan Gap Task
+#### Plan Gap Task
 
 The agreed disposition of criteria a delivered row left unmet.
 
@@ -3091,18 +3105,16 @@ The agreed disposition of criteria a delivered row left unmet.
    - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
    - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
 
-# modes/deliver-mode
+### Deliver Mode
 
-## Procedure
-
-### Integrate Epic Delivery
+#### Integrate Epic Delivery
 
 Coordinates current branch, epic and pull-request evidence for one epic-base integration.
 
 1. **Prepare the evidence.**
    - Confirm the repository prerequisite in [Close Tracker Issue](#close-tracker-issue).
    - Run [Maintain Review Pull Request](#maintain-review-pull-request) with the actual task merges.
-   - Run [Understand Mode](#modesunderstand-mode) with the review pull request identity.
+   - Run [Understand Mode](#understand-mode-2) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](#read-pull-request-state).
    - Require the user to have marked the draft ready.
@@ -3124,7 +3136,7 @@ Coordinates current branch, epic and pull-request evidence for one epic-base int
    Run [Read Pull Request State](#read-pull-request-state) to confirm the merged state, verified head, target and merge commit.
    - Return the result or blocker. Draft and blocked pull requests remain open.
 
-### Fetch Merge Readiness
+#### Fetch Merge Readiness
 
 The current pull request's readiness against its target requirements and head checks.
 
@@ -3142,11 +3154,7 @@ The current pull request's readiness against its target requirements and head ch
    - Compare its head with the retained SHA; a changed head requires fresh evidence.
    - Return the verified head, target requirements and readiness result, including unresolved conditions.
 
-# modes/propose-mode
-
-Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
-
-## Procedure
+### Propose Mode
 
 The main path meets [Outcomes](#outcomes).
 
@@ -3185,22 +3193,9 @@ The main path meets [Outcomes](#outcomes).
 8. **Report.**
    Give the issue's URL, and the board's when the issue was placed.
 
-## Outcomes
+### Sync Mode
 
-- **A scoped problem.**
-  The user has one problem scoped, and has confirmed its goal.
-- **One proposal.**
-  The user has that problem raised as one proposal.
-- **On the proposals board.**
-  When the user wants the proposal on the proposals board, it is there, raised, and unassigned.
-
-# modes/sync-mode
-
-Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
-
-## Procedure
-
-The main path meets [Outcomes](#outcomes-1).
+The main path meets [Outcomes](#outcomes).
 
 1. **Select.**
    Select an initiative with its open epics, or the epics the user names.
@@ -3312,14 +3307,14 @@ The main path meets [Outcomes](#outcomes-1).
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](#modesunderstand-mode) with the task's open pull request or each epic review pull request, one run per base.
+    - Run [Understand Mode](#understand-mode-2) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
 
-### Read Delivery Evidence
+#### Read Delivery Evidence
 
 The pull requests and issue links that establish current delivery.
 
@@ -3340,7 +3335,7 @@ The pull requests and issue links that establish current delivery.
    With or without a title correction:
    - Return the current pull request records, complete issue-link snapshot and per-epic findings to the caller, reporting incomplete evidence as a blocker.
 
-### Record Issue Delivery
+#### Record Issue Delivery
 
 The issue bodies associated with a pull request's delivery.
 
@@ -3361,7 +3356,7 @@ The issue bodies associated with a pull request's delivery.
    - Publish that returned epic body and each task body returned by Record Task Delivery through [Save Tracker Issue](#save-tracker-issue).
    - Return the saved identities and findings to the caller.
 
-### Maintain Review Pull Request
+#### Maintain Review Pull Request
 
 The draft pull request and body for one epic base's delivered changes.
 
@@ -3382,7 +3377,7 @@ The draft pull request and body for one epic base's delivered changes.
    - Run [Record Epic Delivery](#record-epic-delivery) with the current epic and refreshed review and task-merge records.
    - Return its cited-versus-actual merge findings with the review identity. The session recording each task merge owns this update.
 
-### Record Task Merge
+#### Record Task Merge
 
 The task and epic records after one confirmed task merge.
 
@@ -3402,7 +3397,7 @@ The task and epic records after one confirmed task merge.
    - Follow [Close Delivered Issue](#close-delivered-issue) when eligible.
    - Run [Record Initiative Delivery](#record-initiative-delivery) with the current initiative and every linked epic record. Initiative completion does not gate an epic merge. A task merge alone does not sync the initiative or board.
 
-### Record Board Delivery
+#### Record Board Delivery
 
 The board's status and assignees after its issues record delivery.
 
@@ -3429,7 +3424,7 @@ The board's status and assignees after its issues record delivery.
    - Run [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
    - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
-### Close Delivered Issue
+#### Close Delivered Issue
 
 Fresh closure evidence assembled across the issue and its linked pull requests.
 
@@ -3455,7 +3450,7 @@ Fresh closure evidence assembled across the issue and its linked pull requests.
      - Repeat the completion check before trying again.
    - Report any unmerged link or unmet criterion.
 
-### Verify Selected Criteria
+#### Verify Selected Criteria
 
 The verification evidence for a supplied set of criteria whose delivery is ready.
 
@@ -3469,7 +3464,7 @@ The verification evidence for a supplied set of criteria whose delivery is ready
    Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
    - Leave body publication and further planning to the caller.
 
-### Tick Verified Criteria
+#### Tick Verified Criteria
 
 The confirmed criteria and completed rows recorded in an epic or initiative body.
 
@@ -3479,26 +3474,9 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
 2. **Return the body.**
    Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
 
-## Outcomes
+### Understand Mode
 
-- **Delivery recorded.**
-  The user has each landed task tied to the pull request that delivered it, and has what now holds recorded on the initiative and its epics.
-- **Complete work closed.**
-  Work that is complete is closed.
-- **The board is current.**
-  The theme board shows where the initiative and its epics stand, including what a reviewer can take up.
-- **A change entering review is explained.**
-  Each task and epic that enters review has an overview on the pull request a reviewer reads.
-- **The queue stays undecided.**
-  A sync on its own leaves the choice of what to start next undecided.
-
-# modes/understand-mode
-
-Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
-
-## Procedure
-
-The main path meets [Outcomes](#outcomes-2).
+The main path meets [Outcomes](#outcomes).
 
 1. **Select the change.**
    Require the pull request number or URL.
@@ -3534,6 +3512,30 @@ The main path meets [Outcomes](#outcomes-2).
    Report the pull request, record folder, diagrams and References row.
 
 ## Outcomes
+
+### Propose Mode
+
+- **A scoped problem.**
+  The user has one problem scoped, and has confirmed its goal.
+- **One proposal.**
+  The user has that problem raised as one proposal.
+- **On the proposals board.**
+  When the user wants the proposal on the proposals board, it is there, raised, and unassigned.
+
+### Sync Mode
+
+- **Delivery recorded.**
+  The user has each landed task tied to the pull request that delivered it, and has what now holds recorded on the initiative and its epics.
+- **Complete work closed.**
+  Work that is complete is closed.
+- **The board is current.**
+  The theme board shows where the initiative and its epics stand, including what a reviewer can take up.
+- **A change entering review is explained.**
+  Each task and epic that enters review has an overview on the pull request a reviewer reads.
+- **The queue stays undecided.**
+  A sync on its own leaves the choice of what to start next undecided.
+
+### Understand Mode
 
 - **The change explained.**
   The engineer reviewing the pull request has its structure and its flows, read at the head commit under review.
@@ -3608,12 +3610,12 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 
 ## Procedure
 
-The main path meets [Outcomes](#outcomes-3).
+The main path meets [Outcomes](#outcomes-1).
 
 1. **Take the proposal.**
    - When the user names a proposal, its associated issue body defines the problem scope.
    - When no proposal is named:
-     - Run [Propose Mode](#modespropose-mode) with the user's goal.
+     - Run [Propose Mode](#propose-mode-2) with the user's goal.
      - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
 2. **Prepare the planning record.**
    - For an initiative, epic or complex plan, call [Populate Planning Record](#populate-planning-record) with the record identity, folder and supplied evidence files.
@@ -3685,7 +3687,7 @@ The main path meets [Outcomes](#outcomes-3).
    - Repeat goal and ordering review on changed bodies before returning readiness.
 9. **Record delivered work.**
    When work has landed:
-   - Run [Sync Mode](#modessync-mode) for the affected initiative.
+   - Run [Sync Mode](#sync-mode-2) for the affected initiative.
    - For an unplaced task issue:
      - Add its row through Populate Epic Issue Body.
      - Save that body.

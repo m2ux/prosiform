@@ -10,7 +10,7 @@ Two compositions produced from a real source tree under the v1 rules, so the con
 | Entry reference | `modes/plan-mode.md`, whole document |
 | Expansion-depth budget | 8 |
 | Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-composition-replaces-them) retires them |
-| Cohorts | none, and `--group artifacts:2` |
+| Cohorts | none, and `--group artifacts:2 --group modes:2` |
 | Output | [Composite](worked-example-composite.md), [grouped composite](worked-example-grouped.md) |
 
 The Prerequisites exclusion is the one departure from composing the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once composition supplies what they named. Composing with them in place would measure the tool against a structure that is going away, so this example composes the tree D11 leaves behind.
@@ -54,17 +54,17 @@ The composite was then published and rendered by GitHub, which is the independen
 
 ## Grouped by cohort
 
-The same closure composed with `--group artifacts:2`, which merges every document under the `artifacts` directory at its second heading level. The modes, `guidelines` and `references` are claimed by no cohort and keep their own groups.
+The same closure composed with `--group artifacts:2 --group modes:2`, which merges every document under those directories at its second heading level. `references/requirement-characteristics` is claimed by no cohort and keeps its own group, as does `modes/plan-mode`, which is the entry reference and is never claimed.
 
 | Measure | No cohort | `artifacts:2` |
 | --- | --- | --- |
-| Top-level groups | 27, one per document | 8 |
-| Destinations | 353 | 259 |
+| Top-level groups | 27, one per document | 4 |
+| Destinations | 353 | 253 |
 | Branched names | 0 | 13 |
-| Carrying an ordinal | 81 | 20 |
-| Bytes | 187,488 | 187,070 |
+| Carrying an ordinal | 81 | 17 |
+| Bytes | 187,488 | 187,078 |
 
-Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
+Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`, and five modes into `# Modes`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
 ```markdown
 # Artifacts
@@ -96,7 +96,23 @@ The thirteen branched names are all in `## Fields`. A name several documents con
 #### Proposal Body
 ```
 
-Twenty destinations take the renderer's ordinal, most of them branch headings: a document contributing to several branched names supplies its title to each, so `Epic Issue Body` recurs.
+Seventeen destinations take the renderer's ordinal, most of them branch headings: a document contributing to several branched names supplies its title to each, so `Epic Issue Body` recurs.
+
+A merged section is not always a container of named items. Every mode's `Procedure` carries the mode's own numbered steps, so merging five of them by item would run five procedures together with nothing to tell them apart. A section carrying body text from more than one document therefore branches whole:
+
+```markdown
+## Procedure
+
+### Align Mode
+#### Repair Issue Format
+#### Plan Gap Task
+
+### Deliver Mode
+#### Integrate Epic Delivery
+#### Fetch Merge Readiness
+```
+
+`modes/plan-mode` is absent from that cohort: an entry reference is never claimed, so it keeps its own group at the end. `SKILL.md` is absent from the composite entirely, since nothing in the closure links to it.
 
 Published and rendered by GitHub, with none broken.
 
