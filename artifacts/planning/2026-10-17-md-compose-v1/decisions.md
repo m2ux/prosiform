@@ -262,6 +262,16 @@ A reference to a heading at the grouping depth resolves to the contributing docu
 
 Generated-input detection reads a bundle's opening file heading, which a merged group does not have: its heading is a directory slug in title case. A bundle whose every group is merged is therefore not detected, and the design says so rather than implying a guarantee it cannot keep. Nothing rests on the detection: an ordinal is safe because a bundle is generated whole in one pass and validated against the map that assigned it, not because a later run would refuse the bundle as input.
 
+## D27 — A Grouping Rule Is Validated, and an Overview Holds Everything Above the Depth
+
+Three things a grouping rule does were stated nowhere, and each one decides output.
+
+A merged section can meet both variant tests at once: it carries body text from more than one document, and it also carries a name several documents contribute. The document-keyed test is applied first, and a section it splits is arranged by document throughout. The per-name rule then applies only to the names inside a section the first test leaves alone, so one section is never arranged two ways.
+
+An `Overview` section holds each member's selected content above the grouping depth. The earlier wording said preamble, which the glossary defines as content above a document's first heading — and in this workspace that is almost always empty, because a document opens on its title and its lead text sits under it. Holding the preamble alone would drop that text, and a section shallower than the grouping depth would have nowhere to go at all. The overview subsection is named from the document's stem and absorbs the member's own H1 when their slugs agree, which is the file heading's absorption rule applied where there is no file heading.
+
+A rule's own arguments are checked. A depth outside 1 through 6 names no heading level, a slug naming no directory under the root arranges nothing the user asked for, and one slug given twice states two arrangements for one set of documents; all three are refused with `E_INVALID_GROUP_RULE` and the invalid-usage exit status. A rule whose directories contribute no document to this particular closure is different: the rule is well formed and the closure simply does not reach it, so it warns and arranges nothing.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

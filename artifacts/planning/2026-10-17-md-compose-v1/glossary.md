@@ -44,10 +44,10 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **consolidation** | Replacing overlapping selections with their union, so each region appears exactly once however many references reach it. |
 | **structural ancestor** | A heading emitted with no body, to preserve the outline of a partial selection. Not a dependency, and not a substitute for selecting the section it names. |
 | **group** | A top-level division of the bundle. By default one source document; a grouping rule makes it one merged directory. |
-| **grouping rule** | `SLUG:DEPTH`. Every document under a directory named `SLUG` is merged at source heading level `DEPTH`, beneath one heading carrying the slug in title case. Repeatable. |
+| **grouping rule** | `SLUG:DEPTH`. Every document under a directory named `SLUG` is merged at source heading level `DEPTH`, beneath one heading carrying the slug in title case. Repeatable, once per slug. |
 | **member** | A source document a grouping rule claims. |
 | **variant** | One of several same-named sections a merged group draws from different documents. Emitted once as a shared heading, with one subheading per source document. |
-| **overview** | The section of a merged group holding its members' preambles, one subheading each. |
+| **overview** | The section of a merged group holding each member's content above the grouping depth, one subheading each. |
 
 ## Addressing
 
