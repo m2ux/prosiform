@@ -21,6 +21,7 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 - **Continuous Markdown:** Emit one bundle Markdown document with one generated H1 per group and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
 - **Groups:** A group is one top-level division of the bundle. By default it is one source document, headed by its normalized root-relative path with the Markdown extension removed; under a grouping rule it is one merged directory, headed by that directory's slug in title case. Emit each selected region once. Keep source order among selected content and required heading-only ancestors within a document's group, and within each contribution a document makes to a merged one.
 - **Dependency order:** Order groups by root-relative path, a merged group taking its directory's. Discovery order and argument order never decide the arrangement, so one selection always bundles to the same bytes. The grouping rules in force are the only thing that changes where a section sits.
+- **Entry line:** Open the bundle with a generated preamble naming each entry reference and linking to the destination it resolved to.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
 
 ## Parser and source-preserving edits
@@ -244,6 +245,23 @@ A destination is the fragment the renderer itself would generate, so every inter
 
 An ordinal is safe here in a way it is not in a source document. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A bundle is generated whole in one pass and validated against the map that produced it, so every ordinal it carries is assigned and checked in the same run. A bundle is not a source: it is not hand-edited, and no link into one outlives the run that wrote it.
 
+### Entry line
+
+The bundle opens with a preamble of its own: one generated line naming each entry reference and linking to the destination it resolved to, followed by a statement that the remainder is material those entries reference.
+
+```markdown
+This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
+
+# Artifacts
+```
+
+- **Link text:** The visible text of the heading the destination names, so what the line says and what the reader finds agree. Under a grouping rule that is the member's overview subsection, which is a name the caller cannot derive from the reference it supplied.
+- **No execution verb:** The line states what the bundle was built for. It does not instruct the agent to carry anything out, because the tool does not know whether an entry names a procedure, and execution verbs belong to the authored instructions.
+- **Generated structure:** The line is recorded with the group, file and variant headings as generated structure, not as selected content, so it counts toward no source's coverage. Its links are ordinary internal references and are validated as such.
+- **Reading scope at the point of use:** A bundle can hold several documents' procedures. The line is where the bundle says which one it was built for, so the distinction between the material to act on and the material it references survives into the document the agent actually reads.
+
+The line is not a detection signal. An authored document may legitimately open with links into its own sections, so generated-input detection continues to rest on the file heading alone.
+
 ### Markdown-only output
 
 The bundle contains Markdown and nothing else. No anchor elements, no identifiers and no other markup are emitted at a destination, so a destination is a name for a place in the document rather than an element in it.
@@ -430,8 +448,8 @@ Successful compilation establishes that the complete candidate passed validation
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
 - **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a delivery failure rather than a truncated apparent success.
-- **Entry destinations:** On success, report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format, and return them in the wrapper's structured result. A caller then reaches what it asked for without searching the document. The destination comes from the same map that rewrote every reference, and the bundle carries no marker for it.
-- **Clean Markdown:** Keep success stdout limited to the bundle document. Completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, not per-section Markdown envelopes.
+- **Entry destinations:** On success, report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format, so a caller can act on it as data. The bundle states the same thing in its entry line, which is what reaches the agent.
+- **Clean Markdown:** Keep success stdout limited to the bundle document. Beyond the entry line, the bundle carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
 - **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
 
@@ -465,7 +483,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Target integrity:** Every rewritten link points to the intended source-derived destination, not merely a section whose slug happens to coincide.
 - **Uniqueness:** Each bundle destination occurs once, and resolves in the renderer that reads the bundle.
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
-- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, generated group, variant and overview headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
+- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, the generated entry line, generated group, variant and overview headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
 - **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands or fetch remote URLs implicitly.
 - **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation.
@@ -483,6 +501,7 @@ Validate the completed document against the source-to-output mapping, not only i
 - **No accidental expansion:** The only unselected source-derived content emitted is required heading-only ancestry. Never include an unselected ancestor's body or siblings merely to supply structure.
 - **Ownership stability:** Link ownership and direct-self-reference classification remain the same before and after overlap consolidation.
 - **Block-syntax preservation:** Generated headings and region boundaries must not absorb content into unintended non-heading containers.
+- **Entry line integrity:** The bundle's entry line names every entry reference and no other, and each of its links resolves to the destination that reference's target was assigned.
 - **Group isolation:** Each group has exactly one H1, each contributing source belongs to exactly one group, and a source's emitted headings sit beneath that group's H1 rather than entering another group's outline.
 - **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under its group's shift, using structural ancestors where needed. In a merged group the grouping rules supply the chain above the grouping depth, and the heading the rules place there is where the preserved chain begins. Validate against the original source outline and the grouping rules together.
 - **Depth safety:** No emitted heading exceeds H6; overflow produces a failure, not a success with altered depth.
@@ -536,6 +555,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
 - **Grouping:** One entry bundled with and without a group, selecting the same content; a merged section drawn from several documents; a name occurring once left bare; a name several documents carry emitted once with a variant heading each, distinguished at one path segment and at more than one; a merged section carrying body text from more than one document split by document; a document no group matches keeping its own group; a whole-document reference to a member resolving to its overview subsection, and one to a member with no preamble resolving to its first contribution; a reference to a grouping-depth heading resolving to the variant carrying the document it named; a member's shallower section carried under its overview subsection; a section split by document taking precedence over the names inside it; and a rule refused for its depth, its unknown slug or its repetition.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor structural ancestors; original skipped heading levels; ancestor promotion after dependency expansion; and no ancestor-body or structural ancestor-link dependency leakage.
+- **Entry line:** One entry and several; an entry whose destination is a file heading and one whose destination is an overview subsection under a grouping rule; the link text matching the heading it names; and the line counting toward no source's coverage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.
 - **Resources:** Images and script links rebased for file output, stdout with and without a resource base, and unchanged relative paths inside command examples.

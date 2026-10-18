@@ -1,3 +1,5 @@
+This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
+
 # Artifacts
 
 ## Overview

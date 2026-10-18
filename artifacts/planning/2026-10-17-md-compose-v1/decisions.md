@@ -240,7 +240,7 @@ Anything still coinciding takes the renderer's ordinal, as any repeat does. Elev
 
 Two things needed a home once a merged document stopped being contiguous. A group is headed by its directory slug in title case and carries an `Overview` section holding each member's preamble, as a subsection named by the document's stem less a trailing word the section already states: `artifacts/epic-issue-body.md` reads `Artifacts` / `Overview` / `Epic Issue Body`. The trimming is the rule the variant headings already follow, drop what the containing heading states, applied to a name rather than a path; under `Overview` nothing in this workspace matches, so names stay whole. Two earlier shapes were discarded: a `Sources` group above the groups, which invented a structural area, and a file heading per member inside one, which mixed paths in among section names. And a reference to a grouping-depth heading resolves to the merged group, losing which document it meant, which is the cost of merging.
 
-Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups against 27, 13 names carrying variants, 302 destinations against 353, 38 ordinals against 81. All 421 references are rewritten under either arrangement, and GitHub's rendering of the three-group bundle resolves every one of its 727 fragment links against the 306 anchors it generates.
+Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups against 27, 13 names carrying variants, 302 destinations against 353, 38 ordinals against 81. All 421 references are rewritten under either arrangement, and GitHub's rendering of the three-group bundle resolves every one of its 728 fragment links against the 306 anchors it generates.
 
 Only `work-planner` is broadly representative in this workspace, so the cross-library case the parameter is built for, two directories of one slug under separate libraries, is implemented but not yet exercised against real sources.
 
@@ -271,6 +271,24 @@ A merged section can meet both variant tests at once: it carries body text from 
 An `Overview` section holds each member's selected content above the grouping depth. The earlier wording said preamble, which the glossary defines as content above a document's first heading — and in this workspace that is almost always empty, because a document opens on its title and its lead text sits under it. Holding the preamble alone would drop that text, and a section shallower than the grouping depth would have nowhere to go at all. The overview subsection is named from the document's stem and absorbs the member's own H1 when their slugs agree, which is the file heading's absorption rule applied where there is no file heading.
 
 A rule's own arguments are checked. A depth outside 1 through 6 names no heading level, a slug naming no directory under the root arranges nothing the user asked for, and one slug given twice states two arrangements for one set of documents; all three are refused with `E_INVALID_GROUP_RULE` and the invalid-usage exit status. A rule whose directories contribute no document to this particular closure is different: the rule is well formed and the closure simply does not reach it, so it warns and arranges nothing.
+
+## D28 — The Bundle Opens by Naming What It Was Built For
+
+A caller passes one reference and receives the whole closure. Path order decides where that reference's content sits, and a grouping rule distributes it across merged sections, so the document says nothing about which part answers the request. In the worked example the entry's group begins 75% of the way in.
+
+The bundle therefore opens with a preamble of its own, naming each entry reference and linking to the destination it resolved to. It supplies three things.
+
+It supplies the mapping, which the caller cannot compute. The caller sent `modes/plan-mode.md`; under `--group modes:2` that became `#plan-mode`, the name of an overview subsection derived from the document stem. The identity was already known; the destination was not.
+
+It puts the reading rule where it is used. The design already says inclusion makes material available without authorizing the execution of every included procedure, but that sentence lives in a specification no agent reads. A bundle holding five modes' procedures leaves the agent to infer which one it was built for. The entry line states it in the document itself, and states nothing more: it carries no execution verb, because the tool does not know whether an entry names a procedure, and execution verbs belong to the authored instructions.
+
+It survives the transport. The delivery contract guarantees the bundle arrives whole; it guarantees nothing about metadata carried beside it, which a transport may summarize or drop. A destination in the artifact is as reliable as the artifact. The run still reports each destination on the diagnostic stream, which is where a script or the corpus runner reads it as data rather than parsing prose.
+
+The clean-Markdown rule is narrowed rather than set aside. It forbade generated commentary in the Markdown; it now admits this one line and forbids the rest, per-section envelopes included. The line is recorded with the group, file and variant headings as generated structure, so it counts toward no source's coverage.
+
+The line is not used as a detection signal. An authored document may legitimately open with links into its own sections, so generated-input detection continues to rest on the file heading alone, with the limitation D26 records.
+
+Whether naming the entry is enough, or whether an agent also needs its content positioned differently, is a question about agent behaviour that no reading of the design settles. It is taken up where it can be answered: each refinement-stage run records whether the entry's content was acted on from the bundle alone.
 
 ## Evidence
 

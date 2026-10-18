@@ -12,7 +12,7 @@ Two runs produced from a real source tree under the v1 rules, so the contract ca
 | Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-bundling-replaces-them) retires them |
 | Groups | none, and `--group artifacts:2 --group modes:2 --group references:2` |
 | Output | [Bundle](worked-example-bundle.md), [grouped bundle](worked-example-grouped.md) |
-| Links rewritten | 421 under either arrangement |
+| Links rewritten | 421 under either arrangement, plus the entry line |
 
 The Prerequisites exclusion is the one departure from bundling the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once bundling supplies what they named. Bundling with them in place would measure the tool against a structure that is going away, so this example bundles the tree D11 leaves behind.
 
@@ -28,15 +28,18 @@ A second bundling, entered at `SKILL.md`, was run to exercise the failure paths.
 | Headings emitted | 353 |
 | Deepest emitted heading | H4 |
 | Internal links rewritten | 421 |
-| Bundle size | 187,488 bytes |
+| Bundle size | 187,594 bytes |
 | Expansion depth reached | 4 hops |
 | Group order | root-relative path throughout |
 
-Validation reparsed the bundle and checked it against the invariants the output alone can establish: every one of the 421 internal links resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
+Validation reparsed the bundle and checked it against the invariants the output alone can establish: every one of its 422 internal links -- the 421 rewritten references and the entry line -- resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
 
-The bundle was then published and rendered by GitHub, which is the independent check. GitHub generates 353 anchors for its 353 headings, 272 bare and 81 carrying an ordinal, and the page's 774 fragment links -- the 421 rewritten ones and GitHub's own 353 heading self-links -- all resolve. None are broken.
+The bundle was then published and rendered by GitHub, which is the independent check. GitHub generates 353 anchors for its 353 headings, 272 bare and 81 carrying an ordinal, and the page's 775 fragment links -- the 421 rewritten ones, the entry line, and GitHub's own 353 heading self-links -- all resolve. None are broken.
 
 ## What it shows
+
+- **The bundle says what it was built for.**
+  It opens on `This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.` Grouped, the same line reads `[Plan Mode](#plan-mode)`, which is the name of an overview subsection the caller could not have derived from the reference it passed. The line names the entry and nothing more: the tool does not know whether an entry is a procedure, so it supplies no verb.
 
 - **A destination is the renderer's own fragment, and nothing is emitted at it.**
   `[Template](#template)` is the fragment GitHub generates for the heading `### Template`, so the link resolves where the bundle is read. Where two bundled headings share a slug the destination carries the renderer's ordinal, as `[Fields](#fields-7)` does. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
@@ -64,7 +67,7 @@ The same closure bundled with `--group artifacts:2 --group modes:2 --group refer
 | Carrying an ordinal | 81 | 41 |
 | Names carrying variants | 0 | 13 |
 | Internal links rewritten | 421 | 421 |
-| Bytes | 187,488 | 186,812 |
+| Bytes | 187,594 | 186,907 |
 
 Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`, five modes into `# Modes` and one reference into `# References`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
@@ -118,7 +121,7 @@ A merged section is not always a container of named items. Every mode's `Procedu
 
 Both arrangements rewrite the same 421 references. A reference to a heading at the grouping depth reaches the variant carrying the document it named, so merging costs no precision.
 
-Published and rendered by GitHub, which generates 306 anchors for the bundle's 306 headings. All 727 fragment links on the page -- the 421 rewritten references and GitHub's own 306 heading self-links -- resolve against them, with none broken.
+Published and rendered by GitHub, which generates 306 anchors for the bundle's 306 headings. All 728 fragment links on the page -- the 421 rewritten references, the entry line, and GitHub's own 306 heading self-links -- resolve against them, with none broken.
 
 **This is also where the merge earns its keep as a review tool.** Reading the eight `Template` fields together shows that `Template` does not belong under `Fields` at all — a template is the artifact's shape, not one of its fields — which is a structural defect in the source that document-by-document reading had not surfaced in this workspace. The same question applies to `Sections`, carried by four documents under the same heading.
 

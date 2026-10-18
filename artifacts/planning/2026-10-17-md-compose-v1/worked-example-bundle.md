@@ -1,3 +1,5 @@
+This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.
+
 # artifacts/architecture-overview
 
 ## Operations

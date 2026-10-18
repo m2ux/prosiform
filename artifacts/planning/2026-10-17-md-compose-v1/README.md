@@ -19,7 +19,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [Decisions](decisions.md) | The planning decisions taken with the user, the reasoning behind each, and the measured evidence |
 | [Review](review.md) | The goal trace, the stage order, the source alignment, the threats checked, the independent task pairs and the check results |
 | [Worked Example](worked-example.md) | One bundle produced from the work-planner skill under the v1 rules, with its measurements and what it settles |
-| [Worked Example bundle](worked-example-bundle.md) | The bundle itself: 27 file groups, 204 selected sections and 421 rewritten destinations |
+| [Worked Example bundle](worked-example-bundle.md) | The bundle itself: an entry line, 27 file groups, 204 selected sections and 421 rewritten destinations |
 | [Worked Example grouped](worked-example-grouped.md) | The same closure merged under `artifacts`, `modes` and `references`: three top-level groups, 13 names carrying variants and 41 ordinals |
 | [I00 initiative body](i00-initiative.md) | The local source for issue #2, the prototype initiative |
 | [I01 initiative body](i01-initiative.md) | The local source for issue #20, the refinement initiative |
