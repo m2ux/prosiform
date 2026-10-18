@@ -55,6 +55,8 @@ ok   repository https://github.com/m2ux/prosiform/tree/engineering/artifacts/pla
 
 This is what `fetch-depth: 0` buys: `actions/checkout` fetches a single branch by default, under which both of those references and the whole vocabulary check fail with `no git ref named engineering`, and no token changes that.
 
+**The epic base is gated too.** [Run 39156887427](https://github.com/m2ux/prosiform/actions/runs/39156887427) — **success**, on `181fe7b`, the commit that merged this work into `i00/e00/main`. The trigger names the base as well as the task branch, so the merge result is checked and not only the change that produced it.
+
 **Other runs on this branch.** Two earlier runs sit in the history against commits this branch no longer carries: 39156040702, which failed because the `uv` installer was named by a major tag that project does not publish, and 39156117095, which passed on the revision before the slug rule was widened. Neither is evidence for a criterion.
 
 ## T2 Lock check
