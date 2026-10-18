@@ -65,13 +65,20 @@ The production build's tree is created by the initiative that writes that build.
 
 ## 📦 Installation
 
-prosiform installs from the Python build in `prototype/`:
+prosiform installs from the Python build in [`prototype/`](prototype/README.md):
 
 ```bash
 pip install ./prototype
 ```
 
-That build is not written yet, so a checkout installs nothing today. The project definition and the lockfile that pins what it installs are the next task; the status table below tracks the stage they sit in.
+A working copy takes its environment from the lockfile, which records the exact version of every dependency a checkout installs:
+
+```bash
+cd prototype
+uv sync --frozen
+```
+
+The build declares its dependencies and ships the [glossary](docs/glossary.md) with the package; it implements no behaviour yet, and the status table below tracks the stage it sits in.
 
 ## 🚀 Invocation
 
