@@ -2,7 +2,7 @@
 
 Every term the contract uses, defined once. A term defined here means this and nothing else in the design, the criteria, the corpus and the tool's own diagnostics.
 
-The tool is `bundle-md`. It bundles; what it produces is a bundle.
+The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 ## The act and the artifact
 

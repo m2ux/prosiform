@@ -18,13 +18,13 @@ The gates are mandatory before any bundle is published, so an unsatisfiable gate
 
 ## D3 — One Repository, Prototype Retained
 
-`m2ux/md-composer` holds `fixtures/` (the language-neutral corpus and the contract it encodes), `prototype/` (the Python oracle, retained and maintained) and `rust/` (production bundle-md). Both implementations run the same corpus in continuous integration. Each tree is created by the stage that writes into it: the corpus, prototype and documentation trees by the prototype initiative, the production tree by the production initiative.
+`m2ux/md-composer` holds `fixtures/` (the language-neutral corpus and the contract it encodes), `prototype/` (the Python oracle, retained and maintained) and `rust/` (production prosiform). Both implementations run the same corpus in continuous integration. Each tree is created by the stage that writes into it: the corpus, prototype and documentation trees by the prototype initiative, the production tree by the production initiative.
 
 The no-stopgap principle rules out a draft that a later version replaces. It does not rule out a second implementation that keeps proving the first. Retaining the oracle gives differential testing: a divergence between two independent implementations on the same input is a defect in one of them, which catches classes of error the fixtures did not anticipate.
 
 ## D4 — One Theme Board
 
-A single bundle-md theme board, copied from the Initiative template, holds both initiatives and their epics.
+A single prosiform theme board, copied from the Initiative template, holds both initiatives and their epics.
 
 Two boards would split one product's queue and hide the dependency between the stages. One board shows the Rust initiative's readiness as gated on the prototype's corpus.
 
@@ -118,7 +118,7 @@ An agent decides between reading a document and bundling it exactly once, on ent
 
 That rules out marking individual links. It would also contradict the goal clause stating that nothing beyond ordinary Markdown links and headings is needed to bundle a document, and it would have to be maintained across every link in every skill. Inferring the choice from file names or paths is excluded for the same reason the design excludes inferring prerequisites from them.
 
-So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself composable and the harness bundles on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: bundle-md strips frontmatter, so the marker never reaches the output, and the generated-input rule already stops a bundle being bundled again.
+So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself composable and the harness bundles on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: prosiform strips frontmatter, so the marker never reaches the output, and the generated-input rule already stops a bundle being bundled again.
 
 The first stage runs during refinement, as each prerequisite section is removed. How reliably agents follow a written instruction is itself evidence, so the second stage is raised as its own proposal once there is use to draw on, rather than planned from an assumption about how well prose works.
 
@@ -246,7 +246,7 @@ Only `work-planner` is broadly representative in this workspace, so the cross-li
 
 ## D25 — The Routing Document Is Not Bundled, and Group Order Is Path Order
 
-A skill's entry point is a routing table. The agent reads it, chooses a procedure, and passes that procedure's link to bundle-md. The routing document is therefore never bundled, because it is never an entry reference: `SKILL.md` routes, `modes/plan-mode.md` is the argument, and the bundle holds the argument and what it reaches.
+A skill's entry point is a routing table. The agent reads it, chooses a procedure, and passes that procedure's link to prosiform. The routing document is therefore never bundled, because it is never an entry reference: `SKILL.md` routes, `modes/plan-mode.md` is the argument, and the bundle holds the argument and what it reaches.
 
 Groups are ordered by root-relative path, and nothing else. Neither discovery order nor argument order decides the arrangement, so one selection always bundles to the same bytes.
 

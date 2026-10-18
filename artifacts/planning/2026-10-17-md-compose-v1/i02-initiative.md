@@ -1,6 +1,6 @@
 ## Overview
 
-A Rust build of bundle-md is the tool agents invoke, and it passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive bundling exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails. The build targets one tagged revision of the design and corpus, so later refinement does not move the contract under it.
+A Rust build of prosiform is the tool agents invoke, and it passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive bundling exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails. The build targets one tagged revision of the design and corpus, so later refinement does not move the contract under it.
 
 ## Problem
 

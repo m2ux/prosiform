@@ -1,6 +1,6 @@
 ## Overview
 
-Agent skills in this workspace are authored as modular instruction sets: an entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation means resolving that graph at read time, which is work the agent currently performs by following prose rules. This proposal scopes bundle-md, a tool that compiles a set of linked local Markdown documents into one continuous, validated Markdown document, so that an agent given a reference receives the selected content and every local Markdown dependency it links to, or an explicit failure.
+Agent skills in this workspace are authored as modular instruction sets: an entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation means resolving that graph at read time, which is work the agent currently performs by following prose rules. This proposal scopes prosiform, a tool that compiles a set of linked local Markdown documents into one continuous, validated Markdown document, so that an agent given a reference receives the selected content and every local Markdown dependency it links to, or an explicit failure.
 
 ## Problem
 

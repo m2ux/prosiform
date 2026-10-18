@@ -1,10 +1,10 @@
-# bundle-md v1 - October 2026
+# prosiform v1 - October 2026
 
 > Initiative Plan - Created 2026-10-17 - Revised 2026-10-18
 
 ## Executive Summary
 
-bundle-md compiles a set of linked local Markdown documents into one continuous, validated Markdown document. Agent skills in this workspace are authored as modular instruction sets: a skill entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation currently means the agent resolves that graph itself, deciding which sections to read, where each section ends, and when the closure is complete. bundle-md moves that retrieval into a deterministic compilation step that either returns the whole bundle or fails with a diagnostic.
+prosiform compiles a set of linked local Markdown documents into one continuous, validated Markdown document. Agent skills in this workspace are authored as modular instruction sets: a skill entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation currently means the agent resolves that graph itself, deciding which sections to read, where each section ends, and when the closure is complete. prosiform moves that retrieval into a deterministic compilation step that either returns the whole bundle or fails with a diagnostic.
 
 The work runs in three stages. A Python 3 build lays out the repository, implements the behavioural contract, produces a language-neutral fixture corpus of exact expected bundles, and installs as the tool agents in this workspace invoke. It is then used for an extended period, and what that use reveals refines the specification through a findings ledger until every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision. A Rust build then implements that tagged revision, with the prototype retained in use as its differential oracle. The corpus is the contract, so neither implementation is the specification of the other.
 

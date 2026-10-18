@@ -1,12 +1,12 @@
-# bundle-md: revised v1 design
+# prosiform: revised v1 design
 
-bundle-md is intended for agent skills and other instruction sets authored as collections of linked Markdown documents. Authors can keep procedures, shared rules, prerequisites, and reference material in separate, reusable sections rather than duplicating them in every operation. An agent typically enters through a document such as `SKILL.md` and selects a linked procedure to carry out.
+prosiform is intended for agent skills and other instruction sets authored as collections of linked Markdown documents. Authors can keep procedures, shared rules, prerequisites, and reference material in separate, reusable sections rather than duplicating them in every operation. An agent typically enters through a document such as `SKILL.md` and selects a linked procedure to carry out.
 
 The problem addressed here is the gap between that modular authoring structure and the complete context needed to perform an operation. A document or section link identifies a destination, but does not itself establish which content is retrieved, whether its dependencies are followed, or whether the resulting context is complete. Leaving those decisions to the agent makes retrieval part of the reasoning task, with opportunities for missed prerequisites, unnecessarily broad reads, and inconsistent handling of repeated or recursive references.
 
-bundle-md moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to the fragments a renderer generates for the headings they now name. It validates the complete candidate before publication, either returning the bundle or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
+prosiform moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to the fragments a renderer generates for the headings they now name. It validates the complete candidate before publication, either returning the bundle or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
 
-The intended guarantee is complete, validated bundling of the explicitly linked content under a declared Markdown profile, not control over agent execution. bundle-md does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown resources are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
+The intended guarantee is complete, validated bundling of the explicitly linked content under a declared Markdown profile, not control over agent execution. prosiform does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown resources are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
 
 ## Design status
 
@@ -86,7 +86,7 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 Expose one command, with bundled Markdown on stdout and diagnostics on stderr. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
-bundle-md --root DIR [OPTIONS] REF [REF ...]
+prosiform --root DIR [OPTIONS] REF [REF ...]
 ```
 
 | Option | Behavior |
@@ -106,21 +106,27 @@ Allow `--check --output FILE` to validate rebasing for that destination without 
 ### Usage examples
 
 ```bash
-# Whole document and recursive dependencies.
-bundle-md --root skills/work-planner SKILL.md
+# A procedure and everything it reaches. The routing document the caller
+# read to find it, SKILL.md, is not an entry reference and is not bundled.
+prosiform --root skills/work-planner modes/plan-mode.md
+
+# Grouped: every document under a named directory merged at a heading level.
+prosiform --root skills/work-planner \
+  --group artifacts:2 --group modes:2 \
+  modes/plan-mode.md
 
 # Multiple selected targets.
-bundle-md --root skills/work-planner \
+prosiform --root skills/work-planner \
   'artifacts/epic-issue-body.md#record-epic-delivery' \
   'artifacts/epic.md#delivery-findings'
 
 # A referring document supplies context for a bare fragment only.
-bundle-md --root skills/work-planner \
+prosiform --root skills/work-planner \
   --from artifacts/epic-issue-body.md \
   '#record-epic-delivery'
 
 # Full compilation and validation, without publication.
-bundle-md --root skills/work-planner --check \
+prosiform --root skills/work-planner --check \
   'artifacts/epic-issue-body.md#record-epic-delivery'
 ```
 
@@ -410,7 +416,7 @@ This is change detection, not a transactional filesystem snapshot: files can cha
 
 ## Generated input policy
 
-Rebundling of bundle-md output is unsupported in v1. Reject an input document whose first heading is a document-level H1 whose text, with a supported Markdown extension appended, names a document under the allowed source root, with `E_GENERATED_INPUT`.
+Rebundling of prosiform output is unsupported in v1. Reject an input document whose first heading is a document-level H1 whose text, with a supported Markdown extension appended, names a document under the allowed source root, with `E_GENERATED_INPUT`.
 
 A file heading has that shape and an authored document's title does not, so ordinary unmodified output identifies itself without a metadata wrapper. A heading-like example in code is not a heading and does not trigger detection.
 
