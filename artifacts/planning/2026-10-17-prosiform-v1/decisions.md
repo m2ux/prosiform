@@ -1,0 +1,308 @@
+# Decisions
+
+The planning decisions taken with the user, each with the reasoning that produced it.
+
+## D1 — The Python Build Is the Tool in Use
+
+Python implements the full behavioural contract — closure, consolidation, destination identity, validation, diagnostics and CLI — produces a language-neutral fixture corpus of exact expected bundles, and ships as the tool agents in this workspace invoke. It is used for an extended period before a production build is committed to. Source-span edit fidelity is proven in Rust, where the production parser lives.
+
+The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, destination identity over the whole bundle and the post-compilation invariants — are parser-independent and provable cheaply.
+
+A specification written before use is a hypothesis, and the cheapest place to discover what it got wrong is a build that already works. Using Python for that period means the design's errors are found and corrected at Python's cost rather than at Rust's, and it makes the corpus the durable artifact: what survives the period is a contract that real sources have exercised. The prototype is therefore a retained component, not a stopgap, and it stays in use as the differential oracle after the production build exists. See D7 for what ends that period.
+
+## D2 — Gate Evaluation Precedes the Rust Build; Upstream Is a Separate Proposal
+
+The Rust initiative opens with an epic that empirically proves or disproves both mandatory parser viability gates against a pinned `pulldown-cmark`, producing a written verdict. The upstream contribution is a non-goal of this proposal. A failed gate triggers a new proposal for the upstream route, raised only then.
+
+The gates are mandatory before any bundle is published, so an unsatisfiable gate blocks the Rust initiative. The assessment concludes the current public API probably satisfies neither. Carrying the risk as a gate epic makes the blockage visible and dated without authorizing outbound action, which the design forbids. An upstream contribution depends on maintainer agreement, so it does not belong inside an initiative whose completion is otherwise controlled here.
+
+## D3 — One Repository, Prototype Retained
+
+`m2ux/prosiform` holds `fixtures/` (the language-neutral corpus and the contract it encodes), `prototype/` (the Python oracle, retained and maintained) and `rust/` (production prosiform). Both implementations run the same corpus in continuous integration. Each tree is created by the stage that writes into it: the corpus, prototype and documentation trees by the prototype initiative, the production tree by the production initiative.
+
+The no-stopgap principle rules out a draft that a later version replaces. It does not rule out a second implementation that keeps proving the first. Retaining the oracle gives differential testing: a divergence between two independent implementations on the same input is a defect in one of them, which catches classes of error the fixtures did not anticipate.
+
+## D4 — One Theme Board
+
+A single prosiform theme board, copied from the Initiative template, holds both initiatives and their epics.
+
+Two boards would split one product's queue and hide the dependency between the stages. One board shows the Rust initiative's readiness as gated on the prototype's corpus.
+
+## D5 — Goal Clauses
+
+Eight clauses, stated as outcomes someone could observe. G1 to G7 were confirmed when the proposal was raised; G8 follows from the decision to use the Python build for an extended period before committing to a production build, and is added to the proposal rather than left implicit.
+
+- **G1.** Given a source root and one or more local document or section references, an agent receives one continuous Markdown document containing the selected content and every local Markdown dependency reachable from it.
+- **G2.** Every internal reference in that document resolves to exactly one destination within it, and each included source region appears exactly once however many paths reach it.
+- **G3.** Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names.
+- **G4.** The original outline of each selected section survives: its ancestor headings are present, its relative depth is preserved, and each contributing file's content sits beneath one heading naming that file.
+- **G5.** A run that cannot be fully validated emits no bundle and exits nonzero, with a diagnostic naming the defect, its source location, the offending reference and the inclusion chain that reached it.
+- **G6.** Authors keep their existing modular files; nothing beyond ordinary Markdown links and headings is needed to bundle a document.
+- **G7.** The contract is demonstrated by two independent implementations passing one shared fixture corpus.
+
+- **G8.** The behavioural contract the production build implements has been exercised by real use and recorded as settled before that build begins.
+
+The user declined two offered amendments: dropping G7 as a planning rather than product outcome, and adding the agent delivery contract as an eighth clause.
+
+## D6 — The Prototype Parses With markdown-it-py
+
+The Python build parses with `markdown-it-py`. `I00:E01:W02` configures it to the declared profile rather than selecting a parser.
+
+The profile needs pipe tables, double-tilde strikethrough, source task-list markers preserved without checkbox generation, and typographic substitution disabled. `markdown-it-py` is CommonMark-compliant, supplies the first three through option-controlled plugins and the fourth by leaving its typographer off, and exposes a token stream whose structure is the closest Python analogue to `pulldown-cmark`'s event model. That similarity matters beyond convenience: profile reasoning that holds for one build reads across to the other, so a divergence between them is more likely a defect than a difference in how each parser frames the same document.
+
+Block tokens carry line ranges and inline tokens do not, which bounds how precisely the prototype can locate an edit. That bound is acceptable here because byte-exact span editing is D1's explicit non-goal for this build; the prototype may reconstruct its output provided the corpus's preservation fixtures hold. A candidate parser is not excluded later: a fixture the prototype cannot satisfy for parser reasons is a reason to revisit this decision, recorded as one.
+
+## D7 — The Specification Is Settled by Use Before Rust Is Committed To
+
+The Python build is used for an extended period as the tool agents invoke, and what that use reveals refines the specification. That period is its own initiative between the prototype and the production build. It ends when every entry in a findings ledger is resolved or explicitly deferred with a reason, and the design and corpus carry one tagged revision; the production build names that revision as its target.
+
+Two weaker end conditions were considered. A declared quiet span of active use measures stability directly, but a quiet span can mean the tool went unused rather than that the contract settled. Corpus coverage of every construct in this workspace's real sources ties the freeze to breadth of exposure, but says nothing about findings still open. The ledger condition is checkable by inspecting the ledger and the tag, and its deferral path stops one awkward finding holding the stage open indefinitely while still recording what was set aside.
+
+The ordering within the stage is design, then corpus, then build. A fix applied to the build alone leaves the design asserting the original behaviour, and the next implementation reads the design; a fixture edited first turns an observed accident into the contract.
+
+## D8 — The Production Initiative Is I02
+
+The Rust initiative renumbers from I01 to I02, and the refinement stage takes I01, so the initiative numbers follow the order the stages run in. No pull request named any of those numbers, so the renumbering changed only issue titles and body references.
+
+## D9 — The Repository Is Laid Out Before the First Task
+
+The default branch holds a README whose body is `tbd` and no other file. A foundation epic opens the prototype initiative: the corpus, prototype and documentation trees D3 names, a Python environment whose dependencies resolve through a lockfile, documented commands for tests, lint, format and type checks, continuous integration running those same commands, and a README that states what the tool is and links to the design and the plan.
+
+It is an epic rather than preparatory rows on the corpus harness because its subject is the repository, not the corpus, and because four of its five criteria bind every later epic rather than one.
+
+No production infrastructure is created before the production initiative starts. Its tree, workspace, toolchain and dependencies are a first row of the adapter epic, so the Rust build neither inherits the prototype's environment by accident nor leaves an empty tree standing through the prototype and refinement stages. The prototype initiative carries a Non-Goal excluding that work.
+
+The prototype's epics renumbered up by one to make room at E00, and the production adapter epic gained a W00 row. No pull request named any of those identifiers, so the renumbering changed only issue titles and body references.
+
+The design and the planning record stay on the engineering branch. The repository's documentation tree links to them rather than copying them, so there is one copy of each.
+
+## D10 — Three Corrections Taken From the Pre-Delivery Review
+
+A review of the plan before any work started produced three corrections, each closing a hole rather than changing a decision.
+
+**The freeze could pass on an unused tool.** Both conditions ending the refinement stage counted entries in the findings ledger, and an unused tool records none, so the stage held on its first day with the specification unexamined. The ledger now records every bundling run, not only surprises, and an exposure set names the real sources that must be bundled before a freeze. The freeze check refuses a tag until each of them carries a recorded run.
+
+**Twelve error codes had no owner.** Every epic said the tool fails "with its declared error code" and nothing declared the catalogue, while the first failure fixture arrives four epics before diagnostics are built. The catalogue is now part of the fixture manifest schema in the corpus-harness epic, so a fixture naming a code outside it is rejected as malformed.
+
+**The evidence behind the proposal is of the same order as the output budget.** The closure measured for the Problem is 318,018 bytes read whole against a default budget of 262,144. A fixture now bundles that closure and records its output size against the configured budget, so the default rests on a measurement, which is what the design asks for.
+
+A fourth finding was withdrawn. It claimed the prototype could not keep its byte-preservation promise, because rewriting a link destination inside a selected section needs a character position its parser does not report. Computing a destination needs the target's identity, not the original's position, and the position matters only for splicing text into a copy of the original bytes. Of the four edits inside a selected section, three sit at line granularity the parser does report; for the fourth the parser supplies the destination, the count and the order of the links in the containing structure, so the occurrence is located by walking them rather than by pattern matching. The promise stands unchanged.
+
+## D11 — Prerequisite Sections Go as Bundling Replaces Them
+
+A skill's prerequisite section names whole documents, coarsely but completely. Bundling supplies the same context precisely, so those sections are removed rather than refactored, and no refactor is planned as work inside these initiatives.
+
+Removal happens during the refinement stage, one skill at a time, and is gated: a section comes out only once a recorded bundling run supplies the sources it named. A source the section named and the bundling did not supply is a ledger entry, usually resolving to a missing inline link in the procedure that needed it.
+
+The timing is what makes the gap catchable. Removing the lists before the stage would take away the coarse safety net before the tool had been shown to replace it; removing them after the freeze would refine and measure the tool against a structure that is going away.
+
+This also reframes the measured evidence. The 318,018 bytes reached from one mode is largely the prerequisite sections pulling whole documents. It is the before-figure that bundling replaces, not a limit to design around.
+
+The [worked example](worked-example.md) measures the split. Bundling Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then bundles 187,488. So removal accounts for 78,687 bytes and bundling for 51,843. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
+
+## D12 — Each Run Is Measured Against Reading the Sources Whole
+
+A run record carries the bundled output size and the total size of the same sources read whole. The refinement stage is not settled until each source in the exposure set has that pair recorded.
+
+The proposal justified this work with a retrieval cost. Every criterion since has been about correctness, so without this the plan would never answer the question it was raised to answer. The measurement rides on a record that already exists for other reasons, so it costs one field and one criterion.
+
+## D13 — Deployment Stays Behind the Validation Gate
+
+Field deployment waits on the validation gate and runs in parallel with the conformance report. It is last in numbering, not in dependency.
+
+Deploying five levels earlier, once destinations resolve, would start the refinement stage sooner. It would also put an unvalidated tool into use: no reparse of the finished bundle against what was selected, no boundary safety, no detection of a source that changed mid-run, and no diagnostics explaining a failure. Findings recorded then would mix genuine specification problems with defects the gate would have caught, which is the evidence the stage exists to produce.
+
+## D14 — The Entry Point Says Bundle; Later the Harness Does It
+
+An agent decides between reading a document and bundling it exactly once, on entry. Inside a bundle the question cannot arise: every supported local Markdown link has been rewritten to an internal destination, and a link that could not be rewritten failed the bundling.
+
+That rules out marking individual links. It would also contradict the goal clause stating that nothing beyond ordinary Markdown links and headings is needed to bundle a document, and it would have to be maintained across every link in every skill. Inferring the choice from file names or paths is excluded for the same reason the design excludes inferring prerequisites from them.
+
+So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself ready to bundle and the harness bundles on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: prosiform strips frontmatter, so the marker never reaches the output, and the generated-input rule already stops a bundle being bundled again.
+
+The first stage runs during refinement, as each prerequisite section is removed. How reliably agents follow a written instruction is itself evidence, so the second stage is raised as its own proposal once there is use to draw on, rather than planned from an assumption about how well prose works.
+
+## D15 — A Failed Bundling Stops the Work
+
+A caller meeting a failed run halts and surfaces the diagnostic. Reading the sources instead is unsupported, and the documented invocation says so.
+
+A fallback would restore the behaviour bundling replaces, and would restore it silently: the work would continue, nobody would notice, and the failure would produce no ledger entry. The refinement stage depends on failures being visible, so an invisible one costs more than a halt.
+
+## D16 — Four Clauses the Plan Had Not Claimed
+
+A second review mapped the design's sections against what the epics claim, and found three clauses with no owner and one the plan contradicted.
+
+**An unsupported construct fails rather than becoming prose.** The profile work item planned a fixture asserting that an unsupported extension construct is left as ordinary text. The design says a recognized unsupported dependency or section-naming construct in selected content is rejected. Leaving a wiki link as text drops a dependency and reports nothing, which the completeness criterion forbids, so the build would have satisfied its epic while violating its initiative. The design is followed: a construct recognized as a dependency or section-naming extension fails, while prose that merely resembles one is left alone.
+
+**Validation follows the selection, not the file.** A whole design section had no criterion. Indexing a source means parsing all of it, so the natural implementation validates all of it, and bundling one section of a large skill would fail on a broken link elsewhere in the same file. Two criteria now hold the boundary, and a file-wide parsing-safety failure is diagnosed as an inability to index that source rather than as a dependency on the construct that exceeded the limit.
+
+**Encoding and suffix classification are stated.** A source is required to be valid UTF-8, and Markdown classification recognizes the two declared suffixes case-insensitively while failing an explicit entry carrying another.
+
+**Determinism is promised, not merely tested.** A work item tested that differing argument orders produce one bundle; no criterion said so. Both the corpus comparison and the differential run between the two builds rest on it, so it is now a criterion and group order derives from source identity rather than from discovery order.
+
+The conformance report would have caught all four, since it maps every design clause to its fixtures and lists the uncovered ones. It runs at the end of the prototype initiative, so the first of these would have surfaced after the profile had been built against the opposite rule.
+
+## D17 — Destinations Are Hierarchy Paths, and the Output Is Markdown Only
+
+The hierarchy path is superseded by [D23](#d23--a-destination-is-the-fragment-the-renderer-generates); the Markdown-only output stands.
+
+Every outbound local link in a bundled document becomes a reference to content now inside that same document. The bundle is a transient artifact an agent reads whole: it is never published, and no renderer resolves its fragments. A destination therefore only has to name a place in a document the reader already holds.
+
+A destination is the root-relative document path, then the source-heading slug of each eligible ancestor, then the section's own slug. Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which means duplicate sibling headings. Those are refused as ambiguous.
+
+That removes four things the earlier scheme needed. The digest goes, because uniqueness comes from the structure. The collision error goes with it. GitHub's duplicate numbering is not reproduced, because a counter ties a destination to how many similar headings precede it, so unrelated edits would silently repoint links; measured across this workspace, no document has repeated heading slugs and no link uses a numbered fragment. And the reserved prefix goes, because the path form is itself the marker that identifies the tool's own output.
+
+The bundle carries Markdown and nothing else. No anchor elements are emitted, and raw HTML in selected content fails rather than being copied through, so the output holds no element or identifier the tool did not create. Hand-written anchors are no longer a supported way to name a section: a source heading is the only thing that does. Measured across this workspace's skills, no document contains any HTML, so nothing depended on the removed feature.
+
+What this costs is clicking. A fragment of this form resolves in no renderer. That is not a loss for the consumer, which reads the document rather than navigating it.
+
+## D18 — Expansion Depth Is a Budget, and a Structural Ancestor Does Not Satisfy a Reference
+
+Bundling carries a declared expansion-depth budget, defaulting to eight link hops from the nearest entry reference along a target's shortest path. The design previously forbade any depth cap; that prohibition was aimed at a recursive-call limit leaking out as behaviour, which is a different thing from a budget chosen on purpose. Traversal stays iterative and a cyclic graph within the budget bundles normally.
+
+Measured across four real entry points in this workspace, depth today runs from three to six hops. Eight sits above that with headroom and low enough to catch a runaway chain.
+
+What the measurement also showed is what the budget does not do. Every one of those entry points reaches the same forty-three files: SKILL.md in three hops, plan-mode in six. The graph is dense, so depth governs the shape of a traversal and not its size. Size stays bounded by the file, byte and target budgets. The depth budget exists so a document reaches what governs it directly, and a chain that outgrows it is a prompt to restructure the sources rather than to raise the number.
+
+Separately, a link whose target is present only as a heading-only ancestor now expands closure to include that section's selected body. A structural ancestor shows a title to preserve an outline; it is not content, and a reference to it was previously able to resolve to a heading with nothing beneath it while the bundle looked complete.
+
+## D19 — A File Group Keeps Its Source Order
+
+Selected regions and structural ancestors are emitted in the order they appear in their source. A document's preamble therefore sits after its filename heading and before its first retained heading, which needs no rule of its own.
+
+This was raised first as a gap about preamble placement, which was the wrong framing: preamble position follows from source order, and the general rule was the thing no criterion covered. Without it, sections could be emitted in any order within a file group, which would break both outline reconstruction and the determinism the bundle promises.
+
+## D20 — The Record Names Destinations, Not Anchors
+
+A destination names a place in the bundle and the output carries no markup, so the record states both in those terms throughout. Three error codes are renamed to the things they now describe: an ambiguous fragment names a heading rather than an anchor, a reference that resolves to nothing names a target, and a document refused as input is a generated one with no reserved namespace left to name.
+
+| Code | Raised when |
+| --- | --- |
+| `E_AMBIGUOUS_SOURCE_HEADING` | A fragment requires one of two sibling headings producing the same slug. |
+| `E_TARGET_NOT_FOUND` | A supported local Markdown reference resolves to no document or section. |
+| `E_GENERATED_INPUT` | A source's links carry bundle destinations. |
+
+Goal clause G6 is restated for the same reason: authors needed nothing beyond ordinary Markdown links and headings before this change, and heading anchors named a feature that no longer exists. The clause is weaker in wording and identical in what it promises, because a hand-written anchor was never required to bundle a document and no document in this workspace carried one.
+
+The design's status paragraph now names both builds. It previously said no implementation was authorized, which three planned initiatives have overtaken.
+
+## D21 — A File Heading Carries a Path Without Its Extension, and Absorbs a Title It Duplicates
+
+The file heading is the visible text of a file group and the first segment of every destination into it, so the two must be the same string: a reader following `artifacts/board/fields/themes` looks for a heading spelled `artifacts/board`. Both now drop the Markdown extension.
+
+Dropping it means two documents whose paths differ only by that extension produce one file heading. They are refused with `E_AMBIGUOUS_FILE_GROUP`, which is the treatment duplicate sibling headings already get. The design previously kept the extension for exactly that case; refusing the ambiguity is the cheaper answer, and no document in this workspace has a twin under another Markdown extension.
+
+The file heading also absorbs the source's first heading where that heading is the document's only H1 and slugifies to the final segment of the path. Measured across the work-planner skill, 37 of its 38 documents open with an H1 restating their own filename, so without absorption almost every file group opens with the same name twice and every destination into it carries the slug twice.
+
+The one exception shows why the rule compares slugs rather than dropping every H1. `SKILL.md` opens with `# Work Planner`, a title the path does not carry, so it is kept and its group shifts as usual.
+
+An absorbed group keeps its source heading levels, because the file heading has taken the level the plus-one shift was making room for. The shift is therefore a property of the group rather than of the bundle: plus one by default, zero where a title was absorbed. The alternative, shifting anyway, leaves each absorbed group opening on an H1 followed by an H3.
+
+## D22 — A Destination Is Written as a Fragment
+
+The hash stands; what follows it is settled by [D23](#d23--a-destination-is-the-fragment-the-renderer-generates).
+
+A destination begins with `#`, so `#artifacts/architecture-overview/fields/template` rather than the bare path. Everything after the hash names a place inside this one document.
+
+Written as a bare path, a destination is indistinguishable from a relative file reference, and an editor offered one tries to open a file that does not exist. The content it names is in the bundle, a few hundred lines away, which is the whole point of having bundled it.
+
+A colon chain was considered for the ancestor segments. It leaves the file path looking like a path, and for a document at the source root it produces `guidelines:prose`, where a colon in the first segment is how a URI scheme is spelled and a renderer may read `guidelines:` as one. The leading hash has no such hazard, needs one character, and leaves the path and the slugs exactly as they were.
+
+The generated-input rule cannot read off the destination, which D23 makes an ordinary fragment. It reads the file heading instead.
+
+## D23 — A Destination Is the Fragment the Renderer Generates
+
+A destination is the bundled heading's slug, carrying the ordinal a GitHub-compatible renderer appends when two bundled headings share one. So `#task-eligibility` where the slug is unique, `#fields-7` where it is the eighth heading to produce `fields`.
+
+Measured against GitHub's own rendering of the worked example: it generates 353 anchors for the bundle's 353 headings, 272 bare and 81 numbered, and strips `/` from every slug it makes. That last fact is decisive. No destination containing a path separator can match an anchor, so the hierarchy path could not resolve anywhere, under any separator, while the path remained inside the fragment. The bundle published with renderer-generated destinations resolves all 774 of its fragment links against those anchors, with none broken.
+
+This reverses the part of [D17](#d17--destinations-are-hierarchy-paths-and-the-output-is-markdown-only) that refused the renderer's counter. That refusal was sound about source documents, where an edit elsewhere changes how many similar headings precede a target and a stored link silently repoints. It does not carry to a bundle, which is generated whole in one pass, validated against the map that produced it, never hand-edited, and refused as input to a later run. No link to a bundle destination outlives the run that wrote it, so there is nothing for a later edit to repoint.
+
+Two things are given up. A destination no longer says which file it points into, so an agent reads the link text rather than the href to know where it is going. And the generated-input policy loses its marker: a bundle's links are ordinary fragments now, so detection rests on the file heading alone, which is weaker and recorded as such.
+
+Two things are gained beyond the links working. Scoping destinations to the bundle rather than to a file group means a section whose slug is unique needs no qualification at all, which is most of them. And the bundle stops carrying a naming scheme of its own: it is an ordinary Markdown document whose links happen to resolve.
+
+## D24 — A Group Merges One Part of the Tree, and a Name Carries Variants Only Where It Collides
+
+`--group SLUG:DEPTH`, repeatable, names a directory slug and a source heading level. Every document under any directory of that slug is merged at that level: `--group artifacts:2` puts every `Operations` section of every artifact document in one place, every `Fields` section in another. A document no group names keeps its own group, so one bundle carries both arrangements and the entry document is still read as itself.
+
+This subsumes the bare grouping level that preceded it. Merging the whole bundle at a level is a group whose slug matches everything, so carrying both would be two parameters for one idea, and the narrower one could not express what the broader one already did.
+
+The slug is what scopes the merge. A group emits one H1 carrying it, so two groups never blend: `artifacts` and `references` each hold their own `Operations`. Without that scope the parameter would only be a depth, and a depth cannot say which part of a tree is worth merging.
+
+A merged heading keeps its source text. Where that text occurs once in its group there is nothing to disambiguate, and most do: bundling Plan Mode with `--group artifacts:2` leaves every one of the twenty-four merged operations bare. Where two or more documents contribute one text, it is emitted once and each document's content hangs beneath it under a variant heading naming that document, so the eight `Template` fields sit together under one `Template` rather than scattered under eight qualified names. Thirteen names carry variants this way, all of them in `Fields`.
+
+A variant heading is the shortest run of that document's path which distinguishes it from the others, in title case, measured after dropping the leading segments they all share. In this group that is one segment, `Architecture Overview` against `Epic Issue Body`; across two libraries carrying one slug it would be the library name. Qualifying the heading text itself was tried first and discarded: it spelled the same distinction but left the variants apart, which is the comparison the merge exists to make.
+
+This supersedes refusing the collision. Refusal was the right answer while every merged name was either unique or a conflict; minimal qualification is better because it distinguishes exactly the names that need it and leaves the rest alone, so the bundle does not acquire a naming scheme that applies to everything in order to handle a minority. What survives of the refusal is the case qualification cannot reach: two headings of one document colliding in one group, which the source heading rules already refuse.
+
+Anything still coinciding takes the renderer's ordinal, as any repeat does. Eleven did, five of them generated group or merged-section headings matching a section name in an unmatched document.
+
+Two things needed a home once a merged document stopped being contiguous. A group is headed by its directory slug in title case and carries an `Overview` section holding each member's preamble, as a subsection named by the document's stem less a trailing word the section already states: `artifacts/epic-issue-body.md` reads `Artifacts` / `Overview` / `Epic Issue Body`. The trimming is the rule the variant headings already follow, drop what the containing heading states, applied to a name rather than a path; under `Overview` nothing in this workspace matches, so names stay whole. Two earlier shapes were discarded: a `Sources` group above the groups, which invented a structural area, and a file heading per member inside one, which mixed paths in among section names. And a reference to a grouping-depth heading resolves to the merged group, losing which document it meant, which is the cost of merging.
+
+Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups against 27, 13 names carrying variants, 302 destinations against 353, 38 ordinals against 81. All 421 references are rewritten under either arrangement, and GitHub's rendering of the three-group bundle resolves every one of its 728 fragment links against the 306 anchors it generates.
+
+Only `work-planner` is broadly representative in this workspace, so the cross-library case the parameter is built for, two directories of one slug under separate libraries, is implemented but not yet exercised against real sources.
+
+## D25 — The Routing Document Is Not Bundled, and Group Order Is Path Order
+
+A skill's entry point is a routing table. The agent reads it, chooses a procedure, and passes that procedure's link to prosiform. The routing document is therefore never bundled, because it is never an entry reference: `SKILL.md` routes, `modes/plan-mode.md` is the argument, and the bundle holds the argument and what it reaches.
+
+Groups are ordered by root-relative path, and nothing else. Neither discovery order nor argument order decides the arrangement, so one selection always bundles to the same bytes.
+
+Emitting an entry reference's group last was tried and removed. The argument for it was salience: the thing the agent carries out sitting closest to the point of acting, with its material laid out above. Nothing rested on it. Order never decides whether a link resolves, only which heading takes the bare slug and which takes an ordinal, so every link resolves whatever the arrangement. No order can do better than that in any case, because the reference graph is cyclic — `epic-issue-body` to `epic` to `initiative-issue-body` and back, among three cycles — so between 31 and 61 of the Plan Mode closure's 194 cross-document references point forward whichever order is chosen. The delivery contract settles the rest: the agent holds the whole validated document before it acts.
+
+So the rule bought two backward references out of 194 and cost a special case, a second special case to stop a group claiming the entry away from it, and a contradiction in the determinism criterion, which had promised that argument order does not change the bytes. Path order throughout restores all three.
+
+## D26 — The Contract Is Stated Over Groups, and a Merged Reference Reaches Its Document
+
+A group is the bundle's unit of arrangement: one source document by default, one merged directory under a grouping rule. Four clauses of the input and output contract and two post-compilation invariants describe that unit as a source file, which holds for a document-headed group and fails for a merged one. They are restated over groups, so one set of invariants holds under every arrangement: one H1 per group, each source belonging to exactly one group, source order kept within a group and within each contribution to a merged one, and the preserved outline beginning at the heading the grouping rules place.
+
+A reference to a heading at the grouping depth resolves to the contributing document's variant heading, and to the merged heading itself where the name occurs once. The variant heading is already emitted and already names its document, so the reference reaches the document it meant. Resolving to the shared heading instead would make a grouped bundle answer a reference less precisely than an ungrouped one, which would make grouping a choice about fidelity rather than about arrangement.
+
+Generated-input detection reads a bundle's opening file heading, which a merged group does not have: its heading is a directory slug in title case. A bundle whose every group is merged is therefore not detected, and the design says so rather than implying a guarantee it cannot keep. Nothing rests on the detection: an ordinal is safe because a bundle is generated whole in one pass and validated against the map that assigned it, not because a later run would refuse the bundle as input.
+
+## D27 — A Grouping Rule Is Validated, and an Overview Holds Everything Above the Depth
+
+Three things a grouping rule does were stated nowhere, and each one decides output.
+
+A merged section can meet both variant tests at once: it carries body text from more than one document, and it also carries a name several documents contribute. The document-keyed test is applied first, and a section it splits is arranged by document throughout. The per-name rule then applies only to the names inside a section the first test leaves alone, so one section is never arranged two ways.
+
+An `Overview` section holds each member's selected content above the grouping depth. The earlier wording said preamble, which the glossary defines as content above a document's first heading — and in this workspace that is almost always empty, because a document opens on its title and its lead text sits under it. Holding the preamble alone would drop that text, and a section shallower than the grouping depth would have nowhere to go at all. The overview subsection is named from the document's stem and absorbs the member's own H1 when their slugs agree, which is the file heading's absorption rule applied where there is no file heading.
+
+A rule's own arguments are checked. A depth outside 1 through 6 names no heading level, a slug naming no directory under the root arranges nothing the user asked for, and one slug given twice states two arrangements for one set of documents; all three are refused with `E_INVALID_GROUP_RULE` and the invalid-usage exit status. A rule whose directories contribute no document to this particular closure is different: the rule is well formed and the closure simply does not reach it, so it warns and arranges nothing.
+
+## D28 — The Bundle Opens by Naming What It Was Built For
+
+A caller passes one reference and receives the whole closure. Path order decides where that reference's content sits, and a grouping rule distributes it across merged sections, so the document says nothing about which part answers the request. In the worked example the entry's group begins 75% of the way in.
+
+The bundle therefore opens with a preamble of its own, naming each entry reference and linking to the destination it resolved to. It supplies three things.
+
+It supplies the mapping, which the caller cannot compute. The caller sent `modes/plan-mode.md`; under `--group modes:2` that became `#plan-mode`, the name of an overview subsection derived from the document stem. The identity was already known; the destination was not.
+
+It puts the reading rule where it is used. The design already says inclusion makes material available without authorizing the execution of every included procedure, but that sentence lives in a specification no agent reads. A bundle holding five modes' procedures leaves the agent to infer which one it was built for. The entry line states it in the document itself, and states nothing more: it carries no execution verb, because the tool does not know whether an entry names a procedure, and execution verbs belong to the authored instructions.
+
+It survives the transport. The delivery contract guarantees the bundle arrives whole; it guarantees nothing about metadata carried beside it, which a transport may summarize or drop. A destination in the artifact is as reliable as the artifact. The run still reports each destination on the diagnostic stream, which is where a script or the corpus runner reads it as data rather than parsing prose.
+
+The clean-Markdown rule is narrowed rather than set aside. It forbade generated commentary in the Markdown; it now admits this one line and forbids the rest, per-section envelopes included. The line is recorded with the group, file and variant headings as generated structure, so it counts toward no source's coverage.
+
+The line is not used as a detection signal. An authored document may legitimately open with links into its own sections, so generated-input detection continues to rest on the file heading alone, with the limitation D26 records.
+
+Whether naming the entry is enough, or whether an agent also needs its content positioned differently, is a question about agent behaviour that no reading of the design settles. It is taken up where it can be answered: each refinement-stage run records whether the entry's content was acted on from the bundle alone.
+
+## Evidence
+
+Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
+
+| Measure | Value |
+| --- | --- |
+| Markdown files in the work-planner skill | 38 |
+| Internal `.md` links among them | 519 |
+| Of those, section-level fragment links | 363 |
+| Files listed as Plan Mode prerequisites | 15 |
+| Files in the transitive link closure of `modes/plan-mode.md` | 39 |
+| Distinct section targets in that closure | 139 |
+| Bytes if every file in that closure is read whole | 318,018 |
+| Files across the workspace's skills carrying a `Read these files first` list | 25 |
+
+The closure figures come from a traversal of `](…​.md[#fragment])` links from `skills/work-planner/modes/plan-mode.md`, following each target transitively.
