@@ -12,6 +12,8 @@ It matters because the prototype's parser is decided and unpinned. Two checkouts
 
 | Artifact | What it holds |
 | --- | --- |
+| [w02.md](w02.md) | The task's plan: the project definition, the lockfile, the environment command and the glossary the wheel carries |
+| [validation.md](validation.md) | The environment setup run as it was performed: procedure, tested revision, observations, the differing-version case it caught, and each dependency measured against the profile |
 
 ## Links
 
