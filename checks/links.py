@@ -21,6 +21,7 @@ import argparse
 import re
 import subprocess
 import sys
+import unicodedata
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -32,7 +33,7 @@ INLINE_LINK = re.compile(r"\]\(\s*<?([^()<>\s]+)>?\s*(?:\"[^\"]*\")?\s*\)")
 REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*<?(\S+)>?", re.MULTILINE)
 FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$", re.MULTILINE)
-SLUG_STRIP = re.compile(r"[^\w\- ]", re.UNICODE)
+SLUG_KEPT = frozenset("-_ ")
 
 USER_AGENT = "prosiform-link-check"
 
@@ -50,10 +51,23 @@ def strip_code_fences(text: str) -> str:
 
 
 def slug(heading: str) -> str:
+    """The fragment GitHub generates for a heading.
+
+    A code span and a link reduce to their text. What survives is lowercased
+    and holds its letters, numbers and combining marks, its hyphens and its
+    underscores; punctuation and symbols, an emoji among them, are dropped.
+    Each remaining space becomes a hyphen, and nothing is trimmed, so a
+    heading opening with an emoji yields a leading hyphen: `## ✅ Checks`
+    generates `#-checks`.
+    """
     text = re.sub(r"`([^`]*)`", r"\1", heading)
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
-    text = SLUG_STRIP.sub("", text.lower()).strip()
-    return re.sub(r"\s+", "-", text)
+    kept = [
+        character
+        for character in text.lower()
+        if character in SLUG_KEPT or unicodedata.category(character)[0] in "LNM"
+    ]
+    return "".join(kept).replace(" ", "-")
 
 
 def fragments_of(text: str) -> set[str]:
