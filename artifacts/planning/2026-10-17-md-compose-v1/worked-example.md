@@ -10,7 +10,8 @@ Two compositions produced from a real source tree under the v1 rules, so the con
 | Entry reference | `modes/plan-mode.md`, whole document |
 | Expansion-depth budget | 8 |
 | Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-composition-replaces-them) retires them |
-| Output | [Composite](worked-example-composite.md) |
+| Grouping level | `1` (by document) and `2` (by section level) |
+| Output | [Composite](worked-example-composite.md), [grouped composite](worked-example-grouped.md) |
 
 The Prerequisites exclusion is the one departure from composing the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once composition supplies what they named. Composing with them in place would measure the tool against a structure that is going away, so this example composes the tree D11 leaves behind.
 
@@ -49,6 +50,32 @@ The composite was then published and rendered by GitHub, which is the independen
 
 - **Whole-document and section references produce different destinations.**
   `[Propose Mode](#modespropose-mode)` resolves to that file's heading, whose slug drops the slash as the renderer does; `[Populate Planning Record](#populate-planning-record)` resolves to the section.
+
+## Grouped at section level
+
+The same closure composed at `--group-level 2`, where a group is one source heading text merged across every document carrying it rather than one document.
+
+| Measure | Level 1 | Level 2 |
+| --- | --- | --- |
+| Groups | 27, one per document | 9 |
+| Destinations | 353 | 276 |
+| Carrying an ordinal | 81 | 26 |
+| Bytes | 187,488 | 185,915 |
+
+Eight distinct headings exist at level 2 across those 27 documents: `Operations` in 20 of them, `Fields` in 18, `Commands` in 13, `Procedure` in 6, `Outcomes` in 4. Grouping by that level puts every operation in the skill in one place.
+
+**The work-planner skill does not compose at this level.** Twenty-six names collide inside the merged `Fields` group, so the run refuses and publishes nothing:
+
+| Colliding name | Documents |
+| --- | --- |
+| `Template` | architecture-overview, epic-issue-body, initiative-issue-body, planning-record, proposal-body, pull-request-body, task-body, work-item |
+| `Titles` | epic-issue-body, initiative-issue-body, issue-body, proposal-body, pull-request-body, task-body |
+| `Sections` | architecture-overview, proposal-body, task-body, work-item |
+| `Problem`, `Proposal`, `Non-Goals`, `References`, `Work Breakdown`, `Acceptance Criteria`, `Open Questions`, `Breakdown Prose`, `Delivery Findings`, `Delivery State` | two documents each |
+
+That is the rule working rather than failing. Grouping merges separate documents into one namespace, and the author guarantees uniqueness among what they merged. The published grouped composite above is the refused candidate, kept so the arrangement can be reviewed; a conforming one needs those names made distinct first.
+
+One collision is the compositor's own: the generated `Sources` group clashes with a `Sources` heading in `initiative-issue-body.md`, which is worth knowing before the name is settled.
 
 ## Measurements against reading the sources whole
 

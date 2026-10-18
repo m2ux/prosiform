@@ -94,6 +94,7 @@ md-compose --root DIR [OPTIONS] REF [REF ...]
 | `--root DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
 | `--from DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
 | `-o, --output FILE` | Atomically publish validated output to a file; default or `-` means stdout. |
+| `--group-level N` | Organize the composite by source heading level `N`, merging that level across documents; `1`, the default, groups by document. |
 | `--check` | Discover, compose, and validate without emitting or publishing the composite. |
 | `--resource-base URL` | HTTPS directory URL mapping source-root-relative resource paths for stdout output. |
 | `--diagnostics text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
@@ -159,6 +160,20 @@ All content from that source belongs beneath its file heading. The output has no
 - **Depth overflow:** Fail with `E_HEADING_DEPTH_OVERFLOW` before publication if any emitted source heading or structural ancestor would require a level beyond H6. Do not flatten it, clamp its level, or emit H7-like text as if it were a heading.
 
 The hierarchy guarantee is the original selected source outline beneath one additional file level. File headings isolate source documents, while destinations are assigned over the composite as a whole, so two files contributing a section of the same name stay distinguishable.
+
+### Grouping level
+
+A group is the unit the composite is organized into, and `--group-level` says what one is. At `1`, the default, a group is one source document, headed by its path, which is the arrangement every rule above describes. Deeper, a group is one source heading text at that level, merged across every document that carries it: at `2` all `Operations` sections become one group, all `Fields` another.
+
+- **Group heading:** At level 1 the group heading is the document path. Deeper it is the source heading's own visible text, emitted once however many documents contribute to it.
+- **Contribution order:** Documents contribute to a group in the deterministic group order, and a group appears at the position of its first contribution.
+- **Level shift:** A source heading at the group level becomes the composite's H1. One below it becomes H2, and so on, so a group's members sit at a uniform depth whichever document supplied them.
+- **Verbatim names:** A merged heading keeps its source text. Nothing is prefixed, qualified or renamed to fit it into a group.
+- **Merged ambiguity:** Grouping merges separate documents into one namespace, so two documents contributing one heading text to one composite fail with `E_AMBIGUOUS_MERGED_HEADING`, naming both sources and the group. The author guarantees uniqueness among what they merge; the compositor does not invent a distinction. This applies from level 2, because level 1 merges nothing.
+- **Document content above the group level:** A document's preamble, and any content above its first group-level heading, is emitted under a leading `Sources` group as one heading per document carrying its path. That heading is where a whole-document reference resolves, since a grouped document is no longer contiguous.
+- **Ordinals:** Destinations are assigned as ever. A deeper group level removes most repeats by construction, since the names that collided were the group headings themselves.
+
+Grouping changes how a composite is arranged, not what it contains. The closure, the consolidation, the selected content and the validation invariants are the same at every level.
 
 ### Heading-only ancestor scaffolding
 
@@ -504,6 +519,7 @@ Before broad implementation, create small fixtures with exact expected composite
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
+- **Grouping:** One composition at each supported group level from the same entry; two documents contributing one heading text to one group refused; a whole-document reference resolving to its `Sources` entry; a reference to a group-level heading resolving to the merged group; and content above a document's first group-level heading preserved.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor scaffolds; original skipped heading levels; scaffold promotion after dependency expansion; and no ancestor-body or scaffold-link dependency leakage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.

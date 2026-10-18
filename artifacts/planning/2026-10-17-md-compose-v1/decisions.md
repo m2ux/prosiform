@@ -222,6 +222,18 @@ Two things are given up. A destination no longer says which file it points into,
 
 Two things are gained beyond the links working. Scoping destinations to the composite rather than to a file group means a section whose slug is unique needs no qualification at all, which is most of them. And the composite stops carrying a naming scheme of its own: it is an ordinary Markdown document whose links happen to resolve.
 
+## D24 — A Composite Is Grouped by Document or by Section Level
+
+`--group-level N` says what a group of the composite is. At `1`, the default, a group is one source document headed by its path. Deeper, a group is one source heading text at that level merged across every document carrying it, so at `2` every `Operations` section in the closure becomes one group and every `Fields` another.
+
+Measured on the Plan Mode closure: at level 1 it is 27 groups, one per document; at level 2 it is 9, because only eight distinct headings exist at that level across those 27 documents, `Operations` in 20 of them, `Fields` in 18, `Commands` in 13.
+
+A merged heading keeps its source text. Nothing is prefixed with the document that supplied it, because a qualified name is a second naming scheme to maintain and the composite has just finished shedding one. Instead, two documents contributing one heading text to one group fail with `E_AMBIGUOUS_MERGED_HEADING`. Grouping merges separate namespaces into one, so the author guarantees uniqueness among what they merged, which is the same answer duplicate siblings and duplicate file groups already get.
+
+That refusal is not hypothetical. The work-planner skill does not compose at level 2: 26 names collide, all inside the merged `Fields` group, `Template` across seven documents and `Titles` across six. Grouping is therefore a capability the sources have to earn, and the ledger entry it produces is a renaming task rather than a tool defect.
+
+Two things needed a home once a document stopped being contiguous. Content above a document's first group-level heading, which is its preamble, goes under a leading `Sources` group as one heading per document carrying its path; that heading is also where a whole-document reference resolves. A reference to a group-level heading resolves to the merged group, which loses which document the reference meant, and is the cost of merging.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
