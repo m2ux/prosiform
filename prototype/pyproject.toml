@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "prosiform"
+version = "0.0.0"
+description = "A deterministic compiler for instruction sets written as linked Markdown"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "markdown-it-py==4.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/m2ux/prosiform"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prosiform"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"../docs/glossary.md" = "prosiform/docs/glossary.md"
