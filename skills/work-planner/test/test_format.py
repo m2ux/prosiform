@@ -170,11 +170,17 @@ def proposal_body() -> str:
 
 class Proposal(unittest.TestCase):
     def test_a_proposal_needs_no_theme_and_no_work_breakdown(self):
-        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body(),
+        r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=proposal_body(),
                          labels=('type:proposal',)))
         r.run()
         self.assertEqual(r.decide, [])
         self.assertEqual(r.apply, [])
+
+    def test_a_proposal_without_its_prefix_is_a_finding(self):
+        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body(),
+                         labels=('type:proposal',)))
+        r.run()
+        self.assertIn('title has no [P00] prefix', r.decide)
 
     def test_an_unprefixed_issue_does_not_become_a_proposal(self):
         r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body()))
@@ -182,7 +188,7 @@ class Proposal(unittest.TestCase):
         self.assertNotIn('labels: add type:proposal', r.apply)
 
     def test_a_theme_label_is_removed(self):
-        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body(),
+        r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=proposal_body(),
                          labels=('type:proposal', 'theme:canon')))
         r.run()
         self.assertIn('labels: remove theme:canon', r.apply)
@@ -195,7 +201,7 @@ class Proposal(unittest.TestCase):
             '## Work Breakdown\n\n| Epic | Description | Coverage | Depends on | Done |\n'
             '| --- | --- | --- | --- | --- |\n| E00 | Work | AC1 | | |\n\n'
             '## Acceptance Criteria\n\n- [ ] **AC1.** Holds.\n\n## Non-Goals')
-        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=text, labels=('type:proposal',)))
+        r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=text, labels=('type:proposal',)))
         r.run()
         self.assertTrue(any('initiative template' in item for item in r.decide))
 

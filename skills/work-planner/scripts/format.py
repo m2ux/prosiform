@@ -6,8 +6,8 @@ Usage:
   python3 format.py issue-936.json --epic issue-943.json --epic issue-937.json … [--fix fixed-936.md]
 
 issue-943.json is the issue as `gh api repos/{owner}/{repo}/issues/943` returns it. The kind comes
-from the title prefix: [I07] initiative, [I07:E00] epic, [I07:E00:W01] task. A proposal has no prefix
-and carries type:proposal. No prefix and no type:proposal is a standalone issue, which belongs to no
+from the title prefix: [P00] proposal, [I07] initiative, [I07:E00] epic, [I07:E00:W01] task. A proposal
+also carries type:proposal. No prefix and no type:proposal is a standalone issue, which belongs to no
 initiative and takes artifacts/standalone-body.md. The format is read
 from the Markdown template under Fields in each body artifact: its sections and their order, the sections it marks
 optional ("delete the section", in any case), and its Work Breakdown columns.
@@ -84,6 +84,7 @@ BODY_ARTIFACTS = {
     'issue': 'standalone-body.md',
 }
 PREFIX = re.compile(r'^\[(I\d\d)((?:[: ][EW]\d\d)*)\]')
+PROPOSAL = re.compile(r'^\[P\d\d\]')
 KINDS = {0: 'initiative', 1: 'epic', 2: 'task'}
 MAX_CRITERIA = 3
 MAX_DESCRIPTION = 8
@@ -290,10 +291,13 @@ class Review:
         title = self.issue['title']
         if 'type:proposal' in self.labels():
             self.kind, self.number = 'proposal', None
-            if ': ' not in title:
+            rest = PROPOSAL.sub('', title).strip()
+            if rest == title:
+                self.decide.append('title has no [P00] prefix')
+            if ': ' not in rest:
                 self.decide.append('title has no "Name: Subtitle"')
             else:
-                name, _, subtitle = title.partition(': ')
+                name, _, subtitle = rest.partition(': ')
                 self.check_title_shape(name, subtitle)
             self.check_labels()
             return self.check_body()
