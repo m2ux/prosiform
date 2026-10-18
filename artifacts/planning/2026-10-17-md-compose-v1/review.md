@@ -21,12 +21,14 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G1 | I00 | AC11 | E08 Field Deployment | AC1, AC4 |
 | G5 | I00 | AC12 | E08 Field Deployment | AC2, AC3 |
 | G7 | I00 | AC13 | E00 Project Foundation | AC2–AC4 |
+| G1 | I00 | AC14 | E04 Dependency Closure | AC8 |
 | G8 | I01 | AC1 | E00 Findings Ledger | AC1, AC2 |
 | G8 | I01 | AC2 | E00 Findings Ledger | AC3, AC4 |
 | G8 | I01 | AC3 | E01 Specification Revision | AC1, AC2 |
 | G8 | I01 | AC4 | E01 Specification Revision | AC3, AC4 |
 | G8 | I01 | AC5 | E02 Specification Freeze | AC1, AC2 |
 | G7 | I01 | AC6 | E02 Specification Freeze | AC3 |
+| G8 | I01 | AC7 | E02 Specification Freeze | AC4 |
 | G3 | I02 | AC1 | E00 Parser Verdict | AC1–AC6 |
 | G3 | I02 | AC2 | E01 Source-Range Adapter | AC1–AC4 |
 | G5 | I02 | AC3 | E01 Source-Range Adapter | AC5 |
@@ -81,6 +83,7 @@ The dependency check reports task pairs within one epic where neither depends on
 
 | Pair | Why it is not joined |
 | --- | --- |
+| I01 E00 W02, W03 | Fixture reduction and the run record both extend the ledger, but one is a tool that rewrites sources and the other is a schema addition read by the freeze check. Separate pull requests keep a reduction defect from blocking the exposure measure. |
 | I01 E01 W02, W03 | Traceability regeneration changes the conformance report; the open-finding summary reads the ledger. They share no code and are read by different audiences, so one failing should not hold the other back. |
 | I02 E00 W01, W02, W03 | Each reproducer pins a different parser capability, and each result is read on its own into the gate report. One pull request per reproducer keeps a failed gate attributable to the evidence that failed it. |
 | I02 E01 W02, W03 | Edit application and the suppression signal touch different parser surfaces, and the suppression signal's shape depends on the route the gate report records, so joining them would couple an edit mechanism to an undecided interface. |
@@ -97,7 +100,7 @@ The checks run against the plan, and what each observed.
 
 - All three initiatives report no problem: no overbroad whole-epic dependency, no backward reference, no duplicated or implied edge, and no numbering that departs from start order.
 - I00's whole-epic edges are E06 on E05, E07 on E06 and E08 on E06; every other ordering lives in the task graph. The foundation epic binds the later ones through task edges rather than a whole-epic edge, because the corpus harness's first row needs the check commands but not the integration job.
-- I01's whole-epic edges are E01 on E00 and E02 on E00.
+- I01 carries no whole-epic edge. Its ordering is entirely in the task graph, because the freeze needs the run record while the revision epic does not.
 - I02's whole-epic edges are E01, E02, E03 and E04 on E00, E05 on E04, and E06 on E05.
 - I00's two longest chains are 21 steps, sharing eighteen rows and diverging at the validation gate into conformance and into deployment. I01's longest chain is 6 steps, from the ledger format to the tagged revision. I02's twelve longest chains are 15 steps, each passing through the gate report.
 - The independent task pairs it reported are recorded above.

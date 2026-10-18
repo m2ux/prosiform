@@ -76,6 +76,18 @@ The prototype's epics renumbered up by one to make room at E00, and the producti
 
 The design and the planning record stay on the engineering branch. The repository's documentation tree links to them rather than copying them, so there is one copy of each.
 
+## D10 — Three Corrections Taken From the Pre-Delivery Review
+
+A review of the plan before any work started produced three corrections, each closing a hole rather than changing a decision.
+
+**The freeze could pass on an unused tool.** Both conditions ending the refinement stage counted entries in the findings ledger, and an unused tool records none, so the stage held on its first day with the specification unexamined. The ledger now records every composition run, not only surprises, and an exposure set names the real sources that must be composed before a freeze. The freeze check refuses a tag until each of them carries a recorded run.
+
+**Twelve error codes had no owner.** Every epic said the tool fails "with its declared error code" and nothing declared the catalogue, while the first failure fixture arrives four epics before diagnostics are built. The catalogue is now part of the fixture manifest schema in the corpus-harness epic, so a fixture naming a code outside it is rejected as malformed.
+
+**The evidence behind the proposal is of the same order as the output budget.** The closure measured for the Problem is 318,018 bytes read whole against a default budget of 262,144. A fixture now composes that closure and records its output size against the configured budget, so the default rests on a measurement, which is what the design asks for.
+
+A fourth finding was withdrawn. It claimed the prototype could not keep its byte-preservation promise, because rewriting a link destination inside a selected section needs a character position its parser does not report. Computing a destination needs the target's identity, not the original's position, and the position matters only for splicing text into a copy of the original bytes. Of the four edits inside a selected section, three sit at line granularity the parser does report; for the fourth the parser supplies the destination, the count and the order of the links in the containing structure, so the occurrence is located by walking them rather than by pattern matching. The promise stands unchanged.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

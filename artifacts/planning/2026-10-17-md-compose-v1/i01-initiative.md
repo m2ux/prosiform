@@ -26,6 +26,9 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 - **The prototype is the tool in use.**
   It is invoked from this workspace's skills, so the contract meets real sources and real agents rather than constructed examples.
 
+- **The ledger records every run.**
+  A composition run is recorded with the source identities it composed and its outcome, so how much the tool was used is a fact the ledger holds rather than an impression.
+
 - **Every surprise becomes a ledger entry.**
   An entry carries its date, the invocation, the source identities, the observed result and the expected one, and a triage state naming whether it changes the design, fills a corpus gap, fixes a build defect, or changes nothing.
 
@@ -49,8 +52,8 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/md-composer/issues/21) | Findings Ledger | AC1, AC2 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/22) | Specification Revision | AC3, AC4 | [E00](https://github.com/m2ux/md-composer/issues/21) | |
-| [E02](https://github.com/m2ux/md-composer/issues/23) | Specification Freeze | AC5, AC6 | [E00](https://github.com/m2ux/md-composer/issues/21) | |
+| [E01](https://github.com/m2ux/md-composer/issues/22) | Specification Revision | AC3, AC4 | | |
+| [E02](https://github.com/m2ux/md-composer/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
 
 ## Acceptance Criteria
 
@@ -60,6 +63,7 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 - [ ] **AC4.** What remains unsettled is visible without reading the ledger whole, as the open-finding summary shows.
 - [ ] **AC5.** Each ledger entry is resolved or carries a recorded deferral naming what is deferred and why, as the ledger's status summary shows.
 - [ ] **AC6.** The design and the corpus carry one tagged revision that a production build can name as its target, as the tag shows.
+- [ ] **AC7.** The specification is settled only after the tool has composed each source in a declared exposure set, as the freeze check shows.
 
 ## Non-Goals
 

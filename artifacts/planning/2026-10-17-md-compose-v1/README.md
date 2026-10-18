@@ -62,6 +62,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E04:W04](i00-e04/w04.md) | The implementation plan for selection consolidation and expanded coverage |
 | [I00:E04:W05](i00-e04/w05.md) | The implementation plan for self-reference and ancestor-reference classification |
 | [I00:E04:W06](i00-e04/w06.md) | The implementation plan for resource budgets fail at the boundary |
+| [I00:E04:W07](i00-e04/w07.md) | The implementation plan for measured output size of a real closure |
 | [I00:E05:W01](i00-e05/w01.md) | The implementation plan for custom anchor recognition and alias resolution |
 | [I00:E05:W02](i00-e05/w02.md) | The implementation plan for qualified destinations and collision detection |
 | [I00:E05:W03](i00-e05/w03.md) | The implementation plan for reference conversion and definition removal |
@@ -78,6 +79,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E08:W03](i00-e08/w03.md) | The implementation plan for documented invocation for callers |
 | [I01:E00:W01](i01-e00/w01.md) | The implementation plan for ledger format and triage states |
 | [I01:E00:W02](i01-e00/w02.md) | The implementation plan for fixture capture from a recorded entry |
+| [I01:E00:W03](i01-e00/w03.md) | The implementation plan for run record and the declared exposure set |
 | [I01:E01:W01](i01-e01/w01.md) | The implementation plan for revision order and its citation record |
 | [I01:E01:W02](i01-e01/w02.md) | The implementation plan for traceability refreshed on each revision |
 | [I01:E01:W03](i01-e01/w03.md) | The implementation plan for open-finding summary from the ledger |
