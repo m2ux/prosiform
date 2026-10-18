@@ -186,7 +186,7 @@ Read this before adding or changing a reference.
 - **Issue bodies.**
   The skill's prose layout applies to its instructions. Issue bodies follow [Issue Body](artifacts/issue-body.md#fields); pull request bodies follow [Pull Request Body](artifacts/pull-request-body.md#fields).
 - **Common conventions.**
-  The entry point supplies [Command Conventions](SKILL.md#command-conventions) before mode selection. Graph-specific setup belongs to [Repository Graph](artifacts/repository-graph.md).
+  The entry point supplies [Conventions](SKILL.md#conventions) before mode selection. Graph-specific setup belongs to [Repository Graph](artifacts/repository-graph.md).
 
 ## Progressive Disclosure
 
