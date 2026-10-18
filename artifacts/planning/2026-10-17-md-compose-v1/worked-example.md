@@ -57,11 +57,11 @@ The same closure composed with `--group artifacts:2`, which merges every documen
 
 | Measure | No cohort | `artifacts:2` |
 | --- | --- | --- |
-| Top-level groups | 27, one per document | 9 |
+| Top-level groups | 27, one per document | 8 |
 | Headings | 353 | 289 |
 | Qualified names | 0 | 38 |
-| Carrying an ordinal | 81 | 11 |
-| Bytes | 187,488 | 187,421 |
+| Carrying an ordinal | 81 | 10 |
+| Bytes | 187,488 | 187,404 |
 
 Twenty-one artifact documents merge into `# artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
@@ -86,11 +86,21 @@ The thirty-eight qualified names are all in `## Fields`, where `Template` is con
 ### issue-body/Titles
 ```
 
-Eleven destinations still take the renderer's ordinal. Five are generated headings — the `artifacts` cohort heading and the merged `Operations`, `Outcomes`, `Procedure` and `Sources` — coinciding with a section of that name in a document no cohort claimed.
+Ten destinations still take the renderer's ordinal. Four are generated headings — the `artifacts` cohort heading and the merged `Operations`, `Outcomes` and `Procedure` — coinciding with a section of that name in a document no cohort claimed.
 
 Published and rendered by GitHub: 289 anchors, 710 fragment links, none broken.
 
-One note on what this showed. The generated `Sources` group name collides with a real `Sources` heading in `initiative-issue-body.md`, which is worth settling before the name is fixed.
+A member's preamble sits at the head of its cohort under a heading carrying its path, which is the file heading a document outside any cohort already receives, so the compositor generates no group name of its own:
+
+```markdown
+# artifacts
+
+## artifacts/epic-issue-body
+
+Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
+
+## Operations
+```
 
 Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 

@@ -1,10 +1,8 @@
-# Sources
+# artifacts
 
 ## artifacts/epic-issue-body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
-
-# artifacts
 
 ## Operations
 
@@ -382,7 +380,7 @@ The requirements evidence used to validate an initiative's criteria.
 1. Read each local source at its checkout path.
 2. For a pinned GitHub blob, run [Fetch Source](#fetch-source) with its repository, path, pinned revision and output file.
 3. Fetch other URLs through the harness's web access.
-4. Record an unreadable or empty source as a [Sources](#sources-1) finding; its criteria remain unevaluated.
+4. Record an unreadable or empty source as a [Sources](#sources) finding; its criteria remain unevaluated.
 5. Return each source's contents and identity with those findings.
 
 ### Check Initiative Completion
@@ -1294,7 +1292,7 @@ An initiative criterion meets the [shared acceptance criteria](#shared-acceptanc
 
 ### initiative-issue-body/References
 
-- A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources-1).
+- A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources).
 - A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
 
 ### Sources
@@ -3264,7 +3262,7 @@ The draft checked against the initiative outcomes.
    - Record any criterion no task row delivers as a gap from the supplied epic format results.
 3. **Align.**
    Call [Read Requirement Sources](#read-requirement-sources) with the initiative References, checkout, authenticated access and output files.
-   - Extend the trace table with the source requirement each criterion answers to. Each unmatched requirement, each criterion that departs from the one it cites, and each source that could not be read is a gap [Sources](#sources-1) names.
+   - Extend the trace table with the source requirement each criterion answers to. Each unmatched requirement, each criterion that departs from the one it cites, and each source that could not be read is a gap [Sources](#sources) names.
 4. **Criteria.**
    Check each criterion against the [shared acceptance criteria](#shared-acceptance-criteria) and [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
 5. **Validate the body.**

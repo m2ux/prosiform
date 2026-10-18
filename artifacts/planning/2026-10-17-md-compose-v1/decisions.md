@@ -236,9 +236,9 @@ This supersedes refusing the collision. Refusal was the right answer while every
 
 Anything still coinciding takes the renderer's ordinal, as any repeat does. Eleven did, five of them generated cohort or merged-section headings matching a section name in an unmatched document.
 
-Two things needed a home once a merged document stopped being contiguous. A member's preamble goes under a leading `Sources` group as one heading per document carrying its path, which is also where a whole-document reference to a member resolves. And a reference to a cohort-depth heading resolves to the merged group, losing which document it meant, which is the cost of merging.
+Two things needed a home once a merged document stopped being contiguous. A member's preamble is emitted at the head of its cohort under a heading carrying its path, which is the file heading a document outside any cohort already receives, and is where a whole-document reference to the member resolves. A generated group name was tried first and discarded: it competed with authored headings in the same namespace and lost, colliding with a `Sources` heading in `initiative-issue-body.md`. Reusing the file heading invents no vocabulary and reserves nothing. And a reference to a cohort-depth heading resolves to the merged group, losing which document it meant, which is the cost of merging.
 
-Measured on the Plan Mode closure with `--group artifacts:2`: 9 top-level groups against 27, 289 headings against 353, 38 qualified names, 11 ordinals against 81. Published and rendered by GitHub, its 710 fragment links resolve against its 289 anchors with none broken.
+Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups against 27, 289 headings against 353, 38 qualified names, 10 ordinals against 81. Published and rendered by GitHub, its 710 fragment links resolve against its 289 anchors with none broken.
 
 Only `work-planner` is broadly representative in this workspace, so the cross-library case the parameter is built for, two directories of one slug under separate libraries, is implemented but not yet exercised against real sources.
 
