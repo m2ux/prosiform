@@ -19,7 +19,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [Review](review.md) | The goal trace, the stage order, the source alignment, the threats checked, the independent task pairs and the check results |
 | [Worked Example](worked-example.md) | One composite produced from the work-planner skill under the v1 rules, with its measurements and what it settles |
 | [Worked Example composite](worked-example-composite.md) | The composite itself: 27 file groups, 204 selected sections and 421 rewritten destinations |
-| [Worked Example grouped](worked-example-grouped.md) | The same closure at group level 2: nine merged groups, and the refused candidate behind 26 name collisions |
+| [Worked Example grouped](worked-example-grouped.md) | The same closure with an `artifacts` cohort: nine top-level groups, 38 qualified names and 11 ordinals |
 | [I00 initiative body](i00-initiative.md) | The local source for issue #2, the prototype initiative |
 | [I01 initiative body](i01-initiative.md) | The local source for issue #20, the refinement initiative |
 | [I02 initiative body](i02-initiative.md) | The local source for issue #10, the production initiative |
@@ -60,7 +60,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E03:W04](i00-e03/w04.md) | The implementation plan for file group emission: absorbed title and source order |
 | [I00:E03:W05](i00-e03/w05.md) | The implementation plan for heading-only ancestor scaffolding |
 | [I00:E03:W06](i00-e03/w06.md) | The implementation plan for heading depth overflow fails |
-| [I00:E03:W07](i00-e03/w07.md) | The implementation plan for the grouping level and merged-name ambiguity |
+| [I00:E03:W07](i00-e03/w07.md) | The implementation plan for cohort grouping and minimal name qualification |
 | [I00:E04:W01](i00-e04/w01.md) | The implementation plan for reference normalization and path identity |
 | [I00:E04:W02](i00-e04/w02.md) | The implementation plan for root confinement and no-symlink source access |
 | [I00:E04:W03](i00-e04/w03.md) | The implementation plan for link classification and traversal to a fixed point |

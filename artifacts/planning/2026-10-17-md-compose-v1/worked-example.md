@@ -10,7 +10,7 @@ Two compositions produced from a real source tree under the v1 rules, so the con
 | Entry reference | `modes/plan-mode.md`, whole document |
 | Expansion-depth budget | 8 |
 | Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-composition-replaces-them) retires them |
-| Grouping level | `1` (by document) and `2` (by section level) |
+| Cohorts | none, and `--group artifacts:2` |
 | Output | [Composite](worked-example-composite.md), [grouped composite](worked-example-grouped.md) |
 
 The Prerequisites exclusion is the one departure from composing the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once composition supplies what they named. Composing with them in place would measure the tool against a structure that is going away, so this example composes the tree D11 leaves behind.
@@ -51,31 +51,48 @@ The composite was then published and rendered by GitHub, which is the independen
 - **Whole-document and section references produce different destinations.**
   `[Propose Mode](#modespropose-mode)` resolves to that file's heading, whose slug drops the slash as the renderer does; `[Populate Planning Record](#populate-planning-record)` resolves to the section.
 
-## Grouped at section level
+## Grouped by cohort
 
-The same closure composed at `--group-level 2`, where a group is one source heading text merged across every document carrying it rather than one document.
+The same closure composed with `--group artifacts:2`, which merges every document under the `artifacts` directory at its second heading level. The modes, `guidelines` and `references` are claimed by no cohort and keep their own groups.
 
-| Measure | Level 1 | Level 2 |
+| Measure | No cohort | `artifacts:2` |
 | --- | --- | --- |
-| Groups | 27, one per document | 9 |
-| Destinations | 353 | 276 |
-| Carrying an ordinal | 81 | 26 |
-| Bytes | 187,488 | 185,915 |
+| Top-level groups | 27, one per document | 9 |
+| Headings | 353 | 289 |
+| Qualified names | 0 | 38 |
+| Carrying an ordinal | 81 | 11 |
+| Bytes | 187,488 | 188,188 |
 
-Eight distinct headings exist at level 2 across those 27 documents: `Operations` in 20 of them, `Fields` in 18, `Commands` in 13, `Procedure` in 6, `Outcomes` in 4. Grouping by that level puts every operation in the skill in one place.
+Twenty-one artifact documents merge into `# artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
-**The work-planner skill does not compose at this level.** Twenty-six names collide inside the merged `Fields` group, so the run refuses and publishes nothing:
+```markdown
+# artifacts
 
-| Colliding name | Documents |
-| --- | --- |
-| `Template` | architecture-overview, epic-issue-body, initiative-issue-body, planning-record, proposal-body, pull-request-body, task-body, work-item |
-| `Titles` | epic-issue-body, initiative-issue-body, issue-body, proposal-body, pull-request-body, task-body |
-| `Sections` | architecture-overview, proposal-body, task-body, work-item |
-| `Problem`, `Proposal`, `Non-Goals`, `References`, `Work Breakdown`, `Acceptance Criteria`, `Open Questions`, `Breakdown Prose`, `Delivery Findings`, `Delivery State` | two documents each |
+## Operations
 
-That is the rule working rather than failing. Grouping merges separate documents into one namespace, and the author guarantees uniqueness among what they merged. The published grouped composite above is the refused candidate, kept so the arrangement can be reviewed; a conforming one needs those names made distinct first.
+### Populate Architecture Overview
+### Plan Board Changes
+### Select Project Board
+```
 
-One collision is the compositor's own: the generated `Sources` group clashes with a `Sources` heading in `initiative-issue-body.md`, which is worth knowing before the name is settled.
+The thirty-eight qualified names are all in `## Fields`, where `Template` is contributed by seven documents and `Titles` by six. Each takes the shortest left-anchored run of its path that separates it from the others, which here is two segments, since every colliding document sits under `artifacts/`:
+
+```markdown
+## Fields
+
+### artifacts/architecture-overview/Template
+### artifacts/epic-issue-body/Template
+### artifacts/epic-issue-body/Titles
+### artifacts/issue-body/Titles
+```
+
+Eleven destinations still take the renderer's ordinal. Five are generated headings — the `artifacts` cohort heading and the merged `Operations`, `Outcomes`, `Procedure` and `Sources` — coinciding with a section of that name in a document no cohort claimed.
+
+Published and rendered by GitHub: 289 anchors, 710 fragment links, none broken.
+
+Two notes on what this showed. The qualifier repeats the cohort's own path, so a reader already inside `# artifacts` sees `artifacts/epic-issue-body/Template`; dropping segments the cohort heading already states would shorten it to `epic-issue-body/Template`. And the generated `Sources` group name collides with a real `Sources` heading in `initiative-issue-body.md`, which is worth settling before the name is fixed.
+
+Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 
 ## Measurements against reading the sources whole
 

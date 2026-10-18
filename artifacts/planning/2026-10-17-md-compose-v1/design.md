@@ -94,7 +94,7 @@ md-compose --root DIR [OPTIONS] REF [REF ...]
 | `--root DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
 | `--from DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
 | `-o, --output FILE` | Atomically publish validated output to a file; default or `-` means stdout. |
-| `--group-level N` | Organize the composite by source heading level `N`, merging that level across documents; `1`, the default, groups by document. |
+| `--group SLUG:DEPTH` | Merge every document under a directory named `SLUG` at source heading level `DEPTH`; repeatable. Documents no cohort names keep their own group. |
 | `--check` | Discover, compose, and validate without emitting or publishing the composite. |
 | `--resource-base URL` | HTTPS directory URL mapping source-root-relative resource paths for stdout output. |
 | `--diagnostics text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
@@ -161,19 +161,23 @@ All content from that source belongs beneath its file heading. The output has no
 
 The hierarchy guarantee is the original selected source outline beneath one additional file level. File headings isolate source documents, while destinations are assigned over the composite as a whole, so two files contributing a section of the same name stay distinguishable.
 
-### Grouping level
+### Grouping
 
-A group is the unit the composite is organized into, and `--group-level` says what one is. At `1`, the default, a group is one source document, headed by its path, which is the arrangement every rule above describes. Deeper, a group is one source heading text at that level, merged across every document that carries it: at `2` all `Operations` sections become one group, all `Fields` another.
+A group is the unit the composite is organized into. By default a group is one source document, headed by its path. A cohort changes that for part of the tree: `--group SLUG:DEPTH`, repeatable, names a directory slug and a source heading level, and every document under any directory of that slug is merged at that level.
 
-- **Group heading:** At level 1 the group heading is the document path. Deeper it is the source heading's own visible text, emitted once however many documents contribute to it.
-- **Contribution order:** Documents contribute to a group in the deterministic group order, and a group appears at the position of its first contribution.
-- **Level shift:** A source heading at the group level becomes the composite's H1. One below it becomes H2, and so on, so a group's members sit at a uniform depth whichever document supplied them.
-- **Verbatim names:** A merged heading keeps its source text. Nothing is prefixed, qualified or renamed to fit it into a group.
-- **Merged ambiguity:** Grouping merges separate documents into one namespace, so two documents contributing one heading text to one composite fail with `E_AMBIGUOUS_MERGED_HEADING`, naming both sources and the group. The author guarantees uniqueness among what they merge; the compositor does not invent a distinction. This applies from level 2, because level 1 merges nothing.
-- **Document content above the group level:** A document's preamble, and any content above its first group-level heading, is emitted under a leading `Sources` group as one heading per document carrying its path. That heading is where a whole-document reference resolves, since a grouped document is no longer contiguous.
-- **Ordinals:** Destinations are assigned as ever. A deeper group level removes most repeats by construction, since the names that collided were the group headings themselves.
+```text
+--group artifacts:2 --group references:2
+```
 
-Grouping changes how a composite is arranged, not what it contains. The closure, the consolidation, the selected content and the validation invariants are the same at every level.
+- **Cohort membership:** A document belongs to the cohort whose slug matches the deepest directory segment of its path. A document no cohort matches keeps its own group, so one composite can carry both arrangements.
+- **Cohort structure:** A cohort emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every member document's contribution. A source heading at the cohort depth becomes that H2; the level below becomes H3, and so on.
+- **Verbatim names:** A merged heading keeps its source text. Nothing is prefixed, qualified or renamed where the text occurs once in its group.
+- **Minimal qualification:** Where two or more documents contribute one heading text to one merged section, each takes a qualifier: the shortest left-anchored run of its root-relative path segments that distinguishes it from the others, joined to the text by a separator. Two documents differing in their first segment take one segment each; two differing deeper take as many as it costs to tell them apart. A qualifier is part of the emitted heading text, so a reader sees which document supplied the section and the destination follows from it.
+- **Residual ambiguity:** Qualification separates documents, not headings within one. Two headings of one document colliding in one group is the source ambiguity the heading rules already refuse. Anything still coinciding, such as a generated cohort heading matching a section name elsewhere, takes the renderer's ordinal as any repeat does.
+- **Document content above the cohort depth:** A member document's preamble is emitted under a leading `Sources` group, one heading per document carrying its path. That heading is where a whole-document reference to a member resolves, since a merged document is no longer contiguous.
+- **Merged section references:** A reference to a source heading at the cohort depth resolves to the merged group it became, which no longer records which document the reference meant.
+
+Grouping changes how a composite is arranged, not what it contains. The closure, the consolidation, the selected content and the validation invariants are the same whichever grouping is asked for.
 
 ### Heading-only ancestor scaffolding
 
@@ -519,7 +523,7 @@ Before broad implementation, create small fixtures with exact expected composite
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
-- **Grouping:** One composition at each supported group level from the same entry; two documents contributing one heading text to one group refused; a whole-document reference resolving to its `Sources` entry; a reference to a group-level heading resolving to the merged group; and content above a document's first group-level heading preserved.
+- **Grouping:** One entry composed with and without a cohort, selecting the same content; a merged section drawn from several documents; a name occurring once left bare; colliding names qualified to the shortest distinguishing path prefix, at one segment and at more than one; a document no cohort matches keeping its own group; a whole-document reference to a member resolving to its `Sources` entry; and a reference to a cohort-depth heading resolving to the merged group.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor scaffolds; original skipped heading levels; scaffold promotion after dependency expansion; and no ancestor-body or scaffold-link dependency leakage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.
