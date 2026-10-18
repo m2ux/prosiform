@@ -13,6 +13,7 @@ It matters because every later epic carries tests, and nothing yet states how th
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The task's plan: the named commands and their runner, the tool configuration and where it lives, the inventory the vocabulary check reads, and the lock check |
+| [validation.md](validation.md) | Each named command as it was run: procedure, tested revision, the clean-tree result and the deliberate violation it fails on, and what each run establishes |
 
 ## Links
 
