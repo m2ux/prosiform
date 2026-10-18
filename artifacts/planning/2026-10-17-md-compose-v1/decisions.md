@@ -118,7 +118,7 @@ An agent decides between reading a document and bundling it exactly once, on ent
 
 That rules out marking individual links. It would also contradict the goal clause stating that nothing beyond ordinary Markdown links and headings is needed to bundle a document, and it would have to be maintained across every link in every skill. Inferring the choice from file names or paths is excluded for the same reason the design excludes inferring prerequisites from them.
 
-So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself composable and the harness bundles on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: prosiform strips frontmatter, so the marker never reaches the output, and the generated-input rule already stops a bundle being bundled again.
+So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself ready to bundle and the harness bundles on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: prosiform strips frontmatter, so the marker never reaches the output, and the generated-input rule already stops a bundle being bundled again.
 
 The first stage runs during refinement, as each prerequisite section is removed. How reliably agents follow a written instruction is itself evidence, so the second stage is raised as its own proposal once there is use to draw on, rather than planned from an assumption about how well prose works.
 
@@ -156,7 +156,7 @@ The bundle carries Markdown and nothing else. No anchor elements are emitted, an
 
 What this costs is clicking. A fragment of this form resolves in no renderer. That is not a loss for the consumer, which reads the document rather than navigating it.
 
-## D18 — Expansion Depth Is a Budget, and a Structural ancestor Does Not Satisfy a Reference
+## D18 — Expansion Depth Is a Budget, and a Structural Ancestor Does Not Satisfy a Reference
 
 Bundling carries a declared expansion-depth budget, defaulting to eight link hops from the nearest entry reference along a target's shortest path. The design previously forbade any depth cap; that prohibition was aimed at a recursive-call limit leaking out as behaviour, which is a different thing from a budget chosen on purpose. Traversal stays iterative and a cyclic graph within the budget bundles normally.
 
@@ -222,7 +222,7 @@ Two things are given up. A destination no longer says which file it points into,
 
 Two things are gained beyond the links working. Scoping destinations to the bundle rather than to a file group means a section whose slug is unique needs no qualification at all, which is most of them. And the bundle stops carrying a naming scheme of its own: it is an ordinary Markdown document whose links happen to resolve.
 
-## D24 — A Cohort Merges One Part of the Tree, and a Name Is Qualified Only Where It Collides
+## D24 — A Group Merges One Part of the Tree, and a Name Carries Variants Only Where It Collides
 
 `--group SLUG:DEPTH`, repeatable, names a directory slug and a source heading level. Every document under any directory of that slug is merged at that level: `--group artifacts:2` puts every `Operations` section of every artifact document in one place, every `Fields` section in another. A document no group names keeps its own group, so one bundle carries both arrangements and the entry document is still read as itself.
 

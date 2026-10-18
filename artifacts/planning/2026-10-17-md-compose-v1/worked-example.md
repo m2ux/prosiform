@@ -44,7 +44,7 @@ The bundle was then published and rendered by GitHub, which is the independent c
 - **A file heading absorbs a title it already carries.**
   `artifacts/architecture-overview.md` opens with `# Architecture Overview`, which slugifies to its own filename stem, so the file heading replaces it and that group keeps its source levels. Thirty-seven of the skill's thirty-eight documents are this shape. `SKILL.md`, whose H1 is `Work Planner`, is the one that is not: it keeps its H1 and shifts.
 
-- **Heading-only structural ancestors carries no body.**
+- **A heading-only structural ancestor carries no body.**
   `artifacts/board-queue` contributes one section. Its group emits the filename heading, then `Fields` as a title alone, then `Task Eligibility` with its content. No sibling section and no ancestor body reaches the bundle.
 
 - **Heading-like text in code is untouched.**
@@ -53,7 +53,7 @@ The bundle was then published and rendered by GitHub, which is the independent c
 - **Whole-document and section references produce different destinations.**
   `[Propose Mode](#modespropose-mode)` resolves to that file's heading, whose slug drops the slash as the renderer does; `[Populate Planning Record](#populate-planning-record)` resolves to the section.
 
-## Grouped by group
+## Grouped
 
 The same closure bundled with `--group artifacts:2 --group modes:2 --group references:2`, which merges every document under those directories at its second heading level. Every document in the closure is claimed, so the bundle is three groups.
 

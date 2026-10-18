@@ -132,11 +132,11 @@ prosiform --root skills/work-planner --check \
 
 These examples describe the agreed interface; no command has been implemented or executed. Missing references produce the specified diagnostics.
 
-## Explicitly composable source structure
+## Explicitly linked source structure
 
 Common rules, file-level prerequisites, and shared SKILL.md instructions will be refactored into addressable sections. Operations must link to the sections that govern them, so the tool can obtain the required context through explicit links.
 
-- **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; heading-only structural ancestors supplies structure, not additional governing instructions.
+- **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; a heading-only structural ancestor supplies structure, not additional governing instructions.
 - **Explicit dependencies:** A section's author is responsible for linking any required shared rules or context. Such references are part of the recursive dependency graph.
 - **Reading versus execution:** Inclusion makes material available; it does not authorize executing every included procedure. Execution verbs and call boundaries remain part of the authored instructions.
 
@@ -177,13 +177,13 @@ A group is the unit the bundle is organized into. By default a group is one sour
 
 A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A rule whose directories contribute no document to the closure is not an error: it arranges nothing, and the run reports it as a warning on stderr.
 
-- **Cohort membership:** A document belongs to the group whose slug matches the deepest directory segment of its path. A document no group matches keeps its own group, so one bundle can carry both arrangements.
-- **Cohort structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every member document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
+- **Group membership:** A document belongs to the group whose slug matches the deepest directory segment of its path. A document no group matches keeps its own group, so one bundle can carry both arrangements.
+- **Group structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every member document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
 - **Verbatim names:** A merged heading keeps its source text. Nothing is prefixed, qualified or renamed where the text occurs once in its group.
 - **Document-keyed sections:** A merged section carrying body text above its first subheading, from more than one document, is the document's section rather than a container of named items, and splits into variants: one variant heading per contributing document, with that document's text and subheadings beneath it. Every mode's `Procedure` merges this way, since a procedure is the mode's own. A section carrying only named items, such as `Operations`, does not. This test is applied first, and a section it splits is arranged by document throughout; the rule below applies to the names inside a section it leaves alone.
-- **Branching by document:** Where two or more documents contribute one heading text to one merged section, that text is emitted once as a heading of its own and each document's content hangs beneath it under a variant heading naming the document. The variants of a name then sit together, so a reader comparing them reads one place rather than several. A variant heading is the shortest run of that document's root-relative path which distinguishes it from the others, in title case, measured after dropping the leading segments they all share, since those are the context the group heading already states. Each document's own heading is replaced by the shared one, and its content shifts one level to sit under its branch.
+- **Variants by document:** Where two or more documents contribute one heading text to one merged section, that text is emitted once as a heading of its own and each document's content hangs beneath it under a variant heading naming the document. The variants of a name then sit together, so a reader comparing them reads one place rather than several. A variant heading is the shortest run of that document's root-relative path which distinguishes it from the others, in title case, measured after dropping the leading segments they all share, since those are the context the group heading already states. Each document's own heading is replaced by the shared one, and its content shifts one level to sit under its variant heading.
 - **Residual ambiguity:** Qualification separates documents, not headings within one. Two headings of one document colliding in one group is the source ambiguity the heading rules already refuse. Anything still coinciding, such as a generated group heading matching a section name elsewhere, takes the renderer's ordinal as any repeat does.
-- **Cohort naming:** A group's heading is its directory slug in title case, so `artifacts` is emitted as `Artifacts`.
+- **Group naming:** A group's heading is its directory slug in title case, so `artifacts` is emitted as `Artifacts`.
 - **Document content above the grouping depth:** A group carries an `Overview` section holding each member's selected content above the grouping depth: its preamble, and the body of any section shallower than that depth with its outline beneath. Each member contributes one subsection, named by that document's stem in title case, less a trailing word the section already states: `artifacts/epic-issue-body.md` contributes `Epic Issue Body` under `Artifacts` / `Overview`. A member's own H1 is absorbed by that subsection heading when its slug equals the stem, as a file heading absorbs the title it carries. That heading is where a whole-document reference to the member resolves. A member with nothing above the grouping depth gets no heading, and a whole-document reference to it resolves to its first contribution. A preamble reaches the bundle only through a whole-document selection, since it belongs to no section.
 - **Merged section references:** A reference to a source heading at the grouping depth resolves to that document's variant heading where the name carries variants, and to the merged heading itself where the name occurs once. A reference reaches the document it named under every arrangement.
 
@@ -195,7 +195,7 @@ For each selected section, retain the chain of eligible ancestor headings needed
 
 Structural ancestry is generated structural content, not dependency inclusion:
 
-- **Heading text:** Render a structural ancestor's original visible title as escaped text, without live source links, images, or HTML. Do not traverse references from a ancestor-only heading or import its body.
+- **Heading text:** Render a structural ancestor's original visible title as escaped text, without live source links, images, or HTML. Do not traverse references from an ancestor-only heading or import its body.
 - **Provenance:** Record structural ancestor headings separately from selected content, retaining their canonical source-heading identities and original levels for validation.
 - **Deduplication:** Emit each structural ancestor once. If dependency discovery later selects that ancestor as content, replace its structural ancestor with the normally transformed source heading and selected body rather than adding a second copy.
 - **Targets:** A structural ancestor is not a substitute for selecting the corresponding source section. A real link to that ancestor expands closure to include the section normally, replacing the structural ancestor with the transformed heading and its selected body; a displayed title does not satisfy a reference.
@@ -220,7 +220,7 @@ Selected Detail content.
 
 Insert blank-line separation between maximal emitted regions and reparse the candidate. Reject boundaries that merge or absorb content into unintended code fences, lists, quotes, HTML blocks, or other non-heading containers.
 
-Do not silently close fences or repair code examples. Report unsafe boundaries with `E_UNSAFE_COMPOSITION_BOUNDARY`, identifying the source regions and conflicting output boundary.
+Do not silently close fences or repair code examples. Report unsafe boundaries with `E_UNSAFE_BUNDLE_BOUNDARY`, identifying the source regions and conflicting output boundary.
 
 ## Bundle destinations
 
