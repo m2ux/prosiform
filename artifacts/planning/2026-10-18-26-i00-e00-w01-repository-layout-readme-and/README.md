@@ -12,6 +12,7 @@ It matters because every later task of the initiative lands in the structure thi
 
 | Artifact | What it holds |
 | --- | --- |
+| [w01.md](w01.md) | The task's plan: the three trees, the README, the shipped glossary and the three checks that hold them true |
 
 ## Links
 
