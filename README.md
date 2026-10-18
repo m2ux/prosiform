@@ -63,6 +63,27 @@ Three trees, each created by the stage that writes into it.
 
 The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
 
+## ✅ Checks
+
+Every check is a named command. Continuous integration runs these same names, so a check cannot hold on a working copy and be absent remotely.
+
+```bash
+make check
+```
+
+| Command | Asserts |
+| --- | --- |
+| `make test` | The Python build's suite passes. A run that collects no test fails. |
+| `make lint` | The repository's Python carries no lint error. |
+| `make format-check` | That same Python is formatted as the declared configuration formats it. |
+| `make typecheck` | That same Python type checks in strict mode. |
+| `make lock-check` | The lockfile describes the dependency list the project definition declares. |
+| `make layout` | Each of the three trees holds a tracked file. |
+| `make links` | Every reference this README carries resolves. |
+| `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
+
+`make check` runs them in that order and stops at the first failure. The tools the first four call are pinned by [`prototype/uv.lock`](prototype/README.md); the last three are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+
 ## 📦 Installation
 
 prosiform installs from the Python build in [`prototype/`](prototype/README.md):
