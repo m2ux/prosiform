@@ -63,7 +63,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 - [ ] **AC4.** Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names, as the corpus runner's preservation check shows.
 - [ ] **AC5.** Each selected section keeps its ancestor chain and its relative depth beneath the heading naming its source file, as the corpus runner's outline comparison shows.
 - [ ] **AC6.** A composition that fails validation publishes nothing, exits nonzero and writes a diagnostic carrying the defect, its source location, the offending reference and the inclusion chain, as the corpus's failure fixtures show.
-- [ ] **AC7.** A document composes with no markup beyond ordinary Markdown links and heading anchors, as the fixtures taken from unmodified workspace skills show.
+- [ ] **AC7.** A document composes with no markup beyond ordinary Markdown links and headings, as the fixtures taken from unmodified workspace skills show.
 - [ ] **AC8.** A fixture declares its sources, its invocation and its expected result, and the runner decides pass or fail from that declaration alone, as the runner's own test suite shows.
 - [ ] **AC9.** Every behavioural clause the design states maps to at least one corpus fixture, or is listed as uncovered, as the conformance report shows.
 - [ ] **AC10.** Each resource limit the profile names fails at the first boundary it crosses, publishing nothing, as the corpus's limit fixtures show.
@@ -84,6 +84,6 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 ## References
 
-- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the behavioural contract these criteria answer to: input and output, Markdown profile, section extraction, anchor identity, validation invariants and resource limits.
+- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the behavioural contract these criteria answer to: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
 - **R2.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — why the prototype is a retained oracle, where the corpus lives, and the measured evidence behind the Problem.
 - **R3.** [Proposal](https://github.com/m2ux/md-composer/issues/1) — the scoped problem and the goal clauses these criteria trace to.

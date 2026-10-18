@@ -4,9 +4,9 @@ The planning decisions taken with the user, each with the reasoning that produce
 
 ## D1 — The Python Build Is the Tool in Use
 
-Python implements the full behavioural contract — closure, consolidation, anchor identity, validation, diagnostics and CLI — produces a language-neutral fixture corpus of exact expected composites, and ships as the tool agents in this workspace invoke. It is used for an extended period before a production build is committed to. Source-span edit fidelity is proven in Rust, where the production parser lives.
+Python implements the full behavioural contract — closure, consolidation, destination identity, validation, diagnostics and CLI — produces a language-neutral fixture corpus of exact expected composites, and ships as the tool agents in this workspace invoke. It is used for an extended period before a production build is committed to. Source-span edit fidelity is proven in Rust, where the production parser lives.
 
-The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, qualified destination identity and the post-compilation invariants — are parser-independent and provable cheaply.
+The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, hierarchy-path destination identity and the post-compilation invariants — are parser-independent and provable cheaply.
 
 A specification written before use is a hypothesis, and the cheapest place to discover what it got wrong is a build that already works. Using Python for that period means the design's errors are found and corrected at Python's cost rather than at Rust's, and it makes the corpus the durable artifact: what survives the period is a contract that real sources have exercised. The prototype is therefore a retained component, not a stopgap, and it stays in use as the differential oracle after the production build exists. See D7 for what ends that period.
 
@@ -37,7 +37,7 @@ Eight clauses, stated as outcomes someone could observe. G1 to G7 were confirmed
 - **G3.** Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names.
 - **G4.** The original outline of each selected section survives: its ancestor headings are present, its relative depth is preserved, and each contributing file's content sits beneath one heading naming that file.
 - **G5.** A composition that cannot be fully validated emits no composite and exits nonzero, with a diagnostic naming the defect, its source location, the offending reference and the inclusion chain that reached it.
-- **G6.** Authors keep their existing modular files; nothing beyond ordinary Markdown links and optional heading anchors makes a document composable.
+- **G6.** Authors keep their existing modular files; nothing beyond ordinary Markdown links and headings makes a document composable.
 - **G7.** The contract is demonstrated by two independent implementations passing one shared fixture corpus.
 
 - **G8.** The behavioural contract the production build implements has been exercised by real use and recorded as settled before that build begins.
@@ -114,9 +114,9 @@ Deploying five levels earlier, once destinations resolve, would start the refine
 
 An agent decides between reading a document and composing it exactly once, on entry. Inside a composite the question cannot arise: every supported local Markdown link has been rewritten to an internal destination, and a link that could not be rewritten failed the composition.
 
-That rules out marking individual links. It would also contradict the goal clause stating that nothing beyond ordinary Markdown links and heading anchors makes a document composable, and it would have to be maintained across every link in every skill. Inferring the choice from file names or paths is excluded for the same reason the design excludes inferring prerequisites from them.
+That rules out marking individual links. It would also contradict the goal clause stating that nothing beyond ordinary Markdown links and headings makes a document composable, and it would have to be maintained across every link in every skill. Inferring the choice from file names or paths is excluded for the same reason the design excludes inferring prerequisites from them.
 
-So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself composable and the harness composes on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: md-compose strips frontmatter, so the marker never reaches the output, and the reserved-anchor rule already stops a composite being composed again.
+So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself composable and the harness composes on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: md-compose strips frontmatter, so the marker never reaches the output, and the generated-input rule already stops a composite being composed again.
 
 The first stage runs during refinement, as each prerequisite section is removed. How reliably agents follow a written instruction is itself evidence, so the second stage is raised as its own proposal once there is use to draw on, rather than planned from an assumption about how well prose works.
 
@@ -130,7 +130,7 @@ A fallback would restore the behaviour composition replaces, and would restore i
 
 A second review mapped the design's sections against what the epics claim, and found three clauses with no owner and one the plan contradicted.
 
-**An unsupported construct fails rather than becoming prose.** The profile work item planned a fixture asserting that an unsupported extension construct is left as ordinary text. The design says a recognized unsupported dependency or anchor construct in selected content is rejected. Leaving a wiki link as text drops a dependency and reports nothing, which the completeness criterion forbids, so the build would have satisfied its epic while violating its initiative. The design is followed: a construct recognized as a dependency or anchor extension fails, while prose that merely resembles one is left alone.
+**An unsupported construct fails rather than becoming prose.** The profile work item planned a fixture asserting that an unsupported extension construct is left as ordinary text. The design says a recognized unsupported dependency or section-naming construct in selected content is rejected. Leaving a wiki link as text drops a dependency and reports nothing, which the completeness criterion forbids, so the build would have satisfied its epic while violating its initiative. The design is followed: a construct recognized as a dependency or section-naming extension fails, while prose that merely resembles one is left alone.
 
 **Validation follows the selection, not the file.** A whole design section had no criterion. Indexing a source means parsing all of it, so the natural implementation validates all of it, and composing one section of a large skill would fail on a broken link elsewhere in the same file. Two criteria now hold the boundary, and a file-wide parsing-safety failure is diagnosed as an inability to index that source rather than as a dependency on the construct that exceeded the limit.
 
@@ -167,6 +167,20 @@ Separately, a link whose target is present only as a heading-only ancestor now e
 Selected regions and structural ancestors are emitted in the order they appear in their source. A document's preamble therefore sits after its filename heading and before its first retained heading, which needs no rule of its own.
 
 This was raised first as a gap about preamble placement, which was the wrong framing: preamble position follows from source order, and the general rule was the thing no criterion covered. Without it, sections could be emitted in any order within a file group, which would break both outline reconstruction and the determinism the composite promises.
+
+## D20 — The Record Names Destinations, Not Anchors
+
+A destination is a hierarchy path and the composite carries no markup, so the record states both in those terms throughout. Three error codes are renamed to the things they now describe: an ambiguous fragment names a heading rather than an anchor, a reference that resolves to nothing names a target, and a document refused as input is a generated one with no reserved namespace left to name.
+
+| Code | Raised when |
+| --- | --- |
+| `E_AMBIGUOUS_SOURCE_HEADING` | A fragment requires one of two sibling headings producing the same slug. |
+| `E_TARGET_NOT_FOUND` | A supported local Markdown reference resolves to no document or section. |
+| `E_GENERATED_INPUT` | A source's links carry composite destinations. |
+
+Goal clause G6 is restated for the same reason: authors needed nothing beyond ordinary Markdown links and headings before this change, and heading anchors named a feature that no longer exists. The clause is weaker in wording and identical in what it promises, because a hand-written anchor was never required to make a document composable and no document in this workspace carried one.
+
+The design's status paragraph now names both builds. It previously said no implementation was authorized, which three planned initiatives have overtaken.
 
 ## Evidence
 

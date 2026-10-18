@@ -13,7 +13,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | Artifact | What it holds |
 | --- | --- |
 | [Proposal body](proposal.md) | The local source for issue #1, the scoped problem and its eight goal clauses |
-| [Design](design.md) | The v1 behavioural contract: input and output, Markdown profile, section extraction, anchor identity, validation invariants and resource limits |
+| [Design](design.md) | The v1 behavioural contract: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits |
 | [Upstream Assessment](upstream-assessment.md) | The inspected state of `pulldown-cmark` against the parser gates, and the two narrowly scoped contributions, deferred and unauthorized |
 | [Decisions](decisions.md) | The planning decisions taken with the user, the reasoning behind each, and the measured evidence |
 | [Review](review.md) | The goal trace, the stage order, the source alignment, the threats checked, the independent task pairs and the check results |

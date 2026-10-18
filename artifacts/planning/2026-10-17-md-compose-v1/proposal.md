@@ -28,7 +28,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 - Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names.
 - The original outline of each selected section survives: its ancestor headings are present, its relative depth is preserved, and each contributing file's content sits beneath one heading naming that file.
 - A composition that cannot be fully validated emits no composite and exits nonzero, with a diagnostic naming the defect, its source location, the offending reference and the inclusion chain that reached it.
-- Authors keep their existing modular files; nothing beyond ordinary Markdown links and optional heading anchors makes a document composable.
+- Authors keep their existing modular files; nothing beyond ordinary Markdown links and headings makes a document composable.
 - The contract is demonstrated by two independent implementations passing one shared fixture corpus.
 - The behavioural contract the production build implements has been exercised by real use and recorded as settled before that build begins.
 
@@ -45,7 +45,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 ## References
 
-- **R1.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the approved behavioural contract: input and output, Markdown profile, section extraction, anchor identity, validation invariants and resource limits.
+- **R1.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the approved behavioural contract: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
 - **R2.** [Upstream assessment](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/upstream-assessment.md) — the inspected state of `pulldown-cmark` against the two parser viability gates, and the two narrowly scoped contributions that would satisfy them.
 - **R3.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — the decisions taken with the user, the reasoning behind each, and the measured evidence above.
 
