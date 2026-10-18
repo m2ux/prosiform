@@ -126,6 +126,20 @@ A caller meeting a failed composition halts and surfaces the diagnostic. Reading
 
 A fallback would restore the behaviour composition replaces, and would restore it silently: the work would continue, nobody would notice, and the failure would produce no ledger entry. The refinement stage depends on failures being visible, so an invisible one costs more than a halt.
 
+## D16 — Four Clauses the Plan Had Not Claimed
+
+A second review mapped the design's sections against what the epics claim, and found three clauses with no owner and one the plan contradicted.
+
+**An unsupported construct fails rather than becoming prose.** The profile work item planned a fixture asserting that an unsupported extension construct is left as ordinary text. The design says a recognized unsupported dependency or anchor construct in selected content is rejected. Leaving a wiki link as text drops a dependency and reports nothing, which the completeness criterion forbids, so the build would have satisfied its epic while violating its initiative. The design is followed: a construct recognized as a dependency or anchor extension fails, while prose that merely resembles one is left alone.
+
+**Validation follows the selection, not the file.** A whole design section had no criterion. Indexing a source means parsing all of it, so the natural implementation validates all of it, and composing one section of a large skill would fail on a broken link elsewhere in the same file. Two criteria now hold the boundary, and a file-wide parsing-safety failure is diagnosed as an inability to index that source rather than as a dependency on the construct that exceeded the limit.
+
+**Encoding and suffix classification are stated.** A source is required to be valid UTF-8, and Markdown classification recognizes the two declared suffixes case-insensitively while failing an explicit entry carrying another.
+
+**Determinism is promised, not merely tested.** A work item tested that differing argument orders produce one composite; no criterion said so. Both the corpus comparison and the differential run between the two builds rest on it, so it is now a criterion and group order derives from source identity rather than from discovery order.
+
+The conformance report would have caught all four, since it maps every design clause to its fixtures and lists the uncovered ones. It runs at the end of the prototype initiative, so the first of these would have surfaced after the profile had been built against the opposite rule.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

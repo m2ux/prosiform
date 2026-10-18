@@ -8,14 +8,14 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 
 | Clause | Initiative | Criterion | Epic | Epic criteria |
 | --- | --- | --- | --- | --- |
-| G1 | I00 | AC1 | E04 Dependency Closure | AC1, AC2 |
+| G1 | I00 | AC1 | E04 Dependency Closure | AC1, AC2, AC9, AC10 |
 | G2 | I00 | AC2 | E05 Destination Identity | AC3, AC4 |
 | G2 | I00 | AC3 | E04 Dependency Closure | AC3 |
 | G3 | I00 | AC4 | E06 Validation Gate | AC2 |
 | G4 | I00 | AC5 | E03 Outline Hierarchy | AC1–AC7 |
-| G5 | I00 | AC6 | E06 Validation Gate | AC1, AC3–AC7 |
+| G5 | I00 | AC6 | E06 Validation Gate | AC1, AC3–AC9 |
 | G5 | I00 | AC10 | E04 Dependency Closure | AC7 |
-| G6 | I00 | AC7 | E02 Walking Skeleton | AC1–AC6 |
+| G6 | I00 | AC7 | E02 Walking Skeleton | AC1–AC8 |
 | G7 | I00 | AC8 | E01 Corpus Harness | AC1–AC4 |
 | G7 | I00 | AC9 | E07 Corpus Conformance | AC1–AC4 |
 | G1 | I00 | AC11 | E08 Field Deployment | AC1, AC4 |

@@ -71,6 +71,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E06:W02](i00-e06/w02.md) | The implementation plan for block boundary safety |
 | [I00:E06:W03](i00-e06/w03.md) | The implementation plan for source consistency and generated-input rejection |
 | [I00:E06:W04](i00-e06/w04.md) | The implementation plan for diagnostic content and the json format |
+| [I00:E06:W05](i00-e06/w05.md) | The implementation plan for validation scope and indexing failures |
 | [I00:E07:W01](i00-e07/w01.md) | The implementation plan for adversarial fixture families completed |
 | [I00:E07:W02](i00-e07/w02.md) | The implementation plan for clause-to-fixture mapping and the report |
 | [I00:E07:W03](i00-e07/w03.md) | The implementation plan for implementation independence check |
