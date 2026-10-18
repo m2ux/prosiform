@@ -1,6 +1,6 @@
-# artifacts
+# Artifacts
 
-## artifacts/epic-issue-body
+## Epic Issue Body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
@@ -1713,7 +1713,7 @@ A finding identifies whether it needs a user decision and records any supplied a
 
 ### task-body/Sections
 
-- A task has the [epic issue body](#artifactsepic-issue-body)'s sections without the Work Breakdown table.
+- A task has the [epic issue body](#epic-issue-body)'s sections without the Work Breakdown table.
 - A task is a row of the epic table, and gets its own `[Ixx:Eyy:Wzz]` issue only when it needs discussion or evidence of its own.
 
 ### work-item/Template

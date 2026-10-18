@@ -62,12 +62,12 @@ The same closure composed with `--group artifacts:2`, which merges every documen
 | Headings | 353 | 289 |
 | Qualified names | 0 | 38 |
 | Carrying an ordinal | 81 | 10 |
-| Bytes | 187,488 | 187,404 |
+| Bytes | 187,488 | 187,385 |
 
-Twenty-one artifact documents merge into `# artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
+Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
 ```markdown
-# artifacts
+# Artifacts
 
 ## Operations
 
@@ -87,21 +87,23 @@ The thirty-eight qualified names are all in `## Fields`, where `Template` is con
 ### issue-body/Titles
 ```
 
-Ten destinations still take the renderer's ordinal. Four are generated headings — the `artifacts` cohort heading and the merged `Operations`, `Outcomes` and `Procedure` — coinciding with a section of that name in a document no cohort claimed.
+Ten destinations still take the renderer's ordinal. Four are generated headings — the `Artifacts` cohort heading and the merged `Operations`, `Outcomes` and `Procedure` — coinciding with a section of that name in a document no cohort claimed.
 
 Published and rendered by GitHub: 289 anchors, 710 fragment links, none broken.
 
-A member's preamble sits at the head of its cohort under a heading carrying its path, which is the file heading a document outside any cohort already receives, so the compositor generates no group name of its own:
+A cohort is headed by its directory slug in title case, and a member's preamble becomes a synthetic section of it named by the document's stem, so the preamble sits among the cohort's sections rather than in a structure of its own:
 
 ```markdown
-# artifacts
+# Artifacts
 
-## artifacts/epic-issue-body
+## Epic Issue Body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
 ## Operations
 ```
+
+One member contributes one. A preamble belongs to no section, so only a whole-document selection carries one, and `artifacts/epic-issue-body.md` is the cohort's only whole-document member.
 
 Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 
