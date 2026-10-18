@@ -1,8 +1,8 @@
 # Artifacts
 
-## Body
+## Overview
 
-### Epic Issue
+### Epic Issue Body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
@@ -436,7 +436,7 @@ One body rewritten from confirmed local findings.
 3. Record a required tracker-kind change for the caller.
 4. Restate historical narration as the current design.
 5. Apply confirmed criterion changes.
-   - The body must meet [Body](#body-1), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
+   - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
 6. Validate the body through [Validate Issue Body](#validate-issue-body).
 7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
@@ -1193,7 +1193,7 @@ Summary, Structure, Behaviour, What Changed and Reading Order are always present
 
 #### Task Body
 
-- A task has the [epic issue body](#epic-issue-body-6)'s sections without the Work Breakdown table.
+- A task has the [epic issue body](#epic-issue-body-7)'s sections without the Work Breakdown table.
 - A task is a row of the epic table, and gets its own `[Ixx:Eyy:Wzz]` issue only when it needs discussion or evidence of its own.
 
 #### Work Item
@@ -1530,7 +1530,7 @@ Epic delivery follows [Delivery State](#delivery-state). Each finding names the 
 
 ### Initiative Acceptance Criteria
 
-An initiative criterion meets the [shared acceptance criteria](#shared-acceptance-criteria) and [Requirement Characteristics](#referencesrequirement-characteristics), and:
+An initiative criterion meets the [shared acceptance criteria](#shared-acceptance-criteria) and [Requirement Characteristics](#requirement-characteristics), and:
 
 - **No counts.**
   An initiative criterion carries no counts or figures, which go stale: it measures against a named baseline or check ("against the baseline", "as the budget test measures it"). A figure stays only where it is the criterion's own target, such as a bound it holds to.
@@ -1611,7 +1611,7 @@ An acceptance criterion meets these. A kind adds its own under its Acceptance Cr
 - States an end state, not an activity.
 - Names or implies the instrument that observes it: a test, a guard, a command or a measure.
 - Is unambiguous, so two readers agree on whether it holds.
-- Meets [Requirement Characteristics](#referencesrequirement-characteristics).
+- Meets [Requirement Characteristics](#requirement-characteristics).
 - **One invariant.**
   Each criterion states a single condition that holds or does not. One joining several is split, and the Coverage cells cite the new ones. A condition over a list of subjects is one condition.
 
@@ -3046,7 +3046,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 # Modes
 
-## Body
+## Overview
 
 ### Propose Mode
 
@@ -3548,7 +3548,11 @@ The main path meets [Outcomes](#outcomes).
 - **One account.**
   The same pull request yields one account, and a later run replaces it with the current change.
 
-# references/requirement-characteristics
+# References
+
+## Overview
+
+### Requirement Characteristics
 
 The characteristics an acceptance criterion meets, and the characteristics a set of them meets. Condensed from ISO/IEC/IEEE 29148:2018, clauses 5.2.4 to 5.2.7.
 

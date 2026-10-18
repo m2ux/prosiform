@@ -10,7 +10,7 @@ Two compositions produced from a real source tree under the v1 rules, so the con
 | Entry reference | `modes/plan-mode.md`, whole document |
 | Expansion-depth budget | 8 |
 | Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-composition-replaces-them) retires them |
-| Cohorts | none, and `--group artifacts:2 --group modes:2` |
+| Cohorts | none, and `--group artifacts:2 --group modes:2 --group references:2` |
 | Output | [Composite](worked-example-composite.md), [grouped composite](worked-example-grouped.md) |
 
 The Prerequisites exclusion is the one departure from composing the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once composition supplies what they named. Composing with them in place would measure the tool against a structure that is going away, so this example composes the tree D11 leaves behind.
@@ -54,17 +54,17 @@ The composite was then published and rendered by GitHub, which is the independen
 
 ## Grouped by cohort
 
-The same closure composed with `--group artifacts:2 --group modes:2`, which merges every document under those directories at its second heading level. `references/requirement-characteristics` is claimed by no cohort and keeps its own group, as does `modes/plan-mode`, which is the entry reference and is never claimed.
+The same closure composed with `--group artifacts:2 --group modes:2 --group references:2`, which merges every document under those directories at its second heading level. `modes/plan-mode` is the entry reference and is never claimed, so it keeps its own group at the end.
 
 | Measure | No cohort | `artifacts:2` |
 | --- | --- | --- |
 | Top-level groups | 27, one per document | 4 |
 | Destinations | 353 | 253 |
 | Branched names | 0 | 13 |
-| Carrying an ordinal | 81 | 18 |
-| Bytes | 187,488 | 187,097 |
+| Carrying an ordinal | 81 | 17 |
+| Bytes | 187,488 | 187,106 |
 
-Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`, and five modes into `# Modes`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
+Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`, five modes into `# Modes` and one reference into `# References`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
 ```markdown
 # Artifacts
@@ -118,21 +118,19 @@ Published and rendered by GitHub, with none broken.
 
 **This is also where the merge earns its keep as a review tool.** Reading the eight `Template` fields together shows that `Template` does not belong under `Fields` at all — a template is the artifact's shape, not one of its fields — which is a structural defect in the source that document-by-document reading had not surfaced in this workspace. The same question applies to `Sections`, carried by four documents under the same heading.
 
-A cohort is headed by its directory slug in title case and carries a `Body` section holding each member's preamble, named by the document's stem less a trailing word the section already states:
+Every cohort takes the same shape: headed by its directory slug in title case, opening with an `Overview` section that holds each member's preamble.
 
 ```markdown
-# Artifacts
-
-## Body
-
-### Epic Issue
-
-Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
-
-## Operations
+# Artifacts            # Modes                  # References
+## Overview            ## Overview              ## Overview
+### Epic Issue Body    ### Propose Mode         ### Requirement Characteristics
+## Operations          ### Sync Mode            ## Individual
+## Fields              ### Understand Mode      ## A Set
+## Commands            ## Procedure             ## Wording
+                       ## Outcomes
 ```
 
-That trimming is the rule the branch headings already follow, drop what the containing heading states, applied to a name rather than a path: `epic-issue-body.md` reads `Epic Issue` under `Body`. A preamble belongs to no section, so only a whole-document selection carries one; the artifacts cohort has one such member and the modes cohort three.
+An overview subsection is named by the document's stem less a trailing word the section already states, which is the rule the branch headings follow applied to a name rather than a path. Under `Overview` nothing in this workspace matches, so names stay whole. A preamble belongs to no section, so only a whole-document selection carries one: one artifacts member, three modes, one reference.
 
 Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 
