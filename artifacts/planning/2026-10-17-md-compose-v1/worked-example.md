@@ -61,8 +61,8 @@ The same closure composed with `--group artifacts:2 --group modes:2`, which merg
 | Top-level groups | 27, one per document | 4 |
 | Destinations | 353 | 253 |
 | Branched names | 0 | 13 |
-| Carrying an ordinal | 81 | 17 |
-| Bytes | 187,488 | 187,078 |
+| Carrying an ordinal | 81 | 18 |
+| Bytes | 187,488 | 187,097 |
 
 Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`, and five modes into `# Modes`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
@@ -118,19 +118,21 @@ Published and rendered by GitHub, with none broken.
 
 **This is also where the merge earns its keep as a review tool.** Reading the eight `Template` fields together shows that `Template` does not belong under `Fields` at all — a template is the artifact's shape, not one of its fields — which is a structural defect in the source that document-by-document reading had not surfaced in this workspace. The same question applies to `Sections`, carried by four documents under the same heading.
 
-A cohort is headed by its directory slug in title case, and a member's preamble becomes a synthetic section of it named by the document's stem, so the preamble sits among the cohort's sections rather than in a structure of its own:
+A cohort is headed by its directory slug in title case and carries a `Body` section holding each member's preamble, named by the document's stem less a trailing word the section already states:
 
 ```markdown
 # Artifacts
 
-## Epic Issue Body
+## Body
+
+### Epic Issue
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
 ## Operations
 ```
 
-One member contributes one. A preamble belongs to no section, so only a whole-document selection carries one, and `artifacts/epic-issue-body.md` is the cohort's only whole-document member.
+That trimming is the rule the branch headings already follow, drop what the containing heading states, applied to a name rather than a path: `epic-issue-body.md` reads `Epic Issue` under `Body`. A preamble belongs to no section, so only a whole-document selection carries one; the artifacts cohort has one such member and the modes cohort three.
 
 Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 

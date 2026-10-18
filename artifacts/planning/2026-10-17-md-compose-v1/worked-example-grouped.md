@@ -1,6 +1,8 @@
 # Artifacts
 
-## Epic Issue Body
+## Body
+
+### Epic Issue
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
@@ -434,7 +436,7 @@ One body rewritten from confirmed local findings.
 3. Record a required tracker-kind change for the caller.
 4. Restate historical narration as the current design.
 5. Apply confirmed criterion changes.
-   - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
+   - The body must meet [Body](#body-1), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
 6. Validate the body through [Validate Issue Body](#validate-issue-body).
 7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
@@ -1191,7 +1193,7 @@ Summary, Structure, Behaviour, What Changed and Reading Order are always present
 
 #### Task Body
 
-- A task has the [epic issue body](#epic-issue-body-7)'s sections without the Work Breakdown table.
+- A task has the [epic issue body](#epic-issue-body-6)'s sections without the Work Breakdown table.
 - A task is a row of the epic table, and gets its own `[Ixx:Eyy:Wzz]` issue only when it needs discussion or evidence of its own.
 
 #### Work Item
@@ -3044,15 +3046,17 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 # Modes
 
-## Propose Mode
+## Body
+
+### Propose Mode
 
 Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
 
-## Sync Mode
+### Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
-## Understand Mode
+### Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
