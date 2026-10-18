@@ -30,12 +30,30 @@ The wheel carries [`docs/glossary.md`](../docs/glossary.md) at `prosiform/docs/g
 uv build --wheel
 ```
 
+## Checks
+
+The build's tests and static checks are named commands, run from the repository root alongside [the checks the repository carries](../checks/README.md). Each tool is declared in the `dev` dependency group and pinned by the lockfile, so the version that checks a change on a working copy is the version that checks it in continuous integration.
+
+| Command | Runs |
+| --- | --- |
+| `make test` | `pytest` over `tests/`. A run that collects no test exits 5, so a suite that discovers nothing fails. |
+| `make lint` | `ruff check` over the package, its tests and `checks/`. |
+| `make format-check` | `ruff format --check` over those same files. Formatting is reported, not applied. |
+| `make typecheck` | `mypy` in strict mode over those same files. |
+
+| Declared | Value | Why |
+| --- | --- | --- |
+| [`pytest`](https://pypi.org/project/pytest/) | `==9.1.1` | Discovers and reports the suite, and exits nonzero on a failure and on an empty discovery alike. |
+| [`ruff`](https://pypi.org/project/ruff/) | `==0.17.1` | The linter and the formatter in one tool, so one declared configuration governs both. |
+| [`mypy`](https://pypi.org/project/mypy/) | `==2.4.0` | The type checker, run in strict mode. |
+
+`tests/test_profile.py` holds the pinned parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text, typographic substitution off, and raw HTML recognized as a token of its own.
+
 ## Layout
 
 | Path | Holds |
 | --- | --- |
-| `pyproject.toml` | The project definition: the supported Python version, the dependencies and the package data. |
+| `pyproject.toml` | The project definition: the supported Python version, the dependencies, the package data and the tool configuration. |
 | `uv.lock` | The exact resolved version and hash of every package. |
 | `src/prosiform/` | The package. |
-
-The commands that run this build's tests and static checks are a later task.
+| `tests/` | The build's tests. |
