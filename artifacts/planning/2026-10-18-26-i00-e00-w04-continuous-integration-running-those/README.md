@@ -12,6 +12,8 @@ It matters because a check that exists only as a command someone remembers to ty
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 Continuous Integration](w04.md) | The task's local plan: the job, the credential and the branch history it carries, and the heading-slug rule |
+| [Validation](validation.md) | The integration runs, clean and against a deliberate violation of each check, and the slug comparison |
 
 ## Links
 
