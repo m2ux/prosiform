@@ -6,7 +6,7 @@ The planning decisions taken with the user, each with the reasoning that produce
 
 Python implements the full behavioural contract — closure, consolidation, destination identity, validation, diagnostics and CLI — produces a language-neutral fixture corpus of exact expected composites, and ships as the tool agents in this workspace invoke. It is used for an extended period before a production build is committed to. Source-span edit fidelity is proven in Rust, where the production parser lives.
 
-The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, hierarchy-path destination identity and the post-compilation invariants — are parser-independent and provable cheaply.
+The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, destination identity over the whole composite and the post-compilation invariants — are parser-independent and provable cheaply.
 
 A specification written before use is a hypothesis, and the cheapest place to discover what it got wrong is a build that already works. Using Python for that period means the design's errors are found and corrected at Python's cost rather than at Rust's, and it makes the corpus the durable artifact: what survives the period is a contract that real sources have exercised. The prototype is therefore a retained component, not a stopgap, and it stays in use as the differential oracle after the production build exists. See D7 for what ends that period.
 
@@ -98,7 +98,7 @@ The timing is what makes the gap catchable. Removing the lists before the stage 
 
 This also reframes the measured evidence. The 318,018 bytes reached from one mode is largely the prerequisite sections pulling whole documents. It is the before-figure that composition replaces, not a limit to design around.
 
-The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 200,124. So removal accounts for 78,687 bytes and composition for 39,207. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
+The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 187,488. So removal accounts for 78,687 bytes and composition for 51,843. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
 
 ## D12 — Each Run Is Measured Against Reading the Sources Whole
 
@@ -144,6 +144,8 @@ The conformance report would have caught all four, since it maps every design cl
 
 ## D17 — Destinations Are Hierarchy Paths, and the Output Is Markdown Only
 
+The hierarchy path is superseded by [D23](#d23--a-destination-is-the-fragment-the-renderer-generates); the Markdown-only output stands.
+
 Every outbound local link in a composed document becomes a reference to content now inside that same document. The composite is a transient artifact an agent reads whole: it is never published, and no renderer resolves its fragments. A destination therefore only has to name a place in a document the reader already holds.
 
 A destination is the root-relative document path, then the source-heading slug of each eligible ancestor, then the section's own slug. Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which means duplicate sibling headings. Those are refused as ambiguous.
@@ -172,7 +174,7 @@ This was raised first as a gap about preamble placement, which was the wrong fra
 
 ## D20 — The Record Names Destinations, Not Anchors
 
-A destination is a hierarchy path and the composite carries no markup, so the record states both in those terms throughout. Three error codes are renamed to the things they now describe: an ambiguous fragment names a heading rather than an anchor, a reference that resolves to nothing names a target, and a document refused as input is a generated one with no reserved namespace left to name.
+A destination names a place in the composite and the output carries no markup, so the record states both in those terms throughout. Three error codes are renamed to the things they now describe: an ambiguous fragment names a heading rather than an anchor, a reference that resolves to nothing names a target, and a document refused as input is a generated one with no reserved namespace left to name.
 
 | Code | Raised when |
 | --- | --- |
@@ -198,13 +200,27 @@ An absorbed group keeps its source heading levels, because the file heading has 
 
 ## D22 — A Destination Is Written as a Fragment
 
+The hash stands; what follows it is settled by [D23](#d23--a-destination-is-the-fragment-the-renderer-generates).
+
 A destination begins with `#`, so `#artifacts/architecture-overview/fields/template` rather than the bare path. Everything after the hash names a place inside this one document.
 
 Written as a bare path, a destination is indistinguishable from a relative file reference, and an editor offered one tries to open a file that does not exist. The content it names is in the composite, a few hundred lines away, which is the whole point of having composed it.
 
 A colon chain was considered for the ancestor segments. It leaves the file path looking like a path, and for a document at the source root it produces `guidelines:prose`, where a colon in the first segment is how a URI scheme is spelled and a renderer may read `guidelines:` as one. The leading hash has no such hazard, needs one character, and leaves the path and the slugs exactly as they were.
 
-This also makes the generated-input rule easier to state. A source is a composite when its links carry fragments whose first segment names a document path, which is a shape no hand-written source link has.
+The generated-input rule cannot read off the destination, which D23 makes an ordinary fragment. It reads the file heading instead.
+
+## D23 — A Destination Is the Fragment the Renderer Generates
+
+A destination is the composed heading's slug, carrying the ordinal a GitHub-compatible renderer appends when two composed headings share one. So `#task-eligibility` where the slug is unique, `#fields-7` where it is the eighth heading to produce `fields`.
+
+Measured against GitHub's own rendering of the worked example: it generates 353 anchors for the composite's 353 headings, 272 bare and 81 numbered, and strips `/` from every slug it makes. That last fact is decisive. No destination containing a path separator can match an anchor, so the hierarchy path could not resolve anywhere, under any separator, while the path remained inside the fragment. The composite published with renderer-generated destinations resolves all 774 of its fragment links against those anchors, with none broken.
+
+This reverses the part of [D17](#d17--destinations-are-hierarchy-paths-and-the-output-is-markdown-only) that refused the renderer's counter. That refusal was sound about source documents, where an edit elsewhere changes how many similar headings precede a target and a stored link silently repoints. It does not carry to a composite, which is generated whole in one pass, validated against the map that produced it, never hand-edited, and refused as input to a later run. No link to a composite destination outlives the run that wrote it, so there is nothing for a later edit to repoint.
+
+Two things are given up. A destination no longer says which file it points into, so an agent reads the link text rather than the href to know where it is going. And the generated-input policy loses its marker: a composite's links are ordinary fragments now, so detection rests on the file heading alone, which is weaker and recorded as such.
+
+Two things are gained beyond the links working. Scoping destinations to the composite rather than to a file group means a section whose slug is unique needs no qualification at all, which is most of them. And the composite stops carrying a naming scheme of its own: it is an ordinary Markdown document whose links happen to resolve.
 
 ## Evidence
 

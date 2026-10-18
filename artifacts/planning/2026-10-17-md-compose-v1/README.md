@@ -66,7 +66,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E04:W05](i00-e04/w05.md) | The implementation plan for self-reference and ancestor-reference classification |
 | [I00:E04:W06](i00-e04/w06.md) | The implementation plan for resource budgets fail at the boundary |
 | [I00:E04:W07](i00-e04/w07.md) | The implementation plan for measured output size of a real closure |
-| [I00:E05:W01](i00-e05/w01.md) | The implementation plan for hierarchy-path destinations and ambiguity |
+| [I00:E05:W01](i00-e05/w01.md) | The implementation plan for renderer-generated destinations and ambiguity |
 | [I00:E05:W02](i00-e05/w02.md) | The implementation plan for link rewriting through the destination map |
 | [I00:E05:W03](i00-e05/w03.md) | The implementation plan for reference conversion and definition removal |
 | [I00:E05:W04](i00-e05/w04.md) | The implementation plan for resource rebasing and the resource base |

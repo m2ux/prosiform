@@ -4,7 +4,7 @@ md-compose is intended for agent skills and other instruction sets authored as c
 
 The problem addressed here is the gap between that modular authoring structure and the complete context needed to perform an operation. A document or section link identifies a destination, but does not itself establish which content is retrieved, whether its dependencies are followed, or whether the resulting context is complete. Leaving those decisions to the agent makes retrieval part of the reasoning task, with opportunities for missed prerequisites, unnecessarily broad reads, and inconsistent handling of repeated or recursive references.
 
-md-compose moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to hierarchy paths through the composite. It validates the complete candidate before publication, either returning the composite or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
+md-compose moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to the fragments a renderer generates for the headings they now name. It validates the complete candidate before publication, either returning the composite or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
 
 The intended guarantee is complete, validated composition of the explicitly linked content under a declared Markdown profile, not control over agent execution. md-compose does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown resources are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
 
@@ -77,7 +77,7 @@ Use a fixture-validated Rust adapter for GitHub-compatible source-heading slugs 
 
 Derive visible heading text from parser events: text/code content, link labels, image alternative text, decoded entities, and normalized line-break spacing, excluding formatting delimiters. Enumerate headings in original source order, container-nested headings included.
 
-Test punctuation, repeated spaces, markup, Unicode, and headings whose slugs coincide. Two headings in one source producing the same slug are not numbered apart: a fragment requiring one of them fails with `E_AMBIGUOUS_SOURCE_HEADING`, and the author disambiguates by retitling. Source-fragment lookup produces the slug a composite destination's segments are built from; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
+Test punctuation, repeated spaces, markup, Unicode, and headings whose slugs coincide. Two headings in one source producing the same slug are not numbered apart: a fragment requiring one of them fails with `E_AMBIGUOUS_SOURCE_HEADING`, and the author disambiguates by retitling. A source fragment must therefore identify one heading on its own, while a composite destination is free to carry the renderer's ordinal, because the compositor assigns it over a document it generated. Source-fragment lookup produces the slug a composite destination is built from; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
 
 The pinned adapter and compatibility fixtures define the supported profile. Do not promise perfect parity with every future renderer change.
 
@@ -148,7 +148,7 @@ Only headings that are direct children of the document are selectable section ro
 
 Emit exactly one document-level H1 for each contributing source file, using its normalized root-relative path with the Markdown extension removed. Escape the path as literal heading text so punctuation in it cannot create links, images, or inline HTML.
 
-All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents with the same basename in different directories remain distinguishable by their root-relative paths. Two documents whose paths differ only by Markdown extension produce one file heading and fail with `E_AMBIGUOUS_FILE_GROUP`.
+All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents with the same basename in different directories remain distinguishable by their root-relative paths. Two documents whose paths differ only by Markdown extension produce two file headings a reader cannot tell apart, and fail with `E_AMBIGUOUS_FILE_GROUP`.
 
 - **Absorbed title:** The file heading absorbs a source's first heading when that heading is the document's only H1 and its slug equals the final segment of the file heading's path. An absorbed title is not emitted, contributes no destination segment, and is not a target, because the file heading already names it.
 - **Group shift:** Every emitted source heading in a file group moves down exactly one level: H1 becomes H2, H2 becomes H3, and so on. A group whose title was absorbed keeps its source levels, the file heading having taken the level the shift makes room for. Preserve visible heading text and relative depth; do not renormalize selected roots independently.
@@ -158,7 +158,7 @@ All content from that source belongs beneath its file heading. The output has no
 - **Source order:** Within each file group, emit selected regions and structural ancestors in their original source order.
 - **Depth overflow:** Fail with `E_HEADING_DEPTH_OVERFLOW` before publication if any emitted source heading or structural ancestor would require a level beyond H6. Do not flatten it, clamp its level, or emit H7-like text as if it were a heading.
 
-The hierarchy guarantee is the original selected source outline beneath one additional file level. File headings isolate source documents, and a destination's hierarchy path keeps one file's sections out of another file's outline.
+The hierarchy guarantee is the original selected source outline beneath one additional file level. File headings isolate source documents, while destinations are assigned over the composite as a whole, so two files contributing a section of the same name stay distinguishable.
 
 ### Heading-only ancestor scaffolding
 
@@ -193,29 +193,33 @@ Insert blank-line separation between maximal emitted regions and reparse the can
 
 Do not silently close fences or repair code examples. Report unsafe boundaries with `E_UNSAFE_COMPOSITION_BOUNDARY`, identifying the source regions and conflicting output boundary.
 
-## Hierarchy-path composite destinations
+## Composite destinations
 
-Resolve fragments against the original complete source document before assigning composite identities. A destination is the path to the section through the composite's own structure, derived from stable source identities rather than from traversal positions or discovery order.
+Resolve fragments against the original complete source document before mapping them, so a destination follows from source identity rather than from traversal position or discovery order. A destination is then the fragment a renderer generates for the composed heading it names: that heading's slug under the profile's slugging rules, carrying the ordinal the renderer appends when two composed headings share a slug.
 
 ```text
-#{file-path-without-extension}/{ancestor-slug}/…/{section-slug}
+#{heading-slug}        a composed heading whose slug is unique in the composite
+#{heading-slug}-{n}    the heading that is the (n+1)th to carry that slug
 ```
 
-- **Fragment form:** A destination is written as a fragment, so it begins with `#`. Everything after it names a place inside this one document, which is what a fragment means and what stops a renderer or an editor resolving it against the filesystem.
-- **File segment:** The file group's heading text, which is the normalized root-relative document path with its Markdown extension removed, so a destination's first segment is a heading the reader can find.
-- **Ancestor segments:** The source-heading slug of each eligible ancestor, in order from the document's first level down to the section's parent. An absorbed title contributes no segment, its name being the file segment already.
-- **Section segment:** The section's own source-heading slug. A whole-document destination is the file segment alone.
-- **Uniqueness by construction:** Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which is a duplicate sibling. Duplicate siblings are refused as ambiguous, so no digest, no counter and no collision check is required.
-- **Separated segments:** Segments keep their separators, inside the file path included. Flattening them would make `a/b.md` and `a-b.md` collide.
+- **One document:** The composite is one document, so a destination is scoped to the whole composite rather than to a file group. A section whose slug is unique in the composite needs no qualification, and a reference from one file group to another is spelled the same way as a reference within one.
+- **Ordinal assignment:** Walk the emitted headings in composite order, file headings, structural ancestors and selected source headings alike. The first heading to carry a slug takes that slug; each later one takes the slug and its ordinal, counting from one. This is the renderer's own rule, reproduced so the two agree.
+- **Document destinations:** A whole-document reference resolves to the destination of that file's heading. The presence of a file heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
 - **Internal links:** Rewrite both cross-file and fragment-only links to the destination of the target they resolved to, using the same map that produced it.
-- **Visible headings:** Preserve selected source heading text while shifting levels by the group's shift. Nothing is inserted at a destination; the heading and its position in the outline are what the path names.
-- **Document destinations:** A file group may contain only selected sections. The presence of its filename heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
+- **Visible headings:** Preserve selected source heading text while shifting levels by the group's shift. Nothing is inserted at a destination; the heading and its position in the outline are what the destination names.
+- **Uniqueness:** Each destination occurs once in the composite and each rewritten link resolves to exactly one of them. The ordinal makes this true by construction and validation establishes it, rather than leaving it to the chance that no two headings coincide.
+
+### Resolvable where the composite is read
+
+A destination is the fragment the renderer itself would generate, so every internal link resolves: in a Markdown renderer, in an editor preview, and for an agent reading the document whole. The composite needs no anchor elements and no identifiers to achieve this, because the headings it already emits are what the renderer indexes.
+
+An ordinal is safe here in a way it is not in a source document. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A composite is generated whole in one pass, validated against the map that produced it, never hand-edited, and refused as input to a later composition, so no link to one outlives the run that wrote it.
 
 ### Markdown-only output
 
 The composite contains Markdown and nothing else. No anchor elements, no identifiers and no other markup are emitted at a destination, so a destination is a name for a place in the document rather than an element in it.
 
-The composite is a transient artifact consumed by an agent reading it whole. It is not published, and no renderer resolves its fragments, so a destination needs no element to point at: the fragment states which file, which ancestors and which section a reference means, and the reader locates it by the document's own structure. Writing it as a fragment is what makes that claim visible in the syntax, and it is why no destination can be mistaken for a path to a file that composition has already brought inside.
+A source heading is the only thing that names a section. There is no supported syntax for attaching a second name to one, so both a source fragment and a composite destination resolve against heading slugs alone, the first against one document's headings and the second against the composite's.
 
 ### Source markup policy
 
@@ -229,7 +233,7 @@ Parse each source independently after frontmatter recognition and before selecti
 
 1. Convert resolved reference-style uses in selected content to inline links or images.
 2. Preserve visible link text, image alternative content, and optional titles with the necessary Markdown escaping.
-3. Rewrite local Markdown destinations to composite hierarchy paths; preserve or rebase other destinations under the resource policy.
+3. Rewrite local Markdown destinations to composite destinations; preserve or rebase other destinations under the resource policy.
 4. Remove all original link-reference definition nodes from emitted content, including unused definitions.
 5. Preserve unresolved bracketed text as literal text; do not infer a dependency from text the source parser did not recognize as a link.
 6. Leave examples inside code spans and code blocks unchanged.
@@ -246,7 +250,7 @@ Composition is a compile-and-validate process rather than streaming concatenatio
 2. Read and parse each distinct source file once during discovery, capturing its identity and content hash and excluding leading frontmatter from composed content.
 3. Index source headings, links, definitions, ownership, and eligible section boundaries.
 4. Discover the recursive dependency graph and expand included source coverage to a fixed point.
-5. Consolidate selections, group them by source file, and derive required heading-only ancestors. Check shifted heading depths and assign collision-free destinations without treating scaffolds as new dependencies.
+5. Consolidate selections, group them by source file, and derive required heading-only ancestors. Check shifted heading depths and assign each emitted heading its destination in composite order, without treating scaffolds as new dependencies.
 6. Apply source-local reference conversions, rewrite destinations and heading syntax, and construct the candidate with one filename H1 per source.
 7. Reparse in candidate-validation mode and compare with selected source constructs, including target integrity, unintended new references, coverage, namespaces, and block boundaries. Do not reload the candidate through source-input validation.
 8. Recheck every source against its captured content hash and canonical path identity; fail if a source has changed, disappeared, or resolved elsewhere.
@@ -293,7 +297,7 @@ Discard metadata without validating YAML values. Count it toward input-size limi
 Classify references before traversal. The compositor guarantees internal resolution for supported local Markdown document links, not offline availability of every resource mentioned in the composed text.
 
 - **Local Markdown document links:** Resolve, recursively compose, and rewrite to composite destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
-- **Fragment-only links:** Resolve against the original source document's heading index, then apply the same composition and rewriting rules. A source fragment names one heading; a composite destination's fragment names a path through the whole composite, and the two are never confused because a source is rejected when its fragments take the latter form.
+- **Fragment-only links:** Resolve against the original source document's heading index, then apply the same composition and rewriting rules.
 - **Images and non-Markdown resources:** Do not recursively include them. Preserve their meaning through the resource-location policy below.
 - **Web URLs:** Preserve them without fetching or interpreting them as local dependencies. A GitHub URL remains a web URL unless an explicit URL-to-checkout feature is introduced later.
 - **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
@@ -385,11 +389,11 @@ This is change detection, not a transactional filesystem snapshot: files can cha
 
 ## Generated input policy
 
-Recomposition of md-compose output is unsupported in v1. Reject an input document whose links carry composite destinations, recognized by a fragment whose first segment names a document path, with `E_GENERATED_INPUT`, even when the requested subsection excludes them.
+Recomposition of md-compose output is unsupported in v1. Reject an input document whose first heading is a document-level H1 whose text, with a supported Markdown extension appended, names a document under the allowed source root, with `E_GENERATED_INPUT`.
 
-A composite rewrites every internal link to that form, so ordinary unmodified output identifies itself without a metadata wrapper. Destination-like examples in code remain literal and do not trigger detection.
+A file heading has that shape and an authored document's title does not, so ordinary unmodified output identifies itself without a metadata wrapper. A heading-like example in code is not a heading and does not trigger detection.
 
-This is not proof of origin or a security signature. Rewriting those links defeats the convention; do not claim detection of arbitrary modified derivatives.
+The destinations themselves can no longer carry this signal, since a composite's links are ordinary fragments indistinguishable from an authored one. Detection rests on the file heading alone, which is weaker: it is not proof of origin or a security signature, rewriting that heading defeats it, and no detection of arbitrary modified derivatives is claimed.
 
 ## Agent delivery contract
 
@@ -417,7 +421,7 @@ Keep `--max-links` scoped to authored occurrences in the selected closure. If fu
 
 Use the same declared Markdown grammar where applicable, but separate the policy context for source validation from candidate validation.
 
-- **Source mode:** Enforce source-root and generated-input rules, source-fragment resolution, and source-owned self-reference checks.
+- **Source mode:** Enforce source-root and generated-input rules, source-fragment resolution, and source-owned self-reference checks. A source fragment names one heading and carries no ordinal.
 - **Candidate mode:** Accept generated filename headings, shifted headings, and structural ancestors. Validate destinations, coverage, reconstructed outlines, block structure, and reference invariants against source provenance.
 - **Ownership:** Retain original source ownership independently of output heading levels. Validate the reconstructed outline against that model rather than assigning synthetic file/scaffold headings executable ownership.
 - **Preprocessing:** Do not pass the candidate back through source frontmatter stripping, dependency discovery, or generated-input rejection.
@@ -429,7 +433,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 
 - **Resolution:** Every supported local Markdown reference resolves to a known document or section.
 - **Target integrity:** Every rewritten link points to the intended source-derived destination, not merely a section whose slug happens to coincide.
-- **Uniqueness:** Composite destination identities are unambiguous.
+- **Uniqueness:** Each composite destination occurs once, and resolves in the renderer that reads the composite.
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
 - **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, generated filename headings and heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
@@ -440,7 +444,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 
 Validate the completed document against the source-to-output mapping, not only its surface syntax.
 
-- **One intended destination:** Each rewritten link resolves to exactly one explicit destination corresponding to its intended original document or section.
+- **One intended destination:** Each rewritten link resolves to exactly one destination corresponding to its intended original document or section, and that destination is the fragment the declared renderer generates for the heading it names.
 - **Reference preservation:** Each link/image use in selected source content retains its visible content and title and reaches its intended destination under the resource policy. Scaffold-only titles intentionally contain no live source links or images.
 - **No new links:** Source text parsed as literal bracketed text must not become a new link or image through composition.
 - **No definition leakage:** No original link-reference definition nodes survive emission; literal examples of definitions remain unchanged.
@@ -495,7 +499,7 @@ Before broad implementation, create small fixtures with exact expected composite
 
 - **Identity:** Whole-file composition with internal section links; direct self-links through heading names; ancestor back-references; preamble-to-document self-links; same-file cross-section links.
 - **Coverage:** Child-first then parent inclusion; whole-document inclusion discovered late; shared dependencies; multi-file cycles; different entry argument orders.
-- **Destinations:** Duplicate heading slugs refused as ambiguous, same-basename paths in different directories, two documents whose paths differ only by Markdown extension refused as ambiguous, deep ancestor chains, and a file group whose filename heading does not imply whole-document inclusion.
+- **Destinations:** A unique composed heading taking a bare slug, repeated composed headings taking ordinals in composite order, a source fragment ambiguous within one document refused, two documents whose paths differ only by Markdown extension refused, same-basename paths in different directories, and a file group whose filename heading does not imply whole-document inclusion.
 - **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
@@ -506,12 +510,12 @@ Before broad implementation, create small fixtures with exact expected composite
 - **Resources:** Images and script links rebased for file output, stdout with and without a resource base, and unchanged relative paths inside command examples.
 - **Consistency:** Source modification, deletion, or changed canonical identity during compilation.
 - **Validation scope:** Unselected broken/self-referential siblings do not fail a narrow composition but do fail when later included.
-- **Generated inputs:** Reject a source whose links carry composite destinations, while ignoring destination-like examples in code.
+- **Generated inputs:** Reject a source opening on a file heading, while ignoring a heading-like example in code and an authored title that merely contains a slash.
 - **Delivery:** Nonzero process exit, output-budget failure, broken output pipe, and wrapper rejection of transport-oversized output.
 - **Parser fidelity:** Exact ranges for multiline references, reference-style images, nested image/link edits, tables, tabs, Unicode, escapes, CRLF, and original diagnostic coordinates.
 - **Definition inventory:** Remove every selected definition occurrence, including duplicates, unused labels, case-fold-equivalent labels, multiline definitions, and supported containers, without changing original winner selection.
 - **Parser exhaustion:** Trigger reference-expansion suppression below the compositor's public input/output limits and require an explicit failure. Include a case that consumes the budget on its last valid reference with no later lookup, which must not falsely claim omitted references.
-- **Validation modes:** Candidate validation accepts generated filename headings and scaffolds and preserves saved source ownership; a subsequent source invocation rejects the generated document.
+- **Validation modes:** Candidate validation accepts generated filename headings and scaffolds, confirms each destination against the renderer's own slugging, and preserves saved source ownership; a subsequent source invocation rejects the generated document.
 - **File-wide safety:** Excessive parsing depth in an unselected sibling can fail with a file-indexing resource diagnostic, while an ordinary unselected broken link does not.
 - **Profile:** Task markers protected from definitions, disabled typographic rewriting, Markdown suffix classification, and explicit rejection of unsupported selected dependency constructs.
 - **Frontmatter:** Optional BOM, exact opening/closing delimiters, `...` termination, leading-blank-line distinction, malformed delimiters, and missing closers.
