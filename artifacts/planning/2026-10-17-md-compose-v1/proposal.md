@@ -1,6 +1,6 @@
 ## Overview
 
-Agent skills in this workspace are authored as modular instruction sets: an entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation means resolving that graph at read time, which is work the agent currently performs by following prose rules. This proposal scopes md-compose, a tool that compiles a set of linked local Markdown documents into one continuous, validated Markdown document, so that an agent given a reference receives the selected content and every local Markdown dependency it links to, or an explicit failure.
+Agent skills in this workspace are authored as modular instruction sets: an entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation means resolving that graph at read time, which is work the agent currently performs by following prose rules. This proposal scopes bundle-md, a tool that compiles a set of linked local Markdown documents into one continuous, validated Markdown document, so that an agent given a reference receives the selected content and every local Markdown dependency it links to, or an explicit failure.
 
 ## Problem
 
@@ -27,19 +27,19 @@ Modular Markdown authoring separates the destination a link names from the conte
 - Every internal reference in that document resolves to exactly one destination within it, and each included source region appears exactly once however many paths reach it.
 - Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names.
 - The original outline of each selected section survives: its ancestor headings are present, its relative depth is preserved, and each contributing file's content sits beneath one heading naming that file.
-- A composition that cannot be fully validated emits no composite and exits nonzero, with a diagnostic naming the defect, its source location, the offending reference and the inclusion chain that reached it.
-- Authors keep their existing modular files; nothing beyond ordinary Markdown links and headings makes a document composable.
+- A run that cannot be fully validated emits no bundle and exits nonzero, with a diagnostic naming the defect, its source location, the offending reference and the inclusion chain that reached it.
+- Authors keep their existing modular files; nothing beyond ordinary Markdown links and headings is needed to bundle a document.
 - The contract is demonstrated by two independent implementations passing one shared fixture corpus.
 - The behavioural contract the production build implements has been exercised by real use and recorded as settled before that build begins.
 
 ## Non-Goals
 
-- It does not execute, authorize or sequence the procedures it composes.
+- It does not execute, authorize or sequence the procedures it bundles.
 - It does not infer a dependency the source did not state as a Markdown link.
 - It does not fetch remote documents, resources or URLs.
-- It does not bundle images or other non-Markdown resources into the composite.
+- It does not bundle images or other non-Markdown resources into the bundle.
 - It does not accept its own output as a source document.
-- It does not guarantee that an agent obeys the composed instructions.
+- It does not guarantee that an agent obeys the bundled instructions.
 - It does not change `pulldown-cmark` or contribute anything upstream.
 - It does not commit to a date by which the contract is settled.
 

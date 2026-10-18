@@ -1,21 +1,21 @@
 # Worked Example
 
-Two compositions produced from a real source tree under the v1 rules, so the contract can be reviewed as output rather than as prose.
+Two runs produced from a real source tree under the v1 rules, so the contract can be reviewed as output rather than as prose.
 
-## What was composed
+## What was bundled
 
 | | |
 | --- | --- |
 | Source root | `.claude/skills/work-planner` at commit `6888ebf` |
 | Entry reference | `modes/plan-mode.md`, whole document |
 | Expansion-depth budget | 8 |
-| Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-composition-replaces-them) retires them |
-| Cohorts | none, and `--group artifacts:2 --group modes:2 --group references:2` |
-| Output | [Composite](worked-example-composite.md), [grouped composite](worked-example-grouped.md) |
+| Prerequisites sections | Excluded from every source, as [D11](decisions.md#d11--prerequisite-sections-go-as-bundling-replaces-them) retires them |
+| Groups | none, and `--group artifacts:2 --group modes:2 --group references:2` |
+| Output | [Bundle](worked-example-bundle.md), [grouped bundle](worked-example-grouped.md) |
 
-The Prerequisites exclusion is the one departure from composing the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once composition supplies what they named. Composing with them in place would measure the tool against a structure that is going away, so this example composes the tree D11 leaves behind.
+The Prerequisites exclusion is the one departure from bundling the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once bundling supplies what they named. Bundling with them in place would measure the tool against a structure that is going away, so this example bundles the tree D11 leaves behind.
 
-A second composition, entered at `SKILL.md`, was run to exercise the failure paths. Its output is not kept; what it found is recorded below.
+A second bundling, entered at `SKILL.md`, was run to exercise the failure paths. Its output is not kept; what it found is recorded below.
 
 ## Result
 
@@ -27,24 +27,24 @@ A second composition, entered at `SKILL.md`, was run to exercise the failure pat
 | Headings emitted | 353 |
 | Deepest emitted heading | H4 |
 | Internal links rewritten | 421 |
-| Composite size | 187,488 bytes |
+| Bundle size | 187,488 bytes |
 | Expansion depth reached | 4 hops |
 | Group order | root-relative path throughout |
 
-Validation reparsed the composite and checked it against the invariants the output alone can establish: every one of the 421 internal links resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
+Validation reparsed the bundle and checked it against the invariants the output alone can establish: every one of the 421 internal links resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
 
-The composite was then published and rendered by GitHub, which is the independent check. GitHub generates 353 anchors for its 353 headings, 272 bare and 81 carrying an ordinal, and the page's 774 fragment links -- the 421 rewritten ones and GitHub's own 353 heading self-links -- all resolve. None are broken.
+The bundle was then published and rendered by GitHub, which is the independent check. GitHub generates 353 anchors for its 353 headings, 272 bare and 81 carrying an ordinal, and the page's 774 fragment links -- the 421 rewritten ones and GitHub's own 353 heading self-links -- all resolve. None are broken.
 
 ## What it shows
 
 - **A destination is the renderer's own fragment, and nothing is emitted at it.**
-  `[Template](#template)` is the fragment GitHub generates for the heading `### Template`, so the link resolves where the composite is read. Where two composed headings share a slug the destination carries the renderer's ordinal, as `[Fields](#fields-7)` does. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
+  `[Template](#template)` is the fragment GitHub generates for the heading `### Template`, so the link resolves where the bundle is read. Where two bundled headings share a slug the destination carries the renderer's ordinal, as `[Fields](#fields-7)` does. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
 
 - **A file heading absorbs a title it already carries.**
   `artifacts/architecture-overview.md` opens with `# Architecture Overview`, which slugifies to its own filename stem, so the file heading replaces it and that group keeps its source levels. Thirty-seven of the skill's thirty-eight documents are this shape. `SKILL.md`, whose H1 is `Work Planner`, is the one that is not: it keeps its H1 and shifts.
 
-- **Heading-only scaffolding carries no body.**
-  `artifacts/board-queue` contributes one section. Its group emits the filename heading, then `Fields` as a title alone, then `Task Eligibility` with its content. No sibling section and no ancestor body reaches the composite.
+- **Heading-only structural ancestors carries no body.**
+  `artifacts/board-queue` contributes one section. Its group emits the filename heading, then `Fields` as a title alone, then `Task Eligibility` with its content. No sibling section and no ancestor body reaches the bundle.
 
 - **Heading-like text in code is untouched.**
   The template fences in `artifacts/architecture-overview.md` hold `# Architecture Overview — {{Change Name}}` and a `---` pair inside a Mermaid block. Neither is shifted, parsed as a heading, or read as frontmatter.
@@ -52,11 +52,11 @@ The composite was then published and rendered by GitHub, which is the independen
 - **Whole-document and section references produce different destinations.**
   `[Propose Mode](#modespropose-mode)` resolves to that file's heading, whose slug drops the slash as the renderer does; `[Populate Planning Record](#populate-planning-record)` resolves to the section.
 
-## Grouped by cohort
+## Grouped by group
 
-The same closure composed with `--group artifacts:2 --group modes:2 --group references:2`, which merges every document under those directories at its second heading level. Every document in the closure is claimed, so the composite is three groups.
+The same closure bundled with `--group artifacts:2 --group modes:2 --group references:2`, which merges every document under those directories at its second heading level. Every document in the closure is claimed, so the bundle is three groups.
 
-| Measure | No cohort | `artifacts:2` |
+| Measure | No group | `artifacts:2` |
 | --- | --- | --- |
 | Top-level groups | 27, one per document | 3 |
 | Destinations | 353 | 250 |
@@ -76,7 +76,7 @@ Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`,
 ### Select Project Board
 ```
 
-The thirteen branched names are all in `## Fields`. A name several documents contribute is emitted once, with each document's content under a branch heading naming it, so the eight `Template` fields sit together:
+The thirteen names carrying variants are all in `## Fields`. A name several documents contribute is emitted once, with each document's content under a variant heading naming it, so the eight `Template` fields sit together:
 
 ```markdown
 ## Fields
@@ -96,9 +96,9 @@ The thirteen branched names are all in `## Fields`. A name several documents con
 #### Proposal Body
 ```
 
-Seventeen destinations take the renderer's ordinal, most of them branch headings: a document contributing to several branched names supplies its title to each, so `Epic Issue Body` recurs.
+Seventeen destinations take the renderer's ordinal, most of them variant headings: a document contributing to several names carrying variants supplies its title to each, so `Epic Issue Body` recurs.
 
-A merged section is not always a container of named items. Every mode's `Procedure` carries the mode's own numbered steps, so merging five of them by item would run five procedures together with nothing to tell them apart. A section carrying body text from more than one document therefore branches whole:
+A merged section is not always a container of named items. Every mode's `Procedure` carries the mode's own numbered steps, so merging five of them by item would run five procedures together with nothing to tell them apart. A section carrying body text from more than one document therefore splits into variants:
 
 ```markdown
 ## Procedure
@@ -112,13 +112,13 @@ A merged section is not always a container of named items. Every mode's `Procedu
 #### Fetch Merge Readiness
 ```
 
-`modes/plan-mode`, the entry reference, is merged into the modes cohort like any other mode; nothing distinguishes it by position. `SKILL.md` is absent from the composite entirely, since nothing in the closure links to it.
+`modes/plan-mode`, the entry reference, is merged into the modes group like any other mode; nothing distinguishes it by position. `SKILL.md` is absent from the bundle entirely, since nothing in the closure links to it.
 
 Published and rendered by GitHub, with none broken.
 
 **This is also where the merge earns its keep as a review tool.** Reading the eight `Template` fields together shows that `Template` does not belong under `Fields` at all — a template is the artifact's shape, not one of its fields — which is a structural defect in the source that document-by-document reading had not surfaced in this workspace. The same question applies to `Sections`, carried by four documents under the same heading.
 
-Every cohort takes the same shape: headed by its directory slug in title case, opening with an `Overview` section that holds each member's preamble.
+Every group takes the same shape: headed by its directory slug in title case, opening with an `Overview` section that holds each member's preamble.
 
 ```markdown
 # Artifacts            # Modes                  # References
@@ -131,7 +131,7 @@ Every cohort takes the same shape: headed by its directory slug in title case, o
                        ## Outcomes
 ```
 
-An overview subsection is named by the document's stem less a trailing word the section already states, which is the rule the branch headings follow applied to a name rather than a path. Under `Overview` nothing in this workspace matches, so names stay whole. A preamble belongs to no section, so only a whole-document selection carries one: one artifacts member, four modes, one reference.
+An overview subsection is named by the document's stem less a trailing word the section already states, which is the rule the variant headings follow applied to a name rather than a path. Under `Overview` nothing in this workspace matches, so names stay whole. A preamble belongs to no section, so only a whole-document selection carries one: one artifacts member, four modes, one reference.
 
 Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 
@@ -141,16 +141,16 @@ Only `work-planner` is broadly representative in this workspace, so the case the
 | --- | --- | --- |
 | Closure with Prerequisites sections present, read whole | 39 | 318,018 |
 | Closure with Prerequisites sections removed, read whole | 27 | 239,331 |
-| Composed | 27 | 187,488 |
+| Bundled | 27 | 187,488 |
 | The whole skill, read whole | 38 | 302,445 |
 
-Most of the reduction is D11's, not composition's. Removing the prerequisite lists drops twelve files no procedure linked, worth 78,687 bytes; selecting sections within what remains saves a further 51,843, or 21.7%. At this skill's granularity, composition's case rests on the completeness signal, the single document and the resolved links rather than on size.
+Most of the reduction is D11's, not bundling's. Removing the prerequisite lists drops twelve files no procedure linked, worth 78,687 bytes; selecting sections within what remains saves a further 51,843, or 21.7%. At this skill's granularity, bundling's case rests on the completeness signal, the single document and the resolved links rather than on size.
 
 That is also the first thing [D12](decisions.md#d12--each-run-is-measured-against-reading-the-sources-whole)'s run records will measure at scale, and this example is the shape those records take.
 
 ## What the failure paths found
 
-The Plan Mode closure composes clean. The `SKILL.md` closure, which reaches `guidelines.md` and `modes/revise-mode.md`, does not: it fails on ten defects in the source, every one of them a real link fault that reading the files would not surface.
+The Plan Mode closure bundles clean. The `SKILL.md` closure, which reaches `guidelines.md` and `modes/revise-mode.md`, does not: it fails on ten defects in the source, every one of them a real link fault that reading the files would not surface.
 
 | Defect | Where | Count |
 | --- | --- | --- |
@@ -165,7 +165,7 @@ This is the completeness signal doing the thing the proposal claimed for it, on 
 
 ## What it does not establish
 
-The composites were produced by a direct reading of the design, not by the prototype, which does not exist yet. They demonstrate what the rules produce and where they are ambiguous. This is not a conformance result, carries no fixture, and proves nothing about byte-level preservation, diagnostic wording, exit statuses or atomic publication.
+The bundles were produced by a direct reading of the design, not by the prototype, which does not exist yet. They demonstrate what the rules produce and where they are ambiguous. This is not a conformance result, carries no fixture, and proves nothing about byte-level preservation, diagnostic wording, exit statuses or atomic publication.
 
 ## Open
 

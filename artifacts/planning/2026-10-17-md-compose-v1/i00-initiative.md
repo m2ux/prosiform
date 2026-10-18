@@ -1,6 +1,6 @@
 ## Overview
 
-A Python 3 build of md-compose compiles one or more local Markdown document or section references into one continuous, validated Markdown document, and a language-neutral fixture corpus states what that document must be. The corpus declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing this one. The repository is laid out, its environment pinned and its checks runnable before the first of that work lands. The build installs as the tool agents in this workspace invoke, with a wrapper that delivers a composite whole or reports a delivery failure. The initiative is complete when the corpus covers every behavioural clause of the design, the Python build passes it, and an agent composes by invoking the installed tool.
+A Python 3 build of bundle-md compiles one or more local Markdown document or section references into one continuous, validated Markdown document, and a language-neutral fixture corpus states what that document must be. The corpus declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing this one. The repository is laid out, its environment pinned and its checks runnable before the first of that work lands. The build installs as the tool agents in this workspace invoke, with a wrapper that delivers a bundle whole or reports a delivery failure. The initiative is complete when the corpus covers every behavioural clause of the design, the Python build passes it, and an agent bundles by invoking the installed tool.
 
 ## Problem
 
@@ -24,13 +24,13 @@ Modular Markdown authoring separates the destination a link names from the conte
 ## Proposal
 
 - **The corpus is the contract.**
-  Each fixture declares a source tree, an invocation and the exact expected composite, exit status and diagnostics. A runner decides pass or fail from the declaration alone, naming no implementation.
+  Each fixture declares a source tree, an invocation and the exact expected bundle, exit status and diagnostics. A runner decides pass or fail from the declaration alone, naming no implementation.
 
 - **Python proves the semantics.**
   Dependency closure, overlap consolidation, destination identity and the post-compilation invariants are parser-independent, so a Python build establishes them at a fraction of the cost of establishing them in the production language.
 
 - **The build grows in layers.**
-  A whole-document composition that works end to end comes first. Outline hierarchy, dependency closure, destination identity and the validation gate each extend a product that already works.
+  A whole-document bundling that works end to end comes first. Outline hierarchy, dependency closure, destination identity and the validation gate each extend a product that already works.
 
 - **Span-level editing is out of scope here.**
   Byte-exact source-preserving edits are specific to the production parser and are proven where that parser lives. This build may reconstruct its output, provided the corpus's preservation fixtures hold.
@@ -57,27 +57,27 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** A composition returns one Markdown document holding the selected content and every local Markdown dependency reachable from it, as the corpus runner's output comparison shows.
-- [ ] **AC2.** Each internal reference in a published composite resolves to exactly one destination within that composite, as the corpus runner's destination check shows.
-- [ ] **AC3.** Each selected source region appears once in a published composite however many reference paths reach it, as the corpus runner's coverage check shows.
+- [ ] **AC1.** A bundling returns one Markdown document holding the selected content and every local Markdown dependency reachable from it, as the corpus runner's output comparison shows.
+- [ ] **AC2.** Each internal reference in a published bundle resolves to exactly one destination within that bundle, as the corpus runner's destination check shows.
+- [ ] **AC3.** Each selected source region appears once in a published bundle however many reference paths reach it, as the corpus runner's coverage check shows.
 - [ ] **AC4.** Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names, as the corpus runner's preservation check shows.
 - [ ] **AC5.** Each selected section keeps its ancestor chain and its relative depth beneath the heading naming its source file, as the corpus runner's outline comparison shows.
-- [ ] **AC6.** A composition that fails validation publishes nothing, exits nonzero and writes a diagnostic carrying the defect, its source location, the offending reference and the inclusion chain, as the corpus's failure fixtures show.
-- [ ] **AC7.** A document composes with no markup beyond ordinary Markdown links and headings, as the fixtures taken from unmodified workspace skills show.
+- [ ] **AC6.** A bundling that fails validation publishes nothing, exits nonzero and writes a diagnostic carrying the defect, its source location, the offending reference and the inclusion chain, as the corpus's failure fixtures show.
+- [ ] **AC7.** A document bundles with no markup beyond ordinary Markdown links and headings, as the fixtures taken from unmodified workspace skills show.
 - [ ] **AC8.** A fixture declares its sources, its invocation and its expected result, and the runner decides pass or fail from that declaration alone, as the runner's own test suite shows.
 - [ ] **AC9.** Every behavioural clause the design states maps to at least one corpus fixture, or is listed as uncovered, as the conformance report shows.
 - [ ] **AC10.** Each resource limit the profile names fails at the first boundary it crosses, publishing nothing, as the corpus's limit fixtures show.
-- [ ] **AC11.** An agent composes its context by invoking the installed tool rather than by reading the linked documents itself, as the installation smoke run against a documented entry point shows.
-- [ ] **AC12.** A composite the transport cannot deliver whole is reported as a delivery failure rather than as a truncated success, as the corpus's delivery fixtures show.
+- [ ] **AC11.** An agent bundles its context by invoking the installed tool rather than by reading the linked documents itself, as the installation smoke run against a documented entry point shows.
+- [ ] **AC12.** A bundle the transport cannot deliver whole is reported as a delivery failure rather than as a truncated success, as the corpus's delivery fixtures show.
 - [ ] **AC13.** A corpus run reproduces on a fresh checkout at the dependency versions a lockfile records, as the continuous-integration run shows.
-- [ ] **AC14.** The output budget rests on the measured size of a real composition rather than an assumed figure, as the recorded measurement shows.
+- [ ] **AC14.** The output budget rests on the measured size of a real bundling rather than an assumed figure, as the recorded measurement shows.
 
 ## Non-Goals
 
 - It does not apply byte-exact edits to identified source spans.
 - It does not create the production build's tree, toolchain or dependencies.
 - It does not settle the specification, which use refines.
-- It does not execute, authorize or sequence the procedures it composes.
+- It does not execute, authorize or sequence the procedures it bundles.
 - It does not infer a dependency the source did not state as a Markdown link.
 - It does not fetch remote documents, resources or URLs.
 - It does not accept its own output as a source document.

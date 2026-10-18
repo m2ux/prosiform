@@ -1,12 +1,12 @@
-# md-compose v1 - October 2026
+# bundle-md v1 - October 2026
 
 > Initiative Plan - Created 2026-10-17 - Revised 2026-10-18
 
 ## Executive Summary
 
-md-compose compiles a set of linked local Markdown documents into one continuous, validated Markdown document. Agent skills in this workspace are authored as modular instruction sets: a skill entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation currently means the agent resolves that graph itself, deciding which sections to read, where each section ends, and when the closure is complete. md-compose moves that retrieval into a deterministic compilation step that either returns the whole composite or fails with a diagnostic.
+bundle-md compiles a set of linked local Markdown documents into one continuous, validated Markdown document. Agent skills in this workspace are authored as modular instruction sets: a skill entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation currently means the agent resolves that graph itself, deciding which sections to read, where each section ends, and when the closure is complete. bundle-md moves that retrieval into a deterministic compilation step that either returns the whole bundle or fails with a diagnostic.
 
-The work runs in three stages. A Python 3 build lays out the repository, implements the behavioural contract, produces a language-neutral fixture corpus of exact expected composites, and installs as the tool agents in this workspace invoke. It is then used for an extended period, and what that use reveals refines the specification through a findings ledger until every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision. A Rust build then implements that tagged revision, with the prototype retained in use as its differential oracle. The corpus is the contract, so neither implementation is the specification of the other.
+The work runs in three stages. A Python 3 build lays out the repository, implements the behavioural contract, produces a language-neutral fixture corpus of exact expected bundles, and installs as the tool agents in this workspace invoke. It is then used for an extended period, and what that use reveals refines the specification through a findings ledger until every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision. A Rust build then implements that tagged revision, with the prototype retained in use as its differential oracle. The corpus is the contract, so neither implementation is the specification of the other.
 
 ## Artifacts
 
@@ -15,11 +15,12 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [Proposal body](proposal.md) | The local source for issue #1, the scoped problem and its eight goal clauses |
 | [Design](design.md) | The v1 behavioural contract: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits |
 | [Upstream Assessment](upstream-assessment.md) | The inspected state of `pulldown-cmark` against the parser gates, and the two narrowly scoped contributions, deferred and unauthorized |
+| [Glossary](glossary.md) | Each term the contract uses, defined once, and the terms deliberately not used |
 | [Decisions](decisions.md) | The planning decisions taken with the user, the reasoning behind each, and the measured evidence |
 | [Review](review.md) | The goal trace, the stage order, the source alignment, the threats checked, the independent task pairs and the check results |
-| [Worked Example](worked-example.md) | One composite produced from the work-planner skill under the v1 rules, with its measurements and what it settles |
-| [Worked Example composite](worked-example-composite.md) | The composite itself: 27 file groups, 204 selected sections and 421 rewritten destinations |
-| [Worked Example grouped](worked-example-grouped.md) | The same closure with an `artifacts` cohort: nine top-level groups, 38 qualified names and 11 ordinals |
+| [Worked Example](worked-example.md) | One bundle produced from the work-planner skill under the v1 rules, with its measurements and what it settles |
+| [Worked Example bundle](worked-example-bundle.md) | The bundle itself: 27 file groups, 204 selected sections and 421 rewritten destinations |
+| [Worked Example grouped](worked-example-grouped.md) | The same closure with an `artifacts` group: nine top-level groups, 38 qualified names and 11 ordinals |
 | [I00 initiative body](i00-initiative.md) | The local source for issue #2, the prototype initiative |
 | [I01 initiative body](i01-initiative.md) | The local source for issue #20, the refinement initiative |
 | [I02 initiative body](i02-initiative.md) | The local source for issue #10, the production initiative |
@@ -58,9 +59,9 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E03:W02](i00-e03/w02.md) | The implementation plan for eligible section extraction and boundaries |
 | [I00:E03:W03](i00-e03/w03.md) | The implementation plan for the plus-one heading shift and Setext conversion |
 | [I00:E03:W04](i00-e03/w04.md) | The implementation plan for file group emission: absorbed title and source order |
-| [I00:E03:W05](i00-e03/w05.md) | The implementation plan for heading-only ancestor scaffolding |
+| [I00:E03:W05](i00-e03/w05.md) | The implementation plan for heading-only structural ancestors |
 | [I00:E03:W06](i00-e03/w06.md) | The implementation plan for heading depth overflow fails |
-| [I00:E03:W07](i00-e03/w07.md) | The implementation plan for cohort grouping and minimal name qualification |
+| [I00:E03:W07](i00-e03/w07.md) | The implementation plan for group grouping and minimal name qualification |
 | [I00:E04:W01](i00-e04/w01.md) | The implementation plan for reference normalization and path identity |
 | [I00:E04:W02](i00-e04/w02.md) | The implementation plan for root confinement and no-symlink source access |
 | [I00:E04:W03](i00-e04/w03.md) | The implementation plan for link classification and traversal to a fixed point |
@@ -89,7 +90,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E01:W01](i01-e01/w01.md) | The implementation plan for revision order and its citation record |
 | [I01:E01:W02](i01-e01/w02.md) | The implementation plan for traceability refreshed on each revision |
 | [I01:E01:W03](i01-e01/w03.md) | The implementation plan for open-finding summary from the ledger |
-| [I01:E01:W04](i01-e01/w04.md) | The implementation plan for prerequisite removal and the composition instruction |
+| [I01:E01:W04](i01-e01/w04.md) | The implementation plan for prerequisite removal and the bundling instruction |
 | [I01:E02:W01](i01-e02/w01.md) | The implementation plan for deferral decisions for the remaining entries |
 | [I01:E02:W02](i01-e02/w02.md) | The implementation plan for freeze check and the tagged revision |
 | [I02:E00:W01](i02-e00/w01.md) | The implementation plan for definition-occurrence reproducer |

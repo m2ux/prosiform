@@ -4,7 +4,7 @@ The prototype is used as the tool agents in this workspace invoke, and what that
 
 ## Problem
 
-The behavioural contract has been written and reviewed, and nothing has yet composed a real instruction set for an agent carrying out the procedure it describes.
+The behavioural contract has been written and reviewed, and nothing has yet bundled a real instruction set for an agent carrying out the procedure it describes.
 
 - **A specification written before use is a hypothesis.**
   The design states its invariants against constructed examples, and names its own residual items as needing measured fixture and real-skill data before their defaults are revisited ([residual policy](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md#L532-L537)).
@@ -16,7 +16,7 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
   The agent is doing something else, so without a recorded place for a finding the cheapest action is a local workaround, and the design keeps its original claim.
 
 - **A fix applied to the build leaves the contract wrong.**
-  Correcting a composition in code without changing the design leaves the design asserting the original behaviour, and the next implementation reads the design.
+  Correcting a bundling in code without changing the design leaves the design asserting the original behaviour, and the next implementation reads the design.
 
 - **A moving contract cannot be implemented twice.**
   A corpus that changes under refinement gives a second implementation no fixed target and no revision it can be said to satisfy.
@@ -27,7 +27,7 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
   It is invoked from this workspace's skills, so the contract meets real sources and real agents rather than constructed examples.
 
 - **The ledger records every run.**
-  A composition run is recorded with the source identities it composed and its outcome, so how much the tool was used is a fact the ledger holds rather than an impression.
+  A bundling run is recorded with the source identities it bundled and its outcome, so how much the tool was used is a fact the ledger holds rather than an impression.
 
 - **Every surprise becomes a ledger entry.**
   An entry carries its date, the invocation, the source identities, the observed result and the expected one, and a triage state naming whether it changes the design, fills a corpus gap, fixes a build defect, or changes nothing.
@@ -44,11 +44,11 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 - **Deferral is a recorded decision.**
   An entry not resolved before the freeze names what is deferred and why, and stays in the ledger for the stage that takes it.
 
-- **A prerequisite list goes when composition replaces it.**
-  A skill's prerequisite section names whole documents, coarsely but completely. It is removed once a recorded composition supplies what it named, and anything the composition failed to supply is a ledger entry rather than a silent loss. In its place the skill's own text names the invocation that composes them, so an agent is told to compose rather than left to decide.
+- **A prerequisite list goes when bundling replaces it.**
+  A skill's prerequisite section names whole documents, coarsely but completely. It is removed once a recorded bundling supplies what it named, and anything the bundling failed to supply is a ledger entry rather than a silent loss. In its place the skill's own text names the invocation that bundles them, so an agent is told to bundle rather than left to decide.
 
 - **Each run is measured against what it replaces.**
-  A run record carries the composed output size and the whole-file size of the sources it composed, so the retrieval cost the proposal measured can be compared with the cost of composing instead.
+  A run record carries the bundled output size and the whole-file size of the sources it bundled, so the retrieval cost the proposal measured can be compared with the cost of bundling instead.
 
 - **The freeze is a tag.**
   Design and corpus take one tagged revision, and the production build names that revision as its target.
@@ -63,21 +63,21 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** A surprise met while composing in real use is recorded with the evidence needed to reproduce it without the original session, as the ledger's entries show.
+- [ ] **AC1.** A surprise met while bundling in real use is recorded with the evidence needed to reproduce it without the original session, as the ledger's entries show.
 - [ ] **AC2.** A recorded finding is reducible to a corpus fixture that reproduces it, as the capture tool's reduction tests show.
 - [ ] **AC3.** An accepted finding changes the design before the corpus or the build, as the revision history citing that finding shows.
 - [ ] **AC4.** What remains unsettled is visible without reading the ledger whole, as the open-finding summary shows.
 - [ ] **AC5.** Each ledger entry is resolved or carries a recorded deferral naming what is deferred and why, as the ledger's status summary shows.
 - [ ] **AC6.** The design and the corpus carry one tagged revision that a production build can name as its target, as the tag shows.
-- [ ] **AC7.** The specification is settled only after the tool has composed each source in a declared exposure set, as the freeze check shows.
-- [ ] **AC8.** A prerequisite section is removed only where a recorded composition supplies what it named, and any shortfall is a ledger entry, as the removal records show.
-- [ ] **AC9.** Each exposure-set source carries a composed size recorded against the size of the same sources read whole, as the run records show.
+- [ ] **AC7.** The specification is settled only after the tool has bundled each source in a declared exposure set, as the freeze check shows.
+- [ ] **AC8.** A prerequisite section is removed only where a recorded bundling supplies what it named, and any shortfall is a ledger entry, as the removal records show.
+- [ ] **AC9.** Each exposure-set source carries a bundled size recorded against the size of the same sources read whole, as the run records show.
 
 ## Non-Goals
 
 - It does not implement a production build.
-- It does not change the outcomes the composition contract serves.
-- It does not restructure a source document beyond removing a prerequisite section composition has replaced.
+- It does not change the outcomes the bundling contract serves.
+- It does not restructure a source document beyond removing a prerequisite section bundling has replaced.
 - It does not commit to a date for the freeze.
 - It does not accept a finding by working around it in a source document.
 - It does not open an issue or a pull request on another project.

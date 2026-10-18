@@ -1,13 +1,13 @@
 ## Overview
 
-A Rust build of md-compose is the tool agents invoke, and it passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive composition exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails. The build targets one tagged revision of the design and corpus, so later refinement does not move the contract under it.
+A Rust build of bundle-md is the tool agents invoke, and it passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive bundling exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails. The build targets one tagged revision of the design and corpus, so later refinement does not move the contract under it.
 
 ## Problem
 
-A composition the production build publishes must be trusted byte for byte, and the parser it rests on has not been proven able to supply that.
+A bundling the production build publishes must be trusted byte for byte, and the parser it rests on has not been proven able to supply that.
 
 - **Reconstruction loses what the source said.**
-  Regenerating a document through a formatter rewrites spacing, escaping and newline spelling, so composed instructions and code examples stop being the bytes an author wrote.
+  Regenerating a document through a formatter rewrites spacing, escaping and newline spelling, so bundled instructions and code examples stop being the bytes an author wrote.
 
 - **A definition map holds one occurrence per label.**
   The inspected first pass inserts definitions with a first-wins entry, so a later duplicate occurrence has no map entry, and a source transformer removing definitions cannot find it.
@@ -42,7 +42,7 @@ A composition the production build publishes must be trusted byte for byte, and 
   The work names the tagged revision of the design and corpus it implements, and adopting a later one is a recorded decision.
 
 - **Both builds stay on one corpus.**
-  A differential run composes each corpus input with both builds and compares the results, so a divergence is a defect in one of them rather than a silent difference.
+  A differential run bundles each corpus input with both builds and compares the results, so a divergence is a defect in one of them rather than a silent difference.
 
 - **Versions are pinned after the fixtures pass.**
   The parser, the slugging component and every other dependency take exact versions, chosen once the fixtures hold against them.
@@ -62,12 +62,12 @@ A composition the production build publishes must be trusted byte for byte, and 
 ## Acceptance Criteria
 
 - [ ] **AC1.** Each parser viability gate the design names has an executed reproducer and a recorded verdict against a pinned parser version, as the gate report shows.
-- [ ] **AC2.** Untouched source bytes and their newline spelling survive composition exactly, as the corpus's preservation fixtures and the span-fidelity fixtures show.
+- [ ] **AC2.** Untouched source bytes and their newline spelling survive bundling exactly, as the corpus's preservation fixtures and the span-fidelity fixtures show.
 - [ ] **AC3.** A reference lookup an internal parser limit suppresses is observable to the compiler rather than indistinguishable from literal bracketed text, as the exhaustion fixtures show.
-- [ ] **AC4.** A published composite keeps the source outline and the declared Markdown profile, as the corpus's outline and profile fixtures show.
-- [ ] **AC5.** A composition resolves its dependency closure and holds every limit the profile names, as the corpus's closure and limit fixtures show.
-- [ ] **AC6.** A published composite carries one destination per rewritten reference and no original reference definition, as the corpus's destination and reference fixtures show.
-- [ ] **AC7.** A composition that fails validation publishes nothing, exits nonzero and writes its diagnostic, as the corpus's failure fixtures show.
+- [ ] **AC4.** A published bundle keeps the source outline and the declared Markdown profile, as the corpus's outline and profile fixtures show.
+- [ ] **AC5.** A bundling resolves its dependency closure and holds every limit the profile names, as the corpus's closure and limit fixtures show.
+- [ ] **AC6.** A published bundle carries one destination per rewritten reference and no original reference definition, as the corpus's destination and reference fixtures show.
+- [ ] **AC7.** A bundling that fails validation publishes nothing, exits nonzero and writes its diagnostic, as the corpus's failure fixtures show.
 - [ ] **AC8.** Both builds produce identical output for each corpus input, as the differential run shows.
 - [ ] **AC9.** Every dependency is pinned to an exact version against which the corpus passes, as the lockfile and that run show.
 - [ ] **AC10.** The build implements one tagged revision of the design and corpus, as the recorded target revision and the corpus run against it show.
