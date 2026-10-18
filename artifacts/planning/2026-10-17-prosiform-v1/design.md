@@ -2,11 +2,13 @@
 
 prosiform is intended for agent skills and other instruction sets authored as collections of linked Markdown documents. Authors can keep procedures, shared rules, prerequisites, and reference material in separate, reusable sections rather than duplicating them in every operation. An agent typically enters through a document such as `SKILL.md` and selects a linked procedure to carry out.
 
-The problem addressed here is the gap between that modular authoring structure and the complete context needed to perform an operation. A document or section link identifies a destination, but does not itself establish which content is retrieved, whether its dependencies are followed, or whether the resulting context is complete. Leaving those decisions to the agent makes retrieval part of the reasoning task, with opportunities for missed prerequisites, unnecessarily broad reads, and inconsistent handling of repeated or recursive references.
+The problem addressed here is the gap between that modular authoring structure and the complete context needed to perform an operation. A document or section link identifies a *destination*, but does not itself establish which content is retrieved, whether its dependencies are followed, or whether the resulting context is complete. Leaving those decisions to the agent makes retrieval part of the reasoning task, with opportunities for missed prerequisites, unnecessarily broad reads, and inconsistent handling of repeated or recursive references.
 
-prosiform moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to the fragments a renderer generates for the headings they now name. It validates the complete candidate before publication, either returning the bundle or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
+prosiform moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping *selections*, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to the fragments a renderer generates for the headings they now name. It validates the complete *candidate* before *publication*, either returning the *bundle* or failing with *diagnostics* the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
 
-The intended guarantee is complete, validated bundling of the explicitly linked content under a declared Markdown profile, not control over agent execution. prosiform does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown resources are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
+The intended guarantee is complete, validated bundling of the explicitly linked content under a declared Markdown *profile*, not control over agent execution. prosiform does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown *resources* are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
+
+A term italicised on first use is a contract term. It means one thing and nothing else here, in the acceptance criteria, in the fixture corpus and in the tool's diagnostics, and the glossary published with the build defines it. The vocabulary check reads those marks and holds the glossary to them.
 
 ## Design status
 
@@ -14,12 +16,12 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 
 ## Input and output contract
 
-- **Entry references:** Accept one or more local document or document-plus-fragment references and an explicit allowed source root. An entry reference names the procedure to be carried out, not the routing document the caller read to find it; a routing document reaches the bundle only if something selected links to it.
-- **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its preamble, subject to frontmatter stripping and the documented syntax transformations below.
-- **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a section.
-- **Recursive bundling:** Traverse supported Markdown links within selected content until every reachable local Markdown target has been resolved and included.
-- **Continuous Markdown:** Emit one bundle Markdown document with one generated H1 per group and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
-- **Groups:** A group is one top-level division of the bundle. By default it is one source document, headed by its normalized root-relative path with the Markdown extension removed; under a grouping rule it is one merged directory, headed by that directory's slug in title case. Emit each selected region once. Keep source order among selected content and required heading-only ancestors within a document's group, and within each contribution a document makes to a merged one.
+- **Entry references:** Accept one or more local document or document-plus-fragment *references* and an explicit allowed source *root*. An *entry reference* names the procedure to be carried out, not the routing document the caller read to find it; a routing document reaches the bundle only if something selected links to it.
+- **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its *preamble*, subject to *frontmatter* stripping and the documented syntax transformations below.
+- **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a *section*.
+- **Recursive bundling:** Traverse supported Markdown links within selected content until every reachable local Markdown *target* has been resolved and included.
+- **Continuous Markdown:** Emit one bundle Markdown document with one generated H1 per *group* and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
+- **Groups:** A group is one top-level division of the bundle. By default it is one *source document*, headed by its normalized root-relative path with the Markdown extension removed; under a *grouping rule* it is one merged directory, headed by that directory's *slug* in title case. Emit each selected *region* once. Keep source order among selected content and required heading-only ancestors within a document's group, and within each contribution a document makes to a merged one.
 - **Dependency order:** Order groups by root-relative path, a merged group taking its directory's. Discovery order and argument order never decide the arrangement, so one selection always bundles to the same bytes. The grouping rules in force are the only thing that changes where a section sits.
 - **Entry line:** Open the bundle with a generated preamble naming each entry reference and linking to the destination it resolved to.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
@@ -31,12 +33,12 @@ Use `pulldown-cmark` as the first semantic-parser candidate, behind a version-pi
 Its `into_offset_iter()` exposes Markdown events paired with source ranges, and `reference_definitions()` exposes the reference-definition map ([pulldown-cmark parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)). These APIs are a starting point, not a guarantee that every destination, definition, or nested edit already has the exact span required by this specification.
 
 - **Parsing authority:** Let the parser identify headings, links, images, definitions, code examples, and HTML nodes, the last so they can be refused.
-- **Source positions:** Build the source-range adapter around offset events and reference-definition data. Verify and retain the original spans needed for headings, link/image uses, and definitions; do not equate an enclosing event range with a precise destination span without validation.
-- **Source model:** Derive block ancestry, eligible section boundaries, and link ownership from the event stream while retaining canonical source identities and provenance ranges.
+- **Source positions:** Build the source-range adapter around offset events and reference-definition data. Verify and retain the original spans needed for headings, link/image uses, and definitions; do not equate an enclosing event range with a precise destination span without *validation*.
+- **Source model:** Derive block ancestry, eligible section boundaries, and link ownership from the event stream while retaining canonical source identities and *provenance* ranges.
 - **Coordinate mapping:** Map ranges in the parser's input view back to original UTF-8 bytes, including any BOM/frontmatter preprocessing, CRLF, tabs, escapes, and Unicode. Preserve original diagnostic coordinates.
 - **Edits:** Apply validated non-overlapping edits. Handle constructs such as an image inside a link through a defined parent-edit strategy rather than overlapping replacements.
 - **Untouched content:** Preserve original bytes and newline spelling, including code examples. Generated headings and separators may use LF; do not globally reformat sources.
-- **Validation:** Reparse the candidate with the same explicit profile and check the declared source-to-output invariants.
+- **Validation:** Reparse the candidate with the same explicit profile and check the declared source-to-output *invariants*.
 
 The source-range adapter is an unproven implementation dependency, not an existing capability claim. It must pass fixtures for multiline references, reference-style images, tables, nested containers, escaped destinations, Unicode, and CRLF before this approach is considered validated; definition removal must cover unused as well as referenced definitions.
 
@@ -53,7 +55,7 @@ If the public API is insufficient, require parser-aware occurrence collection, n
 
 Do not disable the parser's resource protections to satisfy these gates. A general broken-reference callback is not an adequate exhaustion signal unless the pinned implementation demonstrably invokes it for every limit-suppressed lookup.
 
-Do not fall back to regex-only rewriting when an edit span is unavailable. Fail the unsupported case or explicitly revisit the parser/editing approach; do not silently switch to whole-document formatting or another authoritative parser.
+Do not fall back to regex-only *rewriting* when an edit span is unavailable. Fail the unsupported case or explicitly revisit the parser/editing approach; do not silently switch to whole-document formatting or another authoritative parser.
 
 Pin exact Rust dependency versions after the fixtures pass. Do not regenerate the whole document through an HTML or Markdown formatter; if the first parser candidate cannot satisfy the fixture gate, revisit the parser choice without weakening the behavioural contract.
 
@@ -78,7 +80,7 @@ Use a fixture-validated Rust adapter for GitHub-compatible source-heading slugs 
 
 Derive visible heading text from parser events: text/code content, link labels, image alternative text, decoded entities, and normalized line-break spacing, excluding formatting delimiters. Enumerate headings in original source order, container-nested headings included.
 
-Test punctuation, repeated spaces, markup, Unicode, and headings whose slugs coincide. Two headings in one source producing the same slug are not numbered apart: a fragment requiring one of them fails with `E_AMBIGUOUS_SOURCE_HEADING`, and the author disambiguates by retitling. A source fragment must therefore identify one heading on its own, while a bundle destination is free to carry the renderer's ordinal, because the tool assigns it over a document it generated. Source-fragment lookup produces the slug a bundle destination is built from; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
+Test punctuation, repeated spaces, markup, Unicode, and headings whose slugs coincide. Two headings in one source producing the same slug are not numbered apart: a fragment requiring one of them fails with `E_AMBIGUOUS_SOURCE_HEADING`, and the author disambiguates by retitling. A source fragment must therefore identify one heading on its own, while a bundle destination is free to carry the renderer's *ordinal*, because the tool assigns it over a document it generated. Source-fragment lookup produces the slug a bundle destination is built from; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
 
 The pinned adapter and compatibility fixtures define the supported profile. Do not promise perfect parity with every future renderer change.
 
@@ -136,7 +138,7 @@ These examples describe the agreed interface; no command has been implemented or
 
 Common rules, file-level prerequisites, and shared SKILL.md instructions will be refactored into addressable sections. Operations must link to the sections that govern them, so the tool can obtain the required context through explicit links.
 
-- **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; a heading-only structural ancestor supplies structure, not additional governing instructions.
+- **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; a heading-only *structural ancestor* supplies structure, not additional governing instructions.
 - **Explicit dependencies:** A section's author is responsible for linking any required shared rules or context. Such references are part of the recursive dependency graph.
 - **Reading versus execution:** Inclusion makes material available; it does not authorize executing every included procedure. Execution verbs and call boundaries remain part of the authored instructions.
 
@@ -175,19 +177,19 @@ A group is the unit the bundle is organized into. By default a group is one sour
 --group artifacts:2 --group references:2
 ```
 
-A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A rule whose directories contribute no document to the closure is not an error: it arranges nothing, and the run reports it as a warning on stderr.
+A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A rule whose directories contribute no document to the *closure* is not an error: it arranges nothing, and the run reports it as a warning on stderr.
 
 - **Group membership:** A document belongs to the group whose slug matches the deepest directory segment of its path. A document no group matches keeps its own group, so one bundle can carry both arrangements.
-- **Group structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every member document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
+- **Group structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every *member* document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
 - **Verbatim names:** A merged heading keeps its source text. Nothing is prefixed, qualified or renamed where the text occurs once in its group.
-- **Document-keyed sections:** A merged section carrying body text above its first subheading, from more than one document, is the document's section rather than a container of named items, and splits into variants: one variant heading per contributing document, with that document's text and subheadings beneath it. Every mode's `Procedure` merges this way, since a procedure is the mode's own. A section carrying only named items, such as `Operations`, does not. This test is applied first, and a section it splits is arranged by document throughout; the rule below applies to the names inside a section it leaves alone.
+- **Document-keyed sections:** A merged section carrying body text above its first subheading, from more than one document, is the document's section rather than a container of named items, and splits into *variants*: one variant heading per contributing document, with that document's text and subheadings beneath it. Every mode's `Procedure` merges this way, since a procedure is the mode's own. A section carrying only named items, such as `Operations`, does not. This test is applied first, and a section it splits is arranged by document throughout; the rule below applies to the names inside a section it leaves alone.
 - **Variants by document:** Where two or more documents contribute one heading text to one merged section, that text is emitted once as a heading of its own and each document's content hangs beneath it under a variant heading naming the document. The variants of a name then sit together, so a reader comparing them reads one place rather than several. A variant heading is the shortest run of that document's root-relative path which distinguishes it from the others, in title case, measured after dropping the leading segments they all share, since those are the context the group heading already states. Each document's own heading is replaced by the shared one, and its content shifts one level to sit under its variant heading.
 - **Residual ambiguity:** Qualification separates documents, not headings within one. Two headings of one document colliding in one group is the source ambiguity the heading rules already refuse. Anything still coinciding, such as a generated group heading matching a section name elsewhere, takes the renderer's ordinal as any repeat does.
 - **Group naming:** A group's heading is its directory slug in title case, so `artifacts` is emitted as `Artifacts`.
 - **Document content above the grouping depth:** A group carries an `Overview` section holding each member's selected content above the grouping depth: its preamble, and the body of any section shallower than that depth with its outline beneath. Each member contributes one subsection, named by that document's stem in title case, less a trailing word the section already states: `artifacts/epic-issue-body.md` contributes `Epic Issue Body` under `Artifacts` / `Overview`. A member's own H1 is absorbed by that subsection heading when its slug equals the stem, as a file heading absorbs the title it carries. That heading is where a whole-document reference to the member resolves. A member with nothing above the grouping depth gets no heading, and a whole-document reference to it resolves to its first contribution. A preamble reaches the bundle only through a whole-document selection, since it belongs to no section.
 - **Merged section references:** A reference to a source heading at the grouping depth resolves to that document's variant heading where the name carries variants, and to the merged heading itself where the name occurs once. A reference reaches the document it named under every arrangement.
 
-Grouping changes how a bundle is arranged, not what it contains. The closure, the consolidation and the selected content are the same whichever grouping is asked for, and so are the validation invariants, which are stated over groups rather than over source files so that they hold under every arrangement.
+Grouping changes how a bundle is arranged, not what it contains. The closure, the *consolidation* and the selected content are the same whichever grouping is asked for, and so are the validation invariants, which are stated over groups rather than over source files so that they hold under every arrangement.
 
 ### Heading-only structural ancestors
 
@@ -254,7 +256,7 @@ This bundle was built for [Plan Mode](#plan-mode); everything else is material i
 # Artifacts
 ```
 
-- **Link text:** The visible text of the heading the destination names, so what the line says and what the reader finds agree. Under a grouping rule that is the member's overview subsection, which is a name the caller cannot derive from the reference it supplied.
+- **Link text:** The visible text of the heading the destination names, so what the line says and what the reader finds agree. Under a grouping rule that is the member's *overview* subsection, which is a name the caller cannot derive from the reference it supplied.
 - **No execution verb:** The line states what the bundle was built for. It does not instruct the agent to carry anything out, because the tool does not know whether an entry names a procedure, and execution verbs belong to the authored instructions.
 - **Generated structure:** The line is recorded with the group, file and variant headings as generated structure, not as selected content, so it counts toward no source's coverage. Its links are ordinary internal references and are validated as such.
 - **Reading scope at the point of use:** A bundle can hold several documents' procedures. The line is where the bundle says which one it was built for, so the distinction between the material to act on and the material it references survives into the document the agent actually reads.
@@ -281,7 +283,7 @@ Parse each source independently after frontmatter recognition and before selecti
 2. Preserve visible link text, image alternative content, and optional titles with the necessary Markdown escaping.
 3. Rewrite local Markdown destinations to bundle destinations; emit every other destination as authored.
 4. Remove all original link-reference definition nodes from emitted content, including unused definitions.
-5. Preserve unresolved bracketed text as literal text; do not infer a dependency from text the source parser did not recognize as a link.
+5. Preserve unresolved bracketed text as literal text; do not infer a *dependency* from text the source parser did not recognize as a link.
 6. Leave examples inside code spans and code blocks unchanged.
 
 For example, a literal `[runner]` in one source must remain literal even if another source defines `[runner]: tools.md#run`. Convert the latter source's resolved use to an inline link and omit its definition from the bundle.
@@ -416,7 +418,7 @@ Use deterministic configurable limits and fail rather than truncate. These are a
 
 Accept positive decimal integer overrides; zero must not mean unlimited. Traverse iteratively; the expansion-depth budget is a declared constraint on how far a chain of references may reach, not a recursive-call-depth cap, and a cyclic graph within the budget bundles normally.
 
-Expansion depth constrains the shape of a reference graph rather than its size, which the file, byte and target budgets bound. It exists so a document reaches what governs it directly, and a chain that outgrows the budget is a prompt to restructure the sources rather than to raise the number.
+*Expansion depth* constrains the shape of a reference graph rather than its size, which the file, byte and target budgets bound. It exists so a document reaches what governs it directly, and a chain that outgrows the budget is a prompt to restructure the sources rather than to raise the number.
 
 Enforce `--max-nesting` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
 
@@ -441,7 +443,7 @@ The destinations themselves can no longer carry this signal, since a bundle's li
 Successful compilation establishes that the complete candidate passed validation. It does not establish that a downstream tool transport delivered every byte to the calling agent.
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
-- **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a delivery failure rather than a truncated apparent success.
+- **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a *delivery* failure rather than a truncated apparent success.
 - **Entry destinations:** On success, report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format, so a caller can act on it as data. The bundle states the same thing in its entry line, which is what reaches the agent.
 - **Clean Markdown:** Keep success stdout limited to the bundle document. Beyond the entry line, the bundle carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
