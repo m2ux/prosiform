@@ -61,7 +61,7 @@ The same closure composed with `--group artifacts:2`, which merges every documen
 | Headings | 353 | 289 |
 | Qualified names | 0 | 38 |
 | Carrying an ordinal | 81 | 11 |
-| Bytes | 187,488 | 188,188 |
+| Bytes | 187,488 | 187,421 |
 
 Twenty-one artifact documents merge into `# artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
@@ -75,22 +75,22 @@ Twenty-one artifact documents merge into `# artifacts`, holding `## Operations`,
 ### Select Project Board
 ```
 
-The thirty-eight qualified names are all in `## Fields`, where `Template` is contributed by seven documents and `Titles` by six. Each takes the shortest left-anchored run of its path that separates it from the others, which here is two segments, since every colliding document sits under `artifacts/`:
+The thirty-eight qualified names are all in `## Fields`, where `Template` is contributed by seven documents and `Titles` by six. Each takes the shortest run of its path that separates it from the others, measured after dropping the leading segments every colliding document shares, since those are the context the group heading already states:
 
 ```markdown
 ## Fields
 
-### artifacts/architecture-overview/Template
-### artifacts/epic-issue-body/Template
-### artifacts/epic-issue-body/Titles
-### artifacts/issue-body/Titles
+### architecture-overview/Template
+### epic-issue-body/Template
+### epic-issue-body/Titles
+### issue-body/Titles
 ```
 
 Eleven destinations still take the renderer's ordinal. Five are generated headings — the `artifacts` cohort heading and the merged `Operations`, `Outcomes`, `Procedure` and `Sources` — coinciding with a section of that name in a document no cohort claimed.
 
 Published and rendered by GitHub: 289 anchors, 710 fragment links, none broken.
 
-Two notes on what this showed. The qualifier repeats the cohort's own path, so a reader already inside `# artifacts` sees `artifacts/epic-issue-body/Template`; dropping segments the cohort heading already states would shorten it to `epic-issue-body/Template`. And the generated `Sources` group name collides with a real `Sources` heading in `initiative-issue-body.md`, which is worth settling before the name is fixed.
+One note on what this showed. The generated `Sources` group name collides with a real `Sources` heading in `initiative-issue-body.md`, which is worth settling before the name is fixed.
 
 Only `work-planner` is broadly representative in this workspace, so the case the parameter is built for — one slug under two libraries, qualified at one segment — is implemented but not exercised against real sources here.
 
