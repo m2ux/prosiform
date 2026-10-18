@@ -244,19 +244,15 @@ Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups
 
 Only `work-planner` is broadly representative in this workspace, so the cross-library case the parameter is built for, two directories of one slug under separate libraries, is implemented but not yet exercised against real sources.
 
-## D25 — The Routing Document Is Not Composed, and the Entry Reference Is Emitted Last
+## D25 — The Routing Document Is Not Composed, and Group Order Is Path Order
 
 A skill's entry point is a routing table. The agent reads it, chooses a procedure, and passes that procedure's link to md-compose. The routing document is therefore never composed, because it is never an entry reference: `SKILL.md` routes, `modes/plan-mode.md` is the argument, and the composite holds the argument and what it reaches.
 
-Groups are ordered by root-relative path, except that a document named as an entry reference is emitted last, entry references in the order given. A cohort keeps a member it claims, so the rule applies to document groups. The agent then reads its routing document, invokes the tool, and finds the procedure it asked for at the end of what that procedure needs.
+Groups are ordered by root-relative path, and nothing else. Neither discovery order nor argument order decides the arrangement, so one selection always composes to the same bytes.
 
-The question this settles is whether the entry has to come last for the content it references to have been read by the point of use. It does not, and nothing could make it so. The reference graph of the Plan Mode closure is cyclic — `epic-issue-body` to `epic` to `initiative-issue-body` and back, among three cycles — so no ordering makes every reference backward. Between 31 and 61 of its 194 cross-document references point forward whichever order is chosen. The delivery contract settles the practical question anyway: the agent holds the whole validated document before it acts, so a forward reference costs nothing.
+Emitting an entry reference's group last was tried and removed. The argument for it was salience: the thing the agent carries out sitting closest to the point of acting, with its material laid out above. Nothing rested on it. Order never decides whether a link resolves, only which heading takes the bare slug and which takes an ordinal, so every link resolves whatever the arrangement. No order can do better than that in any case, because the reference graph is cyclic — `epic-issue-body` to `epic` to `initiative-issue-body` and back, among three cycles — so between 31 and 61 of the Plan Mode closure's 194 cross-document references point forward whichever order is chosen. The delivery contract settles the rest: the agent holds the whole validated document before it acts.
 
-That leaves arrangement, decided on what the reader does with it. The entry reference is what the agent carries out and the rest is what it carries out against, so it sits closest to the point of acting with its material already laid out. Nothing in the closure references it, 30 references leave it and none arrive, so moving it costs no document its own context.
-
-It is also the best of the three on the measure: 163 backward references against 161 for path order and 133 for entry-first. That margin is two references and is not the reason.
-
-Composing a routing document instead, as an experiment did, is not the intended use and shows why. `SKILL.md` pulls all 38 documents of the skill into one 301 KB composite, which is the whole library rather than the context for one operation.
+So the rule bought two backward references out of 194 and cost a special case, a second special case to stop a cohort claiming the entry away from it, and a contradiction in the determinism criterion, which had promised that argument order does not change the bytes. Path order throughout restores all three.
 
 ## Evidence
 
