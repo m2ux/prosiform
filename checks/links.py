@@ -131,12 +131,12 @@ def is_repository_tree_url(target: str) -> bool:
     """A blob or tree URL into this repository, which git resolves."""
     if not target.startswith(REPOSITORY_URL_PREFIX):
         return False
-    parts = target[len(REPOSITORY_URL_PREFIX):].partition("#")[0].split("/")
+    parts = target[len(REPOSITORY_URL_PREFIX) :].partition("#")[0].split("/")
     return len(parts) >= 2 and parts[0] in ("blob", "tree")
 
 
 def resolve_repository_url(target: str) -> str | None:
-    rest = target[len(REPOSITORY_URL_PREFIX):]
+    rest = target[len(REPOSITORY_URL_PREFIX) :]
     path_part, _, fragment = rest.partition("#")
     parts = path_part.split("/")
     ref_name, path = parts[1], "/".join(parts[2:])
@@ -167,7 +167,9 @@ def gh_api(arguments: list[str]) -> str | None:
             ["gh", "api", *arguments], capture_output=True, text=True, timeout=30
         )
     except FileNotFoundError:
-        return "gh is not installed, and a private reference needs an authenticated read"
+        return (
+            "gh is not installed, and a private reference needs an authenticated read"
+        )
     except subprocess.TimeoutExpired:
         return "gh did not answer within 30s"
     if result.returncode != 0:
@@ -193,8 +195,8 @@ def resolve_github(target: str) -> str | None:
         scope, login, number = project.groups()
         owner_field = "user" if scope == "users" else "organization"
         query = (
-            "{ %s(login: \"%s\") { projectV2(number: %s) { id } } }"
-            % (owner_field, login, number)
+            f'{{ {owner_field}(login: "{login}") '
+            f"{{ projectV2(number: {number}) {{ id }} }} }}"
         )
         return gh_api(["graphql", "-f", f"query={query}", "--silent"])
 
@@ -213,9 +215,7 @@ def resolve_http(target: str) -> str | None:
     except urllib.error.HTTPError as error:
         if error.code in (403, 405):
             try:
-                get = urllib.request.Request(
-                    target, headers={"User-Agent": USER_AGENT}
-                )
+                get = urllib.request.Request(target, headers={"User-Agent": USER_AGENT})
                 with urllib.request.urlopen(get, timeout=20) as response:
                     return None if response.status < 400 else f"HTTP {response.status}"
             except Exception as retry_error:  # noqa: BLE001 - reported verbatim
@@ -271,7 +271,9 @@ def main() -> int:
         if not document.exists():
             failures.append(f"{name} — the document to check does not exist")
             continue
-        failures += [f"{name}: {failure}" for failure in check(document, arguments.online)]
+        failures += [
+            f"{name}: {failure}" for failure in check(document, arguments.online)
+        ]
 
     for failure in failures:
         print(f"FAIL {failure}", file=sys.stderr)
