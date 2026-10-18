@@ -13,7 +13,7 @@ cd prototype
 uv sync --frozen
 ```
 
-`--frozen` installs what the lockfile records and resolves nothing, so a dependency change reaches an environment only by way of a lockfile change. `uv sync --check` reports an environment whose versions have drifted from the lockfile. `uv lock` rewrites the lockfile after an edit to `pyproject.toml`.
+`--frozen` installs what the lockfile records and resolves nothing, so a dependency change reaches an environment only by way of a lockfile change. `uv sync --check` reports an environment whose versions have drifted from the lockfile. `uv lock` rewrites the lockfile after an edit to `pyproject.toml`, and `uv lock --check` reports a lockfile that no longer describes the declared dependencies.
 
 | Declared | Value | Why |
 | --- | --- | --- |
@@ -40,6 +40,7 @@ The build's tests and static checks are named commands, run from the repository 
 | `make lint` | `ruff check` over the package, its tests and `checks/`. |
 | `make format-check` | `ruff format --check` over those same files. Formatting is reported, not applied. |
 | `make typecheck` | `mypy` in strict mode over those same files. |
+| `make lock-check` | `uv lock --check`, which exits nonzero when `uv.lock` does not describe the dependency list `pyproject.toml` declares. A dependency edited without relocking fails here rather than at the next install. |
 
 | Declared | Value | Why |
 | --- | --- | --- |

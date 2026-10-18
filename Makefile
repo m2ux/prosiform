@@ -12,9 +12,9 @@ UV_RUN := uv run --project prototype --frozen
 TOOL_CONFIG := prototype/pyproject.toml
 PYTHON_SOURCES := prototype/src prototype/tests checks
 
-.PHONY: check test lint format-check typecheck
+.PHONY: check test lint format-check typecheck lock-check
 
-check: lint format-check typecheck test
+check: lock-check lint format-check typecheck test
 
 test:
 	cd prototype && uv run --frozen pytest
@@ -27,3 +27,6 @@ format-check:
 
 typecheck:
 	$(UV_RUN) mypy --config-file $(TOOL_CONFIG) $(PYTHON_SOURCES)
+
+lock-check:
+	cd prototype && uv lock --check
