@@ -29,6 +29,7 @@ A second composition, entered at `SKILL.md`, was run to exercise the failure pat
 | Internal links rewritten | 421 |
 | Composite size | 187,488 bytes |
 | Expansion depth reached | 4 hops |
+| Entry group position | last, after the 26 documents it reaches |
 
 Validation reparsed the composite and checked it against the invariants the output alone can establish: every one of the 421 internal links resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
 
@@ -138,5 +139,5 @@ The composites were produced by a direct reading of the design, not by the proto
 
 ## Open
 
-- **Group order.**
-  File groups are emitted in root-relative path order, which satisfies the design's requirement for a deterministic order derived from source identity. It places the entry document, `modes/plan-mode`, three quarters of the way through the composite. Whether the entry reference should lead its composite is unsettled.
+- **Nothing.**
+  The questions this example raised — the qualifier's length, the generated group name and the group order — are settled in D21 to D25.

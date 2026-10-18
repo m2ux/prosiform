@@ -14,13 +14,13 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 
 ## Input and output contract
 
-- **Entry references:** Accept one or more local document or document-plus-fragment references and an explicit allowed source root.
+- **Entry references:** Accept one or more local document or document-plus-fragment references and an explicit allowed source root. An entry reference names the procedure to be carried out, not the routing document the caller read to find it; a routing document reaches the composite only if something selected links to it.
 - **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its preamble, subject to frontmatter stripping and the documented syntax transformations below.
 - **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a section.
 - **Recursive composition:** Traverse supported Markdown links within selected content until every reachable local Markdown target has been resolved and included.
 - **Continuous Markdown:** Emit one composite Markdown document with one generated H1 per contributing source file and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
 - **Source grouping:** Use the normalized root-relative document path with its Markdown extension removed as the H1's visible text. Emit each file once, preserving source order among its selected content and required heading-only ancestors.
-- **Dependency order:** File groups need not follow argument or discovery order. Use a deterministic group order for reproducibility; do not reorder sections within a file.
+- **Dependency order:** Order groups by root-relative path, except that a document named as an entry reference is emitted last, entry references in the order given, so the material a composition was asked for sits closest to the point of use. Discovery order is never the group order; do not reorder sections within a file.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
 
 ## Parser and source-preserving edits
@@ -523,6 +523,7 @@ Before broad implementation, create small fixtures with exact expected composite
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
+- **Order:** An entry reference's group emitted after every group it reaches; several entry references emitted in the order given; an entry reference claimed by a cohort staying in it.
 - **Grouping:** One entry composed with and without a cohort, selecting the same content; a merged section drawn from several documents; a name occurring once left bare; colliding names qualified to the shortest distinguishing path prefix, at one segment and at more than one; a document no cohort matches keeping its own group; a whole-document reference to a member resolving to a heading carrying its path at the head of its cohort, and one to a member with no preamble resolving to its first contribution; and a reference to a cohort-depth heading resolving to the merged group.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor scaffolds; original skipped heading levels; scaffold promotion after dependency expansion; and no ancestor-body or scaffold-link dependency leakage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
