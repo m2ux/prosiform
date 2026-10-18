@@ -59,10 +59,10 @@ The same closure composed with `--group artifacts:2`, which merges every documen
 | Measure | No cohort | `artifacts:2` |
 | --- | --- | --- |
 | Top-level groups | 27, one per document | 8 |
-| Headings | 353 | 289 |
-| Qualified names | 0 | 38 |
-| Carrying an ordinal | 81 | 10 |
-| Bytes | 187,488 | 187,385 |
+| Destinations | 353 | 259 |
+| Branched names | 0 | 13 |
+| Carrying an ordinal | 81 | 20 |
+| Bytes | 187,488 | 187,070 |
 
 Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`, `## Fields` and `## Commands`. All twenty-four merged operations keep their bare names, because no two documents offer the same one:
 
@@ -76,20 +76,31 @@ Twenty-one artifact documents merge into `# Artifacts`, holding `## Operations`,
 ### Select Project Board
 ```
 
-The thirty-eight qualified names are all in `## Fields`, where `Template` is contributed by seven documents and `Titles` by six. Each takes the shortest run of its path that separates it from the others, measured after dropping the leading segments every colliding document shares, since those are the context the group heading already states:
+The thirteen branched names are all in `## Fields`. A name several documents contribute is emitted once, with each document's content under a branch heading naming it, so the eight `Template` fields sit together:
 
 ```markdown
 ## Fields
 
-### architecture-overview/Template
-### epic-issue-body/Template
-### epic-issue-body/Titles
-### issue-body/Titles
+### Template
+#### Architecture Overview
+#### Epic Issue Body
+#### Initiative Issue Body
+#### Planning Record
+#### Proposal Body
+#### Pull Request Body
+#### Task Body
+#### Work Item
+
+### Sections
+#### Architecture Overview
+#### Proposal Body
 ```
 
-Ten destinations still take the renderer's ordinal. Four are generated headings — the `Artifacts` cohort heading and the merged `Operations`, `Outcomes` and `Procedure` — coinciding with a section of that name in a document no cohort claimed.
+Twenty destinations take the renderer's ordinal, most of them branch headings: a document contributing to several branched names supplies its title to each, so `Epic Issue Body` recurs.
 
-Published and rendered by GitHub: 289 anchors, 710 fragment links, none broken.
+Published and rendered by GitHub, with none broken.
+
+**This is also where the merge earns its keep as a review tool.** Reading the eight `Template` fields together shows that `Template` does not belong under `Fields` at all — a template is the artifact's shape, not one of its fields — which is a structural defect in the source that document-by-document reading had not surfaced in this workspace. The same question applies to `Sections`, carried by four documents under the same heading.
 
 A cohort is headed by its directory slug in title case, and a member's preamble becomes a synthetic section of it named by the document's stem, so the preamble sits among the cohort's sections rather than in a structure of its own:
 
