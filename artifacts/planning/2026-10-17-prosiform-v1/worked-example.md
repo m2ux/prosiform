@@ -157,18 +157,21 @@ That is also the first thing [D12](decisions.md#d12--each-run-is-measured-agains
 
 ## What the failure paths found
 
-The Plan Mode closure bundles clean. The `SKILL.md` closure, which reaches `guidelines.md` and `modes/revise-mode.md`, does not: it fails on ten defects in the source, every one of them a real link fault that reading the files would not surface.
+The Plan Mode closure bundles clean. The `SKILL.md` closure, which reaches `guidelines.md` and `modes/revise-mode.md`, does not: it fails on ten links, of which one is a defect in the source and nine are the root refusing a dependency the skill genuinely has.
 
-| Defect | Where | Count |
+| Refused link | Where | Count |
 | --- | --- | --- |
 | `SKILL.md#command-conventions`, where the heading is `Conventions` | `guidelines.md:189` | 1 |
-| `../guidelines.md…`, from `guidelines.md`, which is already at the root | `guidelines.md:3, 193, 206` | 4 |
-| `../../guidelines.md…`, from `modes/`, which leaves the root | `modes/revise-mode.md:17, 30, 36, 42` | 4 |
-| `guidelines.md#disclosure-verification`, where no such heading exists | `guidelines.md:193`, `modes/revise-mode.md:42` | 1 |
+| `../guidelines.md…`, naming the shared skill guidelines | `guidelines.md:3, 193, 193, 206` | 4 |
+| `../../guidelines.md…`, naming the same file from `modes/` | `modes/revise-mode.md:9, 17, 30, 36, 42` | 5 |
 
-Each `..` fault is one level too many, so each link resolves above the allowed source root and fails confinement. The skill is maintained upstream, so these are reported rather than corrected here.
+Only the first is a fault. `skills/guidelines.md` exists, and it carries the `Progressive Disclosure`, `Disclosure Verification` and `Changes` headings the other nine name, so each of those links resolves exactly where its author intended. They fail because the run was rooted at `skills/work-planner`, and the skill depends on a file one level above it.
 
-This is the completeness signal doing the thing the proposal claimed for it, on the first real tree it was pointed at.
+That is a finding about the root, not about the skill. A skill is not necessarily a self-contained tree: work-planner shares material with its siblings, so the root that contains its closure is `skills`, not `skills/work-planner`. [D31](decisions.md#d31--the-root-is-the-callers-boundary-and-must-contain-the-closure) settles what the root means.
+
+The one real fault is reported upstream, where the skill is maintained.
+
+This is still the completeness signal doing what the proposal claimed, on the first real tree it was pointed at -- and the first thing it caught was a root chosen too narrowly, which no amount of reading the files would have surfaced either.
 
 ## What it does not establish
 

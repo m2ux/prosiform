@@ -352,6 +352,8 @@ A reference is a dependency when it carries no scheme and no authority and resol
 
 Require an explicit allowed source root and canonicalize that root once. Command-line document paths are relative to the root; links inside sources are relative to their originating document's directory.
 
+The root is the caller's confinement boundary, not a claim about how the sources are organized. It must contain every document the entry references reach: a collection that shares material with a sibling collection is rooted above both, since a reference leaving the root fails whether or not its author meant it. A refused reference therefore says the root is too narrow at least as often as it says the link is wrong, and the diagnostic names the resolved path so the caller can tell which.
+
 A fragment-only command-line reference requires `--from DOC`; otherwise it fails. File-naming positional references remain root-relative even when `--from` is present. A fragment-only source link uses its source document automatically.
 
 ### Resolution sequence

@@ -302,6 +302,22 @@ Resource rebasing goes with it. A relative image reference is text: emitted byte
 
 The tool bundles linked local Markdown. Nothing about a web address belonged in the contract that says so.
 
+## D30 — Merge Discipline Is Convention Until the Repository Is Public
+
+The repository is private on a plan that offers no branch protection: the API answers a protection request with an upgrade notice. The delivery procedure defines the base order and the merge order, every writer follows it, and that is where the guarantee comes from while the writer count is low. The first sign of a writer who does not follow it will be a surprising merge rather than a blocked push, which is worth knowing in advance.
+
+The repository is to be made public later. Protection is enabled at that point, because it becomes available at no cost and the procedure stops being the only thing holding the shape: required pull requests on `main`, no force-push, no branch deletion. The condition is recorded here and tracked as an issue so it is acted on when the trigger arrives rather than remembered.
+
+## D31 — The Root Is the Caller's Boundary and Must Contain the Closure
+
+The root confines source access. It is the caller's safety boundary and says nothing about how the sources are organized, so it must contain every document the entry references reach.
+
+This was settled by getting it wrong. The worked example bundled `modes/plan-mode.md` with the root at `skills/work-planner` and recorded ten link faults in the skill. Nine were not faults. `skills/guidelines.md` exists, carrying the three headings those links name, and work-planner's own guidelines and its revise mode both reference it deliberately. The links resolve exactly where their authors intended; the root excluded a dependency the skill genuinely has, and the refusals were read as defects.
+
+A collection that shares material with a sibling is therefore rooted above both: `skills`, not `skills/work-planner`. The alternative, treating a cross-collection dependency as a defect to remove, would make the tool's confinement boundary dictate how a skill is authored, which is the wrong way round for a boundary whose purpose is to stop a run reading outside what the caller allowed.
+
+A refused reference says the root is too narrow at least as often as it says the link is wrong. The diagnostic names the resolved path so the caller can tell the two apart, and that is the only thing the tool can say about it.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
