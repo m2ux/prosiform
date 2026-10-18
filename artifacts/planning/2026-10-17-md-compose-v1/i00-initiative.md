@@ -1,6 +1,6 @@
 ## Overview
 
-A Python 3 build of md-compose compiles one or more local Markdown document or section references into one continuous, validated Markdown document, and a language-neutral fixture corpus states what that document must be. The corpus declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing this one. The build installs as the tool agents in this workspace invoke, with a wrapper that delivers a composite whole or reports a delivery failure. The initiative is complete when the corpus covers every behavioural clause of the design, the Python build passes it, and an agent composes by invoking the installed tool.
+A Python 3 build of md-compose compiles one or more local Markdown document or section references into one continuous, validated Markdown document, and a language-neutral fixture corpus states what that document must be. The corpus declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing this one. The repository is laid out, its environment pinned and its checks runnable before the first of that work lands. The build installs as the tool agents in this workspace invoke, with a wrapper that delivers a composite whole or reports a delivery failure. The initiative is complete when the corpus covers every behavioural clause of the design, the Python build passes it, and an agent composes by invoking the installed tool.
 
 ## Problem
 
@@ -45,14 +45,15 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/md-composer/issues/3) | Corpus Harness | AC8 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/4) | Walking Skeleton | AC7 |  | |
-| [E02](https://github.com/m2ux/md-composer/issues/5) | Outline Hierarchy | AC5 |  | |
-| [E03](https://github.com/m2ux/md-composer/issues/6) | Dependency Closure | AC1, AC3, AC10 |  | |
-| [E04](https://github.com/m2ux/md-composer/issues/7) | Destination Identity | AC2 |  | |
-| [E05](https://github.com/m2ux/md-composer/issues/8) | Validation Gate | AC4, AC6 | [E04](https://github.com/m2ux/md-composer/issues/7) | |
-| [E06](https://github.com/m2ux/md-composer/issues/9) | Corpus Conformance | AC9 | [E05](https://github.com/m2ux/md-composer/issues/8) | |
-| [E07](https://github.com/m2ux/md-composer/issues/19) | Field Deployment | AC11, AC12 | [E05](https://github.com/m2ux/md-composer/issues/8) | |
+| [E00](https://github.com/m2ux/md-composer/issues/26) | Project Foundation | AC13 | | |
+| [E01](https://github.com/m2ux/md-composer/issues/3) | Corpus Harness | AC8 | | |
+| [E02](https://github.com/m2ux/md-composer/issues/4) | Walking Skeleton | AC7 |  | |
+| [E03](https://github.com/m2ux/md-composer/issues/5) | Outline Hierarchy | AC5 |  | |
+| [E04](https://github.com/m2ux/md-composer/issues/6) | Dependency Closure | AC1, AC3, AC10 |  | |
+| [E05](https://github.com/m2ux/md-composer/issues/7) | Destination Identity | AC2 |  | |
+| [E06](https://github.com/m2ux/md-composer/issues/8) | Validation Gate | AC4, AC6 | [E05](https://github.com/m2ux/md-composer/issues/7) | |
+| [E07](https://github.com/m2ux/md-composer/issues/9) | Corpus Conformance | AC9 | [E06](https://github.com/m2ux/md-composer/issues/8) | |
+| [E08](https://github.com/m2ux/md-composer/issues/19) | Field Deployment | AC11, AC12 | [E06](https://github.com/m2ux/md-composer/issues/8) | |
 
 ## Acceptance Criteria
 
@@ -68,6 +69,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 - [ ] **AC10.** Each resource limit the profile names fails at the first boundary it crosses, publishing nothing, as the corpus's limit fixtures show.
 - [ ] **AC11.** An agent composes its context by invoking the installed tool rather than by reading the linked documents itself, as the installation smoke run against a documented entry point shows.
 - [ ] **AC12.** A composite the transport cannot deliver whole is reported as a delivery failure rather than as a truncated success, as the corpus's delivery fixtures show.
+- [ ] **AC13.** A corpus run reproduces on a fresh checkout at the dependency versions a lockfile records, as the continuous-integration run shows.
 
 ## Non-Goals
 

@@ -8,18 +8,19 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 
 | Clause | Initiative | Criterion | Epic | Epic criteria |
 | --- | --- | --- | --- | --- |
-| G1 | I00 | AC1 | E03 Dependency Closure | AC1, AC2 |
-| G2 | I00 | AC2 | E04 Destination Identity | AC3, AC4 |
-| G2 | I00 | AC3 | E03 Dependency Closure | AC3 |
-| G3 | I00 | AC4 | E05 Validation Gate | AC2 |
-| G4 | I00 | AC5 | E02 Outline Hierarchy | AC1–AC7 |
-| G5 | I00 | AC6 | E05 Validation Gate | AC1, AC3–AC7 |
-| G5 | I00 | AC10 | E03 Dependency Closure | AC7 |
-| G6 | I00 | AC7 | E01 Walking Skeleton | AC1–AC6 |
-| G7 | I00 | AC8 | E00 Corpus Harness | AC1–AC4 |
-| G7 | I00 | AC9 | E06 Corpus Conformance | AC1–AC4 |
-| G1 | I00 | AC11 | E07 Field Deployment | AC1, AC4 |
-| G5 | I00 | AC12 | E07 Field Deployment | AC2, AC3 |
+| G1 | I00 | AC1 | E04 Dependency Closure | AC1, AC2 |
+| G2 | I00 | AC2 | E05 Destination Identity | AC3, AC4 |
+| G2 | I00 | AC3 | E04 Dependency Closure | AC3 |
+| G3 | I00 | AC4 | E06 Validation Gate | AC2 |
+| G4 | I00 | AC5 | E03 Outline Hierarchy | AC1–AC7 |
+| G5 | I00 | AC6 | E06 Validation Gate | AC1, AC3–AC7 |
+| G5 | I00 | AC10 | E04 Dependency Closure | AC7 |
+| G6 | I00 | AC7 | E02 Walking Skeleton | AC1–AC6 |
+| G7 | I00 | AC8 | E01 Corpus Harness | AC1–AC4 |
+| G7 | I00 | AC9 | E07 Corpus Conformance | AC1–AC4 |
+| G1 | I00 | AC11 | E08 Field Deployment | AC1, AC4 |
+| G5 | I00 | AC12 | E08 Field Deployment | AC2, AC3 |
+| G7 | I00 | AC13 | E00 Project Foundation | AC2–AC4 |
 | G8 | I01 | AC1 | E00 Findings Ledger | AC1, AC2 |
 | G8 | I01 | AC2 | E00 Findings Ledger | AC3, AC4 |
 | G8 | I01 | AC3 | E01 Specification Revision | AC1, AC2 |
@@ -31,13 +32,14 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G5 | I02 | AC3 | E01 Source-Range Adapter | AC5 |
 | G4 | I02 | AC4 | E02 Profile and Outline | AC1–AC6 |
 | G1 | I02 | AC5 | E03 Closure and Budgets | AC1–AC7 |
-| G2 | I02 | AC6 | E04 Destination Identity | AC1–AC5 |
+| G2 | I02 | AC6 | E05 Destination Identity | AC1–AC5 |
 | G5 | I02 | AC7 | E05 Validation and Delivery | AC1–AC6 |
 | G7 | I02 | AC8 | E06 Differential Conformance | AC1 |
 | G7 | I02 | AC9 | E06 Differential Conformance | AC2–AC4 |
 | G8 | I02 | AC10 | E01 Source-Range Adapter | AC6 |
 
 - Every initiative criterion traces to a clause, and every clause is made true by at least one criterion.
+- Two epic criteria serve no initiative criterion of their own: the foundation epic's layout and README, and the adapter epic's Rust workspace. Each is a condition the epics after them rely on rather than an outcome the initiative is judged by.
 - G6 is made true by I00 AC7 alone. The production build inherits that property through the corpus rather than restating it, because a source needing added markup would fail the fixtures taken from unmodified workspace skills.
 - G8 was added to the proposal when the decision to use the Python build for an extended period was taken. Without it, the refinement initiative's criteria would trace to no clause.
 
@@ -45,7 +47,7 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 
 The three initiatives run in series, and each boundary is a dependency a task row names rather than an assumption.
 
-- I00 ends with a build that passes the corpus and is installed for agents to invoke. I01 E00 W01 depends on I00 E07 W03, so the ledger opens once there is something in use to record findings from.
+- I00 opens with the repository's foundation and ends with a build that passes the corpus and is installed for agents to invoke. I01 E00 W01 depends on I00 E08 W03, so the ledger opens once there is something in use to record findings from.
 - I01 ends with a tagged revision of the design and corpus. I02 E01 W01 depends on I01 E02 W02, so every implementing epic of the production build waits on the freeze.
 - I02 E00, the parser verdict, depends on neither. Its reproducers test a parser, not the specification, so the largest unknown in the production build can be answered while the refinement stage runs.
 
@@ -94,17 +96,17 @@ The checks run against the plan, and what each observed.
 `deps.py` run over each initiative body and all of its epic bodies.
 
 - All three initiatives report no problem: no overbroad whole-epic dependency, no backward reference, no duplicated or implied edge, and no numbering that departs from start order.
-- I00's whole-epic edges are E05 on E04, E06 on E05 and E07 on E05; every other ordering lives in the task graph.
+- I00's whole-epic edges are E06 on E05, E07 on E06 and E08 on E06; every other ordering lives in the task graph. The foundation epic binds the later ones through task edges rather than a whole-epic edge, because the corpus harness's first row needs the check commands but not the integration job.
 - I01's whole-epic edges are E01 on E00 and E02 on E00.
 - I02's whole-epic edges are E01, E02, E03 and E04 on E00, E05 on E04, and E06 on E05.
-- I00's two longest chains are 18 steps, sharing fifteen rows and diverging at the validation gate into conformance and into deployment. I01's longest chain is 6 steps, from the ledger format to the tagged revision. I02's twelve longest chains are 15 steps, each passing through the gate report.
+- I00's two longest chains are 21 steps, sharing eighteen rows and diverging at the validation gate into conformance and into deployment. I01's longest chain is 6 steps, from the ledger format to the tagged revision. I02's twelve longest chains are 15 steps, each passing through the gate report.
 - The independent task pairs it reported are recorded above.
 
 ### Body Format Check
 
 `format.py` run over every published issue, each epic against its initiative and each initiative against all of its epics.
 
-- All twenty-two issues report no mechanical fix, no metadata change to apply and no finding to decide.
+- All twenty-three issues report no mechanical fix, no metadata change to apply and no finding to decide.
 - Each epic criterion is delivered by at least one task row, and each initiative criterion by at least one epic row.
 
 ### Goal Trace

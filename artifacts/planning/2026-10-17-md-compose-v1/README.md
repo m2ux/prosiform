@@ -6,7 +6,7 @@
 
 md-compose compiles a set of linked local Markdown documents into one continuous, validated Markdown document. Agent skills in this workspace are authored as modular instruction sets: a skill entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation currently means the agent resolves that graph itself, deciding which sections to read, where each section ends, and when the closure is complete. md-compose moves that retrieval into a deterministic compilation step that either returns the whole composite or fails with a diagnostic.
 
-The work runs in three stages. A Python 3 build implements the behavioural contract, produces a language-neutral fixture corpus of exact expected composites, and installs as the tool agents in this workspace invoke. It is then used for an extended period, and what that use reveals refines the specification through a findings ledger until every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision. A Rust build then implements that tagged revision, with the prototype retained in use as its differential oracle. The corpus is the contract, so neither implementation is the specification of the other.
+The work runs in three stages. A Python 3 build lays out the repository, implements the behavioural contract, produces a language-neutral fixture corpus of exact expected composites, and installs as the tool agents in this workspace invoke. It is then used for an extended period, and what that use reveals refines the specification through a findings ledger until every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision. A Rust build then implements that tagged revision, with the prototype retained in use as its differential oracle. The corpus is the contract, so neither implementation is the specification of the other.
 
 ## Artifacts
 
@@ -20,14 +20,15 @@ The work runs in three stages. A Python 3 build implements the behavioural contr
 | [I00 initiative body](i00-initiative.md) | The local source for issue #2, the prototype initiative |
 | [I01 initiative body](i01-initiative.md) | The local source for issue #20, the refinement initiative |
 | [I02 initiative body](i02-initiative.md) | The local source for issue #10, the production initiative |
-| [I00:E00 body](i00-e00.md) | The local source for issue #3, Corpus Harness |
-| [I00:E01 body](i00-e01.md) | The local source for issue #4, Walking Skeleton |
-| [I00:E02 body](i00-e02.md) | The local source for issue #5, Outline Hierarchy |
-| [I00:E03 body](i00-e03.md) | The local source for issue #6, Dependency Closure |
-| [I00:E04 body](i00-e04.md) | The local source for issue #7, Destination Identity |
-| [I00:E05 body](i00-e05.md) | The local source for issue #8, Validation Gate |
-| [I00:E06 body](i00-e06.md) | The local source for issue #9, Corpus Conformance |
-| [I00:E07 body](i00-e07.md) | The local source for issue #19, Field Deployment |
+| [I00:E00 body](i00-e00.md) | The local source for issue #26, Project Foundation |
+| [I00:E01 body](i00-e01.md) | The local source for issue #3, Corpus Harness |
+| [I00:E02 body](i00-e02.md) | The local source for issue #4, Walking Skeleton |
+| [I00:E03 body](i00-e03.md) | The local source for issue #5, Outline Hierarchy |
+| [I00:E04 body](i00-e04.md) | The local source for issue #6, Dependency Closure |
+| [I00:E05 body](i00-e05.md) | The local source for issue #7, Destination Identity |
+| [I00:E06 body](i00-e06.md) | The local source for issue #8, Validation Gate |
+| [I00:E07 body](i00-e07.md) | The local source for issue #9, Corpus Conformance |
+| [I00:E08 body](i00-e08.md) | The local source for issue #19, Field Deployment |
 | [I01:E00 body](i01-e00.md) | The local source for issue #21, Findings Ledger |
 | [I01:E01 body](i01-e01.md) | The local source for issue #22, Specification Revision |
 | [I01:E02 body](i01-e02.md) | The local source for issue #23, Specification Freeze |
@@ -38,39 +39,43 @@ The work runs in three stages. A Python 3 build implements the behavioural contr
 | [I02:E04 body](i02-e04.md) | The local source for issue #15, Destination Identity |
 | [I02:E05 body](i02-e05.md) | The local source for issue #16, Validation and Delivery |
 | [I02:E06 body](i02-e06.md) | The local source for issue #17, Differential Conformance |
-| [I00:E00:W01](i00-e00/w01.md) | The implementation plan for fixture layout and manifest schema |
-| [I00:E00:W02](i00-e00/w02.md) | The implementation plan for corpus runner and result comparison |
-| [I00:E00:W03](i00-e00/w03.md) | The implementation plan for corpus run on every change |
-| [I00:E01:W01](i00-e01/w01.md) | The implementation plan for command interface, streams and exit statuses |
-| [I00:E01:W02](i00-e01/w02.md) | The implementation plan for profile configuration and source parsing |
-| [I00:E01:W03](i00-e01/w03.md) | The implementation plan for byte-order mark and frontmatter removal |
-| [I00:E01:W04](i00-e01/w04.md) | The implementation plan for whole-document emission under a filename heading |
-| [I00:E01:W05](i00-e01/w05.md) | The implementation plan for fixtures from unmodified workspace skills |
-| [I00:E02:W01](i00-e02/w01.md) | The implementation plan for source heading slugs and duplicate numbering |
-| [I00:E02:W02](i00-e02/w02.md) | The implementation plan for eligible section extraction and boundaries |
-| [I00:E02:W03](i00-e02/w03.md) | The implementation plan for plus-one heading shift and setext conversion |
-| [I00:E02:W04](i00-e02/w04.md) | The implementation plan for heading-only ancestor scaffolding |
-| [I00:E02:W05](i00-e02/w05.md) | The implementation plan for heading depth overflow fails |
-| [I00:E03:W01](i00-e03/w01.md) | The implementation plan for reference normalization and path identity |
-| [I00:E03:W02](i00-e03/w02.md) | The implementation plan for root confinement and no-symlink source access |
-| [I00:E03:W03](i00-e03/w03.md) | The implementation plan for link classification and traversal to a fixed point |
-| [I00:E03:W04](i00-e03/w04.md) | The implementation plan for selection consolidation and expanded coverage |
-| [I00:E03:W05](i00-e03/w05.md) | The implementation plan for self-reference and ancestor-reference classification |
-| [I00:E03:W06](i00-e03/w06.md) | The implementation plan for resource budgets fail at the boundary |
-| [I00:E04:W01](i00-e04/w01.md) | The implementation plan for custom anchor recognition and alias resolution |
-| [I00:E04:W02](i00-e04/w02.md) | The implementation plan for qualified destinations and collision detection |
-| [I00:E04:W03](i00-e04/w03.md) | The implementation plan for reference conversion and definition removal |
-| [I00:E04:W04](i00-e04/w04.md) | The implementation plan for resource rebasing and the resource base |
-| [I00:E05:W01](i00-e05/w01.md) | The implementation plan for candidate validation and provenance invariants |
-| [I00:E05:W02](i00-e05/w02.md) | The implementation plan for block boundary safety |
-| [I00:E05:W03](i00-e05/w03.md) | The implementation plan for source consistency and generated-input rejection |
-| [I00:E05:W04](i00-e05/w04.md) | The implementation plan for diagnostic content and the json format |
-| [I00:E06:W01](i00-e06/w01.md) | The implementation plan for adversarial fixture families completed |
-| [I00:E06:W02](i00-e06/w02.md) | The implementation plan for clause-to-fixture mapping and the report |
-| [I00:E06:W03](i00-e06/w03.md) | The implementation plan for implementation independence check |
-| [I00:E07:W01](i00-e07/w01.md) | The implementation plan for installation and stable entry point |
-| [I00:E07:W02](i00-e07/w02.md) | The implementation plan for delivery wrapper and transport limit |
-| [I00:E07:W03](i00-e07/w03.md) | The implementation plan for documented invocation for callers |
+| [I00:E00:W01](i00-e00/w01.md) | The implementation plan for repository layout and readme |
+| [I00:E00:W02](i00-e00/w02.md) | The implementation plan for python environment and pinned dependencies |
+| [I00:E00:W03](i00-e00/w03.md) | The implementation plan for test runner and static checks |
+| [I00:E00:W04](i00-e00/w04.md) | The implementation plan for continuous integration running those commands |
+| [I00:E01:W01](i00-e01/w01.md) | The implementation plan for fixture layout and manifest schema |
+| [I00:E01:W02](i00-e01/w02.md) | The implementation plan for corpus runner and result comparison |
+| [I00:E01:W03](i00-e01/w03.md) | The implementation plan for corpus run on every change |
+| [I00:E02:W01](i00-e02/w01.md) | The implementation plan for command interface, streams and exit statuses |
+| [I00:E02:W02](i00-e02/w02.md) | The implementation plan for profile configuration and source parsing |
+| [I00:E02:W03](i00-e02/w03.md) | The implementation plan for byte-order mark and frontmatter removal |
+| [I00:E02:W04](i00-e02/w04.md) | The implementation plan for whole-document emission under a filename heading |
+| [I00:E02:W05](i00-e02/w05.md) | The implementation plan for fixtures from unmodified workspace skills |
+| [I00:E03:W01](i00-e03/w01.md) | The implementation plan for source heading slugs and duplicate numbering |
+| [I00:E03:W02](i00-e03/w02.md) | The implementation plan for eligible section extraction and boundaries |
+| [I00:E03:W03](i00-e03/w03.md) | The implementation plan for plus-one heading shift and setext conversion |
+| [I00:E03:W04](i00-e03/w04.md) | The implementation plan for heading-only ancestor scaffolding |
+| [I00:E03:W05](i00-e03/w05.md) | The implementation plan for heading depth overflow fails |
+| [I00:E04:W01](i00-e04/w01.md) | The implementation plan for reference normalization and path identity |
+| [I00:E04:W02](i00-e04/w02.md) | The implementation plan for root confinement and no-symlink source access |
+| [I00:E04:W03](i00-e04/w03.md) | The implementation plan for link classification and traversal to a fixed point |
+| [I00:E04:W04](i00-e04/w04.md) | The implementation plan for selection consolidation and expanded coverage |
+| [I00:E04:W05](i00-e04/w05.md) | The implementation plan for self-reference and ancestor-reference classification |
+| [I00:E04:W06](i00-e04/w06.md) | The implementation plan for resource budgets fail at the boundary |
+| [I00:E05:W01](i00-e05/w01.md) | The implementation plan for custom anchor recognition and alias resolution |
+| [I00:E05:W02](i00-e05/w02.md) | The implementation plan for qualified destinations and collision detection |
+| [I00:E05:W03](i00-e05/w03.md) | The implementation plan for reference conversion and definition removal |
+| [I00:E05:W04](i00-e05/w04.md) | The implementation plan for resource rebasing and the resource base |
+| [I00:E06:W01](i00-e06/w01.md) | The implementation plan for candidate validation and provenance invariants |
+| [I00:E06:W02](i00-e06/w02.md) | The implementation plan for block boundary safety |
+| [I00:E06:W03](i00-e06/w03.md) | The implementation plan for source consistency and generated-input rejection |
+| [I00:E06:W04](i00-e06/w04.md) | The implementation plan for diagnostic content and the json format |
+| [I00:E07:W01](i00-e07/w01.md) | The implementation plan for adversarial fixture families completed |
+| [I00:E07:W02](i00-e07/w02.md) | The implementation plan for clause-to-fixture mapping and the report |
+| [I00:E07:W03](i00-e07/w03.md) | The implementation plan for implementation independence check |
+| [I00:E08:W01](i00-e08/w01.md) | The implementation plan for installation and stable entry point |
+| [I00:E08:W02](i00-e08/w02.md) | The implementation plan for delivery wrapper and transport limit |
+| [I00:E08:W03](i00-e08/w03.md) | The implementation plan for documented invocation for callers |
 | [I01:E00:W01](i01-e00/w01.md) | The implementation plan for ledger format and triage states |
 | [I01:E00:W02](i01-e00/w02.md) | The implementation plan for fixture capture from a recorded entry |
 | [I01:E01:W01](i01-e01/w01.md) | The implementation plan for revision order and its citation record |

@@ -64,6 +64,16 @@ The ordering within the stage is design, then corpus, then build. A fix applied 
 
 The Rust initiative renumbers from I01 to I02, and the refinement stage takes I01, so the initiative numbers follow the order the stages run in. No pull request named any of those numbers, so the renumbering changed only issue titles and body references.
 
+## D9 — The Repository Is Laid Out Before the First Task
+
+The default branch holds a README whose body is `tbd` and no other file. A foundation epic opens the prototype initiative: the four trees D3 names, a Python environment whose dependencies resolve through a lockfile, documented commands for tests, lint, format and type checks, continuous integration running those same commands, and a README that states what the tool is and links to the design and the plan.
+
+It is an epic rather than preparatory rows on the corpus harness because its subject is the repository, not the corpus, and because four of its five criteria bind every later epic rather than one. The production tree takes the same treatment as a first row of the adapter epic, so the Rust build does not inherit the prototype's environment by accident.
+
+The prototype's epics renumbered up by one to make room at E00, and the production adapter epic gained a W00 row. No pull request named any of those identifiers, so the renumbering changed only issue titles and body references.
+
+The design and the planning record stay on the engineering branch. The repository's documentation tree links to them rather than copying them, so there is one copy of each.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
