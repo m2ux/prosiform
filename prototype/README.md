@@ -1,0 +1,60 @@
+# Prototype
+
+The Python build of prosiform.
+
+It establishes the behavioural contract, runs the [fixture corpus](../fixtures/README.md), and stays in use as a differential oracle once the production build exists.
+
+## Environment
+
+`pyproject.toml` declares the supported Python version and the build's dependencies. `uv.lock` records the exact version and hash of every package those dependencies resolve to, so two checkouts install the same tree.
+
+```bash
+cd prototype
+uv sync --frozen
+```
+
+`--frozen` installs what the lockfile records and resolves nothing, so a dependency change reaches an environment only by way of a lockfile change. `uv sync --check` reports an environment whose versions have drifted from the lockfile. `uv lock` rewrites the lockfile after an edit to `pyproject.toml`, and `uv lock --check` reports a lockfile that no longer describes the declared dependencies.
+
+| Declared | Value | Why |
+| --- | --- | --- |
+| Python | `>=3.13` | The version the environment is created with and the one continuous integration runs. |
+| [`markdown-it-py`](https://pypi.org/project/markdown-it-py/) | `==4.2.0` | The parser the `skill-markdown-v1` profile is configured on. Its `commonmark` preset with the `table` and `strikethrough` rules enabled gives the profile's pipe tables and double-tilde strikethrough; its typographer stays off, which is the profile's disabled typographic substitution; it leaves source task-list markers as text rather than generating checkbox HTML; and it emits raw HTML as its own token, which is what lets the build refuse it. |
+
+`mdurl` is resolved as `markdown-it-py`'s own dependency. The profile needs no parser plugin, so `mdit-py-plugins` is not declared: pipe tables and strikethrough are core rules of the parser, and preserving task-list markers means leaving the plugin that renders them out.
+
+## Packaging
+
+The wheel carries [`docs/glossary.md`](../docs/glossary.md) at `prosiform/docs/glossary.md`, so the vocabulary the tool's diagnostics use travels with an installed build rather than only with the source tree.
+
+```bash
+uv build --wheel
+```
+
+## Checks
+
+The build's tests and static checks are named commands, run from the repository root alongside [the checks the repository carries](../checks/README.md). Each tool is declared in the `dev` dependency group and pinned by the lockfile, so the version that checks a change on a working copy is the version that checks it in continuous integration.
+
+| Command | Runs |
+| --- | --- |
+| `make test` | `pytest` over `tests/`. A run that collects no test exits 5, so a suite that discovers nothing fails. |
+| `make lint` | `ruff check` over the package, its tests and `checks/`. |
+| `make format-check` | `ruff format --check` over those same files. Formatting is reported, not applied. |
+| `make typecheck` | `mypy` in strict mode over those same files. |
+| `make lock-check` | `uv lock --check`, which exits nonzero when `uv.lock` does not describe the dependency list `pyproject.toml` declares. A dependency edited without relocking fails here rather than at the next install. |
+
+| Declared | Value | Why |
+| --- | --- | --- |
+| [`pytest`](https://pypi.org/project/pytest/) | `==9.1.1` | Discovers and reports the suite, and exits nonzero on a failure and on an empty discovery alike. |
+| [`ruff`](https://pypi.org/project/ruff/) | `==0.17.1` | The linter and the formatter in one tool, so one declared configuration governs both. |
+| [`mypy`](https://pypi.org/project/mypy/) | `==2.4.0` | The type checker, run in strict mode. |
+
+`tests/test_profile.py` holds the pinned parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text, typographic substitution off, and raw HTML recognized as a token of its own.
+
+## Layout
+
+| Path | Holds |
+| --- | --- |
+| `pyproject.toml` | The project definition: the supported Python version, the dependencies, the package data and the tool configuration. |
+| `uv.lock` | The exact resolved version and hash of every package. |
+| `src/prosiform/` | The package. |
+| `tests/` | The build's tests. |
