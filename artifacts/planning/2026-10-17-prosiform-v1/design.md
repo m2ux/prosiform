@@ -94,15 +94,14 @@ prosiform --root DIR [OPTIONS] REF [REF ...]
 | --- | --- |
 | `--root DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
 | `--from DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
-| `-o, --output FILE` | Atomically publish validated output to a file; default or `-` means stdout. |
+| `-o, --output FILE` | Atomically publish validated output to a file, resolved from the process working directory; default or `-` means stdout. A path naming an input source is refused. |
 | `--group SLUG:DEPTH` | Merge every document under a directory named `SLUG` at source heading level `DEPTH`, which is 1 through 6; repeatable, once per slug. Documents no group names keep their own group. |
 | `--check` | Discover, bundle, and validate without emitting or publishing the bundle. |
-| `--resource-base URL` | HTTPS directory URL mapping source-root-relative resource paths for stdout output. |
 | `--diagnostics text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
 | `--version` | Report tool version and profile identifier. |
 | `--help` | Show usage, defaults, and exit-status meanings. |
 
-Allow `--check --output FILE` to validate rebasing for that destination without writing it. Optional manifests and dependency explanations can be added later without changing the core invocation.
+`--check` accepts `--output FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
 ### Usage examples
 
@@ -280,7 +279,7 @@ Parse each source independently after frontmatter recognition and before selecti
 
 1. Convert resolved reference-style uses in selected content to inline links or images.
 2. Preserve visible link text, image alternative content, and optional titles with the necessary Markdown escaping.
-3. Rewrite local Markdown destinations to bundle destinations; preserve or rebase other destinations under the resource policy.
+3. Rewrite local Markdown destinations to bundle destinations; emit every other destination as authored.
 4. Remove all original link-reference definition nodes from emitted content, including unused definitions.
 5. Preserve unresolved bracketed text as literal text; do not infer a dependency from text the source parser did not recognize as a link.
 6. Leave examples inside code spans and code blocks unchanged.
@@ -341,14 +340,12 @@ Discard metadata without validating YAML values. Count it toward input-size limi
 
 ## Link classification and resource handling
 
-Classify references before traversal. The tool guarantees internal resolution for supported local Markdown document links, not offline availability of every resource mentioned in the bundled text.
+A reference is a dependency when it carries no scheme and no authority and resolves to a Markdown file under the allowed root. Everything else is text the bundle carries unchanged. The tool guarantees internal resolution for the first kind and claims nothing about the second.
 
 - **Local Markdown document links:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
 - **Fragment-only links:** Resolve against the original source document's heading index, then apply the same bundling and rewriting rules.
-- **Images and non-Markdown resources:** Do not recursively include them. Preserve their meaning through the resource-location policy below.
-- **Web URLs:** Preserve them without fetching or interpreting them as local dependencies. A GitHub URL remains a web URL unless an explicit URL-to-checkout feature is introduced later.
+- **Everything else:** A reference carrying a scheme or an authority is not a local document reference. Emit it as authored and never open, fetch or interpret it. No scheme is permitted or refused, because which scheme it carries decides nothing: carrying one at all is what puts the reference outside the tool's interest. Images and other non-Markdown references are text by the same rule.
 - **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
-- **Other URI schemes:** Maintain an explicit allowlist for pass-through references and reject unsupported schemes. Do not treat an unrecognized scheme as a filesystem path.
 - **Examples:** Do not follow apparent links inside code spans, fenced code blocks, or other literal example content.
 
 ## Reference normalization and path identity
@@ -361,7 +358,7 @@ A fragment-only command-line reference requires `--from DOC`; otherwise it fails
 
 1. For authored Markdown links, obtain the destination from the parser with Markdown escapes and entities interpreted once. CLI reference arguments enter directly as URI-reference strings.
 2. Split URI components before percent-decoding so encoded `#` and `?` remain filename characters rather than becoming delimiters.
-3. Classify scheme and authority. Pass through supported external references under their policy; reject unsupported schemes.
+3. Emit any reference carrying a scheme or an authority as authored, and resolve no further.
 4. Reject any query component on local Markdown document references, including an explicitly empty query.
 5. Strictly validate percent escapes and decode path and fragment exactly once as UTF-8. Look up the decoded source fragment exactly; do not lowercase or re-slug it.
 6. Reject NULs, control characters, decoded path separators originating from escapes, and remaining backslash separators. Local paths use forward slashes in v1.
@@ -382,7 +379,7 @@ Do not apply additional Unicode normalization to filesystem names beyond what th
 | `sub/../guide.md#run` | Normalize to `guide.md#run` when confined to the root. |
 | A normalized path outside the root | Fail with `E_SOURCE_OUTSIDE_ROOT`. |
 
-Root-relative URL paths beginning with `/`, filesystem absolute reference paths, protocol-relative URLs, and platform-specific drive paths are outside the local-reference profile and fail explicitly. This restriction applies to document references, not to the configuration path naming the allowed source root.
+A schemeless reference that is not a relative path confined to the root fails explicitly: a root-relative path beginning with `/`, a filesystem absolute path, and a platform-specific drive path each name a local document the root cannot contain, and refusing them keeps an intended dependency from being dropped in silence. This restriction applies to document references, not to the configuration path naming the allowed source root.
 
 ### No-symlink source policy
 
@@ -392,18 +389,13 @@ Use rooted, no-follow access or equivalent safeguards, not merely a pre-open str
 
 Non-Markdown resource links are not opened as source dependencies. They remain governed by the resource policy.
 
-## Resource-location policy
+## Resources are text
 
-Rebase relative image and non-Markdown resource URLs against their original source location when writing to a specified output file. Preserve any applicable query or fragment; do not modify shell commands, code examples, or prose containing filesystem paths.
+A relative image or other non-Markdown reference is text. It is emitted byte-identical to its source and never opened, rebased or resolved, so a bundle read from somewhere other than its source directory may not find it.
 
-- **File output:** Resolve `--output` relative to the process working directory, independently of source references. Compute resource URLs relative to that destination's directory and reject outputs that overwrite an input source.
-- **Stdout with an explicit resource base:** Require an HTTPS directory URL ending in `/`, with no credentials, query, or fragment. Append the percent-encoded source-root-relative resource path and preserve the resource reference's own query or fragment.
-- **Mapping failures:** Resources outside the source root have no mapping under `--resource-base` and fail rather than acquiring invented URLs.
-- **Conflicting modes:** Reject `--resource-base` with a real output file, including validation-only file-output context. Permit it for stdout or validation-only stdout semantics.
-- **Stdout without a resource base:** Leave resource references unchanged and warn on stderr that resource portability is not guaranteed. A successful Markdown dependency bundling does not imply that those resources are portable.
-- **Unrepresentable resource references:** If a requested rebasing cannot be performed safely, fail with a diagnostic rather than inventing a destination.
+Warn on stderr that resource portability is not guaranteed. A successful Markdown bundling establishes nothing about the resources its text mentions, and the warning does not turn a successful run into a failure.
 
-Never fetch resource-base URLs or add authentication capabilities. A portability warning alone does not turn successful compilation into failure.
+Rebasing a resource path means deciding where the bundle will be read from, which is the caller's question rather than the tool's. Nothing here maps a resource to a URL, so the tool holds no notion of a web address at all.
 
 ## Resource limits
 
@@ -483,9 +475,9 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Target integrity:** Every rewritten link points to the intended source-derived destination, not merely a section whose slug happens to coincide.
 - **Uniqueness:** Each bundle destination occurs once, and resolves in the renderer that reads the bundle.
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
-- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, the generated entry line, generated group, variant and overview headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
+- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting, title absorption, heading shifts and necessary Setext conversion, the generated entry line, generated group, variant and overview headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
-- **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands or fetch remote URLs implicitly.
+- **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands, and never open a reference the tool did not resolve as a local Markdown dependency.
 - **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation.
 
 ### Post-compilation invariants
@@ -558,7 +550,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **Entry line:** One entry and several; an entry whose destination is a file heading and one whose destination is an overview subsection under a grouping rule; the link text matching the heading it names; and the line counting toward no source's coverage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.
-- **Resources:** Images and script links rebased for file output, stdout with and without a resource base, and unchanged relative paths inside command examples.
+- **Resources:** An image, a script link and a relative path inside a command example each emitted byte-identical, with the portability warning on stderr.
 - **Consistency:** Source modification, deletion, or changed canonical identity during compilation.
 - **Validation scope:** Unselected broken/self-referential siblings do not fail a narrow run but do fail when later included.
 - **Generated inputs:** Reject a source opening on a file heading, while ignoring a heading-like example in code and an authored title that merely contains a slash.
@@ -570,14 +562,13 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **File-wide safety:** Excessive parsing depth in an unselected sibling can fail with a file-indexing resource diagnostic, while an ordinary unselected broken link does not.
 - **Profile:** Task markers protected from definitions, disabled typographic rewriting, Markdown suffix classification, and explicit rejection of unsupported selected dependency constructs.
 - **Frontmatter:** Optional BOM, exact opening/closing delimiters, `...` termination, leading-blank-line distinction, malformed delimiters, and missing closers.
-- **CLI:** Root versus `--from` resolution, `--check` with output rebasing but no publication, resource-base conflicts, clean JSON diagnostics, and documented exit statuses.
+- **CLI:** Root versus `--from` resolution, `--check` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
 - **Limits:** Every limit fails at the first exceeded boundary without truncation; zero/negative overrides fail; parser nesting cannot silently fall back to different syntax.
 
 ## Implementation verification and residual policy detail
 
 - **Source-range adapter:** Rust and the first parser candidate are selected, but range fidelity, complete occurrence coverage, observable reference-resolution suppression, and nested-edit handling must be proven after implementation is authorized.
 - **Dependency pins:** Choose an appropriate Rust slugging component and exact tested dependency versions; compatibility fixtures, not assumptions about upstream behavior, establish the supported profile.
-- **URI pass-through allowlist:** The exact set of additional non-HTTP schemes remains to be specified. Do not silently authorize arbitrary schemes; ordinary web references and HTTPS resource-base behavior are defined above.
 - **Calibration:** Revisit numerical defaults only with measured fixture and real-skill data. The approved initial limits are not performance claims.
 - **Upstream route:** Keep the possible contribution recorded in the note below. No issue or PR drafting, implementation, or publication is authorized.
 

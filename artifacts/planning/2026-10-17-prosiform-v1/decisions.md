@@ -290,6 +290,18 @@ The line is not used as a detection signal. An authored document may legitimatel
 
 Whether naming the entry is enough, or whether an agent also needs its content positioned differently, is a question about agent behaviour that no reading of the design settles. It is taken up where it can be answered: each refinement-stage run records whether the entry's content was acted on from the bundle alone.
 
+## D29 — A Scheme Means the Reference Is Not Ours, and a Resource Is Text
+
+Six clauses decided one thing: whether a reference is a local Markdown dependency. They classified schemes, kept an allowlist, handled authorities, refused protocol-relative URLs, and left the exact scheme set as a residual item to be specified later.
+
+One clause decides it. A reference is a dependency when it carries no scheme and no authority and resolves to a Markdown file under the root. Everything else is text the bundle carries unchanged, never opened and never interpreted. No scheme is permitted and none is refused, because which scheme a reference carries decides nothing: carrying one at all is what puts it outside the tool's interest.
+
+That is stronger than the allowlist it replaces. The property the old clauses protected was that an unrecognized scheme must not be read as a filesystem path, and they protected it through a rejection path. Now a scheme is positive evidence that the reference is not local, so no path exists along which one could be opened. A schemeless reference the root cannot contain still fails, because that is a local document reference the run cannot satisfy, and refusing it keeps an intended dependency from being dropped in silence.
+
+Resource rebasing goes with it. A relative image reference is text: emitted byte-identical, never rebased, with a warning that a bundle read elsewhere may not find it. Rebasing one means deciding where the bundle will be read from, which is the caller's question. The `--resource-base` option, its HTTPS directory validation, its conflict with a real output file, the file-output rebasing rules and their fixture family are all removed, and the tool holds no notion of a web address at all. The one rule worth keeping from that section stays on the option that owns it: an output path naming an input source is refused.
+
+The tool bundles linked local Markdown. Nothing about a web address belonged in the contract that says so.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
