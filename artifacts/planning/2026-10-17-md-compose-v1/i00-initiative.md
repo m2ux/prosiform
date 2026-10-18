@@ -74,6 +74,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 ## Non-Goals
 
 - It does not apply byte-exact edits to identified source spans.
+- It does not create the production build's tree, toolchain or dependencies.
 - It does not settle the specification, which use refines.
 - It does not execute, authorize or sequence the procedures it composes.
 - It does not infer a dependency the source did not state as a Markdown link.

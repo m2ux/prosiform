@@ -39,7 +39,7 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G8 | I02 | AC10 | E01 Source-Range Adapter | AC6 |
 
 - Every initiative criterion traces to a clause, and every clause is made true by at least one criterion.
-- Two epic criteria serve no initiative criterion of their own: the foundation epic's layout and README, and the adapter epic's Rust workspace. Each is a condition the epics after them rely on rather than an outcome the initiative is judged by.
+- Two epic criteria serve no initiative criterion of their own: the foundation epic's layout and README, and the adapter epic's production tree and workspace. Each is a condition the epics after them rely on rather than an outcome the initiative is judged by.
 - G6 is made true by I00 AC7 alone. The production build inherits that property through the corpus rather than restating it, because a source needing added markup would fail the fixtures taken from unmodified workspace skills.
 - G8 was added to the proposal when the decision to use the Python build for an extended period was taken. Without it, the refinement initiative's criteria would trace to no clause.
 
@@ -47,7 +47,7 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 
 The three initiatives run in series, and each boundary is a dependency a task row names rather than an assumption.
 
-- I00 opens with the repository's foundation and ends with a build that passes the corpus and is installed for agents to invoke. I01 E00 W01 depends on I00 E08 W03, so the ledger opens once there is something in use to record findings from.
+- I00 opens with the repository's foundation and ends with a build that passes the corpus and is installed for agents to invoke. The foundation creates the corpus, prototype and documentation trees only; the production tree, workspace and toolchain are a first row of I02 E01, and I00 carries a Non-Goal excluding them. I01 E00 W01 depends on I00 E08 W03, so the ledger opens once there is something in use to record findings from.
 - I01 ends with a tagged revision of the design and corpus. I02 E01 W01 depends on I01 E02 W02, so every implementing epic of the production build waits on the freeze.
 - I02 E00, the parser verdict, depends on neither. Its reproducers test a parser, not the specification, so the largest unknown in the production build can be answered while the refinement stage runs.
 
