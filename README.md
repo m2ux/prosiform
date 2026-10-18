@@ -1,14 +1,14 @@
 # 🧩 prosiform
 
 [![Status: planning](https://img.shields.io/badge/status-planning-orange.svg)](https://github.com/users/m2ux/projects/18)
-[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/md-composer/blob/engineering/artifacts/planning/2026-10-17-md-compose-v1/design.md)
+[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle — or it publishes nothing and says why.
 
 ---
 
-**[Design](https://github.com/m2ux/md-composer/blob/engineering/artifacts/planning/2026-10-17-md-compose-v1/design.md)** • **[Glossary](https://github.com/m2ux/md-composer/blob/engineering/artifacts/planning/2026-10-17-md-compose-v1/glossary.md)** • **[Plan](https://github.com/users/m2ux/projects/18)** • **[Proposal](https://github.com/m2ux/md-composer/issues/1)** • **[Planning record](https://github.com/m2ux/md-composer/tree/engineering/artifacts/planning/2026-10-17-md-compose-v1)**
+**[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/glossary.md)** • **[Plan](https://github.com/users/m2ux/projects/18)** • **[Proposal](https://github.com/m2ux/prosiform/issues/1)** • **[Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1)**
 
 ---
 
@@ -48,7 +48,7 @@ References → Closure → Consolidation → Grouping → Rewriting → Validati
 - **Bundle** — the single validated Markdown document one run produces
 - **Profile** — `skill-markdown-v1`: CommonMark with pipe tables, strikethrough and preserved task markers; no typographic substitution
 
-Every term the contract uses is defined once, in the [glossary](https://github.com/m2ux/md-composer/blob/engineering/artifacts/planning/2026-10-17-md-compose-v1/glossary.md), which ships with the tool.
+Every term the contract uses is defined once, in the [glossary](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/glossary.md), which ships with the tool.
 
 ## 🚀 Quick Start
 
@@ -105,9 +105,9 @@ Three stages, in order. Progress is on the **[Bundling board](https://github.com
 
 | Stage | Delivers | State |
 | --- | --- | --- |
-| **[I00 Prototype](https://github.com/m2ux/md-composer/issues/2)** | A Python build, a language-neutral fixture corpus, and the tool installed for agents to invoke | In Progress |
-| **[I01 Field Refinement](https://github.com/m2ux/md-composer/issues/20)** | The specification settled by real use, frozen at a tagged revision | Ready |
-| **[I02 Production](https://github.com/m2ux/md-composer/issues/10)** | A Rust build implementing that revision, with the prototype retained as its differential oracle | Planned |
+| **[I00 Prototype](https://github.com/m2ux/prosiform/issues/2)** | A Python build, a language-neutral fixture corpus, and the tool installed for agents to invoke | In Progress |
+| **[I01 Field Refinement](https://github.com/m2ux/prosiform/issues/20)** | The specification settled by real use, frozen at a tagged revision | Ready |
+| **[I02 Production](https://github.com/m2ux/prosiform/issues/10)** | A Rust build implementing that revision, with the prototype retained as its differential oracle | Planned |
 
 The fixture corpus is the contract: it declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing one.
 
