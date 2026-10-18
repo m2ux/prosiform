@@ -1,1 +1,116 @@
-tbd
+# 🧩 prosiform
+
+[![Status: planning](https://img.shields.io/badge/status-planning-orange.svg)](https://github.com/users/m2ux/projects/18)
+[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
+
+A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle — or it publishes nothing and says why.
+
+---
+
+**[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/glossary.md)** • **[Plan](https://github.com/users/m2ux/projects/18)** • **[Proposal](https://github.com/m2ux/prosiform/issues/1)** • **[Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1)**
+
+---
+
+## 🎯 Overview
+
+Agent skills are authored as collections of linked documents: an entry point links to procedures, and procedures link to the sections that govern them. Reaching the complete context for one operation means resolving that graph at read time. prosiform moves that work into a compilation step, so retrieval stops being part of the reasoning task.
+
+### Why?
+
+Leaving retrieval to the agent costs:
+
+* **Missed prerequisites** — a link names a destination; it does not retrieve it
+* **Unbounded reads** — one procedure in a real skill reaches 39 documents and 318,018 bytes when read whole
+* **No completeness signal** — a prerequisite skipped and one never needed produce the same result
+* **Duplicated rules** — shared context gets copied into each document rather than linked once
+
+### How It Works
+
+1. **Resolve** — entry references normalize to source identities confined to an allowed root
+2. **Discover** — supported local Markdown links are followed to a fixed point
+3. **Consolidate** — overlapping selections merge, so each region appears exactly once
+4. **Arrange** — regions are emitted into groups, source headings shifting one level beneath the heading that names their group
+5. **Rewrite** — every reference is repointed at the fragment a renderer generates for the heading it now names
+6. **Validate** — the candidate is reparsed and checked against what was selected; nothing reaches stdout until it passes
+
+### Architecture
+
+```
+References → Closure → Consolidation → Grouping → Rewriting → Validation → Bundle
+```
+
+- **Reference** — a document, or a document and a section fragment
+- **Section** — a document-level heading and its subsections; the smallest unit a reference can select
+- **Closure** — every local Markdown document reachable by link from the selection
+- **Group** — a top-level division of the bundle: one source document by default, or one merged directory
+- **Destination** — the fragment a renderer generates for an emitted heading, which is what every rewritten reference names
+- **Bundle** — the single validated Markdown document one run produces
+- **Profile** — `skill-markdown-v1`: CommonMark with pipe tables, strikethrough and preserved task markers; no typographic substitution
+
+Every term the contract uses is defined once, in the [glossary](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/glossary.md), which ships with the tool.
+
+## 🚀 Quick Start
+
+Nothing is built yet. The behavioural contract is specified and the work is planned — this is the interface that contract defines.
+
+```bash
+# A procedure and everything it reaches. The routing document the caller read
+# to find it, SKILL.md, is not an entry reference and is not bundled.
+prosiform --root skills/work-planner modes/plan-mode.md
+
+# Selected sections
+prosiform --root skills/work-planner 'artifacts/epic.md#delivery-findings'
+
+# Every document under a named directory merged at a heading level
+prosiform --root skills/work-planner \
+  --group artifacts:2 --group modes:2 \
+  modes/plan-mode.md
+
+# Compile and validate without publishing
+prosiform --root skills/work-planner --check modes/plan-mode.md
+```
+
+The bundle goes to stdout and diagnostics to stderr. It opens by naming what it was built for, so the caller reaches its procedure without searching:
+
+```markdown
+This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
+```
+
+A failed run publishes nothing. The caller halts and surfaces the diagnostic rather than reading the sources itself.
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | Compiled, validated, published |
+| `1` | Input, dependency, policy, safety or resource-limit failure |
+| `2` | Invalid usage or option combination |
+| `3` | Publication or delivery failure |
+| `4` | Unexpected internal error |
+
+## 📏 Measured
+
+One procedure of this workspace's `work-planner` skill, bundled under the v1 rules:
+
+| | Read whole | Bundled |
+| --- | --- | --- |
+| Documents | 27 | 27 |
+| Bytes | 239,331 | 187,594 |
+| References resolved by the reader | 421 | 0 |
+
+Rendered by GitHub, all 775 fragment links on the page resolve against the 353 anchors it generates, none broken. The same closure merged into three groups is 306 headings and 186,907 bytes, and rewrites the same 421 references.
+
+## 🗺️ Status
+
+Three stages, in order. Progress is on the **[Bundling board](https://github.com/users/m2ux/projects/18)**.
+
+| Stage | Delivers | State |
+| --- | --- | --- |
+| **[I00 Prototype](https://github.com/m2ux/prosiform/issues/2)** | A Python build, a language-neutral fixture corpus, and the tool installed for agents to invoke | In Progress |
+| **[I01 Field Refinement](https://github.com/m2ux/prosiform/issues/20)** | The specification settled by real use, frozen at a tagged revision | Ready |
+| **[I02 Production](https://github.com/m2ux/prosiform/issues/10)** | A Rust build implementing that revision, with the prototype retained as its differential oracle | Planned |
+
+The fixture corpus is the contract: it declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing one.
+
+## 📐 Scope
+
+prosiform bundles explicitly linked local Markdown. It does **not** execute or authorize the procedures it bundles, infer dependencies the source did not state as links, fetch remote documents, bundle non-Markdown resources, or accept its own output as input.
