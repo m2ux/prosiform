@@ -83,7 +83,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E01:W01](i01-e01/w01.md) | The implementation plan for revision order and its citation record |
 | [I01:E01:W02](i01-e01/w02.md) | The implementation plan for traceability refreshed on each revision |
 | [I01:E01:W03](i01-e01/w03.md) | The implementation plan for open-finding summary from the ledger |
-| [I01:E01:W04](i01-e01/w04.md) | The implementation plan for prerequisite removal gated on a composition |
+| [I01:E01:W04](i01-e01/w04.md) | The implementation plan for prerequisite removal and the composition instruction |
 | [I01:E02:W01](i01-e02/w01.md) | The implementation plan for deferral decisions for the remaining entries |
 | [I01:E02:W02](i01-e02/w02.md) | The implementation plan for freeze check and the tagged revision |
 | [I02:E00:W01](i02-e00/w01.md) | The implementation plan for definition-occurrence reproducer |

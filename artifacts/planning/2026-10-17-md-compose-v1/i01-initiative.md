@@ -45,7 +45,7 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
   An entry not resolved before the freeze names what is deferred and why, and stays in the ledger for the stage that takes it.
 
 - **A prerequisite list goes when composition replaces it.**
-  A skill's prerequisite section names whole documents, coarsely but completely. It is removed once a recorded composition supplies what it named, and anything the composition failed to supply is a ledger entry rather than a silent loss.
+  A skill's prerequisite section names whole documents, coarsely but completely. It is removed once a recorded composition supplies what it named, and anything the composition failed to supply is a ledger entry rather than a silent loss. In its place the skill's own text names the invocation that composes them, so an agent is told to compose rather than left to decide.
 
 - **Each run is measured against what it replaces.**
   A run record carries the composed output size and the whole-file size of the sources it composed, so the retrieval cost the proposal measured can be compared with the cost of composing instead.

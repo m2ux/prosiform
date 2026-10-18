@@ -19,7 +19,7 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G7 | I00 | AC8 | E01 Corpus Harness | AC1–AC4 |
 | G7 | I00 | AC9 | E07 Corpus Conformance | AC1–AC4 |
 | G1 | I00 | AC11 | E08 Field Deployment | AC1, AC4 |
-| G5 | I00 | AC12 | E08 Field Deployment | AC2, AC3 |
+| G5 | I00 | AC12 | E08 Field Deployment | AC2, AC3, AC5 |
 | G7 | I00 | AC13 | E00 Project Foundation | AC2–AC4 |
 | G1 | I00 | AC14 | E04 Dependency Closure | AC8 |
 | G8 | I01 | AC1 | E00 Findings Ledger | AC1, AC2 |
@@ -29,7 +29,7 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G8 | I01 | AC5 | E02 Specification Freeze | AC1, AC2 |
 | G7 | I01 | AC6 | E02 Specification Freeze | AC3 |
 | G8 | I01 | AC7 | E02 Specification Freeze | AC4 |
-| G8 | I01 | AC8 | E01 Specification Revision | AC5, AC6 |
+| G8 | I01 | AC8 | E01 Specification Revision | AC5, AC6, AC7 |
 | G8 | I01 | AC9 | E00 Findings Ledger | AC7 |
 | G3 | I02 | AC1 | E00 Parser Verdict | AC1–AC6 |
 | G3 | I02 | AC2 | E01 Source-Range Adapter | AC1–AC4 |
@@ -69,7 +69,7 @@ The criteria of all three initiatives answer to the design, which each body mark
 - **Consumers.**
   The workspace skills are the intended consumer. Their prerequisite sections are removed during the refinement stage as composition replaces them, each removal gated on a recorded run that supplied what the section named. Nothing else about those skills is restructured, and the initiative carries a Non-Goal saying so.
 - **Silent failures.**
-  Every path the design fails closed on has a corpus fixture asserting the failure, its error code and the absence of output. A fail-closed path with no fixture is reported by the conformance report's uncovered list, which is regenerated on each revision so a clause added during refinement cannot hide.
+  A failed composition halts the caller; reading the sources instead is unsupported, so a failure cannot be absorbed without a ledger entry. Every path the design fails closed on has a corpus fixture asserting the failure, its error code and the absence of output. A fail-closed path with no fixture is reported by the conformance report's uncovered list, which is regenerated on each revision so a clause added during refinement cannot hide.
 - **Measurement.**
   Composition is measured against what it replaces: each run records its composed size and the size of the same sources read whole, and the stage is not settled until every exposure-set source carries that pair. The baseline is the evidence recorded in [Decisions](decisions.md), measured at commit `acac85867ca963df00251e4cf00a4db11b14bf24` before any of this work starts. The instrument is the corpus runner, which decides results from fixture declarations and names no implementation, so it is independent of both builds. The freeze is judged by the ledger's status summary, which is derived from the ledger rather than maintained beside it.
 - **Version skew.**

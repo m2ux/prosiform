@@ -110,6 +110,22 @@ Field deployment waits on the validation gate and runs in parallel with the conf
 
 Deploying five levels earlier, once destinations resolve, would start the refinement stage sooner. It would also put an unvalidated tool into use: no reparse of the finished composite against what was selected, no boundary safety, no detection of a source that changed mid-run, and no diagnostics explaining a failure. Findings recorded then would mix genuine specification problems with defects the gate would have caught, which is the evidence the stage exists to produce.
 
+## D14 — The Entry Point Says Compose; Later the Harness Does It
+
+An agent decides between reading a document and composing it exactly once, on entry. Inside a composite the question cannot arise: every supported local Markdown link has been rewritten to an internal destination, and a link that could not be rewritten failed the composition.
+
+That rules out marking individual links. It would also contradict the goal clause stating that nothing beyond ordinary Markdown links and heading anchors makes a document composable, and it would have to be maintained across every link in every skill. Inferring the choice from file names or paths is excluded for the same reason the design excludes inferring prerequisites from them.
+
+So the mark belongs at the entry, and the question is who acts on it. In the first stage the skill's own text names the invocation, which needs nothing built and is the natural replacement for the prose that told the agent to read. In the second the skill declares itself composable and the harness composes on load, so the choice stops being the agent's at all. Frontmatter suits that declaration: md-compose strips frontmatter, so the marker never reaches the output, and the reserved-anchor rule already stops a composite being composed again.
+
+The first stage runs during refinement, as each prerequisite section is removed. How reliably agents follow a written instruction is itself evidence, so the second stage is raised as its own proposal once there is use to draw on, rather than planned from an assumption about how well prose works.
+
+## D15 — A Failed Composition Stops the Work
+
+A caller meeting a failed composition halts and surfaces the diagnostic. Reading the sources instead is unsupported, and the documented invocation says so.
+
+A fallback would restore the behaviour composition replaces, and would restore it silently: the work would continue, nobody would notice, and the failure would produce no ledger entry. The refinement stage depends on failures being visible, so an invisible one costs more than a halt.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
