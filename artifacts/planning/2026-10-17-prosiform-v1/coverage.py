@@ -34,6 +34,7 @@ CRITERION = re.compile(r"^- \[[ x]\] \*\*(AC\d+)\.\*\*\s*(.*)$")
 COLLECTIVE = [
     ("Markdown and source-heading profile", "Typography", "I00:E02:AC5"),
     ("CLI contract", "--diagnostics", "I00:E06:AC7"),
+    ("CLI contract", "--check", "I00:E02:AC10"),
     ("Section extraction and output hierarchy", "Subsections", "I00:E03:AC1"),
     ("Section extraction and output hierarchy", "Containers", "I00:E03:AC1"),
     ("Compile before publishing", "step", None),
