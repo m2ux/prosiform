@@ -16,7 +16,7 @@ The selected implementation language is Rust, with `pulldown-cmark` as the first
 
 - **Entry references:** Accept one or more local document or document-plus-fragment references and an explicit allowed source root.
 - **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its preamble, subject to frontmatter stripping and the documented syntax transformations below.
-- **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. Supported custom anchors resolve to their owning eligible section.
+- **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a section.
 - **Recursive composition:** Traverse supported Markdown links within selected content until every reachable local Markdown target has been resolved and included.
 - **Continuous Markdown:** Emit one composite Markdown document with one generated H1 per contributing source file and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
 - **Source grouping:** Use the normalized root-relative filename, including its extension, as the H1's visible text. Emit each file once, preserving source order among its selected content and required heading-only ancestors.
@@ -29,7 +29,7 @@ Use `pulldown-cmark` as the first semantic-parser candidate, behind a version-pi
 
 Its `into_offset_iter()` exposes Markdown events paired with source ranges, and `reference_definitions()` exposes the reference-definition map ([pulldown-cmark parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)). These APIs are a starting point, not a guarantee that every destination, definition, or nested edit already has the exact span required by this specification.
 
-- **Parsing authority:** Let the parser identify headings, links, images, definitions, code examples, and HTML nodes.
+- **Parsing authority:** Let the parser identify headings, links, images, definitions, code examples, and HTML nodes, the last so they can be refused.
 - **Source positions:** Build the source-range adapter around offset events and reference-definition data. Verify and retain the original spans needed for headings, link/image uses, definitions, and supported anchor nodes; do not equate an enclosing event range with a precise destination span without validation.
 - **Source model:** Derive block ancestry, eligible section boundaries, and link ownership from the event stream while retaining canonical source identities and provenance ranges.
 - **Coordinate mapping:** Map ranges in the parser's input view back to original UTF-8 bytes, including any BOM/frontmatter preprocessing, CRLF, tabs, escapes, and Unicode. Preserve original diagnostic coordinates.
@@ -62,7 +62,7 @@ Use a versioned `skill-markdown-v1` profile based on CommonMark, with pipe table
 
 - **Core syntax:** Support ATX/Setext headings, paragraphs, lists, blockquotes, code spans and blocks, inline/reference links and images, thematic breaks, and ordinary CommonMark autolinks.
 - **Task lists:** Preserve `[ ]`, `[x]`, and `[X]` markers without generating checkbox HTML. Recognize marker positions so reference definitions cannot turn them into links.
-- **HTML:** Parse HTML so anchor and reference policies can be enforced. Retain only content passing those policies and boundary checks; this is not an HTML-sanitization guarantee.
+- **HTML:** Recognize HTML so it can be refused. Raw HTML in selected content fails; the composite carries Markdown only.
 - **Typography:** Disable smart quotes, typographic substitutions, and formatting cleanup.
 - **Bare text:** Do not infer dependencies from ordinary paths in prose. Bare URLs may remain text; browser-specific rendering is outside the guaranteed profile.
 - **Unsupported extensions:** Footnotes, wiki links, heading-attribute syntax, and include/transclusion directives are not v1 composition features. Reject recognized unsupported dependency or anchor constructs in selected content, but do not guess every possible extension from ordinary prose.
@@ -75,9 +75,9 @@ Pin the parser configuration and definition-handling rules as part of the profil
 
 Use a fixture-validated Rust adapter for GitHub-compatible source-heading slugs and duplicate tracking, with fresh state per complete source document. Select or implement the Rust slugging component against the compatibility fixtures; no specific slugger crate is selected yet.
 
-Derive visible heading text from parser events: text/code content, link labels, image alternative text, decoded entities, and normalized line-break spacing, excluding formatting delimiters and HTML tags. Enumerate headings in original source order, including container-nested headings when needed for duplicate numbering.
+Derive visible heading text from parser events: text/code content, link labels, image alternative text, decoded entities, and normalized line-break spacing, excluding formatting delimiters. Enumerate headings in original source order, container-nested headings included.
 
-Test punctuation, repeated spaces, markup, Unicode, duplicates, and collisions between naturally suffixed headings and generated suffixes. Source-fragment lookup remains separate from the `mdc-…` output-ID algorithm; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
+Test punctuation, repeated spaces, markup, Unicode, and headings whose slugs coincide. Two headings in one source producing the same slug are not numbered apart: a fragment requiring one of them fails with `E_AMBIGUOUS_SOURCE_ANCHOR`, and the author disambiguates by retitling. Source-fragment lookup produces the slug a composite destination's segments are built from; GitHub documents formatting removal and duplicate numbering for its source heading links ([GitHub section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)).
 
 The pinned adapter and compatibility fixtures define the supported profile. Do not promise perfect parity with every future renderer change.
 
@@ -142,7 +142,7 @@ Only headings that are direct children of the document are selectable section ro
 - **Containers:** Headings inside lists, blockquotes, or other containers do not terminate a document-level section.
 - **Nested target:** A fragment targeting a container-nested heading fails with `E_NESTED_SECTION_TARGET`.
 - **Enclosing inclusion:** Container-nested headings may be retained when their whole document or enclosing eligible section is selected. Shift their heading levels along with other emitted source headings, while preserving the containing list/quote and other non-heading content.
-- **Source anchor index:** Include all renderer-recognized source headings in the original anchor index, including nested headings if the profile numbers them. Extraction eligibility must not change another heading's original fragment.
+- **Source heading index:** Index every source heading the profile recognizes, container-nested ones included. Extraction eligibility must not change another heading's original fragment.
 
 ### File-scoped hierarchy
 
@@ -192,50 +192,34 @@ Insert blank-line separation between maximal emitted regions and reparse the can
 
 Do not silently close fences or repair code examples. Report unsafe boundaries with `E_UNSAFE_COMPOSITION_BOUNDARY`, identifying the source regions and conflicting output boundary.
 
-## Original custom anchors
+## Hierarchy-path composite destinations
 
-Support empty standalone HTML anchors with one destination attribute, `name` or `id`, immediately preceding an eligible heading. Blank lines and other supported empty anchors may intervene; prose or another substantive block prevents association.
-
-```markdown
-<a name="delivery"></a>
-
-### Record Epic Delivery
-```
-
-The custom anchor and the heading's ordinary source fragment are aliases of one canonical section. Selecting either includes the same section, and both rewrite to one qualified destination.
-
-- **Alias self-reference:** A section linking to its own alias fails as a direct self-reference.
-- **Unsupported target:** An arbitrary-position custom anchor, including one midway through a paragraph, fails as a target with `E_UNSUPPORTED_ANCHOR_TARGET`.
-- **Selected markup:** Unsupported anchor-producing markup in emitted content fails rather than introducing uncontrolled IDs. Non-anchor HTML remains subject to the syntax and boundary policy.
-- **Ambiguity:** A required source fragment with multiple destinations fails with `E_AMBIGUOUS_SOURCE_ANCHOR`.
-- **Emission:** Remove supported original custom-anchor nodes from selected content and emit the qualified anchor at the associated heading. Do not retain old unqualified aliases.
-
-Keep original alias-to-section mappings for target validation. Anchor-node replacement is an explicitly permitted transformation.
-
-## Qualified composite destinations
-
-Resolve fragments against the original complete source document before assigning composite identities. Reserve `mdc-` for generated destinations and derive their IDs from stable source identities, not traversal positions or discovery order.
+Resolve fragments against the original complete source document before assigning composite identities. A destination is the path to the section through the composite's own structure, derived from stable source identities rather than from traversal positions or discovery order.
 
 ```text
-mdc-{path-slug}--{target-slug}--{digest12}
+{root-relative-path}/{ancestor-slug}/…/{section-slug}
 ```
 
-- **Path slug:** Lowercase ASCII slug of the normalized root-relative document path without its Markdown extension; replace non-ASCII-alphanumeric runs with a hyphen, trim hyphens, and use `doc` if empty.
-- **Target slug:** Apply the same readable-slug transformation to the canonical source heading fragment; use `document` for whole-document destinations.
-- **Identity digest:** First 12 lowercase hexadecimal characters of SHA-256 over UTF-8 `root-relative-path + NUL + target-kind + NUL + canonical-source-fragment`. Use distinct document and section kinds; the document fragment is empty.
-- **Aliases:** Use the owning section's canonical source fragment rather than the alias spelling.
-- **Collision:** Distinct identities producing the same final ID fail with `E_OUTPUT_ANCHOR_COLLISION`. The explicit check, not an assumption about digest uniqueness, establishes correctness.
-- **Source identity:** Resolve duplicate-heading suffixes and source aliases before composition. The readable output-slug algorithm must not replace the configured source-heading slug rules.
-- **Internal links:** Rewrite both cross-file and fragment-only links using the same destination map.
-- **Visible headings:** Preserve selected source heading text while shifting levels by one. Add qualified destinations as explicit HTML anchors; file grouping does not replace source-fragment resolution or collision checks.
-- **Output profile:** Target a GitHub-compatible renderer that preserves explicit named anchors, using `<a name="QUALIFIED-ID"></a>` at each destination. Verify this behavior in compatibility tests; do not promise correct anchor navigation in every Markdown renderer.
-- **Document destinations:** Place a source document's qualified start anchor at its generated filename H1, distinct from its first original source heading. A file group may contain only selected sections; the presence of its wrapper or anchor does not mean the whole document was included. A whole-document reference still requires full-body inclusion under the established transformation rules.
+- **File segment:** The normalized root-relative document path, including its Markdown extension, so documents sharing a stem under different extensions stay distinct.
+- **Ancestor segments:** The source-heading slug of each eligible ancestor, in order from the document's first level down to the section's parent.
+- **Section segment:** The section's own source-heading slug. A whole-document destination is the file segment alone.
+- **Uniqueness by construction:** Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which is a duplicate sibling. Duplicate siblings are refused as ambiguous, so no digest, no counter and no collision check is required.
+- **Separated segments:** Path segments keep their separators. Flattening them would make `a/b.md` and `a-b.md` collide.
+- **Internal links:** Rewrite both cross-file and fragment-only links to the destination of the target they resolved to, using the same map that produced it.
+- **Visible headings:** Preserve selected source heading text while shifting levels by one. Nothing is inserted at a destination; the heading and its position in the outline are what the path names.
+- **Document destinations:** A file group may contain only selected sections. The presence of its filename heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
 
-### Full namespace validation
+### Markdown-only output
 
-Validate generated destinations against all supported output anchor-producing constructs, including automatically generated IDs for filename headings, shifted source headings, and structural ancestors. Reject emitted source/scaffold headings whose automatic anchors start with `mdc-`, reject source custom anchors in that namespace, remove supported old anchors, and verify that each generated destination occurs exactly once.
+The composite contains Markdown and nothing else. No anchor elements, no identifiers and no other markup are emitted at a destination, so a destination is a name for a place in the document rather than an element in it.
 
-Generated-input detection applies file-wide as specified below. The namespace is a reserved convention, not proof of origin.
+The composite is a transient artifact consumed by an agent reading it whole. It is not published, and no renderer resolves its fragments, so a destination needs no element to point at: the path states which file, which ancestors and which section a reference means, and the reader locates it by the document's own structure.
+
+### Source markup policy
+
+Raw HTML is outside the profile. A source carrying it in selected content fails rather than copying it into the composite, which keeps the output free of identifiers and elements the compositor neither created nor tracks.
+
+A source heading is the only thing that names a section. There is no supported syntax for attaching a second name to one, so a fragment resolves against the source-heading slugs alone.
 
 ## Source-local reference interpretation
 
@@ -258,7 +242,7 @@ Composition is a compile-and-validate process rather than streaming concatenatio
 
 1. Resolve entry references and allowed source paths.
 2. Read and parse each distinct source file once during discovery, capturing its identity and content hash and excluding leading frontmatter from composed content.
-3. Index source headings, custom-anchor aliases, links, definitions, ownership, and eligible section boundaries.
+3. Index source headings, links, definitions, ownership, and eligible section boundaries.
 4. Discover the recursive dependency graph and expand included source coverage to a fixed point.
 5. Consolidate selections, group them by source file, and derive required heading-only ancestors. Check shifted heading depths and assign collision-free destinations without treating scaffolds as new dependencies.
 6. Apply source-local reference conversions and anchor replacements, rewrite destinations and heading syntax, and construct the candidate with one filename H1 per source.
@@ -396,7 +380,7 @@ This is change detection, not a transactional filesystem snapshot: files can cha
 
 ## Generated input policy
 
-Recomposition of md-compose output is unsupported in v1. Reject an input document containing a parser-recognized explicit anchor in the reserved `mdc-` namespace with `E_GENERATED_OR_RESERVED_INPUT`, even when the requested subsection excludes that anchor.
+Recomposition of md-compose output is unsupported in v1. Reject an input document whose links carry composite destinations, recognized by their path form, with `E_GENERATED_OR_RESERVED_INPUT`, even when the requested subsection excludes them.
 
 Every produced document has at least one generated anchor, so the convention identifies ordinary unmodified output without adding metadata wrappers. Anchor-like examples in code remain literal and do not trigger detection.
 
@@ -504,9 +488,9 @@ With `--diagnostics json`, emit one JSON object per stderr line, including `seve
 
 Before broad implementation, create small fixtures with exact expected composites or expected failures.
 
-- **Identity:** Whole-file composition with internal section links; direct self-links through heading names and aliases; ancestor back-references; preamble-to-document self-links; same-file cross-section links.
+- **Identity:** Whole-file composition with internal section links; direct self-links through heading names; ancestor back-references; preamble-to-document self-links; same-file cross-section links.
 - **Coverage:** Child-first then parent inclusion; whole-document inclusion discovered late; shared dependencies; multi-file cycles; different entry argument orders.
-- **Anchors:** Duplicate heading text, same-basename paths, slug and digest collisions, heading-associated aliases, arbitrary-position targets, reserved namespaces, and renderer-generated anchor collisions.
+- **Destinations:** Duplicate heading slugs refused as ambiguous, same-basename paths in different directories, documents sharing a stem under different extensions, deep ancestor chains, and a file group whose filename heading does not imply whole-document inclusion.
 - **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.

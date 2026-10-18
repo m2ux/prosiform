@@ -140,6 +140,18 @@ A second review mapped the design's sections against what the epics claim, and f
 
 The conformance report would have caught all four, since it maps every design clause to its fixtures and lists the uncovered ones. It runs at the end of the prototype initiative, so the first of these would have surfaced after the profile had been built against the opposite rule.
 
+## D17 — Destinations Are Hierarchy Paths, and the Output Is Markdown Only
+
+Every outbound local link in a composed document becomes a reference to content now inside that same document. The composite is a transient artifact an agent reads whole: it is never published, and no renderer resolves its fragments. A destination therefore only has to name a place in a document the reader already holds.
+
+A destination is the root-relative document path, then the source-heading slug of each eligible ancestor, then the section's own slug. Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which means duplicate sibling headings. Those are refused as ambiguous.
+
+That removes four things the earlier scheme needed. The digest goes, because uniqueness comes from the structure. The collision error goes with it. GitHub's duplicate numbering is not reproduced, because a counter ties a destination to how many similar headings precede it, so unrelated edits would silently repoint links; measured across this workspace, no document has repeated heading slugs and no link uses a numbered fragment. And the reserved prefix goes, because the path form is itself the marker that identifies the tool's own output.
+
+The composite carries Markdown and nothing else. No anchor elements are emitted, and raw HTML in selected content fails rather than being copied through, so the output holds no element or identifier the compositor did not create. Hand-written anchors are no longer a supported way to name a section: a source heading is the only thing that does. Measured across this workspace's skills, no document contains any HTML, so nothing depended on the removed feature.
+
+What this costs is clicking. A fragment of this form resolves in no renderer. That is not a loss for the consumer, which reads the document rather than navigating it.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

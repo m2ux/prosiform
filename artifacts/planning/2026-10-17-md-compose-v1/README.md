@@ -51,7 +51,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E02:W03](i00-e02/w03.md) | The implementation plan for byte-order mark and frontmatter removal |
 | [I00:E02:W04](i00-e02/w04.md) | The implementation plan for whole-document emission under a filename heading |
 | [I00:E02:W05](i00-e02/w05.md) | The implementation plan for fixtures from unmodified workspace skills |
-| [I00:E03:W01](i00-e03/w01.md) | The implementation plan for source heading slugs and duplicate numbering |
+| [I00:E03:W01](i00-e03/w01.md) | The implementation plan for source heading slugs and the heading index |
 | [I00:E03:W02](i00-e03/w02.md) | The implementation plan for eligible section extraction and boundaries |
 | [I00:E03:W03](i00-e03/w03.md) | The implementation plan for plus-one heading shift and setext conversion |
 | [I00:E03:W04](i00-e03/w04.md) | The implementation plan for heading-only ancestor scaffolding |
@@ -63,8 +63,8 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E04:W05](i00-e04/w05.md) | The implementation plan for self-reference and ancestor-reference classification |
 | [I00:E04:W06](i00-e04/w06.md) | The implementation plan for resource budgets fail at the boundary |
 | [I00:E04:W07](i00-e04/w07.md) | The implementation plan for measured output size of a real closure |
-| [I00:E05:W01](i00-e05/w01.md) | The implementation plan for custom anchor recognition and alias resolution |
-| [I00:E05:W02](i00-e05/w02.md) | The implementation plan for qualified destinations and collision detection |
+| [I00:E05:W01](i00-e05/w01.md) | The implementation plan for hierarchy-path destinations and ambiguity |
+| [I00:E05:W02](i00-e05/w02.md) | The implementation plan for link rewriting through the destination map |
 | [I00:E05:W03](i00-e05/w03.md) | The implementation plan for reference conversion and definition removal |
 | [I00:E05:W04](i00-e05/w04.md) | The implementation plan for resource rebasing and the resource base |
 | [I00:E06:W01](i00-e06/w01.md) | The implementation plan for candidate validation and provenance invariants |
