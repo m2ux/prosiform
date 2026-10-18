@@ -4,11 +4,11 @@
 [![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
-A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle..
+A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
 
 ---
 
-**[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/glossary.md)** • **[Plan](https://github.com/users/m2ux/projects/18)** • **[Proposal](https://github.com/m2ux/prosiform/issues/1)** • **[Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1)**
+**[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)** • **[Plan](https://github.com/users/m2ux/projects/18)** • **[Proposal](https://github.com/m2ux/prosiform/issues/1)** • **[Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1)**
 
 ---
 
@@ -48,9 +48,32 @@ References → Closure → Consolidation → Grouping → Rewriting → Validati
 - **Bundle** — the single validated Markdown document one run produces
 - **Profile** — `skill-markdown-v1`: CommonMark with pipe tables, strikethrough and preserved task markers; no typographic substitution
 
-Every term the contract uses is defined once, in the [glossary](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/glossary.md), which ships with the tool.
+Every term the contract uses is defined once, in the [glossary](docs/glossary.md), which ships with the tool.
 
-## 🚀 Quick Start
+## 🗂️ Repository Layout
+
+Three trees, each created by the stage that writes into it.
+
+| Tree | Holds |
+| --- | --- |
+| [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. Both builds run it. |
+| [`prototype/`](prototype/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
+| [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
+| [`checks/`](checks/README.md) | The checks that hold the layout, the README's references and the glossary's coverage true. |
+
+The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
+
+## 📦 Installation
+
+prosiform installs from the Python build in `prototype/`:
+
+```bash
+pip install ./prototype
+```
+
+That build is not written yet, so a checkout installs nothing today. The project definition and the lockfile that pins what it installs are the next task; the status table below tracks the stage they sit in.
+
+## 🚀 Invocation
 
 Nothing is built yet. The behavioural contract is specified and the work is planned — this is the interface that contract defines.
 
