@@ -1,0 +1,50 @@
+# The repository's checks, run on every change to the branches that carry the
+# build. The job calls the named command a developer calls, so one
+# configuration governs a local run and a remote one: `make check` runs the
+# eight targets in the order the Makefile declares, stops at the first
+# failure, and names the target that failed.
+
+name: Checks
+
+on:
+  push:
+    branches:
+      # main carries the build and an initiative's branches target it. The
+      # workspace branch carries the tooling and the engineering branch the
+      # planning records; neither holds a build to check.
+      - main
+      - "i[0-9][0-9]/**"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          # The link and vocabulary checks resolve references into another
+          # branch of this repository through git rather than the API, so the
+          # checkout carries every branch and the README names which one.
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.0
+        with:
+          # The version the planning records document a local run under. The
+          # Python toolchain itself comes from prototype/uv.lock, which
+          # `uv run --frozen` installs and resolves nothing beyond.
+          version: "0.11.14"
+
+      - name: Run the checks
+        run: make check
+        env:
+          # The link check reads four issues and a user-level project board
+          # through the GitHub API, because a private repository answers an
+          # unauthenticated request with 404. A user-owned project sits
+          # outside the repository scope the built-in token is confined to,
+          # so the job supplies a token carrying read:project.
+          GH_TOKEN: ${{ secrets.PROJECT_READ_TOKEN }}
