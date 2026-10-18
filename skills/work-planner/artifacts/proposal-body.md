@@ -61,8 +61,9 @@ The body's local format and field findings.
 
 ### Titles
 
-- The title is `Name: Subtitle`, with no prefix.
+- The title is `[P00] Name: Subtitle`.
 - The label is `type:proposal`.
+- `P` is the proposal number. Proposals count from `00`.
 
 ### Problem
 
