@@ -88,6 +88,28 @@ A review of the plan before any work started produced three corrections, each cl
 
 A fourth finding was withdrawn. It claimed the prototype could not keep its byte-preservation promise, because rewriting a link destination inside a selected section needs a character position its parser does not report. Computing a destination needs the target's identity, not the original's position, and the position matters only for splicing text into a copy of the original bytes. Of the four edits inside a selected section, three sit at line granularity the parser does report; for the fourth the parser supplies the destination, the count and the order of the links in the containing structure, so the occurrence is located by walking them rather than by pattern matching. The promise stands unchanged.
 
+## D11 — Prerequisite Sections Go as Composition Replaces Them
+
+A skill's prerequisite section names whole documents, coarsely but completely. Composition supplies the same context precisely, so those sections are removed rather than refactored, and no refactor is planned as work inside these initiatives.
+
+Removal happens during the refinement stage, one skill at a time, and is gated: a section comes out only once a recorded composition run supplies the sources it named. A source the section named and the composition did not supply is a ledger entry, usually resolving to a missing inline link in the procedure that needed it.
+
+The timing is what makes the gap catchable. Removing the lists before the stage would take away the coarse safety net before the tool had been shown to replace it; removing them after the freeze would refine and measure the tool against a structure that is going away.
+
+This also reframes the measured evidence. The 318,018 bytes reached from one mode is largely the prerequisite sections pulling whole documents. It is the before-figure that composition replaces, not a limit to design around.
+
+## D12 — Each Run Is Measured Against Reading the Sources Whole
+
+A run record carries the composed output size and the total size of the same sources read whole. The refinement stage is not settled until each source in the exposure set has that pair recorded.
+
+The proposal justified this work with a retrieval cost. Every criterion since has been about correctness, so without this the plan would never answer the question it was raised to answer. The measurement rides on a record that already exists for other reasons, so it costs one field and one criterion.
+
+## D13 — Deployment Stays Behind the Validation Gate
+
+Field deployment waits on the validation gate and runs in parallel with the conformance report. It is last in numbering, not in dependency.
+
+Deploying five levels earlier, once destinations resolve, would start the refinement stage sooner. It would also put an unvalidated tool into use: no reparse of the finished composite against what was selected, no boundary safety, no detection of a source that changed mid-run, and no diagnostics explaining a failure. Findings recorded then would mix genuine specification problems with defects the gate would have caught, which is the evidence the stage exists to produce.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

@@ -44,6 +44,12 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 - **Deferral is a recorded decision.**
   An entry not resolved before the freeze names what is deferred and why, and stays in the ledger for the stage that takes it.
 
+- **A prerequisite list goes when composition replaces it.**
+  A skill's prerequisite section names whole documents, coarsely but completely. It is removed once a recorded composition supplies what it named, and anything the composition failed to supply is a ledger entry rather than a silent loss.
+
+- **Each run is measured against what it replaces.**
+  A run record carries the composed output size and the whole-file size of the sources it composed, so the retrieval cost the proposal measured can be compared with the cost of composing instead.
+
 - **The freeze is a tag.**
   Design and corpus take one tagged revision, and the production build names that revision as its target.
 
@@ -51,8 +57,8 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/md-composer/issues/21) | Findings Ledger | AC1, AC2 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/22) | Specification Revision | AC3, AC4 | | |
+| [E00](https://github.com/m2ux/md-composer/issues/21) | Findings Ledger | AC1, AC2, AC9 | | |
+| [E01](https://github.com/m2ux/md-composer/issues/22) | Specification Revision | AC3, AC4, AC8 | | |
 | [E02](https://github.com/m2ux/md-composer/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
 
 ## Acceptance Criteria
@@ -64,11 +70,14 @@ The behavioural contract has been written and reviewed, and nothing has yet comp
 - [ ] **AC5.** Each ledger entry is resolved or carries a recorded deferral naming what is deferred and why, as the ledger's status summary shows.
 - [ ] **AC6.** The design and the corpus carry one tagged revision that a production build can name as its target, as the tag shows.
 - [ ] **AC7.** The specification is settled only after the tool has composed each source in a declared exposure set, as the freeze check shows.
+- [ ] **AC8.** A prerequisite section is removed only where a recorded composition supplies what it named, and any shortfall is a ledger entry, as the removal records show.
+- [ ] **AC9.** Each exposure-set source carries a composed size recorded against the size of the same sources read whole, as the run records show.
 
 ## Non-Goals
 
 - It does not implement a production build.
 - It does not change the outcomes the composition contract serves.
+- It does not restructure a source document beyond removing a prerequisite section composition has replaced.
 - It does not commit to a date for the freeze.
 - It does not accept a finding by working around it in a source document.
 - It does not open an issue or a pull request on another project.

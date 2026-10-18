@@ -29,6 +29,8 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G8 | I01 | AC5 | E02 Specification Freeze | AC1, AC2 |
 | G7 | I01 | AC6 | E02 Specification Freeze | AC3 |
 | G8 | I01 | AC7 | E02 Specification Freeze | AC4 |
+| G8 | I01 | AC8 | E01 Specification Revision | AC5, AC6 |
+| G8 | I01 | AC9 | E00 Findings Ledger | AC7 |
 | G3 | I02 | AC1 | E00 Parser Verdict | AC1–AC6 |
 | G3 | I02 | AC2 | E01 Source-Range Adapter | AC1–AC4 |
 | G5 | I02 | AC3 | E01 Source-Range Adapter | AC5 |
@@ -65,11 +67,11 @@ The criteria of all three initiatives answer to the design, which each body mark
 ## Threats
 
 - **Consumers.**
-  The workspace skills are the intended consumer, and their prerequisite lists become redundant once compositions replace them. Refactoring those skills is outside all three initiatives and is raised separately. The skills are nevertheless the source material the refinement stage composes, so their constructs reach the contract through the ledger rather than through a refactor.
+  The workspace skills are the intended consumer. Their prerequisite sections are removed during the refinement stage as composition replaces them, each removal gated on a recorded run that supplied what the section named. Nothing else about those skills is restructured, and the initiative carries a Non-Goal saying so.
 - **Silent failures.**
   Every path the design fails closed on has a corpus fixture asserting the failure, its error code and the absence of output. A fail-closed path with no fixture is reported by the conformance report's uncovered list, which is regenerated on each revision so a clause added during refinement cannot hide.
 - **Measurement.**
-  The baseline is the evidence recorded in [Decisions](decisions.md), measured at commit `acac85867ca963df00251e4cf00a4db11b14bf24` before any of this work starts. The instrument is the corpus runner, which decides results from fixture declarations and names no implementation, so it is independent of both builds. The freeze is judged by the ledger's status summary, which is derived from the ledger rather than maintained beside it.
+  Composition is measured against what it replaces: each run records its composed size and the size of the same sources read whole, and the stage is not settled until every exposure-set source carries that pair. The baseline is the evidence recorded in [Decisions](decisions.md), measured at commit `acac85867ca963df00251e4cf00a4db11b14bf24` before any of this work starts. The instrument is the corpus runner, which decides results from fixture declarations and names no implementation, so it is independent of both builds. The freeze is judged by the ledger's status summary, which is derived from the ledger rather than maintained beside it.
 - **Version skew.**
   The corpus changes throughout I01 and is fixed by the freeze tag. The production build names that tag, the differential run compares the two builds against it, and exact dependency pins hold the parser behaviour the profile rests on. A fixture changed to accommodate the production build is a recorded decision rather than an edit.
 - **Open-ended refinement.**
@@ -84,7 +86,7 @@ The dependency check reports task pairs within one epic where neither depends on
 | Pair | Why it is not joined |
 | --- | --- |
 | I01 E00 W02, W03 | Fixture reduction and the run record both extend the ledger, but one is a tool that rewrites sources and the other is a schema addition read by the freeze check. Separate pull requests keep a reduction defect from blocking the exposure measure. |
-| I01 E01 W02, W03 | Traceability regeneration changes the conformance report; the open-finding summary reads the ledger. They share no code and are read by different audiences, so one failing should not hold the other back. |
+| I01 E01 W02, W03, W04 | Traceability regeneration changes the conformance report, the open-finding summary reads the ledger, and prerequisite removal changes source documents. Three subjects with no shared code, so one failing should not hold the others back. |
 | I02 E00 W01, W02, W03 | Each reproducer pins a different parser capability, and each result is read on its own into the gate report. One pull request per reproducer keeps a failed gate attributable to the evidence that failed it. |
 | I02 E01 W02, W03 | Edit application and the suppression signal touch different parser surfaces, and the suppression signal's shape depends on the route the gate report records, so joining them would couple an edit mechanism to an undecided interface. |
 
