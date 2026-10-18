@@ -98,7 +98,7 @@ The timing is what makes the gap catchable. Removing the lists before the stage 
 
 This also reframes the measured evidence. The 318,018 bytes reached from one mode is largely the prerequisite sections pulling whole documents. It is the before-figure that composition replaces, not a limit to design around.
 
-The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 206,896. So removal accounts for 78,687 bytes and composition for 32,435. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
+The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 199,703. So removal accounts for 78,687 bytes and composition for 39,628. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
 
 ## D12 — Each Run Is Measured Against Reading the Sources Whole
 
@@ -183,6 +183,18 @@ A destination is a hierarchy path and the composite carries no markup, so the re
 Goal clause G6 is restated for the same reason: authors needed nothing beyond ordinary Markdown links and headings before this change, and heading anchors named a feature that no longer exists. The clause is weaker in wording and identical in what it promises, because a hand-written anchor was never required to make a document composable and no document in this workspace carried one.
 
 The design's status paragraph now names both builds. It previously said no implementation was authorized, which three planned initiatives have overtaken.
+
+## D21 — A File Heading Carries a Path Without Its Extension, and Absorbs a Title It Duplicates
+
+The file heading is the visible text of a file group and the first segment of every destination into it, so the two must be the same string: a reader following `artifacts/board/fields/themes` looks for a heading spelled `artifacts/board`. Both now drop the Markdown extension.
+
+Dropping it means two documents whose paths differ only by that extension produce one file heading. They are refused with `E_AMBIGUOUS_FILE_GROUP`, which is the treatment duplicate sibling headings already get. The design previously kept the extension for exactly that case; refusing the ambiguity is the cheaper answer, and no document in this workspace has a twin under another Markdown extension.
+
+The file heading also absorbs the source's first heading where that heading is the document's only H1 and slugifies to the final segment of the path. Measured across the work-planner skill, 37 of its 38 documents open with an H1 restating their own filename, so without absorption almost every file group opens with the same name twice and every destination into it carries the slug twice.
+
+The one exception shows why the rule compares slugs rather than dropping every H1. `SKILL.md` opens with `# Work Planner`, a title the path does not carry, so it is kept and its group shifts as usual.
+
+An absorbed group keeps its source heading levels, because the file heading has taken the level the plus-one shift was making room for. The shift is therefore a property of the group rather than of the composite: plus one by default, zero where a title was absorbed. The alternative, shifting anyway, leaves each absorbed group opening on an H1 followed by an H3.
 
 ## Evidence
 

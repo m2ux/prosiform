@@ -4,7 +4,7 @@ md-compose is intended for agent skills and other instruction sets authored as c
 
 The problem addressed here is the gap between that modular authoring structure and the complete context needed to perform an operation. A document or section link identifies a destination, but does not itself establish which content is retrieved, whether its dependencies are followed, or whether the resulting context is complete. Leaving those decisions to the agent makes retrieval part of the reasoning task, with opportunities for missed prerequisites, unnecessarily broad reads, and inconsistent handling of repeated or recursive references.
 
-md-compose moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to hierarchy paths through the composite. It validates the complete candidate before publication, either returning the composite or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
+md-compose moves this retrieval and assembly work into a deterministic compilation step. Given one or more local document or section references, it recursively resolves supported Markdown dependencies, consolidates repeated and overlapping selections, and produces one continuous Markdown document organized under a top-level filename heading for each source. Source headings move down one level beneath that heading, except in a file whose own title it already carries, and heading-only ancestors preserve the outline of partial selections; links to included documents are rewritten to hierarchy paths through the composite. It validates the complete candidate before publication, either returning the composite or failing with diagnostics the calling agent can explain to the user. Authors retain modular source files, while the agent receives the selected material and its explicitly linked dependencies without needing further local Markdown retrieval.
 
 The intended guarantee is complete, validated composition of the explicitly linked content under a declared Markdown profile, not control over agent execution. md-compose does not infer unlinked prerequisites, execute procedures, enforce workflow transitions, or guarantee that an agent obeys the resulting instructions; web references and non-Markdown resources are also outside its recursive bundling scope. This separation lets the tool make retrieval predictable without becoming a workflow engine or requiring authors to abandon their linked-document structure.
 
@@ -19,7 +19,7 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 - **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a section.
 - **Recursive composition:** Traverse supported Markdown links within selected content until every reachable local Markdown target has been resolved and included.
 - **Continuous Markdown:** Emit one composite Markdown document with one generated H1 per contributing source file and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
-- **Source grouping:** Use the normalized root-relative filename, including its extension, as the H1's visible text. Emit each file once, preserving source order among its selected content and required heading-only ancestors.
+- **Source grouping:** Use the normalized root-relative document path with its Markdown extension removed as the H1's visible text. Emit each file once, preserving source order among its selected content and required heading-only ancestors.
 - **Dependency order:** File groups need not follow argument or discovery order. Use a deterministic group order for reproducibility; do not reorder sections within a file.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
 
@@ -146,11 +146,12 @@ Only headings that are direct children of the document are selectable section ro
 
 ### File-scoped hierarchy
 
-Emit exactly one document-level H1 for each contributing source file, using its normalized root-relative filename. Escape the filename as literal heading text so punctuation in a path cannot create links, images, or inline HTML.
+Emit exactly one document-level H1 for each contributing source file, using its normalized root-relative path with the Markdown extension removed. Escape the path as literal heading text so punctuation in it cannot create links, images, or inline HTML.
 
-All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents with the same basename in different directories remain distinguishable by their root-relative paths.
+All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents with the same basename in different directories remain distinguishable by their root-relative paths. Two documents whose paths differ only by Markdown extension produce one file heading and fail with `E_AMBIGUOUS_FILE_GROUP`.
 
-- **Uniform shift:** Every emitted source heading moves down exactly one level: H1 becomes H2, H2 becomes H3, and so on. Preserve visible heading text and relative depth; do not renormalize selected roots independently.
+- **Absorbed title:** The file heading absorbs a source's first heading when that heading is the document's only H1 and its slug equals the final segment of the file heading's path. An absorbed title is not emitted, contributes no destination segment, and is not a target, because the file heading already names it.
+- **Group shift:** Every emitted source heading in a file group moves down exactly one level: H1 becomes H2, H2 becomes H3, and so on. A group whose title was absorbed keeps its source levels, the file heading having taken the level the shift makes room for. Preserve visible heading text and relative depth; do not renormalize selected roots independently.
 - **Heading syntax:** Shift ATX headings by editing their heading syntax. Convert Setext headings to equivalent ATX headings when required, preserving their visible text and inline semantics, including multiline source forms.
 - **Containers:** Apply the same level shift to real headings within retained containers without removing or changing the container structure. Heading-like text inside code remains untouched.
 - **Preamble:** A selected document's preamble appears after its filename H1 and before its first retained source heading.
@@ -169,7 +170,7 @@ Scaffolding is generated structural content, not dependency inclusion:
 - **Provenance:** Record scaffold headings separately from selected content, retaining their canonical source-heading identities and original levels for validation.
 - **Deduplication:** Emit each structural ancestor once. If dependency discovery later selects that ancestor as content, replace its scaffold with the normally transformed source heading and selected body rather than adding a second copy.
 - **Targets:** A scaffold is not a substitute for selecting the corresponding source section. A real link to that ancestor expands closure to include the section normally, replacing the scaffold with the transformed heading and its selected body; a displayed title does not satisfy a reference.
-- **Depth:** Shift scaffold levels by the same plus-one rule. Do not compress skipped levels or invent missing headings that did not exist in the source.
+- **Depth:** Shift scaffold levels by their group's shift. Do not compress skipped levels or invent missing headings that did not exist in the source.
 
 For example, selecting `Alpha` and `Detail` from a source whose original outline is `## Alpha`, `## Beta`, `### Detail` requires a heading-only `Beta` in the composite:
 
@@ -200,13 +201,13 @@ Resolve fragments against the original complete source document before assigning
 {root-relative-path}/{ancestor-slug}/…/{section-slug}
 ```
 
-- **File segment:** The normalized root-relative document path, including its Markdown extension, so documents sharing a stem under different extensions stay distinct.
-- **Ancestor segments:** The source-heading slug of each eligible ancestor, in order from the document's first level down to the section's parent.
+- **File segment:** The file group's heading text, which is the normalized root-relative document path with its Markdown extension removed, so a destination's first segment is a heading the reader can find.
+- **Ancestor segments:** The source-heading slug of each eligible ancestor, in order from the document's first level down to the section's parent. An absorbed title contributes no segment, its name being the file segment already.
 - **Section segment:** The section's own source-heading slug. A whole-document destination is the file segment alone.
 - **Uniqueness by construction:** Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which is a duplicate sibling. Duplicate siblings are refused as ambiguous, so no digest, no counter and no collision check is required.
 - **Separated segments:** Path segments keep their separators. Flattening them would make `a/b.md` and `a-b.md` collide.
 - **Internal links:** Rewrite both cross-file and fragment-only links to the destination of the target they resolved to, using the same map that produced it.
-- **Visible headings:** Preserve selected source heading text while shifting levels by one. Nothing is inserted at a destination; the heading and its position in the outline are what the path names.
+- **Visible headings:** Preserve selected source heading text while shifting levels by the group's shift. Nothing is inserted at a destination; the heading and its position in the outline are what the path names.
 - **Document destinations:** A file group may contain only selected sections. The presence of its filename heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
 
 ### Markdown-only output
@@ -429,7 +430,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Target integrity:** Every rewritten link points to the intended source-derived destination, not merely a section whose slug happens to coincide.
 - **Uniqueness:** Composite destination identities are unambiguous.
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
-- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, plus-one heading shifts and necessary Setext conversion, generated filename headings and heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
+- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, generated filename headings and heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
 - **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands or fetch remote URLs implicitly.
 - **Publication:** Compile failures return nonzero status and no composite on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation.
@@ -448,7 +449,7 @@ Validate the completed document against the source-to-output mapping, not only i
 - **Ownership stability:** Link ownership and direct-self-reference classification remain the same before and after overlap consolidation.
 - **Block-syntax preservation:** Generated headings and region boundaries must not absorb content into unintended non-heading containers.
 - **File isolation:** Each contributing source has exactly one filename H1, and its emitted source headings remain beneath it rather than entering another file's outline.
-- **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under the plus-one shift, using scaffolds where needed. Validate this against the original source outline.
+- **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under its group's shift, using scaffolds where needed. Validate this against the original source outline.
 - **Depth safety:** No emitted heading exceeds H6; overflow produces a failure, not a success with altered depth.
 
 Use provenance ranges and distinct generated-structure records to check these properties. Repeated identical prose in different source regions is not duplication by itself, and string counting is not a sufficient exactly-once test; neither filename wrappers nor scaffolds may count as selected body content.
@@ -493,11 +494,11 @@ Before broad implementation, create small fixtures with exact expected composite
 
 - **Identity:** Whole-file composition with internal section links; direct self-links through heading names; ancestor back-references; preamble-to-document self-links; same-file cross-section links.
 - **Coverage:** Child-first then parent inclusion; whole-document inclusion discovered late; shared dependencies; multi-file cycles; different entry argument orders.
-- **Destinations:** Duplicate heading slugs refused as ambiguous, same-basename paths in different directories, documents sharing a stem under different extensions, deep ancestor chains, and a file group whose filename heading does not imply whole-document inclusion.
+- **Destinations:** Duplicate heading slugs refused as ambiguous, same-basename paths in different directories, two documents whose paths differ only by Markdown extension refused as ambiguous, deep ancestor chains, and a file group whose filename heading does not imply whole-document inclusion.
 - **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
-- **File hierarchy:** Same-basename sources in different directories; filenames needing Markdown escaping; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
+- **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor scaffolds; original skipped heading levels; scaffold promotion after dependency expansion; and no ancestor-body or scaffold-link dependency leakage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.

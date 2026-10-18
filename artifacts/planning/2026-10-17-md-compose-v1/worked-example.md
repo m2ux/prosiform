@@ -1,6 +1,6 @@
 # Worked Example
 
-One composite produced from a real source tree under the v1 rules, so the contract can be reviewed as output rather than as prose.
+Two compositions produced from a real source tree under the v1 rules, so the contract can be reviewed as output rather than as prose.
 
 ## What was composed
 
@@ -14,6 +14,8 @@ One composite produced from a real source tree under the v1 rules, so the contra
 
 The Prerequisites exclusion is the one departure from composing the tree as it stands today. Those sections name whole documents coarsely, and D11 removes them during the refinement stage once composition supplies what they named. Composing with them in place would measure the tool against a structure that is going away, so this example composes the tree D11 leaves behind.
 
+A second composition, entered at `SKILL.md`, was run to exercise the failure paths. Its output is not kept; what it found is recorded below.
+
 ## Result
 
 | Measure | Value |
@@ -21,27 +23,30 @@ The Prerequisites exclusion is the one departure from composing the tree as it s
 | Contributing files | 27 |
 | Of those, whole documents | 6 |
 | Sections selected in the other 21 | 204 |
-| Headings emitted | 380 |
-| Deepest emitted heading | H5 |
+| Headings emitted | 353 |
+| Deepest emitted heading | H4 |
 | Internal links rewritten | 421 |
-| Composite size | 206,896 bytes |
+| Composite size | 199,703 bytes |
 | Expansion depth reached | 4 hops |
 
-Validation reparsed the composite and checked it against the invariants it can establish from the output alone: every one of the 421 internal links resolves to one of 380 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
+Validation reparsed the composite and checked it against the invariants the output alone can establish: every one of the 421 internal links resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
 
 ## What it shows
 
 - **A destination is a path, and nothing is emitted at it.**
-  `[Outcomes](modes/plan-mode.md/plan-mode/outcomes)` names the file, the ancestor chain and the section. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
+  `[Template](artifacts/architecture-overview/fields/template)` names the file, the ancestor chain and the section. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
+
+- **A file heading absorbs a title it already carries.**
+  `artifacts/architecture-overview.md` opens with `# Architecture Overview`, which slugifies to its own filename stem, so the file heading replaces it and that group keeps its source levels. Thirty-seven of the skill's thirty-eight documents are this shape. `SKILL.md`, whose H1 is `Work Planner`, is the one that is not: it keeps its H1 and shifts.
 
 - **Heading-only scaffolding carries no body.**
-  `artifacts/board-queue.md` contributes one section. Its group emits the filename heading, then `Board Queue` and `Fields` as titles alone, then `Task Eligibility` with its content. No sibling section and no ancestor body reaches the composite.
+  `artifacts/board-queue` contributes one section. Its group emits the filename heading, then `Fields` as a title alone, then `Task Eligibility` with its content. No sibling section and no ancestor body reaches the composite.
 
 - **Heading-like text in code is untouched.**
   The template fences in `artifacts/architecture-overview.md` hold `# Architecture Overview — {{Change Name}}` and a `---` pair inside a Mermaid block. Neither is shifted, parsed as a heading, or read as frontmatter.
 
 - **Whole-document and section references produce different destinations.**
-  `[Propose Mode](modes/propose-mode.md)` keeps the bare file segment; `[Populate Planning Record](artifacts/planning-record.md/planning-record/operations/populate-planning-record)` carries the full chain.
+  `[Propose Mode](modes/propose-mode)` keeps the bare file segment; `[Populate Planning Record](artifacts/planning-record/operations/populate-planning-record)` carries the full chain.
 
 ## Measurements against reading the sources whole
 
@@ -49,18 +54,33 @@ Validation reparsed the composite and checked it against the invariants it can e
 | --- | --- | --- |
 | Closure with Prerequisites sections present, read whole | 39 | 318,018 |
 | Closure with Prerequisites sections removed, read whole | 27 | 239,331 |
-| Composed | 27 | 206,896 |
+| Composed | 27 | 199,703 |
 | The whole skill, read whole | 38 | 302,445 |
 
-Most of the reduction is D11's, not composition's. Removing the prerequisite lists drops twelve files no procedure linked, worth 78,687 bytes; selecting sections within what remains saves a further 32,435, or 13.5%. At this skill's granularity, composition's case rests on the completeness signal, the single document and the resolved links rather than on size.
+Most of the reduction is D11's, not composition's. Removing the prerequisite lists drops twelve files no procedure linked, worth 78,687 bytes; selecting sections within what remains saves a further 39,628, or 16.6%. At this skill's granularity, composition's case rests on the completeness signal, the single document and the resolved links rather than on size.
 
 That is also the first thing [D12](decisions.md#d12--each-run-is-measured-against-reading-the-sources-whole)'s run records will measure at scale, and this example is the shape those records take.
 
+## What the failure paths found
+
+The Plan Mode closure composes clean. The `SKILL.md` closure, which reaches `guidelines.md` and `modes/revise-mode.md`, does not: it fails on ten defects in the source, every one of them a real link fault that reading the files would not surface.
+
+| Defect | Where | Count |
+| --- | --- | --- |
+| `SKILL.md#command-conventions`, where the heading is `Conventions` | `guidelines.md:189` | 1 |
+| `../guidelines.md…`, from `guidelines.md`, which is already at the root | `guidelines.md:3, 193, 206` | 4 |
+| `../../guidelines.md…`, from `modes/`, which leaves the root | `modes/revise-mode.md:17, 30, 36, 42` | 4 |
+| `guidelines.md#disclosure-verification`, where no such heading exists | `guidelines.md:193`, `modes/revise-mode.md:42` | 1 |
+
+Each `..` fault is one level too many, so each link resolves above the allowed source root and fails confinement. The skill is maintained upstream, so these are reported rather than corrected here.
+
+This is the completeness signal doing the thing the proposal claimed for it, on the first real tree it was pointed at.
+
 ## What it does not establish
 
-The composite was produced by a direct reading of the design, not by the prototype, which does not exist yet. It demonstrates what the rules produce and where they are ambiguous. It is not a conformance result, carries no fixture, and proves nothing about byte-level preservation, diagnostics, exit statuses or any failure path.
+The composites were produced by a direct reading of the design, not by the prototype, which does not exist yet. They demonstrate what the rules produce and where they are ambiguous. This is not a conformance result, carries no fixture, and proves nothing about byte-level preservation, diagnostic wording, exit statuses or atomic publication.
 
 ## Open
 
 - **Group order.**
-  File groups are emitted in root-relative path order, which satisfies the design's requirement for a deterministic order derived from source identity. It places the entry document, `modes/plan-mode.md`, three quarters of the way through the composite. Whether the entry reference should lead its composite is unsettled.
+  File groups are emitted in root-relative path order, which satisfies the design's requirement for a deterministic order derived from source identity. It places the entry document, `modes/plan-mode`, three quarters of the way through the composite. Whether the entry reference should lead its composite is unsettled.

@@ -55,9 +55,10 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E02:W05](i00-e02/w05.md) | The implementation plan for fixtures from unmodified workspace skills |
 | [I00:E03:W01](i00-e03/w01.md) | The implementation plan for source heading slugs and the heading index |
 | [I00:E03:W02](i00-e03/w02.md) | The implementation plan for eligible section extraction and boundaries |
-| [I00:E03:W03](i00-e03/w03.md) | The implementation plan for plus-one heading shift and setext conversion |
-| [I00:E03:W04](i00-e03/w04.md) | The implementation plan for heading-only ancestor scaffolding |
-| [I00:E03:W05](i00-e03/w05.md) | The implementation plan for heading depth overflow fails |
+| [I00:E03:W03](i00-e03/w03.md) | The implementation plan for the plus-one heading shift and Setext conversion |
+| [I00:E03:W04](i00-e03/w04.md) | The implementation plan for file group emission: absorbed title and source order |
+| [I00:E03:W05](i00-e03/w05.md) | The implementation plan for heading-only ancestor scaffolding |
+| [I00:E03:W06](i00-e03/w06.md) | The implementation plan for heading depth overflow fails |
 | [I00:E04:W01](i00-e04/w01.md) | The implementation plan for reference normalization and path identity |
 | [I00:E04:W02](i00-e04/w02.md) | The implementation plan for root confinement and no-symlink source access |
 | [I00:E04:W03](i00-e04/w03.md) | The implementation plan for link classification and traversal to a fixed point |
