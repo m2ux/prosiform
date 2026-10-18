@@ -118,6 +118,8 @@ A merged section is not always a container of named items. Every mode's `Procedu
 
 Both arrangements rewrite the same 421 references. A reference to a heading at the grouping depth reaches the variant carrying the document it named, so merging costs no precision.
 
+Published and rendered by GitHub, which generates 306 anchors for the bundle's 306 headings. All 727 fragment links on the page -- the 421 rewritten references and GitHub's own 306 heading self-links -- resolve against them, with none broken.
+
 **This is also where the merge earns its keep as a review tool.** Reading the eight `Template` fields together shows that `Template` does not belong under `Fields` at all — a template is the artifact's shape, not one of its fields — which is a structural defect in the source that document-by-document reading had not surfaced in this workspace. The same question applies to `Sections`, carried by four documents under the same heading.
 
 Every group takes the same shape: headed by its directory slug in title case, opening with an `Overview` section that holds each member's preamble.
