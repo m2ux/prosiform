@@ -168,7 +168,7 @@ Scaffolding is generated structural content, not dependency inclusion:
 - **Heading text:** Render a scaffold's original visible title as escaped text, without live source links, images, or HTML. Do not traverse references from a scaffold-only heading or import its body.
 - **Provenance:** Record scaffold headings separately from selected content, retaining their canonical source-heading identities and original levels for validation.
 - **Deduplication:** Emit each structural ancestor once. If dependency discovery later selects that ancestor as content, replace its scaffold with the normally transformed source heading and selected body rather than adding a second copy.
-- **Targets:** A scaffold is not a substitute for selecting the corresponding source section. A real link to that ancestor must expand closure to include the section normally; do not satisfy it solely because the ancestor's title is already displayed.
+- **Targets:** A scaffold is not a substitute for selecting the corresponding source section. A real link to that ancestor expands closure to include the section normally, replacing the scaffold with the transformed heading and its selected body; a displayed title does not satisfy a reference.
 - **Depth:** Shift scaffold levels by the same plus-one rule. Do not compress skipped levels or invent missing headings that did not exist in the source.
 
 For example, selecting `Alpha` and `Detail` from a source whose original outline is `## Alpha`, `## Beta`, `### Detail` requires a heading-only `Beta` in the composite:
@@ -365,8 +365,11 @@ Use deterministic configurable limits and fail rather than truncate. These are a
 | `--max-targets` | `4,096` | Distinct canonical document/section targets discovered, even if later subsumed. |
 | `--max-links` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
 | `--max-nesting` | `64` | Supported syntactic container nesting; exceeding the limit is an error. |
+| `--max-expansion-depth` | `8` | Link hops from the nearest entry reference to a reached target, counted along its shortest path. |
 
-Accept positive decimal integer overrides; zero must not mean unlimited. Traverse iteratively without a separate recursive-call-depth cap that rejects otherwise valid cyclic graphs.
+Accept positive decimal integer overrides; zero must not mean unlimited. Traverse iteratively; the expansion-depth budget is a declared constraint on how far a chain of references may reach, not a recursive-call-depth cap, and a cyclic graph within the budget composes normally.
+
+Expansion depth constrains the shape of a reference graph rather than its size, which the file, byte and target budgets bound. It exists so a document reaches what governs it directly, and a chain that outgrows the budget is a prompt to restructure the sources rather than to raise the number.
 
 Enforce `--max-nesting` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
 

@@ -152,6 +152,22 @@ The composite carries Markdown and nothing else. No anchor elements are emitted,
 
 What this costs is clicking. A fragment of this form resolves in no renderer. That is not a loss for the consumer, which reads the document rather than navigating it.
 
+## D18 — Expansion Depth Is a Budget, and a Scaffold Does Not Satisfy a Reference
+
+Composition carries a declared expansion-depth budget, defaulting to eight link hops from the nearest entry reference along a target's shortest path. The design previously forbade any depth cap; that prohibition was aimed at a recursive-call limit leaking out as behaviour, which is a different thing from a budget chosen on purpose. Traversal stays iterative and a cyclic graph within the budget composes normally.
+
+Measured across four real entry points in this workspace, depth today runs from three to six hops. Eight sits above that with headroom and low enough to catch a runaway chain.
+
+What the measurement also showed is what the budget does not do. Every one of those entry points reaches the same forty-three files: SKILL.md in three hops, plan-mode in six. The graph is dense, so depth governs the shape of a traversal and not its size. Size stays bounded by the file, byte and target budgets. The depth budget exists so a document reaches what governs it directly, and a chain that outgrows it is a prompt to restructure the sources rather than to raise the number.
+
+Separately, a link whose target is present only as a heading-only ancestor now expands closure to include that section's selected body. A scaffold shows a title to preserve an outline; it is not content, and a reference to it was previously able to resolve to a heading with nothing beneath it while the composite looked complete.
+
+## D19 — A File Group Keeps Its Source Order
+
+Selected regions and structural ancestors are emitted in the order they appear in their source. A document's preamble therefore sits after its filename heading and before its first retained heading, which needs no rule of its own.
+
+This was raised first as a gap about preamble placement, which was the wrong framing: preamble position follows from source order, and the general rule was the thing no criterion covered. Without it, sections could be emitted in any order within a file group, which would break both outline reconstruction and the determinism the composite promises.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
