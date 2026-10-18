@@ -240,7 +240,7 @@ Anything still coinciding takes the renderer's ordinal, as any repeat does. Elev
 
 Two things needed a home once a merged document stopped being contiguous. A group is headed by its directory slug in title case and carries an `Overview` section holding each member's preamble, as a subsection named by the document's stem less a trailing word the section already states: `artifacts/epic-issue-body.md` reads `Artifacts` / `Overview` / `Epic Issue Body`. The trimming is the rule the variant headings already follow, drop what the containing heading states, applied to a name rather than a path; under `Overview` nothing in this workspace matches, so names stay whole. Two earlier shapes were discarded: a `Sources` group above the groups, which invented a structural area, and a file heading per member inside one, which mixed paths in among section names. And a reference to a grouping-depth heading resolves to the merged group, losing which document it meant, which is the cost of merging.
 
-Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups against 27, 13 names carrying variants, 259 destinations against 353, 20 ordinals against 81. Published and rendered by GitHub, every fragment link resolves against the anchors it generates, with none broken.
+Measured on the Plan Mode closure with `--group artifacts:2`: 8 top-level groups against 27, 13 names carrying variants, 302 destinations against 353, 38 ordinals against 81. All 421 references are rewritten under either arrangement.
 
 Only `work-planner` is broadly representative in this workspace, so the cross-library case the parameter is built for, two directories of one slug under separate libraries, is implemented but not yet exercised against real sources.
 
