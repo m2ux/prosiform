@@ -77,8 +77,8 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Markdown and source-heading profile | Core syntax | I00:E03:AC4 |
 | Markdown and source-heading profile | Task lists | I02:E02:AC1 |
 | Markdown and source-heading profile | HTML | I00:E02:AC9, I02:E05:AC3, I02:E03:AC1 |
-| Markdown and source-heading profile | Bare text | I00:E02:AC10 |
-| Markdown and source-heading profile | Unsupported extensions | I00:E02:AC7, I00:E02:AC10, I02:AC5 |
+| Markdown and source-heading profile | Bare text | I00:E04:AC15 |
+| Markdown and source-heading profile | Unsupported extensions | I00:E02:AC7, I00:E04:AC15, I02:AC5 |
 | Markdown and source-heading profile | File suffixes | I00:E04:AC9, I02:E02:AC7, I00:E04:AC12 |
 | Markdown and source-heading profile | Encoding | I00:E02:AC8 |
 | CLI contract | --root DIR | I02:E03:AC2, I02:E02:AC9, I00:E04:AC5 |
@@ -150,7 +150,7 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Link classification and resource handling | Fragment-only links | I01:AC1, I00:E05:AC3 |
 | Link classification and resource handling | Web URLs | I00:E04:AC13 |
 | Link classification and resource handling | Unsupported local-document syntax | I02:E03:AC1, I00:E04:AC6, I00:E04:AC1 |
-| Link classification and resource handling | Other URI schemes | I02:E03:AC1, I00:E04:AC6, I00:E04:AC10 |
+| Link classification and resource handling | Other URI schemes | I02:E03:AC1, I00:E04:AC6, I00:E04:AC15 |
 | Link classification and resource handling | Examples | I02:E05:AC2, I02:E01:AC5, I02:E01:AC3 |
 | Resolution sequence | step 1 | I00:E06:AC5, I00:E05:AC3 |
 | Resolution sequence | step 3 | I02:E03:AC1, I00:E04:AC6 |
