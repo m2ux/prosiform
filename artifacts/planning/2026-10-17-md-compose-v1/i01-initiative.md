@@ -1,82 +1,76 @@
 ## Overview
 
-A Rust build of md-compose is the tool agents invoke, and it passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive composition exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails.
+The prototype is used as the tool agents in this workspace invoke, and what that use reveals changes the specification until it stops changing. Every surprise becomes a ledger entry reducible to a fixture; an accepted finding changes the design first, then the corpus, then the build. The initiative ends when every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision, which is the target the production build names.
 
 ## Problem
 
-A composition the production build publishes must be trusted byte for byte, and the parser it rests on has not been proven able to supply that.
+The behavioural contract has been written and reviewed, and nothing has yet composed a real instruction set for an agent carrying out the procedure it describes.
 
-- **Reconstruction loses what the source said.**
-  Regenerating a document through a formatter rewrites spacing, escaping and newline spelling, so composed instructions and code examples stop being the bytes an author wrote.
+- **A specification written before use is a hypothesis.**
+  The design states its invariants against constructed examples, and names its own residual items as needing measured fixture and real-skill data before their defaults are revisited ([residual policy](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md#L532-L537)).
 
-- **A definition map holds one occurrence per label.**
-  The inspected first pass inserts definitions with a first-wins entry, so a later duplicate occurrence has no map entry, and a source transformer removing definitions cannot find it.
+- **A corpus built beside an implementation tests what was implemented.**
+  Fixtures accumulate from the work that needed them, so a construct real sources carry but nobody implemented has no fixture and produces no failure.
 
-- **A suppressed reference looks like ordinary text.**
-  The inspected lookup returns nothing when its reference-expansion budget is zero, before definition lookup, so a reference the limit suppressed and bracketed text that was never a link reach the consumer identically.
+- **A surprise met mid-task has nowhere to go.**
+  The agent is doing something else, so without a recorded place for a finding the cheapest action is a local workaround, and the design keeps its original claim.
 
-- **The event range is not the destination range.**
-  An enclosing event carries a span for the construct, not for the destination inside it, so an edit placed from that span alone can fall outside the text it means to replace.
+- **A fix applied to the build leaves the contract wrong.**
+  Correcting a composition in code without changing the design leaves the design asserting the original behaviour, and the next implementation reads the design.
 
-- **An unpinned dependency changes the contract.**
-  Parser behaviour on duplicate definitions, offsets and option-controlled extensions is what the profile rests on, so an unpinned upgrade can change how existing source is interpreted.
+- **A moving contract cannot be implemented twice.**
+  A corpus that changes under refinement gives a second implementation no fixed target and no revision it can be said to satisfy.
 
 ## Proposal
 
-- **The gates are answered before the build.**
-  Executed reproducers establish whether the pinned parser exposes every reference-definition occurrence and whether it makes a suppressed reference lookup observable. Each answer and its evidence are recorded.
+- **The prototype is the tool in use.**
+  It is invoked from this workspace's skills, so the contract meets real sources and real agents rather than constructed examples.
 
-- **A failed gate takes a recorded route.**
-  Parser-aware occurrence collection, narrowly scoped instrumentation, a different parser candidate and a separate upstream proposal are the routes. The route taken is a recorded decision, not an implicit fallback.
+- **Every surprise becomes a ledger entry.**
+  An entry carries its date, the invocation, the source identities, the observed result and the expected one, and a triage state naming whether it changes the design, fills a corpus gap, fixes a build defect, or changes nothing.
 
-- **Edits are applied to verified spans.**
-  Original bytes are retained and replaced in place. A construct whose exact edit span cannot be established fails rather than falling back to pattern rewriting or whole-document formatting.
+- **An entry is reducible to a fixture.**
+  A capture tool reduces an entry's sources and invocation to the smallest fixture that still reproduces the observed result, so a finding becomes something that can be re-run.
 
-- **The corpus is inherited, not rewritten.**
-  The production build passes the fixtures the prototype established. A fixture changing to accommodate the production build is a change to the contract and is decided as one.
+- **A finding changes the design first.**
+  The design is the contract; the corpus follows the design, and the build follows the corpus. Each revision cites the entry that motivated it.
 
-- **Both builds stay on one corpus.**
-  A differential run composes each corpus input with both builds and compares the results, so a divergence is a defect in one of them rather than a silent difference.
+- **An accepted finding becomes a row.**
+  Rows are added to the revision epic as findings are accepted, so what remains is visible rather than implied.
 
-- **Versions are pinned after the fixtures pass.**
-  The parser, the slugging component and every other dependency take exact versions, chosen once the fixtures hold against them.
+- **Deferral is a recorded decision.**
+  An entry not resolved before the freeze names what is deferred and why, and stays in the ledger for the stage that takes it.
+
+- **The freeze is a tag.**
+  Design and corpus take one tagged revision, and the production build names that revision as its target.
 
 ## Work Breakdown
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/md-composer/issues/11) | Parser Verdict | AC1 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/12) | Source-Range Adapter | AC2, AC3 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E02](https://github.com/m2ux/md-composer/issues/13) | Profile and Outline | AC4 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E03](https://github.com/m2ux/md-composer/issues/14) | Closure and Budgets | AC5 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E04](https://github.com/m2ux/md-composer/issues/15) | Destination Identity | AC6 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E05](https://github.com/m2ux/md-composer/issues/16) | Validation and Delivery | AC7 | [E04](https://github.com/m2ux/md-composer/issues/15) | |
-| [E06](https://github.com/m2ux/md-composer/issues/17) | Differential Conformance | AC8, AC9 | [E05](https://github.com/m2ux/md-composer/issues/16) | |
+| [E00](https://github.com/m2ux/md-composer/issues/21) | Findings Ledger | AC1, AC2 | | |
+| [E01](https://github.com/m2ux/md-composer/issues/22) | Specification Revision | AC3, AC4 | [E00](https://github.com/m2ux/md-composer/issues/21) | |
+| [E02](https://github.com/m2ux/md-composer/issues/23) | Specification Freeze | AC5, AC6 | [E00](https://github.com/m2ux/md-composer/issues/21) | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** Each parser viability gate the design names has an executed reproducer and a recorded verdict against a pinned parser version, as the gate report shows.
-- [ ] **AC2.** Untouched source bytes and their newline spelling survive composition exactly, as the corpus's preservation fixtures and the span-fidelity fixtures show.
-- [ ] **AC3.** A reference lookup an internal parser limit suppresses is observable to the compiler rather than indistinguishable from literal bracketed text, as the exhaustion fixtures show.
-- [ ] **AC4.** A published composite keeps the source outline and the declared Markdown profile, as the corpus's outline and profile fixtures show.
-- [ ] **AC5.** A composition resolves its dependency closure and holds every limit the profile names, as the corpus's closure and limit fixtures show.
-- [ ] **AC6.** A published composite carries one destination per rewritten reference and no original reference definition, as the corpus's destination and reference fixtures show.
-- [ ] **AC7.** A composition that fails validation publishes nothing, exits nonzero and writes its diagnostic, as the corpus's failure fixtures show.
-- [ ] **AC8.** Both builds produce identical output for each corpus input, as the differential run shows.
-- [ ] **AC9.** Every dependency is pinned to an exact version against which the corpus passes, as the lockfile and that run show.
+- [ ] **AC1.** A surprise met while composing in real use is recorded with the evidence needed to reproduce it without the original session, as the ledger's entries show.
+- [ ] **AC2.** A recorded finding is reducible to a corpus fixture that reproduces it, as the capture tool's reduction tests show.
+- [ ] **AC3.** An accepted finding changes the design before the corpus or the build, as the revision history citing that finding shows.
+- [ ] **AC4.** What remains unsettled is visible without reading the ledger whole, as the open-finding summary shows.
+- [ ] **AC5.** Each ledger entry is resolved or carries a recorded deferral naming what is deferred and why, as the ledger's status summary shows.
+- [ ] **AC6.** The design and the corpus carry one tagged revision that a production build can name as its target, as the tag shows.
 
 ## Non-Goals
 
+- It does not implement a production build.
+- It does not change the outcomes the composition contract serves.
+- It does not commit to a date for the freeze.
+- It does not accept a finding by working around it in a source document.
 - It does not open an issue or a pull request on another project.
-- It does not disable a parser resource protection to satisfy a gate.
-- It does not rewrite a corpus fixture to accommodate the production build without a recorded decision.
-- It does not replace the prototype, which is retained as the differential oracle.
-- It does not fetch remote documents, resources or URLs.
-- It does not accept its own output as a source document.
 
 ## References
 
-- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the behavioural contract these criteria answer to, including the parser viability gates and the source-preserving edit requirement.
-- **R2.** **Source.** [Upstream assessment](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/upstream-assessment.md) — the inspected parser state behind the gates, and the routes open when one fails.
-- **R3.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — why gate evaluation precedes the build and why the upstream route is a separate proposal.
-- **R4.** [Proposal](https://github.com/m2ux/md-composer/issues/1) — the scoped problem and the goal clauses these criteria trace to.
+- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the specification this initiative settles, including the residual items it names as needing measured real-skill data.
+- **R2.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — why the prototype is used before a production build is committed to, and what marks the specification settled.
+- **R3.** [Proposal](https://github.com/m2ux/md-composer/issues/1) — the scoped problem and the goal clauses these criteria trace to.

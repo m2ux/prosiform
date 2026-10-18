@@ -1,6 +1,6 @@
 ## Overview
 
-A Python 3 build of md-compose compiles one or more local Markdown document or section references into one continuous, validated Markdown document, and a language-neutral fixture corpus states what that document must be. The corpus declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing this one. The initiative is complete when that corpus covers every behavioural clause of the design and the Python build passes it.
+A Python 3 build of md-compose compiles one or more local Markdown document or section references into one continuous, validated Markdown document, and a language-neutral fixture corpus states what that document must be. The corpus declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing this one. The build installs as the tool agents in this workspace invoke, with a wrapper that delivers a composite whole or reports a delivery failure. The initiative is complete when the corpus covers every behavioural clause of the design, the Python build passes it, and an agent composes by invoking the installed tool.
 
 ## Problem
 
@@ -35,6 +35,9 @@ Modular Markdown authoring separates the destination a link names from the conte
 - **Span-level editing is out of scope here.**
   Byte-exact source-preserving edits are specific to the production parser and are proven where that parser lives. This build may reconstruct its output, provided the corpus's preservation fixtures hold.
 
+- **The build ships to be used.**
+  It installs with a stable entry point and a wrapper owning the delivery contract, because the specification is refined by what real use reveals and nothing is revealed by a build nobody invokes.
+
 - **The conformance report is the handover.**
   It maps every behavioural clause of the design to the fixtures that exercise it, and lists any clause no fixture covers, so the next implementation inherits a measured contract rather than an assumed one.
 
@@ -49,6 +52,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 | [E04](https://github.com/m2ux/md-composer/issues/7) | Destination Identity | AC2 |  | |
 | [E05](https://github.com/m2ux/md-composer/issues/8) | Validation Gate | AC4, AC6 | [E04](https://github.com/m2ux/md-composer/issues/7) | |
 | [E06](https://github.com/m2ux/md-composer/issues/9) | Corpus Conformance | AC9 | [E05](https://github.com/m2ux/md-composer/issues/8) | |
+| [E07](https://github.com/m2ux/md-composer/issues/19) | Field Deployment | AC11, AC12 | [E05](https://github.com/m2ux/md-composer/issues/8) | |
 
 ## Acceptance Criteria
 
@@ -62,11 +66,13 @@ Modular Markdown authoring separates the destination a link names from the conte
 - [ ] **AC8.** A fixture declares its sources, its invocation and its expected result, and the runner decides pass or fail from that declaration alone, as the runner's own test suite shows.
 - [ ] **AC9.** Every behavioural clause the design states maps to at least one corpus fixture, or is listed as uncovered, as the conformance report shows.
 - [ ] **AC10.** Each resource limit the profile names fails at the first boundary it crosses, publishing nothing, as the corpus's limit fixtures show.
+- [ ] **AC11.** An agent composes its context by invoking the installed tool rather than by reading the linked documents itself, as the installation smoke run against a documented entry point shows.
+- [ ] **AC12.** A composite the transport cannot deliver whole is reported as a delivery failure rather than as a truncated success, as the corpus's delivery fixtures show.
 
 ## Non-Goals
 
 - It does not apply byte-exact edits to identified source spans.
-- It does not ship as the tool agents invoke in normal use.
+- It does not settle the specification, which use refines.
 - It does not execute, authorize or sequence the procedures it composes.
 - It does not infer a dependency the source did not state as a Markdown link.
 - It does not fetch remote documents, resources or URLs.

@@ -2,11 +2,13 @@
 
 The planning decisions taken with the user, each with the reasoning that produced it.
 
-## D1 — The Python Prototype Is a Semantic Oracle
+## D1 — The Python Build Is the Tool in Use
 
-Python implements the full behavioural contract — closure, consolidation, anchor identity, validation, diagnostics and CLI — and produces a language-neutral fixture corpus of exact expected composites. Source-span edit fidelity is proven in Rust, where the production parser lives.
+Python implements the full behavioural contract — closure, consolidation, anchor identity, validation, diagnostics and CLI — produces a language-neutral fixture corpus of exact expected composites, and ships as the tool agents in this workspace invoke. It is used for an extended period before a production build is committed to. Source-span edit fidelity is proven in Rust, where the production parser lives.
 
-The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, qualified destination identity and the post-compilation invariants — are parser-independent and provable cheaply. Splitting the work this way makes the corpus the durable artifact and keeps the prototype a retained component rather than a stopgap.
+The design's hardest unproven element is the source-range adapter, which is parser-specific and would not transfer from a Python CommonMark parser to `pulldown-cmark`. Its hardest semantic elements — dependency closure to a fixed point, overlap consolidation, qualified destination identity and the post-compilation invariants — are parser-independent and provable cheaply.
+
+A specification written before use is a hypothesis, and the cheapest place to discover what it got wrong is a build that already works. Using Python for that period means the design's errors are found and corrected at Python's cost rather than at Rust's, and it makes the corpus the durable artifact: what survives the period is a contract that real sources have exercised. The prototype is therefore a retained component, not a stopgap, and it stays in use as the differential oracle after the production build exists. See D7 for what ends that period.
 
 ## D2 — Gate Evaluation Precedes the Rust Build; Upstream Is a Separate Proposal
 
@@ -28,7 +30,7 @@ Two boards would split one product's queue and hide the dependency between the s
 
 ## D5 — Goal Clauses
 
-Seven clauses, confirmed by the user, stated as outcomes someone could observe:
+Eight clauses, stated as outcomes someone could observe. G1 to G7 were confirmed when the proposal was raised; G8 follows from the decision to use the Python build for an extended period before committing to a production build, and is added to the proposal rather than left implicit.
 
 - **G1.** Given a source root and one or more local document or section references, an agent receives one continuous Markdown document containing the selected content and every local Markdown dependency reachable from it.
 - **G2.** Every internal reference in that document resolves to exactly one destination within it, and each included source region appears exactly once however many paths reach it.
@@ -37,6 +39,8 @@ Seven clauses, confirmed by the user, stated as outcomes someone could observe:
 - **G5.** A composition that cannot be fully validated emits no composite and exits nonzero, with a diagnostic naming the defect, its source location, the offending reference and the inclusion chain that reached it.
 - **G6.** Authors keep their existing modular files; nothing beyond ordinary Markdown links and optional heading anchors makes a document composable.
 - **G7.** The contract is demonstrated by two independent implementations passing one shared fixture corpus.
+
+- **G8.** The behavioural contract the production build implements has been exercised by real use and recorded as settled before that build begins.
 
 The user declined two offered amendments: dropping G7 as a planning rather than product outcome, and adding the agent delivery contract as an eighth clause.
 
@@ -47,6 +51,18 @@ The Python build parses with `markdown-it-py`. `I00:E01:W02` configures it to th
 The profile needs pipe tables, double-tilde strikethrough, source task-list markers preserved without checkbox generation, and typographic substitution disabled. `markdown-it-py` is CommonMark-compliant, supplies the first three through option-controlled plugins and the fourth by leaving its typographer off, and exposes a token stream whose structure is the closest Python analogue to `pulldown-cmark`'s event model. That similarity matters beyond convenience: profile reasoning that holds for one build reads across to the other, so a divergence between them is more likely a defect than a difference in how each parser frames the same document.
 
 Block tokens carry line ranges and inline tokens do not, which bounds how precisely the prototype can locate an edit. That bound is acceptable here because byte-exact span editing is D1's explicit non-goal for this build; the prototype may reconstruct its output provided the corpus's preservation fixtures hold. A candidate parser is not excluded later: a fixture the prototype cannot satisfy for parser reasons is a reason to revisit this decision, recorded as one.
+
+## D7 — The Specification Is Settled by Use Before Rust Is Committed To
+
+The Python build is used for an extended period as the tool agents invoke, and what that use reveals refines the specification. That period is its own initiative between the prototype and the production build. It ends when every entry in a findings ledger is resolved or explicitly deferred with a reason, and the design and corpus carry one tagged revision; the production build names that revision as its target.
+
+Two weaker end conditions were considered. A declared quiet span of active use measures stability directly, but a quiet span can mean the tool went unused rather than that the contract settled. Corpus coverage of every construct in this workspace's real sources ties the freeze to breadth of exposure, but says nothing about findings still open. The ledger condition is checkable by inspecting the ledger and the tag, and its deferral path stops one awkward finding holding the stage open indefinitely while still recording what was set aside.
+
+The ordering within the stage is design, then corpus, then build. A fix applied to the build alone leaves the design asserting the original behaviour, and the next implementation reads the design; a fixture edited first turns an observed accident into the contract.
+
+## D8 — The Production Initiative Is I02
+
+The Rust initiative renumbers from I01 to I02, and the refinement stage takes I01, so the initiative numbers follow the order the stages run in. No pull request named any of those numbers, so the renumbering changed only issue titles and body references.
 
 ## Evidence
 

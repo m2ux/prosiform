@@ -1,6 +1,6 @@
 # Review
 
-The goal trace, the threats checked against the drafts, and the independent task pairs the dependency check reported.
+The goal trace, the threats checked against the drafts, and the independent task pairs the dependency check reports.
 
 ## Goal Trace
 
@@ -18,37 +18,58 @@ Each confirmed goal clause, the initiative criterion that makes it true, and the
 | G6 | I00 | AC7 | E01 Walking Skeleton | AC1–AC6 |
 | G7 | I00 | AC8 | E00 Corpus Harness | AC1–AC4 |
 | G7 | I00 | AC9 | E06 Corpus Conformance | AC1–AC4 |
-| G3 | I01 | AC1 | E00 Parser Verdict | AC1–AC6 |
-| G3 | I01 | AC2 | E01 Source-Range Adapter | AC1–AC4 |
-| G5 | I01 | AC3 | E01 Source-Range Adapter | AC5 |
-| G4 | I01 | AC4 | E02 Profile and Outline | AC1–AC6 |
-| G1 | I01 | AC5 | E03 Closure and Budgets | AC1–AC7 |
-| G2 | I01 | AC6 | E04 Destination Identity | AC1–AC5 |
-| G5 | I01 | AC7 | E05 Validation and Delivery | AC1–AC6 |
-| G7 | I01 | AC8 | E06 Differential Conformance | AC1 |
-| G7 | I01 | AC9 | E06 Differential Conformance | AC2–AC4 |
+| G1 | I00 | AC11 | E07 Field Deployment | AC1, AC4 |
+| G5 | I00 | AC12 | E07 Field Deployment | AC2, AC3 |
+| G8 | I01 | AC1 | E00 Findings Ledger | AC1, AC2 |
+| G8 | I01 | AC2 | E00 Findings Ledger | AC3, AC4 |
+| G8 | I01 | AC3 | E01 Specification Revision | AC1, AC2 |
+| G8 | I01 | AC4 | E01 Specification Revision | AC3, AC4 |
+| G8 | I01 | AC5 | E02 Specification Freeze | AC1, AC2 |
+| G7 | I01 | AC6 | E02 Specification Freeze | AC3 |
+| G3 | I02 | AC1 | E00 Parser Verdict | AC1–AC6 |
+| G3 | I02 | AC2 | E01 Source-Range Adapter | AC1–AC4 |
+| G5 | I02 | AC3 | E01 Source-Range Adapter | AC5 |
+| G4 | I02 | AC4 | E02 Profile and Outline | AC1–AC6 |
+| G1 | I02 | AC5 | E03 Closure and Budgets | AC1–AC7 |
+| G2 | I02 | AC6 | E04 Destination Identity | AC1–AC5 |
+| G5 | I02 | AC7 | E05 Validation and Delivery | AC1–AC6 |
+| G7 | I02 | AC8 | E06 Differential Conformance | AC1 |
+| G7 | I02 | AC9 | E06 Differential Conformance | AC2–AC4 |
+| G8 | I02 | AC10 | E01 Source-Range Adapter | AC6 |
 
 - Every initiative criterion traces to a clause, and every clause is made true by at least one criterion.
 - G6 is made true by I00 AC7 alone. The production build inherits that property through the corpus rather than restating it, because a source needing added markup would fail the fixtures taken from unmodified workspace skills.
+- G8 was added to the proposal when the decision to use the Python build for an extended period was taken. Without it, the refinement initiative's criteria would trace to no clause.
+
+## Stage Order
+
+The three initiatives run in series, and each boundary is a dependency a task row names rather than an assumption.
+
+- I00 ends with a build that passes the corpus and is installed for agents to invoke. I01 E00 W01 depends on I00 E07 W03, so the ledger opens once there is something in use to record findings from.
+- I01 ends with a tagged revision of the design and corpus. I02 E01 W01 depends on I01 E02 W02, so every implementing epic of the production build waits on the freeze.
+- I02 E00, the parser verdict, depends on neither. Its reproducers test a parser, not the specification, so the largest unknown in the production build can be answered while the refinement stage runs.
 
 ## Source Alignment
 
-The criteria of both initiatives answer to the design, which both bodies mark as a source. The upstream assessment is a marked source of I01 alone, because only its parser gates answer to it.
+The criteria of all three initiatives answer to the design, which each body marks as a source. The upstream assessment is a marked source of I02 alone, because only its parser gates answer to it.
 
-- Each mandatory parser viability gate the design states is answered by I01 AC1, and the route for a failed gate by the epic criterion behind it.
-- The design's deferral of upstream action is held by I01's Non-Goals, which exclude opening an issue or pull request on another project.
-- The design's residual policy details — the additional URI pass-through schemes and the numerical limit calibration — are stated as open in the design and are carried as Open Questions on the epics that would settle them, not as criteria.
+- Each mandatory parser viability gate the design states is answered by I02 AC1, and the route for a failed gate by the epic criterion behind it.
+- The design's deferral of upstream action is held by I02's Non-Goals, which exclude opening an issue or pull request on another project.
+- The design's agent delivery contract is answered by I00 AC12 and the epic criteria behind it, and again by I02 AC7.
+- The design's residual policy details — the additional URI pass-through schemes and the numerical limit calibration — are stated as open in the design. The scheme allowlist is an Open Question on the epic that needs it; the limit calibration is the kind of measured revision I01 exists to produce.
 
 ## Threats
 
 - **Consumers.**
-  The workspace skills are the intended consumer, and their prerequisite lists become redundant once compositions replace them. Refactoring those skills is outside both initiatives and is raised separately when a build exists to refactor against.
+  The workspace skills are the intended consumer, and their prerequisite lists become redundant once compositions replace them. Refactoring those skills is outside all three initiatives and is raised separately. The skills are nevertheless the source material the refinement stage composes, so their constructs reach the contract through the ledger rather than through a refactor.
 - **Silent failures.**
-  Every path the design fails closed on has a corpus fixture asserting the failure, its error code and the absence of output. A fail-closed path with no fixture is reported by the conformance report's uncovered list rather than passing silently.
+  Every path the design fails closed on has a corpus fixture asserting the failure, its error code and the absence of output. A fail-closed path with no fixture is reported by the conformance report's uncovered list, which is regenerated on each revision so a clause added during refinement cannot hide.
 - **Measurement.**
-  The baseline is the evidence recorded in [Decisions](decisions.md), measured at commit `acac85867ca963df00251e4cf00a4db11b14bf24` before any of this work starts. The instrument is the corpus runner, which decides results from fixture declarations and names no implementation, so it is independent of both builds.
+  The baseline is the evidence recorded in [Decisions](decisions.md), measured at commit `acac85867ca963df00251e4cf00a4db11b14bf24` before any of this work starts. The instrument is the corpus runner, which decides results from fixture declarations and names no implementation, so it is independent of both builds. The freeze is judged by the ledger's status summary, which is derived from the ledger rather than maintained beside it.
 - **Version skew.**
-  The corpus is produced by one initiative and consumed by the other. The differential run and the exact dependency pins are what keep the two builds and the corpus in agreement; a fixture changed to accommodate the production build is a recorded decision rather than an edit.
+  The corpus changes throughout I01 and is fixed by the freeze tag. The production build names that tag, the differential run compares the two builds against it, and exact dependency pins hold the parser behaviour the profile rests on. A fixture changed to accommodate the production build is a recorded decision rather than an edit.
+- **Open-ended refinement.**
+  I01 commits to no end date, which is one of its Non-Goals. The deferral path is what stops a single unresolved finding holding the stage open, and the open-finding summary is what makes the remaining distance visible while it runs.
 - **In-flight work.**
   The repository holds no implementation, so nothing in flight alters the ground this plan stands on.
 
@@ -58,8 +79,9 @@ The dependency check reports task pairs within one epic where neither depends on
 
 | Pair | Why it is not joined |
 | --- | --- |
-| I01 E00 W01, W02, W03 | Each reproducer pins a different parser capability, and each result is read on its own into the gate report. One pull request per reproducer keeps a failed gate attributable to the evidence that failed it. |
-| I01 E01 W02, W03 | Edit application and the suppression signal touch different parser surfaces, and the suppression signal's shape depends on the route the gate report records, so joining them would couple an edit mechanism to an undecided interface. |
+| I01 E01 W02, W03 | Traceability regeneration changes the conformance report; the open-finding summary reads the ledger. They share no code and are read by different audiences, so one failing should not hold the other back. |
+| I02 E00 W01, W02, W03 | Each reproducer pins a different parser capability, and each result is read on its own into the gate report. One pull request per reproducer keeps a failed gate attributable to the evidence that failed it. |
+| I02 E01 W02, W03 | Edit application and the suppression signal touch different parser surfaces, and the suppression signal's shape depends on the route the gate report records, so joining them would couple an edit mechanism to an undecided interface. |
 
 Every other pair in every epic is ordered by a dependency.
 
@@ -69,24 +91,25 @@ The checks run against the plan, and what each observed.
 
 ### Dependency Check
 
-`deps.py` run over each initiative body and all seven of its epic bodies.
+`deps.py` run over each initiative body and all of its epic bodies.
 
-- Both initiatives report no problem: no overbroad whole-epic dependency, no backward reference, no duplicated or implied edge, and no numbering that departs from start order.
-- I00's whole-epic edges are E05 on E04 and E06 on E05; every other ordering lives in the task graph.
-- I01's whole-epic edges are E01, E02, E03 and E04 on E00, E05 on E04, and E06 on E05.
-- I00's longest chain is 18 steps, from the fixture manifest to the independence check. I01's twelve longest chains are 15 steps, each passing through the gate report.
+- All three initiatives report no problem: no overbroad whole-epic dependency, no backward reference, no duplicated or implied edge, and no numbering that departs from start order.
+- I00's whole-epic edges are E05 on E04, E06 on E05 and E07 on E05; every other ordering lives in the task graph.
+- I01's whole-epic edges are E01 on E00 and E02 on E00.
+- I02's whole-epic edges are E01, E02, E03 and E04 on E00, E05 on E04, and E06 on E05.
+- I00's two longest chains are 18 steps, sharing fifteen rows and diverging at the validation gate into conformance and into deployment. I01's longest chain is 6 steps, from the ledger format to the tagged revision. I02's twelve longest chains are 15 steps, each passing through the gate report.
 - The independent task pairs it reported are recorded above.
 
 ### Body Format Check
 
-`format.py` run over every published issue, each epic against its initiative and each initiative against all seven of its epics.
+`format.py` run over every published issue, each epic against its initiative and each initiative against all of its epics.
 
-- All sixteen issues report no mechanical fix, no metadata change to apply and no finding to decide.
+- All twenty-two issues report no mechanical fix, no metadata change to apply and no finding to decide.
 - Each epic criterion is delivered by at least one task row, and each initiative criterion by at least one epic row.
 
 ### Goal Trace
 
-The trace table above, built from the confirmed clauses and the drafted bodies.
+The trace table above, built from the confirmed clauses and the published bodies.
 
 - Every clause is made true by at least one initiative criterion, and every initiative criterion traces to a clause.
 - No criterion is delivered by an epic whose own criteria leave it partly unmet.
