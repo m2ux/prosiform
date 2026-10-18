@@ -7,10 +7,10 @@ Agent skills in this workspace are authored as modular instruction sets: an entr
 Modular Markdown authoring separates the destination a link names from the context an operation needs, and nothing closes that gap except the reading agent.
 
 - **Retrieval is prose the agent must execute.**
-  One rule directs the agent to read a linked section and its subsections, stop before the next heading of equal or higher level, read that file's prerequisites first, preserve boundaries in batched reads and recover truncated output: [Linked sections](https://github.com/m2ux/md-composer/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/SKILL.md#L71-L72).
+  One rule directs the agent to read a linked section and its subsections, stop before the next heading of equal or higher level, read that file's prerequisites first, preserve boundaries in batched reads and recover truncated output: [Linked sections](https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/SKILL.md#L71-L72).
 
 - **One request reaches 39 documents.**
-  [Plan Mode](https://github.com/m2ux/md-composer/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md#L5-L23) lists 15 prerequisites; the transitive closure of its Markdown links is 39 files and 139 distinct section targets, 318,018 bytes read whole.
+  [Plan Mode](https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md#L5-L23) lists 15 prerequisites; the transitive closure of its Markdown links is 39 files and 139 distinct section targets, 318,018 bytes read whole.
 
 - **Section boundaries are decided by the reader.**
   519 Markdown links run between the 38 files of that one skill, 363 of them naming a section rather than a file, so each read also decides where the named section ends.
@@ -45,7 +45,7 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 ## References
 
-- **R1.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the approved behavioural contract: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
-- **R2.** [Upstream assessment](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/upstream-assessment.md) — the inspected state of `pulldown-cmark` against the two parser viability gates, and the two narrowly scoped contributions that would satisfy them.
-- **R3.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — the decisions taken with the user, the reasoning behind each, and the measured evidence above.
+- **R1.** [v1 design](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md) — the approved behavioural contract: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
+- **R2.** [Upstream assessment](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/upstream-assessment.md) — the inspected state of `pulldown-cmark` against the two parser viability gates, and the two narrowly scoped contributions that would satisfy them.
+- **R3.** [Planning decisions](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — the decisions taken with the user, the reasoning behind each, and the measured evidence above.
 

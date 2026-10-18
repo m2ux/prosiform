@@ -7,10 +7,10 @@ A Python 3 build of prosiform compiles one or more local Markdown document or se
 Modular Markdown authoring separates the destination a link names from the context an operation needs, and nothing closes that gap except the reading agent.
 
 - **Retrieval is prose the agent must execute.**
-  One rule directs the agent to read a linked section and its subsections, stop before the next heading of equal or higher level, read that file's prerequisites first, preserve boundaries in batched reads and recover truncated output: [Linked sections](https://github.com/m2ux/md-composer/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/SKILL.md#L71-L72).
+  One rule directs the agent to read a linked section and its subsections, stop before the next heading of equal or higher level, read that file's prerequisites first, preserve boundaries in batched reads and recover truncated output: [Linked sections](https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/SKILL.md#L71-L72).
 
 - **One request reaches 39 documents.**
-  [Plan Mode](https://github.com/m2ux/md-composer/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md#L5-L23) lists 15 prerequisites; the transitive closure of its Markdown links is 39 files and 139 distinct section targets, 318,018 bytes read whole.
+  [Plan Mode](https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md#L5-L23) lists 15 prerequisites; the transitive closure of its Markdown links is 39 files and 139 distinct section targets, 318,018 bytes read whole.
 
 - **Section boundaries are decided by the reader.**
   519 Markdown links run between the 38 files of that one skill, 363 of them naming a section rather than a file, so each read also decides where the named section ends.
@@ -45,15 +45,15 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/md-composer/issues/26) | Project Foundation | AC13 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/3) | Corpus Harness | AC8 | | |
-| [E02](https://github.com/m2ux/md-composer/issues/4) | Walking Skeleton | AC7 |  | |
-| [E03](https://github.com/m2ux/md-composer/issues/5) | Outline Hierarchy | AC5 |  | |
-| [E04](https://github.com/m2ux/md-composer/issues/6) | Dependency Closure | AC1, AC3, AC10, AC14 |  | |
-| [E05](https://github.com/m2ux/md-composer/issues/7) | Destination Identity | AC2 |  | |
-| [E06](https://github.com/m2ux/md-composer/issues/8) | Validation Gate | AC4, AC6 | [E05](https://github.com/m2ux/md-composer/issues/7) | |
-| [E07](https://github.com/m2ux/md-composer/issues/9) | Corpus Conformance | AC9 | [E06](https://github.com/m2ux/md-composer/issues/8) | |
-| [E08](https://github.com/m2ux/md-composer/issues/19) | Field Deployment | AC11, AC12 | [E06](https://github.com/m2ux/md-composer/issues/8) | |
+| [E00](https://github.com/m2ux/prosiform/issues/26) | Project Foundation | AC13 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/3) | Corpus Harness | AC8 | | |
+| [E02](https://github.com/m2ux/prosiform/issues/4) | Walking Skeleton | AC7 |  | |
+| [E03](https://github.com/m2ux/prosiform/issues/5) | Outline Hierarchy | AC5 |  | |
+| [E04](https://github.com/m2ux/prosiform/issues/6) | Dependency Closure | AC1, AC3, AC10, AC14 |  | |
+| [E05](https://github.com/m2ux/prosiform/issues/7) | Destination Identity | AC2 |  | |
+| [E06](https://github.com/m2ux/prosiform/issues/8) | Validation Gate | AC4, AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
+| [E07](https://github.com/m2ux/prosiform/issues/9) | Corpus Conformance | AC9 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
+| [E08](https://github.com/m2ux/prosiform/issues/19) | Field Deployment | AC11, AC12 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
 
 ## Acceptance Criteria
 
@@ -84,6 +84,6 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 ## References
 
-- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the behavioural contract these criteria answer to: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
-- **R2.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — why the prototype is a retained oracle, where the corpus lives, and the measured evidence behind the Problem.
-- **R3.** [Proposal](https://github.com/m2ux/md-composer/issues/1) — the scoped problem and the goal clauses these criteria trace to.
+- **R1.** **Source.** [v1 design](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md) — the behavioural contract these criteria answer to: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
+- **R2.** [Planning decisions](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — why the prototype is a retained oracle, where the corpus lives, and the measured evidence behind the Problem.
+- **R3.** [Proposal](https://github.com/m2ux/prosiform/issues/1) — the scoped problem and the goal clauses these criteria trace to.

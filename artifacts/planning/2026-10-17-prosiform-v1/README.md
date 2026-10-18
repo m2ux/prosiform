@@ -103,10 +103,10 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 
 | Resource | Link |
 | --- | --- |
-| Proposal | https://github.com/m2ux/md-composer/issues/1 |
-| I00 Prototype Compiler | https://github.com/m2ux/md-composer/issues/2 |
-| I01 Field Refinement | https://github.com/m2ux/md-composer/issues/20 |
-| I02 Production Compiler | https://github.com/m2ux/md-composer/issues/10 |
+| Proposal | https://github.com/m2ux/prosiform/issues/1 |
+| I00 Prototype Compiler | https://github.com/m2ux/prosiform/issues/2 |
+| I01 Field Refinement | https://github.com/m2ux/prosiform/issues/20 |
+| I02 Production Compiler | https://github.com/m2ux/prosiform/issues/10 |
 | Composition theme board | https://github.com/users/m2ux/projects/18 |
 | Proposals board | https://github.com/users/m2ux/projects/16 |
 | pulldown-cmark issue #423 | https://github.com/pulldown-cmark/pulldown-cmark/issues/423 |

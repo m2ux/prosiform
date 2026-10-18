@@ -7,7 +7,7 @@ The prototype is used as the tool agents in this workspace invoke, and what that
 The behavioural contract has been written and reviewed, and nothing has yet bundled a real instruction set for an agent carrying out the procedure it describes.
 
 - **A specification written before use is a hypothesis.**
-  The design states its invariants against constructed examples, and names its own residual items as needing measured fixture and real-skill data before their defaults are revisited ([residual policy](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md#L532-L537)).
+  The design states its invariants against constructed examples, and names its own residual items as needing measured fixture and real-skill data before their defaults are revisited ([residual policy](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md#L532-L537)).
 
 - **A corpus built beside an implementation tests what was implemented.**
   Fixtures accumulate from the work that needed them, so a construct real sources carry but nobody implemented has no fixture and produces no failure.
@@ -57,9 +57,9 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/md-composer/issues/21) | Findings Ledger | AC1, AC2, AC9 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/22) | Specification Revision | AC3, AC4, AC8 | | |
-| [E02](https://github.com/m2ux/md-composer/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
+| [E00](https://github.com/m2ux/prosiform/issues/21) | Findings Ledger | AC1, AC2, AC9 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/22) | Specification Revision | AC3, AC4, AC8 | | |
+| [E02](https://github.com/m2ux/prosiform/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
 
 ## Acceptance Criteria
 
@@ -84,6 +84,6 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 
 ## References
 
-- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the specification this initiative settles, including the residual items it names as needing measured real-skill data.
-- **R2.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — why the prototype is used before a production build is committed to, and what marks the specification settled.
-- **R3.** [Proposal](https://github.com/m2ux/md-composer/issues/1) — the scoped problem and the goal clauses these criteria trace to.
+- **R1.** **Source.** [v1 design](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md) — the specification this initiative settles, including the residual items it names as needing measured real-skill data.
+- **R2.** [Planning decisions](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — why the prototype is used before a production build is committed to, and what marks the specification settled.
+- **R3.** [Proposal](https://github.com/m2ux/prosiform/issues/1) — the scoped problem and the goal clauses these criteria trace to.

@@ -51,13 +51,13 @@ A bundling the production build publishes must be trusted byte for byte, and the
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/md-composer/issues/11) | Parser Verdict | AC1 | | |
-| [E01](https://github.com/m2ux/md-composer/issues/12) | Source-Range Adapter | AC2, AC3, AC10 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E02](https://github.com/m2ux/md-composer/issues/13) | Profile and Outline | AC4 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E03](https://github.com/m2ux/md-composer/issues/14) | Closure and Budgets | AC5 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E04](https://github.com/m2ux/md-composer/issues/15) | Destination Identity | AC6 | [E00](https://github.com/m2ux/md-composer/issues/11) | |
-| [E05](https://github.com/m2ux/md-composer/issues/16) | Validation and Delivery | AC7 | [E04](https://github.com/m2ux/md-composer/issues/15) | |
-| [E06](https://github.com/m2ux/md-composer/issues/17) | Differential Conformance | AC8, AC9 | [E05](https://github.com/m2ux/md-composer/issues/16) | |
+| [E00](https://github.com/m2ux/prosiform/issues/11) | Parser Verdict | AC1 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/12) | Source-Range Adapter | AC2, AC3, AC10 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
+| [E02](https://github.com/m2ux/prosiform/issues/13) | Profile and Outline | AC4 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
+| [E03](https://github.com/m2ux/prosiform/issues/14) | Closure and Budgets | AC5 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
+| [E04](https://github.com/m2ux/prosiform/issues/15) | Destination Identity | AC6 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
+| [E05](https://github.com/m2ux/prosiform/issues/16) | Validation and Delivery | AC7 | [E04](https://github.com/m2ux/prosiform/issues/15) | |
+| [E06](https://github.com/m2ux/prosiform/issues/17) | Differential Conformance | AC8, AC9 | [E05](https://github.com/m2ux/prosiform/issues/16) | |
 
 ## Acceptance Criteria
 
@@ -83,7 +83,7 @@ A bundling the production build publishes must be trusted byte for byte, and the
 
 ## References
 
-- **R1.** **Source.** [v1 design](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/design.md) — the behavioural contract these criteria answer to, including the parser viability gates and the source-preserving edit requirement.
-- **R2.** **Source.** [Upstream assessment](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/upstream-assessment.md) — the inspected parser state behind the gates, and the routes open when one fails.
-- **R3.** [Planning decisions](https://github.com/m2ux/md-composer/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-md-compose-v1/decisions.md) — why gate evaluation precedes the build and why the upstream route is a separate proposal.
-- **R4.** [Proposal](https://github.com/m2ux/md-composer/issues/1) — the scoped problem and the goal clauses these criteria trace to.
+- **R1.** **Source.** [v1 design](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md) — the behavioural contract these criteria answer to, including the parser viability gates and the source-preserving edit requirement.
+- **R2.** **Source.** [Upstream assessment](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/upstream-assessment.md) — the inspected parser state behind the gates, and the routes open when one fails.
+- **R3.** [Planning decisions](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — why gate evaluation precedes the build and why the upstream route is a separate proposal.
+- **R4.** [Proposal](https://github.com/m2ux/prosiform/issues/1) — the scoped problem and the goal clauses these criteria trace to.
