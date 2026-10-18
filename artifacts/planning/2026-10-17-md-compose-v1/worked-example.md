@@ -26,7 +26,7 @@ A second composition, entered at `SKILL.md`, was run to exercise the failure pat
 | Headings emitted | 353 |
 | Deepest emitted heading | H4 |
 | Internal links rewritten | 421 |
-| Composite size | 199,703 bytes |
+| Composite size | 200,124 bytes |
 | Expansion depth reached | 4 hops |
 
 Validation reparsed the composite and checked it against the invariants the output alone can establish: every one of the 421 internal links resolves to one of 353 destinations, no two destinations coincide, no original reference definition survives, and no heading exceeds H6.
@@ -34,7 +34,7 @@ Validation reparsed the composite and checked it against the invariants the outp
 ## What it shows
 
 - **A destination is a path, and nothing is emitted at it.**
-  `[Template](artifacts/architecture-overview/fields/template)` names the file, the ancestor chain and the section. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
+  `[Template](#artifacts/architecture-overview/fields/template)` names the file, the ancestor chain and the section. It is written as a fragment, so nothing tries to resolve it against the filesystem. The target is an ordinary shifted source heading carrying no identifier, and the reader locates it by the document's structure.
 
 - **A file heading absorbs a title it already carries.**
   `artifacts/architecture-overview.md` opens with `# Architecture Overview`, which slugifies to its own filename stem, so the file heading replaces it and that group keeps its source levels. Thirty-seven of the skill's thirty-eight documents are this shape. `SKILL.md`, whose H1 is `Work Planner`, is the one that is not: it keeps its H1 and shifts.
@@ -46,7 +46,7 @@ Validation reparsed the composite and checked it against the invariants the outp
   The template fences in `artifacts/architecture-overview.md` hold `# Architecture Overview — {{Change Name}}` and a `---` pair inside a Mermaid block. Neither is shifted, parsed as a heading, or read as frontmatter.
 
 - **Whole-document and section references produce different destinations.**
-  `[Propose Mode](modes/propose-mode)` keeps the bare file segment; `[Populate Planning Record](artifacts/planning-record/operations/populate-planning-record)` carries the full chain.
+  `[Propose Mode](#modes/propose-mode)` keeps the file segment alone; `[Populate Planning Record](#artifacts/planning-record/operations/populate-planning-record)` carries the full chain.
 
 ## Measurements against reading the sources whole
 
@@ -54,10 +54,10 @@ Validation reparsed the composite and checked it against the invariants the outp
 | --- | --- | --- |
 | Closure with Prerequisites sections present, read whole | 39 | 318,018 |
 | Closure with Prerequisites sections removed, read whole | 27 | 239,331 |
-| Composed | 27 | 199,703 |
+| Composed | 27 | 200,124 |
 | The whole skill, read whole | 38 | 302,445 |
 
-Most of the reduction is D11's, not composition's. Removing the prerequisite lists drops twelve files no procedure linked, worth 78,687 bytes; selecting sections within what remains saves a further 39,628, or 16.6%. At this skill's granularity, composition's case rests on the completeness signal, the single document and the resolved links rather than on size.
+Most of the reduction is D11's, not composition's. Removing the prerequisite lists drops twelve files no procedure linked, worth 78,687 bytes; selecting sections within what remains saves a further 39,207, or 16.4%. At this skill's granularity, composition's case rests on the completeness signal, the single document and the resolved links rather than on size.
 
 That is also the first thing [D12](decisions.md#d12--each-run-is-measured-against-reading-the-sources-whole)'s run records will measure at scale, and this example is the shape those records take.
 

@@ -198,14 +198,15 @@ Do not silently close fences or repair code examples. Report unsafe boundaries w
 Resolve fragments against the original complete source document before assigning composite identities. A destination is the path to the section through the composite's own structure, derived from stable source identities rather than from traversal positions or discovery order.
 
 ```text
-{root-relative-path}/{ancestor-slug}/…/{section-slug}
+#{file-path-without-extension}/{ancestor-slug}/…/{section-slug}
 ```
 
+- **Fragment form:** A destination is written as a fragment, so it begins with `#`. Everything after it names a place inside this one document, which is what a fragment means and what stops a renderer or an editor resolving it against the filesystem.
 - **File segment:** The file group's heading text, which is the normalized root-relative document path with its Markdown extension removed, so a destination's first segment is a heading the reader can find.
 - **Ancestor segments:** The source-heading slug of each eligible ancestor, in order from the document's first level down to the section's parent. An absorbed title contributes no segment, its name being the file segment already.
 - **Section segment:** The section's own source-heading slug. A whole-document destination is the file segment alone.
 - **Uniqueness by construction:** Two destinations coincide only when the file, the ancestor chain and the slug all coincide, which is a duplicate sibling. Duplicate siblings are refused as ambiguous, so no digest, no counter and no collision check is required.
-- **Separated segments:** Path segments keep their separators. Flattening them would make `a/b.md` and `a-b.md` collide.
+- **Separated segments:** Segments keep their separators, inside the file path included. Flattening them would make `a/b.md` and `a-b.md` collide.
 - **Internal links:** Rewrite both cross-file and fragment-only links to the destination of the target they resolved to, using the same map that produced it.
 - **Visible headings:** Preserve selected source heading text while shifting levels by the group's shift. Nothing is inserted at a destination; the heading and its position in the outline are what the path names.
 - **Document destinations:** A file group may contain only selected sections. The presence of its filename heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
@@ -214,7 +215,7 @@ Resolve fragments against the original complete source document before assigning
 
 The composite contains Markdown and nothing else. No anchor elements, no identifiers and no other markup are emitted at a destination, so a destination is a name for a place in the document rather than an element in it.
 
-The composite is a transient artifact consumed by an agent reading it whole. It is not published, and no renderer resolves its fragments, so a destination needs no element to point at: the path states which file, which ancestors and which section a reference means, and the reader locates it by the document's own structure.
+The composite is a transient artifact consumed by an agent reading it whole. It is not published, and no renderer resolves its fragments, so a destination needs no element to point at: the fragment states which file, which ancestors and which section a reference means, and the reader locates it by the document's own structure. Writing it as a fragment is what makes that claim visible in the syntax, and it is why no destination can be mistaken for a path to a file that composition has already brought inside.
 
 ### Source markup policy
 
@@ -292,7 +293,7 @@ Discard metadata without validating YAML values. Count it toward input-size limi
 Classify references before traversal. The compositor guarantees internal resolution for supported local Markdown document links, not offline availability of every resource mentioned in the composed text.
 
 - **Local Markdown document links:** Resolve, recursively compose, and rewrite to composite destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
-- **Fragment-only links:** Resolve against the original source document's heading index, then apply the same composition and rewriting rules.
+- **Fragment-only links:** Resolve against the original source document's heading index, then apply the same composition and rewriting rules. A source fragment names one heading; a composite destination's fragment names a path through the whole composite, and the two are never confused because a source is rejected when its fragments take the latter form.
 - **Images and non-Markdown resources:** Do not recursively include them. Preserve their meaning through the resource-location policy below.
 - **Web URLs:** Preserve them without fetching or interpreting them as local dependencies. A GitHub URL remains a web URL unless an explicit URL-to-checkout feature is introduced later.
 - **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
@@ -384,7 +385,7 @@ This is change detection, not a transactional filesystem snapshot: files can cha
 
 ## Generated input policy
 
-Recomposition of md-compose output is unsupported in v1. Reject an input document whose links carry composite destinations, recognized by their path form, with `E_GENERATED_INPUT`, even when the requested subsection excludes them.
+Recomposition of md-compose output is unsupported in v1. Reject an input document whose links carry composite destinations, recognized by a fragment whose first segment names a document path, with `E_GENERATED_INPUT`, even when the requested subsection excludes them.
 
 A composite rewrites every internal link to that form, so ordinary unmodified output identifies itself without a metadata wrapper. Destination-like examples in code remain literal and do not trigger detection.
 

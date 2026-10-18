@@ -98,7 +98,7 @@ The timing is what makes the gap catchable. Removing the lists before the stage 
 
 This also reframes the measured evidence. The 318,018 bytes reached from one mode is largely the prerequisite sections pulling whole documents. It is the before-figure that composition replaces, not a limit to design around.
 
-The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 199,703. So removal accounts for 78,687 bytes and composition for 39,628. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
+The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 200,124. So removal accounts for 78,687 bytes and composition for 39,207. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
 
 ## D12 — Each Run Is Measured Against Reading the Sources Whole
 
@@ -195,6 +195,16 @@ The file heading also absorbs the source's first heading where that heading is t
 The one exception shows why the rule compares slugs rather than dropping every H1. `SKILL.md` opens with `# Work Planner`, a title the path does not carry, so it is kept and its group shifts as usual.
 
 An absorbed group keeps its source heading levels, because the file heading has taken the level the plus-one shift was making room for. The shift is therefore a property of the group rather than of the composite: plus one by default, zero where a title was absorbed. The alternative, shifting anyway, leaves each absorbed group opening on an H1 followed by an H3.
+
+## D22 — A Destination Is Written as a Fragment
+
+A destination begins with `#`, so `#artifacts/architecture-overview/fields/template` rather than the bare path. Everything after the hash names a place inside this one document.
+
+Written as a bare path, a destination is indistinguishable from a relative file reference, and an editor offered one tries to open a file that does not exist. The content it names is in the composite, a few hundred lines away, which is the whole point of having composed it.
+
+A colon chain was considered for the ancestor segments. It leaves the file path looking like a path, and for a document at the source root it produces `guidelines:prose`, where a colon in the first segment is how a URI scheme is spelled and a renderer may read `guidelines:` as one. The leading hash has no such hazard, needs one character, and leaves the path and the slugs exactly as they were.
+
+This also makes the generated-input rule easier to state. A source is a composite when its links carry fragments whose first segment names a document path, which is a shape no hand-written source link has.
 
 ## Evidence
 
