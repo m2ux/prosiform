@@ -18,9 +18,9 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 - **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its preamble, subject to frontmatter stripping and the documented syntax transformations below.
 - **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a section.
 - **Recursive bundling:** Traverse supported Markdown links within selected content until every reachable local Markdown target has been resolved and included.
-- **Continuous Markdown:** Emit one bundle Markdown document with one generated H1 per contributing source file and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
-- **Source grouping:** Use the normalized root-relative document path with its Markdown extension removed as the H1's visible text. Emit each file once, preserving source order among its selected content and required heading-only ancestors.
-- **Dependency order:** Order groups by root-relative path. Discovery order and argument order never decide the arrangement, so one selection always bundles to the same bytes; do not reorder sections within a file.
+- **Continuous Markdown:** Emit one bundle Markdown document with one generated H1 per group and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
+- **Groups:** A group is one top-level division of the bundle. By default it is one source document, headed by its normalized root-relative path with the Markdown extension removed; under a grouping rule it is one merged directory, headed by that directory's slug in title case. Emit each selected region once. Keep source order among selected content and required heading-only ancestors within a document's group, and within each contribution a document makes to a merged one.
+- **Dependency order:** Order groups by root-relative path, a merged group taking its directory's. Discovery order and argument order never decide the arrangement, so one selection always bundles to the same bytes. The grouping rules in force are the only thing that changes where a section sits.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
 
 ## Parser and source-preserving edits
@@ -183,9 +183,9 @@ A group is the unit the bundle is organized into. By default a group is one sour
 - **Residual ambiguity:** Qualification separates documents, not headings within one. Two headings of one document colliding in one group is the source ambiguity the heading rules already refuse. Anything still coinciding, such as a generated group heading matching a section name elsewhere, takes the renderer's ordinal as any repeat does.
 - **Cohort naming:** A group's heading is its directory slug in title case, so `artifacts` is emitted as `Artifacts`.
 - **Document content above the grouping depth:** A group carries an `Overview` section holding the preamble of each member that has one, as a subsection named by that document's stem in title case, less a trailing word the section already states: `artifacts/epic-issue-body.md` contributes `Epic Issue Body` under `Artifacts` / `Overview`. That heading is where a whole-document reference to the member resolves. A member with no preamble gets no heading, and a whole-document reference to it resolves to its first contribution. Only a whole-document selection carries a preamble, since a preamble belongs to no section.
-- **Merged section references:** A reference to a source heading at the grouping depth resolves to the merged group it became, which no longer records which document the reference meant.
+- **Merged section references:** A reference to a source heading at the grouping depth resolves to that document's variant heading where the name carries variants, and to the merged heading itself where the name occurs once. A reference reaches the document it named under every arrangement.
 
-Grouping changes how a bundle is arranged, not what it contains. The closure, the consolidation, the selected content and the validation invariants are the same whichever grouping is asked for.
+Grouping changes how a bundle is arranged, not what it contains. The closure, the consolidation and the selected content are the same whichever grouping is asked for, and so are the validation invariants, which are stated over groups rather than over source files so that they hold under every arrangement.
 
 ### Heading-only structural ancestors
 
@@ -240,7 +240,7 @@ Resolve fragments against the original complete source document before mapping t
 
 A destination is the fragment the renderer itself would generate, so every internal link resolves: in a Markdown renderer, in an editor preview, and for an agent reading the document whole. The bundle needs no anchor elements and no identifiers to achieve this, because the headings it already emits are what the renderer indexes.
 
-An ordinal is safe here in a way it is not in a source document. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A bundle is generated whole in one pass, validated against the map that produced it, never hand-edited, and refused as input to a later bundling, so no link to one outlives the run that wrote it.
+An ordinal is safe here in a way it is not in a source document. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A bundle is generated whole in one pass and validated against the map that produced it, so every ordinal it carries is assigned and checked in the same run. A bundle is not a source: it is not hand-edited, and no link into one outlives the run that wrote it.
 
 ### Markdown-only output
 
@@ -420,7 +420,7 @@ Rebundling of prosiform output is unsupported in v1. Reject an input document wh
 
 A file heading has that shape and an authored document's title does not, so ordinary unmodified output identifies itself without a metadata wrapper. A heading-like example in code is not a heading and does not trigger detection.
 
-The destinations themselves can no longer carry this signal, since a bundle's links are ordinary fragments indistinguishable from an authored one. Detection rests on the file heading alone, which is weaker: it is not proof of origin or a security signature, rewriting that heading defeats it, and no detection of arbitrary modified derivatives is claimed.
+The destinations themselves can no longer carry this signal, since a bundle's links are ordinary fragments indistinguishable from an authored one. Detection rests on the file heading alone, which is weaker: it is not proof of origin or a security signature, rewriting that heading defeats it, and no detection of arbitrary modified derivatives is claimed. A merged group is headed by a directory slug rather than a path, so a bundle whose every group is merged carries no file heading and is not detected. Rebundling it is unsupported on the same terms, and v1 claims no detection of it.
 
 ## Agent delivery contract
 
@@ -462,7 +462,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Target integrity:** Every rewritten link points to the intended source-derived destination, not merely a section whose slug happens to coincide.
 - **Uniqueness:** Each bundle destination occurs once, and resolves in the renderer that reads the bundle.
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
-- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, generated filename headings and heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
+- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting/rebasing, title absorption, heading shifts and necessary Setext conversion, generated group, variant and overview headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
 - **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands or fetch remote URLs implicitly.
 - **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation.
@@ -480,8 +480,8 @@ Validate the completed document against the source-to-output mapping, not only i
 - **No accidental expansion:** The only unselected source-derived content emitted is required heading-only ancestry. Never include an unselected ancestor's body or siblings merely to supply structure.
 - **Ownership stability:** Link ownership and direct-self-reference classification remain the same before and after overlap consolidation.
 - **Block-syntax preservation:** Generated headings and region boundaries must not absorb content into unintended non-heading containers.
-- **File isolation:** Each contributing source has exactly one filename H1, and its emitted source headings remain beneath it rather than entering another file's outline.
-- **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under its group's shift, using structural ancestors where needed. Validate this against the original source outline.
+- **Group isolation:** Each group has exactly one H1, each contributing source belongs to exactly one group, and a source's emitted headings sit beneath that group's H1 rather than entering another group's outline.
+- **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under its group's shift, using structural ancestors where needed. In a merged group the grouping rules supply the chain above the grouping depth, and the heading the rules place there is where the preserved chain begins. Validate against the original source outline and the grouping rules together.
 - **Depth safety:** No emitted heading exceeds H6; overflow produces a failure, not a success with altered depth.
 
 Use provenance ranges and distinct generated-structure records to check these properties. Repeated identical prose in different source regions is not duplication by itself, and string counting is not a sufficient exactly-once test; neither filename wrappers nor structural ancestors may count as selected body content.
@@ -531,7 +531,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
-- **Grouping:** One entry bundled with and without a group, selecting the same content; a merged section drawn from several documents; a name occurring once left bare; colliding names qualified to the shortest distinguishing path prefix, at one segment and at more than one; a document no group matches keeping its own group; a whole-document reference to a member resolving to a heading carrying its path at the head of its group, and one to a member with no preamble resolving to its first contribution; and a reference to a grouping-depth heading resolving to the merged group.
+- **Grouping:** One entry bundled with and without a group, selecting the same content; a merged section drawn from several documents; a name occurring once left bare; a name several documents carry emitted once with a variant heading each, distinguished at one path segment and at more than one; a merged section carrying body text from more than one document split by document; a document no group matches keeping its own group; a whole-document reference to a member resolving to its overview subsection, and one to a member with no preamble resolving to its first contribution; and a reference to a grouping-depth heading resolving to the variant carrying the document it named.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor structural ancestors; original skipped heading levels; ancestor promotion after dependency expansion; and no ancestor-body or structural ancestor-link dependency leakage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.

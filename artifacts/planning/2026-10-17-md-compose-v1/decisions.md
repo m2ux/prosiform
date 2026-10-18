@@ -254,6 +254,14 @@ Emitting an entry reference's group last was tried and removed. The argument for
 
 So the rule bought two backward references out of 194 and cost a special case, a second special case to stop a group claiming the entry away from it, and a contradiction in the determinism criterion, which had promised that argument order does not change the bytes. Path order throughout restores all three.
 
+## D26 — The Contract Is Stated Over Groups, and a Merged Reference Reaches Its Document
+
+A group is the bundle's unit of arrangement: one source document by default, one merged directory under a grouping rule. Four clauses of the input and output contract and two post-compilation invariants describe that unit as a source file, which holds for a document-headed group and fails for a merged one. They are restated over groups, so one set of invariants holds under every arrangement: one H1 per group, each source belonging to exactly one group, source order kept within a group and within each contribution to a merged one, and the preserved outline beginning at the heading the grouping rules place.
+
+A reference to a heading at the grouping depth resolves to the contributing document's variant heading, and to the merged heading itself where the name occurs once. The variant heading is already emitted and already names its document, so the reference reaches the document it meant. Resolving to the shared heading instead would make a grouped bundle answer a reference less precisely than an ungrouped one, which would make grouping a choice about fidelity rather than about arrangement.
+
+Generated-input detection reads a bundle's opening file heading, which a merged group does not have: its heading is a directory slug in title case. A bundle whose every group is merged is therefore not detected, and the design says so rather than implying a guarantee it cannot keep. Nothing rests on the detection: an ordinal is safe because a bundle is generated whole in one pass and validated against the map that assigned it, not because a later run would refuse the bundle as input.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
