@@ -25,6 +25,7 @@ The main path meets [Outcomes](#outcomes).
    - Spot-check what they return before recording it.
 3. **Draft the body.**
    Run [Populate Proposal Body](../artifacts/proposal-body.md#populate-proposal-body) with the confirmed problem, evidence, goal clauses, boundary and output body path. The local file is the source for the issue.
+   - Obtain the proposal's number through [Select Tracker Number](../artifacts/issue.md#select-tracker-number) with the proposal prefix letter, and carry it in the title.
    - The goal clauses are the clauses the user confirmed. The Non-Goals are the boundary.
    - The design, the acceptance criteria, and the breakdown belong to a later goal.
 4. **Validate.**

@@ -37,7 +37,7 @@ The main path meets [Outcomes](#outcomes).
      - Populate a discussion body through [Populate Pull Request Body](../artifacts/pull-request-body.md#populate-pull-request-body).
      - Run [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request) as a draft with the planning branch, target, title and body file. Only the user decides to merge that discussion pull request.
 3. **Draft each initiative body.**
-   - For a new initiative, obtain its proposed prefix through [Select Initiative Number](../artifacts/issue.md#select-initiative-number).
+   - For a new initiative, obtain its proposed prefix through [Select Tracker Number](../artifacts/issue.md#select-tracker-number) with the initiative prefix letter.
    - Run [Draft Initiative Issue Body](../artifacts/initiative-issue-body.md#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path. The epics' acceptance criteria carry the detail that makes the initiative's criteria true.
 4. **Populate the epics.**
    Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
@@ -60,7 +60,7 @@ The main path meets [Outcomes](#outcomes).
 6. **Publish.**
    Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions before saving the issues.
    - For a new initiative:
-     - Call [Select Initiative Number](../artifacts/issue.md#select-initiative-number).
+     - Call [Select Tracker Number](../artifacts/issue.md#select-tracker-number) with the initiative prefix letter.
      - Save it through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), using temporary epic-row links until issue identities exist.
      - Save the epics in dependency order.
      - Replace every temporary link in the initiative and epic bodies with the saved issue identity.

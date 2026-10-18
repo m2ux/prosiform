@@ -118,14 +118,14 @@ The tracker identity matching one initiative prefix.
 1. Run [Find Initiative Issue](#find-initiative-issue) with the supplied repository and prefix.
 2. Return its issue number or an unresolved identity.
 
-### Select Initiative Number
+### Select Tracker Number
 
-The next unused initiative number in the repository.
+The next unused number for one prefixed issue kind in the repository.
 
-**Inputs:** Repository and existing initiative titles.
+**Inputs:** Repository, the kind's prefix letter and its existing titles.
 
-1. Run [List Initiative Titles](#list-initiative-titles) for the supplied repository, covering all issue states.
-2. Read the highest initiative prefix.
+1. Run [List Prefixed Titles](#list-prefixed-titles) for the supplied repository and prefix letter, covering all issue states.
+2. Read the highest prefix carrying that letter.
 3. Confirm the following number, or `00` when there is no prefix, remains unused before creation.
 4. Return the confirmed number.
 
@@ -418,17 +418,17 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" --jq '.[]
 gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" --jq '.[] | select(.pull_request == null) | select(.title | startswith("[I08]")) | .number'
 ```
 
-### List Initiative Titles
+### List Prefixed Titles
 
-Lists titles carrying an initiative prefix, across all states.
+Lists titles carrying one kind's prefix letter, across all states.
 
-**Inputs:** Repository owner and name.
+**Inputs:** Repository owner and name, and the kind's prefix letter.
 
 ```bash
-gh api --paginate 'repos/<owner>/<repository>/issues?state=all&per_page=100' --jq '.[] | select(.title | test("^\\[I[0-9]{2}\\]")) | .title'
+gh api --paginate 'repos/<owner>/<repository>/issues?state=all&per_page=100' --jq '.[] | select(.title | test("^\\[<prefix-letter>[0-9]{2}\\]")) | .title'
 ```
 
-**Example:**
+**Example:** Initiatives in one repository.
 
 ```bash
 gh api --paginate 'repos/m2ux/workflow-server/issues?state=all&per_page=100' --jq '.[] | select(.title | test("^\\[I[0-9]{2}\\]")) | .title'
