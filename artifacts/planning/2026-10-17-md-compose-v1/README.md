@@ -17,6 +17,8 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [Upstream Assessment](upstream-assessment.md) | The inspected state of `pulldown-cmark` against the parser gates, and the two narrowly scoped contributions, deferred and unauthorized |
 | [Decisions](decisions.md) | The planning decisions taken with the user, the reasoning behind each, and the measured evidence |
 | [Review](review.md) | The goal trace, the stage order, the source alignment, the threats checked, the independent task pairs and the check results |
+| [Worked Example](worked-example.md) | One composite produced from the work-planner skill under the v1 rules, with its measurements and what it settles |
+| [Worked Example composite](worked-example-composite.md) | The composite itself: 27 file groups, 204 selected sections and 421 rewritten destinations |
 | [I00 initiative body](i00-initiative.md) | The local source for issue #2, the prototype initiative |
 | [I01 initiative body](i01-initiative.md) | The local source for issue #20, the refinement initiative |
 | [I02 initiative body](i02-initiative.md) | The local source for issue #10, the production initiative |

@@ -98,6 +98,8 @@ The timing is what makes the gap catchable. Removing the lists before the stage 
 
 This also reframes the measured evidence. The 318,018 bytes reached from one mode is largely the prerequisite sections pulling whole documents. It is the before-figure that composition replaces, not a limit to design around.
 
+The [worked example](worked-example.md) measures the split. Composing Plan Mode without the prerequisite lists reaches 27 files rather than 39, which is 239,331 bytes read whole against 318,018; selecting sections within those 27 then composes 206,896. So removal accounts for 78,687 bytes and composition for 32,435. At this skill's granularity the retrieval argument rests on the completeness signal and the single resolved document, not on size.
+
 ## D12 — Each Run Is Measured Against Reading the Sources Whole
 
 A run record carries the composed output size and the total size of the same sources read whole. The refinement stage is not settled until each source in the exposure set has that pair recorded.
