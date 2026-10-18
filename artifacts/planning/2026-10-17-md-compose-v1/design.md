@@ -430,6 +430,7 @@ Successful compilation establishes that the complete candidate passed validation
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
 - **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a delivery failure rather than a truncated apparent success.
+- **Entry destinations:** On success, report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format, and return them in the wrapper's structured result. A caller then reaches what it asked for without searching the document. The destination comes from the same map that rewrote every reference, and the bundle carries no marker for it.
 - **Clean Markdown:** Keep success stdout limited to the bundle document. Completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, not per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
 - **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
@@ -541,7 +542,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **Consistency:** Source modification, deletion, or changed canonical identity during compilation.
 - **Validation scope:** Unselected broken/self-referential siblings do not fail a narrow run but do fail when later included.
 - **Generated inputs:** Reject a source opening on a file heading, while ignoring a heading-like example in code and an authored title that merely contains a slash.
-- **Delivery:** Nonzero process exit, output-budget failure, broken output pipe, and wrapper rejection of transport-oversized output.
+- **Delivery:** Nonzero process exit, output-budget failure, broken output pipe, wrapper rejection of transport-oversized output, and a successful run reporting each entry reference's destination, with and without a grouping rule.
 - **Parser fidelity:** Exact ranges for multiline references, reference-style images, nested image/link edits, tables, tabs, Unicode, escapes, CRLF, and original diagnostic coordinates.
 - **Definition inventory:** Remove every selected definition occurrence, including duplicates, unused labels, case-fold-equivalent labels, multiline definitions, and supported containers, without changing original winner selection.
 - **Parser exhaustion:** Trigger reference-expansion suppression below the tool's public input/output limits and require an explicit failure. Include a case that consumes the budget on its last valid reference with no later lookup, which must not falsely claim omitted references.
