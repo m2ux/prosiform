@@ -12,7 +12,8 @@ It matters because the command runs only from a checkout today, so every caller 
 
 | Artifact | What it holds |
 | --- | --- |
-| [w01.md](w01.md) | The task's plan: the packaging, the entry point name and the version reporting |
+| [w01.md](w01.md) | The task's plan: what an entry point must satisfy to be one, the smoke run that proves it, and what that run cannot observe |
+| [validation.md](validation.md) | The checks as they were run: the run AC1 names, each check's procedure and result, the observed failure of an entry point only a checkout resolves, and the cases awaiting I00:E10 |
 
 ## Links
 
