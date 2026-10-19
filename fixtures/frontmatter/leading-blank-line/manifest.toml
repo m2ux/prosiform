@@ -1,0 +1,17 @@
+description = "A blank line before a line of three hyphens makes that line a thematic break the bundle carries, because an opener is the first physical line or nothing."
+
+clauses = [
+  "Frontmatter policy — an indented delimiter, a trailing space, a TOML fence and a leading blank line are not v1 frontmatter",
+  "Parser and source-preserving edits — Untouched content",
+  "File-scoped hierarchy — Preamble",
+  "Adversarial acceptance fixtures — Frontmatter, malformed delimiters",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

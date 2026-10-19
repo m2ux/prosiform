@@ -18,6 +18,7 @@ from prosiform import PROFILE
 from prosiform.cli import (
     INPUT_FAILURE,
     INTERNAL_ERROR,
+    INVALID_ENCODING,
     INVALID_GROUP_RULE,
     INVALID_USAGE,
     PUBLICATION_FAILED,
@@ -30,8 +31,10 @@ from prosiform.cli import (
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
     main,
+    read_entry,
 )
 from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
+from prosiform.source import UNTERMINATED_FRONTMATTER
 
 
 @dataclass(frozen=True)
@@ -455,3 +458,105 @@ def test_an_output_path_naming_an_input_source_carries_the_invalid_usage_code(
     )
     assert run.status == USAGE_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
+
+
+def test_a_source_that_is_not_valid_utf8_is_an_input_failure(root: Path) -> None:
+    (root / "guide.md").write_bytes(b"# Guide\n\nA byte that is not UTF-8: \xe9\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    reported = run.diagnostics()[0]
+    assert reported["code"] == INVALID_ENCODING
+    assert reported["source"] == "guide.md"
+    assert "UTF-8" in reported["message"]
+
+
+def test_a_source_that_is_not_valid_utf8_reaches_no_generic_handler(
+    root: Path,
+) -> None:
+    (root / "guide.md").write_bytes(b"\xff\xfe# Guide\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert "unexpected internal error" not in run.diagnostics()[0]["message"]
+
+
+def test_an_unterminated_frontmatter_opener_is_an_input_failure(root: Path) -> None:
+    written(root, "guide.md", "---\ntitle: Guide\n\n# Guide\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    reported = run.diagnostics()[0]
+    assert reported["code"] == UNTERMINATED_FRONTMATTER
+    assert reported["source"] == "guide.md:1"
+
+
+def test_transport_metadata_reaches_no_parse(root: Path) -> None:
+    written(root, "guide.md", "﻿---\ntitle: Guide\n---\n# Guide\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert "raw HTML" in run.diagnostics()[0]["message"]
+
+
+def test_a_diagnostic_below_a_stripped_block_names_the_line_of_the_file(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "---\ntitle: Guide\n---\n# Guide\n\nSee [[page]] now.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.diagnostics()[0]["source"] == "guide.md:6"
+
+
+def test_a_diagnostic_below_a_mark_alone_names_the_line_of_the_file(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "﻿# Guide\n\nSee [[page]] now.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.diagnostics()[0]["source"] == "guide.md:3"
+
+
+@pytest.mark.parametrize(
+    ("source", "at"),
+    [
+        (" ---\ntitle: Guide\n---\n\nSee [[page]] now.\n", 5),
+        ("--- \ntitle: Guide\n---\n\nSee [[page]] now.\n", 5),
+        ('+++\ntitle = "Guide"\n+++\n\nSee [[page]] now.\n', 5),
+        ('{\n  "title": "Guide"\n}\n\nSee [[page]] now.\n', 5),
+        ("***\ntitle: Guide\n---\n\nSee [[page]] now.\n", 5),
+        ("\n---\ntitle: Guide\n---\n\nSee [[page]] now.\n", 6),
+    ],
+)
+def test_a_first_line_that_is_no_opener_shifts_no_coordinate(
+    root: Path, source: str, at: int
+) -> None:
+    written(root, "guide.md", source)
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.diagnostics()[0]["source"] == f"guide.md:{at}"
+
+
+def test_a_crlf_delimited_block_is_stripped_by_the_command(root: Path) -> None:
+    (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\nSee [[page]].\r\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["source"] == "guide.md:4"
+
+
+def test_a_referring_document_is_stripped_too(root: Path) -> None:
+    written(root, "guide.md", "---\ntitle: Guide\n---\n# Guide\n\n<div>raw</div>\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--from", "guide.md", "#run"
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["source"] == "guide.md:6"
+
+
+def test_a_stripped_source_the_profile_accepts_reaches_the_absent_stage(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "﻿---\ntitle: Guide\n...\n# Guide\n")
+    assert invoke("--root", str(root), "guide.md").status == INTERNAL_ERROR
+
+
+def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
+    (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\n# Guide\r\n")
+    read = read_entry(root, "guide.md", "guide.md")
+    assert read.text == "# Guide\r\n"
+    assert read.first_line == 4

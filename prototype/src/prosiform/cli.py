@@ -12,13 +12,16 @@ The command checks the form of every option before it looks for anything
 an option names, so an invalid command line is reported as invalid usage
 rather than as a fault in a tree it may not even have described correctly.
 
-Every entry document the run names is read and parsed under the declared
-profile, and a source carrying a construct that profile refuses fails as
-the refusal it is. A run whose sources the profile accepts reaches the
-bundling stage. That stage is not part of this build: the run publishes
-nothing and returns the unexpected-internal-error status, which says that
-the build cannot carry the request out rather than that anything is wrong
-with the source it names.
+Every entry document the run names is read as bytes, required to be valid
+UTF-8, stripped of the transport metadata it carries ahead of its content
+and parsed under the declared profile, and a source carrying a construct
+that profile refuses fails as the refusal it is. Every location a
+diagnostic reports is the location in the file the author holds, whatever
+the strip removed ahead of it. A run whose sources the profile accepts
+reaches the bundling stage. That stage is not part of this build: the run
+publishes nothing and returns the unexpected-internal-error status, which
+says that the build cannot carry the request out rather than that
+anything is wrong with the source it names.
 """
 
 import argparse
@@ -30,11 +33,18 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
 
-from markdown_it.token import Token
-
 from prosiform import PROFILE
 from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
 from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
+from prosiform.source import (
+    CLOSERS,
+    ENCODING,
+    UNTERMINATED_FRONTMATTER,
+    Source,
+    Unterminated,
+    content,
+    decode,
+)
 
 NAME = "prosiform"
 
@@ -50,6 +60,7 @@ FRAGMENT = "#"
 MIN_DEPTH = 1
 MAX_DEPTH = 6
 
+INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
@@ -282,8 +293,14 @@ def location(name: str, at: int | None) -> str:
     return name if at is None else f"{name}:{at}"
 
 
-def read_entry(root: Path, reference: str, name: str) -> list[Token]:
-    """One entry document, read under the allowed source root and parsed."""
+def read_entry(root: Path, reference: str, name: str) -> Source:
+    """One entry document's content, read under the allowed source root.
+
+    The bytes are read without newline translation, so a CRLF source
+    reaches the scan spelled as the file spells it, and they are decoded
+    strictly, so a source that is not valid UTF-8 fails here as the source
+    defect it is rather than reaching the command's generic handler.
+    """
     if not is_markdown(name):
         raise input_failure(
             f"the entry reference {reference!r} names a document whose suffix is "
@@ -309,17 +326,45 @@ def read_entry(root: Path, reference: str, name: str) -> list[Token]:
             remedy="name a document the source root carries",
             reference=reference,
         )
-    return parse(path.read_text(encoding="utf-8"))
+    try:
+        text = decode(path.read_bytes())
+    except UnicodeDecodeError as undecodable:
+        raise input_failure(
+            f"the entry reference {reference!r} names a document that is not valid "
+            f"{ENCODING.upper()}: byte {undecodable.start}, "
+            f"{undecodable.reason}",
+            code=INVALID_ENCODING,
+            remedy=f"save the document as {ENCODING.upper()}",
+            reference=reference,
+            source=name,
+        ) from undecodable
+    try:
+        return content(text)
+    except Unterminated as unclosed:
+        raise input_failure(
+            f"the entry reference {reference!r} names a document whose frontmatter "
+            f"opener is closed by no later line of exactly "
+            f"{' or '.join(CLOSERS)}",
+            code=UNTERMINATED_FRONTMATTER,
+            remedy=f"close the block with a line of exactly {' or '.join(CLOSERS)}",
+            reference=reference,
+            source=location(name, unclosed.line),
+        ) from unclosed
 
 
-def refused(name: str, refusal: Refusal) -> Failure:
-    """One construct the profile refuses, reported against the source carrying it."""
+def refused(name: str, source: Source, refusal: Refusal) -> Failure:
+    """One construct the profile refuses, reported against the source carrying it.
+
+    The line the parser reports is a line of the content the strip
+    returned, and the line the diagnostic carries is the line that content
+    occupies in the file.
+    """
     return input_failure(
         refusal.message,
         code=refusal.code,
         remedy=refusal.remedy,
         reference=refusal.reference,
-        source=location(name, refusal.line),
+        source=location(name, source.line(refusal.line)),
     )
 
 
@@ -401,17 +446,17 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             )
 
     for reference, name in named:
-        tokens = read_entry(root, reference, name)
-        refusal = next(refusals(tokens), None)
+        source = read_entry(root, reference, name)
+        refusal = next(refusals(parse(source.text)), None)
         if refusal is not None:
-            raise refused(name, refusal)
+            raise refused(name, source, refusal)
 
     raise Failure(
         INTERNAL_ERROR,
         Diagnostic(
             ERROR,
-            "this build reads and parses the sources its entry references name "
-            "and carries no bundling stage, so they cannot be bundled",
+            "this build reads, strips and parses the sources its entry references "
+            "name and carries no bundling stage, so they cannot be bundled",
             code=UNEXPECTED_INTERNAL_ERROR,
             remedy="use a build that carries one",
         ),

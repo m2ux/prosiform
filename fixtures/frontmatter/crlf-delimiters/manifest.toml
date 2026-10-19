@@ -1,0 +1,18 @@
+description = "An opener and a closer terminated by CRLF are recognized as delimiters, and the closer's CRLF is removed with it."
+
+clauses = [
+  "Frontmatter policy — steps 1 through 5",
+  "Markdown and source-heading profile — Encoding",
+  "Validation and failure contract — Preservation",
+  "File-scoped hierarchy — Absorbed title",
+  "Adversarial acceptance fixtures — Frontmatter",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

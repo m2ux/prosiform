@@ -55,6 +55,8 @@ The build's tests and static checks are named commands, run from the repository 
 
 `tests/test_profile.py` holds the build's configured parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text and protected from a reference definition that would turn one into a link, typographic substitution off, raw HTML recognized as a token of its own, Markdown suffixes classified case-insensitively, and each recognized unsupported dependency or section-naming construct refused while the prose, the code span and the escape that resemble one pass untouched.
 
+`tests/test_source.py` holds the transport-metadata scan to the frontmatter policy in both of its directions: one leading byte-order mark removed and a second left as content, a block closed by three hyphens or by three dots and by neither an indented delimiter nor one carrying a trailing space, CRLF terminators recognized, a YAML example inside a code block and a thematic break below the first line left alone, an opener no line closes failing, and the line of the file every location in the stripped content maps back to.
+
 `tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, and the status a request this build cannot carry out returns.
 
 ## Layout
