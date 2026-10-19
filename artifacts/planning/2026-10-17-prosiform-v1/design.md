@@ -141,7 +141,7 @@ These examples describe the agreed interface; no command has been implemented or
 Common rules, file-level prerequisites, and shared SKILL.md instructions will be refactored into addressable sections. Operations must link to the sections that govern them, so the tool can obtain the required context through explicit links.
 
 - **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; a heading-only *structural ancestor* supplies structure, not additional governing instructions.
-- **Explicit dependencies:** A section's author is responsible for linking any required shared rules or context. Such references are part of the recursive dependency graph.
+- **Explicit dependencies:** A section's author is responsible for marking any required shared rules or context, and a marked reference is part of the recursive dependency graph. Linking cites material; marking requires it. A document therefore cites shared material that sits outside the allowed root without putting the bundling outside that root, and a skill stays bundleable with its own directory as the root however widely its prose refers.
 - **Reading versus execution:** Inclusion makes material available; it does not authorize executing every included procedure. Execution verbs and call boundaries remain part of the authored instructions.
 
 ## Section extraction and output hierarchy
@@ -344,10 +344,14 @@ Discard metadata without validating YAML values. Count it toward input-size limi
 
 ## Link classification and resource handling
 
-A reference is a dependency when it carries no scheme and no authority and resolves to a Markdown file under the allowed root. Everything else is text the bundle carries unchanged. The tool guarantees internal resolution for the first kind and claims nothing about the second.
+A reference is a dependency when its author marked it as one, it carries no scheme and no authority, and it resolves to a Markdown file under the allowed root. Everything else is text the bundle carries unchanged, an unmarked local Markdown link among it. The tool guarantees internal resolution for the first kind and claims nothing about the second.
 
-- **Local Markdown document links:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
-- **Fragment-only links:** Resolve against the original source document's heading index, then apply the same bundling and rewriting rules.
+A mention is not a dependency. An author naming a document without marking the link has recorded that the document exists, not that the bundle must carry it, and only the author can tell those apart: no shape a reference takes distinguishes them, which is why the shape is not what decides.
+
+- **The mark:** A dependency's link text opens with `¬`, as in `[¬ Record Epic Delivery](epic-issue-body.md#record-epic-delivery)`. The character is ordinary text to the profile, so marking adds no construct the grammar must recognize and a renderer that knows nothing of this tool displays the link. The mark is authoring syntax rather than content: a rewritten link carries the text that followed the mark and not the mark itself.
+- **Marked local Markdown document links:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
+- **Unmarked local Markdown links:** Emit as authored. The reference is not resolved, the document it names is not opened, and the link is not rewritten even where the bundle carries that document because another reference marked it. What one author marked cannot change what another author's reference says.
+- **Fragment-only links:** A marked fragment-only link resolves against the original source document's heading index, then follows the same bundling and rewriting rules. An unmarked one is emitted as authored.
 - **Everything else:** A reference carrying a scheme or an authority is not a local document reference. Emit it as authored and never open, fetch or interpret it. No scheme is permitted or refused, because which scheme it carries decides nothing: carrying one at all is what puts the reference outside the tool's interest. Images and other non-Markdown references are text by the same rule.
 - **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
 - **Examples:** Do not follow apparent links inside code spans, fenced code blocks, or other literal example content.
