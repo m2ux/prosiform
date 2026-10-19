@@ -25,13 +25,14 @@ The board changes implied by supplied delivery state.
 
 ### *Record* Epic Review
 
-One epic's board item at In Review, recording that its delivery is complete and its review is open.
+One epic's board item at In Review, recording that its delivery is complete and its review draft awaits the user's mark.
 
 **Inputs:** Epic issue identity, board identity and output paths.
 
 1. Run [Read Board State](board.md#read-board-state) for the supplied board to obtain its items and Status field.
 2. Run [Read Board Configuration](board.md#read-board-configuration) with the board identity and output paths for the Status option ids.
-3. Match the epic's issue to its board item, returning an absent item as a finding for the caller.
+3. Match the epic's issue to its board item.
+   - Return an absent item as a finding and stop. The status write below needs it.
 4. Run [Update Item Status](board.md#update-item-status) with the board and item identities, the Status field and In Review option ids, and that status in its request body file, meeting [Status Changes](#status-changes).
    - Repeat the write and read the item again when it still shows the preceding status. The item list can lag a write.
 5. Return the confirmed status or the discrepancy left for the caller.

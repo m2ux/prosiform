@@ -22,9 +22,8 @@ Read these files first.
    - Run [Understand Mode](../modes/understand-mode.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-   - Require the user to have marked the draft ready.
-   - Put a draft still awaiting that mark to the user as an [Interview](../guidelines.md#modes), naming the epic standing in review on its board.
-   - Leave a draft waiting for that decision.
+   - Put a draft still awaiting its ready mark to the user as an [Interview](../guidelines.md#modes), naming the epic standing in review on its board.
+   - Continue only on a pull request the user has marked ready, and leave a draft waiting for that decision.
    - Confirm its head is the epic base and its target is the corresponding long-lived branch.
 2. **Refresh and validate.**
    Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base).
