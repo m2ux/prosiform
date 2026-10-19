@@ -12,6 +12,8 @@ It matters because a declared fixture produces no verdict until something execut
 
 | Artifact | What it holds |
 | --- | --- |
+| [w02.md](w02.md) | The task's plan: the runner's interface, how the build under test is configured and invoked, how each expectation kind is compared and a difference located, the result shape, and the three things that hold the runner to naming no implementation |
+| [validation.md](validation.md) | Each check as it was run: procedure, tested revision, results, the read of the runner for implementation-specific assumptions, and what the runs do not establish |
 
 ## Links
 
