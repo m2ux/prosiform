@@ -13,6 +13,7 @@ It matters because every fixture the corpus holds so far was written for the tes
 | Artifact | What it holds |
 | --- | --- |
 | [w05.md](w05.md) | The task's plan: the documents selected and the constructs each contributes, how an expected bundle is produced and confirmed, and the byte-identity check on each copy |
+| [validation.md](validation.md) | The checks as they were run: the set in one pass, the byte-identity of each copy, the corpus measured at the base and at this head, each expected bundle accounted against the contract clause by clause, every destination resolved, five deliberate faults, and the findings a real document exposed |
 
 ## Links
 
