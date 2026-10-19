@@ -19,8 +19,8 @@ Read these files first.
 - [Plan Mode](plan-mode.md)
 - [Dependency Graph](../artifacts/dependency-graph.md)
 - [Requirement Characteristics](../references/requirement-characteristics.md)
-- [Sync Mode](sync-mode.md)
 - [Pull Request](../artifacts/pull-request.md)
+- [Delivery Evidence](../artifacts/delivery-evidence.md)
 - [Initiative](../artifacts/initiative.md)
 - [Epic](../artifacts/epic.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
@@ -86,7 +86,7 @@ The main path meets [Outcomes](#outcomes).
    - Put each problem it reports to the user. An initiative Depends on cell takes the epics it derives, as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
 9. **Coverage.**
    When no initiative or epic is selected, continue at step 13, Re-run.
-   - For initiative or epic scope, run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the selected initiative and epics.
+   - For initiative or epic scope, run [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) for the selected initiative and epics.
    - Continue with its returned records.
    - For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file:
      - **Unmet.**

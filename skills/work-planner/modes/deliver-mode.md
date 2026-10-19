@@ -9,6 +9,7 @@ Read these files first.
 - [Board](../artifacts/board.md)
 - [Advance Mode](advance-mode.md)
 - [Pull Request](../artifacts/pull-request.md)
+- [Delivery Evidence](../artifacts/delivery-evidence.md)
 - [Epic](../artifacts/epic.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Delivery Plan](../artifacts/delivery-plan.md)
@@ -51,7 +52,7 @@ The main path meets [Outcomes](#outcomes).
    - Resolve any missing issue through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Repeat Plan Available Work with every resolved off-board issue while retaining the other inputs.
    - For delivery discrepancies:
-     - Run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the affected initiative and epics.
+     - Run [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) for the affected initiative and epics.
      - Resume the survey with its returned records.
    - Handle the returned availability findings:
      - **Held work.**

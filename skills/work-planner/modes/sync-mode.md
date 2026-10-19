@@ -12,6 +12,7 @@ Read these files first.
 - [Align Mode](align-mode.md)
 - [Task Body](../artifacts/task-body.md)
 - [Pull Request](../artifacts/pull-request.md)
+- [Delivery Evidence](../artifacts/delivery-evidence.md)
 - [Epic](../artifacts/epic.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Deliver Mode](deliver-mode.md)
@@ -44,7 +45,7 @@ The main path meets [Outcomes](#outcomes).
      - Return a remaining format failure as a blocker.
 2. **Fetch.**
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for each issue, including each task issue under an epic being synced, titled as [Titles](../artifacts/task-body.md#titles) states.
-   - Run [Read Delivery Evidence](#read-delivery-evidence) with the selected repositories and initiative prefix, fetched epic JSON, authenticated access and destination snapshot files.
+   - Run [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) with the selected repositories and initiative prefix, fetched epic JSON, authenticated access and destination snapshot files.
    - Use its returned pull request records, complete issue-link snapshot and findings in the following steps.
    - Confirm the repository prerequisite for issue closure: GitHub's setting that auto-closes issues with merged linked pull requests is disabled.
    - Capture each issue's Development links.
@@ -144,27 +145,6 @@ The main path meets [Outcomes](#outcomes).
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](../artifacts/issue-body.md#coverage-reports).
 
-### Read Delivery Evidence
-
-The pull requests and issue links that establish current delivery.
-
-1. **Fetch.**
-   - Run [Read Initiative Pull Requests](../artifacts/pull-request.md#read-initiative-pull-requests).
-   - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links).
-   - Use [Access Development Links](../artifacts/pull-request.md#access-development-links) for the actual complete link sets.
-2. **Match.**
-   Run [Inspect Epic Delivery](../artifacts/epic.md#inspect-epic-delivery) with the epic JSON, pull request records and complete issue-link snapshot.
-   - Route the returned [Delivery Findings](../artifacts/epic.md#delivery-findings) to matching, verification or user decisions.
-   - Fetch any linked pull request absent from the input with [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-   - Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
-3. **Repair a name.**
-   When the user confirms a delivery whose title omits its epic:
-   - Run [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request) with the confirmed epic prefix and purpose.
-   - Repeat the fetch and match steps with the saved title before returning.
-
-   With or without a title correction:
-   - Return the current pull request records, complete issue-link snapshot and per-epic findings to the caller, reporting incomplete evidence as a blocker.
-
 ### Record Issue Delivery
 
 The issue bodies associated with a pull request's delivery.
@@ -212,7 +192,7 @@ The draft pull request and body for one epic base's delivered changes.
 The task and epic records after one confirmed task merge.
 
 1. **Read and record.**
-   Follow [Read Delivery Evidence](#read-delivery-evidence).
+   Follow [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence).
    - Run [Record Issue Delivery](#record-issue-delivery) for the delivered unit.
    - Close an eligible task issue through [Close Delivered Issue](#close-delivered-issue).
 2. **Review.**
