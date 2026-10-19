@@ -16,11 +16,12 @@ Read these files first.
 
 The verification evidence for a supplied set of criteria whose delivery is ready.
 
-**Inputs:** Criterion ids, current issue body, delivery findings, delivery revisions and named instruments.
+**Inputs:** Criterion ids, current issue body, delivery findings, delivery revisions, named instruments and the project checkout to run them in.
 
 1. Confirm the supplied delivery findings establish [Readiness](#readiness) for each selected criterion.
    - Return an undelivered or unreadable dependency as a blocker for that criterion.
-2. Run each criterion's named instrument on the branch or branches the delivering pull requests merged into.
+2. Check out each branch the delivering pull requests merged into, in the supplied project checkout, meeting [Instrument Checkout](#instrument-checkout).
+   - Run each criterion's named instrument there.
    - Record the result against the tested revisions, meeting [Instrument Result](#instrument-result).
 3. Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
    - Leave body publication and further planning to the caller.
@@ -46,6 +47,10 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
 ### Readiness
 
 A criterion is ready to verify when the supplied delivery findings show the work its evidence depends on delivered and readable. An undelivered or unreadable dependency leaves it unready.
+
+### Instrument Checkout
+
+An instrument runs in a checkout of the project at the merged revision it is verifying, which the caller supplies. A checkout the caller is editing is not that revision, so a criterion verified against uncommitted work is unverified.
 
 ### Instrument Result
 
