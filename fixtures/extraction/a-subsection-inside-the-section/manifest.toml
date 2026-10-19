@@ -1,0 +1,16 @@
+description = "A section carries every deeper document-level heading beneath it and their content, and ends at the next heading of its own level."
+
+clauses = [
+  "Section extraction and output hierarchy — Subsections",
+  "Section extraction and output hierarchy — Boundary",
+  "File-scoped hierarchy — Group shift",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

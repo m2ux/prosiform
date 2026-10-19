@@ -24,6 +24,7 @@ from prosiform.profile import parse
 from prosiform.source import (
     MARK,
     Heading,
+    Nested,
     Source,
     Unterminated,
     bare,
@@ -32,6 +33,8 @@ from prosiform.source import (
     fragments,
     index,
     lines,
+    regions,
+    section,
     slug,
 )
 
@@ -319,3 +322,87 @@ def test_the_duplicate_count_is_fresh_for_each_complete_document() -> None:
     second = indexed("## Run\n")
     assert [one.fragment for one in first] == ["run", "run-1"]
     assert [one.fragment for one in second] == ["run"]
+
+
+def spans(text: str, fragment: str) -> list[str] | None:
+    """The type of each region one fragment selects from a source."""
+    found = section(parse(text), fragment)
+    return None if found is None else [token.type for token in found]
+
+
+def test_a_container_is_one_region_and_what_it_holds_opens_none() -> None:
+    text = "# Guide\n\n> ## Nested\n>\n> Inside.\n\nAfter.\n"
+    opened = [token.type for token in regions(parse(text))]
+    assert opened == ["heading_open", "blockquote_open", "paragraph_open"]
+
+
+def test_a_section_runs_to_the_next_heading_of_equal_level() -> None:
+    text = "## Run\n\nDo it.\n\n## Stop\n\nStop it.\n"
+    assert spans(text, "run") == ["heading_open", "paragraph_open"]
+
+
+def test_a_section_runs_to_the_next_heading_of_higher_level() -> None:
+    text = "## Run\n\nDo it.\n\n# Guide\n\nAbout it.\n"
+    assert spans(text, "run") == ["heading_open", "paragraph_open"]
+
+
+def test_a_section_carries_the_deeper_headings_beneath_it() -> None:
+    text = "## Run\n\nDo it.\n\n### Detail\n\nThe detail.\n\n## Stop\n"
+    assert spans(text, "run") == [
+        "heading_open",
+        "paragraph_open",
+        "heading_open",
+        "paragraph_open",
+    ]
+
+
+def test_a_section_the_document_outlasts_runs_to_its_end() -> None:
+    text = "## Run\n\nDo it.\n\n### Detail\n\nThe detail.\n"
+    assert spans(text, "run") == [
+        "heading_open",
+        "paragraph_open",
+        "heading_open",
+        "paragraph_open",
+    ]
+
+
+def test_a_heading_a_blockquote_carries_ends_no_section() -> None:
+    text = "## Run\n\n> ## Quoted\n>\n> Inside.\n\n## Stop\n"
+    assert spans(text, "run") == ["heading_open", "blockquote_open"]
+
+
+def test_a_heading_a_list_item_carries_ends_no_section() -> None:
+    text = "## Run\n\n- ## Listed\n\n## Stop\n"
+    assert spans(text, "run") == ["heading_open", "bullet_list_open"]
+
+
+def test_heading_like_text_in_a_fence_ends_no_section() -> None:
+    text = "## Run\n\n```\n## Not a heading\n```\n\n## Stop\n"
+    assert spans(text, "run") == ["heading_open", "fence"]
+
+
+def test_a_fragment_naming_a_container_nested_heading_roots_no_section() -> None:
+    text = "## Run\n\n> ## Quoted\n>\n> Inside.\n"
+    with pytest.raises(Nested) as refused:
+        section(parse(text), "quoted")
+    assert refused.value.fragment == "quoted"
+
+
+def test_a_fragment_naming_no_heading_of_the_document_selects_nothing() -> None:
+    assert section(parse("## Run\n\nDo it.\n"), "stop") is None
+
+
+def test_heading_like_text_in_a_fence_names_no_section() -> None:
+    assert section(parse("## Run\n\n```\n## Stop\n```\n"), "stop") is None
+
+
+def test_a_setext_heading_roots_a_section() -> None:
+    text = "Run\n---\n\nDo it.\n\nStop\n----\n"
+    assert spans(text, "run") == ["heading_open", "paragraph_open"]
+
+
+def test_a_fragment_selects_the_heading_its_ordinal_names() -> None:
+    text = "## Run\n\nFirst.\n\n## Run\n\nSecond.\n"
+    found = section(parse(text), "run-1")
+    assert found is not None
+    assert [token.map for token in found] == [[4, 5], [6, 7]]

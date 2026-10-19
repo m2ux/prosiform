@@ -1,0 +1,19 @@
+description = "A fragment naming text only a code example carries names no heading of the document, so it resolves to nothing."
+
+clauses = [
+  "Section extraction and output hierarchy — eligible roots, heading-like text in code",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#stop"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "guide.md#stop"
