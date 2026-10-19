@@ -1,0 +1,19 @@
+description = "A symbolic link to a symbolic link is refused at the first link, so no chain below the allowed root is walked to a target."
+
+clauses = [
+  "No-symlink source policy",
+  "Reference normalization and path identity — Resolution sequence, step 8",
+]
+
+[invocation]
+root = "source"
+arguments = ["chain.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "chain.md"
