@@ -72,8 +72,7 @@ The main path meets [Outcomes](#outcomes).
 7. **Hold.**
    For each confirmed unit, before its session starts:
    - Add its record with [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record), named as the `unit` line gives it.
-   - Commit the engineering worktree.
-   - Push its branch.
+   - Run [Publish Planning Record](../artifacts/planning-record.md#publish-planning-record) for the record's folder.
    - Run [Reserve Task Rows](../artifacts/epic-issue-body.md#reserve-task-rows) for the unit's tasks.
    - Run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the body it writes.
    - Set each task issue of the unit, where one exists, to In Progress with [Update Item Status](../artifacts/board.md#update-item-status), and its epic with it.
@@ -123,8 +122,7 @@ The confirmed unit carried from its supplied brief through implementation and de
    - Add any further file the work needs, as [Layout](../artifacts/planning-record.md#layout) describes.
 4. **Link the work items.**
    Register each returned work-item file through [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record). The row retains its folder link while reserved.
-   - Commit the engineering worktree.
-   - Push its branch.
+   - Run [Publish Planning Record](../artifacts/planning-record.md#publish-planning-record) for the record's folder.
 5. **Match the tests to the criteria.**
    Check the returned work item's test row against each criterion the unit's Coverage carries and [Test Coverage](../artifacts/pull-request-body.md#test-coverage).
    - Resolve a missing test before implementation.

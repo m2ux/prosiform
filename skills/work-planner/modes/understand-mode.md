@@ -43,8 +43,7 @@ The main path meets [Outcomes](#outcomes).
 4. **Register the overview.**
    Call [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) with the record identity, folder, overview file and pull request link. The overview is its one Artifacts row and the pull request is under Links.
 5. **Publish and link.**
-   - Commit the engineering worktree.
-   - Push its branch so the overview resolves.
+   - Run [Publish Planning Record](../artifacts/planning-record.md#publish-planning-record) for the record's folder, so the overview resolves.
    - Call [Link Architecture Overview](../artifacts/pull-request-body.md#link-architecture-overview) with the current body and published overview URL.
    - Publish the returned file through [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request).
 6. **Report.**
