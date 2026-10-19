@@ -234,6 +234,15 @@ class Queue(unittest.TestCase):
         self.assertIn('[I01:E00] Epic 2: Work: Backlog → Ready', out)
         self.assertIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
 
+    def test_a_lower_set_waits_while_a_higher_one_is_under_way(self):
+        current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''),
+                             (f"[E01]({url('issues', 3)})", ''))
+        started = epic(2, '01:E00', (f"[W01]({url('pull', 9)})", 'Go', ''), priority='priority: 5')
+        later = epic(3, '01:E01', ('W01', 'Go', ''), priority='priority: 2')
+        out = queue(staged((current, 'In Progress'), (started, 'In Progress'), (later, 'Backlog')),
+                    [pr(9, '[I01:E00] Go', merged='2026-01-01T00:00:00Z')])
+        self.assertNotIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
+
     def test_an_open_question_keeps_the_next_epic_in_backlog(self):
         current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''))
         asking = epic(2, '01:E00', ('W01', 'Go', ''), questions='Which shape?')

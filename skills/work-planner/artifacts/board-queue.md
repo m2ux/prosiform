@@ -50,7 +50,8 @@ A priority label is `priority:` and a positive integer. A larger number is highe
 
 - On an initiative In Progress, a partly completed epic is In Progress even with open questions. Partly completed means a delivered task row on an epic that is not closed as completed. Delivery follows [Task Delivery](epic-issue-body.md#task-delivery), using the supplied evidence.
 - On that initiative, an unstarted epic can start when every prerequisite epic named by its task rows or initiative row is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
-- Of the epics that can start, those carrying the highest priority number are next and Ready, all together. An epic with no priority label ranks below every number, so it is Ready only when no labelled sibling can start.
+- Of the epics that can start, those carrying the highest priority number are next and Ready, all together. The highest counts the epics already In Progress, so an epic of a lower number waits while a higher one runs.
+- An epic with no priority label ranks below every number, so it is Ready only when no labelled sibling can start or is running.
 - Any other Ready epic of that initiative moves to Backlog.
 - An epic In Review or Done remains in that state.
 - On an initiative that moves to Backlog, its epics move to Backlog. A Ready epic of an initiative that is not In Progress moves to Backlog.
