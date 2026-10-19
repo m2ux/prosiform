@@ -22,12 +22,12 @@ Read these files first.
    - Follow [Issue Delivery](issue-delivery.md) for the delivered unit.
    - Close an eligible task issue through [Issue Closure](issue-closure.md).
 2. **Review.**
-   Follow [Review Pull Request](review-pull-request.md) for the affected epic base.
+   Follow [Review Pull Request](review-pull-request.md) for the affected epic base, with the epic's issue and the repository setting confirmed for the session.
 3. **Complete when ready.**
    When every task and criterion is complete:
    - Run [Record Epic Review](../artifacts/board-delivery.md#record-epic-review) with the epic identity and the supplied board identity. The board shows the epic at In Review before the user is asked to mark its review ready.
    - Report an absent board item. Integration is not gated on the board.
-   - Follow [Epic Integration](epic-integration.md) with the epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
+   - Follow [Epic Integration](epic-integration.md) with the epic identity and body, review identity, project checkout, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
 4. **Close the epic.**
    After every epic base has merged:
    - Refresh the evidence.

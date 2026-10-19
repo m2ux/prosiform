@@ -115,9 +115,10 @@ One current pull request and its requested supporting records.
 
 One pull request created or updated from supplied content and metadata.
 
-**Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes.
+**Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
 
-1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, supplying required issue-link evidence for delivery and preserving epic and discussion draft state.
+1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
+   - For a task or epic pull request, run [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
 2. For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
 3. Re-read through [Read Pull Request State](#read-pull-request-state).
 4. Return the saved state or discrepancy.
@@ -145,10 +146,10 @@ The check-run and status evidence for one literal head commit.
 
 Merges each open task pull request whose test plan has passed.
 
-**Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
+**Inputs:** Task pull request identity, its epic base, the project checkout, the repository prerequisite and the passing test-plan evidence.
 
 1. Run [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close) for the repository, and confirm the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
-2. Run [Update Epic Base](delivery-branches.md#update-epic-base).
+2. Run [Update Epic Base](delivery-branches.md#update-epic-base) with the supplied project checkout and epic base.
    - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
    - Run [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
    - Stop on a handoff for human approval.
