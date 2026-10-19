@@ -7,6 +7,7 @@ A pull request's identity, head and base, issue links, review state and merge re
 Read these files first.
 
 - [Issue](issue.md)
+- [Delivery Branches](delivery-branches.md)
 
 ## Operations
 
@@ -139,6 +140,41 @@ The check-run and status evidence for one literal head commit.
 1. Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
 2. Run [Fetch Head Status](#fetch-head-status) for the same SHA.
 3. Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
+
+### Merge Task Pull Requests
+
+Merges each open task pull request whose test plan has passed.
+
+**Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
+
+1. Confirm the repository prerequisite in [Close Tracker Issue](issue.md#close-tracker-issue) and the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
+2. Run [Update Epic Base](delivery-branches.md#update-epic-base).
+   - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
+   - Run [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
+   - Stop on a handoff for human approval.
+   - If the merge is refused:
+     - Run [Update Task Branch](delivery-branches.md#update-task-branch).
+     - Repeat Fetch Merge Readiness for the updated task head.
+     - Retry Merge Delivery Pull Request once with that verified evidence. A conflict or repeated refusal leaves the pull request open with the blocker reported.
+3. Run [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
+   - Return that result to the caller.
+
+### Fetch Merge Readiness
+
+The current pull request's readiness against its target requirements and head checks.
+
+**Inputs:** Pull request identity, its target branch, and the protection, rules, check and status output paths.
+
+1. Run [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
+   - Retain the literal head SHA and target branch for the evidence calls.
+2. Call [Read Target Requirements](delivery-branches.md#read-target-requirements) with the repository, target and protection/rules output paths.
+   - Carry any unresolved requirement into the readiness result.
+3. Read the head evidence.
+   - Call [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
+   - Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A missing or pending check, blocked merge state or unmet required review leaves readiness unresolved.
+4. Run [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
+   - Compare its head with the retained SHA; a changed head requires fresh evidence.
+   - Return the verified head, target requirements and readiness result, including unresolved conditions.
 
 ## Fields
 

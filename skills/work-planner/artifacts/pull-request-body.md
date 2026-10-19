@@ -7,6 +7,8 @@ Populates one pull request body from its change, review scope and validation evi
 Read these files first.
 
 - [Issue Body](issue-body.md)
+- [Pull Request](pull-request.md)
+- [Epic Issue Body](epic-issue-body.md)
 
 ## Operations
 
@@ -48,6 +50,25 @@ One pull request body referencing its published overview.
       ```
 
 3. Return the complete updated body file for publication.
+
+### Maintain Review Pull Request
+
+The draft pull request and body for one epic base's delivered changes.
+
+**Inputs:** Epic identity and base, supplied delivery findings, the actual task merges into that base, and the existing review body when there is one.
+
+1. Use the review number in the supplied delivery findings.
+   - When it is absent:
+     - Run [Locate Review Pull Request](pull-request.md#locate-review-pull-request) with the repository and epic base as head.
+     - Use its returned number or absence result.
+   - Fetch an existing review through [Read Pull Request State](pull-request.md#read-pull-request-state).
+2. Pass the existing body when present and the actual task merges into the base to [Populate Review Body](#populate-review-body).
+3. Publish when the first task merges, a draft is reported or an unmerged base has no review.
+   - Pass the returned file to [Publish Pull Request](pull-request.md#publish-pull-request), supplying its number for an existing review. The epic stays open; the user marks the draft ready when the epic is complete.
+4. Run [Read Pull Request State](pull-request.md#read-pull-request-state) for the published review.
+   - Compare its complete body with the published file.
+   - Run [Record Epic Delivery](epic-issue-body.md#record-epic-delivery) with the current epic and refreshed review and task-merge records.
+   - Return its cited-versus-actual merge findings with the review identity. The session recording each task merge owns this update.
 
 ## Fields
 

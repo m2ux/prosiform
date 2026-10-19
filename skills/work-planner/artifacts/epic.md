@@ -7,6 +7,10 @@ An epic's prerequisite evidence, task delivery findings, integration readiness a
 Read these files first.
 
 - [Initiative Issue Body](initiative-issue-body.md)
+- [Issue](issue.md)
+- [Pull Request](pull-request.md)
+- [Pull Request Body](pull-request-body.md)
+- [Delivery Branches](delivery-branches.md)
 
 ## Operations
 
@@ -51,7 +55,38 @@ The epic's normal delivery result before tracker closure.
 3. Confirm every base has merged into its corresponding long-lived branch. An unknown or incomplete base list, or missing merge evidence, leaves completion unconfirmed even when every task is delivered and every criterion is ticked.
 4. Return the completion result in [Delivery State](#delivery-state), identifying remaining blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
 
+### Integrate Epic Delivery
+
+Coordinates current branch, epic and pull-request evidence for one epic-base integration.
+
+**Inputs:** Epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot, criterion verification evidence, and the architecture overview published for the review pull request.
+
+1. Prepare the evidence.
+   - Confirm the repository prerequisite in [Close Tracker Issue](issue.md#close-tracker-issue).
+   - Run [Maintain Review Pull Request](pull-request-body.md#maintain-review-pull-request) with the actual task merges.
+   - Confirm the supplied overview is the one published for the review pull request at its current head, meeting [Review Evidence](#review-evidence). Return a missing or stale overview as a finding for the caller to resolve before integration continues.
+   - Read the pull request through [Read Pull Request State](pull-request.md#read-pull-request-state).
+   - Require the user to have marked the draft ready.
+   - Leave a draft waiting for that decision.
+   - Confirm its head is the epic base and its target is the corresponding long-lived branch.
+2. Run [Update Epic Base](delivery-branches.md#update-epic-base).
+   - Obtain current criterion verification for the updated result.
+   - Refresh the delivery records.
+   - Call [Check Epic Readiness](#check-epic-readiness) with the current epic, delivery records, complete issue-link snapshot and that verification evidence.
+   - When the branch content changes, before checking merge readiness:
+     - Repeat Maintain Review Pull Request with the current task merges.
+     - Return the changed head as a stale-overview finding, and resume with the overview the caller republishes for it.
+   - Follow [Fetch Merge Readiness](pull-request.md#fetch-merge-readiness) for the exact current head and target. A conflict, failed or pending check, unmet epic condition or incomplete evidence leaves integration blocked.
+3. Pass the confirmed epic readiness, verified head, target requirements, repository prerequisite and passing evidence to [Merge Delivery Pull Request](pull-request.md#merge-delivery-pull-request) with delivery kind epic, without asking for further confirmation.
+   - Return its handoff when a human reviewer must merge. A changed head requires fresh verification; a merge refusal returns to the readiness checks, and a repeated refusal is reported without retrying.
+4. Run [Read Pull Request State](pull-request.md#read-pull-request-state) to confirm the merged state, verified head, target and merge commit.
+   - Return the result or blocker. Draft and blocked pull requests remain open.
+
 ## Fields
+
+### Review Evidence
+
+An epic base integrates with an architecture overview published for its review pull request at the head under review. An absent overview, or one published for an earlier head, is stale, and a stale overview leaves integration unresolved until the caller republishes it.
 
 ### Prerequisite Evidence
 
