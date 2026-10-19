@@ -53,7 +53,7 @@ The build's tests and static checks are named commands, run from the repository 
 | [`jsonschema`](https://pypi.org/project/jsonschema/) | `==4.26.0` | Validates a fixture manifest against the corpus schema, which is a published schema language rather than a validator written here. |
 | [`types-jsonschema`](https://pypi.org/project/types-jsonschema/) | `==4.26.0.20261006` | The annotations `jsonschema` does not ship, which strict mode requires. |
 
-`tests/test_profile.py` holds the pinned parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text, typographic substitution off, and raw HTML recognized as a token of its own.
+`tests/test_profile.py` holds the build's configured parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text and protected from a reference definition that would turn one into a link, typographic substitution off, raw HTML recognized as a token of its own, Markdown suffixes classified case-insensitively, and each recognized unsupported dependency or section-naming construct refused while the prose, the code span and the escape that resemble one pass untouched.
 
 `tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, and the status a request this build cannot carry out returns.
 
