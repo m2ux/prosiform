@@ -24,6 +24,14 @@ fixtures/
 
 `source/` is the tree the run is confined to. `expected/` holds the bytes the run must produce. They are separate because an expected bundle is itself Markdown, and a bundle offered as input is refused under the generated-input policy.
 
+## Copied sources
+
+Most families write their sources for the clause they exercise. The `real-source/` family does not: each of its sources is a document copied byte for byte from one of this workspace's skills, at the root-relative path that skill gives it. A source written to exercise one clause exercises that clause and says nothing about the documents the tool exists to bundle, so this family is where the corpus meets prose nobody wrote for it.
+
+A copied source is not edited. A document that needs an edit to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
+
+A document joins the family when its closure is itself: no local Markdown document reference, and fragment-only references only where the destination the bundle generates is the fragment the source already spells. Such a document bundles to the same bytes under a build that traverses references and one that has nothing to traverse, so its expected bundle states the contract rather than a stage of the work.
+
 ## The manifest
 
 The manifest is the whole declaration. A runner reads it and the fixture's files, and decides pass or fail from them alone.

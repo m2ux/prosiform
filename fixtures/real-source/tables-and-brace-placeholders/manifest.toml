@@ -1,0 +1,19 @@
+description = "A workspace skill template bundles its six-column pipe tables as the bytes they were written in, and its headings ending in a brace block keep their text because a heading attribute is spelled another way."
+
+clauses = [
+  "Input and output contract — Whole documents",
+  "File-scoped hierarchy — Absorbed title",
+  "Markdown and source-heading profile — pipe tables enabled",
+  "Markdown and source-heading profile — Unsupported extensions",
+  "Parser and source-preserving edits — Untouched content",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["templates/integration-review.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
