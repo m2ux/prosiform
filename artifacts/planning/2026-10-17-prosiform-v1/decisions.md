@@ -318,6 +318,16 @@ A collection that shares material with a sibling is therefore rooted above both:
 
 A refused reference says the root is too narrow at least as often as it says the link is wrong. The diagnostic names the resolved path so the caller can tell the two apart, and that is the only thing the tool can say about it.
 
+## D32 — The Mark Is Authoring Syntax and Does Not Reach the Bundle
+
+A dependency's link text opens with `¬`. A rewritten link carries the text that followed the mark and not the mark itself.
+
+The alternative was to preserve it. Visible link text is preserved everywhere else, and the preservation invariant lists link text among the bytes a bundling does not change, so carrying the mark through would have been the consistent reading of that rule.
+
+It loses to what the mark is. The mark says *this reference is a requirement*, which is a statement to the compiler about the source, not content the author wrote for a reader. A marked link is rewritten in any case — its destination changes from a source path to a bundle destination — so the text is already being transformed at that point, and dropping the mark costs no additional pass. Carrying it would put a symbol in every bundled link that means nothing to the reader holding the bundle, where every reference has already been resolved and the distinction the mark drew no longer applies.
+
+An unmarked link is emitted as authored and is not rewritten, so no mark can appear in one. The invariant therefore reads: a mark appears in a source and never in a bundle.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
