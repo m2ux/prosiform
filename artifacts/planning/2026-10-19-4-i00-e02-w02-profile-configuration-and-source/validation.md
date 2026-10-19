@@ -199,3 +199,26 @@ FAILED tests/test_cli.py::test_a_fragment_reference_reads_the_whole_document_it_
 ```
 
 Reverted.
+
+## T5 Continuous integration
+
+**Observes AC5, AC7, AC9.** The same set, run by the `Checks` workflow on the pushed head rather than on a working copy.
+
+```bash
+gh run view 39235193899 --repo m2ux/prosiform --log
+```
+
+**Pass.** Conclusion `success`, head `b765a0e9c579bb45a70123a95dd7a7874ed8e97a`, which is the revision tested above and the head the pull request merged from.
+
+```text
+Resolved 22 packages in 0.70ms
+All checks passed!
+20 files already formatted
+Success: no issues found in 19 source files
+98 passed in 0.28s
+86 passed in 0.53s
+layout check: 3 tree(s) present
+table check: 11 command(s) and 7 declaration(s), each declared by the project and named by a table
+link check: every reference in 6 document(s) resolved
+vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 20 source(s)
+```
