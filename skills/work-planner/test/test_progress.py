@@ -192,9 +192,9 @@ def refs(out: str) -> list[str]:
 
 
 class Next(unittest.TestCase):
-    def ready(self, number: int, epic: int, initiative: int = 1, depends: str = ''):
+    def ready(self, number: int, epic: int, initiative: int = 1, depends: str = '', labels=()):
         return item(issue(number, f'[I{initiative:02d}:E{epic:02d}] Epic {epic}: Ready',
-                          body=epic_body(('W01', 'Go', depends))), 'Ready')
+                          body=epic_body(('W01', 'Go', depends)), labels=labels), 'Ready')
 
     def initiative(self, number: int, which: int = 1, labels=(), *rows):
         return item(issue(number, f'[I{which:02d}] Theme {which}: Work', body=initiative_body(*rows),
@@ -204,6 +204,11 @@ class Next(unittest.TestCase):
         items = [self.initiative(1, 1, ['priority: 1']), self.initiative(2, 2, ['priority: 5']),
                  self.initiative(3, 3), self.ready(10, 0, 1), self.ready(11, 0, 2), self.ready(12, 0, 3)]
         self.assertEqual(refs(summary(items)), ['I02:E00', 'I01:E00', 'I03:E00'])
+
+    def test_ranked_by_their_epics_own_priority_label_within_one_initiative(self):
+        items = [self.initiative(1), self.ready(10, 0, labels=('priority: 1',)),
+                 self.ready(11, 1), self.ready(12, 2, labels=('priority: 5',))]
+        self.assertEqual(refs(summary(items)), ['I01:E02', 'I01:E00', 'I01:E01'])
 
     def test_an_epic_named_in_an_initiative_row_dependency_is_ranked_ahead(self):
         items = [self.initiative(1, 1, (), (f"[E01]({url('issues', 11)})", 'E02'),

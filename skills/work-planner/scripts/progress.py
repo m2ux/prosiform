@@ -40,10 +40,10 @@ epic's repository.
   In progress  epics and task issues In Progress or In Review, each epic with its open pull
                requests that link none of its task issues In Progress or In Review, ready for
                review (In Review) or draft, or else, with no line under it, its next task.
-  Next         epics and task issues Ready, ranked by the priority label of their initiative (a
-               larger number first; no label after every number) and then by reference, with an
-               epic another listed epic depends on ahead of it; the first five, and a count of
-               the rest. An epic names its next task.
+  Next         epics and task issues Ready, ranked by the priority label of their initiative, then
+               by their epic's own (a larger number first; no label after every number) and then by
+               reference, with an epic another listed epic depends on ahead of it; the first five,
+               and a count of the rest. An epic names its next task.
 An epic's next task is its first undelivered task whose dependencies are delivered and whose linked
 task issue, if it has one, is on the board and not In Progress or In Review. A task is undelivered
 while every pull request its id links is open. A task issue that
@@ -395,18 +395,23 @@ def main() -> int:
         context.append(f"{mark(k)} *{reference(initiatives[k][0])} {epic_name(title)}:* "
                        f"{subtitle(title)} — {issues[k]['html_url']}")
 
-    def priority(k: Key) -> int:
-        """The priority an item takes from its initiative. A larger number is higher."""
+    def level(k: Key) -> int:
+        """An issue's priority label. A larger number is higher, and no label ranks below every
+        number."""
+        found = [int(matched.group(1)) for l in issues[k].get('labels', [])
+                 if (matched := PRIORITY.fullmatch(l['name']))]
+        return max(found) if found else 0
+
+    def priority(k: Key) -> tuple[int, int]:
+        """The priority an item ranks by: its initiative's, then its epic's own."""
         if (ek := epic_for(k)) is None:
-            return 0
+            return 0, 0
         scope = scope_of_epic[ek]
         if (initiative := initiative_issue.get(scope)) is None:
             unresolved.append(f'I{scope[1]} in {scope[0]}: its initiative is not on the board; '
                               'give its issue with --initiatives')
-            return 0
-        levels = [int(matched.group(1)) for l in issues[initiative].get('labels', [])
-                  if (matched := PRIORITY.fullmatch(l['name']))]
-        return max(levels) if levels else 0
+            return 0, level(ek)
+        return level(initiative), level(ek)
 
     def depends_on(k: Key) -> set[Key]:
         """The epics the item's epic depends on, as the board holds them."""
@@ -417,7 +422,8 @@ def main() -> int:
 
     def rank(entry: tuple[Key, str]) -> tuple:
         k = entry[0]
-        return -priority(k), tagged[k], k[0].lower()
+        initiative, epic = priority(k)
+        return -initiative, -epic, tagged[k], k[0].lower()
 
     ready = sorted((e for e in ready if e[0] not in named_next), key=rank)
     waiting = {k: depends_on(k) & {listed for listed, _ in ready} for k, _ in ready}

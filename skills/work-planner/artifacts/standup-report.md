@@ -38,7 +38,7 @@ The management paragraph is set off by blank lines, with the board's link beneat
 - **In progress.**
   Epics and task issues In Progress or In Review, each epic with its open pull requests, or else its next task.
 - **Next.**
-  The five Ready items ranked by the priority label of the initiative their epic belongs to, with an epic another listed epic depends on ahead of it, each epic with its next task, and a count of the rest. An epic depends on the epics its task rows name outside it and those its initiative row names.
+  The five Ready items ranked by the priority label of the initiative their epic belongs to and then by their epic's own, with an epic another listed epic depends on ahead of it, each epic with its next task, and a count of the rest. An epic depends on the epics its task rows name outside it and those its initiative row names.
 - **Key.**
   I Initiative, E Epic and W Work Item. Opening marks are ✅ done, 🔄 in progress (an initiative or epic open and not In Review), 👀 in review, 📝 draft and ▶️ ready.
 
