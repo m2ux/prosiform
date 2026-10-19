@@ -2,15 +2,6 @@
 
 A tracker issue: its identity, saved body, metadata, discussion and closure state. The caller supplies the populated body and the delivery decision.
 
-## Prerequisites
-
-Read these files first.
-
-- [Pull Request](pull-request.md)
-- [Epic](epic.md)
-- [Initiative](initiative.md)
-- [Delivery Branches](delivery-branches.md)
-
 ## Operations
 
 ### Read Tracker Issue
@@ -137,32 +128,6 @@ The next unused number for one prefixed issue kind in the repository.
 2. Read the highest prefix carrying that letter.
 3. Confirm the following number, or `00` when there is no prefix, remains unused before creation.
 4. Return the confirmed number.
-
-### Close Delivered Issue
-
-Fresh closure evidence assembled across the issue and its linked pull requests.
-
-**Inputs:** Issue identity selected by the delivery checks, criterion verification evidence, confirmed repository setting and output snapshot paths.
-
-1. Read the issue and its Development links.
-   - Run [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
-   - Run [Capture Issue Development](#capture-issue-development) for that issue.
-2. Run [Read Pull Request State](pull-request.md#read-pull-request-state) for every captured link, across repositories and all states.
-   - Use a fresh destination file so an earlier snapshot cannot supply membership.
-3. Check delivery completion for the issue's kind.
-   - For an epic:
-     - Run [Read Delivery Branches](delivery-branches.md#read-delivery-branches) for the complete expected bases.
-     - Run [Read Pull Request State](pull-request.md#read-pull-request-state) for their merge evidence.
-     - Run [Check Epic Completion](epic.md#check-epic-completion) with the current epic JSON, delivery records, complete issue-link snapshot, criterion verification evidence and those base records.
-   - For an initiative:
-     - Refresh every linked epic through [Read Tracker Issue](#read-tracker-issue).
-     - Run [Check Initiative Completion](initiative.md#check-initiative-completion) with the current initiative JSON, all linked epic records, criterion verification evidence and captured Development-link and pull-request records. A task retains its task delivery result.
-   - Return any incomplete or failed result before closure.
-4. Pass the successful normal delivery result, issue JSON, complete Development snapshot, confirmed repository setting and fresh pull request records to [Close Tracker Issue](#close-tracker-issue).
-   - If the operation reports a changed link set or missing evidence:
-     - Refresh those inputs.
-     - Repeat the completion check before trying again.
-   - Report any unmerged link or unmet criterion.
 
 ## Fields
 
