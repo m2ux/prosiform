@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Assert every reference every README the repository owns resolves.
+"""Assert every reference every document the repository owns resolves.
 
-The documents are found rather than listed, so a tree added later brings its
-README into the check by being committed. Naming documents on the command line
-checks those instead, which is for reading one document while editing it.
+The documents are found rather than listed, so a document added later comes
+into the check by being committed. The fixture corpus is excepted: a fixture's
+source carries references a run is meant to refuse, and its expected bundle is
+output rather than a document a reader follows. Naming documents on the command
+line checks those instead, which is for reading one document while editing it.
 
 Four classes of reference, each resolved by what it names:
 
@@ -30,7 +32,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from documents import ROOT, readmes, strip_code_fences
+from documents import ROOT, documents, strip_code_fences
 
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
@@ -262,7 +264,7 @@ def main() -> int:
         "documents",
         nargs="*",
         help="documents to check, relative to the repository root, in place of "
-        "every README the repository owns",
+        "every document the repository owns",
     )
     parser.add_argument(
         "--online",
@@ -272,9 +274,9 @@ def main() -> int:
     arguments = parser.parse_args()
 
     named = [(ROOT / name).resolve() for name in arguments.documents]
-    documents = named or readmes()
+    selected = named or documents()
     failures = []
-    for document in documents:
+    for document in selected:
         name = (
             document.relative_to(ROOT).as_posix()
             if document.is_relative_to(ROOT)
@@ -292,7 +294,7 @@ def main() -> int:
     if failures:
         print(f"\nlink check: {len(failures)} unresolved reference(s)", file=sys.stderr)
         return 1
-    print(f"\nlink check: every reference in {len(documents)} document(s) resolved")
+    print(f"\nlink check: every reference in {len(selected)} document(s) resolved")
     return 0
 
 

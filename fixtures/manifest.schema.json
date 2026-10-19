@@ -63,16 +63,36 @@
       }
     },
     "diagnostic": {
-      "description": "One message the run emits to standard error.",
+      "description": "One message the run emits to standard error. Its severity and its code name it together, and the severity decides which catalogue the code is drawn from: an error decides a failing run and a warning accompanies a successful one, so neither catalogue admits the other's codes.",
       "type": "object",
       "additionalProperties": false,
       "required": ["severity", "code"],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "severity": { "const": "error" } },
+            "required": ["severity"]
+          },
+          "then": { "properties": { "code": { "$ref": "#/$defs/errorCode" } } }
+        },
+        {
+          "if": {
+            "properties": { "severity": { "const": "warning" } },
+            "required": ["severity"]
+          },
+          "then": { "properties": { "code": { "$ref": "#/$defs/warningCode" } } }
+        }
+      ],
       "properties": {
         "severity": {
           "description": "Whether the message fails the run or accompanies it.",
           "enum": ["error", "warning"]
         },
-        "code": { "$ref": "#/$defs/errorCode" },
+        "code": {
+          "description": "The stable code naming this diagnostic, from the catalogue its severity selects.",
+          "type": "string",
+          "minLength": 1
+        },
         "reference": {
           "description": "The original reference the diagnostic concerns, as the source spells it.",
           "type": "string",
@@ -93,7 +113,7 @@
       "not": { "pattern": "(^|/)\\.\\.(/|$)" }
     },
     "errorCode": {
-      "description": "The catalogue: the stable error codes the design declares. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. The catalogue is closed over errors; the design describes warnings but names no code for one.",
+      "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
       "enum": [
         "E_AMBIGUOUS_FILE_GROUP",
         "E_AMBIGUOUS_SOURCE_HEADING",
@@ -108,6 +128,10 @@
         "E_UNSAFE_BUNDLE_BOUNDARY",
         "E_UNTERMINATED_FRONTMATTER"
       ]
+    },
+    "warningCode": {
+      "description": "The warning catalogue: the stable warning codes the design declares, each prefixed W_. A warning accompanies a successful run rather than deciding a failing one, so a fixture declaring one states what a run writes to standard error while still succeeding. A diagnostic whose severity is warning draws its code from here.",
+      "enum": ["W_EMPTY_GROUP_RULE", "W_RESOURCE_PORTABILITY"]
     }
   }
 }

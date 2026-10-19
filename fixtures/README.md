@@ -58,7 +58,7 @@ source = "guide.md:3"
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
-| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code. A run emitting none declares an empty list. |
+| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects. A run emitting none declares an empty list. |
 
 The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
@@ -68,11 +68,13 @@ Expected output is a file rather than text inside the manifest because the prese
 
 [`manifest.schema.json`](manifest.schema.json) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) document, and it is the shape every manifest takes. A manifest is parsed as TOML and validated against it: TOML's value model is a subset of JSON's, so the parsed document validates with no intermediate form. Python reads it with `tomllib` and `jsonschema`; Rust reads it with the `toml` and `jsonschema` crates.
 
-A manifest that leaves out one of the five declarations, carries a field the schema does not describe, or names an error code outside the catalogue fails validation, so a malformed fixture fails as a fixture rather than as a bundling.
+A manifest that leaves out one of the five declarations, carries a field the schema does not describe, or names a code outside the catalogue its diagnostic's severity selects fails validation, so a malformed fixture fails as a fixture rather than as a bundling.
 
-## The catalogue
+## The catalogues
 
-A diagnostic's `code` comes from this set and no other. Each is a code the design declares, and the clause it comes from is why it exists.
+A diagnostic is named by its severity and its code together, and the severity decides which catalogue the code comes from. Each code is one the design declares, and the clause it comes from is why it exists.
+
+An error decides a failing run.
 
 | Code | Declared by |
 | --- | --- |
@@ -89,9 +91,16 @@ A diagnostic's `code` comes from this set and no other. Each is a code the desig
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
-The catalogue is closed over errors. The design describes two warnings — a grouping rule that arranges nothing, and the portability of a resource reference — and names a code for neither, so a warning diagnostic cannot yet be declared.
+A warning accompanies a successful run, so a fixture declaring one states what a run writes to standard error while still succeeding.
 
-A test holds the catalogue to the design's own text: it collects every `E_`-prefixed code the design carries and requires the schema to enumerate exactly those, so the catalogue cannot drift from the contract it is derived from.
+| Code | Declared by |
+| --- | --- |
+| `W_EMPTY_GROUP_RULE` | Grouping — a rule whose directories contribute no document to the closure. |
+| `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
+
+The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
+
+A test holds each catalogue to the design's own text: it collects every code the design carries under a prefix — `E_` for an error and `W_` for a warning — and requires the schema to enumerate exactly those, so neither catalogue can drift from the contract it is derived from.
 
 ## Running a fixture
 
