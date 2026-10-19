@@ -13,6 +13,7 @@ It matters because a check performed on a string can confine a reference that es
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The task's plan: the access mechanism, the canonicalization and the two error codes |
+| [validation.md](validation.md) | The validation record: the behaviour measured before the design was built to it, the command behind each Test Plan row, and the output it returned |
 
 ## Links
 
