@@ -26,4 +26,5 @@ It matters because the corpus has never been executed by anything but a person. 
 | W04 record | [Whole-document emission under a filename heading](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w04-whole-document-emission-under) |
 | W05 record | [Fixtures from unmodified workspace skills](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w05-fixtures-from-unmodified-workspace) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
-| Pull request | [#56 \[I00:E02\] Corpus Run on Every Change](https://github.com/m2ux/prosiform/pull/56) |
+| Pull request | [#56 \[I00:E02\] Corpus Run on Every Change](https://github.com/m2ux/prosiform/pull/56), merged into `i00/e02/main` as `d8abd5e` |
+| Epic review | [#47 \[I00:E02\] Walking Skeleton](https://github.com/m2ux/prosiform/pull/47) |

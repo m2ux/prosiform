@@ -151,6 +151,18 @@ make harness
 
 The build under test in these cases is a canned program each case configures, as in the runner's own tests: the comparison belongs to `runner.py`, and what these cases exercise is the verdict drawn from it.
 
+## T7 The same job on the epic base
+
+**Observes AC11.** The merge commit `d8abd5e` on `i00/e02/main` runs the same job, which is the corpus running on a change nobody wrote the command for.
+
+Run [39258458529](https://github.com/m2ux/prosiform/actions/runs/39258458529), conclusion `success`:
+
+```text
+corpus check: 38 fixture(s), 36 pass, 0 fail, 2 awaited, 0 unexpected pass
+```
+
+**Pass.**
+
 ## Limitations
 
 - **The job names this repository's build.** A second implementation of the contract runs the same corpus by naming its own build in `PROSIFORM_BUILD`; nothing here presumes the Python build, and `checks/corpus.py` imports no package of it. That a second build passes the corpus is not observed, because there is no second build.
