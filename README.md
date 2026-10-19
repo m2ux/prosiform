@@ -1,6 +1,6 @@
 # 🧩 prosiform
 
-[![Status: planning](https://img.shields.io/badge/status-planning-orange.svg)](https://github.com/users/m2ux/projects/18)
+[![Status: building](https://img.shields.io/badge/status-building-orange.svg)](https://github.com/users/m2ux/projects/18)
 [![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
@@ -102,11 +102,11 @@ cd prototype
 uv sync --frozen
 ```
 
-The build declares its dependencies and ships the [glossary](docs/glossary.md) with the package; it implements no behaviour yet, and the status table below tracks the stage it sits in.
+Installing the build puts the `prosiform` command on the path and ships the [glossary](docs/glossary.md) with the package. The status table below tracks the stage the build sits in.
 
 ## 🚀 Invocation
 
-Nothing is built yet. The behavioural contract is specified and the work is planned — this is the interface that contract defines.
+The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses below. Bundling is the stage under it, and the walking skeleton is building it now: a run that names an entry reference returns `4`, which says this build cannot carry the request out rather than that the source it names is at fault.
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller read
@@ -125,7 +125,7 @@ prosiform --root skills/work-planner \
 prosiform --root skills/work-planner --check modes/plan-mode.md
 ```
 
-The bundle goes to stdout and diagnostics to stderr. It opens by naming what it was built for, so the caller reaches its procedure without searching:
+Standard output carries exactly one thing per run: the bundle a compiling run publishes, the response an informational run returns, or nothing at all. Diagnostics go to standard error, as text for a reader or, under `--diagnostics json`, as one JSON object per line and nothing else. A bundle opens by naming what it was built for, so the caller reaches its procedure without searching:
 
 ```markdown
 This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
