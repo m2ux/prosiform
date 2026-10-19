@@ -24,7 +24,7 @@ Read these files first.
    Follow [Review Pull Request](review-pull-request.md) for the affected epic base.
 3. **Complete when ready.**
    When every task and criterion is complete:
-   - Follow [Epic Integration](epic-integration.md) with the epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
+   - Follow [Epic Integration](epic-integration.md) with the epic identity and body, review identity, project checkout, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
 4. **Close the epic.**
    After every epic base has merged:
    - Refresh the evidence.

@@ -1,6 +1,6 @@
 # Epic Integration
 
-One epic base merged into its long-lived branch, on current branch, epic and pull-request evidence.
+One epic base merged into its long-lived branch, on current branch, epic and pull-request evidence. The base names the target it merges into.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ Read these files first.
    - Leave a draft waiting for that decision.
    - Confirm its head is the epic base and its target is the corresponding long-lived branch.
 2. **Refresh and validate.**
-   Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base).
+   Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base) with the project checkout and the epic base.
    - Obtain current criterion verification for the updated result.
    - Refresh the delivery records.
    - Call [Check Epic Readiness](../artifacts/epic.md#check-epic-readiness) with the current epic, delivery records, complete issue-link snapshot and that verification evidence.
