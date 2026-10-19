@@ -17,23 +17,47 @@ UTF-8, stripped of the transport metadata it carries ahead of its content
 and parsed under the declared profile, and a source carrying a construct
 that profile refuses fails as the refusal it is. Every location a
 diagnostic reports is the location in the file the author holds, whatever
-the strip removed ahead of it. A run whose sources the profile accepts
-reaches the bundling stage. That stage is not part of this build: the run
-publishes nothing and returns the unexpected-internal-error status, which
-says that the build cannot carry the request out rather than that
-anything is wrong with the source it names.
+the strip removed ahead of it.
+
+A reference with no fragment, or with an empty one, selects the whole
+document, and each document so selected becomes one file group of the
+bundle, the groups ordered by root-relative path. A reference carrying a
+nonempty fragment names a section, and section selection is not part of
+this build: such a run publishes nothing and returns the
+unexpected-internal-error status, which says that the build cannot carry
+the request out rather than that anything is wrong with the source it
+names.
+
+The bundle is published once the whole candidate is built. A
+validation-only run publishes nothing, to either stream or to a named
+file; a run naming an output file writes it atomically, through a
+neighbouring temporary file renamed into place, so a reader of that path
+sees the previous bytes or the whole bundle and never a partial one.
 """
 
 import argparse
 import os
 import re
 import sys
+import tempfile
 from collections.abc import Sequence
 from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
 
 from prosiform import PROFILE
+from prosiform.bundle import (
+    AMBIGUOUS_FILE_GROUP,
+    HEADING_DEPTH_OVERFLOW,
+    MAX_LEVEL,
+    Group,
+    Overflow,
+    assemble,
+    destinations,
+    entry_line,
+    group,
+    heading_text,
+)
 from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
 from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 from prosiform.source import (
@@ -44,6 +68,7 @@ from prosiform.source import (
     Unterminated,
     content,
     decode,
+    lines,
 )
 
 NAME = "prosiform"
@@ -267,6 +292,20 @@ def document(reference: str) -> str:
     return reference.partition(FRAGMENT)[0]
 
 
+def fragment(reference: str) -> str:
+    """The fragment one entry reference carries, empty where it names none.
+
+    An absent fragment and an empty one are the same whole-document
+    reference, so both read as no fragment here.
+    """
+    return reference.partition(FRAGMENT)[2]
+
+
+def relative(root: Path, name: str) -> str:
+    """One source's normalized root-relative path, which names its file group."""
+    return (root / name).resolve().relative_to(root).as_posix()
+
+
 def entries(referrer: str | None, references: Sequence[str]) -> list[tuple[str, str]]:
     """Each distinct document this run reads, and the reference that names it.
 
@@ -376,6 +415,66 @@ def directories(root: Path) -> set[str]:
     return found
 
 
+def contributing(root: Path, references: Sequence[str]) -> dict[str, str]:
+    """Each file group the bundle carries, by the path that names it.
+
+    A reference with no fragment selects a whole document, which is the
+    group. Two references naming one document name one group, and the
+    groups are ordered by root-relative path so one selection always
+    bundles to the same bytes.
+    """
+    selected: dict[str, str] = {}
+    for reference in references:
+        if fragment(reference):
+            continue
+        name = document(reference)
+        selected.setdefault(relative(root, name), name)
+    return dict(sorted(selected.items()))
+
+
+def unambiguous(paths: Sequence[str]) -> None:
+    """Hold each file heading to naming one source, as a reader must read it."""
+    headed: dict[str, str] = {}
+    for path in paths:
+        title = heading_text(path)
+        if title in headed:
+            raise input_failure(
+                f"{path!r} and {headed[title]!r} both head a file group {title!r}, "
+                f"which a reader cannot tell apart",
+                code=AMBIGUOUS_FILE_GROUP,
+                remedy="bundle one of the two, or rename one of the documents",
+                reference=path,
+            )
+        headed[title] = path
+
+
+def compose(root: Path, read: dict[str, Source], references: Sequence[str]) -> str:
+    """The complete bundle candidate: its entry line and one group per source."""
+    selected = contributing(root, references)
+    unambiguous(list(selected))
+    groups: list[Group] = []
+    for path, name in selected.items():
+        source = read[name]
+        try:
+            groups.append(group(path, parse(source.text), lines(source.text)))
+        except Overflow as beyond:
+            raise input_failure(
+                f"{path!r} emits the heading {beyond.heading!r} at level "
+                f"{beyond.level}, which is beyond H{MAX_LEVEL}",
+                code=HEADING_DEPTH_OVERFLOW,
+                remedy="raise the heading in the source, or select a section of it",
+                reference=path,
+                source=path,
+            ) from beyond
+    assigned = destinations([heading for one in groups for heading in one.headings])
+    named = []
+    at = 0
+    for one in groups:
+        named.append((one.headings[0], assigned[at]))
+        at += len(one.headings)
+    return assemble(entry_line(named), groups)
+
+
 def publish(text: str, stream: IO[str]) -> None:
     """Write one response to standard output, or report that it was refused."""
     try:
@@ -390,6 +489,43 @@ def publish(text: str, stream: IO[str]) -> None:
                 ERROR,
                 f"standard output refused the response: {refused}",
                 code=PUBLICATION_FAILED,
+            ),
+        ) from refused
+
+
+def publish_file(text: str, destination: Path) -> None:
+    """Write one validated bundle to a named file, atomically.
+
+    The bytes go to a temporary file beside the destination and that file
+    is renamed onto it, which is one filesystem operation, so a reader of
+    the destination sees the bytes that were there before or the whole
+    bundle and never a partial one. A write the destination refuses
+    leaves the temporary file behind no longer than the attempt.
+    """
+    written = None
+    try:
+        handle = tempfile.NamedTemporaryFile(
+            "w",
+            encoding=ENCODING,
+            newline="",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            delete=False,
+        )
+        written = Path(handle.name)
+        with handle:
+            handle.write(text)
+        os.replace(written, destination)
+    except OSError as refused:
+        if written is not None:
+            written.unlink(missing_ok=True)
+        raise Failure(
+            PUBLICATION_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"the output path {str(destination)!r} refused the bundle: {refused}",
+                code=PUBLICATION_FAILED,
+                remedy="name a path the run can write",
             ),
         ) from refused
 
@@ -445,22 +581,35 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
                 remedy="name a directory the source root carries",
             )
 
+    read: dict[str, Source] = {}
     for reference, name in named:
         source = read_entry(root, reference, name)
         refusal = next(refusals(parse(source.text)), None)
         if refusal is not None:
             raise refused(name, source, refusal)
+        read[name] = source
 
-    raise Failure(
-        INTERNAL_ERROR,
-        Diagnostic(
-            ERROR,
-            "this build reads, strips and parses the sources its entry references "
-            "name and carries no bundling stage, so they cannot be bundled",
-            code=UNEXPECTED_INTERNAL_ERROR,
-            remedy="use a build that carries one",
-        ),
-    )
+    selecting = [reference for reference in options.references if fragment(reference)]
+    if selecting:
+        raise Failure(
+            INTERNAL_ERROR,
+            Diagnostic(
+                ERROR,
+                f"this build bundles whole documents and carries no section "
+                f"selection, so {selecting[0]!r} names content it cannot select",
+                code=UNEXPECTED_INTERNAL_ERROR,
+                remedy="use a build that carries one, or name the whole document",
+            ),
+        )
+
+    bundled = compose(root, read, options.references)
+    if options.check:
+        return SUCCESS
+    if options.output == STANDARD_OUTPUT:
+        publish(bundled, stdout)
+    else:
+        publish_file(bundled, Path(options.output).resolve())
+    return SUCCESS
 
 
 def main(

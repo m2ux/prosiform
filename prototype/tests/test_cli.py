@@ -8,6 +8,7 @@ and what each of the two streams carried.
 """
 
 import json
+import os
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -15,6 +16,7 @@ from typing import IO, Any
 
 import pytest
 from prosiform import PROFILE
+from prosiform.bundle import AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW
 from prosiform.cli import (
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -113,7 +115,7 @@ def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:
         "json",
         "guide.md",
     )
-    assert run.status == INTERNAL_ERROR
+    assert run.status == SUCCESS
 
 
 @pytest.mark.parametrize(
@@ -173,7 +175,7 @@ def test_a_grouping_depth_outside_one_through_six_is_invalid_usage(
 @pytest.mark.parametrize("depth", ["1", "6"])
 def test_a_grouping_depth_at_the_boundary_is_accepted(root: Path, depth: str) -> None:
     run = invoke("--root", str(root), "--group", f"docs:{depth}", "guide.md")
-    assert run.status == INTERNAL_ERROR
+    assert run.status == SUCCESS
 
 
 @pytest.mark.parametrize("declaration", ["docs", "docs:", ":2", "docs:two", "a/b:2"])
@@ -261,7 +263,7 @@ def test_an_output_path_naming_no_input_source_is_accepted(
     run = invoke(
         "--root", str(root), "--output", str(tmp_path / "bundle.md"), "guide.md"
     )
-    assert run.status == INTERNAL_ERROR
+    assert run.status == SUCCESS
 
 
 def test_standard_output_is_the_default_output_destination(root: Path) -> None:
@@ -273,7 +275,7 @@ def test_standard_output_is_the_default_output_destination(root: Path) -> None:
 def test_a_run_the_build_cannot_carry_out_returns_the_internal_error_status(
     root: Path,
 ) -> None:
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#run")
     assert run.status == INTERNAL_ERROR
     assert run.stdout == ""
     assert [one["severity"] for one in run.diagnostics()] == ["error"]
@@ -364,11 +366,9 @@ def test_a_construct_the_profile_refuses_fails_the_run(
         "# Guide\n\n- [ ] open\n- [x] done\n\n[x]: page.md\n",
     ],
 )
-def test_a_source_the_profile_accepts_reaches_the_absent_stage(
-    root: Path, source: str
-) -> None:
+def test_a_source_the_profile_accepts_bundles(root: Path, source: str) -> None:
     written(root, "guide.md", source)
-    assert invoke("--root", str(root), "guide.md").status == INTERNAL_ERROR
+    assert invoke("--root", str(root), "guide.md").status == SUCCESS
 
 
 def test_the_referring_document_is_read_under_the_profile(root: Path) -> None:
@@ -397,7 +397,7 @@ def test_an_entry_suffix_outside_the_profile_is_an_input_failure(root: Path) -> 
 
 def test_an_entry_suffix_is_classified_case_insensitively(root: Path) -> None:
     written(root, "GUIDE.MARKDOWN", "# Guide\n")
-    assert invoke("--root", str(root), "GUIDE.MARKDOWN").status == INTERNAL_ERROR
+    assert invoke("--root", str(root), "GUIDE.MARKDOWN").status == SUCCESS
 
 
 def test_an_entry_naming_no_document_is_an_input_failure(root: Path) -> None:
@@ -548,11 +548,9 @@ def test_a_referring_document_is_stripped_too(root: Path) -> None:
     assert run.diagnostics()[0]["source"] == "guide.md:6"
 
 
-def test_a_stripped_source_the_profile_accepts_reaches_the_absent_stage(
-    root: Path,
-) -> None:
+def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
     written(root, "guide.md", "﻿---\ntitle: Guide\n...\n# Guide\n")
-    assert invoke("--root", str(root), "guide.md").status == INTERNAL_ERROR
+    assert invoke("--root", str(root), "guide.md").status == SUCCESS
 
 
 def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
@@ -560,3 +558,167 @@ def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
     read = read_entry(root, "guide.md", "guide.md")
     assert read.text == "# Guide\r\n"
     assert read.first_line == 4
+
+
+def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    assert run.stderr == ""
+    assert run.stdout == (
+        "This bundle was built for [guide](#guide); "
+        "everything else is material it references.\n"
+        "\n# guide\n\n## Run\n\nDo it.\n"
+    )
+
+
+def test_two_sources_sharing_a_basename_stay_distinguishable(root: Path) -> None:
+    written(root, "docs/note.md", "# Note\n\nUnder docs.\n")
+    written(root, "notes/note.md", "# Note\n\nUnder notes.\n")
+    run = invoke("--root", str(root), "docs/note.md", "notes/note.md")
+    assert run.status == SUCCESS
+    assert "# docs/note\n" in run.stdout
+    assert "# notes/note\n" in run.stdout
+
+
+def test_groups_are_ordered_by_root_relative_path(root: Path) -> None:
+    written(root, "docs/note.md", "# Note\n")
+    written(root, "guide.md", "# Guide\n")
+    ordered = invoke("--root", str(root), "guide.md", "docs/note.md").stdout
+    assert ordered.index("# docs/note\n") < ordered.index("# guide\n")
+
+
+def test_one_document_named_twice_is_one_group(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n")
+    run = invoke("--root", str(root), "guide.md", "sub/../guide.md")
+    assert run.stdout.count("# guide\n") == 1
+
+
+def test_two_paths_differing_only_by_suffix_are_an_ambiguous_file_group(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n")
+    written(root, "guide.markdown", "# Guide\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "guide.md", "guide.markdown"
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [AMBIGUOUS_FILE_GROUP]
+
+
+def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Another Name\n\n###### Deep\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
+
+
+def test_a_fragment_reference_names_content_this_build_cannot_select(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\n## Run\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#run")
+    assert run.status == INTERNAL_ERROR
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
+
+
+def test_an_empty_fragment_is_a_whole_document_reference(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n")
+    assert invoke("--root", str(root), "guide.md#").stdout == (
+        invoke("--root", str(root), "guide.md").stdout
+    )
+
+
+def test_a_referring_document_contributes_no_group(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n")
+    written(root, "docs/note.md", "# Note\n")
+    run = invoke("--root", str(root), "--from", "guide.md", "docs/note.md")
+    assert run.status == SUCCESS
+    assert "# guide\n" not in run.stdout
+    assert "# docs/note\n" in run.stdout
+
+
+def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n")
+    destination = tmp_path / "bundle.md"
+    run = invoke("--root", str(root), "--output", str(destination), "guide.md")
+    assert run.status == SUCCESS
+    assert run.stdout == ""
+    assert destination.read_text() == (
+        "This bundle was built for [guide](#guide); "
+        "everything else is material it references.\n\n# guide\n\nBody.\n"
+    )
+
+
+def test_a_named_output_file_is_published_through_one_rename(
+    root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    written(root, "guide.md", "# Guide\n")
+    published = tmp_path / "published"
+    published.mkdir()
+    destination = published / "bundle.md"
+    renamed: list[tuple[str, str]] = []
+    replace = os.replace
+
+    def record(source: Any, target: Any) -> None:
+        renamed.append((str(source), str(target)))
+        replace(source, target)
+
+    monkeypatch.setattr(os, "replace", record)
+    assert invoke("--root", str(root), "-o", str(destination), "guide.md").status == (
+        SUCCESS
+    )
+    assert [target for _, target in renamed] == [str(destination)]
+    assert [path.name for path in published.iterdir()] == ["bundle.md"]
+
+
+def test_a_failed_run_leaves_the_output_file_alone(root: Path, tmp_path: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n<div>raw</div>\n")
+    destination = tmp_path / "bundle.md"
+    destination.write_text("earlier bytes\n")
+    assert invoke("--root", str(root), "-o", str(destination), "guide.md").status == (
+        INPUT_FAILURE
+    )
+    assert destination.read_text() == "earlier bytes\n"
+
+
+def test_an_output_path_the_run_cannot_write_is_a_publication_failure(
+    root: Path, tmp_path: Path
+) -> None:
+    written(root, "guide.md", "# Guide\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "-o",
+        str(tmp_path / "absent" / "bundle.md"),
+        "guide.md",
+    )
+    assert run.status == PUBLICATION_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
+
+
+def test_a_validation_only_run_bundles_and_publishes_nothing(
+    root: Path, tmp_path: Path
+) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n")
+    destination = tmp_path / "bundle.md"
+    run = invoke("--root", str(root), "--check", "-o", str(destination), "guide.md")
+    assert run.status == SUCCESS
+    assert run.stdout == ""
+    assert not destination.exists()
+
+
+def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Another Name\n\n###### Deep\n")
+    run = invoke("--root", str(root), "--check", "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
