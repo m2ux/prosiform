@@ -1,0 +1,16 @@
+description = "A group whose title the file heading absorbed keeps its source levels, so no heading needs a level written and a Setext heading is emitted as the Setext heading its source wrote."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Heading syntax",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

@@ -1,0 +1,17 @@
+description = "A heading a retained container carries moves down one level where it sits, a nested container's heading with it, while the container markers, the list structure and the heading-like text inside a code example are carried as the source wrote them."
+
+clauses = [
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Containers",
+  "Section extraction and output hierarchy — Enclosing inclusion",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
