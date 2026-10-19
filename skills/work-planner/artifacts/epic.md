@@ -14,11 +14,11 @@ Read these files first.
 
 The evidence required before starting an epic's work.
 
-**Inputs:** Current initiative and epic bodies, and current issue and base-merge records for every prerequisite named by their rows.
+**Inputs:** Current initiative and epic bodies, and current issue and base-merge records for every prerequisite the initiative row names.
 
 1. Identify each prerequisite the supplied initiative row names.
-2. Apply the initiative's [whole-epic dependency rule](initiative-issue-body.md#work-breakdown); a task row's reference to another epic's row gates that row alone, and retains which output is consumed.
-3. Confirm each prerequisite epic is closed as completed and every one of its bases has merged. A dependency on one task of another epic waits for that entire epic's delivery, since its output reaches this epic's base when that epic's bases merge. Missing records leave the prerequisite unconfirmed.
+2. Apply the initiative's [whole-epic dependency rule](initiative-issue-body.md#work-breakdown); a task row's reference to another epic retains which output is consumed, and gates that row rather than this epic.
+3. Confirm each prerequisite epic is closed as completed and every one of its bases has merged. Missing records leave the prerequisite unconfirmed.
 4. Return the [Prerequisite Evidence](#prerequisite-evidence), identifying each confirmed prerequisite and missing condition. Only a confirmed result permits an unstarted epic to be marked Ready, its bases to be created or its task to be dispatched.
 
 ### *Inspect* Epic Delivery
