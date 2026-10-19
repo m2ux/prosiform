@@ -1,0 +1,16 @@
+description = "A YAML example inside a code block and a thematic break below the first line are both content, because neither sits where an opener can."
+
+clauses = [
+  "Frontmatter policy — do not strip YAML examples in code blocks or non-leading thematic breaks",
+  "Parser and source-preserving edits — Untouched content",
+  "Adversarial acceptance fixtures — Frontmatter",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

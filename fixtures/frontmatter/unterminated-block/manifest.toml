@@ -1,0 +1,21 @@
+description = "A recognized frontmatter opener that no later line closes fails, naming the line the opener sits on rather than consuming the document as metadata."
+
+clauses = [
+  "Frontmatter policy — step 6",
+  "Validation and failure contract — Publication",
+  "Adversarial acceptance fixtures — Frontmatter, missing closers",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNTERMINATED_FRONTMATTER"
+reference = "guide.md"
+source = "guide.md:1"
