@@ -318,6 +318,8 @@ A collection that shares material with a sibling is therefore rooted above both:
 
 A refused reference says the root is too narrow at least as often as it says the link is wrong. The diagnostic names the resolved path so the caller can tell the two apart, and that is the only thing the tool can say about it.
 
+**D33 supersedes the rooting conclusion above.** The reasoning holds and the measurement holds: the boundary must not dictate how a skill is authored, and nine of those ten faults were the root's fault rather than the links'. What has changed is that a reference's shape is no longer what makes it a dependency. The links to the shared guidelines go unmarked, so they are citations, and a citation puts nothing outside the root. The skill is rooted at its own directory, nothing in it moves, and the boundary still dictates nothing — which is the outcome this decision wanted and could not reach while every mention was a requirement.
+
 ## D32 — The Mark Is Authoring Syntax and Does Not Reach the Bundle
 
 A dependency's link text opens with `¬`. A rewritten link carries the text that followed the mark and not the mark itself.
@@ -327,6 +329,16 @@ The alternative was to preserve it. Visible link text is preserved everywhere el
 It loses to what the mark is. The mark says *this reference is a requirement*, which is a statement to the compiler about the source, not content the author wrote for a reader. A marked link is rewritten in any case — its destination changes from a source path to a bundle destination — so the text is already being transformed at that point, and dropping the mark costs no additional pass. Carrying it would put a symbol in every bundled link that means nothing to the reader holding the bundle, where every reference has already been resolved and the distinction the mark drew no longer applies.
 
 An unmarked link is emitted as authored and is not rewritten, so no mark can appear in one. The invariant therefore reads: a mark appears in a source and never in a bundle.
+
+## D33 — A Skill Is Rooted at Its Own Directory, and a Citation Leaves It
+
+A collection is rooted at its own directory. `skills/work-planner` is the root for bundling work-planner, and the shared material a skill cites from above that directory is not carried into the bundle.
+
+D31 reached the opposite conclusion and was right to, under the rule in force: every local Markdown link was a dependency, so a citation of `skills/guidelines.md` put the closure above the skill, and the only way to keep the links where their authors wrote them was to widen the root. Widening works and costs something — a root at `skills` permits a run to read every sibling collection, which is a larger boundary than any one bundling needs, and it makes the portable unit the whole directory of skills rather than the skill.
+
+The mark removes the choice between them. A citation is unmarked, so it carries no document and crosses no boundary; a requirement is marked, and an author who marks a reference above the root is told the root is too narrow for what they required. The root goes back to being the smallest boundary that contains what the run was asked to carry, which is what a confinement boundary should be.
+
+Nineteen references across five documents in two collections cite the shared guidelines this way, and two further collections cite nothing above themselves. None of them changes: an unmarked link is what they already are.
 
 ## Evidence
 
