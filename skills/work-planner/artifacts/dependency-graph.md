@@ -58,10 +58,6 @@ Every pair of tasks in an epic where neither depends on the other is named in th
 
 A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
 
-### Findings
-
-A check reports each dependency listed twice or already implied, each independent pair absent from Joins, each whole-epic dependency with that epic's row count, its binding row and level, and the earliest row and its level, and the longest chains.
-
 ## Commands
 
 ### Check Dependencies

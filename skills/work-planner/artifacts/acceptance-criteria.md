@@ -21,7 +21,7 @@ The verification evidence for a supplied set of criteria whose delivery is ready
 1. Confirm the supplied delivery findings establish [Readiness](#readiness) for each selected criterion.
    - Return an undelivered or unreadable dependency as a blocker for that criterion.
 2. Run each criterion's named instrument on the branch or branches the delivering pull requests merged into.
-   - Record the result against the tested revisions, meeting [Coverage Reports](issue-body.md#coverage-reports). A failed, unavailable or inconclusive instrument leaves the criterion unverified.
+   - Record the result against the tested revisions, meeting [Instrument Result](#instrument-result).
 3. Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
    - Leave body publication and further planning to the caller.
 
@@ -31,7 +31,7 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
 
 **Inputs:** Issue JSON, verified criterion ids, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
 
-1. Record the criteria, ticking Done as [Tables](issue-body.md#tables) and [Work Breakdown](epic-issue-body.md#work-breakdown) state.
+1. Record the criteria, meeting [Tick State](#tick-state).
    - For an epic, run [Record Epic Criteria](epic-issue-body.md#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
    - For an initiative, run [Record Initiative Criteria](initiative-issue-body.md#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
 2. Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
