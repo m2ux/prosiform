@@ -70,7 +70,7 @@ Use a versioned `skill-markdown-v1` profile based on CommonMark, with pipe table
 - **Bare text:** Do not infer dependencies from ordinary paths in prose. Bare URLs may remain text; browser-specific rendering is outside the guaranteed profile.
 - **Unsupported extensions:** Footnotes, wiki links, heading-attribute syntax, and include/transclusion directives are not v1 bundling features. Reject recognized unsupported dependency or section-naming constructs in selected content with `E_UNSUPPORTED_CONSTRUCT`, but do not guess every possible extension from ordinary prose.
 - **File suffixes:** Recognize `.md` and `.markdown` case-insensitively for classification while preserving filesystem spelling and case semantics. An explicit entry with another suffix fails with `E_UNSUPPORTED_ENTRY_SUFFIX`.
-- **Encoding:** Require valid UTF-8. Tolerate and remove one leading UTF-8 BOM as source transport metadata.
+- **Encoding:** Require valid UTF-8, and fail a source that is not with `E_INVALID_ENCODING` rather than decoding it with replacement characters. Tolerate and remove one leading UTF-8 BOM as source transport metadata.
 
 Pin the parser configuration and definition-handling rules as part of the profile. Later extension changes must not silently change the interpretation of existing source.
 
