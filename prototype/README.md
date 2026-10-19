@@ -37,6 +37,7 @@ The build's tests and static checks are named commands, run from the repository 
 | Command | Runs |
 | --- | --- |
 | `make test` | `pytest` over `tests/`. A run that collects no test exits 5, so a suite that discovers nothing fails. |
+| `make corpus` | `pytest` over `../checks/tests`, which validates every fixture manifest the corpus holds. The corpus is not this build, so it carries its own command. |
 | `make lint` | `ruff check` over the package, its tests and `checks/`. |
 | `make format-check` | `ruff format --check` over those same files. Formatting is reported, not applied. |
 | `make typecheck` | `mypy` in strict mode over those same files. |
@@ -47,6 +48,8 @@ The build's tests and static checks are named commands, run from the repository 
 | [`pytest`](https://pypi.org/project/pytest/) | `==9.1.1` | Discovers and reports the suite, and exits nonzero on a failure and on an empty discovery alike. |
 | [`ruff`](https://pypi.org/project/ruff/) | `==0.17.1` | The linter and the formatter in one tool, so one declared configuration governs both. |
 | [`mypy`](https://pypi.org/project/mypy/) | `==2.4.0` | The type checker, run in strict mode. |
+| [`jsonschema`](https://pypi.org/project/jsonschema/) | `==4.26.0` | Validates a fixture manifest against the corpus schema, which is a published schema language rather than a validator written here. |
+| [`types-jsonschema`](https://pypi.org/project/types-jsonschema/) | `==4.26.0.20261006` | The annotations `jsonschema` does not ship, which strict mode requires. |
 
 `tests/test_profile.py` holds the pinned parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text, typographic substitution off, and raw HTML recognized as a token of its own.
 
