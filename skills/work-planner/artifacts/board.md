@@ -2,12 +2,6 @@
 
 The theme or proposals board, its membership and each item's status.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](issue.md)
-
 ## Operations
 
 ### *Select* Project Board
@@ -147,7 +141,7 @@ A board's repositories are those its items' issues live in, read from each item'
 
 ### Assignees
 
-An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so a change is made through [Assign Tracker Issue](issue.md#assign-tracker-issue).
+An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so the call that changes one acts on the issue.
 
 ### Standalone Issues
 

@@ -100,16 +100,6 @@ The Development links observed for one issue through authenticated GitHub.
 1. Read every page and state, across repositories, recording each linked pull request's identity.
 2. Return the observed links and whether the entire field was readable.
 
-### *Assign* Tracker Issue
-
-The issue's assignees brought to the supplied set.
-
-**Inputs:** Issue identity, the logins to assign and the logins to unassign.
-
-1. Run [Add Issue Assignee](#add-issue-assignee) for each login to assign.
-2. Run [Remove Issue Assignee](#remove-issue-assignee) for each login to unassign.
-3. Run [Fetch Tracker Issue](#fetch-tracker-issue) and return the saved assignees. A login GitHub refuses, because it cannot be assigned in that repository, returns to the caller unset.
-
 ### *Confirm* Repository Auto-Close
 
 Whether the repository auto-closes issues whose linked pull requests merge, established for this session.
@@ -249,42 +239,6 @@ gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/labels' -f 'lab
 
 ```bash
 gh api --method POST 'repos/<owner>/<repo>/issues/943/labels' -f 'labels[]=<label>' --jq '.[].name'
-```
-
-### Add Issue Assignee
-
-Assigns a user to an issue.
-
-**Inputs:** Repository, issue number and the login to assign.
-
-Repeat `-f 'assignees[]=<login>'` for each supplied login.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/assignees' -f 'assignees[]=<login>' --jq '.assignees[].login'
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/943/assignees' -f 'assignees[]=m2ux' --jq '.assignees[].login'
-```
-
-### Remove Issue Assignee
-
-Unassigns a user from an issue.
-
-**Inputs:** Repository, issue number and the login to unassign.
-
-Repeat `-f 'assignees[]=<login>'` for each supplied login.
-
-```bash
-gh api --method DELETE 'repos/<owner>/<repo>/issues/<issue-number>/assignees' -f 'assignees[]=<login>' --jq '.assignees[].login'
-```
-
-**Example:**
-
-```bash
-gh api --method DELETE 'repos/<owner>/<repo>/issues/943/assignees' -f 'assignees[]=m2ux' --jq '.assignees[].login'
 ```
 
 ### Remove Issue Label
