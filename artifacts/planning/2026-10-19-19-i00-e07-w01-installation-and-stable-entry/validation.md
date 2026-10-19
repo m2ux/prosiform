@@ -127,4 +127,10 @@ Each of these is declared `awaiting = "I00:E10"`.
 
 ## The version the entry point reports
 
-The command reports `prosiform 0.0.0 (skill-markdown-v1)`. The profile identifier is the build's own and is what a caller reads to know which contract it is talking to. The version is the placeholder the project definition has carried since the repository was laid out; releasing a version that says something is a decision for the epic that ships the tool, not for the check that proves it resolves.
+The runs above were performed at `f555f90`, where the project definition still carried the placeholder `0.0.0` and the command reported `prosiform 0.0.0 (skill-markdown-v1)`. [#67](https://github.com/m2ux/prosiform/pull/67) raises it to `0.1.0`, merged into `i00/e07/main` at `8a08e4f`, and the smoke run at `db42849` reports `prosiform 0.1.0 (skill-markdown-v1)`. The profile identifier is unchanged and is what a caller reads to know which contract it is talking to.
+
+The version response is compared with the whole literal in `tests/test_cli.py`, so the number is declared in the project definition and read back where a caller reads it: raising one without the other fails the suite rather than reaching a release.
+
+## The three cases awaiting I00:E10
+
+They are raised as [#68](https://github.com/m2ux/prosiform/issues/68) and placed as row W04 of [#9 I00:E10](https://github.com/m2ux/prosiform/issues/9), covering that epic's AC7. The conformance report's declared-surface listing already names each exit status no fixture can reach with its reason; an installation claim no fixture can reach is the same kind of statement, and the report is where it is read rather than this record.
