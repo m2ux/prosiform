@@ -284,7 +284,11 @@ gh run list --repo m2ux/prosiform --branch i00/e02/w05-fixtures-from-unmodified-
 
 **Observes AC6.** The checks run on `i00/e02/main` once this task's pull request merges into it.
 
-**Pass.** Recorded after the merge.
+```bash
+gh run list --repo m2ux/prosiform --branch i00/e02/main
+```
+
+**Pass.** Pull request `#54` merged as `56ad50f`, a merge commit, with `mergeStateStatus` `CLEAN` and the head check `Checks` already `success` on `c58469f`. Run `39251700519` on `56ad50f` reports conclusion `success`. The epic base was brought up to date with `origin/main` before the merge and was already up to date.
 
 ## The Documents Selected
 
