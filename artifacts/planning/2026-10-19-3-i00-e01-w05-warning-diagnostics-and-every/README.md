@@ -13,6 +13,7 @@ It matters because a diagnostic carries a stable code and the corpus currently s
 | Artifact | What it holds |
 | --- | --- |
 | [w05.md](w05.md) | The task's plan: how a severity pairs a diagnostic with its catalogue, how the catalogue test derives both prefixes from the design, and how the link check separates a document from a fixture's source |
+| [validation.md](validation.md) | Each check as it was run: procedure, tested revision, the clean tree, each deliberate fault and the failure it produced, the continuous-integration run, and what the checks do not establish |
 
 ## Links
 
