@@ -92,7 +92,8 @@ The main path meets [Outcomes](#outcomes).
    - For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file:
      - **Unmet.**
        - Each task [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) reports unmet is a gap.
-       - Follow [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task).
+       - Follow [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task) with the current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
+       - For each criterion it returns as already holding, run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria), pass the verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria), and publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
      - **Repair.**
        - Repair Done cells as [Tables](../artifacts/issue-body.md#tables) states.
        - When the preceding Record Epic Delivery call reports a row done, or a tick cleared, run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) from the output body file, without asking.

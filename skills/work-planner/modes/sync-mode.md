@@ -108,7 +108,9 @@ The main path meets [Outcomes](#outcomes).
    Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
    - Retain the returned verified criterion ids and evidence for the tick step.
    - For an unresolved epic criterion requiring further work:
-     - Follow [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task) with the current epic JSON and body, delivered task row, criterion ids, findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
+     - Follow [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task) with the current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
+     - For each criterion it returns as already holding, repeat [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) with that criterion id, the current epic body, delivery findings, delivery revisions and named instruments.
+     - Pass the returned verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path, and publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
      - Resume with its recorded disposition; a criterion that cannot be confirmed stays unticked.
 8. **Tick.**
    Tick the confirmed criteria with [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria).

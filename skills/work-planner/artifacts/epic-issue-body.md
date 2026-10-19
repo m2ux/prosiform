@@ -9,7 +9,6 @@ Read these files first.
 - [Issue Body](issue-body.md)
 - [Pull Request](pull-request.md)
 - [Epic](epic.md)
-- [Acceptance Criteria](acceptance-criteria.md)
 - [Issue](issue.md)
 
 ## Operations
@@ -96,17 +95,13 @@ One epic body with confirmed task-grain and coverage corrections.
 
 The agreed disposition of criteria a delivered row left unmet.
 
-**Inputs:** Current epic JSON and body, delivered task row, criterion ids, delivery findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
+**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
 
 1. Present each unmet criterion and its missing evidence to the user.
-   - For criteria the user confirms already hold:
-     - Run [Verify Selected Criteria](acceptance-criteria.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments.
-     - Pass returned verified ids to [Tick Verified Criteria](acceptance-criteria.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path.
-     - Publish through [Save Tracker Issue](issue.md#save-tracker-issue).
-   - Retain verified criteria on the delivered task.
-   - Record failed verification or unanswered decisions as pending.
-   - If no criteria need further work, return the saved results and pending findings to the caller.
-   - Continue to the draft step with only the criteria the user confirms need further work, using the saved body.
+   - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
+   - Record an unanswered decision as pending.
+   - If no criteria need further work, return the pending findings to the caller.
+   - Continue to the draft step with only the criteria the user confirms need further work.
 2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
    - Confirm the draft with the user.
    - On acceptance, call [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.

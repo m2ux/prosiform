@@ -8,6 +8,7 @@ Read these files first.
 
 - [Issue Body](issue-body.md)
 - [Initiative Issue Body](initiative-issue-body.md)
+- [Planning Record](planning-record.md)
 
 ## Operations
 
@@ -33,7 +34,7 @@ The draft checked against the initiative outcomes.
 6. Follow [Check Outside Threats](#check-outside-threats).
 7. Rank the gaps, meeting [Gaps](#gaps).
    - Flag the few that most threaten the goal.
-   - Record the trace table in the planning record, or give it to the user when the change has none.
+   - Record the trace table in the [planning record](planning-record.md), or give it to the user when the change has none.
    - Return the trace and ranked findings to the caller.
 
 ### Check Outside Threats

@@ -36,12 +36,12 @@ The main path meets [Outcomes](#outcomes).
    - Resume review.
 6. **Review.**
    - Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) on every issue the hoist changed or created.
-   - Run [Check Dependencies](../artifacts/dependency-graph.md#check-dependencies) on each initiative that gained a task or epic.
+   - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) on each initiative that gained a task or epic.
    - Resolve each finding with the user.
    - Apply confirmed body corrections through [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections).
    - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Repeat Validate Issue Body with the saved affected bodies.
-   - Repeat Check Dependencies with the saved affected bodies.
+   - Repeat Check Dependencies and Numbering with the saved affected bodies.
    - Report any unresolved finding.
 7. **Report.**
    Report each orphan's placement, the issues changed, created or closed, and the orphans left.
