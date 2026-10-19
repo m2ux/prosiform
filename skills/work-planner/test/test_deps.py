@@ -225,6 +225,10 @@ class EpicPriority(unittest.TestCase):
                  'E02:W01': ('Finish', ['E01:W01'], [])}
         self.assertEqual(epic_priority(tasks), {'E00': 3, 'E01': 2, 'E02': 1})
 
+    def test_an_epic_with_no_tasks_carries_the_largest_number(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Consume', ['E00:W01'], [])}
+        self.assertEqual(epic_priority(tasks, ('E00', 'E01', 'E02')), {'E00': 2, 'E01': 1, 'E02': 2})
+
     def test_the_proposed_priority_is_printed_for_each_epic(self):
         code, text = run([('E00', epic_body(('W01', 'Output', ''))),
                           ('E01', epic_body(('W01', 'Consume', 'E00')))])

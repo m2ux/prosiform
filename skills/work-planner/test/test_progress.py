@@ -220,6 +220,10 @@ class Next(unittest.TestCase):
         items = [self.initiative(1), self.ready(11, 1, depends='E02:W01'), self.ready(12, 2)]
         self.assertEqual(refs(summary(items)), ['I01:E02', 'I01:E01'])
 
+    def test_an_initiative_with_an_unreadable_work_breakdown_still_ranks_its_epics(self):
+        broken = item(issue(1, '[I01] Theme 1: Work', body='## Work Breakdown\n\nTBD\n'), 'In Progress')
+        self.assertEqual(refs(summary([broken, self.ready(11, 1)])), ['I01:E01'])
+
     def test_first_five_and_a_count_of_the_rest(self):
         lines = section(summary([self.ready(10 + n, n) for n in range(7)]), 'Next')
         self.assertEqual(len(lines), 6)

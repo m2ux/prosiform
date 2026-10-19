@@ -193,11 +193,11 @@ class Board:
         initiative row names. epics maps the initiative's Eyy ids to their issues."""
         header, tasks = self.table(key)
         cells = [cell(header, task, 'Depends on') for task in tasks.values()]
-        for issue in self.issues.values():
+        for parent, issue in self.issues.items():
             if not re.match(r'^\[I\d\d\]', issue.get('title') or ''):
                 continue
-            head, body = rows(issue)
-            cells += [cell(head, item, 'Depends on') for item in body
+            head, listed = self.table(parent)
+            cells += [cell(head, item, 'Depends on') for item in listed.values()
                       if linked_issue(id_cell(head, item)) == key]
         found = set()
         for entries in cells:

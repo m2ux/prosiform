@@ -173,9 +173,10 @@ def epic_dependencies(tasks: dict) -> dict[str, set[str]]:
             for epic, consumers in own.items()}
 
 
-def epic_priority(tasks: dict) -> dict[str, int]:
-    """Each epic's proposed priority. Epics that can start together share a number, and a larger
-    number is higher, so an epic with no prerequisite epic carries the largest."""
+def epic_priority(tasks: dict, names: tuple[str, ...] = ()) -> dict[str, int]:
+    """Each epic's proposed priority, over the epics the tasks place and the names given. Epics
+    that can start together share a number, and a larger number is higher, so an epic with no
+    prerequisite epic, one with no tasks among them, carries the largest."""
     needs = epic_dependencies(tasks)
     level: dict[str, int] = {}
 
@@ -184,7 +185,7 @@ def epic_priority(tasks: dict) -> dict[str, int]:
             level[epic] = 1 + max((lv(other) for other in needs.get(epic, set())), default=-1)
         return level[epic]
 
-    depth = {epic: lv(epic) for epic in needs}
+    depth = {epic: lv(epic) for epic in {*needs, *names}}
     return {epic: max(depth.values(), default=0) - found + 1 for epic, found in depth.items()}
 
 
@@ -336,7 +337,7 @@ def main(argv: list[str]) -> int:
     print('\n--- whole epics')
     print('\n'.join(whole_epic_lines(tasks, edges, lv)) or 'none')
     print('\n--- epic priority (epics sharing a number start together)')
-    proposed = epic_priority(tasks)
+    proposed = epic_priority(tasks, tuple(epics))
     for epic in sorted(proposed, key=lambda e: (-proposed[e], e)):
         print(proposed[epic], epic)
 

@@ -52,7 +52,7 @@ An initiative Depends on cell takes the epics it derives, as [Work Breakdown](in
 
 ### Epic Priority
 
-The map proposes one positive integer for each epic, derived from the whole-epic edges: an epic with no prerequisite epic carries the largest number, and each epic takes one less than the smallest its prerequisites carry. Epics that share a number have the same prerequisite depth, so they can start together.
+The map proposes one positive integer for each epic supplied, derived from the whole-epic edges: an epic with no prerequisite epic, one whose tasks are not yet written among them, carries the largest number, and each other epic takes one less than the smallest its prerequisites carry. Epics that share a number have the same prerequisite depth, so they can start together.
 
 ### Joins
 
