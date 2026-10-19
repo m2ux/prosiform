@@ -8,7 +8,7 @@ Read these files first.
 
 - [Issue](../artifacts/issue.md)
 - [Review Pull Request](review-pull-request.md)
-- [Understand Mode](../modes/understand-mode.md)
+- [Change Overview](change-overview.md)
 - [Pull Request](../artifacts/pull-request.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Epic](../artifacts/epic.md)
@@ -19,7 +19,7 @@ Read these files first.
 1. **Prepare the evidence.**
    - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, which gates the merge this protocol makes.
    - Follow [Review Pull Request](review-pull-request.md) with the actual task merges, the epic's issue and that confirmed setting.
-   - Run [Understand Mode](../modes/understand-mode.md) with the review pull request identity.
+   - Follow [Change Overview](change-overview.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
    - Put a draft still awaiting its ready mark to the user as an [Interview](../guidelines.md#modes), naming the epic standing in review on its board.
@@ -32,7 +32,7 @@ Read these files first.
    - Call [Check Epic Readiness](../artifacts/epic.md#check-epic-readiness) with the current epic, delivery records, complete issue-link snapshot and that verification evidence.
    - When the branch content changes, before checking merge readiness:
      - Repeat Review Pull Request with the current task merges.
-     - Repeat Understand Mode with the same pull request identity and updated head.
+     - Repeat Change Overview with the same pull request identity and updated head.
    - Follow [Fetch Merge Readiness](../artifacts/pull-request.md#fetch-merge-readiness) for the exact current head and target. A conflict, failed or pending check, unmet epic condition or incomplete evidence leaves integration blocked.
 3. **Merge or hand off.**
    Pass the confirmed epic readiness, verified head, target requirements, repository prerequisite and passing evidence to [Merge Delivery Pull Request](../artifacts/pull-request.md#merge-delivery-pull-request) with delivery kind epic, without asking for further confirmation.
