@@ -30,15 +30,4 @@ Read these files first.
    - Refresh the evidence.
    - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, project checkout, and output body file.
    - Follow [Issue Closure](issue-closure.md) when eligible.
-   - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative and every linked epic record. Initiative completion does not gate an epic merge.
-
-## Effects
-
-- **The task is recorded and closed.**
-  The delivered task's body carries its pull request link and verified criteria, and the issue is closed where its delivery is complete.
-- **The epic row is current.**
-  The epic's Work Breakdown reflects the merge, and its review pull request body cites the actual task merges.
-- **The epic closes only when every base has merged.**
-  An epic whose bases are not all merged stays open, and a draft or unmet merge condition leaves integration pending.
-- **The initiative and the board are untouched.**
-  A task merge alone records initiative delivery but syncs neither the initiative's closure nor its board.
+   - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative and every linked epic record. Initiative completion does not gate an epic merge. A task merge alone does not sync the initiative or board.

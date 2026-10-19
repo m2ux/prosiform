@@ -32,7 +32,7 @@ class DocumentInterfaces(unittest.TestCase):
                         if sections[i] == 'Prerequisites':
                             declared.add(destination)
                         elif sections[i] in ('Procedure', 'Operations', 'Fields',
-                                             'Outcomes', 'Effects', 'Commands'):
+                                             'Outcomes', 'Commands'):
                             used.add(destination)
                         if folder == 'artifacts':
                             self.assertNotIn(destination.parent.name, ('modes', 'protocols'), target)

@@ -68,13 +68,13 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Modes.**
   Files in `modes/` use Prerequisites, Procedure, Outcomes, optional Guidance, and optional Operations. Procedure and Outcomes are required; Operations holds cross-artifact command specifications.
 - **Protocols.**
-  Files in `protocols/` use Prerequisites, Procedure, Effects, and optional Guidance. Procedure and Effects are required. One file holds one protocol, so a caller runs the file and reaches into no step of it.
+  Files in `protocols/` use Prerequisites, Procedure, and optional Guidance. Procedure is required. One file holds one protocol, so a caller runs the file and reaches into no step of it.
 - **Artifacts.**
   Files in `artifacts/` use Prerequisites, optional Operations, Fields, optional Guidance, and optional Commands. Fields is required. Operations holds named procedures; Commands holds their implementation specifications. Templates are fenced Markdown under Fields.
 - **Ownership.**
   Modes coordinate one user goal; protocols coordinate one change across several artifacts; artifact operations perform and validate work on their own subject. Artifact command ownership follows the subject, independent of caller count. A single-step artifact operation uses one bullet and counts as a procedure.
 - **What each terminal section states.**
-  A mode's Outcomes state the user goal met. A protocol's Effects state what has changed across the artifacts it touched, and what a blocker leaves unchanged. An artifact's Fields state the shape of its subject.
+  A mode's Outcomes state the user goal met, which its steps do not carry. An artifact's Fields state the shape of its subject, which is a contract rather than a sequence. A protocol states what it changed in the steps that change it, so it carries no closing summary; one would restate the procedure and go stale against it.
 - **Direction.**
   A mode runs protocols and artifact operations. A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. An artifact runs neither a mode nor a protocol, and names neither.
 - **Choosing between a protocol and an artifact.**

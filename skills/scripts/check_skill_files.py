@@ -28,7 +28,8 @@ name, in the order they name them, Procedure among them, so the reader knows
 what the file carries before opening it. A file carrying no procedure keeps
 its own shape, and a mode file in references carries Rules as well. Files in
 modes use Procedure and Outcomes; artifacts use Operations and Fields;
-protocols use Procedure and Effects. Their directory selects that contract.
+protocols use Procedure alone, since what a protocol changes is what its
+steps do. Their directory selects that contract.
 Artifact commands belong to their subject, including when only one external
 procedure calls them.
 
@@ -63,7 +64,7 @@ LEAD_WIDTH = 100
 SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
 MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Outcomes', 'Guidance', 'Operations')
 ARTIFACT_SECTIONS = ('Prerequisites', 'Operations', 'Fields', 'Guidance', 'Commands')
-PROTOCOL_SECTIONS = ('Prerequisites', 'Procedure', 'Effects', 'Guidance')
+PROTOCOL_SECTIONS = ('Prerequisites', 'Procedure', 'Guidance')
 
 
 def anchor_of(text):
@@ -248,7 +249,7 @@ def check(path, root, cache, cited, called):
                PROTOCOL_SECTIONS if directory == 'protocols' else SECTIONS)
     required = (('Procedure', 'Outcomes') if directory == 'modes' else
                 ('Fields',) if directory == 'artifacts' else
-                ('Procedure', 'Effects') if directory == 'protocols' else
+                ('Procedure',) if directory == 'protocols' else
                 ('Procedure', 'Rules') if mode else ('Procedure',))
     if structured or mode or (path.name != 'SKILL.md' and procedure_spans(lines, fenced, headings)):
         sections = [(index, title.strip()) for index, level, title in headings if level == 2]

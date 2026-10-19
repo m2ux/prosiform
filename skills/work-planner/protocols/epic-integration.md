@@ -39,14 +39,3 @@ Read these files first.
 4. **Confirm the result.**
    Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) to confirm the merged state, verified head, target and merge commit.
    - Return the result or blocker. Draft and blocked pull requests remain open.
-
-## Effects
-
-- **A ready epic base reaches its long-lived branch.**
-  The merge runs on a head verified after the last branch change, with the review body and its overview current for that head.
-- **A reviewer meets an explained change.**
-  The review pull request carries an architecture overview written at the head under review.
-- **An unready base stays open with its condition named.**
-  A draft the user has not marked ready, a conflict, a failed or pending check, an unmet epic condition or incomplete evidence each leave the pull request open.
-- **A human approval requirement is handed back, not worked around.**
-  Where the target requires a reviewer, integration returns that handoff rather than attempting the merge.

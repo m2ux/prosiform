@@ -125,18 +125,18 @@ Read this before adding or changing a protocol.
   One file holds one protocol. A caller runs the file; it does not link a step. A sequence worth calling on its own is its own protocol.
 - **Procedure.**
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
-- **Effects.**
-  Effects state what has changed when the protocol completes, and what a blocker leaves unchanged. An effect is a change to the work, not a user goal and not an artifact's shape. It names no step and links to none.
+- **No closing summary.**
+  What a protocol changes, and what a blocker leaves unchanged, is stated by the step that changes it. A protocol carries no section restating the result; a reader following the procedure and its links has it already, and a summary goes stale against the steps it describes.
 - **Calls.**
   A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. It is run by modes and by other protocols, never by an artifact.
 - **Prerequisites.**
-  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure or Effects link to, including each protocol and mode it runs.
+  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure links to, including each protocol and mode it runs.
 - **A new protocol.**
   A new protocol is a new file. An artifact is not edited to name it.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every protocol is added to this section.
 - **Sections.**
-  Prerequisites, Procedure, Effects, then Guidance when the file has an assistive statement that is not a step or an effect. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
+  Prerequisites, Procedure, then Guidance when the file has an assistive statement that is not a step. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
 
 ## Artifacts
 

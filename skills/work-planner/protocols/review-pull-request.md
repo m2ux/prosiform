@@ -27,13 +27,4 @@ Read these files first.
    Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for the published review.
    - Compare its complete body with the published file.
    - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the current epic and refreshed review and task-merge records.
-   - Return its cited-versus-actual merge findings with the review identity.
-
-## Effects
-
-- **The epic base has one review pull request.**
-  It is opened on the first task merge and reused thereafter, and the session recording each task merge owns the update.
-- **Its body cites the actual merges.**
-  The published body is read back and compared, and a difference between cited and actual merges returns to the caller as a finding.
-- **It stays a draft until the user says otherwise.**
-  The epic stays open while the review is a draft, and only the user marks it ready.
+   - Return its cited-versus-actual merge findings with the review identity. The session recording each task merge owns this update.

@@ -29,12 +29,3 @@ Read these files first.
    For the epic, run [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with its current JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body path.
    - Publish that returned epic body and each task body returned by Record Task Delivery through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Return the saved identities and findings to the caller.
-
-## Effects
-
-- **Each delivered task body carries its delivery.**
-  The task's pull request link and its verified criteria are saved on the issue.
-- **The epic's rows and criteria agree with the merges.**
-  Rows link the pull requests that delivered them, verified criteria are ticked, and a confirmed unplaced task has gained its row.
-- **A coverage disagreement is reported, not resolved.**
-  Recording continues through it, and the caller receives the disagreement with its pull request and row.
