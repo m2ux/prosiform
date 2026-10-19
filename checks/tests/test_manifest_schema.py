@@ -8,6 +8,11 @@ stated. A diagnostic's code comes from the catalogue its severity
 selects, so a fixture cannot expect a failure the contract does not
 define, and cannot declare a warning where an error belongs.
 
+A run that must leave a path untouched declares it, because a comparison
+of the two streams says nothing about a file. The declaration carries
+fixture-relative paths, one apiece, and a fixture whose run creates no
+file leaves it out.
+
 A fixture declaring behaviour the build has yet to deliver names the work
 that delivers it. The schema states that name's shape, so the marker is
 read by a tool rather than by a person, and a flag or a sentence in its
@@ -176,6 +181,35 @@ def test_an_empty_diagnostic_list_is_a_declaration() -> None:
     manifest = complete()
     manifest["expected"]["diagnostics"] = []
     assert errors(manifest) == []
+
+
+def test_a_manifest_declaring_an_absent_path_validates() -> None:
+    manifest = complete()
+    manifest["expected"]["absent"] = ["bundle.md"]
+    assert errors(manifest) == []
+
+
+def test_a_manifest_declaring_no_absent_path_validates() -> None:
+    assert "absent" not in complete()["expected"]
+    assert errors(complete()) == []
+
+
+def test_an_empty_absent_list_fails() -> None:
+    manifest = complete()
+    manifest["expected"]["absent"] = []
+    assert errors(manifest), "a declaration naming no path passed validation"
+
+
+def test_an_absent_path_named_twice_fails() -> None:
+    manifest = complete()
+    manifest["expected"]["absent"] = ["bundle.md", "bundle.md"]
+    assert errors(manifest), "one path declared twice passed validation"
+
+
+def test_an_absent_path_leaving_the_fixture_fails() -> None:
+    manifest = complete()
+    manifest["expected"]["absent"] = ["../elsewhere/bundle.md"]
+    assert errors(manifest)
 
 
 def test_a_manifest_awaiting_an_epic_validates() -> None:

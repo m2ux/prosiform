@@ -67,11 +67,28 @@ source = "guide.md:3"
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects. A run emitting none declares an empty list. |
+| `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it is one the corpus declares ahead of the build. |
 
 The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
 Expected output is a file rather than text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
+
+A run's working directory is the fixture's own, so a path an invocation writes lands among the fixture's files. A comparison of the two streams says nothing about such a file, which is why a run that must leave one unwritten declares the path:
+
+```toml
+[invocation]
+root = "source"
+arguments = ["--check", "--output", "bundle.md", "guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
+absent = ["bundle.md"]
+```
+
+A fixture that already holds a path it declares absent is malformed and is refused before the build is invoked, because a declaration the directory contradicts before the run states nothing about the run.
 
 ## A fixture ahead of the build
 
@@ -150,6 +167,7 @@ The runner appends `--root`, the fixture's source tree resolved to an absolute p
 | `expected.stdout` | Byte for byte against the file the manifest names. | The offset of the first differing byte, the line and byte column it falls on, and a window of each side whose control bytes are spelled out, so a CRLF against an LF is visible. |
 | `expected.exit_status` | As the integer the contract's categories declare. | The status expected and the status the run returned. |
 | `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a message or a remedy the manifest does not name still matches. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; and the field, with both values, when one differs. |
+| `expected.absent` | Each declared path, after the run. | The path the run created and the bytes it wrote. The file is removed once it is reported, so the directory a fixture leaves behind is the one its manifest declares. |
 
 A standard error line that is not a JSON object is reported as one, because the declared format carries diagnostics and nothing else.
 

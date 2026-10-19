@@ -1,0 +1,16 @@
+description = "A validation-only run bundles and validates its entry reference and publishes nothing, so it succeeds with both streams empty."
+
+clauses = [
+  "CLI contract — --check, discover, bundle and validate without emitting or publishing the bundle",
+  "Compile before publishing — no success output is published until the complete candidate has been constructed and validated",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+root = "source"
+arguments = ["--check", "guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

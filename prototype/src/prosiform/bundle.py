@@ -4,7 +4,8 @@ A group is a source document, headed by one generated H1 whose visible
 text is the document's normalized root-relative path with the Markdown
 extension removed. The path is escaped as literal heading text, so
 punctuation in a filename names a file rather than opening a link, an
-image, emphasis, code, raw HTML, an entity or a strikethrough. Two
+image, emphasis, code, raw HTML, an entity or a strikethrough, or closing
+the heading that carries it. Two
 documents sharing a basename in different directories carry their
 directories in their headings and stay distinguishable; two whose paths
 differ only by Markdown extension produce one heading text twice, which
@@ -67,7 +68,7 @@ ENTRY_CLOSING = "; everything else is material it references."
 ENTRY_JOIN = ", "
 ENTRY_LAST = " and "
 
-OPENERS = "\\`*_[]<>&~!"
+OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
 ATX_PREFIX = re.compile(r"^( {0,3})(#{1,6})")
@@ -113,11 +114,14 @@ def final_segment(title: str) -> str:
 
 
 def escaped(text: str) -> str:
-    """One string as literal Markdown text, opening no inline construct.
+    """One string as literal Markdown text, read as the characters it carries.
 
     A backslash precedes each character that can begin a construct the
     profile reads: an escape, a code span, emphasis, a link, an angle
-    bracket, an entity, a strikethrough and an image marker.
+    bracket, an entity, a strikethrough and an image marker. It also
+    precedes the number sign, which ends one: a heading whose text runs
+    to a space and a number sign carries a closing sequence, and a
+    renderer takes that sequence off the heading rather than showing it.
     """
     return OPENER.sub(r"\\\1", text)
 

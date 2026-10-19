@@ -1,9 +1,10 @@
 """Run one corpus fixture and decide its result from the manifest alone.
 
 A fixture declares an invocation and the standard output, exit status and
-diagnostics that invocation must produce. This module performs the run and
-compares all three against the declaration, so a verdict comes from the
-manifest and the fixture's files and from nothing else.
+diagnostics that invocation must produce, and the paths it must leave
+absent. This module performs the run and compares each against the
+declaration, so a verdict comes from the manifest and the fixture's files
+and from nothing else.
 
 The build under test is named by configuration and invoked as a
 subprocess: the environment variable `PROSIFORM_BUILD` holds its command
@@ -24,18 +25,28 @@ the preservation invariant turns on newline spelling and the trailing
 newline; each rendered window spells its control bytes, so a CRLF against
 an LF is visible rather than invisible. Diagnostics are compared in order
 on the fields the manifest declares, so one that is missing, extra or out
-of order is reported as what it is.
+of order is reported as what it is. A path declared absent is checked
+after the run, and a file found there is reported and removed, so a run
+leaves the fixture directory as the manifest declares it.
 """
 
 import json
 import os
 import shlex
 import subprocess
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from manifests import MANIFEST_NAME, errors, identity, missing_files, read
+from manifests import (
+    MANIFEST_NAME,
+    errors,
+    identity,
+    missing_files,
+    present_files,
+    read,
+)
 
 BUILD = "PROSIFORM_BUILD"
 BUILD_TIMEOUT = "PROSIFORM_BUILD_TIMEOUT"
@@ -46,6 +57,7 @@ INVOCATION = "invocation"
 EXIT_STATUS = "expected.exit_status"
 STDOUT = "expected.stdout"
 DIAGNOSTICS = "expected.diagnostics"
+ABSENT = "expected.absent"
 
 DECLARED_FIELDS = ("reference", "source")
 WINDOW = 24
@@ -160,6 +172,30 @@ def compare_stdout(expected: bytes, produced: bytes) -> list[Difference]:
         over = len(produced) - len(expected)
         detail.append(f"the run's output carries {count(over, 'byte')} beyond the end")
     return [Difference(STDOUT, "the bytes differ", tuple(detail))]
+
+
+def compare_absent(fixture: Path, declared: Sequence[str]) -> list[Difference]:
+    """Each path the manifest declares the run must leave absent.
+
+    A file found at one of them is read for the report and then removed,
+    so the fixture directory after a run is the directory its manifest
+    declares, whatever the build did.
+    """
+    differences = []
+    for name in declared:
+        created = fixture / name
+        if not created.exists():
+            continue
+        detail: tuple[str, ...] = ()
+        if created.is_file():
+            written = created.read_bytes()
+            created.unlink()
+            detail = (
+                f"{count(len(written), 'byte')} written, "
+                f"beginning {render(written[:WINDOW])}",
+            )
+        differences.append(Difference(ABSENT, f"the run created {name}", detail))
+    return differences
 
 
 def parse_diagnostics(stderr: bytes) -> tuple[list[dict[str, Any]], list[str]]:
@@ -299,7 +335,11 @@ def run_fixture(fixture: Path) -> Result:
     """One fixture run against the configured build and compared with its manifest."""
     name = identity(fixture)
     manifest = read(fixture / MANIFEST_NAME)
-    malformed = errors(manifest) + missing_files(fixture, manifest)
+    malformed = (
+        errors(manifest)
+        + missing_files(fixture, manifest)
+        + present_files(fixture, manifest)
+    )
     if malformed:
         difference = Difference(
             MANIFEST,
@@ -341,6 +381,7 @@ def run_fixture(fixture: Path) -> Result:
         *compare_exit_status(expected["exit_status"], completed.returncode),
         *compare_stdout((fixture / expected["stdout"]).read_bytes(), completed.stdout),
         *compare_diagnostics(expected["diagnostics"], completed.stderr),
+        *compare_absent(fixture, expected.get("absent", [])),
     ]
     return Result(
         name,

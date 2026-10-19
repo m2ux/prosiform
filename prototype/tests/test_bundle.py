@@ -62,6 +62,7 @@ def test_a_file_heading_is_the_path_without_its_markdown_suffix(
         ("a~b", "a\\~b"),
         ("a!b", "a\\!b"),
         ("a\\b", "a\\\\b"),
+        ("a#b", "a\\#b"),
         ("note-1.v2 (final)", "note-1.v2 (final)"),
     ],
 )
@@ -75,6 +76,21 @@ def test_an_escaped_path_opens_no_construct() -> None:
     children = tokens[1].children or []
     assert [child.type for child in children] == ["text"]
     assert children[0].content == "plan_[v2](x)"
+
+
+def test_an_escaped_path_closes_no_heading() -> None:
+    """A number sign ending a path is heading text, not a closing sequence."""
+    heading = f"# {escaped('notes/draft #')}\n"
+    tokens = parse(heading)
+    children = tokens[1].children or []
+    assert [child.type for child in children] == ["text"]
+    assert children[0].content == "notes/draft #"
+
+
+def test_a_path_ending_in_a_number_sign_keeps_it_in_its_file_heading() -> None:
+    one = grouped("notes/draft #.md", "A document whose path ends in a number sign.\n")
+    assert one.text.splitlines()[0] == "# notes/draft \\#"
+    assert one.headings[0] == "notes/draft #"
 
 
 @pytest.mark.parametrize(

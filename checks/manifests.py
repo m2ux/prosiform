@@ -89,6 +89,21 @@ def missing_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
     return missing
 
 
+def present_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
+    """Every path the manifest declares absent that the fixture already holds.
+
+    A declaration the directory contradicts before the run says nothing
+    about the run, so it is a defect in the fixture rather than a
+    difference the run produced.
+    """
+    declared = manifest.get("expected", {}).get("absent", [])
+    return [
+        f"expected.absent: {name} is a path the fixture holds"
+        for name in declared
+        if isinstance(name, str) and (fixture / name).exists()
+    ]
+
+
 def identity(fixture: Path, corpus: Path = CORPUS) -> str:
     """A fixture's identity: its path under the corpus.
 
