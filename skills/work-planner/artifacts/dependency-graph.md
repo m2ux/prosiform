@@ -35,7 +35,7 @@ The task graph and the row numbers it permits, checked and renumbered across the
    - Search prose for references the script cannot see.
    - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
    - Record the printed longest chains and each binding whole-epic edge in the planning record.
-   - Return the checked bodies and unresolved findings to the caller; do not publish a failed renumbering.
+   - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
 
 ## Fields
 
@@ -49,6 +49,10 @@ A task edge names the producing row for each output the depending row consumes. 
 ### Whole-Epic Edges
 
 An initiative Depends on cell takes the epics it derives, as [Work Breakdown](initiative-issue-body.md#work-breakdown) states. A whole-epic edge holds only where every prerequisite row is required; a narrower dependency stays in the task graph.
+
+### Epic Priority
+
+The map proposes one positive integer for each epic, derived from the whole-epic edges: an epic with no prerequisite epic carries the largest number, and each epic takes one less than the smallest its prerequisites carry. Epics that share a number have the same prerequisite depth, so they can start together.
 
 ### Joins
 
@@ -72,6 +76,7 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 - It also reports dependencies listed twice or already implied, and Joins pairs.
 - It prints each pair of tasks in an epic where neither depends on the other and the two do not name each other in Joins.
 - It prints each whole-epic dependency with that epic's row count, the binding row and its level, and the earliest row and its level.
+- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
 - It reads bodies from [Read Tracker Issue](issue.md#read-tracker-issue), or local drafts.
 
 ```bash
