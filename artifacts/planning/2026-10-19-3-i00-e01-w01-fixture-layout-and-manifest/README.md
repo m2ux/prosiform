@@ -13,6 +13,7 @@ It matters because the corpus is the contract. A fixture that declares everythin
 | Artifact | What it holds |
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: the fixture layout and its discovery rule, the manifest format and its fields, where expected output lives, the schema language and the validator that reads it, the command that runs the checks, and the catalogue of error codes with the design clause each comes from |
+| [validation.md](validation.md) | Each check as it was run: procedure, tested revision, the clean-tree result and the deliberate violations it fails on, and what the runs do not establish |
 
 ## Links
 
