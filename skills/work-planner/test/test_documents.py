@@ -34,9 +34,28 @@ class DocumentInterfaces(unittest.TestCase):
                         elif sections[i] in ('Procedure', 'Operations', 'Fields',
                                              'Outcomes', 'Commands'):
                             used.add(destination)
-                        if folder == 'artifacts':
-                            self.assertNotIn(destination.parent.name, ('modes', 'protocols'), target)
                     self.assertEqual(declared, used)
+
+    def test_calls_go_down_the_layer_stack(self):
+        """A mode aggregates protocol calls as an application calls services,
+        so a call reaches the layer below it. A protocol that runs a mode, or
+        an artifact that names either, inverts that and the lifecycle of one
+        user goal becomes a step of the change it was meant to coordinate."""
+        below = {'modes': ('protocols', 'artifacts', 'references'),
+                 'protocols': ('protocols', 'artifacts', 'references'),
+                 'artifacts': ('references',)}
+        for folder, reachable in below.items():
+            for path in sorted((ROOT / folder).glob('*.md')):
+                lines, fenced, _ = checker.scan(path)
+                for _, target in checker.targets(path, lines, fenced):
+                    name = target.partition('#')[0]
+                    if not name:
+                        continue
+                    destination = (path.parent / name).resolve()
+                    if destination == path or destination.parent.parent != ROOT:
+                        continue
+                    with self.subTest(file=path.name, target=target):
+                        self.assertIn(destination.parent.name, reachable + (folder,))
 
     def test_artifact_operations_expose_inputs_and_consecutive_steps(self):
         for path in sorted((ROOT / 'artifacts').glob('*.md')):
