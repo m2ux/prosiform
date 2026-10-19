@@ -119,7 +119,7 @@ The main path meets [Outcomes](#outcomes).
 10. **Close.**
     - When [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) reports an epic base unmerged and names no open pull request, open it as a draft review pull request and leave the epic open. The user marks the draft ready when the epic is complete.
     - For each open epic pull request:
-      - Follow [Epic Integration](../protocols/epic-integration.md) with the epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence.
+      - Follow [Epic Integration](../protocols/epic-integration.md) with the epic identity and body, review identity, project checkout, current delivery records, complete issue-link snapshot and criterion verification evidence.
       - Report a draft waiting for the user.
     - Fetch the pull requests again after merging.
     - Re-run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the refreshed records and the same project checkout.
