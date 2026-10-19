@@ -7,6 +7,11 @@ rejected as malformed rather than running with an expectation nobody
 stated. A diagnostic's code comes from the catalogue its severity
 selects, so a fixture cannot expect a failure the contract does not
 define, and cannot declare a warning where an error belongs.
+
+A fixture declaring behaviour the build has yet to deliver names the work
+that delivers it. The schema states that name's shape, so the marker is
+read by a tool rather than by a person, and a flag or a sentence in its
+place is rejected.
 """
 
 from typing import Any
@@ -171,3 +176,36 @@ def test_an_empty_diagnostic_list_is_a_declaration() -> None:
     manifest = complete()
     manifest["expected"]["diagnostics"] = []
     assert errors(manifest) == []
+
+
+def test_a_manifest_awaiting_an_epic_validates() -> None:
+    manifest = complete()
+    manifest["awaiting"] = "I00:E03"
+    assert errors(manifest) == []
+
+
+def test_a_manifest_awaiting_a_task_validates() -> None:
+    manifest = complete()
+    manifest["awaiting"] = "I00:E03:W02"
+    assert errors(manifest) == []
+
+
+def test_a_manifest_awaiting_nothing_validates() -> None:
+    assert "awaiting" not in complete()
+    assert errors(complete()) == []
+
+
+@pytest.mark.parametrize(
+    "named",
+    ["", "E03", "I0:E03", "I00-E03", "I00:E03:W2", "later", "I00:E03 section"],
+)
+def test_awaiting_naming_no_work_fails(named: str) -> None:
+    manifest = complete()
+    manifest["awaiting"] = named
+    assert errors(manifest), f"{named!r} passed as the work a fixture awaits"
+
+
+def test_awaiting_as_a_flag_fails() -> None:
+    manifest = complete()
+    manifest["awaiting"] = True
+    assert errors(manifest), "a bare flag passed where the work is named"
