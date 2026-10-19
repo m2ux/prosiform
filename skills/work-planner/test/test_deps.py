@@ -10,11 +10,11 @@ from contextlib import redirect_stdout
 from copy import deepcopy
 from pathlib import Path
 
-from fixtures import SCRIPTS, epic_body, initiative_body
+from fixtures import SCRIPTS, epic_body, initiative_body, work_item
 
 sys.path.insert(0, str(SCRIPTS))
-from deps import (check_initiative, eligible_unjoined, epic_dependencies, epic_priority,  # noqa: E402
-                  main)
+from deps import (check_initiative, contention, eligible_unjoined, epic_dependencies,  # noqa: E402
+                  epic_priority, main)
 
 
 def run(bodies: list[tuple[str, str]]) -> tuple[int, str]:
@@ -215,6 +215,56 @@ class InitiativeDependencies(unittest.TestCase):
             self.assertEqual(path.read_text(), body)
 
 
+class ComponentContention(unittest.TestCase):
+    BUNDLE = 'src/bundle/assembly.ts'
+
+    def test_rows_of_different_epics_extending_one_component_are_paired(self):
+        components = {'E08:W01': self.BUNDLE, 'E09:W01': self.BUNDLE, 'E09:W02': 'src/bundle/emit.ts'}
+        self.assertEqual(contention(components), [('E08:W01', 'E09:W01')])
+
+    def test_rows_of_one_epic_do_not_contend(self):
+        components = {'E08:W01': self.BUNDLE, 'E08:W02': self.BUNDLE}
+        self.assertEqual(contention(components), [])
+
+    def test_the_contending_pair_is_printed(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E09', epic_body(('W01', 'Extend assembly again', ''))),
+                          ('E08:W01', work_item(self.BUNDLE)),
+                          ('E09:W01', work_item(self.BUNDLE))])
+        self.assertEqual(code, 0, text)
+        self.assertIn('E08:W01 and E09:W01 both extend src/bundle/assembly.ts', text)
+
+    def test_the_epics_of_a_contending_pair_are_separated_by_a_number(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E09', epic_body(('W01', 'Extend assembly again', ''))),
+                          ('E08:W01', work_item(self.BUNDLE)),
+                          ('E09:W01', work_item(self.BUNDLE))])
+        self.assertEqual(code, 0, text)
+        self.assertIn('--- epic priority (epics sharing a number start together)\n2 E08\n1 E09', text)
+
+    def test_epics_declaring_different_components_share_a_number(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E09', epic_body(('W01', 'Extend emit', ''))),
+                          ('E08:W01', work_item(self.BUNDLE)),
+                          ('E09:W01', work_item('src/bundle/emit.ts'))])
+        self.assertEqual(code, 0, text)
+        self.assertIn('--- component contention: rows of different epics extending one component\nnone',
+                      text)
+        self.assertIn('--- epic priority (epics sharing a number start together)\n1 E08\n1 E09', text)
+
+    def test_a_work_item_declaring_no_component_is_a_problem(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E08:W01', '## Overview\n\nWhat the task delivers.\n')])
+        self.assertEqual(code, 1)
+        self.assertIn('E08:W01: work item declares no component', text)
+
+    def test_a_work_item_naming_no_row_is_a_problem(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E08:W02', work_item(self.BUNDLE))])
+        self.assertEqual(code, 1)
+        self.assertIn('E08:W02: work item names no row in the epics given', text)
+
+
 class EpicPriority(unittest.TestCase):
     def test_epics_with_no_prerequisite_epic_share_the_largest_number(self):
         tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Other output', [], [])}
@@ -228,6 +278,23 @@ class EpicPriority(unittest.TestCase):
     def test_an_epic_with_no_tasks_carries_the_largest_number(self):
         tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Consume', ['E00:W01'], [])}
         self.assertEqual(epic_priority(tasks, ('E00', 'E01', 'E02')), {'E00': 2, 'E01': 1, 'E02': 2})
+
+    def test_a_contending_pair_does_not_share_a_number(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Other output', [], []),
+                 'E02:W01': ('Consume', ['E01:W01'], [])}
+        self.assertEqual(epic_priority(tasks), {'E00': 2, 'E01': 2, 'E02': 1})
+        self.assertEqual(epic_priority(tasks, (), {('E00', 'E01')}),
+                         {'E00': 3, 'E01': 2, 'E02': 1})
+
+    def test_a_pair_a_prerequisite_already_separates_keeps_its_numbers(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Consume', ['E00:W01'], [])}
+        self.assertEqual(epic_priority(tasks, (), {('E00', 'E01')}), {'E00': 2, 'E01': 1})
+
+    def test_three_contending_epics_take_three_numbers(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Other', [], []),
+                 'E02:W01': ('Another', [], [])}
+        contending = {('E00', 'E01'), ('E00', 'E02'), ('E01', 'E02')}
+        self.assertEqual(epic_priority(tasks, (), contending), {'E00': 3, 'E01': 2, 'E02': 1})
 
     def test_the_proposed_priority_is_printed_for_each_epic(self):
         code, text = run([('E00', epic_body(('W01', 'Output', ''))),

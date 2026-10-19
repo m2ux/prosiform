@@ -8,6 +8,7 @@ Read these files first.
 
 - [Issue](issue.md)
 - [Initiative Issue Body](initiative-issue-body.md)
+- [Work Item](work-item.md)
 
 ## Operations
 
@@ -15,17 +16,18 @@ Read these files first.
 
 The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
 
-**Inputs:** Initiative and epic bodies or local drafts, current pull request records, confirmed numbering maps when any, and explicitly authorized outside-initiative files.
+**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, and explicitly authorized outside-initiative files.
 
 1. Use the supplied local drafts when reviewing unpublished work.
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](issue.md#read-tracker-issue).
-   - Run [Check Dependencies](#check-dependencies) with the initiative body and every epic body.
+   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
 2. Resolve each finding with the user.
    - Preserve task edges when correcting a whole-epic edge.
    - Name the producing row for each consumed output, meeting [Edges](#edges).
    - Retain a whole-epic edge only where [Whole-Epic Edges](#whole-epic-edges) permits it.
    - Read tasks for implied consumption edges.
    - Account for every independent pair as [Joins](#joins) states.
+   - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
    - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
 3. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
    - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
@@ -52,7 +54,19 @@ An initiative Depends on cell takes the epics it derives, as [Work Breakdown](in
 
 ### Epic Priority
 
-The map proposes one positive integer for each epic supplied, derived from the whole-epic edges: an epic with no prerequisite epic, one whose tasks are not yet written among them, carries the largest number, and each other epic takes one less than the smallest its prerequisites carry. Epics that share a number have the same prerequisite depth, so they can start together.
+The map proposes one positive integer for each epic supplied, derived from the whole-epic edges and the components its rows declare. Epics sharing a number start together, so the number asserts they can run in parallel, and it holds a set only where both of these do.
+
+- **Prerequisite depth establishes when an epic may start.**
+  An epic with no prerequisite epic, one whose tasks are not yet written among them, carries the largest number, and each other epic takes one less than the smallest its prerequisites carry.
+- **Component contention establishes whether it can.**
+  An epic holding a row that contends with a row of an epic of the same depth takes the number below that depth, and the epics depending on it follow it down, as [Component Contention](#component-contention) states.
+
+### Component Contention
+
+Two task rows in different epics whose work items declare one [component](work-item.md#component) contend. Concurrent epics are two bases and two pull requests, so one component written from both is a merge conflict.
+
+- Rows of one epic do not contend, since [Joins](#joins) accounts for every pair of them that can run at once.
+- A contending pair is answered by the number that separates its epics, or by moving the rows into one epic.
 
 ### Joins
 
@@ -68,25 +82,26 @@ A comma-separated list of `<old-number>:<new-number>` pairs assigning each old n
 
 Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
 
-**Inputs:** Initiative body file and each epic id with its body file.
+**Inputs:** Initiative body file, each epic id with its body file, and each task id with its work-item file.
 
-- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic.
+- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, and the `<epic-id>:<task-id>=<work-item-file>` argument once per work item.
 
 - Initiative edges follow the [whole-epic prerequisite rule](initiative-issue-body.md#work-breakdown); narrower dependencies stay in the task graph.
 - It also reports dependencies listed twice or already implied, and Joins pairs.
 - It prints each pair of tasks in an epic where neither depends on the other and the two do not name each other in Joins.
+- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention).
 - It prints each whole-epic dependency with that epic's row count, the binding row and its level, and the earliest row and its level.
 - It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
 - It reads bodies from [Read Tracker Issue](issue.md#read-tracker-issue), or local drafts.
 
 ```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>'
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>'
 ```
 
 **Example:**
 
 ```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=live-936.md E00=live-943.md E01=live-937.md
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=live-936.md E00=live-943.md E01=live-937.md E00:W01=e00/w01.md E01:W01=e01/w01.md
 ```
 
 ### Renumber Tasks

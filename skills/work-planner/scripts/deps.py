@@ -1,9 +1,14 @@
 """Check the task dependency graph of an initiative's epics.
 
 Usage:
-  python3 deps.py [I=bodies/initiative.md] E00=bodies/epic-00.md E01=bodies/epic-01.md ...
+  python3 deps.py [I=bodies/initiative.md] E00=bodies/epic-00.md E01=bodies/epic-01.md
+                  [E00:W01=records/e00/w01.md ...]
 
-Each file is an epic issue body holding the agent-engineering Work Breakdown table:
+An argument naming a row is that row's work item, a file whose declaration line names the one
+component its implementation extends:
+  **Component:** src/bundle/assembly.ts
+
+Each remaining file is an epic issue body holding the agent-engineering Work Breakdown table:
   | Task | Description | Coverage | Depends on | Joins | Done |
 A task's id links each pull request associated with it, open or merged:
   | [W01](https://…/pull/950), [W01](https://…/pull/960) | … | AC1 | | | |
@@ -20,6 +25,7 @@ A dependency is one of:
 Markdown links are read by their text, so [E01:W02](https://…/issues/937) is E01:W02.
 
 Problems (exit status 1): a Task cell naming a second, different task id, unknown references,
+a work item declaring no component or naming no row,
 a task depending on itself or a later task in its epic,
 an epic depending on a later epic, cycles, a dependency listed twice, and a dependency that another
 in the same cell already implies. The tasks a whole-epic dependency expands to are not reported as
@@ -34,9 +40,12 @@ With I=, the initiative's Depends on cells are checked: each epic's cell names e
 epics required in full by every task or joined unit, less transitive epic dependencies, and names no task.
 Another initiative's epic (I05:E00) or an issue (#750) may also be named.
 Advisory: task numbers that do not follow the order tasks can start.
-Also printed: each task's level (0 = can start now), the longest chains, and the proposed priority
-of each epic, epics with the same prerequisite depth sharing a number and an epic with no
-prerequisite epic carrying the largest.
+Also printed: each pair of rows in different epics whose work items declare one component, each
+task's level (0 = can start now), the longest chains, and the proposed priority of each epic.
+Epics sharing a priority number start together, so prerequisite depth sets the number and
+contention separates it: an epic with no prerequisite epic carries the largest, and an epic
+holding a row that contends with a row of an epic of the same depth takes the number below it,
+its dependants following it down.
 """
 import re
 import sys
@@ -47,6 +56,7 @@ RANGE = re.compile(r'W(\d\d)[–-]W(\d\d)')
 TASK = re.compile(r'E\d\d:W\d\d')
 EPIC = re.compile(r'E\d\d')
 WID = re.compile(r'W\d\d')
+COMPONENT = re.compile(r'\*\*Component:\*\*\s*(.+?)\s*$')
 EXTERNAL = re.compile(r'#\d+|I\d\d:E\d\d(?::W\d\d)?')
 INITIATIVE_EPIC = re.compile(r'#\d+|I\d\d:E\d\d')
 MAX_CHAINS = 10
@@ -117,6 +127,30 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict, list[tuple[str
     return tasks, problems, whole, edges
 
 
+def read_components(items: dict[str, Path]) -> tuple[dict[str, str], list[str]]:
+    """The component each work item declares, keyed by its row, and the items declaring none."""
+    components, problems = {}, []
+    for key, path in items.items():
+        declared = ''
+        for line in path.read_text().splitlines():
+            found = COMPONENT.match(line.strip())
+            if found:
+                declared = LINK.sub(r'\1', found[1]).strip().strip('`')
+                break
+        if declared:
+            components[key] = declared
+        else:
+            problems.append(f'{key}: work item declares no component')
+    return components, problems
+
+
+def contention(components: dict[str, str]) -> list[tuple[str, str]]:
+    """Pairs of rows in different epics declaring one component."""
+    keys = sorted(components)
+    return [(left, right) for i, left in enumerate(keys) for right in keys[i + 1:]
+            if left.split(':')[0] != right.split(':')[0] and components[left] == components[right]]
+
+
 def eligible_unjoined(tasks: dict, ancestors) -> list[str]:
     """Pairs in one epic that neither depends on the other and that do not name each other."""
     keys = sorted(tasks)
@@ -173,11 +207,8 @@ def epic_dependencies(tasks: dict) -> dict[str, set[str]]:
             for epic, consumers in own.items()}
 
 
-def epic_priority(tasks: dict, names: tuple[str, ...] = ()) -> dict[str, int]:
-    """Each epic's proposed priority, over the epics the tasks place and the names given. Epics
-    that can start together share a number, and a larger number is higher, so an epic with no
-    prerequisite epic, one with no tasks among them, carries the largest."""
-    needs = epic_dependencies(tasks)
+def epic_depth(needs: dict[str, set[str]], names: tuple[str, ...]) -> dict[str, int]:
+    """Each epic's prerequisite depth, over the epics the needs place and the names given."""
     level: dict[str, int] = {}
 
     def lv(epic: str) -> int:
@@ -185,7 +216,28 @@ def epic_priority(tasks: dict, names: tuple[str, ...] = ()) -> dict[str, int]:
             level[epic] = 1 + max((lv(other) for other in needs.get(epic, set())), default=-1)
         return level[epic]
 
-    depth = {epic: lv(epic) for epic in {*needs, *names}}
+    return {epic: lv(epic) for epic in {*needs, *names}}
+
+
+def epic_priority(tasks: dict, names: tuple[str, ...] = (),
+                  contending: set[tuple[str, str]] = frozenset()) -> dict[str, int]:
+    """Each epic's proposed priority, over the epics the tasks place and the names given. Epics
+    that can start together share a number, and a larger number is higher, so an epic with no
+    prerequisite epic, one with no tasks among them, carries the largest. A contending pair does
+    not share a number: the epic later in id order sequences after the other, and the epics
+    depending on it follow it down."""
+    needs = {epic: set(prerequisites) for epic, prerequisites in epic_dependencies(tasks).items()}
+    pairs = {tuple(sorted(pair)) for pair in contending}
+    sequenced: set[tuple[str, str]] = set()
+    while True:
+        depth = epic_depth(needs, names)
+        clash = {(a, b) for a, b in pairs - sequenced
+                 if a in depth and depth[a] == depth.get(b)}
+        if not clash:
+            break
+        for a, b in clash:
+            needs.setdefault(b, set()).add(a)
+        sequenced |= clash
     return {epic: max(depth.values(), default=0) - found + 1 for epic, found in depth.items()}
 
 
@@ -232,14 +284,22 @@ def check_initiative(path: Path, tasks: dict) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
-    epics, initiative = {}, None
+    epics, items, initiative = {}, {}, None
     for arg in argv:
         name, _, path = arg.partition('=')
         if name == 'I':
             initiative = Path(path)
+        elif ':' in name:
+            items[name] = Path(path)
         else:
             epics[name] = Path(path)
     tasks, problems, whole, edges = parse(epics)
+    components, missing = read_components(items)
+    problems += missing
+    for key in sorted(components):
+        if key not in tasks:
+            problems.append(f'{key}: work item names no row in the epics given')
+    components = {key: value for key, value in components.items() if key in tasks}
     advisory = []
 
     for key, (_, deps, acc) in tasks.items():
@@ -336,8 +396,13 @@ def main(argv: list[str]) -> int:
         print(lv(n), n, '-', tasks[n][0][:70])
     print('\n--- whole epics')
     print('\n'.join(whole_epic_lines(tasks, edges, lv)) or 'none')
+    pairs = contention(components)
+    print('\n--- component contention: rows of different epics extending one component')
+    print('\n'.join(f'{left} and {right} both extend {components[left]}'
+                    for left, right in pairs) or 'none')
     print('\n--- epic priority (epics sharing a number start together)')
-    proposed = epic_priority(tasks, tuple(epics))
+    proposed = epic_priority(tasks, tuple(epics),
+                             {(left.split(':')[0], right.split(':')[0]) for left, right in pairs})
     for epic in sorted(proposed, key=lambda e: (-proposed[e], e)):
         print(proposed[epic], epic)
 
