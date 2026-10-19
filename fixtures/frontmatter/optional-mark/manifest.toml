@@ -1,0 +1,18 @@
+description = "A leading byte-order mark and a frontmatter block closed by three hyphens are both absent from the bundle, and the body below them is carried unchanged."
+
+clauses = [
+  "Frontmatter policy — steps 1 through 5",
+  "Markdown and source-heading profile — Encoding",
+  "Validation and failure contract — Preservation",
+  "File-scoped hierarchy — Absorbed title",
+  "Adversarial acceptance fixtures — Frontmatter",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
