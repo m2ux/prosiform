@@ -1,0 +1,17 @@
+description = "Two sources sharing a basename in different directories stay distinguishable, each headed by its own root-relative path, and the groups are ordered by that path rather than by the order the references were given."
+
+clauses = [
+  "File-scoped hierarchy — same basename in different directories",
+  "Input and output contract — Dependency order",
+  "File-scoped hierarchy — Absorbed title",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes/note.md", "docs/note.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

@@ -1,0 +1,19 @@
+description = "Two documents whose paths differ only by Markdown extension produce one file heading twice, which a reader cannot tell apart, so the run refuses the bundle rather than publishing two groups under one name."
+
+clauses = [
+  "File-scoped hierarchy — two documents whose paths differ only by Markdown extension",
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md", "guide.markdown"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_AMBIGUOUS_FILE_GROUP"

@@ -1,0 +1,16 @@
+description = "A source whose only H1 does not slug to the final segment of its path keeps that heading, which moves down one level to sit beneath the file heading rather than beside it."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
