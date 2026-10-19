@@ -6,13 +6,14 @@
 
 This record holds the local plan for a task of [I00:E01] Corpus Harness. The task adds a check comparing the build README's dependency and command tables with what the project actually declares, failing in either direction: a declared item the README omits, and a README row the project does not declare. It also widens the link check from the root README alone to every README the repository owns, discovering them rather than naming them, so a tree added later is covered without the check being edited.
 
-It matters because a reader installs from a README and invokes what it names, so a stale table or a dead link is a wrong instruction rather than an untidy one. Both tables went stale on the first change that touched them, and a reading by hand is what caught it; three of the four READMEs gained links that nothing checks. The task covers AC6 and AC8 of the epic.
+It matters because a reader installs from a README and invokes what it names, so a stale table or a dead link is a wrong instruction rather than an untidy one. Both tables went stale on the first change that touched them, and a reading by hand is what caught it; the repository owns five READMEs and four of them gained links that nothing checks. The task covers AC6 and AC8 of the epic.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
 | [w04.md](w04.md) | The task's plan: how a table is located and a row mapped to a declared item, which declaration sets the table check compares, why no Makefile target is excluded from documentation, and how both checks discover the READMEs they read |
+| [validation.md](validation.md) | Each check as it was run: procedure, tested revision, the clean tree, each deliberate fault and the failure it produced, the continuous-integration run, and what the checks do not establish |
 
 ## Links
 
