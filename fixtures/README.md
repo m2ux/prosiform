@@ -93,10 +93,30 @@ The catalogue is closed over errors. The design describes two warnings — a gro
 
 A test holds the catalogue to the design's own text: it collects every `E_`-prefixed code the design carries and requires the schema to enumerate exactly those, so the catalogue cannot drift from the contract it is derived from.
 
+## Running a fixture
+
+The runner takes one fixture, invokes the build under test against its source tree, and decides pass or fail by comparing the run with the manifest. The build is named by configuration rather than written in the corpus, so one fixture binds every implementation:
+
+```bash
+export PROSIFORM_BUILD=prosiform
+```
+
+The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
+
+The runner appends `--root`, the fixture's source tree resolved to an absolute path, and `--diagnostics json` to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+
+| Expectation | Compared | Located by |
+| --- | --- | --- |
+| `expected.stdout` | Byte for byte against the file the manifest names. | The offset of the first differing byte, the line and byte column it falls on, and a window of each side whose control bytes are spelled out, so a CRLF against an LF is visible. |
+| `expected.exit_status` | As the integer the contract's categories declare. | The status expected and the status the run returned. |
+| `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a message or a remedy the manifest does not name still matches. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; and the field, with both values, when one differs. |
+
+A standard error line that is not a JSON object is reported as one, because the declared format carries diagnostics and nothing else.
+
 ## Running the checks
 
 ```bash
 make corpus
 ```
 
-Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, and the schema's own cases run with it.
+Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them.

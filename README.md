@@ -74,7 +74,7 @@ make check
 | Command | Asserts |
 | --- | --- |
 | `make test` | The Python build's suite passes. A run that collects no test fails. |
-| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), and the catalogue of error codes is the set the design declares. |
+| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), the catalogue of error codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
 | `make lint` | The repository's Python carries no lint error. |
 | `make format-check` | That same Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That same Python type checks in strict mode. |
