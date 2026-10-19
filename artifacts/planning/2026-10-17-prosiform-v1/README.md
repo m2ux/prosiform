@@ -33,8 +33,8 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E05 body](i00-e05.md) | The local source for issue #7, Destination Identity |
 | [I00:E06 body](i00-e06.md) | The local source for issue #8, Candidate Validation |
 | [I00:E07 body](i00-e07.md) | The local source for issue #19, Field Deployment |
-| [I00:E08 body](i00-e08.md) | The local source for the Validation Gate epic |
-| [I00:E09 body](i00-e09.md) | The local source for the Outline and Closure Completion epic |
+| [I00:E08 body](i00-e08.md) | The local source for issue #59, Validation Gate |
+| [I00:E09 body](i00-e09.md) | The local source for issue #60, Outline and Closure Completion |
 | [I00:E10 body](i00-e10.md) | The local source for issue #9, Corpus Conformance |
 | [I00:E11 body](i00-e11.md) | The local source for issue #39, Deferred Debt |
 | [I01:E00 body](i01-e00.md) | The local source for issue #21, Findings Ledger |

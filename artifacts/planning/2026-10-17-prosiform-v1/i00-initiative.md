@@ -56,9 +56,9 @@ Modular Markdown authoring separates the destination a link names from the conte
 | [E05](https://github.com/m2ux/prosiform/issues/7) | Destination Identity | AC2 | | |
 | [E06](https://github.com/m2ux/prosiform/issues/8) | Candidate Validation | AC4, AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
 | [E07](https://github.com/m2ux/prosiform/issues/19) | Field Deployment | AC11, AC12 | | |
-| E08 | Validation Gate | AC6 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
-| E09 | Outline and Closure Completion | AC5, AC14 | [E03](https://github.com/m2ux/prosiform/issues/5), [E04](https://github.com/m2ux/prosiform/issues/6) | |
-| [E10](https://github.com/m2ux/prosiform/issues/9) | Corpus Conformance | AC9 | E08 | |
+| [E08](https://github.com/m2ux/prosiform/issues/59) | Validation Gate | AC6 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
+| [E09](https://github.com/m2ux/prosiform/issues/60) | Outline and Closure Completion | AC5, AC14 | [E03](https://github.com/m2ux/prosiform/issues/5), [E04](https://github.com/m2ux/prosiform/issues/6) | |
+| [E10](https://github.com/m2ux/prosiform/issues/9) | Corpus Conformance | AC9 | [E08](https://github.com/m2ux/prosiform/issues/59) | |
 | [E11](https://github.com/m2ux/prosiform/issues/39) | Deferred Debt | AC15 | | |
 
 The order these epics start in is carried by each one's priority label rather than by this table. A cell here names a prerequisite only where every task of the dependent epic requires every task of the one named; every other edge stays in the task tables, so an epic starts on the rows that are free and waits only on the rows that are not.
