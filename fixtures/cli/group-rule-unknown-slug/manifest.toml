@@ -1,0 +1,18 @@
+description = "A grouping rule whose slug names no directory under the allowed source root fails as an input failure, since the command line is well formed and the tree it names is not what it says."
+
+clauses = [
+  "Grouping — a grouping rule refused for its unknown slug",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "references:2", "guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_GROUP_RULE"
