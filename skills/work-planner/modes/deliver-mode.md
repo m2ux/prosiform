@@ -40,14 +40,14 @@ The main path meets [Outcomes](#outcomes).
    Run [Read Board State](../artifacts/board.md#read-board-state) with the selected board identity to obtain its current items and Status field.
    - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](../artifacts/board.md#repositories) Read Board State returned.
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) with those records.
-   - Use both snapshots in Plan Available Work.
+   - Use the pull request records in Plan Available Work; the issue links serve the merge and delivery steps.
    - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration).
    - Run [Read Board Assignee](../artifacts/board.md#read-board-assignee) for the assignee.
 4. **Survey.**
    - Run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) for each candidate epic with its current initiative and epic bodies and all prerequisite issue and base-merge records.
    - Pass its confirmed result to [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases).
    - Read the project branches and each epic's bases through [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches).
-   - Call [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) with the board items, pull requests, complete issue-link snapshot, project checkout, epic bases and selected record date.
+   - Call [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) with the board items, pull requests, project checkout, epic bases and selected record date.
    - Resolve any missing issue through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Repeat Plan Available Work with every resolved off-board issue while retaining the other inputs.
    - For delivery discrepancies:
@@ -59,7 +59,7 @@ The main path meets [Outcomes](#outcomes).
        - When the user releases a row:
          - Run [Release Task Rows](../artifacts/epic-issue-body.md#release-task-rows).
          - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-         - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, complete issue-link snapshot, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
+         - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
      - **Blocked work.**
        - Report a `blocked` line without asking. Its dependencies decide when it becomes available.
    - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
