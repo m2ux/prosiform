@@ -16,7 +16,7 @@ Read these files first.
 ## Procedure
 
 1. **Prepare the evidence.**
-   - Confirm the repository prerequisite in [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue).
+   - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, which gates the merge this protocol makes.
    - Follow [Review Pull Request](review-pull-request.md) with the actual task merges.
    - Run [Understand Mode](../modes/understand-mode.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.

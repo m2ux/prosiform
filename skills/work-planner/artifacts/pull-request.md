@@ -36,7 +36,7 @@ The observed or updated Development relation for a pull request.
 1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
 2. Return the complete relation for a read-only request.
 3. For a link edit:
-   - Confirm the supplied repository prerequisite by observing the setting or obtaining the user's explicit confirmation; an absent API field is unknown.
+   - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
    - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
    - For removal of an abandoned or incorrect link:
      - Require the supplied user decision.
@@ -147,7 +147,7 @@ Merges each open task pull request whose test plan has passed.
 
 **Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
 
-1. Confirm the repository prerequisite in [Close Tracker Issue](issue.md#close-tracker-issue) and the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
+1. Run [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close) for the repository, and confirm the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
 2. Run [Update Epic Base](delivery-branches.md#update-epic-base).
    - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
    - Run [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.

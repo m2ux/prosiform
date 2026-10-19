@@ -100,6 +100,16 @@ The Development links observed for one issue through authenticated GitHub.
 1. Read every page and state, across repositories, recording each linked pull request's identity.
 2. Return the observed links and whether the entire field was readable.
 
+### *Confirm* Repository Auto-Close
+
+Whether the repository auto-closes issues whose linked pull requests merge, established for this session.
+
+**Inputs:** Repository and authenticated access.
+
+1. Read the setting where the authenticated API exposes it, and take a read value as the answer.
+2. Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
+3. Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
+
 ### *Read* Repository Issues
 
 The issue collection used for repository-wide selection.
@@ -136,6 +146,14 @@ The next unused number for one prefixed issue kind in the repository.
 - **Discussion.** A saved comment preserves the supplied text.
 - **State.**
   The issue is open or closed with its recorded completion reason. Completed work satisfies its criteria and delivery checks; transferred work identifies the issue tracking it.
+
+### Auto-Close Setting
+
+GitHub's **Auto-close issues with merged linked pull requests** repository setting, which must be disabled before a delivery pull request is linked or merged, so that closure follows the criteria rather than the merge.
+
+- The setting is confirmed per repository and holds for the session; it is not inferred from an issue that stayed open.
+- No REST field and no GraphQL field of `gh` 2.46 carries it, so on such a host the user's explicit answer is the only source.
+- An enabled setting closes issues on merge whatever their criteria. Where it cannot be disabled, each affected issue's state is read after every merge and reopened where its criteria are unmet.
 
 ## Commands
 

@@ -45,7 +45,7 @@ The main path meets [Outcomes](#outcomes).
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for each issue, including each task issue under an epic being synced, titled as [Titles](../artifacts/task-body.md#titles) states.
    - Run [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) with the selected repositories and initiative prefix, fetched epic JSON, authenticated access and destination snapshot files.
    - Use its returned pull request records, complete issue-link snapshot and findings in the following steps.
-   - Confirm the repository prerequisite for issue closure: GitHub's setting that auto-closes issues with merged linked pull requests is disabled.
+   - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository holding the issues, which gates every link, merge and closure this run makes.
    - Capture each issue's Development links.
    - Fetch linked pull requests absent from the initiative list before evaluating closure.
 3. **Unnamed deliveries.**
