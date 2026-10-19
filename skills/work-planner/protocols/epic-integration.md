@@ -12,6 +12,7 @@ Read these files first.
 - [Pull Request](../artifacts/pull-request.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Epic](../artifacts/epic.md)
+- [Guidelines](../guidelines.md)
 
 ## Procedure
 
@@ -22,6 +23,7 @@ Read these files first.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
    - Require the user to have marked the draft ready.
+   - Put a draft still awaiting that mark to the user as an [Interview](../guidelines.md#modes), naming the epic standing in review on its board.
    - Leave a draft waiting for that decision.
    - Confirm its head is the epic base and its target is the corresponding long-lived branch.
 2. **Refresh and validate.**

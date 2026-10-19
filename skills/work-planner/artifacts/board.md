@@ -66,7 +66,7 @@ One issue's membership and initial status.
 
 The selected board's items and status fields.
 
-**Inputs:** Existing board owner and number returned by [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board).
+**Inputs:** Existing board owner and number, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns them, whether the caller ran that operation or carries its result.
 
 1. Run [Find Status Field](#find-status-field) for the board number.
 2. Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
