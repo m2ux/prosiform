@@ -1,0 +1,16 @@
+description = "A fragment naming an eligible heading selects that heading and the blocks after it, ending before the next document-level heading of equal level, so a preamble above it and a sibling section after it stay out."
+
+clauses = [
+  "Section extraction and output hierarchy — Boundary",
+  "Input and output contract — Sections",
+  "Entry line — Link text",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

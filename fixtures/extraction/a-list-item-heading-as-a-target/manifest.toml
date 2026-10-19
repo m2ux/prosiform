@@ -1,0 +1,20 @@
+description = "A fragment naming a heading a list item carries fails as the unsupported target it is, as one naming a heading a blockquote carries does."
+
+clauses = [
+  "Section extraction and output hierarchy — Nested target",
+  "Section extraction and output hierarchy — Containers",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#listed"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_NESTED_SECTION_TARGET"
+reference = "guide.md#listed"

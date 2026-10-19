@@ -102,7 +102,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Three fixtures carry the marker. `extraction/nested-section-target` awaits `I00:E03`, which delivers section extraction, and `normalization/root-escape` awaits `I00:E04`, which delivers dependency traversal. `headings/a-heading-with-no-visible-text` awaits `I00:E10`, the conformance epic: a heading a renderer discards entirely is reachable by no fragment, so what it does to the headings around it is observable only through a lookup, and a fragment selects nothing until section extraction lands.
+Four fixtures carry the marker. `normalization/root-escape` awaits `I00:E04`, which delivers dependency traversal. `extraction/a-heading-a-blockquote-carries` and `extraction/a-setext-heading-as-a-root` await `I00:E03:W03`: each states a section whose extent is settled, and the syntax its headings are emitted in is the group shift and the Setext conversion that row delivers. `extraction/an-unterminated-example-at-the-section-end` awaits `I00:E08`, which delivers boundary safety: a code example a source never closes absorbs the group written after it, and the run refuses that boundary rather than closing the example.
 
 ## The schema
 

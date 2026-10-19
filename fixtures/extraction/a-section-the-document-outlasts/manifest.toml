@@ -1,0 +1,15 @@
+description = "A section the document holds no further heading of equal or higher level after runs to the end of the document."
+
+clauses = [
+  "Section extraction and output hierarchy — Boundary",
+  "Section extraction and output hierarchy — Subsections",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
