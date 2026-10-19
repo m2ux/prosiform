@@ -188,6 +188,29 @@ class Board:
                         return False
         return True
 
+    def prerequisite_epics(self, key: Key, epics: dict[str, Key]) -> set[Key]:
+        """The epics this one depends on: those its task rows name outside it, and those its
+        initiative row names. epics maps the initiative's Eyy ids to their issues."""
+        header, tasks = self.table(key)
+        cells = [cell(header, task, 'Depends on') for task in tasks.values()]
+        for parent, issue in self.issues.items():
+            if not re.match(r'^\[I\d\d\]', issue.get('title') or ''):
+                continue
+            head, listed = self.table(parent)
+            cells += [cell(head, item, 'Depends on') for item in listed.values()
+                      if linked_issue(id_cell(head, item)) == key]
+        found = set()
+        for entries in cells:
+            for entry in (e.strip() for e in entries.split(',') if e.strip()):
+                link = LINK.fullmatch(entry)
+                text = link[1] if link else entry
+                if re.fullmatch(r'W\d\d', text) or RANGE.fullmatch(text):
+                    continue
+                prerequisite = epics.get(text.split(':')[0]) or (issue_url(link[2]) if link else None)
+                if prerequisite and prerequisite != key:
+                    found.add(prerequisite)
+        return found
+
     def met(self, cell: str, home: Key, epics: dict[str, Key], why: str) -> bool:
         """Whether every dependency in a Depends on cell is delivered. home is the issue whose table
         holds the row, and the repository a bare #750 is read against; epics maps the initiative's

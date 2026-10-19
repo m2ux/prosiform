@@ -15,7 +15,10 @@ line for an initiative In Progress with no priority, a tie line when labelled in
 the highest rank, a wait line for an open pull request, and a next line for epics.
 --unplanned names an initiative the user left with no priority. It returns to Backlog once its
 open pull requests have completed, and its epics return with it. Initiatives with the same
-priority number run together. A priority is a positive integer with no maximum.
+priority number run together, as do the epics of one initiative, whose highest number counts the
+epics already In Progress. An epic with no priority label ranks below every number, so it waits
+while a labelled sibling can start or is running. A priority is a positive integer with no
+maximum.
 """
 import argparse
 import json
@@ -39,7 +42,7 @@ def label_names(issue: dict) -> set[str]:
 
 
 def rank(issue: dict) -> int | None:
-    """The initiative's priority. A larger number is higher. Two labels count as the larger."""
+    """The issue's priority. A larger number is higher. Two labels count as the larger."""
     found = [int(matched.group(1)) for name in label_names(issue) if (matched := RANK.fullmatch(name))]
     return max(found) if found else None
 
@@ -144,8 +147,10 @@ class Queue:
         return {key[0].lower(), *(epic[0].lower() for _, epic, _ in rows_of)}
 
     def activate(self, key: tuple[str, int]) -> None:
-        """Partly completed epics are In Progress, and the next unstarted epics are Ready."""
+        """Partly completed epics are In Progress, and the unstarted epics of the highest priority
+        set are Ready. The set counts the epics already under way, so a lower one waits."""
         rows_of, epics = self.load(key)
+        candidates, running = [], []
         for row_name, epic_key, depends in rows_of:
             held = self.status.get(epic_key)
             if held in ('In Review', 'Done') or self.issues[epic_key]['state'] != 'open':
@@ -153,12 +158,17 @@ class Queue:
             why = f'{self.line(key)} {row_name}'
             if partial(self.board, epic_key, why):
                 self.place(epic_key, 'In Progress')
+                running.append(epic_key)
             elif held == 'In Progress':
-                continue
+                running.append(epic_key)
             elif is_next(self.board, key, epic_key, depends, epics, why):
-                self.place(epic_key, 'Ready')
+                candidates.append(epic_key)
             elif held == 'Ready':
                 self.place(epic_key, 'Backlog')
+        ranked = {epic_key: rank(self.issues[epic_key]) for epic_key in (*candidates, *running)}
+        top = max((found for found in ranked.values() if found is not None), default=None)
+        for epic_key in candidates:
+            self.place(epic_key, 'Ready' if top is None or ranked[epic_key] == top else 'Backlog')
 
     def park(self) -> None:
         """A Ready epic whose initiative is not In Progress, and was not just returned there, goes Backlog."""

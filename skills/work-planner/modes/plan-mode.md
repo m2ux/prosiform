@@ -7,6 +7,7 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 Read these files first.
 
 - [Propose Mode](propose-mode.md)
+- [Guidelines](../guidelines.md)
 - [Planning Record](../artifacts/planning-record.md)
 - [Pull Request Body](../artifacts/pull-request-body.md)
 - [Pull Request](../artifacts/pull-request.md)
@@ -60,11 +61,13 @@ The main path meets [Outcomes](#outcomes).
    - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
    - An acceptance criterion is created only once it meets [Initiative Acceptance Criteria](../artifacts/initiative-issue-body.md#initiative-acceptance-criteria).
 6. **Publish.**
-   Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions before saving the issues.
+   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer.
+   - Take the positive integer the user confirms for each epic.
+   - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
    - For a new initiative:
      - Call [Select Tracker Number](../artifacts/issue.md#select-tracker-number) with the initiative prefix letter.
      - Save it through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), using temporary epic-row links until issue identities exist.
-     - Save the epics in dependency order.
+     - Save the epics in dependency order, each carrying its confirmed priority label.
      - Replace every temporary link in the initiative and epic bodies with the saved issue identity.
      - Confirm no unresolved epic placeholder remains.
    - For each task needing its own discussion or evidence:
@@ -84,6 +87,8 @@ The main path meets [Outcomes](#outcomes).
    - Repeat that review until clear.
    - After each round, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) on affected bodies.
    - Whenever tasks or edges change, repeat Check Dependencies and Numbering.
+     - Put the proposed Epic Priority map to the user again where the edges moved an epic's number.
+     - Save each confirmed change as that epic's priority label.
    - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
    - Keep local body files as the source for the next pass.
    - Update work-item files and the README inventory for added, renamed or removed tasks.
@@ -118,5 +123,7 @@ The main path meets [Outcomes](#outcomes).
   One proposal may become several initiatives. A partition by solution maturity, such as an MVP demo, a functional prototype, and a production-intent version, is an example of that result. Those initiatives may run in series or in parallel. The example does not limit the partition.
 - **A goal made true.**
   Each clause of the goal the user confirmed is made true by the initiative's criteria, and the epics the initiative lists are the work that delivers those criteria.
+- **Epics that start together.**
+  The user has settled which of the initiative's epics start alongside each other, from a proposal the dependency graph makes.
 - **Review before creation.**
   Findings on that initiative are folded in before any of its issues are created.

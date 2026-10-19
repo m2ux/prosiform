@@ -34,7 +34,9 @@ With I=, the initiative's Depends on cells are checked: each epic's cell names e
 epics required in full by every task or joined unit, less transitive epic dependencies, and names no task.
 Another initiative's epic (I05:E00) or an issue (#750) may also be named.
 Advisory: task numbers that do not follow the order tasks can start.
-Also printed: each task's level (0 = can start now) and the longest chains.
+Also printed: each task's level (0 = can start now), the longest chains, and the proposed priority
+of each epic, epics with the same prerequisite depth sharing a number and an epic with no
+prerequisite epic carrying the largest.
 """
 import re
 import sys
@@ -169,6 +171,22 @@ def epic_dependencies(tasks: dict) -> dict[str, set[str]]:
     return {epic: {other for other, producers in own.items() if other != epic
                    and all(producers <= reach[task] for task in consumers)}
             for epic, consumers in own.items()}
+
+
+def epic_priority(tasks: dict, names: tuple[str, ...] = ()) -> dict[str, int]:
+    """Each epic's proposed priority, over the epics the tasks place and the names given. Epics
+    that can start together share a number, and a larger number is higher, so an epic with no
+    prerequisite epic, one with no tasks among them, carries the largest."""
+    needs = epic_dependencies(tasks)
+    level: dict[str, int] = {}
+
+    def lv(epic: str) -> int:
+        if epic not in level:
+            level[epic] = 1 + max((lv(other) for other in needs.get(epic, set())), default=-1)
+        return level[epic]
+
+    depth = {epic: lv(epic) for epic in {*needs, *names}}
+    return {epic: max(depth.values(), default=0) - found + 1 for epic, found in depth.items()}
 
 
 def check_initiative(path: Path, tasks: dict) -> list[str]:
@@ -318,6 +336,10 @@ def main(argv: list[str]) -> int:
         print(lv(n), n, '-', tasks[n][0][:70])
     print('\n--- whole epics')
     print('\n'.join(whole_epic_lines(tasks, edges, lv)) or 'none')
+    print('\n--- epic priority (epics sharing a number start together)')
+    proposed = epic_priority(tasks, tuple(epics))
+    for epic in sorted(proposed, key=lambda e: (-proposed[e], e)):
+        print(proposed[epic], epic)
 
     top = max(level.values(), default=0)
     ends = sorted(k for k, v in level.items() if v == top)
