@@ -250,12 +250,21 @@ class Queue(unittest.TestCase):
         self.assertNotIn('→ Ready', out)
         self.assertIn('to do: 0', out)
 
-    def test_a_task_dependency_waits_for_the_prerequisite_epic_to_complete(self):
+    def test_a_task_dependency_leaves_its_epic_ready(self):
         current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''),
                              (f"[E01]({url('issues', 3)})", ''))
         prerequisite = epic(2, '01:E00', (f"[W01]({url('pull', 9)})", 'Produce', ''))
         dependent = epic(3, '01:E01', ('W01', 'Independent work', ''),
                          ('W02', 'Consume', f"[E00:W01]({url('issues', 2)})"))
+        pulls = [pr(9, '[I01:E00] Produce', merged='2026-01-01T00:00:00Z', base='i01/e00/main')]
+        out = queue(staged((current, 'In Progress'), (prerequisite, 'In Review'), (dependent, 'Ready')), pulls)
+        self.assertNotIn('[I01:E01] Epic 3: Work: Ready → Backlog', out)
+
+    def test_an_initiative_row_dependency_keeps_its_epic_in_backlog(self):
+        current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''),
+                             (f"[E01]({url('issues', 3)})", f"[E00]({url('issues', 2)})"))
+        prerequisite = epic(2, '01:E00', (f"[W01]({url('pull', 9)})", 'Produce', ''))
+        dependent = epic(3, '01:E01', ('W01', 'Work', ''))
         pulls = [pr(9, '[I01:E00] Produce', merged='2026-01-01T00:00:00Z', base='i01/e00/main')]
         out = queue(staged((current, 'In Progress'), (prerequisite, 'In Review'), (dependent, 'Ready')), pulls)
         self.assertIn('[I01:E01] Epic 3: Work: Ready → Backlog', out)

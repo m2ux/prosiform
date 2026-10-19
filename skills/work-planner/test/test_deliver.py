@@ -97,15 +97,23 @@ class Survey(unittest.TestCase):
         self.assertNotIn('unit', output)
         self.assertIn('available: 0', output)
 
-    def test_ready_epic_waits_for_its_task_prerequisites_to_reach_the_long_lived_branch(self):
+    def test_sibling_epics_offer_their_units_in_one_survey(self):
+        first = epic(943, ('W01', 'Shape', '', 'W02'), ('W02', 'Fit', '', 'W01'))
+        second = epic(944, ('W01', 'Draft', '', ''), ('W02', 'Extend', 'W01', ''), which='07:E01')
+        output = survey(staged((first, 'Ready'), (second, 'Ready')))
+        self.assertIn('unit I07:E00:W01+W02', output)
+        self.assertIn('unit I07:E01:W01', output)
+        self.assertIn('available: 2, held: 0, blocked: 1', output)
+
+    def test_only_the_row_naming_another_epic_waits_for_it(self):
         prerequisite = epic(943, (f"[W01]({url('pull', 9)})", 'Produce', '', ''))
         dependent = epic(944, ('W01', 'Independent work', '', ''),
                          ('W02', 'Consume', f"[E00:W01]({url('issues', 943)})", ''), which='07:E01')
         pulls = [pr(9, '[I07:E00] Produce', merged='2026-01-01T00:00:00Z', base='i07/e00/main')]
         output = survey(staged((prerequisite, 'In Review'), (dependent, 'Ready')), pulls)
-        self.assertNotIn('  unit ', output)
-        self.assertIn('available: 0, held: 0, blocked: 2', output)
-        self.assertIn('prerequisite epic not completed', output)
+        self.assertIn('unit I07:E01:W01', output)
+        self.assertIn('blocked I07:E01:W02', output)
+        self.assertIn('available: 1, held: 0, blocked: 1', output)
         prerequisite['state'], prerequisite['state_reason'] = 'closed', 'completed'
         output = survey(staged((prerequisite, 'Done'), (dependent, 'Ready')), pulls)
         self.assertIn('available: 2, held: 0, blocked: 0', output)
