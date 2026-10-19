@@ -13,6 +13,7 @@ It matters because where a named section ends is a decision, and a heading insid
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The task's plan: the eligibility rule, the boundary rule and the nested-target failure |
+| [validation.md](validation.md) | The checks as they were run, the markers measured, and what each criterion rests on |
 
 ## Links
 
