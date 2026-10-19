@@ -91,7 +91,7 @@ The main path meets [Outcomes](#outcomes).
    - When that session provides no sub-agent dispatch, this mode reports that and stops before any unit begins.
    - The sub-agent works in the unit's worktree, reads the brief, and has the engineering worktree in reach for the planning record.
    - Leave the dispatched session running its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work below.
-   - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as the [Work Breakdown Guide](../artifacts/delivery-branches.md#branches) defines.
+   - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as [Task Branches](../artifacts/delivery-branches.md#task-branches) defines.
    - Raise issues arising from one work item as standalone issues.
    - Once its pull request is open and its epic delivery is recorded:
      - Run [Hoist Mode](hoist-mode.md) for those issue identities.

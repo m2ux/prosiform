@@ -153,7 +153,7 @@ Prints one epic's base branch names, one per line.
 
 **Inputs:** Repository checkout and epic branch prefix.
 
-- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a long-lived branch, as the [Work Breakdown Guide](#branches) defines.
+- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
 - The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
 - The output contains one full base branch name per line.
 
