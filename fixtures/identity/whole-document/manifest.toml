@@ -1,0 +1,17 @@
+description = "A whole-document entry reference bundles the document beneath one heading carrying its root-relative path, which absorbs the document's own title."
+
+clauses = [
+  "Input and output contract — Whole documents",
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

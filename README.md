@@ -74,6 +74,7 @@ make check
 | Command | Asserts |
 | --- | --- |
 | `make test` | The Python build's suite passes. A run that collects no test fails. |
+| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), and the catalogue of error codes is the set the design declares. |
 | `make lint` | The repository's Python carries no lint error. |
 | `make format-check` | That same Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That same Python type checks in strict mode. |
@@ -82,7 +83,7 @@ make check
 | `make links` | Every reference this README carries resolves. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 
-`make check` runs them in that order and stops at the first failure. The tools the first four call are pinned by [`prototype/uv.lock`](prototype/README.md); the last three are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+`make check` runs them in that order and stops at the first failure. The tools the first six call are pinned by [`prototype/uv.lock`](prototype/README.md); the last three are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
 
 ## 📦 Installation
 

@@ -6,19 +6,23 @@
 #
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `prototype/uv.lock` records and resolves
-# nothing. The three repository checks depend on the standard library alone
-# and run under `python3` directly.
+# nothing. The corpus checks read `jsonschema` from that same group, so they
+# run through it; the layout, link and vocabulary checks depend on the
+# standard library alone and run under `python3` directly.
 
 UV_RUN := uv run --project prototype --frozen
 TOOL_CONFIG := prototype/pyproject.toml
 PYTHON_SOURCES := prototype/src prototype/tests checks
 
-.PHONY: check test lint format-check typecheck lock-check layout links vocabulary
+.PHONY: check test corpus lint format-check typecheck lock-check layout links vocabulary
 
-check: lock-check lint format-check typecheck test layout links vocabulary
+check: lock-check lint format-check typecheck test corpus layout links vocabulary
 
 test:
 	cd prototype && uv run --frozen pytest
+
+corpus:
+	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests
 
 lint:
 	$(UV_RUN) ruff check --config $(TOOL_CONFIG) $(PYTHON_SOURCES)
