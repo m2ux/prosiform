@@ -51,6 +51,12 @@ vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-pr
 
 The layout check counts eleven tracked files under `fixtures/`, so the corpus tree holds real content and the check still passes. The vocabulary check is unchanged at thirty-four terms: *fixture*, *manifest* and *catalogue* are words this task uses and the design does not mark as contract terms, so the glossary neither gains nor needs a definition for one.
 
+## The set, in continuous integration
+
+**Observes AC1, AC5.** The same command the developer calls runs on the branch.
+
+The Checks workflow ran `make check` on `483f06d4`, the head of pull request [#40](https://github.com/m2ux/prosiform/pull/40), and completed with conclusion `success`: [run 39200883663](https://github.com/m2ux/prosiform/actions/runs/39200883663). It is the one check the pull request carries.
+
 ## T1 Schema validation over a complete declaration
 
 **Observes AC1.** A manifest declaring its source tree, its invocation, its expected standard output, its expected exit status and its expected diagnostics validates, and one leaving out any of the five does not.
