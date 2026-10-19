@@ -1,6 +1,6 @@
 # Deliver Mode
 
-Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds.
+Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, stands a completed epic in review on the board, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds.
 
 ## Prerequisites
 
@@ -65,7 +65,7 @@ The main path meets [Outcomes](#outcomes).
    - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
 5. **Merge.**
    Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for each `merge` line.
-   - Run [Task Merge](../protocols/task-merge.md) for each confirmed merge result.
+   - Run [Task Merge](../protocols/task-merge.md) for each confirmed merge result, with the selected board identity.
 6. **Confirm.**
    Show each `unit` line, with its tasks, coverage, record folder, branch, base and worktree.
    - Confirm the set as an [Interview](../guidelines.md#modes). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
@@ -85,7 +85,7 @@ The main path meets [Outcomes](#outcomes).
 
    For each held unit:
    - Run [Create Task Worktree](../artifacts/delivery-branches.md#create-task-worktree).
-   - Call [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, reserved folder, worktrees, test obligations and [Run Delivery Session](#run-delivery-session) as the supplied execution procedure.
+   - Call [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, reserved folder, worktrees, test obligations, selected board identity and [Run Delivery Session](#run-delivery-session) as the supplied execution procedure.
    - Resolve any returned gap before dispatch.
    - The agent running this mode starts each unit through the sub-agent dispatch of the session it was called from, and that dispatch is the only way a unit's session starts.
    - When that session provides no sub-agent dispatch, this mode reports that and stops before any unit begins.
@@ -105,7 +105,7 @@ The main path meets [Outcomes](#outcomes).
        - It blocks nothing and would warrant a work item of its own. The unit defers it to this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt), and the epic in hand keeps the scope it was planned with.
      - The session classifies each item and puts it to the user as an [Interview](../guidelines.md#modes), its classification the recommended answer, before the fix or the deferral.
 9. **Report.**
-   Each pull request merged, and each left open by a conflict; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
+   Each pull request merged, and each left open by a conflict; each epic moved to In Review; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
 
 ### Run Delivery Session
 
@@ -135,7 +135,7 @@ The confirmed unit carried from its supplied brief through implementation and de
 8. **Merge.**
    Record check results with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), following [Test Plan](../artifacts/pull-request-body.md#test-plan).
    - Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request.
-   - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result and the unit's current task and epic evidence.
+   - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result, the unit's current task and epic evidence, and the board identity the brief names.
    - Resume the defer step when recording returns; a merge or recording blocker remains explicit.
 9. **Defer.**
    Confirm each item with the user.
@@ -153,6 +153,8 @@ The confirmed unit carried from its supplied brief through implementation and de
   The user has each confirmed unit of the theme board in a session, with a planning record held for that session.
 - **Passed work merged.**
   Each open pull request whose test plan has passed is merged, and one a conflict blocks stays open with the conflict named.
+- **Review visible on the board.**
+  The user sees each completed epic in review on its theme board before being asked to mark its review ready.
 - **Holds left to the user.**
   A row a session holds is released only when the user says so, and a blocked row is named with what blocks it.
 - **One session for each unit.**
