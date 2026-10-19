@@ -1,0 +1,20 @@
+description = "A workspace skill routing document whose headings carry an em dash moves each of them down one level and keeps that text, the dash surviving the shift as part of the heading rather than being normalized out of it."
+
+clauses = [
+  "Input and output contract — Whole documents",
+  "Frontmatter policy — steps 1 through 5",
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Preamble",
+  "Source-heading resolution — derive visible heading text from parser events",
+  "Markdown and source-heading profile — Typography",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["gitnexus-cli/SKILL.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

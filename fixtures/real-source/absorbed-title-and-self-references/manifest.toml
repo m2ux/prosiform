@@ -1,0 +1,20 @@
+description = "A workspace skill document whose title the file heading absorbs bundles with its command examples and its own section references unchanged, the angle-bracket placeholders inside those examples remaining the text they are."
+
+clauses = [
+  "Input and output contract — Whole documents",
+  "File-scoped hierarchy — Absorbed title",
+  "Parser and source-preserving edits — Untouched content",
+  "Link classification and resource handling — Examples",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Identity",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["artifacts/repository-labels.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
