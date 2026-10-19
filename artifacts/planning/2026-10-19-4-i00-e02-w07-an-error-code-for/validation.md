@@ -31,6 +31,8 @@ Six seconds separate each pair of pushes. One continuous-integration run fell in
 
 A branch that has not yet taken this schema fails the catalogue test the same way and for the same reason until the change reaches it. `main` is in that state until the epic base merges.
 
+Both windows are closed. `#51` merged into `i00/e02/main` at 2026-10-19T10:56:02Z as `7aac4ef`, and run `39240993517` on that merge commit concluded `success` at 2026-10-19T10:56:37Z, so the base the window turned red is green again on the change that closed it.
+
 ## The ninth code
 
 W03 landed the encoding requirement in the epic base while this unit was in flight. A source that is not valid UTF-8 fails as an input failure, and it is a failing outcome the contract names at its Encoding clause, so it takes a code of its own. `E_INVALID_ENCODING` is declared at that clause, carried by the catalogue, named by the command's diagnostic and declared by `profile/source-not-utf8`. AC8 reads *a source that is not valid UTF-8 fails rather than being decoded with replacements, as the encoding fixtures show*, and a fixture can now state it.
