@@ -1,6 +1,6 @@
 # Guidelines
 
-The rules this skill's files follow alongside the [shared skill guidelines](../guidelines.md). Modes and artifacts use the directory-specific structures below. A rule that binds only modes, only artifacts, or only references is in that section.
+The rules this skill's files follow alongside the [shared skill guidelines](../guidelines.md). Modes, protocols and artifacts use the directory-specific structures below. A rule that binds only modes, only protocols, only artifacts, or only references is in that section.
 
 ## Titles
 
@@ -10,6 +10,10 @@ The rules this skill's files follow alongside the [shared skill guidelines](../g
   - Each part of a hyphenated word is capitalized.
 - **Action titles.**
   Operation, command and mode procedure titles name the action and subject directly, without articles such as a, an or the. Use meaningful subject words to meet the procedure title length.
+- **Italicised verb.**
+  An artifact operation's title italicises its leading verb, and nothing else: `### *Apply* Issue Placement`. The emphasis leaves the heading's anchor unchanged, so a link to it keeps its plain text and fragment.
+  - The verb separates from the subject, so the anchors one procedure reaches read together as its input and output contract: `*Read*` and `*Fetch*` take evidence in, `*Populate*`, `*Record*` and `*Save*` put state out, `*Check*` and `*Validate*` assert against what they are given.
+  - A title whose leading word does not carry that sense is the wrong title; name the action first.
 
 ## Procedure
 
@@ -113,6 +117,33 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. A mode has no Rules section.
 
+## Protocols
+
+Read this before adding or changing a protocol.
+
+- **One change.**
+  A protocol is one change to the work that lands in several artifacts together. It changes when that change does. Where the sequence produces one nameable output shape it is an artifact operation, not a protocol.
+- **Named for the situation.**
+  A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
+- **Entered whole.**
+  One file holds one protocol. A caller runs the file; it does not link a step. A sequence worth calling on its own is its own protocol.
+- **Procedure.**
+  The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
+- **No closing summary.**
+  What a protocol changes, and what a blocker leaves unchanged, is stated by the step that changes it. A protocol carries no section restating the result; a reader following the procedure and its links has it already, and a summary goes stale against the steps it describes.
+- **Calls.**
+  A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. It is run by modes and by other protocols, never by an artifact.
+- **Prerequisites.**
+  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure links to, including each protocol and mode it runs.
+- **No spare parts.**
+  A protocol nothing runs is not a protocol. One exists because a mode or another protocol follows it.
+- **A new protocol.**
+  A new protocol is a new file. An artifact is not edited to name it.
+- **Step rules.**
+  A rule that binds one step sits in that step. A rule that binds every protocol is added to this section.
+- **Sections.**
+  Prerequisites, Procedure, then Guidance when the file has an assistive statement that is not a step. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
+
 ## Artifacts
 
 Read this before adding or changing an artifact.
@@ -128,11 +159,12 @@ Read this before adding or changing an artifact.
 - **Operation inputs.**
   Callers address an artifact operation through descriptive input names, such as board fields. CLI flags such as `--fields` belong to the artifact's implementation details, not the calling mode procedure. Repeated calls identify the inputs they refresh and retain.
 - **Operation scope.**
-  Reading, inspecting, planning, populating and validating an artifact can each be operations. Classify the work by its subject and behaviour, not its verb or script name. A read that sequences access steps is an operation; a plan that derives an artifact's state is an operation.
+  An operation exists because a procedure calls it. Classify the work by its subject and behaviour, not its verb or script name: a read that sequences access steps is an operation, and a plan that derives an artifact's state is an operation.
+  - Reading, inspecting, planning, populating and validating are shapes an operation can take, not a set an artifact fills. A sibling operation is no reason to add its counterpart, and a wrapper whose body is one call to another operation is that operation.
 - **Bodies and lifecycle.**
   A body artifact populates and validates document content. A subject artifact owns its readiness and completion checks from supplied evidence. Reading evidence about related artifacts does not make a check orchestration; coordinating changes to those artifacts does. Creation, metadata, linking and closure belong to the artifact for the tracked object.
-- **No mode.**
-  An artifact never links to a mode, including by naming one in prose.
+- **No mode, no protocol.**
+  An artifact never links to a mode or a protocol, including by naming one in prose.
 - **Fields.**
   Fields defines the artifact's shape and the conditions on its elements. Common field conditions hold for the family; a kind supplements them. Fields is a `##` section, with each named field or group under `###`. The kind's template is a subsection of Fields and holds that kind's table. Field conditions do not state user goals. A condition that gates an action sits in the procedure step that performs it.
 - **No procedure in Fields.**
@@ -155,6 +187,8 @@ Read this before adding or changing an artifact.
   A population step leads with the writing action and its template or owning operation. Mandatory field conditions follow as nested bullets under that step, linked to their local or shared definitions. Each condition states what must hold; field rules remain at their linked home.
 - **Command implementation.**
   Commands holds the artifact's command and access specifications. Operations holds the sequences that call them. Both expose named subsections to callers.
+- **No spare parts.**
+  An artifact does not carry an operation, a field or a command nothing reaches. An operation no procedure cites is surface that drifts from whatever it wraps, and its capability is already reachable through the operation it would call.
 - **A new kind.**
   A new kind is a new file. The common file is not edited to name it.
 - **Detail.**

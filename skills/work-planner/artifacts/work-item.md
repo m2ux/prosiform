@@ -11,7 +11,7 @@ Read these files first.
 
 ## Operations
 
-### Populate Work Item
+### *Populate* Work Item
 
 One task's local implementation plan.
 

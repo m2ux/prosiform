@@ -9,11 +9,12 @@ Read these files first.
 - [Board](../artifacts/board.md)
 - [Advance Mode](advance-mode.md)
 - [Pull Request](../artifacts/pull-request.md)
+- [Delivery Evidence](../artifacts/delivery-evidence.md)
 - [Epic](../artifacts/epic.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Delivery Plan](../artifacts/delivery-plan.md)
 - [Issue](../artifacts/issue.md)
-- [Sync Mode](sync-mode.md)
+- [Task Merge](../protocols/task-merge.md)
 - [Guidelines](../guidelines.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Planning Record](../artifacts/planning-record.md)
@@ -23,7 +24,6 @@ Read these files first.
 - [Work Item](../artifacts/work-item.md)
 - [Pull Request Body](../artifacts/pull-request-body.md)
 - [Issue Body](../artifacts/issue-body.md)
-- [Understand Mode](understand-mode.md)
 
 ## Procedure
 
@@ -38,20 +38,20 @@ The main path meets [Outcomes](#outcomes).
    - Report a pending decision or unavailable dependency before dispatch.
 3. **Fetch.**
    Run [Read Board State](../artifacts/board.md#read-board-state) with the selected board identity to obtain its current items and Status field.
-   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for each selected board repository.
+   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](../artifacts/board.md#repositories) Read Board State returned.
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) with those records.
-   - Use both snapshots in Plan Available Work.
+   - Use the pull request records in Plan Available Work; the issue links serve the merge and delivery steps.
    - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration).
    - Run [Read Board Assignee](../artifacts/board.md#read-board-assignee) for the assignee.
 4. **Survey.**
    - Run [Check Epic Prerequisites](../artifacts/epic.md#check-epic-prerequisites) for each candidate epic with its current initiative and epic bodies and all prerequisite issue and base-merge records.
    - Pass its confirmed result to [Prepare Delivery Bases](../artifacts/delivery-branches.md#prepare-delivery-bases).
    - Read the project branches and each epic's bases through [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches).
-   - Call [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) with the board items, pull requests, complete issue-link snapshot, project checkout, epic bases and selected record date.
+   - Call [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) with the board items, pull requests, project checkout, epic bases and selected record date.
    - Resolve any missing issue through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
    - Repeat Plan Available Work with every resolved off-board issue while retaining the other inputs.
    - For delivery discrepancies:
-     - Run [Read Delivery Evidence](sync-mode.md#read-delivery-evidence) for the affected initiative and epics.
+     - Run [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) for the affected initiative and epics.
      - Resume the survey with its returned records.
    - Handle the returned availability findings:
      - **Held work.**
@@ -59,21 +59,20 @@ The main path meets [Outcomes](#outcomes).
        - When the user releases a row:
          - Run [Release Task Rows](../artifacts/epic-issue-body.md#release-task-rows).
          - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-         - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, complete issue-link snapshot, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
+         - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
      - **Blocked work.**
        - Report a `blocked` line without asking. Its dependencies decide when it becomes available.
    - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
 5. **Merge.**
-   Follow [Merge Task Pull Requests](#merge-task-pull-requests) for each `merge` line.
-   - Run [Record Task Merge](sync-mode.md#record-task-merge) for each confirmed merge result.
+   Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for each `merge` line.
+   - Run [Task Merge](../protocols/task-merge.md) for each confirmed merge result.
 6. **Confirm.**
    Show each `unit` line, with its tasks, coverage, record folder, branch, base and worktree.
    - Confirm the set as an [Interview](../guidelines.md#modes). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
 7. **Hold.**
    For each confirmed unit, before its session starts:
    - Add its record with [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record), named as the `unit` line gives it.
-   - Commit the engineering worktree.
-   - Push its branch.
+   - Run [Publish Planning Record](../artifacts/planning-record.md#publish-planning-record) for the record's folder.
    - Run [Reserve Task Rows](../artifacts/epic-issue-body.md#reserve-task-rows) for the unit's tasks.
    - Run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the body it writes.
    - Set each task issue of the unit, where one exists, to In Progress with [Update Item Status](../artifacts/board.md#update-item-status), and its epic with it.
@@ -81,8 +80,9 @@ The main path meets [Outcomes](#outcomes).
    - A unit's record exists, its row carries that record's link, and the body is patched, before its session starts. A session is never dispatched for a row another one holds.
    - A held row stays held while its session plans and implements. The pull request's link replaces the record's link, which frees the row.
 8. **Dispatch.**
-   - Confirm each corpus-changing epic has its [Corpus Audit](../artifacts/epic-issue-body.md#corpus-audit) criterion.
-   - Dispatch that final row as its own unit.
+   - Confirm each corpus-changing epic has its [Corpus Audit](../artifacts/epic-issue-body.md#corpus-audit) criterion, whose row is that epic's last.
+   - Keep that audit row a unit of its own, joined to no other row, so it is confirmed and held like any other before a session starts for it.
+
    For each held unit:
    - Run [Create Task Worktree](../artifacts/delivery-branches.md#create-task-worktree).
    - Call [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, reserved folder, worktrees, test obligations and [Run Delivery Session](#run-delivery-session) as the supplied execution procedure.
@@ -91,7 +91,7 @@ The main path meets [Outcomes](#outcomes).
    - When that session provides no sub-agent dispatch, this mode reports that and stops before any unit begins.
    - The sub-agent works in the unit's worktree, reads the brief, and has the engineering worktree in reach for the planning record.
    - Leave the dispatched session running its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work below.
-   - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as the [Work Breakdown Guide](../artifacts/delivery-branches.md#branches) defines.
+   - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as [Task Branches](../artifacts/delivery-branches.md#task-branches) defines.
    - Raise issues arising from one work item as standalone issues.
    - Once its pull request is open and its epic delivery is recorded:
      - Run [Hoist Mode](hoist-mode.md) for those issue identities.
@@ -122,8 +122,7 @@ The confirmed unit carried from its supplied brief through implementation and de
    - Add any further file the work needs, as [Layout](../artifacts/planning-record.md#layout) describes.
 4. **Link the work items.**
    Register each returned work-item file through [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record). The row retains its folder link while reserved.
-   - Commit the engineering worktree.
-   - Push its branch.
+   - Run [Publish Planning Record](../artifacts/planning-record.md#publish-planning-record) for the record's folder.
 5. **Match the tests to the criteria.**
    Check the returned work item's test row against each criterion the unit's Coverage carries and [Test Coverage](../artifacts/pull-request-body.md#test-coverage).
    - Resolve a missing test before implementation.
@@ -135,8 +134,8 @@ The confirmed unit carried from its supplied brief through implementation and de
    - Run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the returned body.
 8. **Merge.**
    Record check results with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), following [Test Plan](../artifacts/pull-request-body.md#test-plan).
-   - Follow [Merge Task Pull Requests](#merge-task-pull-requests) for the task pull request.
-   - On a confirmed merge, run [Record Task Merge](sync-mode.md#record-task-merge) with that merge result and the unit's current task and epic evidence.
+   - Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request.
+   - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result and the unit's current task and epic evidence.
    - Resume the defer step when recording returns; a merge or recording blocker remains explicit.
 9. **Defer.**
    Confirm each item with the user.
@@ -147,72 +146,6 @@ The confirmed unit carried from its supplied brief through implementation and de
     Create each issue that arose during delivery as a standalone issue with [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), with no agent-engineering prefix.
     - Run [Hoist Mode](hoist-mode.md) with those new issue identities after the pull request is open and epic delivery is recorded.
     - Return each placement or pending user decision with the delivery session result.
-
-### Merge Task Pull Requests
-
-Merges each open task pull request whose test plan has passed, on a delivery run that finds it and in the session that opened it.
-
-1. **Check.**
-   Confirm the repository prerequisite in [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue) and the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](../artifacts/pull-request.md#merge-delivery-pull-request) governs.
-2. **Update and merge.**
-   Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base).
-   - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
-   - Run [Merge Delivery Pull Request](../artifacts/pull-request.md#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
-   - Stop on a handoff for human approval.
-   - If the merge is refused:
-     - Run [Update Task Branch](../artifacts/delivery-branches.md#update-task-branch).
-     - Repeat Fetch Merge Readiness for the updated task head.
-     - Retry Merge Delivery Pull Request once with that verified evidence. A conflict or repeated refusal leaves the pull request open with the blocker reported.
-3. **Confirm.**
-   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) to confirm the merged state, head, base and merge commit.
-   - Return that result to the caller.
-
-### Integrate Epic Delivery
-
-Coordinates current branch, epic and pull-request evidence for one epic-base integration.
-
-1. **Prepare the evidence.**
-   - Confirm the repository prerequisite in [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue).
-   - Run [Maintain Review Pull Request](sync-mode.md#maintain-review-pull-request) with the actual task merges.
-   - Run [Understand Mode](understand-mode.md) with the review pull request identity.
-   - Resume with its published overview so the complete review body cites the task merges and carries that overview.
-   - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-   - Require the user to have marked the draft ready.
-   - Leave a draft waiting for that decision.
-   - Confirm its head is the epic base and its target is the corresponding long-lived branch.
-2. **Refresh and validate.**
-   Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base).
-   - Obtain current criterion verification for the updated result.
-   - Refresh the delivery records.
-   - Call [Check Epic Readiness](../artifacts/epic.md#check-epic-readiness) with the current epic, delivery records, complete issue-link snapshot and that verification evidence.
-   - When the branch content changes, before checking merge readiness:
-     - Repeat Maintain Review Pull Request with the current task merges.
-     - Repeat Understand Mode with the same pull request identity and updated head.
-   - Follow [Fetch Merge Readiness](#fetch-merge-readiness) for the exact current head and target. A conflict, failed or pending check, unmet epic condition or incomplete evidence leaves integration blocked.
-3. **Merge or hand off.**
-   Pass the confirmed epic readiness, verified head, target requirements, repository prerequisite and passing evidence to [Merge Delivery Pull Request](../artifacts/pull-request.md#merge-delivery-pull-request) with delivery kind epic, without asking for further confirmation.
-   - Return its handoff when a human reviewer must merge. A changed head requires fresh verification; a merge refusal returns to the readiness checks, and a repeated refusal is reported without retrying.
-4. **Confirm the result.**
-   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) to confirm the merged state, verified head, target and merge commit.
-   - Return the result or blocker. Draft and blocked pull requests remain open.
-
-### Fetch Merge Readiness
-
-The current pull request's readiness against its target requirements and head checks.
-
-1. **Read the head.**
-   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
-   - Retain the literal head SHA and target branch for the evidence calls.
-2. **Read target requirements.**
-   Call [Read Target Requirements](../artifacts/delivery-branches.md#read-target-requirements) with the repository, target and protection/rules output paths.
-   - Carry any unresolved requirement into the readiness result.
-3. **Read head evidence.**
-   - Call [Read Head Evidence](../artifacts/pull-request.md#read-head-evidence) with the exact head SHA and check/status output paths.
-   - Request reviews through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) with the pull request identity and reviews output path. A missing or pending check, blocked merge state or unmet required review leaves readiness unresolved.
-4. **Confirm the head.**
-   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) again with the same identity and destination.
-   - Compare its head with the retained SHA; a changed head requires fresh evidence.
-   - Return the verified head, target requirements and readiness result, including unresolved conditions.
 
 ## Outcomes
 

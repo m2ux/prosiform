@@ -4,7 +4,7 @@ The theme or proposals board, its membership and each item's status.
 
 ## Operations
 
-### Select Project Board
+### *Select* Project Board
 
 The theme or proposals board the request names.
 
@@ -14,7 +14,7 @@ The theme or proposals board the request names.
 2. Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
 3. Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
 
-### Copy Project Board
+### *Copy* Project Board
 
 A missing theme board, or a missing proposals board.
 
@@ -25,7 +25,7 @@ A missing theme board, or a missing proposals board.
    - Run [Create Theme Board](#create-theme-board) with the owner, repository and theme title.
    - Require the new theme's label and board before an initiative takes that theme.
 
-### Create Proposals Board
+### *Create* Proposals Board
 
 A new proposals board linked to the supplied repository.
 
@@ -38,7 +38,7 @@ A new proposals board linked to the supplied repository.
 5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
 6. Return the new board number after linking succeeds.
 
-### Create Theme Board
+### *Create* Theme Board
 
 A new theme board linked to the supplied repository.
 
@@ -51,7 +51,7 @@ A new theme board linked to the supplied repository.
 5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
 6. Return the new board number after linking succeeds.
 
-### Place Issue on Board
+### *Place* Issue on Board
 
 One issue's membership and initial status.
 
@@ -62,7 +62,7 @@ One issue's membership and initial status.
 3. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
 4. Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
-### Read Board State
+### *Read* Board State
 
 The selected board's items and status fields.
 
@@ -70,9 +70,9 @@ The selected board's items and status fields.
 
 1. Run [Find Status Field](#find-status-field) for the board number.
 2. Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
-3. Return the items, Status field and item ids to the caller.
+3. Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
-### Read Board Assignee
+### *Read* Board Assignee
 
 The authenticated login available for board assignments.
 
@@ -81,7 +81,7 @@ The authenticated login available for board assignments.
 1. Run [Find User](#find-user).
 2. Return its login for the caller's assignment decisions.
 
-### Read Board Configuration
+### *Read* Board Configuration
 
 One board's field definitions and requested item state.
 
@@ -91,7 +91,7 @@ One board's field definitions and requested item state.
 2. When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
 3. Return the field definitions and requested current item.
 
-### Locate Project Board
+### *Locate* Project Board
 
 The board identity matching a supplied purpose or theme.
 
@@ -100,7 +100,7 @@ The board identity matching a supplied purpose or theme.
 1. Run [Find Proposals Board](#find-proposals-board) for proposals, or [Find Theme Board](#find-theme-board) for a theme.
 2. Return the identity or an absent-board finding for the caller's selection or creation path.
 
-### Update Item Status
+### *Update* Item Status
 
 One board item with a confirmed status selection applied.
 
@@ -135,9 +135,13 @@ An initiative carries one `theme:*` label, and each of its epics carries the sam
 - It is linked to the repository.
 - It holds the theme's initiatives, their epics and their task issues.
 
+### Repositories
+
+A board's repositories are those its items' issues live in, read from each item's issue, deduplicated and ordered with the board's own repository first. An item whose issue is unreadable leaves the list incomplete, which is reported rather than filled by assumption.
+
 ### Assignees
 
-An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee.
+An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so the call that changes one acts on the issue.
 
 ### Standalone Issues
 

@@ -8,10 +8,12 @@ Read these files first.
 
 - [Board Queue](board-queue.md)
 - [Board](board.md)
+- [Issue](issue.md)
+- [Pull Request](pull-request.md)
 
 ## Operations
 
-### Plan Board Changes
+### *Plan* Board Changes
 
 The board changes implied by supplied delivery state.
 
@@ -20,6 +22,32 @@ The board changes implied by supplied delivery state.
 1. Require the complete pull-request issue-link snapshot; refuse the computation without it.
 2. Run [Compute Board Changes](#compute-board-changes), mapping the supplied records and board context to its parameters.
 3. Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms their live state.
+
+### *Record* Board Delivery
+
+The board's status and assignees after its issues record delivery.
+
+**Inputs:** Saved initiative, epic and task identities, board identity, output directory, and the repositories the board's issues live in.
+
+1. Read the issues, the board and its delivery records.
+   - Run [Read Tracker Issue](issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
+   - Run [Read Board State](board.md#read-board-state) for the selected board.
+   - Run [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for its repositories.
+   - Run [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) for those records.
+   - Run [Read Board Configuration](board.md#read-board-configuration) with the board and output paths.
+   - Run [Read Board Assignee](board.md#read-board-assignee) for the assignment login.
+   - Pass these returned snapshots to Plan Board Changes.
+2. Run [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
+   - Fetch each unresolved issue.
+   - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
+3. Run each emitted call, including the assignee calls, which act on the issue rather than the board item.
+   - Run [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
+   - If that item still shows the preceding status:
+     - Repeat its write.
+     - Repeat the same item read. The item list can lag a write.
+4. Fetch the issues and items again.
+   - Run [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
+   - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
 ## Fields
 

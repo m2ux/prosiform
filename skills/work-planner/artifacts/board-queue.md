@@ -10,7 +10,7 @@ Read these files first.
 
 ## Operations
 
-### Plan Board Queue
+### *Plan* Board Queue
 
 Derives the queue from supplied board and delivery snapshots and confirmed decisions.
 
