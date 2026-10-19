@@ -20,7 +20,9 @@ from prosiform.cli import (
     INTERNAL_ERROR,
     INVALID_GROUP_RULE,
     PUBLICATION_FAILURE,
+    SOURCE_OUTSIDE_ROOT,
     SUCCESS,
+    TARGET_NOT_FOUND,
     USAGE_FAILURE,
     main,
 )
@@ -307,3 +309,97 @@ def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
     run = invoke("--root", str(root), "--group", "docs:9", "guide.md")
     assert run.stdout == ""
     assert run.stderr.startswith(f"{INVALID_GROUP_RULE}: ")
+
+
+def written(root: Path, name: str, text: str) -> None:
+    """One source document under the allowed source root."""
+    path = root / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "# Guide\n\n<div>raw</div>\n",
+        "# Guide\n\nA paragraph carrying <span>raw</span> markup.\n",
+        "# Guide\n\nSee [[page]] for the procedure.\n",
+        "# Guide\n\n![[page]]\n",
+        "# Guide\n\nA claim[^1] needing support.\n",
+        "# Guide\n\n## Run {#custom-id}\n",
+    ],
+)
+def test_a_construct_the_profile_refuses_fails_the_run(root: Path, source: str) -> None:
+    written(root, "guide.md", source)
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["severity"] for one in run.diagnostics()] == ["error"]
+    assert "code" not in run.diagnostics()[0]
+    assert run.diagnostics()[0]["source"].startswith("guide.md:")
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "# Guide\n\nA code span naming `[[page]]` is prose about a wiki link.\n",
+        "# Guide\n\nAn escaped \\[\\[page\\]\\] is literal text.\n",
+        "# Guide\n\nA paragraph mentioning {#custom-id} names no section.\n",
+        "# Guide\n\n```html\n<div>raw</div>\n```\n",
+        "# Guide\n\n- [ ] open\n- [x] done\n\n[x]: page.md\n",
+    ],
+)
+def test_a_source_the_profile_accepts_reaches_the_absent_stage(
+    root: Path, source: str
+) -> None:
+    written(root, "guide.md", source)
+    assert invoke("--root", str(root), "guide.md").status == INTERNAL_ERROR
+
+
+def test_the_referring_document_is_read_under_the_profile(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "--from", "guide.md", "#a-section")
+    assert run.status == INPUT_FAILURE
+    assert "guide.md" in run.stderr
+
+
+def test_a_refusal_names_the_construct_and_where_it_sits(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [[page]] for the procedure.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    reported = run.diagnostics()[0]
+    assert reported["reference"] == "[[page]]"
+    assert reported["source"] == "guide.md:3"
+    assert "wiki link" in reported["message"]
+
+
+def test_an_entry_suffix_outside_the_profile_is_an_input_failure(root: Path) -> None:
+    written(root, "notes.txt", "# Notes\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "notes.txt")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["reference"] == "notes.txt"
+
+
+def test_an_entry_suffix_is_classified_case_insensitively(root: Path) -> None:
+    written(root, "GUIDE.MARKDOWN", "# Guide\n")
+    assert invoke("--root", str(root), "GUIDE.MARKDOWN").status == INTERNAL_ERROR
+
+
+def test_an_entry_naming_no_document_is_an_input_failure(root: Path) -> None:
+    run = invoke("--root", str(root), "--diagnostics", "json", "absent.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
+
+
+def test_an_entry_normalizing_outside_the_root_is_an_input_failure(
+    root: Path,
+) -> None:
+    written(root.parent, "outside.md", "# Outside\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "../outside.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_OUTSIDE_ROOT]
+
+
+def test_a_fragment_reference_reads_the_whole_document_it_names(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n## Run\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "guide.md#run")
+    assert run.status == INPUT_FAILURE
