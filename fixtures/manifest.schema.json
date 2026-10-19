@@ -18,10 +18,16 @@
       "minItems": 1,
       "items": { "type": "string", "minLength": 1 }
     },
+    "awaiting": { "$ref": "#/$defs/awaiting" },
     "invocation": { "$ref": "#/$defs/invocation" },
     "expected": { "$ref": "#/$defs/expected" }
   },
   "$defs": {
+    "awaiting": {
+      "description": "The work that delivers the behaviour this fixture declares, named as an initiative and an epic and optionally the task within it, such as I00:E03 or I00:E03:W02. A fixture carrying it is one the corpus declares ahead of the build: its failure leaves the corpus run green, and a run in which it meets its manifest fails instead, so the marker is lifted on the change that makes it untrue. A fixture the build is expected to satisfy carries no awaiting.",
+      "type": "string",
+      "pattern": "^I[0-9]{2}:E[0-9]{2}(:W[0-9]{2})?$"
+    },
     "invocation": {
       "description": "The run to perform. The runner supplies the build under test from its own configuration, resolves the source tree to an absolute path and passes it as the allowed source root, and asks for diagnostics as data so a code can be compared rather than prose.",
       "type": "object",

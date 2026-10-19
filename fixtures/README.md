@@ -67,10 +67,25 @@ source = "guide.md:3"
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects. A run emitting none declares an empty list. |
+| `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it is one the corpus declares ahead of the build. |
 
 The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
 Expected output is a file rather than text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
+
+## A fixture ahead of the build
+
+The corpus states the contract, and the contract is delivered epic by epic, so a fixture may declare behaviour no build produces yet. Such a fixture names the work that delivers it:
+
+```toml
+awaiting = "I00:E03"
+```
+
+A fixture carrying `awaiting` and failing is reported as awaiting that work, and the corpus run stays green: an expectation the contract makes and the build has not met yet is a statement about the schedule rather than a defect. A fixture carrying it and meeting its manifest fails the run, naming the manifest to lift the marker from, so the marker is temporary by construction — the change that delivers the work is the change that fails until the marker goes.
+
+The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
+
+Two fixtures carry the marker. `extraction/nested-section-target` awaits `I00:E03`, which delivers section extraction, and `normalization/root-escape` awaits `I00:E04`, which delivers dependency traversal.
 
 ## The schema
 
@@ -126,7 +141,7 @@ The runner takes one fixture, invokes the build under test against its source tr
 export PROSIFORM_BUILD=prosiform
 ```
 
-The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
+The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
 The runner appends `--root`, the fixture's source tree resolved to an absolute path, and `--diagnostics json` to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
@@ -138,10 +153,18 @@ The runner appends `--root`, the fixture's source tree resolved to an absolute p
 
 A standard error line that is not a JSON object is reported as one, because the declared format carries diagnostics and nothing else.
 
-## Running the checks
+## Running the corpus
 
 ```bash
 make corpus
+```
+
+Every fixture in this tree runs against the build `PROSIFORM_BUILD` names, in path order, and each one's verdict is printed under its identity — its path under `fixtures/`. A fixture that differs from its manifest fails the run and its differences are printed under its name; one awaiting later work is reported as awaiting it; one awaiting work it already meets fails the run. The run ends on a count of the fixtures against each verdict, and returns a nonzero status when any fixture failed it or when no build is configured.
+
+## Running the checks
+
+```bash
+make harness
 ```
 
 Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them.
