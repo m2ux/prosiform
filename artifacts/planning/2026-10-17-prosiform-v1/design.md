@@ -177,7 +177,7 @@ A group is the unit the bundle is organized into. By default a group is one sour
 --group artifacts:2 --group references:2
 ```
 
-A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A rule whose directories contribute no document to the *closure* is not an error: it arranges nothing, and the run reports it as `W_EMPTY_GROUP_RULE` on stderr.
+A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A depth outside the range and a slug given twice are faults in the command line's own form and exit 2; a slug naming no such directory is a fault in the tree the rule points at and exits 1, as a reference naming no document does. A code names a defect and an exit status names a category of outcome, so one code decides either status according to the fault it names. A rule whose directories contribute no document to the *closure* is not an error: it arranges nothing, and the run reports it as `W_EMPTY_GROUP_RULE` on stderr.
 
 - **Group membership:** A document belongs to the group whose slug matches the deepest directory segment of its path. A document no group matches keeps its own group, so one bundle can carry both arrangements.
 - **Group structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every *member* document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
