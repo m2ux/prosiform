@@ -135,6 +135,8 @@ Read this before adding or changing a protocol.
   A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. It is run by modes and by other protocols, never by an artifact.
 - **Prerequisites.**
   Prerequisites open with `Read these files first.` They list every file the protocol's Procedure links to, including each protocol and mode it runs.
+- **No spare parts.**
+  A protocol nothing runs is not a protocol. One exists because a mode or another protocol follows it.
 - **A new protocol.**
   A new protocol is a new file. An artifact is not edited to name it.
 - **Step rules.**
@@ -157,7 +159,8 @@ Read this before adding or changing an artifact.
 - **Operation inputs.**
   Callers address an artifact operation through descriptive input names, such as board fields. CLI flags such as `--fields` belong to the artifact's implementation details, not the calling mode procedure. Repeated calls identify the inputs they refresh and retain.
 - **Operation scope.**
-  Reading, inspecting, planning, populating and validating an artifact can each be operations. Classify the work by its subject and behaviour, not its verb or script name. A read that sequences access steps is an operation; a plan that derives an artifact's state is an operation.
+  An operation exists because a procedure calls it. Classify the work by its subject and behaviour, not its verb or script name: a read that sequences access steps is an operation, and a plan that derives an artifact's state is an operation.
+  - Reading, inspecting, planning, populating and validating are shapes an operation can take, not a set an artifact fills. A sibling operation is no reason to add its counterpart, and a wrapper whose body is one call to another operation is that operation.
 - **Bodies and lifecycle.**
   A body artifact populates and validates document content. A subject artifact owns its readiness and completion checks from supplied evidence. Reading evidence about related artifacts does not make a check orchestration; coordinating changes to those artifacts does. Creation, metadata, linking and closure belong to the artifact for the tracked object.
 - **No mode, no protocol.**
@@ -184,6 +187,8 @@ Read this before adding or changing an artifact.
   A population step leads with the writing action and its template or owning operation. Mandatory field conditions follow as nested bullets under that step, linked to their local or shared definitions. Each condition states what must hold; field rules remain at their linked home.
 - **Command implementation.**
   Commands holds the artifact's command and access specifications. Operations holds the sequences that call them. Both expose named subsections to callers.
+- **No spare parts.**
+  An artifact does not carry an operation, a field or a command nothing reaches. An operation no procedure cites is surface that drifts from whatever it wraps, and its capability is already reachable through the operation it would call.
 - **A new kind.**
   A new kind is a new file. The common file is not edited to name it.
 - **Detail.**

@@ -18,24 +18,6 @@ The branches a task pull request targets.
 4. Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
 5. Run [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
-### *Create* Task Branch
-
-One unit's branch and worktree, rooted in its epic base.
-
-**Inputs:** Project checkout, task branch name, epic base, worktree path and confirmed prerequisite evidence.
-
-1. Take the caller's confirmed prerequisite evidence, branch, worktree and selected base as inputs.
-2. Run [Create Task Worktree](#create-task-worktree) with those paths and names, meeting [Task Branches](#task-branches).
-
-### *Update* Delivery Branch
-
-The current upstream content in a delivery branch.
-
-**Inputs:** Selected branch type and name, its worktree and the upstream branch to merge.
-
-1. When the selected branch is an epic base, run [Update Epic Base](#update-epic-base) in its worktree with its long-lived target.
-2. When the selected branch is a task branch, run [Update Task Branch](#update-task-branch) in its worktree with the task branch name and epic base. A conflict stops the operation and is reported.
-
 ### *Create* Epic Base
 
 The missing epic branch rooted in its remote long-lived branch.

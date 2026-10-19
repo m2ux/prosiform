@@ -91,6 +91,34 @@ class DocumentInterfaces(unittest.TestCase):
                         with self.subTest(file=path.name, text=text):
                             self.assertIn(text.strip().lower(), titles)
 
+    def test_every_operation_and_protocol_is_reached(self):
+        """An operation exists because a procedure calls it. Splitting one
+        document into many invents surface on the way, so the orphan is the
+        thing to look for, not only the dropped link."""
+        folders = ('modes', 'artifacts', 'protocols', 'references')
+        cited, operations, protocols = set(), {}, set()
+        for name in ('SKILL.md', 'guidelines.md'):
+            cited |= set(re.findall(r'\]\(([^)\s]+)\)', (ROOT / name).read_text()))
+        for folder in folders:
+            for path in sorted((ROOT / folder).glob('*.md')):
+                cited |= set(re.findall(r'\]\(([^)\s]+)\)', path.read_text()))
+                if folder == 'protocols':
+                    protocols.add(path.name)
+                section = None
+                for _, level, title in checker.scan(path)[2]:
+                    if level == 2:
+                        section = title
+                    elif level == 3 and section == 'Operations':
+                        operations[checker.anchor_of(title)] = f'{folder}/{path.name}'
+        fragments = {t.rpartition('#')[2] for t in cited if '#' in t}
+        files = {t.rpartition('/')[2] for t in cited}
+        for anchor, where in sorted(operations.items()):
+            with self.subTest(operation=anchor, file=where):
+                self.assertIn(anchor, fragments)
+        for name in sorted(protocols):
+            with self.subTest(protocol=name):
+                self.assertIn(name, files)
+
     def test_protocols_are_entered_whole(self):
         """A protocol is one coordinated sequence, so a caller runs the file
         rather than reaching into a step of it."""

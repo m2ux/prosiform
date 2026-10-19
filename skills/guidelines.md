@@ -73,6 +73,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   Files in `artifacts/` use Prerequisites, optional Operations, Fields, optional Guidance, and optional Commands. Fields is required. Operations holds named procedures; Commands holds their implementation specifications. Templates are fenced Markdown under Fields.
 - **Ownership.**
   Modes coordinate one user goal; protocols coordinate one change across several artifacts; artifact operations perform and validate work on their own subject. Artifact command ownership follows the subject, independent of caller count. A single-step artifact operation uses one bullet and counts as a procedure.
+- **Reached or absent.**
+  Every operation, protocol and command a file carries is one its own procedures or its callers reach. A split that distributes one document into many invents surface on the way, so it is audited for what nothing reaches as well as for what it dropped.
 - **What each terminal section states.**
   A mode's Outcomes state the user goal met, which its steps do not carry. An artifact's Fields state the shape of its subject, which is a contract rather than a sequence. A protocol states what it changed in the steps that change it, so it carries no closing summary; one would restate the procedure and go stale against it.
 - **Direction.**
