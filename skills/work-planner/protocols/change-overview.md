@@ -17,7 +17,7 @@ Read these files first.
 
 1. **Prepare the evidence.**
    Read the supplied pull request's identity, title, base and verified head through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-   - Call [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree) with the repository checkout, pull request number, verified head and worktree path.
+   - Call [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree) with the repository checkout, pull request number and verified head.
    - On a changed-head finding:
      - Repeat Read Pull Request State for the same pull request.
      - Repeat Create Pull Request Worktree using its new verified head.

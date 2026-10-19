@@ -12,20 +12,21 @@ Read these files first.
 - [Pull Request](../artifacts/pull-request.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Epic](../artifacts/epic.md)
+- [Guidelines](../guidelines.md)
 
 ## Procedure
 
 1. **Prepare the evidence.**
    - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, which gates the merge this protocol makes.
-   - Follow [Review Pull Request](review-pull-request.md) with the actual task merges.
+   - Follow [Review Pull Request](review-pull-request.md) with the actual task merges, the epic's issue and that confirmed setting.
    - Follow [Change Overview](change-overview.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-   - Require the user to have marked the draft ready.
-   - Leave a draft waiting for that decision.
+   - Put a draft still awaiting its ready mark to the user as an [Interview](../guidelines.md#modes), naming the epic standing in review on its board.
+   - Continue only on a pull request the user has marked ready, and leave a draft waiting for that decision.
    - Confirm its head is the epic base and its target is the corresponding long-lived branch.
 2. **Refresh and validate.**
-   Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base).
+   Run [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base) with the project checkout and the epic base.
    - Obtain current criterion verification for the updated result.
    - Refresh the delivery records.
    - Call [Check Epic Readiness](../artifacts/epic.md#check-epic-readiness) with the current epic, delivery records, complete issue-link snapshot and that verification evidence.
