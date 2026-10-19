@@ -1,0 +1,19 @@
+description = "A grouping rule naming a depth outside 1 through 6 is refused as an invalid option combination, and the run publishes nothing."
+
+clauses = [
+  "Grouping — a grouping rule refused for its depth",
+  "CLI contract — a grouping rule's depth is 1 through 6",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "docs:9", "guide.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_GROUP_RULE"

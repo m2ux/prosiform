@@ -12,6 +12,9 @@ dependencies = [
     "markdown-it-py==4.2.0",
 ]
 
+[project.scripts]
+prosiform = "prosiform.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/m2ux/prosiform"
 
