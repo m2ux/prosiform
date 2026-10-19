@@ -50,6 +50,8 @@ One selected destination for an orphan's work.
      - Publish the affected bodies through [Save Tracker Issue](issue.md#save-tracker-issue).
    - **New task.**
      - Run [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
+     - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
+     - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](epic-issue-body.md#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
      - Number the row where it can start.
      - When movable rows change number, run [Check Dependencies and Numbering](dependency-graph.md#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
      - Publish the checked bodies through Save Tracker Issue.
@@ -71,8 +73,9 @@ The selected layout, with the original wording preserved for readers.
 
 **Inputs:** Source issue identity, selected destination kind, and the evidence and design the body carries.
 
-1. Fetch the body live with [Read Tracker Issue](issue.md#read-tracker-issue).
-   - Post it word for word through [Comment on Issue](issue.md#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
+1. Fetch the body and discussion live with [Read Tracker Issue](issue.md#read-tracker-issue).
+   - Post the body word for word through [Comment on Issue](issue.md#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
+   - Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
 2. Use the selected [Populate Task Body](task-body.md#populate-task-body), [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body), [Populate Initiative Issue Body](initiative-issue-body.md#populate-initiative-issue-body) or [Populate Standalone Body](standalone-body.md#populate-standalone-body) body.
    - Carry evidence into Problem and design into Proposal.
 3. Run [Check Round of Edits](issue-body.md#check-round-of-edits) with the populated body and selected kind conditions before publishing.
