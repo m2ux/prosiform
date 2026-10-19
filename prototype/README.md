@@ -57,7 +57,9 @@ The build's tests and static checks are named commands, run from the repository 
 
 `tests/test_source.py` holds the transport-metadata scan to the frontmatter policy in both of its directions: one leading byte-order mark removed and a second left as content, a block closed by three hyphens or by three dots and by neither an indented delimiter nor one carrying a trailing space, CRLF terminators recognized, a YAML example inside a code block and a thematic break below the first line left alone, an opener no line closes failing, and the line of the file every location in the stripped content maps back to.
 
-`tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, and the status a request this build cannot carry out returns.
+`tests/test_bundle.py` holds the bundle's structure to the clauses the file group rests on: the heading one path generates and the suffix it drops, the escaping that keeps that heading literal, the slug a destination is generated from and the ordinal a repeated one takes, the region a parse exposes for each block with the bytes its source wrote inside it and one blank line between it and the next, a title the path already names absorbed and one it does not kept and shifted, and a shift beyond the sixth level refused.
+
+`tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, the status a request this build cannot carry out returns, and the publication the corpus observes only through standard output — a named output file written through one rename, left untouched by a failing run, and written by no validation-only run.
 
 ## Layout
 
