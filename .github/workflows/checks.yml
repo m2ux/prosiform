@@ -1,8 +1,8 @@
 # The repository's checks, run on every change to the branches that carry the
 # build. The job calls the named command a developer calls, so one
 # configuration governs a local run and a remote one: `make check` runs the
-# eight targets in the order the Makefile declares, stops at the first
-# failure, and names the target that failed.
+# checks in the order the Makefile declares, stops at the first failure, and
+# names the target that failed.
 
 name: Checks
 

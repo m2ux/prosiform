@@ -59,7 +59,7 @@ Three trees, each created by the stage that writes into it.
 | [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. Both builds run it. |
 | [`prototype/`](prototype/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
 | [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
-| [`checks/`](checks/README.md) | The checks that hold the layout, the README's references and the glossary's coverage true. |
+| [`checks/`](checks/README.md) | The checks that hold the layout, every document's references, the README tables, and the glossary's coverage true. |
 
 The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
 
@@ -73,16 +73,19 @@ make check
 
 | Command | Asserts |
 | --- | --- |
-| `make test` | The Python build's suite passes. A run that collects no test fails. |
+| `make lock-check` | The lockfile describes the dependency list the project definition declares. |
 | `make lint` | The repository's Python carries no lint error. |
 | `make format-check` | That same Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That same Python type checks in strict mode. |
-| `make lock-check` | The lockfile describes the dependency list the project definition declares. |
+| `make test` | The Python build's suite passes. A run that collects no test fails. |
+| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
 | `make layout` | Each of the three trees holds a tracked file. |
-| `make links` | Every reference this README carries resolves. |
+| `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`prototype/pyproject.toml`](prototype/README.md) declares, and nothing besides. |
+| `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
+| `make check` | All of the above, in the order listed, stopping at the first failure. |
 
-`make check` runs them in that order and stops at the first failure. The tools the first four call are pinned by [`prototype/uv.lock`](prototype/README.md); the last three are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+The tools the first six call are pinned by [`prototype/uv.lock`](prototype/README.md); `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
 
 ## 📦 Installation
 

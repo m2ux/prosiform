@@ -1,0 +1,20 @@
+description = "A fragment naming a heading nested inside a container fails, because only a document-level heading is a selectable section root."
+
+clauses = [
+  "Section extraction and output hierarchy — Nested target",
+  "Section extraction and output hierarchy — Source heading index",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#nested"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_NESTED_SECTION_TARGET"
+reference = "guide.md#nested"

@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/m2ux/prosiform/blob/main/fixtures/manifest.schema.json",
+  "title": "prosiform fixture manifest",
+  "description": "The declaration of one corpus fixture: the source tree it bundles, the invocation to run against that tree, and the standard output, exit status and diagnostics the run must produce. A runner decides the fixture's result from this declaration and the fixture's files alone. Nothing here names an implementation, a module or a language. The manifest is written as TOML and validated against this document after parsing, because TOML's value model is a subset of JSON's.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["description", "clauses", "invocation", "expected"],
+  "properties": {
+    "description": {
+      "description": "What this fixture establishes, in one sentence.",
+      "type": "string",
+      "minLength": 1
+    },
+    "clauses": {
+      "description": "The design clauses this fixture encodes, each named by its heading and the rule under it, so every clause can be mapped to the fixtures that cover it.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "invocation": { "$ref": "#/$defs/invocation" },
+    "expected": { "$ref": "#/$defs/expected" }
+  },
+  "$defs": {
+    "invocation": {
+      "description": "The run to perform. The runner supplies the build under test from its own configuration, resolves the source tree to an absolute path and passes it as the allowed source root, and asks for diagnostics as data so a code can be compared rather than prose.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "arguments"],
+      "properties": {
+        "root": {
+          "description": "The fixture-relative directory holding the source tree. It is the allowed source root the run is confined to.",
+          "$ref": "#/$defs/fixturePath"
+        },
+        "arguments": {
+          "description": "The arguments of the invocation, in order. The allowed source root and the diagnostic format are supplied by the runner and are not written here.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "expected": {
+      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exit_status", "stdout", "diagnostics"],
+      "properties": {
+        "exit_status": {
+          "description": "The process exit status, one of the five categories the contract declares: 0 success, 1 input, dependency, policy, safety or resource-limit failure, 2 invalid usage, 3 publication or delivery failure, 4 unexpected internal error.",
+          "type": "integer",
+          "enum": [0, 1, 2, 3, 4]
+        },
+        "stdout": {
+          "description": "The fixture-relative path to the bytes standard output must carry. A run that publishes no bundle names a file holding nothing.",
+          "$ref": "#/$defs/fixturePath"
+        },
+        "diagnostics": {
+          "description": "The diagnostics the run must emit on standard error, in order. A run emitting none declares an empty list.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/diagnostic" }
+        }
+      }
+    },
+    "diagnostic": {
+      "description": "One message the run emits to standard error. Its severity and its code name it together, and the severity decides which catalogue the code is drawn from: an error decides a failing run and a warning accompanies a successful one, so neither catalogue admits the other's codes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "code"],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "severity": { "const": "error" } },
+            "required": ["severity"]
+          },
+          "then": { "properties": { "code": { "$ref": "#/$defs/errorCode" } } }
+        },
+        {
+          "if": {
+            "properties": { "severity": { "const": "warning" } },
+            "required": ["severity"]
+          },
+          "then": { "properties": { "code": { "$ref": "#/$defs/warningCode" } } }
+        }
+      ],
+      "properties": {
+        "severity": {
+          "description": "Whether the message fails the run or accompanies it.",
+          "enum": ["error", "warning"]
+        },
+        "code": {
+          "description": "The stable code naming this diagnostic, from the catalogue its severity selects.",
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "description": "The original reference the diagnostic concerns, as the source spells it.",
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "description": "The referring source location, as a fixture-root-relative path and an optional line.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "fixturePath": {
+      "description": "A path inside the fixture directory: forward slashes, no leading slash, and no parent segment, so a fixture reaches nothing outside itself.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$",
+      "not": { "pattern": "(^|/)\\.\\.(/|$)" }
+    },
+    "errorCode": {
+      "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
+      "enum": [
+        "E_AMBIGUOUS_FILE_GROUP",
+        "E_AMBIGUOUS_SOURCE_HEADING",
+        "E_GENERATED_INPUT",
+        "E_HEADING_DEPTH_OVERFLOW",
+        "E_INVALID_GROUP_RULE",
+        "E_NESTED_SECTION_TARGET",
+        "E_PARSER_REFERENCE_LIMIT",
+        "E_SOURCE_OUTSIDE_ROOT",
+        "E_SOURCE_SYMLINK",
+        "E_TARGET_NOT_FOUND",
+        "E_UNSAFE_BUNDLE_BOUNDARY",
+        "E_UNTERMINATED_FRONTMATTER"
+      ]
+    },
+    "warningCode": {
+      "description": "The warning catalogue: the stable warning codes the design declares, each prefixed W_. A warning accompanies a successful run rather than deciding a failing one, so a fixture declaring one states what a run writes to standard error while still succeeding. A diagnostic whose severity is warning draws its code from here.",
+      "enum": ["W_EMPTY_GROUP_RULE", "W_RESOURCE_PORTABILITY"]
+    }
+  }
+}
