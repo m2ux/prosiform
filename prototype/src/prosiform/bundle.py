@@ -28,8 +28,18 @@ the document's only H1 and its slug equals the final segment of the
 path, because the file heading already names it. A group whose title is
 absorbed keeps its source heading levels; every other group moves each
 emitted heading down one level, the file heading taking the level that
-makes room. A shift that would place a heading beyond the sixth level is
-an overflow rather than a heading, and the group refuses it.
+makes room. A heading a retained container carries is shifted where it
+sits, so the container keeps the structure it had. A shift that would
+place any emitted heading beyond the sixth level is an overflow rather
+than a heading, and the group refuses it.
+
+A shift edits an ATX heading's number signs, which are the level the
+author wrote. A Setext heading writes its level as an underline instead,
+so a shifted group emits it as the ATX heading of the same level,
+carrying the inline source its content lines hold joined into the one
+line an ATX heading is, each line break reading as the space it already
+read as. A group that shifts by nothing has no level to write, so the
+heading stays the Setext heading its source wrote.
 
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
@@ -47,7 +57,16 @@ from pathlib import PurePosixPath
 from markdown_it.token import Token
 
 from prosiform.profile import SUFFIXES
-from prosiform.source import Selection, headings, level, regions, slug, visible
+from prosiform.source import (
+    LINE_FEED,
+    Selection,
+    bare,
+    headings,
+    level,
+    regions,
+    slug,
+    visible,
+)
 
 MAX_LEVEL = 6
 SHIFT = 1
@@ -59,6 +78,7 @@ SEPARATOR = "\n\n"
 TERMINATOR = "\n"
 
 ATX = "#"
+SPACE = " "
 HEADING_OPEN = "heading_open"
 
 ANCHOR = "#"
@@ -71,7 +91,11 @@ ENTRY_LAST = " and "
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
-ATX_PREFIX = re.compile(r"^( {0,3})(#{1,6})")
+ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
+CONTAINER_PREFIX = re.compile(
+    r"^(?:[ \t]*(?:>|[-*+](?=[ \t])|\d{1,9}[.)](?=[ \t])))*[ \t]*"
+)
+CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
 
 class Overflow(Exception):
@@ -172,21 +196,108 @@ def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
 
 
 def shifted(line: str, by: int) -> str:
-    """One ATX heading's first line, its level moved down by the group's shift."""
-    return ATX_PREFIX.sub(
+    """One ATX heading's line, its level moved down by the group's shift.
+
+    The level is written in the first number-sign run the line carries:
+    what precedes it is the indent and the container markers the line
+    opens with, and no container marker is a number sign.
+    """
+    return ATX_MARKER.sub(
         lambda written: written.group(1) + ATX * (len(written.group(2)) + by),
         line,
         count=1,
     )
 
 
-def region(physical: Sequence[str], token: Token, by: int) -> str:
-    """One region as the lines its source occupies, its heading level shifted."""
+def opening_markers(line: str) -> str:
+    """The container markers and indent one line opens with, before its content."""
+    written = CONTAINER_PREFIX.match(line)
+    return "" if written is None else written.group(0)
+
+
+def terminator(line: str) -> str:
+    """The line ending one physical line carries, which may be nothing at all."""
+    return line[len(bare(line)) :]
+
+
+def literal_closing(text: str) -> str:
+    """One heading's text with a trailing number-sign run kept as text.
+
+    An ATX heading ends at a run of number signs a space precedes, and a
+    renderer takes that run off the heading rather than showing it. A
+    Setext heading has no closing sequence, so a run ending its text is
+    text, and a backslash before the run keeps it the text it was.
+    """
+    return CLOSING_SEQUENCE.sub(r"\1\\\2\3", text)
+
+
+def converted(carried: Sequence[str], depth: int) -> str:
+    """One Setext heading as the ATX heading of the same level and text.
+
+    A Setext heading writes its level as an underline rather than as a
+    prefix, so it is rewritten rather than edited. Its content lines
+    carry the inline source the author wrote, and they join into the
+    one line an ATX heading is, separated by the space a reader already
+    reads in place of each line break. The rewritten line opens with
+    the markers the heading opened with, so the container that holds
+    the heading holds it still, and a number-sign run ending its text
+    is escaped, because an ATX heading ends at one.
+    """
+    written = [
+        bare(line)[len(opening_markers(line)) :].strip() for line in carried[:-1]
+    ]
+    text = literal_closing(SPACE.join(written))
+    return f"{opening_markers(carried[0])}{ATX * depth} {text}"
+
+
+def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
+    """Every heading one region holds, the region's own heading included."""
+    start, end = token.map or (0, 0)
+    return [
+        opening
+        for opening, _ in headings(tokens)
+        if opening.map is not None and start <= opening.map[0] < end
+    ]
+
+
+def region(
+    physical: Sequence[str], tokens: Sequence[Token], token: Token, by: int
+) -> str:
+    """One region as the lines its source occupies, each heading it holds shifted.
+
+    A heading a container carries is shifted where it sits, so the
+    container keeps the structure it had, and everything that is not a
+    heading is carried as the bytes its source wrote. The headings are
+    rewritten last to first, because a Setext heading becomes one line
+    where its source wrote several and an earlier heading's lines would
+    otherwise move out from under it.
+    """
     start, end = token.map or (0, 0)
     carried = list(physical[start:end])
-    if by and token.type == HEADING_OPEN and is_atx(token):
-        carried[0] = shifted(carried[0], by)
+    if not by:
+        return "".join(carried).rstrip("\r\n")
+    for opening in reversed(carried_headings(tokens, token)):
+        at, closing = opening.map or (0, 0)
+        if is_atx(opening):
+            carried[at - start] = shifted(carried[at - start], by)
+        else:
+            written = converted(physical[at:closing], level(opening) + by)
+            carried[at - start : closing - start] = [
+                written + terminator(physical[closing - 1])
+            ]
     return "".join(carried).rstrip("\r\n")
+
+
+def emitted_text(token: Token, text: str, by: int) -> str:
+    """The visible text the group emits for one heading.
+
+    A Setext heading the group converts carries on one line what its
+    source wrote on several, so each line break between them reads as
+    the space it already read as.
+    """
+    if by and not is_atx(token):
+        return SPACE.join(part.strip() for part in text.split(LINE_FEED))
+    return text
 
 
 def group(
@@ -231,14 +342,15 @@ def group(
             if id(token) in naming:
                 entries.append(0)
             continue
-        if token.type == HEADING_OPEN:
-            depth = level(token) + by
+        for opening in carried_headings(tokens, token):
+            depth = level(opening) + by
             if depth > MAX_LEVEL:
-                raise Overflow(text[id(token)], depth)
+                raise Overflow(text[id(opening)], depth)
+        if token.type == HEADING_OPEN:
             if id(token) in naming:
                 entries.append(len(shown))
-            shown.append(text[id(token)])
-        emitted.append(region(physical, token, by))
+            shown.append(emitted_text(token, text[id(token)], by))
+        emitted.append(region(physical, tokens, token, by))
     return Group(SEPARATOR.join(emitted), tuple(shown), tuple(entries))
 
 

@@ -1,7 +1,5 @@
 description = "A Setext heading is a selectable section root, and the section it roots ends at the next document-level heading of equal level whichever syntax that heading is written in."
 
-awaiting = "I00:E03:W03"
-
 clauses = [
   "Section extraction and output hierarchy — eligible roots, ATX and Setext",
   "Section extraction and output hierarchy — Boundary",

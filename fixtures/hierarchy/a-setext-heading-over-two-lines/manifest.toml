@@ -1,0 +1,15 @@
+description = "A Setext heading written over two source lines becomes one ATX heading carrying both lines, separated by the space a reader already reads in place of the line break, because an ATX heading is one line."
+
+clauses = [
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Heading syntax",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

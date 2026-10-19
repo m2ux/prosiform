@@ -1,0 +1,15 @@
+description = "A shifted group emits each Setext heading as the ATX heading one level deeper, carrying the inline source its underline sat beneath, and a group mixing the two syntaxes shifts both alike."
+
+clauses = [
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Heading syntax",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

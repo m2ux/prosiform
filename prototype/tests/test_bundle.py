@@ -185,6 +185,68 @@ def test_the_separation_between_two_regions_is_one_blank_line() -> None:
     assert grouped("guide.md", text).text == "# guide\n\nOne.\n\nTwo."
 
 
+@pytest.mark.parametrize(
+    ("written", "expected"),
+    [
+        ("> ## Quoted", "> ### Quoted"),
+        ("> > ## Quoted", "> > ### Quoted"),
+        ("- item\n\n  ## Listed", "- item\n\n  ### Listed"),
+        ("1. item\n\n   ## Listed", "1. item\n\n   ### Listed"),
+    ],
+)
+def test_a_heading_a_container_carries_is_shifted_where_it_sits(
+    written: str, expected: str
+) -> None:
+    carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
+    assert carried.text == f"# guide\n\n## Another Name\n\n{expected}"
+
+
+def test_a_container_keeps_the_heading_like_text_a_code_example_holds() -> None:
+    written = "> ```markdown\n> ## Not A Heading\n> ```"
+    carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
+    assert carried.text == f"# guide\n\n## Another Name\n\n{written}"
+
+
+@pytest.mark.parametrize(
+    ("written", "expected"),
+    [
+        ("Run\n===", "## Run"),
+        ("Run\n---", "### Run"),
+        ("Run the *marked* `one`\n---", "### Run the *marked* `one`"),
+        ("Run\nand stop\n---", "### Run and stop"),
+        ("> Quoted\n> ---", "> ### Quoted"),
+    ],
+)
+def test_a_shifted_group_emits_a_setext_heading_as_atx(
+    written: str, expected: str
+) -> None:
+    carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
+    assert carried.text == f"# guide\n\n## Another Name\n\n{expected}"
+
+
+def test_a_group_that_shifts_by_nothing_leaves_a_setext_heading_alone() -> None:
+    carried = grouped("guide.md", "# Guide\n\nRun\n---\n")
+    assert carried.text == "# guide\n\nRun\n---"
+
+
+def test_a_converted_heading_keeps_a_number_sign_run_ending_its_text() -> None:
+    carried = grouped("guide.md", "# Another Name\n\nSharp #\n---\n")
+    assert carried.text == "# guide\n\n## Another Name\n\n### Sharp \\#"
+
+
+def test_a_converted_heading_shows_the_text_its_source_lines_carried() -> None:
+    carried = grouped("guide.md", "# Another Name\n\nRun\nand stop\n---\n")
+    assert carried.headings == ("guide", "Another Name", "Run and stop")
+
+
+def test_a_shift_beyond_the_sixth_level_for_a_nested_heading_is_an_overflow() -> None:
+    text = "# Another Name\n\n> ###### Deep\n"
+    with pytest.raises(Overflow) as refused:
+        grouped("guide.md", text)
+    assert refused.value.heading == "Deep"
+    assert refused.value.level == MAX_LEVEL + 1
+
+
 def test_a_shift_beyond_the_sixth_level_is_an_overflow() -> None:
     text = "# Another Name\n\n###### Deep\n"
     with pytest.raises(Overflow) as refused:

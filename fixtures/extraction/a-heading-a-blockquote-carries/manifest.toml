@@ -1,7 +1,5 @@
 description = "A heading a blockquote carries ends no document-level section, so the blocks after the quote belong to the section the quote sits in, and the heading is emitted at its group's shift inside the container that holds it."
 
-awaiting = "I00:E03:W03"
-
 clauses = [
   "Section extraction and output hierarchy — Containers",
   "Section extraction and output hierarchy — Enclosing inclusion",
