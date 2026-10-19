@@ -13,6 +13,7 @@ It matters because a fixture's manifest requires a catalogued code for every dia
 | Artifact | What it holds |
 | --- | --- |
 | [w07.md](w07.md) | The task's plan: the failing outcomes the contract names no code for, the codes and the clause each is declared under, and the order the design and the schema change in |
+| [validation.md](validation.md) | The checks the pull request cites: their procedure, the revisions they ran against, the catalogue test in both directions, the corpus measurement before and after, and the design-push window with its timestamps |
 
 ## Links
 
