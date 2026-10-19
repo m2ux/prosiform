@@ -438,9 +438,9 @@ This is change detection, not a transactional filesystem snapshot: files can cha
 
 ## Generated input policy
 
-Rebundling of prosiform output is unsupported in v1. Reject an input document whose first heading is a document-level H1 whose text, with a supported Markdown extension appended, names a document under the allowed source root, with `E_GENERATED_INPUT`.
+Rebundling of prosiform output is unsupported in v1. Reject an input document whose first heading is a document-level H1 whose text, with a supported Markdown extension appended, names a document under the allowed source root **other than the document being read**, with `E_GENERATED_INPUT`.
 
-A file heading has that shape and an authored document's title does not, so ordinary unmodified output identifies itself without a metadata wrapper. A heading-like example in code is not a heading and does not trigger detection.
+A bundle's first file heading names its first contributing source, which is never the bundle itself, so ordinary unmodified output identifies itself without a metadata wrapper. An authored document titled with its own name points at itself and is not detected: a document at `My Note.md` headed `# My Note` is the absorbed title's worked example and bundles. A heading-like example in code is not a heading and does not trigger detection.
 
 The destinations themselves can no longer carry this signal, since a bundle's links are ordinary fragments indistinguishable from an authored one. Detection rests on the file heading alone, which is weaker: it is not proof of origin or a security signature, rewriting that heading defeats it, and no detection of arbitrary modified derivatives is claimed. A merged group is headed by a directory slug rather than a path, so a bundle whose every group is merged carries no file heading and is not detected. Rebundling it is unsupported on the same terms, and v1 claims no detection of it.
 
