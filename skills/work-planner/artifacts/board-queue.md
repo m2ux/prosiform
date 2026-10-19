@@ -33,7 +33,9 @@ The queue belongs to one theme board, identified as `users/{owner}/projectsV2/{i
 
 A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one initiative count as the larger number.
+The epics of one initiative carry their own sets, assigned when the initiative is planned. Every epic with the same number starts together, and a number is compared only with its siblings'.
+
+A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 ### Initiative Status
 
@@ -47,7 +49,8 @@ A priority label is `priority:` and a positive integer. A larger number is highe
 ### Epic Status
 
 - On an initiative In Progress, a partly completed epic is In Progress even with open questions. Partly completed means a delivered task row on an epic that is not closed as completed. Delivery follows [Task Delivery](epic-issue-body.md#task-delivery), using the supplied evidence.
-- On that initiative, an unstarted epic is next and Ready when every prerequisite epic named by its task rows or initiative row is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
+- On that initiative, an unstarted epic can start when every prerequisite epic named by its task rows or initiative row is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
+- Of the epics that can start, those carrying the highest priority number are next and Ready, all together. An epic with no priority label ranks below every number, so it is Ready only when no labelled sibling can start.
 - Any other Ready epic of that initiative moves to Backlog.
 - An epic In Review or Done remains in that state.
 - On an initiative that moves to Backlog, its epics move to Backlog. A Ready epic of an initiative that is not In Progress moves to Backlog.

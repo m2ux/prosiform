@@ -153,6 +153,8 @@ The confirmed unit carried from its supplied brief through implementation and de
 
 - **Available work started.**
   The user has each confirmed unit of the theme board in a session, with a planning record held for that session.
+- **Parallel where the plan allows it.**
+  The units offered are those of the epics planned to start together, and an epic planned for later is not offered while they run.
 - **Passed work merged.**
   Each open pull request whose test plan has passed is merged, and one a conflict blocks stays open with the conflict named.
 - **Review visible on the board.**

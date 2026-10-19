@@ -69,4 +69,4 @@ The main path meets [Outcomes](#outcomes).
 - **A parallel work map.**
   Initiatives the user ranks with the same priority run together. One left unordered waits.
 - **Epics follow the initiative.**
-  On the initiative that is underway, the epic that is next can start, and a partly completed epic stays underway.
+  On the initiative that is underway, the epics planned to start together can start, and a partly completed epic stays underway.
