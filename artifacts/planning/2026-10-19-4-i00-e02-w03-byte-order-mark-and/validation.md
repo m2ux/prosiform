@@ -257,3 +257,32 @@ table check: 11 command(s) and 7 declaration(s), each declared by the project an
 link check: every reference in 6 document(s) resolved
 vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 20 source(s)
 ```
+
+## T6 The epic base after the merge
+
+**Observes AC2, AC8.** The same set, run by the `Checks` workflow on `i00/e02/main` at merge commit `3af44a1`.
+
+```bash
+gh run view 39239750538 --repo m2ux/prosiform --log-failed
+```
+
+**Fail, on a condition this row does not carry.** One test of ninety-five, and it is the catalogue test:
+
+```text
+FAILED checks/tests/test_catalogue.py::test_a_catalogue_is_the_codes_the_design_declares[error-E_]
+  Extra items in the right set:
+  'E_ROOT_NOT_FOUND'
+  'E_UNEXPECTED_INTERNAL_ERROR'
+  'E_INVALID_USAGE'
+  'E_UNSUPPORTED_CONSTRUCT'
+  'E_PUBLICATION_FAILED'
+  'E_UNSUPPORTED_ENTRY_SUFFIX'
+  'E_RAW_HTML'
+1 failed, 94 passed in 0.56s
+```
+
+The catalogue test holds `fixtures/manifest.schema.json` to the set of `E_`-prefixed codes the design carries on `origin/engineering`. W07 declared seven further codes there at `a073271`, between the run on this row's head at `10:41` and the run on the base at `10:45`, and the schema enumerating them is W07's own change. Every branch of the repository fails this test while those two land apart, and the condition clears when W07's pull request merges.
+
+The nine fixtures this row adds validate against the schema in that same run, as the ninety-four passing tests include them.
+
+**No code in the seven names a source that is not valid UTF-8.** The gap AC8's fixture waits on is still open after W07's catalogue, which is a finding for that row rather than a change made here.
