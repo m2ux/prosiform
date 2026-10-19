@@ -13,6 +13,7 @@ It matters because the removal is the first thing done to a source and it moves 
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The task's plan: the delimiter rules, the coordinate shift each removal introduces and how it is recorded, and the encoding failure |
+| [validation.md](validation.md) | The checks as they were run: the whole check set, the scan in both directions, the command's statuses and coordinates, the corpus before and after, and six deliberate faults with what each produced |
 
 ## Links
 
