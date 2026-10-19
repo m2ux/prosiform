@@ -10,7 +10,7 @@ Read these files first.
 - [Placement](../artifacts/placement.md)
 - [Guidelines](../guidelines.md)
 - [Issue Body](../artifacts/issue-body.md)
-- [Plan Mode](plan-mode.md)
+- [Dependency Graph](../artifacts/dependency-graph.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Initiative Issue Body](../artifacts/initiative-issue-body.md)
 - [Task Body](../artifacts/task-body.md)
@@ -40,7 +40,7 @@ The main path meets [Outcomes](#outcomes).
    - Resume review.
 6. **Review.**
    - Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) on every issue the hoist changed or created.
-   - Run [Check Dependencies](plan-mode.md#check-dependencies) on each initiative that gained a task or epic.
+   - Run [Check Dependencies](../artifacts/dependency-graph.md#check-dependencies) on each initiative that gained a task or epic.
    - Resolve each finding with the user.
    - Apply confirmed body corrections through [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections).
    - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
@@ -64,7 +64,7 @@ One selected destination for an orphan's work.
    - **New task.**
      - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
      - Number the row where it can start.
-     - When movable rows change number, run [Check Dependencies and Numbering](plan-mode.md#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
+     - When movable rows change number, run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
      - Publish the checked bodies through Save Tracker Issue.
    - **New epic.**
      - Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body).

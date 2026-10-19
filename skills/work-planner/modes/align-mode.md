@@ -16,6 +16,7 @@ Read these files first.
 - [Task Body](../artifacts/task-body.md)
 - [Standalone Body](../artifacts/standalone-body.md)
 - [Plan Mode](plan-mode.md)
+- [Dependency Graph](../artifacts/dependency-graph.md)
 - [Requirement Characteristics](../references/requirement-characteristics.md)
 - [Sync Mode](sync-mode.md)
 - [Pull Request](../artifacts/pull-request.md)
@@ -79,7 +80,7 @@ The main path meets [Outcomes](#outcomes).
 8. **Check dependencies.**
    Check them whenever an initiative or epic is aligned.
    - Take the initiative's body and every epic's body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
-   - Follow [Check Dependencies and Numbering](plan-mode.md#check-dependencies-and-numbering) with those bodies, current pull request records, confirmed maps when any, and explicitly authorized outside-initiative files.
+   - Follow [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) with those bodies, current pull request records, confirmed maps when any, and explicitly authorized outside-initiative files.
    - Resume this alignment with its checked bodies or unresolved findings.
    - Put each problem it reports to the user. An initiative Depends on cell takes the epics it derives, as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
 9. **Coverage.**

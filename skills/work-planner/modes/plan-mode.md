@@ -21,6 +21,7 @@ Read these files first.
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Sync Mode](sync-mode.md)
 - [Review Finding](../artifacts/review-finding.md)
+- [Dependency Graph](../artifacts/dependency-graph.md)
 
 ## Procedure
 
@@ -44,7 +45,7 @@ The main path meets [Outcomes](#outcomes).
    - Call [Populate Work Item](../artifacts/work-item.md#populate-work-item) for each task with its scope, design, criteria and test requirements.
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
-   - Run [Check Dependencies and Numbering](#check-dependencies-and-numbering) across the drafts.
+   - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) across the drafts.
    - Return each epic draft and its format results to the review step.
 5. **Review the drafts.**
    Follow [Review Initiative Goal](#review-initiative-goal).
@@ -122,33 +123,6 @@ The verified findings presented for resolution.
    - Record the confirmed answer on the finding.
    - Return each confirmed resolution to the calling procedure for application to its selected issue kind. A pending decision returns without applying a change.
 
-### Check Dependencies and Numbering
-
-The task graph and the row numbers it permits.
-
-1. **Check.**
-   - Use the supplied local drafts when reviewing unpublished work.
-   - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
-   - Run [Check Dependencies](#check-dependencies) with the initiative body and every epic body.
-2. **Correct.**
-   Resolve each finding with the user.
-   - Preserve task edges when correcting a whole-epic edge.
-   - Name the producing row for each consumed output.
-   - Retain a whole-epic edge only when every prerequisite row is required.
-   - Read tasks for implied consumption edges.
-   - Account for every independent pair in Joins or the planning record.
-   - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
-3. **Renumber.**
-   Preserve numbers already named by pull requests.
-   - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
-   - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
-   - Re-sort rewritten tables.
-   - Inspect every reported range.
-   - Search prose for references the script cannot see.
-   - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each binding whole-epic edge in the planning record.
-   - Return the checked bodies and unresolved findings to the caller; do not publish a failed renumbering.
-
 ### Review Initiative Goal
 
 The draft checked against the initiative outcomes.
@@ -205,71 +179,3 @@ An item the draft leaves open is a gap.
   Each clause of the goal the user confirmed is made true by the initiative's criteria, and the epics the initiative lists are the work that delivers those criteria.
 - **Review before creation.**
   Findings on that initiative are folded in before any of its issues are created.
-
-## Operations
-
-### Check Dependencies
-
-Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
-
-**Inputs:** Initiative body file and each epic id with its body file.
-
-- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic.
-
-- Initiative edges follow the [whole-epic prerequisite rule](../artifacts/initiative-issue-body.md#work-breakdown); narrower dependencies stay in the task graph.
-- It also reports dependencies listed twice or already implied, and Joins pairs.
-- It prints each pair of tasks in an epic where neither depends on the other and the two do not name each other in Joins.
-- It prints each whole-epic dependency with that epic's row count, the binding row and its level, and the earliest row and its level.
-- It reads bodies from [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue), or local drafts.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=live-936.md E00=live-943.md E01=live-937.md
-```
-
-### Renumber Tasks
-
-Renumbers one epic's tasks by the map given, in the files given.
-
-**Inputs:** Initiative number, epic number, epic body file, task-number map and affected body files.
-
-- `<task-number-map>` is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each affected body file as a separate argument.
-
-- It renumbers `<epic-id> Wxx` and `<epic-id>:Wxx` everywhere, and bare `Wxx` inside that epic's own body. **Example:** for `E01`, the qualified forms are `E01 Wxx` and `E01:Wxx`.
-- The map assigns each old task number a distinct new number. A source absent from the files or a duplicate destination is refused.
-- Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
-- Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
-```
-
-### Renumber Epics
-
-Renumbers an initiative's epics across supplied body files.
-
-**Inputs:** Initiative number, current pull request records, confirmed epic-number map, body files and explicitly authorized outside-initiative files when present.
-
-- The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
-- Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
-```
