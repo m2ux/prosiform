@@ -1,0 +1,16 @@
+description = "A Setext heading a retained blockquote carries becomes the ATX heading one level deeper, written behind the quote markers the line opened with, so the quote keeps the structure it had and loses the underline it no longer needs."
+
+clauses = [
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Heading syntax",
+  "File-scoped hierarchy — Containers",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

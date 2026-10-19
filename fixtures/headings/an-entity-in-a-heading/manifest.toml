@@ -1,0 +1,16 @@
+description = "A heading carrying an entity takes the fragment the character that entity decodes to produces, because visible heading text is derived from the parser's events rather than from the bytes that produced them."
+
+clauses = [
+  "Source-heading resolution — derive visible heading text from parser events",
+  "Destination identity and link rewriting — Ordinal assignment",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["article.md", "café.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

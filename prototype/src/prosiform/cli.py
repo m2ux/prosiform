@@ -20,13 +20,15 @@ diagnostic reports is the location in the file the author holds, whatever
 the strip removed ahead of it.
 
 A reference with no fragment, or with an empty one, selects the whole
-document, and each document so selected becomes one file group of the
-bundle, the groups ordered by root-relative path. A reference carrying a
-nonempty fragment names a section, and section selection is not part of
-this build: such a run publishes nothing and returns the
-unexpected-internal-error status, which says that the build cannot carry
-the request out rather than that anything is wrong with the source it
-names.
+document. A reference carrying a nonempty fragment selects the section
+that fragment names, which runs to the next document-level heading of
+equal or higher level; a fragment alone selects from the document
+`--from` names. Each document a run selects from becomes one file group
+of the bundle, carrying every region the run's references selected from
+it, and the groups are ordered by root-relative path. A fragment naming
+a heading a container carries names no section and fails as an
+unsupported target; one naming no heading of its document names
+nothing, and fails as the reference to a missing target it is.
 
 The bundle is published once the whole candidate is built. A
 validation-only run publishes nothing, to either stream or to a named
@@ -45,6 +47,8 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
 
+from markdown_it.token import Token
+
 from prosiform import PROFILE
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
@@ -53,7 +57,6 @@ from prosiform.bundle import (
     Group,
     Overflow,
     assemble,
-    destinations,
     entry_line,
     group,
     heading_text,
@@ -63,12 +66,18 @@ from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 from prosiform.source import (
     CLOSERS,
     ENCODING,
+    NESTED_SECTION_TARGET,
     UNTERMINATED_FRONTMATTER,
+    Nested,
+    Selection,
     Source,
     Unterminated,
     content,
     decode,
+    fragments,
     lines,
+    regions,
+    section,
 )
 
 NAME = "prosiform"
@@ -415,21 +424,71 @@ def directories(root: Path) -> set[str]:
     return found
 
 
-def contributing(root: Path, references: Sequence[str]) -> dict[str, str]:
+def contributing(
+    root: Path, referrer: str | None, references: Sequence[str]
+) -> dict[str, tuple[str, list[str]]]:
     """Each file group the bundle carries, by the path that names it.
 
-    A reference with no fragment selects a whole document, which is the
-    group. Two references naming one document name one group, and the
-    groups are ordered by root-relative path so one selection always
-    bundles to the same bytes.
+    A reference naming a document selects from that document, and a
+    fragment alone selects from the document `--from` names. Two
+    references naming one document name one group, which carries what
+    each of them selected, and the groups are ordered by root-relative
+    path so one selection always bundles to the same bytes.
     """
-    selected: dict[str, str] = {}
+    selected: dict[str, tuple[str, list[str]]] = {}
     for reference in references:
-        if fragment(reference):
-            continue
-        name = document(reference)
-        selected.setdefault(relative(root, name), name)
+        name = document(reference) or (referrer or "")
+        _, selecting = selected.setdefault(relative(root, name), (name, []))
+        selecting.append(reference)
     return dict(sorted(selected.items()))
+
+
+def selection(tokens: Sequence[Token], references: Sequence[str]) -> Selection | None:
+    """What one source contributes, as the references naming it select it.
+
+    A reference with no fragment selects every region the document
+    holds. Every fragment is resolved whatever else the run selected,
+    because a fragment naming no heading names nothing however much of
+    its document reaches the bundle, and the heading each one resolves
+    to stays identifiable so the entry line links what the caller asked
+    for. A whole document selected by nothing else is the selection
+    `None`, whose entry is the file heading.
+    """
+    wanted: set[int] = set()
+    named: list[Token] = []
+    whole = False
+    for reference in references:
+        spelled = fragment(reference)
+        if not spelled:
+            whole = True
+            continue
+        try:
+            found = section(tokens, spelled)
+        except Nested as nested:
+            raise input_failure(
+                f"the reference {reference!r} names a heading a container "
+                f"carries, which is no selectable section root",
+                code=NESTED_SECTION_TARGET,
+                remedy="name a heading the document carries at its own level",
+                reference=reference,
+            ) from nested
+        if found is None:
+            raise input_failure(
+                f"the reference {reference!r} names no heading of the document "
+                f"it selects from",
+                code=TARGET_NOT_FOUND,
+                remedy="name a heading the document carries",
+                reference=reference,
+            )
+        named.append(found[0])
+        wanted.update(id(token) for token in found)
+    if whole:
+        if not named:
+            return None
+        return Selection(tuple(regions(tokens)), tuple(named))
+    return Selection(
+        tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
+    )
 
 
 def unambiguous(paths: Sequence[str]) -> None:
@@ -448,15 +507,23 @@ def unambiguous(paths: Sequence[str]) -> None:
         headed[title] = path
 
 
-def compose(root: Path, read: dict[str, Source], references: Sequence[str]) -> str:
+def compose(
+    root: Path,
+    read: dict[str, Source],
+    referrer: str | None,
+    references: Sequence[str],
+) -> str:
     """The complete bundle candidate: its entry line and one group per source."""
-    selected = contributing(root, references)
+    selected = contributing(root, referrer, references)
     unambiguous(list(selected))
     groups: list[Group] = []
-    for path, name in selected.items():
+    for path, (name, selecting) in selected.items():
         source = read[name]
+        tokens = parse(source.text)
         try:
-            groups.append(group(path, parse(source.text), lines(source.text)))
+            groups.append(
+                group(path, tokens, lines(source.text), selection(tokens, selecting))
+            )
         except Overflow as beyond:
             raise input_failure(
                 f"{path!r} emits the heading {beyond.heading!r} at level "
@@ -466,11 +533,12 @@ def compose(root: Path, read: dict[str, Source], references: Sequence[str]) -> s
                 reference=path,
                 source=path,
             ) from beyond
-    assigned = destinations([heading for one in groups for heading in one.headings])
+    assigned = fragments([heading for one in groups for heading in one.headings])
     named = []
     at = 0
     for one in groups:
-        named.append((one.headings[0], assigned[at]))
+        for entry in one.entries:
+            named.append((one.headings[entry], assigned[at + entry]))
         at += len(one.headings)
     return assemble(entry_line(named), groups)
 
@@ -589,20 +657,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             raise refused(name, source, refusal)
         read[name] = source
 
-    selecting = [reference for reference in options.references if fragment(reference)]
-    if selecting:
-        raise Failure(
-            INTERNAL_ERROR,
-            Diagnostic(
-                ERROR,
-                f"this build bundles whole documents and carries no section "
-                f"selection, so {selecting[0]!r} names content it cannot select",
-                code=UNEXPECTED_INTERNAL_ERROR,
-                remedy="use a build that carries one, or name the whole document",
-            ),
-        )
-
-    bundled = compose(root, read, options.references)
+    bundled = compose(root, read, options.referrer, options.references)
     if options.check:
         return SUCCESS
     if options.output == STANDARD_OUTPUT:

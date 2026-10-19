@@ -1,0 +1,16 @@
+description = "A shift writes a level and changes nothing else a reader reads: an ATX heading keeps the indent and the closing sequence its author wrote, and a Setext heading whose text ends in a number-sign run keeps that run as the text it was rather than losing it to the closing sequence an ATX heading ends at."
+
+clauses = [
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Heading syntax",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

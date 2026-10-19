@@ -1,0 +1,17 @@
+description = "The contract's own example: a document at `My Note.md` titled `My Note` has that title absorbed, because the final path segment is slugged as the title is."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Preamble",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["My Note.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
