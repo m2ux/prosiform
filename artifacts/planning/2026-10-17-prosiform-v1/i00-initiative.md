@@ -48,10 +48,10 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/26) | Project Foundation |  | | ✓ |
+| [E00](https://github.com/m2ux/prosiform/issues/26) | Project Foundation | | | ✓ |
 | [E01](https://github.com/m2ux/prosiform/issues/3) | Corpus Harness | AC8 | | ✓ |
 | [E02](https://github.com/m2ux/prosiform/issues/4) | Walking Skeleton | AC7, AC13 | | ✓ |
-| [E03](https://github.com/m2ux/prosiform/issues/5) | Outline Hierarchy | AC5 | | |
+| [E03](https://github.com/m2ux/prosiform/issues/5) | Outline Hierarchy | AC5 | | ✓ |
 | [E04](https://github.com/m2ux/prosiform/issues/6) | Dependency Closure | AC1, AC3, AC10 | | |
 | [E05](https://github.com/m2ux/prosiform/issues/7) | Destination Identity | AC2 | | |
 | [E06](https://github.com/m2ux/prosiform/issues/8) | Candidate Validation | AC4, AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
