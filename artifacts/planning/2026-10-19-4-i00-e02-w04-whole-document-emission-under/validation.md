@@ -260,9 +260,25 @@ vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-pr
 
 ## T6 The epic base after the merge
 
-**Observes AC1.** The same set, run by the `Checks` workflow on `i00/e02/main` at the merge commit.
+**Observes AC1.** The same set, run by the `Checks` workflow on `i00/e02/main` at merge commit `60b67b3`.
 
-**Not run at the time of writing.** Recorded with the merge.
+```bash
+gh run view 39246467576 --repo m2ux/prosiform --log
+```
+
+**Pass.** Conclusion `success`. The catalogue test, which failed on this base while W03 and W07 landed apart, passes here: the design on `origin/engineering` and the schema on the base carry the same twenty codes.
+
+```text
+All checks passed!
+24 files already formatted
+Success: no issues found in 23 source files
+245 passed in 1.98s
+124 passed in 0.54s
+layout check: 3 tree(s) present
+table check: 11 command(s) and 7 declaration(s), each declared by the project and named by a table
+link check: every reference in 6 document(s) resolved
+vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 20 source(s)
+```
 
 ## The Criteria This Bundle Makes Observable
 
