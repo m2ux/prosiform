@@ -13,6 +13,7 @@ It matters because every row before it made the command fail more precisely and 
 | Artifact | What it holds |
 | --- | --- |
 | [w04.md](w04.md) | The task's plan: the file-group structure, the heading generation and the escaping a path needs to remain literal heading text, and the expected bundles the corpus declared ahead of this row |
+| [validation.md](validation.md) | The checks as they were run: the set in one pass, the bundle's structure, the command's statuses and publication, the corpus measured at the base and at this head, six deliberate faults, and the criteria this bundle makes observable |
 
 ## Links
 
