@@ -22,6 +22,9 @@ after something the project does not have.
 A table is located by its header and a document by git, so a table moved
 within a README, and the README a new tree brings with it, are both read
 without this check being edited.
+
+A row that names a declared item under another version is one fault, not two:
+the item is documented, and what it is documented as is wrong.
 """
 
 import re
@@ -99,7 +102,7 @@ def match_declaration(
     name, version = declared[key(item)]
     stated = plain(record.get("Value", ""))
     if stated != version:
-        return None, (
+        return key(item), (
             f"{document}: {name} — the table names '{stated}' and "
             f"prototype/pyproject.toml declares '{version}'"
         )
@@ -134,11 +137,12 @@ def main() -> int:
                 continue
             for record in table.records():
                 item, failure = match_declaration(document, record, declared_items)
-                if item is None:
-                    failures.append(str(failure))
-                    continue
-                named_items.add(item)
-                print(f"ok   declared    {declared_items[item][0]} — {document}")
+                if item is not None:
+                    named_items.add(item)
+                if failure is not None:
+                    failures.append(failure)
+                elif item is not None:
+                    print(f"ok   declared    {declared_items[item][0]} — {document}")
 
     for target in sorted(declared_targets - named_targets):
         failures.append(
