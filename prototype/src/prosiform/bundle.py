@@ -11,8 +11,10 @@ directories in their headings and stay distinguishable; two whose paths
 differ only by Markdown extension produce one heading text twice, which
 the command refuses as an ambiguous file group.
 
-A group is assembled from the maximal regions the parse found, in source
-order, each carried as the bytes its source wrote. What lies between two
+A group is assembled from the maximal regions the run selected, in
+source order, each carried as the bytes its source wrote. A whole
+document selects every region it holds; a fragment selects the regions
+of the section it names. What lies between two
 regions is not source content: a blank line above the first region, the
 blank line a removed reference definition was separated by, and the
 spacing between any two blocks are the bundle's own, and the bundle
@@ -38,14 +40,14 @@ document a reader opens.
 """
 
 import re
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
 from prosiform.profile import SUFFIXES
-from prosiform.source import headings, level, slug, visible
+from prosiform.source import Selection, headings, level, regions, slug, visible
 
 MAX_LEVEL = 6
 SHIFT = 1
@@ -87,6 +89,7 @@ class Group:
 
     text: str
     headings: tuple[str, ...]
+    entries: tuple[int, ...]
 
 
 def heading_text(path: str) -> str:
@@ -148,19 +151,6 @@ def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
     return {id(opening): visible(inline) for opening, inline in headings(tokens)}
 
 
-def regions(tokens: Sequence[Token]) -> Iterator[Token]:
-    """The token opening each maximal region of the document.
-
-    A region is a block at the document level: a container is one region
-    whatever it holds, and a token inside one opens no region of its own.
-    """
-    depth = 0
-    for token in tokens:
-        if depth == 0 and token.nesting >= 0 and token.map is not None:
-            yield token
-        depth += token.nesting
-
-
 def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
     """The source heading the file heading absorbs, where the source carries one.
 
@@ -199,24 +189,57 @@ def region(physical: Sequence[str], token: Token, by: int) -> str:
     return "".join(carried).rstrip("\r\n")
 
 
-def group(path: str, tokens: Sequence[Token], physical: Sequence[str]) -> Group:
-    """One file group: its generated heading, then the regions its source emits."""
+def group(
+    path: str,
+    tokens: Sequence[Token],
+    physical: Sequence[str],
+    selected: Selection | None = None,
+) -> Group:
+    """One file group: its generated heading, then the regions the run selected.
+
+    A selection of None is the whole document, which the file heading
+    itself is the entry to. A selection of sections emits the regions it
+    names and nothing else, and each heading an entry reference resolved
+    to is the entry to the destination that heading takes.
+
+    A title is absorbed only where the group emits it, because the
+    absorption is the file heading standing in for a heading the group
+    carries. A group that emits none therefore shifts, and a reference
+    to an absorbed title resolves to the file heading's own destination.
+    """
     title = heading_text(path)
+    emitting = (
+        {id(token) for token in regions(tokens)}
+        if selected is None
+        else {id(token) for token in selected.regions}
+    )
+    naming: set[int] = (
+        set() if selected is None else {id(token) for token in selected.named}
+    )
     absorbing = absorbed(tokens, title)
+    if absorbing is not None and id(absorbing) not in emitting:
+        absorbing = None
     by = 0 if absorbing is not None else SHIFT
     emitted = [f"{ATX} {escaped(title)}"]
     shown = [title]
+    entries = [0] if selected is None else []
     text = shown_text(tokens)
     for token in regions(tokens):
+        if id(token) not in emitting:
+            continue
         if token is absorbing:
+            if id(token) in naming:
+                entries.append(0)
             continue
         if token.type == HEADING_OPEN:
             depth = level(token) + by
             if depth > MAX_LEVEL:
                 raise Overflow(text[id(token)], depth)
+            if id(token) in naming:
+                entries.append(len(shown))
             shown.append(text[id(token)])
         emitted.append(region(physical, token, by))
-    return Group(SEPARATOR.join(emitted), tuple(shown))
+    return Group(SEPARATOR.join(emitted), tuple(shown), tuple(entries))
 
 
 def assemble(line: str, groups: Sequence[Group]) -> str:

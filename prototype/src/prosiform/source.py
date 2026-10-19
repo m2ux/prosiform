@@ -45,6 +45,16 @@ Every heading the profile recognizes is indexed, a container-nested one
 included: eligibility to be selected is a later decision, and a heading
 left out of the index would change the fragment of every heading after
 it that shares its slug.
+
+That later decision is the section below. A document is a run of
+maximal regions, each a block the document itself carries, and a
+container is one region whatever it holds. Only a heading that is such
+a region roots a section: it is the heading a reader finds at the
+document's own level, and the blocks following it belong to it until
+the document returns to that level or above. A heading a container
+carries is therefore neither a root nor a boundary — it sits inside one
+region, so the region it sits in is what the document holds there — and
+a fragment naming one names a section the model does not have.
 """
 
 import re
@@ -65,6 +75,7 @@ CARRIAGE_RETURN = "\r"
 PHYSICAL_LINE = re.compile(r"[^\n]*\n|[^\n]+")
 
 UNTERMINATED_FRONTMATTER = "E_UNTERMINATED_FRONTMATTER"
+NESTED_SECTION_TARGET = "E_NESTED_SECTION_TARGET"
 
 HEADING_OPEN = "heading_open"
 INLINE = "inline"
@@ -76,6 +87,16 @@ SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
 SLUG_SPACE = " "
 SLUG_HYPHEN = "-"
 ORDINAL = "-"
+
+
+class Nested(Exception):
+    """A fragment naming a heading a container carries, which roots no section."""
+
+    def __init__(self, fragment: str) -> None:
+        super().__init__(
+            f"the fragment {fragment!r} names a heading a container carries"
+        )
+        self.fragment = fragment
 
 
 class Unterminated(Exception):
@@ -242,3 +263,76 @@ def index(tokens: Sequence[Token]) -> tuple[Heading, ...]:
             carried, shown_texts, fragments(shown_texts), strict=True
         )
     )
+
+
+def regions(tokens: Sequence[Token]) -> Iterator[Token]:
+    """The token opening each maximal region of the document.
+
+    A region is a block at the document level: a container is one region
+    whatever it holds, and a token inside one opens no region of its own.
+    """
+    depth = 0
+    for token in tokens:
+        if depth == 0 and token.nesting >= 0 and token.map is not None:
+            yield token
+        depth += token.nesting
+
+
+def opens(tokens: Sequence[Token], opening: Token) -> int | None:
+    """Where one token opens a region of this document, by position in its run.
+
+    Tokens are compared by identity. Two headings carrying one text and
+    one level are equal as values, so a comparison by value would place
+    the first of them wherever the second occurs.
+    """
+    return next((at for at, token in enumerate(tokens) if token is opening), None)
+
+
+def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
+    """The document-level regions one fragment selects.
+
+    The fragment names a heading of this document's index, and the
+    section it roots runs from that heading to the next document-level
+    heading of equal or higher level, or to the end of the document
+    where the document holds no such heading. A deeper document-level
+    heading and its content belong to the section, and a heading a
+    container carries neither roots nor ends one.
+
+    A fragment naming no heading of this document selects nothing and is
+    reported as the reference to nothing it is. A fragment naming a
+    container-nested heading names a heading the document carries and a
+    section it does not, which is the refusal `Nested` raises.
+    """
+    carried = [opening for opening, _ in headings(tokens)]
+    named = index(tokens)
+    at = next(
+        (one for one, each in enumerate(named) if each.fragment == fragment), None
+    )
+    if at is None:
+        return None
+    spans = list(regions(tokens))
+    start = opens(spans, carried[at])
+    if start is None:
+        raise Nested(fragment)
+    depth = named[at].level
+    end = len(spans)
+    for following in range(start + 1, len(spans)):
+        token = spans[following]
+        if token.type == HEADING_OPEN and level(token) <= depth:
+            end = following
+            break
+    return tuple(spans[start:end])
+
+
+@dataclass(frozen=True)
+class Selection:
+    """What one source contributes to the bundle, and what named it.
+
+    The regions are the document-level blocks the run selected, in
+    source order. The named headings are the ones an entry reference
+    resolved to, which is what the entry line links and what the bundle
+    keeps identifiable.
+    """
+
+    regions: tuple[Token, ...]
+    named: tuple[Token, ...]

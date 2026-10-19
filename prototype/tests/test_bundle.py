@@ -1,8 +1,8 @@
-"""Assert the bundle's structure: its file groups, its regions and its entry line.
+"""Assert the bundle's structure: its file groups and its entry line.
 
 The corpus declares what a run publishes. These are the cases beneath
 it: the heading one path generates, the escaping that keeps that heading
-literal, the region a parse exposes for each block, and the two
+literal, the regions a selection carries into a group, and the two
 decisions a group makes about its own headings.
 """
 
@@ -17,7 +17,6 @@ from prosiform.bundle import (
     escaped,
     group,
     heading_text,
-    regions,
 )
 from prosiform.profile import parse
 from prosiform.source import lines
@@ -104,12 +103,6 @@ def test_the_entry_line_names_every_reference_the_run_was_given() -> None:
 
 def test_the_entry_line_escapes_the_text_of_the_heading_it_names() -> None:
     assert "[plan\\_\\[v2\\]](#plan_v2)" in entry_line([("plan_[v2]", "plan_v2")])
-
-
-def test_a_container_is_one_region_and_what_it_holds_opens_none() -> None:
-    text = "# Guide\n\n> ## Nested\n>\n> Inside.\n\nAfter.\n"
-    opened = [token.type for token in regions(parse(text))]
-    assert opened == ["heading_open", "blockquote_open", "paragraph_open"]
 
 
 def test_a_group_opens_on_its_file_heading() -> None:

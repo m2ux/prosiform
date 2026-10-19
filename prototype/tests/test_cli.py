@@ -19,7 +19,6 @@ from prosiform import PROFILE
 from prosiform.bundle import AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW
 from prosiform.cli import (
     INPUT_FAILURE,
-    INTERNAL_ERROR,
     INVALID_ENCODING,
     INVALID_GROUP_RULE,
     INVALID_USAGE,
@@ -29,14 +28,13 @@ from prosiform.cli import (
     SOURCE_OUTSIDE_ROOT,
     SUCCESS,
     TARGET_NOT_FOUND,
-    UNEXPECTED_INTERNAL_ERROR,
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
     main,
     read_entry,
 )
 from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
-from prosiform.source import UNTERMINATED_FRONTMATTER
+from prosiform.source import NESTED_SECTION_TARGET, UNTERMINATED_FRONTMATTER
 
 
 @dataclass(frozen=True)
@@ -148,11 +146,13 @@ def test_a_fragment_only_reference_needs_a_referring_document(root: Path) -> Non
     assert "--from" in run.stderr
 
 
-def test_a_fragment_only_reference_with_a_referring_document_is_valid(
+def test_a_fragment_only_reference_selects_from_the_referring_document(
     root: Path,
 ) -> None:
-    run = invoke("--root", str(root), "--from", "guide.md", "#a-section")
-    assert run.status == INTERNAL_ERROR
+    written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n")
+    assert invoke("--root", str(root), "--from", "guide.md", "#run").stdout == (
+        invoke("--root", str(root), "guide.md#run").stdout
+    )
 
 
 @pytest.mark.parametrize("depth", ["0", "7", "9", "60"])
@@ -270,16 +270,6 @@ def test_standard_output_is_the_default_output_destination(root: Path) -> None:
     assert invoke("--root", str(root), "--output", "-", "guide.md").status == (
         invoke("--root", str(root), "guide.md").status
     )
-
-
-def test_a_run_the_build_cannot_carry_out_returns_the_internal_error_status(
-    root: Path,
-) -> None:
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#run")
-    assert run.status == INTERNAL_ERROR
-    assert run.stdout == ""
-    assert [one["severity"] for one in run.diagnostics()] == ["error"]
-    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
 
 
 def test_a_validation_only_run_publishes_nothing(root: Path) -> None:
@@ -617,14 +607,30 @@ def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
 
 
-def test_a_fragment_reference_names_content_this_build_cannot_select(
-    root: Path,
-) -> None:
-    written(root, "guide.md", "# Guide\n\n## Run\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#run")
-    assert run.status == INTERNAL_ERROR
+def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n\n## Stop\n\nStop it.\n")
+    run = invoke("--root", str(root), "guide.md#run")
+    assert run.status == SUCCESS
+    assert run.stdout == (
+        "This bundle was built for [Run](#run); everything else is material it "
+        "references.\n\n# guide\n\n### Run\n\nDo it.\n"
+    )
+
+
+def test_a_fragment_naming_a_container_nested_heading_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n> ## Nested\n>\n> Inside.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#nested")
+    assert run.status == INPUT_FAILURE
     assert run.stdout == ""
-    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
+    assert [one["code"] for one in run.diagnostics()] == [NESTED_SECTION_TARGET]
+    assert [one["reference"] for one in run.diagnostics()] == ["guide.md#nested"]
+
+
+def test_a_fragment_naming_no_heading_is_a_missing_target(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n## Run\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#stop")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
 
 
 def test_an_empty_fragment_is_a_whole_document_reference(root: Path) -> None:
