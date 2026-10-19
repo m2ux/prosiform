@@ -13,6 +13,7 @@ It matters because a link string is not a path, and a check performed on the str
 | Artifact | What it holds |
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: the component split, the validation order and the error code for each rejected form |
+| [validation.md](validation.md) | The validation record: the command behind each Test Plan row and the output it returned |
 
 ## Links
 
