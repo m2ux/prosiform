@@ -1,0 +1,20 @@
+description = "A source carrying a byte no UTF-8 sequence admits fails, rather than being decoded with a replacement character the author never wrote."
+
+clauses = [
+  "Markdown and source-heading profile — Encoding, require valid UTF-8",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_ENCODING"
+reference = "guide.md"
+source = "guide.md"

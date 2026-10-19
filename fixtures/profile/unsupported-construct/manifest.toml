@@ -1,0 +1,20 @@
+description = "A wiki link in selected content fails as the unsupported dependency construct it is, rather than being published as literal text that drops the name it carries."
+
+clauses = [
+  "Markdown and source-heading profile — Unsupported extensions, reject recognized unsupported dependency or section-naming constructs",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "[[page]]"
+source = "guide.md:3"

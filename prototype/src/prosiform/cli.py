@@ -59,9 +59,16 @@ FRAGMENT = "#"
 
 MIN_DEPTH = 1
 MAX_DEPTH = 6
+
+INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
+INVALID_USAGE = "E_INVALID_USAGE"
+PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
+ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
+UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
+UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DIAGNOSTICS_OPTION = "--diagnostics"
@@ -84,8 +91,14 @@ class Failure(Exception):
         self.diagnostic = diagnostic
 
 
-def usage_failure(message: str, code: str | None = None) -> Failure:
-    """A command line the contract's grammar does not admit."""
+def usage_failure(message: str, code: str = INVALID_USAGE) -> Failure:
+    """A command line the contract's grammar does not admit.
+
+    Every such fault leads a caller to one remedy, so they share one
+    code. A grouping rule is the exception the contract itself draws: its
+    code names a defect in the rule's value, which the same code reports
+    as an input failure when the slug names no directory.
+    """
     return Failure(
         USAGE_FAILURE,
         Diagnostic(ERROR, message, code=code, remedy=f"run {NAME} --help for usage"),
@@ -94,7 +107,7 @@ def usage_failure(message: str, code: str | None = None) -> Failure:
 
 def input_failure(
     message: str,
-    code: str | None = None,
+    code: str,
     remedy: str = "",
     reference: str | None = None,
     source: str | None = None,
@@ -292,6 +305,7 @@ def read_entry(root: Path, reference: str, name: str) -> Source:
         raise input_failure(
             f"the entry reference {reference!r} names a document whose suffix is "
             f"outside the {PROFILE} profile",
+            code=UNSUPPORTED_ENTRY_SUFFIX,
             remedy=f"name a document ending {' or '.join(SUFFIXES)}",
             reference=reference,
         )
@@ -319,6 +333,7 @@ def read_entry(root: Path, reference: str, name: str) -> Source:
             f"the entry reference {reference!r} names a document that is not valid "
             f"{ENCODING.upper()}: byte {undecodable.start}, "
             f"{undecodable.reason}",
+            code=INVALID_ENCODING,
             remedy=f"save the document as {ENCODING.upper()}",
             reference=reference,
             source=name,
@@ -346,6 +361,7 @@ def refused(name: str, source: Source, refusal: Refusal) -> Failure:
     """
     return input_failure(
         refusal.message,
+        code=refusal.code,
         remedy=refusal.remedy,
         reference=refusal.reference,
         source=location(name, source.line(refusal.line)),
@@ -370,7 +386,11 @@ def publish(text: str, stream: IO[str]) -> None:
             sys.stdout = open(os.devnull, "w")
         raise Failure(
             PUBLICATION_FAILURE,
-            Diagnostic(ERROR, f"standard output refused the response: {refused}"),
+            Diagnostic(
+                ERROR,
+                f"standard output refused the response: {refused}",
+                code=PUBLICATION_FAILED,
+            ),
         ) from refused
 
 
@@ -412,6 +432,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
     if not root.is_dir():
         raise input_failure(
             f"the allowed source root {options.root!r} names no directory",
+            code=ROOT_NOT_FOUND,
             remedy="name a directory that exists",
         )
     present = directories(root)
@@ -436,6 +457,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             ERROR,
             "this build reads, strips and parses the sources its entry references "
             "name and carries no bundling stage, so they cannot be bundled",
+            code=UNEXPECTED_INTERNAL_ERROR,
             remedy="use a build that carries one",
         ),
     )
@@ -457,5 +479,11 @@ def main(
         reporter.emit(outcome.diagnostic)
         return outcome.status
     except Exception as unexpected:  # noqa: BLE001 - the declared status 4
-        reporter.emit(Diagnostic(ERROR, f"unexpected internal error: {unexpected!r}"))
+        reporter.emit(
+            Diagnostic(
+                ERROR,
+                f"unexpected internal error: {unexpected!r}",
+                code=UNEXPECTED_INTERNAL_ERROR,
+            )
+        )
         return INTERNAL_ERROR

@@ -18,15 +18,22 @@ from prosiform import PROFILE
 from prosiform.cli import (
     INPUT_FAILURE,
     INTERNAL_ERROR,
+    INVALID_ENCODING,
     INVALID_GROUP_RULE,
+    INVALID_USAGE,
+    PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
+    ROOT_NOT_FOUND,
     SOURCE_OUTSIDE_ROOT,
     SUCCESS,
     TARGET_NOT_FOUND,
+    UNEXPECTED_INTERNAL_ERROR,
+    UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
     main,
     read_entry,
 )
+from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
 from prosiform.source import UNTERMINATED_FRONTMATTER
 
 
@@ -205,9 +212,12 @@ def test_a_grouping_slug_naming_no_directory_is_an_input_failure(root: Path) -> 
 
 
 def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -> None:
-    run = invoke("--root", str(tmp_path / "absent"), "guide.md")
+    run = invoke(
+        "--root", str(tmp_path / "absent"), "--diagnostics", "json", "guide.md"
+    )
     assert run.status == INPUT_FAILURE
     assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [ROOT_NOT_FOUND]
 
 
 def test_a_usage_failure_is_reported_before_an_input_failure(tmp_path: Path) -> None:
@@ -267,7 +277,7 @@ def test_a_run_the_build_cannot_carry_out_returns_the_internal_error_status(
     assert run.status == INTERNAL_ERROR
     assert run.stdout == ""
     assert [one["severity"] for one in run.diagnostics()] == ["error"]
-    assert "code" not in run.diagnostics()[0]
+    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
 
 
 def test_a_validation_only_run_publishes_nothing(root: Path) -> None:
@@ -291,6 +301,7 @@ def test_a_refused_write_is_a_publication_failure() -> None:
     run = invoke("--version", stdout=Refusing())
     assert run.status == PUBLICATION_FAILURE
     assert "standard output" in run.stderr
+    assert run.stderr.startswith(f"{PUBLICATION_FAILED}: ")
 
 
 def test_a_failing_run_writes_its_diagnostics_as_data(root: Path) -> None:
@@ -321,23 +332,25 @@ def written(root: Path, name: str, text: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "source",
+    ("source", "code"),
     [
-        "# Guide\n\n<div>raw</div>\n",
-        "# Guide\n\nA paragraph carrying <span>raw</span> markup.\n",
-        "# Guide\n\nSee [[page]] for the procedure.\n",
-        "# Guide\n\n![[page]]\n",
-        "# Guide\n\nA claim[^1] needing support.\n",
-        "# Guide\n\n## Run {#custom-id}\n",
+        ("# Guide\n\n<div>raw</div>\n", RAW_HTML),
+        ("# Guide\n\nA paragraph carrying <span>raw</span> markup.\n", RAW_HTML),
+        ("# Guide\n\nSee [[page]] for the procedure.\n", UNSUPPORTED_CONSTRUCT),
+        ("# Guide\n\n![[page]]\n", UNSUPPORTED_CONSTRUCT),
+        ("# Guide\n\nA claim[^1] needing support.\n", UNSUPPORTED_CONSTRUCT),
+        ("# Guide\n\n## Run {#custom-id}\n", UNSUPPORTED_CONSTRUCT),
     ],
 )
-def test_a_construct_the_profile_refuses_fails_the_run(root: Path, source: str) -> None:
+def test_a_construct_the_profile_refuses_fails_the_run(
+    root: Path, source: str, code: str
+) -> None:
     written(root, "guide.md", source)
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
     assert run.status == INPUT_FAILURE
     assert run.stdout == ""
     assert [one["severity"] for one in run.diagnostics()] == ["error"]
-    assert "code" not in run.diagnostics()[0]
+    assert [one["code"] for one in run.diagnostics()] == [code]
     assert run.diagnostics()[0]["source"].startswith("guide.md:")
 
 
@@ -379,6 +392,7 @@ def test_an_entry_suffix_outside_the_profile_is_an_input_failure(root: Path) -> 
     run = invoke("--root", str(root), "--diagnostics", "json", "notes.txt")
     assert run.status == INPUT_FAILURE
     assert run.diagnostics()[0]["reference"] == "notes.txt"
+    assert [one["code"] for one in run.diagnostics()] == [UNSUPPORTED_ENTRY_SUFFIX]
 
 
 def test_an_entry_suffix_is_classified_case_insensitively(root: Path) -> None:
@@ -407,13 +421,52 @@ def test_a_fragment_reference_reads_the_whole_document_it_names(root: Path) -> N
     assert run.status == INPUT_FAILURE
 
 
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        (),
+        ("#a-section",),
+        ("--diagnostics", "yaml", "guide.md"),
+        ("--watch", "guide.md"),
+    ],
+)
+def test_a_fault_in_the_command_line_carries_the_invalid_usage_code(
+    root: Path, arguments: tuple[str, ...]
+) -> None:
+    run = invoke("--root", str(root), "--diagnostics", "json", *arguments)
+    assert run.status == USAGE_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
+
+
+def test_a_missing_source_root_carries_the_invalid_usage_code() -> None:
+    run = invoke("--diagnostics", "json", "guide.md")
+    assert run.status == USAGE_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
+
+
+def test_an_output_path_naming_an_input_source_carries_the_invalid_usage_code(
+    root: Path,
+) -> None:
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(root / "guide.md"),
+        "guide.md",
+    )
+    assert run.status == USAGE_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
+
+
 def test_a_source_that_is_not_valid_utf8_is_an_input_failure(root: Path) -> None:
     (root / "guide.md").write_bytes(b"# Guide\n\nA byte that is not UTF-8: \xe9\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
     assert run.status == INPUT_FAILURE
     assert run.stdout == ""
     reported = run.diagnostics()[0]
-    assert "code" not in reported
+    assert reported["code"] == INVALID_ENCODING
     assert reported["source"] == "guide.md"
     assert "UTF-8" in reported["message"]
 

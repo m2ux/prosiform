@@ -1,11 +1,12 @@
 """The diagnostic stream and the two formats it is written in.
 
 A diagnostic is one message a run emits to standard error. It carries a
-severity, a message, and the further fields the contract names where they
-are known: the stable code of the defect, the reference it concerns, the
-source location it was found at, and a remedy where one can be stated
-accurately. A diagnostic for a defect the contract does not define carries
-no code, since a code is the name of a defect the contract declares.
+severity, the stable code of the defect it reports, a message, and the
+further fields the contract names where they are known: the reference it
+concerns, the source location it was found at, and a remedy where one can
+be stated accurately. The code is required because the contract names one
+for every failing outcome it declares, so a diagnostic without one would
+report a defect the contract does not name.
 
 Text renders a diagnostic for a reader. JSON renders it as data, one object
 per line and nothing else on the stream, so a caller parses standard error
@@ -33,7 +34,7 @@ class Diagnostic:
 
     severity: str
     message: str
-    code: str | None = None
+    code: str
     reference: str | None = None
     source: str | None = None
     remedy: str | None = None
@@ -47,7 +48,7 @@ class Diagnostic:
     def as_text(self) -> str:
         """The diagnostic as a reader reads it: a heading, then its detail."""
         carried = self.fields()
-        heading = carried.pop("code", self.severity)
+        heading = carried.pop("code")
         message = carried.pop("message")
         carried.pop("severity")
         lines = [f"{heading}: {message}"]

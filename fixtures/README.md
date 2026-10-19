@@ -82,13 +82,21 @@ An error decides a failing run.
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_GENERATED_INPUT` | Generated input policy — a source opening on a file heading. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
+| `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_GROUP_RULE` | Grouping — a depth outside 1 through 6, an unknown slug, or a repeated slug. |
+| `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
+| `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write. |
+| `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
+| `E_ROOT_NOT_FOUND` | CLI contract — an allowed source root naming no directory. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — a normalized path outside the allowed root. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |
 | `E_TARGET_NOT_FOUND` | Validation and failure contract — a local Markdown reference resolving to nothing. |
+| `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content. |
+| `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
 A warning accompanies a successful run, so a fixture declaring one states what a run writes to standard error while still succeeding.

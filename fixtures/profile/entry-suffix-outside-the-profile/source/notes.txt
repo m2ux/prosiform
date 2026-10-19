@@ -1,0 +1,3 @@
+# Notes
+
+A document the profile does not classify as Markdown.
