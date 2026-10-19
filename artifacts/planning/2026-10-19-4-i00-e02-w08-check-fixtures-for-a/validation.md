@@ -132,3 +132,9 @@ E_UNSUPPORTED_ENTRY_SUFFIX: the entry reference 'notes/draft #.md' names a docum
 ```
 
 `--from` splits the same way, and each file group of this build comes from a document an entry reference names, so no command line reaches the heading. A manifest declaring the bundle such a path produces would declare how a reference spells a path carrying a number sign, which no design clause states. The escaping is covered by T3 instead, and the reachability gap is reported as an arising issue.
+
+## The merge
+
+`#58` merged into `i00/e02/main` at `c0f3651`, with `8249cb0` as its verified head. Run [39264145318](https://github.com/m2ux/prosiform/actions/runs/39264145318) on that merge commit concluded `success`, so the base carries the change green.
+
+AC10 is ready to verify and is left unticked for the user, so epic `#4` stays open and review `#47` stays draft.
