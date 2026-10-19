@@ -26,6 +26,8 @@ CORPUS = ROOT / "fixtures"
 SCHEMA = CORPUS / "manifest.schema.json"
 MANIFEST_NAME = "manifest.toml"
 
+CATALOGUES = {"error": "errorCode", "warning": "warningCode"}
+
 
 @cache
 def schema() -> dict[str, Any]:
@@ -35,9 +37,22 @@ def schema() -> dict[str, Any]:
     return document
 
 
-def catalogue() -> set[str]:
-    """The error codes a manifest may name."""
-    codes: list[str] = schema()["$defs"]["errorCode"]["enum"]
+def severities() -> list[str]:
+    """The severities a diagnostic may carry, in the order the schema lists them."""
+    declared: list[str] = schema()["$defs"]["diagnostic"]["properties"]["severity"][
+        "enum"
+    ]
+    return declared
+
+
+def catalogue(severity: str) -> set[str]:
+    """The codes a diagnostic of one severity may name.
+
+    A diagnostic is named by its severity and its code together, so the
+    severity selects the catalogue: an error decides a failing run and a
+    warning accompanies a successful one.
+    """
+    codes: list[str] = schema()["$defs"][CATALOGUES[severity]]["enum"]
     return set(codes)
 
 

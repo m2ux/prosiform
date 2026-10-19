@@ -78,7 +78,7 @@ make check
 | `make format-check` | That same Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That same Python type checks in strict mode. |
 | `make test` | The Python build's suite passes. A run that collects no test fails. |
-| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), the catalogue of error codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
+| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
 | `make layout` | Each of the three trees holds a tracked file. |
 | `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`prototype/pyproject.toml`](prototype/README.md) declares, and nothing besides. |
 | `make links` | Every reference every README in this repository carries resolves. |
