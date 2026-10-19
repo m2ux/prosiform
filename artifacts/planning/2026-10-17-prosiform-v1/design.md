@@ -65,11 +65,11 @@ Use a versioned `skill-markdown-v1` profile based on CommonMark, with pipe table
 
 - **Core syntax:** Support ATX/Setext headings, paragraphs, lists, blockquotes, code spans and blocks, inline/reference links and images, thematic breaks, and ordinary CommonMark autolinks.
 - **Task lists:** Preserve `[ ]`, `[x]`, and `[X]` markers without generating checkbox HTML. Recognize marker positions so reference definitions cannot turn them into links.
-- **HTML:** Recognize HTML so it can be refused. Raw HTML in selected content fails; the bundle carries Markdown only.
+- **HTML:** Recognize HTML so it can be refused. Raw HTML in selected content fails with `E_RAW_HTML`; the bundle carries Markdown only.
 - **Typography:** Disable smart quotes, typographic substitutions, and formatting cleanup.
 - **Bare text:** Do not infer dependencies from ordinary paths in prose. Bare URLs may remain text; browser-specific rendering is outside the guaranteed profile.
-- **Unsupported extensions:** Footnotes, wiki links, heading-attribute syntax, and include/transclusion directives are not v1 bundling features. Reject recognized unsupported dependency or section-naming constructs in selected content, but do not guess every possible extension from ordinary prose.
-- **File suffixes:** Recognize `.md` and `.markdown` case-insensitively for classification while preserving filesystem spelling and case semantics. An explicit entry with another suffix fails.
+- **Unsupported extensions:** Footnotes, wiki links, heading-attribute syntax, and include/transclusion directives are not v1 bundling features. Reject recognized unsupported dependency or section-naming constructs in selected content with `E_UNSUPPORTED_CONSTRUCT`, but do not guess every possible extension from ordinary prose.
+- **File suffixes:** Recognize `.md` and `.markdown` case-insensitively for classification while preserving filesystem spelling and case semantics. An explicit entry with another suffix fails with `E_UNSUPPORTED_ENTRY_SUFFIX`.
 - **Encoding:** Require valid UTF-8. Tolerate and remove one leading UTF-8 BOM as source transport metadata.
 
 Pin the parser configuration and definition-handling rules as part of the profile. Later extension changes must not silently change the interpretation of existing source.
@@ -104,6 +104,8 @@ prosiform --root DIR [OPTIONS] REF [REF ...]
 | `--help` | Show usage, defaults, and exit-status meanings. |
 
 `--check` accepts `--output FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
+
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`. A missing `--root`, no entry reference, an option the contract does not declare, an option value outside the set its row names, a fragment-only reference with no `--from`, and an output path naming an input source are all one defect — the command line's own form — and they lead a caller to one remedy, so they take one code and the message says which fault it was. A grouping rule keeps `E_INVALID_GROUP_RULE`, which names a defect in the rule's value rather than in the grammar that admits the option. A `--root` naming no directory is well formed and names a root that is not there: it fails with `E_ROOT_NOT_FOUND` as the input failure it is.
 
 ### Usage examples
 
@@ -482,7 +484,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting, title absorption, heading shifts and necessary Setext conversion, the generated entry line, generated group, variant and overview headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
 - **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands, and never open a reference the tool did not resolve as a local Markdown dependency.
-- **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation.
+- **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation. An output destination that refuses the write, a detected broken pipe among them, fails with `E_PUBLICATION_FAILED`.
 
 ### Post-compilation invariants
 
@@ -535,6 +537,10 @@ Use stable error codes for individual defects and the following exit-status cate
 | `2` | Invalid CLI usage or option combination. |
 | `3` | Output publication or delivery failure, including a detected broken pipe. |
 | `4` | Unexpected internal error; do not misreport it as a source-document defect. |
+
+An unexpected internal error carries `E_UNEXPECTED_INTERNAL_ERROR`. It names the run rather than any document the run read, so a caller reading it is not sent to look at its sources.
+
+Every failing outcome this contract names carries a code, so a diagnostic without one reports a defect the contract does not define.
 
 With `--diagnostics json`, emit one JSON object per stderr line, including `severity`, `code`, `message`, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate. Do not mix JSON diagnostics with progress prose.
 
