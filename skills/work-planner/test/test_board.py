@@ -238,6 +238,15 @@ class InitiativeStatus(unittest.TestCase):
                              statuses=('Backlog', 'Ready', 'In Progress', 'In Review', 'Done'))
         self.assertIn('set #2 [I01:E00] First: Epic: In Progress → In Review', out)
 
+    def test_a_task_is_ready_though_a_sibling_row_waits_on_another_epic(self):
+        epic = issue(2, '[I01:E00] First: Epic', body=epic_body(
+            (f"[W01]({url('issues', 3)})", 'Go', ''),
+            ('W02', 'Consume', f"[E01:W01]({url('issues', 4)})")))
+        task = issue(3, '[I01:E00:W01] Go: Task')
+        out = self.open_pair('Ready', 'Ready', epic, tasks=(task,),
+                             statuses=('Backlog', 'Ready', 'In Progress', 'In Review', 'Done'))
+        self.assertIn('[I01:E00:W01] Go: Task: Backlog → Ready', out)
+
     def task_pair(self, held: tuple[dict, ...]) -> str:
         """An epic whose W01 links a task issue, and an open pull request naming the epic."""
         epic = issue(2, '[I01:E00] First: Epic', body=epic_body((f"[W01]({url('issues', 3)})", 'Go', '')))
