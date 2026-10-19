@@ -16,11 +16,15 @@ One complete prompt file for a confirmed delivery unit.
 
 **Inputs:** Epic URL, task ids, Descriptions, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, supplied session procedure and output path.
 
-1. Write the supplied identity, context and execution instructions to the prompt file.
+1. Write the supplied identity, context and execution instructions to the prompt file, at the supplied output path or where [Location](#location) puts it.
    - Each part must meet [Fields](#fields).
 2. Return the brief path and any missing context. The caller resolves gaps before dispatch.
 
 ## Fields
+
+### Location
+
+The brief is a working file, not part of the delivered change, so it sits in a working directory outside every repository it names. Absent a supplied path it takes the session's scratchpad, named for the unit.
 
 ### Work Identity
 

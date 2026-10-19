@@ -68,7 +68,7 @@ The main path meets [Outcomes](#outcomes).
    - Record the pull request on it with [Comment on Issue](../artifacts/issue.md#comment-on-issue): `Delivered by #950.`
    - [Issue Closure](../protocols/issue-closure.md) when it reports closable.
 6. **Sync each epic.**
-   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues:
+   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues and the project checkout its long-lived branch names come from:
    Linking a pull request replaces the planning-record link on that task.
    - Handle the returned delivery findings:
      - **Conflict.**
@@ -122,7 +122,7 @@ The main path meets [Outcomes](#outcomes).
       - Follow [Epic Integration](../protocols/epic-integration.md) with the epic identity and body, review identity, base worktree and target, current delivery records, complete issue-link snapshot and criterion verification evidence.
       - Report a draft waiting for the user.
     - Fetch the pull requests again after merging.
-    - Re-run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery).
+    - Re-run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the refreshed records and the same project checkout.
     - [Issue Closure](../protocols/issue-closure.md) each epic the re-run reports closable.
 11. **Sync the initiative.**
     Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
@@ -133,13 +133,13 @@ The main path meets [Outcomes](#outcomes).
     - [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) the initiative from its output body file when a tick changed it, so the board sync reads every criterion ticked.
     - [Issue Closure](../protocols/issue-closure.md) the initiative when it reports closable.
 12. **Sync the board.**
-    Select the initiative's theme board.
+    Run [Select Project Board](../artifacts/board.md#select-project-board) for the initiative's theme.
     - Run [Copy Project Board](../artifacts/board.md#copy-project-board) if it is absent.
     - Follow [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
     - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
-    - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains.
+    - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
