@@ -228,7 +228,12 @@ The fourth run is a validation-only run with an output file. It returns 4 becaus
 
 **Observes AC3, AC4.** `make check` on the pushed head, run by the workflow the repository declares.
 
-See the pull request's checks on `7b63a3e`. The workflow runs `make check`, the same set and the same order as T1, on a runner that creates its environment from the lockfile.
+**Pass.** Run `39227378537`, job `Checks`, conclusion `success`, on head `7b63a3ece03595758c92635ab2848520b3d8b7a1`. The workflow runs `make check`, the same set and the same order as T1, on a runner that creates its environment from the lockfile.
+
+```text
+gh api repos/m2ux/prosiform/commits/7b63a3ece03595758c92635ab2848520b3d8b7a1/check-runs
+Checks	completed	success
+```
 
 ## What these checks do not observe
 
