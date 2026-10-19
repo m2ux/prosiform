@@ -177,7 +177,7 @@ A group is the unit the bundle is organized into. By default a group is one sour
 --group artifacts:2 --group references:2
 ```
 
-A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A rule whose directories contribute no document to the *closure* is not an error: it arranges nothing, and the run reports it as a warning on stderr.
+A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A rule whose directories contribute no document to the *closure* is not an error: it arranges nothing, and the run reports it as `W_EMPTY_GROUP_RULE` on stderr.
 
 - **Group membership:** A document belongs to the group whose slug matches the deepest directory segment of its path. A document no group matches keeps its own group, so one bundle can carry both arrangements.
 - **Group structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every *member* document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
@@ -397,7 +397,7 @@ Non-Markdown resource links are not opened as source dependencies. They remain g
 
 A relative image or other non-Markdown reference is text. It is emitted byte-identical to its source and never opened, rebased or resolved, so a bundle read from somewhere other than its source directory may not find it.
 
-Warn on stderr that resource portability is not guaranteed. A successful Markdown bundling establishes nothing about the resources its text mentions, and the warning does not turn a successful run into a failure.
+Warn on stderr with `W_RESOURCE_PORTABILITY` that resource portability is not guaranteed. A successful Markdown bundling establishes nothing about the resources its text mentions, and the warning does not turn a successful run into a failure.
 
 Rebasing a resource path means deciding where the bundle will be read from, which is the caller's question rather than the tool's. Nothing here maps a resource to a URL, so the tool holds no notion of a web address at all.
 
@@ -526,7 +526,7 @@ Diagnostics should include a stable error code, referring source location, origi
 
 ### Exit status and JSON diagnostics
 
-Use stable error codes for individual defects and the following exit-status categories. Warnings may accompany success.
+Use stable error codes for individual defects and the following exit-status categories. Warnings may accompany success, and each carries a stable code of its own, prefixed `W_` where an error code is prefixed `E_`.
 
 | Exit | Meaning |
 | --- | --- |
