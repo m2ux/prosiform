@@ -12,6 +12,7 @@ Read these files first.
 - [Standup Report](../artifacts/standup-report.md)
 - [Issue](../artifacts/issue.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
+- [Issue Body](../artifacts/issue-body.md)
 
 ## Procedure
 

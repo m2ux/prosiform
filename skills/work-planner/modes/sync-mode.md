@@ -19,8 +19,6 @@ Read these files first.
 - [Understand Mode](understand-mode.md)
 - [Pull Request Body](../artifacts/pull-request-body.md)
 - [Board Delivery](../artifacts/board-delivery.md)
-- [Delivery Branches](../artifacts/delivery-branches.md)
-- [Initiative](../artifacts/initiative.md)
 
 ## Procedure
 
@@ -66,7 +64,7 @@ The main path meets [Outcomes](#outcomes).
    - Run [Record Task Delivery](../artifacts/task-body.md#record-task-delivery) with the task JSON, pull request records, complete issue-link snapshot, delivering pull request number, returned verified criterion ids and output body path.
    - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) before closure.
    - Record the pull request on it with [Comment on Issue](../artifacts/issue.md#comment-on-issue): `Delivered by #950.`
-   - [Close Delivered Issue](#close-delivered-issue) when it reports closable.
+   - [Close Delivered Issue](../artifacts/issue.md#close-delivered-issue) when it reports closable.
 6. **Sync each epic.**
    Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery), linking every match from the match step, open or merged, with the task issues:
    Linking a pull request replaces the planning-record link on that task.
@@ -123,7 +121,7 @@ The main path meets [Outcomes](#outcomes).
       - Report a draft waiting for the user.
     - Fetch the pull requests again after merging.
     - Re-run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery).
-    - [Close Delivered Issue](#close-delivered-issue) each epic the re-run reports closable.
+    - [Close Delivered Issue](../artifacts/issue.md#close-delivered-issue) each epic the re-run reports closable.
 11. **Sync the initiative.**
     Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
     - For returned criteria ready to verify:
@@ -131,11 +129,11 @@ The main path meets [Outcomes](#outcomes).
       - Pass returned verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with the initiative JSON, every linked epic record and output body file.
       - Report the remaining findings as pending.
     - [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) the initiative from its output body file when a tick changed it, so the board sync reads every criterion ticked.
-    - [Close Delivered Issue](#close-delivered-issue) the initiative when it reports closable.
+    - [Close Delivered Issue](../artifacts/issue.md#close-delivered-issue) the initiative when it reports closable.
 12. **Sync the board.**
     Select the initiative's theme board.
     - Run [Copy Project Board](../artifacts/board.md#copy-project-board) if it is absent.
-    - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
+    - Follow [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
     - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
@@ -173,7 +171,7 @@ The task and epic records after one confirmed task merge.
 1. **Read and record.**
    Follow [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence).
    - Run [Record Issue Delivery](#record-issue-delivery) for the delivered unit.
-   - Close an eligible task issue through [Close Delivered Issue](#close-delivered-issue).
+   - Close an eligible task issue through [Close Delivered Issue](../artifacts/issue.md#close-delivered-issue).
 2. **Review.**
    Follow [Maintain Review Pull Request](../artifacts/pull-request-body.md#maintain-review-pull-request) for the affected epic base.
 3. **Complete when ready.**
@@ -185,61 +183,8 @@ The task and epic records after one confirmed task merge.
    After every epic base has merged:
    - Refresh the evidence.
    - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, project checkout, and output body file.
-   - Follow [Close Delivered Issue](#close-delivered-issue) when eligible.
+   - Follow [Close Delivered Issue](../artifacts/issue.md#close-delivered-issue) when eligible.
    - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative and every linked epic record. Initiative completion does not gate an epic merge. A task merge alone does not sync the initiative or board.
-
-### Record Board Delivery
-
-The board's status and assignees after its issues record delivery.
-
-1. **Read.**
-   - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
-   - Run [Read Board State](../artifacts/board.md#read-board-state) for the selected board.
-   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for its repositories.
-   - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) for those records.
-   - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration) with the board and output paths.
-   - Run [Read Board Assignee](../artifacts/board.md#read-board-assignee) for the assignment login.
-   - Pass these returned snapshots to Plan Board Changes.
-2. **Plan.**
-   Run [Plan Board Changes](../artifacts/board-delivery.md#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
-   - Fetch each unresolved issue.
-   - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
-3. **Write.**
-   Run each emitted call.
-   - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
-   - If that item still shows the preceding status:
-     - Repeat its write.
-     - Repeat the same item read. The item list can lag a write.
-4. **Repeat.**
-   Fetch the issues and items again.
-   - Run [Plan Board Changes](../artifacts/board-delivery.md#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
-   - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
-
-### Close Delivered Issue
-
-Fresh closure evidence assembled across the issue and its linked pull requests.
-
-1. **Issue.**
-   - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the issue selected by the delivery checks.
-   - Run [Capture Issue Development](../artifacts/issue.md#capture-issue-development) for that issue.
-2. **Pull requests.**
-   Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for every captured link, across repositories and all states.
-   - Use a fresh destination file so an earlier snapshot cannot supply membership.
-3. **Check delivery completion.**
-   - For an epic:
-     - Run [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches) for the complete expected bases.
-     - Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for their merge evidence.
-     - Run [Check Epic Completion](../artifacts/epic.md#check-epic-completion) with the current epic JSON, delivery records, complete issue-link snapshot, criterion verification evidence and those base records.
-   - For an initiative:
-     - Refresh every linked epic through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
-     - Run [Check Initiative Completion](../artifacts/initiative.md#check-initiative-completion) with the current initiative JSON, all linked epic records, criterion verification evidence and captured Development-link and pull-request records. A task retains its task delivery result.
-   - Return any incomplete or failed result before closure.
-4. **Close.**
-   Pass the successful normal delivery result, issue JSON, complete Development snapshot, confirmed repository setting and fresh pull request records to [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue).
-   - If the operation reports a changed link set or missing evidence:
-     - Refresh those inputs.
-     - Repeat the completion check before trying again.
-   - Report any unmerged link or unmet criterion.
 
 ## Outcomes
 
