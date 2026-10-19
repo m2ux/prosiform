@@ -26,7 +26,7 @@ first link read deciding where more than one does. Repository names match in any
   - A pull request titled with an epic's reference counts towards that epic when it lives in the
     epic's repository or its initiative's, the epic's own first. A row whose id links a pull
     request reads it by URL, whatever its title or repository.
-  - An epic depends on the epics its task rows name outside it and those its initiative row names.
+  - An epic names another when a task row names one of its rows or the initiative row names it whole.
 Sections, lines grouped under the epic they belong to:
   Initiatives  each initiative an item under Completed or In progress works for: its title's name
                and subtitle, the one-line outcome the agent-engineering title states. One neither
@@ -42,7 +42,7 @@ epic's repository.
                review (In Review) or draft, or else, with no line under it, its next task.
   Next         epics and task issues Ready, ranked by the priority label of their initiative, then
                by their epic's own (a larger number first; no label after every number) and then by
-               reference, with an epic another listed epic depends on ahead of it; the first five,
+               reference, and an epic ahead of any listed epic naming it; the first five,
                and a count of the rest. An epic names its next task.
 An epic's next task is its first undelivered task whose dependencies are delivered and whose linked
 task issue, if it has one, is on the board and not In Progress or In Review. A task is undelivered
@@ -413,11 +413,11 @@ def main() -> int:
             return 0, level(ek)
         return level(initiative), level(ek)
 
-    def depends_on(k: Key) -> set[Key]:
-        """The epics the item's epic depends on, as the board holds them."""
+    def named_by(k: Key) -> set[Key]:
+        """The epics the item's epic names, as the board holds them."""
         if (ek := epic_for(k)) is None:
             return set()
-        return {found for p in board.prerequisite_epics(ek, epic_ids.get(scope_of_epic[ek], {}))
+        return {found for p in board.referenced_epics(ek, epic_ids.get(scope_of_epic[ek], {}))
                 if (found := on_board(p))}
 
     def rank(entry: tuple[Key, str]) -> tuple:
@@ -426,7 +426,7 @@ def main() -> int:
         return -initiative, -epic, tagged[k], k[0].lower()
 
     ready = sorted((e for e in ready if e[0] not in named_next), key=rank)
-    waiting = {k: depends_on(k) & {listed for listed, _ in ready} for k, _ in ready}
+    waiting = {k: named_by(k) & {listed for listed, _ in ready} for k, _ in ready}
     ordered: list[tuple[Key, str]] = []
     while ready:
         entry = next((e for e in ready if not waiting[e[0]]), ready[0])
