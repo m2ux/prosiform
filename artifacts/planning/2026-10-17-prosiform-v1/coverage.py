@@ -33,7 +33,7 @@ CRITERION = re.compile(r"^- \[[ x]\] \*\*(AC\d+)\.\*\*\s*(.*)$")
 # an entry naming a criterion that no longer exists is a failure of the run.
 COLLECTIVE = [
     ("Markdown and source-heading profile", "Typography", "I00:E02:AC5"),
-    ("CLI contract", "--diagnostics", "I00:E06:AC7"),
+    ("CLI contract", "--diagnostics", "I00:E08:AC5"),
     ("CLI contract", "--check", "I00:E02:AC10"),
     ("Section extraction and output hierarchy", "Subsections", "I00:E03:AC1"),
     ("Section extraction and output hierarchy", "Containers", "I00:E03:AC1"),
@@ -42,7 +42,7 @@ COLLECTIVE = [
     ("Self-reference and ancestor-reference behavior", "Whole-document selection", "I00:E04:AC4"),
     ("Frontmatter policy", "step", "I00:E02:AC2"),
     ("Link classification and resource handling", "Images and non-Markdown resources",
-     "I00:E04:AC13"),
+     "I00:E04:AC12"),
     ("Resolution sequence", "step", "I00:E04:AC6"),
     ("Resolution sequence", "", "I00:E04:AC6"),
     ("Resource limits", "--max-", "I00:E04:AC7"),
@@ -184,7 +184,7 @@ def main():
                "shares at least two distinctive terms with the clause. That is enough to find "
                "a clause no criterion discusses, which is what the first table is for. It is "
                "not evidence that a listed criterion verifies the clause, which is what "
-               "I00:E07's clause-to-fixture report establishes against the corpus.\n")
+               "I00:E10's clause-to-fixture report establishes against the corpus.\n")
     out.append("| Measure | Value |")
     out.append("| --- | --- |")
     out.append("| Design clauses | %d |" % len(design))

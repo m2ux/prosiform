@@ -340,6 +340,44 @@ The mark removes the choice between them. A citation is unmarked, so it carries 
 
 Nineteen references across five documents in two collections cite the shared guidelines this way, and two further collections cite nothing above themselves. None of them changes: an unmarked link is what they already are.
 
+## D34 — An Epic Is Cut Where Its Dependants Need It, and the Tool Ships Before the Gate Completes
+
+A task row naming another epic's row waits for that epic to close, so where a cross-epic edge points decides how much work it imports. Three edges named an early row of their prerequisite and waited for the whole of it: the closure epic's traversal row named the second of seven outline rows, the destination epic's first row named the same, and its rewriting row named the fourth of eight closure rows. Under the previous rule the whole epic waited regardless and the cost was invisible.
+
+Each prerequisite is therefore cut at the row its dependants name. Outline Hierarchy keeps the slug index, section extraction, the shift and file-group emission; structural ancestors, the depth ceiling and directory grouping leave it. Dependency Closure keeps normalization through budgets; the measured size and the example tree leave it. Candidate Validation keeps the one check that establishes a candidate carries its sources, and boundary safety, source consistency, diagnostics and validation scope become a separate gate. The departed rows form two epics that run after the tool is in use.
+
+The alternative was to leave the epics whole and order them by priority. It was refused because priority orders epics and the gate is epic closure, so a tail row with no dependants would still hold the next epic shut. Merging the three epics into one was refused for the opposite reason: it removes every whole-epic wait but puts thirteen rows behind one integration base and one review.
+
+The cost is two more epics, each carrying an integration base, a review pull request and a closure gate. It is paid once. The measured return is the longest chain falling from fourteen steps to thirteen, and the row that installs the tool moving from the eleventh step of that chain to the first.
+
+## D35 — The Initiative Row Gates Only What Every Row Needs
+
+An initiative row's Depends on cell stops an epic starting at all, while a task row's edge stops only that row. Naming a prerequisite on the initiative row where only some rows need it therefore holds back rows that are free, and the board shows an epic waiting on work none of its startable rows consumes.
+
+A cell is written only where every task or joined unit of the dependent epic requires every task of the epic named. Candidate Validation qualifies, its one row naming the last row of Destination Identity. Outline and Closure Completion qualifies, because its rows are joined into one unit and that unit draws on both prerequisite epics. Field Deployment does not: packaging and a stable entry point need nothing from the validation gate, and the cell that named it held those rows behind seven others.
+
+The alternative was to record the intended order as initiative edges, which reads naturally and is what the table looked like before. It was refused because an edge states a requirement and an order states a preference, and writing one as the other removes the board's ability to tell them apart. Order is carried by the priority label, which was made for it.
+
+The measured return is the installation row becoming startable immediately rather than at the eleventh step, and Field Deployment entering the first priority set.
+
+## D36 — Coverage Depth Follows the Ship, and the Corpus Names Its Own Gaps
+
+The corpus is the contract, so a row that ships without the fixtures its criteria name would leave the contract asserting what nothing measures. The eight rows delivered so far carried forty fixtures, five per row and three and a third per criterion, of which sixteen state a nonzero exit. Carried at that depth, the rows before the tool reaches agents would author about eighty-five.
+
+Each shipping row therefore authors the fixture that proves its behaviour and ticks its criterion, and declares its boundary, failure and adversarial cases as fixtures marked `awaiting` the conformance epic. A marked fixture tolerates failure and fails the job when it unexpectedly passes, so a deferral cannot outlive its reason, and the conformance epic gains a criterion that no marker survives it.
+
+The alternative of writing the proving fixtures alone was refused for about one slot of saving: an undeclared case is one the conformance epic must rediscover from the design, and until it does, nothing distinguishes a clause that is covered from one that is not.
+
+The modelled cost of the shipping slice falls from about fifteen row-equivalents to about eleven. The fixture counts are measured; the conversion to row-equivalents rests on fixture authoring being about half of a row, which the record does not establish.
+
+## D37 — The Epic Order Is Chosen Where the Derivation Cannot See the Reason
+
+The derived priority map ranks by prerequisite depth. It places Deferred Debt in the first set, because the rows deferred so far name only closed work, and it places Destination Identity there too, because no whole-epic edge holds it even though no row of it is free. Depth is not the whole of the reason an epic runs when it does.
+
+The map is therefore set as Outline Hierarchy, Dependency Closure and Field Deployment at 6; Destination Identity at 5; Candidate Validation at 4; the Validation Gate and Outline and Closure Completion at 3; Corpus Conformance at 2; Deferred Debt at 1. Field Deployment joins the first set on the strength of one free row and finishes as the rest of the chain reaches it. Deferred Debt is last because its epic exists to be cleared after delivery, which no edge states.
+
+The alternative was to encode the intended order as dependency edges so the derivation would produce it. It was refused for the reason recorded in [D35](#d35--the-initiative-row-gates-only-what-every-row-needs).
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

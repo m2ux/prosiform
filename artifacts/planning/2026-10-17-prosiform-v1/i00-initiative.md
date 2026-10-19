@@ -29,8 +29,11 @@ Modular Markdown authoring separates the destination a link names from the conte
 - **Python proves the semantics.**
   Dependency closure, overlap consolidation, destination identity and the post-compilation invariants are parser-independent, so a Python build establishes them at a fraction of the cost of establishing them in the production language.
 
-- **The build grows in layers.**
-  A whole-document bundling that works end to end comes first. Outline hierarchy, dependency closure, destination identity and the validation gate each extend a product that already works.
+- **The build grows in layers, and the earliest useful layer ships.**
+  A whole-document bundling that works end to end comes first. Section selection, dependency closure, destination identity and the one validation check that proves a candidate carries its sources follow, and the tool installs at that point. Boundary safety, diagnostics, validation scope, the outline a partial selection skipped, directory grouping and the measured budget extend a product agents are already invoking.
+
+- **Coverage depth follows the ship rather than preceding it.**
+  Each row before the ship carries the fixture that proves its behaviour, and declares its boundary, failure and adversarial cases as fixtures awaiting the conformance epic. A declared fixture that unexpectedly passes fails the run, so a deferral cannot outlive its reason and the corpus names every gap it carries.
 
 - **Span-level editing is out of scope here.**
   Byte-exact source-preserving edits are specific to the production parser and are proven where that parser lives. This build may reconstruct its output, provided the corpus's preservation fixtures hold.
@@ -45,15 +48,20 @@ Modular Markdown authoring separates the destination a link names from the conte
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/26) | Project Foundation | AC13 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/3) | Corpus Harness | AC8 | | |
-| [E02](https://github.com/m2ux/prosiform/issues/4) | Walking Skeleton | AC7 |  | |
-| [E03](https://github.com/m2ux/prosiform/issues/5) | Outline Hierarchy | AC5 |  | |
-| [E04](https://github.com/m2ux/prosiform/issues/6) | Dependency Closure | AC1, AC3, AC10, AC14 |  | |
-| [E05](https://github.com/m2ux/prosiform/issues/7) | Destination Identity | AC2 |  | |
-| [E06](https://github.com/m2ux/prosiform/issues/8) | Validation Gate | AC4, AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
-| [E07](https://github.com/m2ux/prosiform/issues/9) | Corpus Conformance | AC9 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
-| [E08](https://github.com/m2ux/prosiform/issues/19) | Field Deployment | AC11, AC12 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
+| [E00](https://github.com/m2ux/prosiform/issues/26) | Project Foundation |  | | ✓ |
+| [E01](https://github.com/m2ux/prosiform/issues/3) | Corpus Harness | AC8 | | ✓ |
+| [E02](https://github.com/m2ux/prosiform/issues/4) | Walking Skeleton | AC7, AC13 | | ✓ |
+| [E03](https://github.com/m2ux/prosiform/issues/5) | Outline Hierarchy | AC5 | | |
+| [E04](https://github.com/m2ux/prosiform/issues/6) | Dependency Closure | AC1, AC3, AC10 | | |
+| [E05](https://github.com/m2ux/prosiform/issues/7) | Destination Identity | AC2 | | |
+| [E06](https://github.com/m2ux/prosiform/issues/8) | Candidate Validation | AC4, AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
+| [E07](https://github.com/m2ux/prosiform/issues/19) | Field Deployment | AC11, AC12 | | |
+| E08 | Validation Gate | AC6 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
+| E09 | Outline and Closure Completion | AC5, AC14 | [E03](https://github.com/m2ux/prosiform/issues/5), [E04](https://github.com/m2ux/prosiform/issues/6) | |
+| [E10](https://github.com/m2ux/prosiform/issues/9) | Corpus Conformance | AC9 | E08 | |
+| [E11](https://github.com/m2ux/prosiform/issues/39) | Deferred Debt | AC15 | | |
+
+The order these epics start in is carried by each one's priority label rather than by this table. A cell here names a prerequisite only where every task of the dependent epic requires every task of the one named; every other edge stays in the task tables, so an epic starts on the rows that are free and waits only on the rows that are not.
 
 ## Acceptance Criteria
 
@@ -63,14 +71,15 @@ Modular Markdown authoring separates the destination a link names from the conte
 - [ ] **AC4.** Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names, as the corpus runner's preservation check shows.
 - [ ] **AC5.** Each selected section keeps its ancestor chain and its relative depth beneath the heading naming its source file, as the corpus runner's outline comparison shows.
 - [ ] **AC6.** A bundling that fails validation publishes nothing, exits nonzero and writes a diagnostic carrying the defect, its source location, the offending reference and the inclusion chain, as the corpus's failure fixtures show.
-- [ ] **AC7.** A document bundles with no markup beyond ordinary Markdown links and headings, as the fixtures taken from unmodified workspace skills show.
-- [ ] **AC8.** A fixture declares its sources, its invocation and its expected result, and the runner decides pass or fail from that declaration alone, as the runner's own test suite shows.
+- [x] **AC7.** A document bundles with no markup beyond ordinary Markdown links and headings, as the fixtures taken from unmodified workspace skills show.
+- [x] **AC8.** A fixture declares its sources, its invocation and its expected result, and the runner decides pass or fail from that declaration alone, as the runner's own test suite shows.
 - [ ] **AC9.** Every behavioural clause the design states maps to at least one corpus fixture, or is listed as uncovered, as the conformance report shows.
 - [ ] **AC10.** Each resource limit the profile names fails at the first boundary it crosses, publishing nothing, as the corpus's limit fixtures show.
 - [ ] **AC11.** An agent bundles its context by invoking the installed tool rather than by reading the linked documents itself, as the installation smoke run against a documented entry point shows.
 - [ ] **AC12.** A bundle the transport cannot deliver whole is reported as a delivery failure rather than as a truncated success, as the corpus's delivery fixtures show.
-- [ ] **AC13.** A corpus run reproduces on a fresh checkout at the dependency versions a lockfile records, as the continuous-integration run shows.
+- [x] **AC13.** A corpus run reproduces on a fresh checkout at the dependency versions a lockfile records, as the continuous-integration run shows.
 - [ ] **AC14.** The output budget rests on the measured size of a real bundling rather than an assumed figure, as the recorded measurement shows.
+- [ ] **AC15.** The technical debt this initiative's delivery defers is fixed, as the Done column of its final epic's Work Breakdown shows.
 
 ## Non-Goals
 
