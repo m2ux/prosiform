@@ -78,14 +78,23 @@ make check
 | `make format-check` | That same Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That same Python type checks in strict mode. |
 | `make test` | The Python build's suite passes. A run that collects no test fails. |
-| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
+| `make harness` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
+| `make corpus` | Every fixture the corpus holds, run against the build under test, produces the result its manifest declares. A fixture declaring work a later epic delivers is reported as awaiting it; one that meets its manifest while awaiting fails, as does a run with no build configured. |
 | `make layout` | Each of the three trees holds a tracked file. |
 | `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`prototype/pyproject.toml`](prototype/README.md) declares, and nothing besides. |
 | `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
-The tools the first six call are pinned by [`prototype/uv.lock`](prototype/README.md); `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+The tools the first seven call are pinned by [`prototype/uv.lock`](prototype/README.md); `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+
+`make corpus` runs a build named by configuration rather than one it chooses, so one corpus binds every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a run resolves it from the fixture's own directory:
+
+```bash
+export PROSIFORM_BUILD="uv run --project $PWD/prototype --frozen prosiform"
+```
+
+There is no default and no fallback: with nothing configured the run fails rather than passing over the corpus, because a corpus run that skips sits inside a passing suite saying nothing.
 
 ## 📦 Installation
 

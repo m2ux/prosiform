@@ -39,7 +39,8 @@ The build's tests and static checks are named commands, run from the repository 
 | Command | Runs |
 | --- | --- |
 | `make test` | `pytest` over `tests/`. A run that collects no test exits 5, so a suite that discovers nothing fails. |
-| `make corpus` | `pytest` over `../checks/tests`, which validates every fixture manifest the corpus holds and exercises the runner that decides a fixture's result. The corpus is not this build, so it carries its own command. |
+| `make harness` | `pytest` over `../checks/tests`, which validates every fixture manifest the corpus holds and exercises the runner that decides a fixture's result. The corpus is not this build, so it carries its own commands. |
+| `make corpus` | `../checks/corpus.py` over every fixture the corpus holds, against the build `PROSIFORM_BUILD` names. This build reaches it as its console entry point, `prosiform`, so the corpus runs against the build a change produces rather than against the package it imports. |
 | `make lint` | `ruff check` over the package, its tests and `checks/`. |
 | `make format-check` | `ruff format --check` over those same files. Formatting is reported, not applied. |
 | `make typecheck` | `mypy` in strict mode over those same files. |

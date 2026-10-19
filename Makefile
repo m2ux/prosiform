@@ -10,6 +10,11 @@
 # run through it; the layout, table, link and vocabulary checks depend on the
 # standard library alone and run under `python3` directly.
 #
+# `make corpus` runs the corpus against a build named by configuration:
+# `PROSIFORM_BUILD` holds that build's command line, and the target fails
+# without one, so a fixture is never reported as holding against a build that
+# never ran.
+#
 # Every target below is named by a command table in one of the repository's
 # READMEs, which `make tables` holds true in both directions.
 
@@ -17,15 +22,18 @@ UV_RUN := uv run --project prototype --frozen
 TOOL_CONFIG := prototype/pyproject.toml
 PYTHON_SOURCES := prototype/src prototype/tests checks
 
-.PHONY: check test corpus lint format-check typecheck lock-check layout tables links vocabulary
+.PHONY: check test harness corpus lint format-check typecheck lock-check layout tables links vocabulary
 
-check: lock-check lint format-check typecheck test corpus layout tables links vocabulary
+check: lock-check lint format-check typecheck test harness corpus layout tables links vocabulary
 
 test:
 	cd prototype && uv run --frozen pytest
 
-corpus:
+harness:
 	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests
+
+corpus:
+	$(UV_RUN) python checks/corpus.py
 
 lint:
 	$(UV_RUN) ruff check --config $(TOOL_CONFIG) $(PYTHON_SOURCES)
