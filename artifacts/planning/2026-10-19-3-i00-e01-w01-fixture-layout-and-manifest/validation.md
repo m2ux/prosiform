@@ -55,7 +55,9 @@ The layout check counts eleven tracked files under `fixtures/`, so the corpus tr
 
 **Observes AC1, AC5.** The same command the developer calls runs on the branch.
 
-The Checks workflow ran `make check` on `483f06d4`, the head of pull request [#40](https://github.com/m2ux/prosiform/pull/40), and completed with conclusion `success`: [run 39200883663](https://github.com/m2ux/prosiform/actions/runs/39200883663). It is the one check the pull request carries.
+The Checks workflow ran `make check` on `483f06d4`, the head of pull request [#40](https://github.com/m2ux/prosiform/pull/40), and completed with conclusion `success`: [run 39200883663](https://github.com/m2ux/prosiform/actions/runs/39200883663). It is the one check that pull request carries.
+
+It ran again on `aef0bed3`, the head of pull request [#42](https://github.com/m2ux/prosiform/pull/42), and completed with conclusion `success`: [run 39201290041](https://github.com/m2ux/prosiform/actions/runs/39201290041).
 
 ## T1 Schema validation over a complete declaration
 
@@ -128,6 +130,26 @@ FAILED checks/tests/test_catalogue.py::test_the_catalogue_is_the_codes_the_desig
 ```
 
 Each deliberately broken tree was restored and `make corpus` run again, returning exit 0 and thirty passing tests.
+
+## T4 The build README against what it enumerates
+
+**Observes no criterion.** `prototype/README.md` enumerates the commands its checks run and the development dependencies the lockfile pins, so both tables must name what this task adds.
+
+```bash
+make check
+python3 checks/links.py --online prototype/README.md
+```
+
+**Pass.** Exit 0 from both. The named link command reads `README.md` alone, so the other four READMEs were checked by passing them to the script, and every reference in each resolved.
+
+```text
+ok   remote     https://pypi.org/project/jsonschema/
+ok   remote     https://pypi.org/project/types-jsonschema/
+
+link check: every reference resolved
+```
+
+The same run over `fixtures/README.md`, `checks/README.md`, `docs/README.md` and `prototype/README.md` together reported `link check: every reference resolved` at exit 0, so no unresolvable reference ships in a document the named command does not read.
 
 ## Where each code comes from
 
