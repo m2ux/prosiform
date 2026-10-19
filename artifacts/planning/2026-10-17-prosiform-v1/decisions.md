@@ -374,9 +374,21 @@ The modelled cost of the shipping slice falls from about fifteen row-equivalents
 
 The derived priority map ranks by prerequisite depth. It places Deferred Debt in the first set, because the rows deferred so far name only closed work, and it places Destination Identity there too, because no whole-epic edge holds it even though no row of it is free. Depth is not the whole of the reason an epic runs when it does.
 
-The map is therefore set as Outline Hierarchy, Dependency Closure and Field Deployment at 6; Destination Identity at 5; Candidate Validation at 4; the Validation Gate and Outline and Closure Completion at 3; Corpus Conformance at 2; Deferred Debt at 1. Field Deployment joins the first set on the strength of one free row and finishes as the rest of the chain reaches it. Deferred Debt is last because its epic exists to be cleared after delivery, which no edge states.
+The map is therefore set as Outline Hierarchy, Dependency Closure and Field Deployment at 7; Destination Identity at 6; Candidate Validation at 5; the Validation Gate at 4; Outline and Closure Completion at 3; Corpus Conformance at 2; Deferred Debt at 1. The separation of the last two is [D38](#d38--a-priority-set-asserts-concurrency-and-the-components-decide-whether-it-holds)'s. Field Deployment joins the first set on the strength of one free row and finishes as the rest of the chain reaches it. Deferred Debt is last because its epic exists to be cleared after delivery, which no edge states.
 
 The alternative was to encode the intended order as dependency edges so the derivation would produce it. It was refused for the reason recorded in [D35](#d35--the-initiative-row-gates-only-what-every-row-needs).
+
+## D38 — A Priority Set Asserts Concurrency, and the Components Decide Whether It Holds
+
+Epics sharing a priority number are Ready together, and since a task row is gated by what it names rather than by its epic, the members of one set run their internal sequences in parallel. That is an assertion about what can proceed at once, and prerequisite depth, which is all the derivation reads, cannot establish it. Two epics that extend one module are as independent as any other pair to a map built from edges.
+
+Each remaining row is therefore read against the component its work item says it implements. Ten of the twenty-eight extend bundle assembly, spread across Outline Hierarchy, Destination Identity, the Validation Gate and Outline and Closure Completion. Six are the closure module, which is one epic's alone. Three are the source model, three the command surface, one the diagnostic stream, three the packaging and documentation.
+
+Two epics of one set may not both hold rows that extend one component. The Validation Gate and Outline and Closure Completion shared a number and each opened on a bundle assembly row, so they are separated and the numbers above them move up by one. The command surface is written by rows of three epics, two of them in the first set; that contention is left standing, because those rows add independent options to a file rather than restructuring one, and the measure is the file while the conflict is the region.
+
+The alternative was to cut epics by component rather than by behaviour. It was refused because the criteria state behaviour, and an epic whose rows share a module but no criterion cannot say what its closure establishes.
+
+This was found by reading every work item by hand after the map had been applied to the tracker. Nothing in the plan, the dependency check or the board reported it, which is [m2ux/workflow-server#1461](https://github.com/m2ux/workflow-server/issues/1461).
 
 ## Evidence
 
