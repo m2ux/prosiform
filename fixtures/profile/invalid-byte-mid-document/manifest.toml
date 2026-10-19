@@ -1,0 +1,21 @@
+description = "A source whose undecodable byte sits below its first section fails like one whose byte sits at its head, so the encoding requirement is a property of the whole document rather than of its opening bytes."
+
+clauses = [
+  "Markdown and source-heading profile — Encoding, require valid UTF-8",
+  "Validation and failure contract — Preservation",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_ENCODING"
+reference = "guide.md"
+source = "guide.md"
