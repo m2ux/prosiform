@@ -397,7 +397,7 @@ Non-Markdown resource links are not opened as source dependencies. They remain g
 
 A relative image or other non-Markdown reference is text. It is emitted byte-identical to its source and never opened, rebased or resolved, so a bundle read from somewhere other than its source directory may not find it.
 
-Warn on stderr with `W_RESOURCE_PORTABILITY` that resource portability is not guaranteed. A successful Markdown bundling establishes nothing about the resources its text mentions, and the warning does not turn a successful run into a failure.
+A bundle carrying at least one resource reference warns on stderr with `W_RESOURCE_PORTABILITY` that resource portability is not guaranteed. A successful Markdown bundling establishes nothing about the resources its text mentions, and the warning does not turn a successful run into a failure. A bundle whose text mentions no resource carries nothing to warn about and emits the warning not at all.
 
 Rebasing a resource path means deciding where the bundle will be read from, which is the caller's question rather than the tool's. Nothing here maps a resource to a URL, so the tool holds no notion of a web address at all.
 
