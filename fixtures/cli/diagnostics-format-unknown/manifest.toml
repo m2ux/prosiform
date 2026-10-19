@@ -1,0 +1,19 @@
+description = "A diagnostic format the contract does not declare is refused as invalid usage, and the run publishes nothing."
+
+clauses = [
+  "CLI contract — --diagnostics takes text or json",
+  "CLI contract — a command line the grammar does not admit",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+root = "source"
+arguments = ["--diagnostics", "yaml", "guide.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
