@@ -115,6 +115,22 @@ def test_a_title_the_path_already_names_is_absorbed() -> None:
     assert carried.headings == ("guide", "Run")
 
 
+def test_a_path_segment_is_slugged_as_the_title_it_is_compared_with_is() -> None:
+    carried = grouped("My Note.md", "# My Note\n\n## Run\n\nDo it.\n")
+    assert carried.text == "# My Note\n\n## Run\n\nDo it."
+    assert carried.headings == ("My Note", "Run")
+
+
+def test_a_hyphenated_segment_absorbs_the_title_spelling_it_with_spaces() -> None:
+    carried = grouped("docs/my-note.md", "# My Note\n\n## Run\n")
+    assert carried.text == "# docs/my-note\n\n## Run"
+
+
+def test_a_title_naming_another_segment_of_the_path_is_not_absorbed() -> None:
+    carried = grouped("docs/note.md", "# Docs\n\n## Run\n")
+    assert carried.text == "# docs/note\n\n## Docs\n\n### Run"
+
+
 def test_an_absorbed_group_keeps_its_source_heading_levels() -> None:
     text = "# Guide\n\n## Run\n\n### Detail\n"
     assert grouped("guide.md", text).text == "# guide\n\n## Run\n\n### Detail"

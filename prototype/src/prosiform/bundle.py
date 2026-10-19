@@ -24,8 +24,11 @@ indent, a delimiter keeps its trailing spaces and a code example keeps
 its bytes.
 
 The file heading absorbs the source's first heading when that heading is
-the document's only H1 and its slug equals the final segment of the
-path, because the file heading already names it. A group whose title is
+the document's only H1 and its slug equals the slug of the final segment
+of the path, because the file heading already names it. Both sides are
+slugged, so the capitalization and spacing a filesystem carries decide
+nothing and a document at `My Note.md` titled `My Note` is absorbed as
+one at `my-note.md` is. A group whose title is
 absorbed keeps its source heading levels; every other group moves each
 emitted heading down one level, the file heading taking the level that
 makes room. A heading a retained container carries is shifted where it
@@ -180,7 +183,9 @@ def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
 
     A title the path already names is absorbed: the document's first
     heading, where that heading is its only H1, sits at the document
-    level, and slugs to the final segment of the file heading's path.
+    level, and slugs to what the final segment of the file heading's
+    path slugs to. The segment is slugged as the title is, so a
+    filesystem's capitalization and spacing decide nothing.
     """
     carried = list(headings(tokens))
     if not carried:
@@ -190,7 +195,7 @@ def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
         return None
     if not any(token is opening for token in regions(tokens)):
         return None
-    if slug(visible(inline)) != final_segment(title):
+    if slug(visible(inline)) != slug(final_segment(title)):
         return None
     return opening
 
