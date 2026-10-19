@@ -66,6 +66,8 @@ link check: every reference resolved
 
 The Checks workflow ran `make check` on `0e3d191a`, the head of pull request [#43](https://github.com/m2ux/prosiform/pull/43), and completed with conclusion `success`: [run 39207149283](https://github.com/m2ux/prosiform/actions/runs/39207149283). It is the one check that pull request carries.
 
+It ran again on `0fc8699a`, the merge commit on the epic base `i00/e01/main`, and completed with conclusion `success`: [run 39207334410](https://github.com/m2ux/prosiform/actions/runs/39207334410).
+
 ## T1 A fixture decided from its manifest and files
 
 **Observes AC2.** The runner reads one fixture's manifest, runs the configured build against its source tree, and returns a verdict from the declaration and the fixture's files.
