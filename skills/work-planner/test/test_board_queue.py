@@ -243,6 +243,12 @@ class Queue(unittest.TestCase):
                     [pr(9, '[I01:E00] Go', merged='2026-01-01T00:00:00Z')])
         self.assertNotIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
 
+    def test_an_epic_with_no_table_is_reported_and_leaves_the_queue_running(self):
+        current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''))
+        broken = issue(2, '[I01:E00] Broken: Work', body='## Work Breakdown\n\nTBD\n')
+        out = queue(staged((current, 'In Progress'), (broken, 'Backlog')))
+        self.assertIn('Work Breakdown has no table', out)
+
     def test_an_open_question_keeps_the_next_epic_in_backlog(self):
         current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''))
         asking = epic(2, '01:E00', ('W01', 'Go', ''), questions='Which shape?')
