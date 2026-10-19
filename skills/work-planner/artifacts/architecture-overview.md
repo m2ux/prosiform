@@ -4,7 +4,7 @@ The architecture overview explains one pull request's changes to the engineer wh
 
 ## Operations
 
-### Populate Architecture Overview
+### *Populate* Architecture Overview
 
 One architecture overview from supplied measurements.
 

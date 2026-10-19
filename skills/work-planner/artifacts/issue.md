@@ -4,7 +4,7 @@ A tracker issue: its identity, saved body, metadata, discussion and closure stat
 
 ## Operations
 
-### Read Tracker Issue
+### *Read* Tracker Issue
 
 The current issue, its saved body and discussion.
 
@@ -13,7 +13,7 @@ The current issue, its saved body and discussion.
 1. Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
 2. Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
 
-### Save Tracker Issue
+### *Save* Tracker Issue
 
 One populated body and its metadata, written to the tracker.
 
@@ -27,7 +27,7 @@ One populated body and its metadata, written to the tracker.
 6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
 7. Compare the saved fields with the intended body and metadata.
 
-### Close Tracker Issue
+### *Close* Tracker Issue
 
 Verified completion of an issue and its linked delivery.
 
@@ -43,7 +43,7 @@ Verified completion of an issue and its linked delivery.
    - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
 5. Run [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
-### Close Transferred Work
+### *Close* Transferred Work
 
 An issue whose work is tracked by another issue.
 
@@ -54,7 +54,7 @@ An issue whose work is tracked by another issue.
 3. Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
 4. Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
 
-### Comment on Issue
+### *Comment* on Issue
 
 The supplied discussion text saved on one issue.
 
@@ -66,7 +66,7 @@ The supplied discussion text saved on one issue.
    - For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
 3. Return the saved comment URL.
 
-### Close as Completed
+### *Close* as Completed
 
 An issue closed after its final evidence check.
 
@@ -79,7 +79,7 @@ An issue closed after its final evidence check.
 5. Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
 6. Return the saved state or failure.
 
-### Capture Issue Development
+### *Capture* Issue Development
 
 The issue's current content and complete Development snapshot.
 
@@ -91,7 +91,7 @@ The issue's current content and complete Development snapshot.
 3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
 4. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
-### Read Issue Development
+### *Read* Issue Development
 
 The Development links observed for one issue through authenticated GitHub.
 
@@ -100,7 +100,17 @@ The Development links observed for one issue through authenticated GitHub.
 1. Read every page and state, across repositories, recording each linked pull request's identity.
 2. Return the observed links and whether the entire field was readable.
 
-### Read Repository Issues
+### *Confirm* Repository Auto-Close
+
+Whether the repository auto-closes issues whose linked pull requests merge, established for this session.
+
+**Inputs:** Repository and authenticated access.
+
+1. Read the setting where the authenticated API exposes it, and take a read value as the answer.
+2. Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
+3. Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
+
+### *Read* Repository Issues
 
 The issue collection used for repository-wide selection.
 
@@ -109,7 +119,7 @@ The issue collection used for repository-wide selection.
 1. Run [Fetch All Issues](#fetch-all-issues), saving the complete collection.
 2. Return it with pull requests distinguishable from issues.
 
-### Locate Initiative Issue
+### *Locate* Initiative Issue
 
 The tracker identity matching one initiative prefix.
 
@@ -118,7 +128,7 @@ The tracker identity matching one initiative prefix.
 1. Run [Find Initiative Issue](#find-initiative-issue) with the supplied repository and prefix.
 2. Return its issue number or an unresolved identity.
 
-### Select Tracker Number
+### *Select* Tracker Number
 
 The next unused number for one prefixed issue kind in the repository.
 
@@ -136,6 +146,14 @@ The next unused number for one prefixed issue kind in the repository.
 - **Discussion.** A saved comment preserves the supplied text.
 - **State.**
   The issue is open or closed with its recorded completion reason. Completed work satisfies its criteria and delivery checks; transferred work identifies the issue tracking it.
+
+### Auto-Close Setting
+
+GitHub's **Auto-close issues with merged linked pull requests** repository setting, which must be disabled before a delivery pull request is linked or merged, so that closure follows the criteria rather than the merge.
+
+- The setting is confirmed per repository and holds for the session; it is not inferred from an issue that stayed open.
+- No REST field and no GraphQL field of `gh` 2.46 carries it, so on such a host the user's explicit answer is the only source.
+- An enabled setting closes issues on merge whatever their criteria. Where it cannot be disabled, each affected issue's state is read after every merge and reopened where its criteria are unmet.
 
 ## Commands
 

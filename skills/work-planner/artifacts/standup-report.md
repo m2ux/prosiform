@@ -4,7 +4,7 @@ A board progress report for a selected window, formatted for pasting into Slack.
 
 ## Operations
 
-### Compose Standup Report
+### *Compose* Standup Report
 
 The copyable report and any missing-evidence findings.
 

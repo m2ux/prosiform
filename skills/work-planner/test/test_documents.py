@@ -11,7 +11,7 @@ import check_skill_files as checker
 
 class DocumentInterfaces(unittest.TestCase):
     def test_prerequisites_match_direct_required_reads(self):
-        for folder in ('modes', 'artifacts'):
+        for folder in ('modes', 'artifacts', 'protocols'):
             for path in sorted((ROOT / folder).glob('*.md')):
                 with self.subTest(file=path.name):
                     lines, fenced, headings = checker.scan(path)
@@ -31,10 +31,11 @@ class DocumentInterfaces(unittest.TestCase):
                             continue
                         if sections[i] == 'Prerequisites':
                             declared.add(destination)
-                        elif sections[i] in ('Procedure', 'Operations', 'Fields', 'Outcomes', 'Commands'):
+                        elif sections[i] in ('Procedure', 'Operations', 'Fields',
+                                             'Outcomes', 'Commands'):
                             used.add(destination)
                         if folder == 'artifacts':
-                            self.assertNotEqual(destination.parent.name, 'modes', target)
+                            self.assertNotIn(destination.parent.name, ('modes', 'protocols'), target)
                     self.assertEqual(declared, used)
 
     def test_artifact_operations_expose_inputs_and_consecutive_steps(self):
@@ -50,6 +51,10 @@ class DocumentInterfaces(unittest.TestCase):
                     end = next((i for i, depth, _ in headings[position + 1:] if depth <= 3), len(lines))
                     body = lines[start + 1:end]
                     self.assertGreaterEqual(len(title.split()), 3)
+                    # The leading verb is italicised and nothing else is, so the
+                    # anchors one procedure reaches read as its IO contract.
+                    self.assertRegex(title, r'^\*[A-Z][a-z]+\* \S')
+                    self.assertEqual(title.count('*'), 2, title)
                     self.assertTrue(any(line.startswith('**Inputs:**') for line in body))
                     numbers = [int(m[1]) for line in body if (m := re.match(r'^(\d+)\. ', line))]
                     if numbers:
@@ -65,4 +70,66 @@ class DocumentInterfaces(unittest.TestCase):
             lines, fenced, _ = checker.scan(path)
             for _, target in checker.targets(path, lines, fenced):
                 name = target.partition('#')[0]
-                self.assertNotIn((path.parent / name).resolve().parent.name, ('modes', 'artifacts'))
+                self.assertNotIn((path.parent / name).resolve().parent.name,
+                                 ('modes', 'artifacts', 'protocols'))
+
+    def test_link_text_names_no_dissolved_document(self):
+        """Link text naming a document outlives the document. `Work Breakdown
+        Guide` survived the reference it named by a year, on an anchor that
+        pointed at neither rule its sentences invoked."""
+        nouns = ('guide', 'manual', 'handbook', 'specification')
+        titles = set()
+        for folder in ('modes', 'artifacts', 'protocols', 'references'):
+            for path in (ROOT / folder).glob('*.md'):
+                for _, _, title in checker.scan(path)[2]:
+                    titles.add(title.strip().lower().replace('*', ''))
+        for folder in ('modes', 'artifacts', 'protocols', 'references'):
+            for path in sorted((ROOT / folder).glob('*.md')):
+                for text in re.findall(r'\[([^\]]+)\]\([^)\s]*#[a-z0-9-]+\)',
+                                       path.read_text()):
+                    if text.strip().lower().endswith(nouns):
+                        with self.subTest(file=path.name, text=text):
+                            self.assertIn(text.strip().lower(), titles)
+
+    def test_every_operation_and_protocol_is_reached(self):
+        """An operation exists because a procedure calls it. Splitting one
+        document into many invents surface on the way, so the orphan is the
+        thing to look for, not only the dropped link."""
+        folders = ('modes', 'artifacts', 'protocols', 'references')
+        cited, operations, protocols = set(), {}, set()
+        for name in ('SKILL.md', 'guidelines.md'):
+            cited |= set(re.findall(r'\]\(([^)\s]+)\)', (ROOT / name).read_text()))
+        for folder in folders:
+            for path in sorted((ROOT / folder).glob('*.md')):
+                cited |= set(re.findall(r'\]\(([^)\s]+)\)', path.read_text()))
+                if folder == 'protocols':
+                    protocols.add(path.name)
+                section = None
+                for _, level, title in checker.scan(path)[2]:
+                    if level == 2:
+                        section = title
+                    elif level == 3 and section == 'Operations':
+                        operations[checker.anchor_of(title)] = f'{folder}/{path.name}'
+        fragments = {t.rpartition('#')[2] for t in cited if '#' in t}
+        files = {t.rpartition('/')[2] for t in cited}
+        for anchor, where in sorted(operations.items()):
+            with self.subTest(operation=anchor, file=where):
+                self.assertIn(anchor, fragments)
+        for name in sorted(protocols):
+            with self.subTest(protocol=name):
+                self.assertIn(name, files)
+
+    def test_protocols_are_entered_whole(self):
+        """A protocol is one coordinated sequence, so a caller runs the file
+        rather than reaching into a step of it."""
+        for folder in ('modes', 'protocols'):
+            for path in sorted((ROOT / folder).glob('*.md')):
+                lines, fenced, _ = checker.scan(path)
+                for _, target in checker.targets(path, lines, fenced):
+                    name, _, fragment = target.partition('#')
+                    if not name:
+                        continue
+                    destination = (path.parent / name).resolve()
+                    if destination.parent.name == 'protocols' and destination != path:
+                        with self.subTest(file=path.name, target=target):
+                            self.assertEqual(fragment, '')

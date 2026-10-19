@@ -4,7 +4,7 @@ An initiative's epic delivery, criterion verification and completion state.
 
 ## Operations
 
-### Check Initiative Completion
+### *Check* Initiative Completion
 
 The initiative's normal delivery result before tracker closure.
 

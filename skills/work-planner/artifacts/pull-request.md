@@ -7,10 +7,11 @@ A pull request's identity, head and base, issue links, review state and merge re
 Read these files first.
 
 - [Issue](issue.md)
+- [Delivery Branches](delivery-branches.md)
 
 ## Operations
 
-### Merge Delivery Pull Request
+### *Merge* Delivery Pull Request
 
 One task or epic pull request's merge result, or its handoff for human approval.
 
@@ -26,7 +27,7 @@ One task or epic pull request's merge result, or its handoff for human approval.
    - If the merge is refused, return the refusal to the caller for fresh verification.
 3. Return the merge result, including its merge commit when supplied, for the caller's readback.
 
-### Access Development Links
+### *Access* Development Links
 
 The observed or updated Development relation for a pull request.
 
@@ -35,7 +36,7 @@ The observed or updated Development relation for a pull request.
 1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
 2. Return the complete relation for a read-only request.
 3. For a link edit:
-   - Confirm the supplied repository prerequisite by observing the setting or obtaining the user's explicit confirmation; an absent API field is unknown.
+   - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
    - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
    - For removal of an abandoned or incorrect link:
      - Require the supplied user decision.
@@ -44,7 +45,7 @@ The observed or updated Development relation for a pull request.
 5. Compare the field with the intended edit.
 6. Return the verified relation or discrepancy.
 
-### Fetch Pull Request Issue Links
+### *Fetch* Pull Request Issue Links
 
 The complete issue-link snapshot for a supplied set of pull requests.
 
@@ -56,7 +57,7 @@ The complete issue-link snapshot for a supplied set of pull requests.
 4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
 5. Return the snapshot for the scripts' `--links` input.
 
-### Link Pull Request to Issue
+### *Link* Pull Request to Issue
 
 The verified delivery-issue relation for a pull request.
 
@@ -67,7 +68,7 @@ The verified delivery-issue relation for a pull request.
 3. Run [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
 4. Return the verified relation and refreshed snapshot.
 
-### Merge Epic Pull Request
+### *Merge* Epic Pull Request
 
 The epic's verified merge into its long-lived target.
 
@@ -79,7 +80,7 @@ The epic's verified merge into its long-lived target.
 4. Confirm the merged state, merge commit, verified head and target.
 5. Return the result or discrepancy.
 
-### Fetch All Initiative Pull Requests
+### *Fetch* All Initiative Pull Requests
 
 The pull request collection covering every supplied board repository.
 
@@ -91,7 +92,7 @@ The pull request collection covering every supplied board repository.
 4. If any fetch failed, return incomplete evidence.
 5. Return the complete collection only after every fetch succeeds.
 
-### Read Initiative Pull Requests
+### *Read* Initiative Pull Requests
 
 The current delivery pull requests for one initiative.
 
@@ -100,7 +101,7 @@ The current delivery pull requests for one initiative.
 1. Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
 2. Return the collection or an incomplete-fetch finding.
 
-### Read Pull Request State
+### *Read* Pull Request State
 
 One current pull request and its requested supporting records.
 
@@ -110,7 +111,7 @@ One current pull request and its requested supporting records.
 2. Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
 3. Return the snapshots or missing evidence.
 
-### Publish Pull Request
+### *Publish* Pull Request
 
 One pull request created or updated from supplied content and metadata.
 
@@ -121,7 +122,7 @@ One pull request created or updated from supplied content and metadata.
 3. Re-read through [Read Pull Request State](#read-pull-request-state).
 4. Return the saved state or discrepancy.
 
-### Locate Review Pull Request
+### *Locate* Review Pull Request
 
 The review pull request for a supplied epic base.
 
@@ -130,7 +131,7 @@ The review pull request for a supplied epic base.
 1. Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
 2. Return its number or an absent-review finding.
 
-### Read Head Evidence
+### *Read* Head Evidence
 
 The check-run and status evidence for one literal head commit.
 
@@ -139,6 +140,41 @@ The check-run and status evidence for one literal head commit.
 1. Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
 2. Run [Fetch Head Status](#fetch-head-status) for the same SHA.
 3. Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
+
+### *Merge* Task Pull Requests
+
+Merges each open task pull request whose test plan has passed.
+
+**Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
+
+1. Run [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close) for the repository, and confirm the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
+2. Run [Update Epic Base](delivery-branches.md#update-epic-base).
+   - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
+   - Run [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
+   - Stop on a handoff for human approval.
+   - If the merge is refused:
+     - Run [Update Task Branch](delivery-branches.md#update-task-branch).
+     - Repeat Fetch Merge Readiness for the updated task head.
+     - Retry Merge Delivery Pull Request once with that verified evidence. A conflict or repeated refusal leaves the pull request open with the blocker reported.
+3. Run [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
+   - Return that result to the caller.
+
+### *Fetch* Merge Readiness
+
+The current pull request's readiness against its target requirements and head checks.
+
+**Inputs:** Pull request identity, its target branch, and the protection, rules, check and status output paths.
+
+1. Run [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
+   - Retain the literal head SHA and target branch for the evidence calls.
+2. Call [Read Target Requirements](delivery-branches.md#read-target-requirements) with the repository, target and protection/rules output paths.
+   - Carry any unresolved requirement into the readiness result.
+3. Read the head evidence.
+   - Call [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
+   - Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A missing or pending check, blocked merge state or unmet required review leaves readiness unresolved.
+4. Run [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
+   - Compare its head with the retained SHA; a changed head requires fresh evidence.
+   - Return the verified head, target requirements and readiness result, including unresolved conditions.
 
 ## Fields
 
