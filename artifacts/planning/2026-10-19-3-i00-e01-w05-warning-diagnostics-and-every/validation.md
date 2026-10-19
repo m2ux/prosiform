@@ -248,6 +248,8 @@ link check: every reference in 6 document(s) resolved
 vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 20 source(s)
 ```
 
+The same set runs again on the epic base once the pull request merges. [Run 39221989302](https://github.com/m2ux/prosiform/actions/runs/39221989302) on `bf4ae98304ad1bd21e195112eb2ca966e7d39c4e`, the merge commit on `i00/e01/main`, concluded `success`. That revision's tree is identical to the tested head's, because the base carried no change between the branch point and the merge, so every run above is a run against the merged content.
+
 ## What these checks do not establish
 
 - **No fixture has been run.** There is no build under test, so the corpus checks validate manifests and exercise the runner's comparison against synthetic runs. That a warning may be declared is established; that a run emits one is not, and cannot be until a build exists.
