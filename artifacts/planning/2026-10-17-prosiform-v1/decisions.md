@@ -46,7 +46,7 @@ The user declined two offered amendments: dropping G7 as a planning rather than 
 
 ## D6 — The Prototype Parses With markdown-it-py
 
-The Python build parses with `markdown-it-py`. `I00:E01:W02` configures it to the declared profile rather than selecting a parser.
+The Python build parses with `markdown-it-py`. `I00:E02:W02` configures it to the declared profile rather than selecting a parser.
 
 The profile needs pipe tables, double-tilde strikethrough, source task-list markers preserved without checkbox generation, and typographic substitution disabled. `markdown-it-py` is CommonMark-compliant, supplies pipe tables and strikethrough as core rules enabled by name, preserves source task-list markers by leaving the task-list plugin out, holds typographic substitution off by default, and exposes a token stream whose structure is the closest Python analogue to `pulldown-cmark`'s event model. That similarity matters beyond convenience: profile reasoning that holds for one build reads across to the other, so a divergence between them is more likely a defect than a difference in how each parser frames the same document.
 
