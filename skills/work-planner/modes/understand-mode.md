@@ -23,7 +23,7 @@ The main path meets [Outcomes](#outcomes).
    - For several supplied pull requests, complete one overview per pull request. An initiative has no overview of its own.
    - Read the pull request identity, title, base and verified head through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
 2. **Prepare the evidence.**
-   Call [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree) with the repository checkout, pull request number, verified head and worktree path.
+   Call [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree) with the repository checkout, pull request number and verified head.
    - On a changed-head finding:
      - Repeat Read Pull Request State for the same pull request.
      - Repeat Create Pull Request Worktree using its new verified head.

@@ -74,19 +74,20 @@ The worktree and branch one unit's session works in.
 
 The detached worktree where the graph reads the reviewed change.
 
-**Inputs:** Repository checkout, pull request number, verified head commit and worktree path.
+**Inputs:** Repository checkout, pull request number and verified head commit.
 
 1. Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
 2. Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
 3. If it differs from the verified head, return a changed-head finding before creating a worktree.
-4. If the supplied worktree already exists:
+4. Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
+5. If that worktree already exists:
    - Run Read Checkout Revision there for `HEAD`.
    - Run [Read Checkout Status](#read-checkout-status) there.
    - Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
    - Otherwise retain it and select an unused path suffixed with the verified commit.
-5. For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
-6. Confirm its HEAD through Read Checkout Revision.
-7. Return the selected detached worktree path and head, or the discrepancy before measuring.
+6. For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
+7. Confirm its HEAD through Read Checkout Revision.
+8. Return the selected detached worktree path and head, or the discrepancy before measuring.
 
 ### *Read* Target Requirements
 
@@ -129,9 +130,18 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - Every pull request delivering the epic's tasks targets that epic base.
 - A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
 
+### Review Worktrees
+
+A reviewed pull request is read in a detached worktree, named by its number under the worktree directory of the repository's main working tree.
+
+- **Example.**
+  Pull request 950 is read at `.worktrees/pr-950`.
+
 ### Task Branches
 
 A unit's task branch is cut from the epic base for the long-lived branch the unit changes, named for its initiative, epic and first task in lowercase separated by slashes, and hyphenated with a slug of at most four words from its Description when one exists: `i01/e02/w04-write-defaults`. Every pull request delivering the unit's work is opened from this branch.
+
+Its worktree is named by that branch under the worktree directory of the repository's main working tree.
 
 ## Commands
 
@@ -231,6 +241,8 @@ Creates a task branch and worktree at the fetched epic base.
 
 **Inputs:** Project checkout, worktree path, task branch, fetched epic base and confirmed prerequisite evidence.
 
+- The path resolves against the directory the command runs in, so supply it as [Task Branches](#task-branches) anchors it rather than relative to a linked worktree.
+
 ```bash
 git worktree add '<worktree-path>' -b '<task-branch>' 'origin/<epic-base>'
 ```
@@ -280,6 +292,8 @@ git worktree add .worktrees/i07/e00/main i07/e00/main
 Creates a detached worktree at the fetched review head.
 
 **Inputs:** Repository checkout, worktree path and fetched head commit.
+
+- The path resolves against the directory the command runs in, so supply it as [Review Worktrees](#review-worktrees) anchors it rather than relative to a linked worktree.
 
 ```bash
 git worktree add --detach '<worktree-path>' '<head-commit>'
