@@ -64,7 +64,7 @@ link check: every reference resolved
 
 **Observes AC2, AC3.** The same command the developer calls runs on the branch.
 
-Recorded after the pull request's check completed; see [Continuous integration](#continuous-integration-result).
+The Checks workflow ran `make check` on `0e3d191a`, the head of pull request [#43](https://github.com/m2ux/prosiform/pull/43), and completed with conclusion `success`: [run 39207149283](https://github.com/m2ux/prosiform/actions/runs/39207149283). It is the one check that pull request carries.
 
 ## T1 A fixture decided from its manifest and files
 
@@ -185,10 +185,6 @@ produced b'# Guide\n'
 **Finding: none.** No implementation-specific assumption was found. One contract-level obligation is deliberate and recorded: whatever configuration names must accept `--root DIR` and `--diagnostics json`. That is the contract every build implements, not a property of one of them.
 
 **The mechanical guard.** `test_the_runner_names_no_implementation_or_language` reads `checks/runner.py` and fails on any of `python`, `pytest`, `pyproject`, `prototype`, `cargo`, `rust`, `node`, `npm`, `src/prosiform` or `import prosiform`. The module carries no shebang, so the guard is not satisfied trivially. `PROSIFORM_BUILD` names the product, which both builds are, rather than an implementation of it.
-
-## Continuous integration result
-
-Recorded below once the pull request's Checks run completed.
 
 ## What the checks do not establish
 
