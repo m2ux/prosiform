@@ -239,4 +239,21 @@ Reverted.
 
 **Observes AC2, AC8.** The same set, run by the `Checks` workflow on the pushed head rather than on a working copy.
 
-**Not run at the time of writing.** Recorded below once the workflow reports on `9135521`.
+```bash
+gh run view 39239212555 --repo m2ux/prosiform --log
+```
+
+**Pass.** Conclusion `success`, head `913552159943eef1574a2e594ef1896322194405`, which is the revision tested above and the head the pull request merges from.
+
+```text
+Resolved 22 packages in 0.65ms
+All checks passed!
+22 files already formatted
+Success: no issues found in 21 source files
+170 passed in 0.36s
+95 passed in 0.53s
+layout check: 3 tree(s) present
+table check: 11 command(s) and 7 declaration(s), each declared by the project and named by a table
+link check: every reference in 6 document(s) resolved
+vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 20 source(s)
+```
