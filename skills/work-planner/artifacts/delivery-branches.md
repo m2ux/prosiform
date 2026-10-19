@@ -4,7 +4,7 @@ The long-lived branches, epic bases and task branches used for delivery.
 
 ## Operations
 
-### Prepare Delivery Bases
+### *Prepare* Delivery Bases
 
 The branches a task pull request targets.
 
@@ -18,7 +18,7 @@ The branches a task pull request targets.
 4. Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
 5. Run [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
-### Create Task Branch
+### *Create* Task Branch
 
 One unit's branch and worktree, rooted in its epic base.
 
@@ -27,7 +27,7 @@ One unit's branch and worktree, rooted in its epic base.
 1. Take the caller's confirmed prerequisite evidence, branch, worktree and selected base as inputs.
 2. Run [Create Task Worktree](#create-task-worktree) with those paths and names, meeting [Task Branches](#task-branches).
 
-### Update Delivery Branch
+### *Update* Delivery Branch
 
 The current upstream content in a delivery branch.
 
@@ -36,7 +36,7 @@ The current upstream content in a delivery branch.
 1. When the selected branch is an epic base, run [Update Epic Base](#update-epic-base) in its worktree with its long-lived target.
 2. When the selected branch is a task branch, run [Update Task Branch](#update-task-branch) in its worktree with the task branch name and epic base. A conflict stops the operation and is reported.
 
-### Create Epic Base
+### *Create* Epic Base
 
 The missing epic branch rooted in its remote long-lived branch.
 
@@ -48,7 +48,7 @@ The missing epic branch rooted in its remote long-lived branch.
    - Run [Publish Epic Base](#publish-epic-base) with that remote source and the missing epic base name, such as `i07/e00/main`, meeting [Epic Bases](#epic-bases).
    - Return the created branch or the failure.
 
-### Update Epic Base
+### *Update* Epic Base
 
 The current long-lived target merged into an epic base.
 
@@ -61,7 +61,7 @@ The current long-lived target merged into an epic base.
    - Run [Push Epic Base](#push-epic-base) in the same worktree.
    - Return the updated branch or the failure.
 
-### Update Task Branch
+### *Update* Task Branch
 
 The current epic base merged into a unit's task branch.
 
@@ -74,7 +74,7 @@ The current epic base merged into a unit's task branch.
    - Run [Push Task Branch](#push-task-branch) with the task branch as destination.
    - Return the updated branch or the failure.
 
-### Create Task Worktree
+### *Create* Task Worktree
 
 The worktree and branch one unit's session works in.
 
@@ -86,7 +86,7 @@ The worktree and branch one unit's session works in.
 4. Run [Add Task Worktree](#add-task-worktree) with the supplied path and task branch, rooted in the fetched epic base.
 5. Return the worktree path and branch or the failure.
 
-### Create Pull Request Worktree
+### *Create* Pull Request Worktree
 
 The detached worktree where the graph reads the reviewed change.
 
@@ -104,7 +104,7 @@ The detached worktree where the graph reads the reviewed change.
 6. Confirm its HEAD through Read Checkout Revision.
 7. Return the selected detached worktree path and head, or the discrepancy before measuring.
 
-### Read Target Requirements
+### *Read* Target Requirements
 
 The protection and active rules governing one target branch.
 
@@ -114,7 +114,7 @@ The protection and active rules governing one target branch.
 2. Run [Fetch Active Branch Rules](#fetch-active-branch-rules) for the same target.
 3. Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
 
-### Read Delivery Branches
+### *Read* Delivery Branches
 
 The configured long-lived branches and existing epic bases.
 

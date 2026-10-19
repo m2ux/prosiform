@@ -10,7 +10,7 @@ Read these files first.
 
 ## Operations
 
-### Populate Pull Request Body
+### *Populate* Pull Request Body
 
 One pull request body from supplied change and validation evidence.
 
@@ -21,7 +21,7 @@ One pull request body from supplied change and validation evidence.
 2. Verify each result link against [Test Plan](#test-plan) before publishing the body.
 3. Return the complete body file and any unresolved evidence links to the caller for publication.
 
-### Populate Review Body
+### *Populate* Review Body
 
 The current change carried by one epic base.
 
@@ -34,7 +34,7 @@ The current change carried by one epic base.
    - Cite the merged task pull request as the next reference.
 3. Return the complete updated body file to the caller.
 
-### Link Architecture Overview
+### *Link* Architecture Overview
 
 One pull request body referencing its published overview.
 

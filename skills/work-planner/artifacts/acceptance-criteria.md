@@ -12,7 +12,7 @@ Read these files first.
 
 ## Operations
 
-### Verify Selected Criteria
+### *Verify* Selected Criteria
 
 The verification evidence for a supplied set of criteria whose delivery is ready.
 
@@ -25,7 +25,7 @@ The verification evidence for a supplied set of criteria whose delivery is ready
 3. Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
    - Leave body publication and further planning to the caller.
 
-### Tick Verified Criteria
+### *Tick* Verified Criteria
 
 The confirmed criteria and completed rows recorded in an epic or initiative body.
 

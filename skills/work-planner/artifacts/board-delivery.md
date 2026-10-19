@@ -13,7 +13,7 @@ Read these files first.
 
 ## Operations
 
-### Plan Board Changes
+### *Plan* Board Changes
 
 The board changes implied by supplied delivery state.
 
@@ -23,7 +23,7 @@ The board changes implied by supplied delivery state.
 2. Run [Compute Board Changes](#compute-board-changes), mapping the supplied records and board context to its parameters.
 3. Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms their live state.
 
-### Record Board Delivery
+### *Record* Board Delivery
 
 The board's status and assignees after its issues record delivery.
 

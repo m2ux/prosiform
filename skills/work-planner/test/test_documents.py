@@ -51,6 +51,10 @@ class DocumentInterfaces(unittest.TestCase):
                     end = next((i for i, depth, _ in headings[position + 1:] if depth <= 3), len(lines))
                     body = lines[start + 1:end]
                     self.assertGreaterEqual(len(title.split()), 3)
+                    # The leading verb is italicised and nothing else is, so the
+                    # anchors one procedure reaches read as its IO contract.
+                    self.assertRegex(title, r'^\*[A-Z][a-z]+\* \S')
+                    self.assertEqual(title.count('*'), 2, title)
                     self.assertTrue(any(line.startswith('**Inputs:**') for line in body))
                     numbers = [int(m[1]) for line in body if (m := re.match(r'^(\d+)\. ', line))]
                     if numbers:
@@ -68,6 +72,24 @@ class DocumentInterfaces(unittest.TestCase):
                 name = target.partition('#')[0]
                 self.assertNotIn((path.parent / name).resolve().parent.name,
                                  ('modes', 'artifacts', 'protocols'))
+
+    def test_link_text_names_no_dissolved_document(self):
+        """Link text naming a document outlives the document. `Work Breakdown
+        Guide` survived the reference it named by a year, on an anchor that
+        pointed at neither rule its sentences invoked."""
+        nouns = ('guide', 'manual', 'handbook', 'specification')
+        titles = set()
+        for folder in ('modes', 'artifacts', 'protocols', 'references'):
+            for path in (ROOT / folder).glob('*.md'):
+                for _, _, title in checker.scan(path)[2]:
+                    titles.add(title.strip().lower().replace('*', ''))
+        for folder in ('modes', 'artifacts', 'protocols', 'references'):
+            for path in sorted((ROOT / folder).glob('*.md')):
+                for text in re.findall(r'\[([^\]]+)\]\([^)\s]*#[a-z0-9-]+\)',
+                                       path.read_text()):
+                    if text.strip().lower().endswith(nouns):
+                        with self.subTest(file=path.name, text=text):
+                            self.assertIn(text.strip().lower(), titles)
 
     def test_protocols_are_entered_whole(self):
         """A protocol is one coordinated sequence, so a caller runs the file

@@ -11,7 +11,7 @@ Read these files first.
 
 ## Operations
 
-### Populate Task Body
+### *Populate* Task Body
 
 One task body within its supplied epic context.
 
@@ -23,7 +23,7 @@ One task body within its supplied epic context.
   - Acceptance criteria must meet the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria).
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
-### Record Task Delivery
+### *Record* Task Delivery
 
 One task body with its confirmed delivery and verified criteria recorded.
 

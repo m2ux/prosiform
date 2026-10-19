@@ -12,7 +12,7 @@ Read these files first.
 
 ## Operations
 
-### Review Initiative Goal
+### *Review* Initiative Goal
 
 The draft checked against the initiative outcomes.
 
@@ -37,7 +37,7 @@ The draft checked against the initiative outcomes.
    - Record the trace table in the [planning record](planning-record.md), or give it to the user when the change has none.
    - Return the trace and ranked findings to the caller.
 
-### Check Outside Threats
+### *Check* Outside Threats
 
 An item the draft leaves open is a gap.
 

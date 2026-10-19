@@ -11,7 +11,7 @@ Read these files first.
 
 ## Operations
 
-### Read Delivery Evidence
+### *Read* Delivery Evidence
 
 The pull requests and issue links that establish current delivery.
 

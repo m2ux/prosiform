@@ -10,7 +10,7 @@ Read these files first.
 
 ## Operations
 
-### Populate Delivery Brief
+### *Populate* Delivery Brief
 
 One complete prompt file for a confirmed delivery unit.
 

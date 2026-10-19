@@ -11,7 +11,7 @@ Read these files first.
 
 ## Operations
 
-### Merge Delivery Pull Request
+### *Merge* Delivery Pull Request
 
 One task or epic pull request's merge result, or its handoff for human approval.
 
@@ -27,7 +27,7 @@ One task or epic pull request's merge result, or its handoff for human approval.
    - If the merge is refused, return the refusal to the caller for fresh verification.
 3. Return the merge result, including its merge commit when supplied, for the caller's readback.
 
-### Access Development Links
+### *Access* Development Links
 
 The observed or updated Development relation for a pull request.
 
@@ -45,7 +45,7 @@ The observed or updated Development relation for a pull request.
 5. Compare the field with the intended edit.
 6. Return the verified relation or discrepancy.
 
-### Fetch Pull Request Issue Links
+### *Fetch* Pull Request Issue Links
 
 The complete issue-link snapshot for a supplied set of pull requests.
 
@@ -57,7 +57,7 @@ The complete issue-link snapshot for a supplied set of pull requests.
 4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
 5. Return the snapshot for the scripts' `--links` input.
 
-### Link Pull Request to Issue
+### *Link* Pull Request to Issue
 
 The verified delivery-issue relation for a pull request.
 
@@ -68,7 +68,7 @@ The verified delivery-issue relation for a pull request.
 3. Run [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
 4. Return the verified relation and refreshed snapshot.
 
-### Merge Epic Pull Request
+### *Merge* Epic Pull Request
 
 The epic's verified merge into its long-lived target.
 
@@ -80,7 +80,7 @@ The epic's verified merge into its long-lived target.
 4. Confirm the merged state, merge commit, verified head and target.
 5. Return the result or discrepancy.
 
-### Fetch All Initiative Pull Requests
+### *Fetch* All Initiative Pull Requests
 
 The pull request collection covering every supplied board repository.
 
@@ -92,7 +92,7 @@ The pull request collection covering every supplied board repository.
 4. If any fetch failed, return incomplete evidence.
 5. Return the complete collection only after every fetch succeeds.
 
-### Read Initiative Pull Requests
+### *Read* Initiative Pull Requests
 
 The current delivery pull requests for one initiative.
 
@@ -101,7 +101,7 @@ The current delivery pull requests for one initiative.
 1. Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
 2. Return the collection or an incomplete-fetch finding.
 
-### Read Pull Request State
+### *Read* Pull Request State
 
 One current pull request and its requested supporting records.
 
@@ -111,7 +111,7 @@ One current pull request and its requested supporting records.
 2. Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
 3. Return the snapshots or missing evidence.
 
-### Publish Pull Request
+### *Publish* Pull Request
 
 One pull request created or updated from supplied content and metadata.
 
@@ -122,7 +122,7 @@ One pull request created or updated from supplied content and metadata.
 3. Re-read through [Read Pull Request State](#read-pull-request-state).
 4. Return the saved state or discrepancy.
 
-### Locate Review Pull Request
+### *Locate* Review Pull Request
 
 The review pull request for a supplied epic base.
 
@@ -131,7 +131,7 @@ The review pull request for a supplied epic base.
 1. Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
 2. Return its number or an absent-review finding.
 
-### Read Head Evidence
+### *Read* Head Evidence
 
 The check-run and status evidence for one literal head commit.
 
@@ -141,7 +141,7 @@ The check-run and status evidence for one literal head commit.
 2. Run [Fetch Head Status](#fetch-head-status) for the same SHA.
 3. Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 
-### Merge Task Pull Requests
+### *Merge* Task Pull Requests
 
 Merges each open task pull request whose test plan has passed.
 
@@ -159,7 +159,7 @@ Merges each open task pull request whose test plan has passed.
 3. Run [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
    - Return that result to the caller.
 
-### Fetch Merge Readiness
+### *Fetch* Merge Readiness
 
 The current pull request's readiness against its target requirements and head checks.
 

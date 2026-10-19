@@ -11,7 +11,7 @@ Read these files first.
 
 ## Operations
 
-### Check Dependencies and Numbering
+### *Check* Dependencies and Numbering
 
 The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
 

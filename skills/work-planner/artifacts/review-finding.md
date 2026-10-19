@@ -4,7 +4,7 @@ One evidenced problem and its proposed solution.
 
 ## Operations
 
-### Populate Review Finding
+### *Populate* Review Finding
 
 One finding verified against its supplied source.
 
@@ -16,7 +16,7 @@ One finding verified against its supplied source.
    - It must meet [Finding Content](#finding-content) and [Decision State](#decision-state).
 4. Return the finding and any pending decision.
 
-### Report Review Finding
+### *Report* Review Finding
 
 The verified findings presented for resolution.
 

@@ -13,7 +13,7 @@ Read these files first.
 
 ## Operations
 
-### Populate Epic Issue Body
+### *Populate* Epic Issue Body
 
 One epic body and its local validation findings.
 
@@ -30,7 +30,7 @@ One epic body and its local validation findings.
 6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
 7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
-### Record Epic Delivery
+### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -40,7 +40,7 @@ One epic body with supplied delivery matches and completed rows recorded.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-### Record Epic Criteria
+### *Record* Epic Criteria
 
 Verified criteria and completed rows in one epic body.
 
@@ -49,7 +49,7 @@ Verified criteria and completed rows in one epic body.
 1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
 2. Return the body and refused criteria. Complete rows receive Done ticks.
 
-### Reserve Task Rows
+### *Reserve* Task Rows
 
 Task rows held for one confirmed delivery session.
 
@@ -59,7 +59,7 @@ Task rows held for one confirmed delivery session.
 2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
 3. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
-### Release Task Rows
+### *Release* Task Rows
 
 Held task rows returned to their work-item links.
 
@@ -69,7 +69,7 @@ Held task rows returned to their work-item links.
 2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
 3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
-### Validate Epic Body
+### *Validate* Epic Body
 
 The body's local format and field findings.
 
@@ -80,7 +80,7 @@ The body's local format and field findings.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-### Revise Epic Rows
+### *Revise* Epic Rows
 
 One epic body with confirmed task-grain and coverage corrections.
 
@@ -91,7 +91,7 @@ One epic body with confirmed task-grain and coverage corrections.
    - Split a task exceeding the allowed criterion grain into the confirmed tasks.
 2. Return the revised body and any cross-body numbering or dependency changes for the caller.
 
-### Plan Gap Task
+### *Plan* Gap Task
 
 The agreed disposition of criteria a delivered row left unmet.
 

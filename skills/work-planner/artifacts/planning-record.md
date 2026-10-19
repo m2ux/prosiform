@@ -4,7 +4,7 @@ A planning record is a folder. README.md is its entry point: it answers what the
 
 ## Operations
 
-### Populate Planning Record
+### *Populate* Planning Record
 
 One planning directory and its artifact inventory.
 

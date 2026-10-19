@@ -16,7 +16,7 @@ Read these files first.
 
 ## Operations
 
-### Draft Issue Placement
+### *Draft* Issue Placement
 
 One placement option from the supplied orphan and candidate destinations.
 
@@ -27,7 +27,7 @@ One placement option from the supplied orphan and candidate destinations.
 3. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
 4. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
 
-### Find Placement Candidates
+### *Find* Placement Candidates
 
 The issue candidates and available destinations from supplied records.
 
@@ -36,7 +36,7 @@ The issue candidates and available destinations from supplied records.
 1. Run [List Orphans](#list-orphans) with the supplied issue file.
 2. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
 
-### Apply Issue Placement
+### *Apply* Issue Placement
 
 One selected destination for an orphan's work.
 
@@ -65,7 +65,7 @@ One selected destination for an orphan's work.
      - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
 2. Return the saved destination, the identities of all affected bodies and the confirmed disposition to the caller, including the destination epic and row for a new task. The caller performs the rewrite or closure.
 
-### Rewrite Orphan Issue
+### *Rewrite* Orphan Issue
 
 The selected layout, with the original wording preserved for readers.
 
@@ -80,7 +80,7 @@ The selected layout, with the original wording preserved for readers.
    - Run [Save Tracker Issue](issue.md#save-tracker-issue) with the validated body, title and labels.
    - Return the saved identity to the caller.
 
-### Subsume Orphan Work
+### *Subsume* Orphan Work
 
 The work remains tracked by the taking issue.
 

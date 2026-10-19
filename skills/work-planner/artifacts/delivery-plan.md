@@ -11,7 +11,7 @@ Read these files first.
 
 ## Operations
 
-### Plan Available Work
+### *Plan* Available Work
 
 One delivery plan from supplied board and delivery evidence.
 
