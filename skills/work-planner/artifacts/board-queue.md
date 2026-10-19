@@ -49,7 +49,7 @@ A priority label is `priority:` and a positive integer. A larger number is highe
 ### Epic Status
 
 - On an initiative In Progress, a partly completed epic is In Progress even with open questions. Partly completed means a delivered task row on an epic that is not closed as completed. Delivery follows [Task Delivery](epic-issue-body.md#task-delivery), using the supplied evidence.
-- On that initiative, an unstarted epic can start when every prerequisite epic named by its task rows or initiative row is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
+- On that initiative, an unstarted epic can start when every prerequisite epic its initiative row names is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
 - Of the epics that can start, those carrying the highest priority number are next and Ready, all together. The highest counts the epics already In Progress, so an epic of a lower number waits while a higher one runs.
 - An epic with no priority label ranks below every number, so it is Ready only when no labelled sibling can start or is running.
 - Any other Ready epic of that initiative moves to Backlog.
@@ -58,7 +58,7 @@ A priority label is `priority:` and a positive integer. A larger number is highe
 
 ### Task Eligibility
 
-A task is Ready only when its epic is Ready or In Progress. The queue contains no task issue changes; task status comes from the supplied delivery state.
+A task is Ready only when its epic is Ready or In Progress and every row its Depends on cell names is delivered. A row naming another epic's row waits for that epic to close, since its output reaches this epic's base when that epic's bases merge, and the rows beside it wait for nothing it waits on. The queue contains no task issue changes; task status comes from the supplied delivery state.
 
 ### Proposed Changes
 
