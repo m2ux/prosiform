@@ -1,0 +1,16 @@
+description = "A title spelled with spaces and a path segment spelling it with hyphens slug alike, so the file heading absorbs the title and the group keeps its source levels."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["docs/my-note.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
