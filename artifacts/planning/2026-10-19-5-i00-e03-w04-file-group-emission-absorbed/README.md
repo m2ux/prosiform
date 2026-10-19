@@ -13,6 +13,7 @@ It matters twice over. It completes the epic, and E03 closing is what releases f
 | Artifact | What it holds |
 | --- | --- |
 | [w04.md](w04.md) | The task's plan: the absorption test, the per-group shift it selects, the emission order, and the comparison both sides are slugged by |
+| [validation.md](validation.md) | The checks as they were run, the defect measured before and after, the markers measured, and what each criterion rests on |
 
 ## Links
 
