@@ -69,11 +69,20 @@ HEADING_ATTRIBUTE = re.compile(rf"{UNESCAPED}\{{#[^{{}}\s]+\}}\s*$")
 
 LINK_REMEDY = "write the dependency as a Markdown link"
 
+RAW_HTML = "E_RAW_HTML"
+UNSUPPORTED_CONSTRUCT = "E_UNSUPPORTED_CONSTRUCT"
+
 
 @dataclass(frozen=True)
 class Refusal:
-    """One construct in selected content the profile refuses, and where it sits."""
+    """One construct in selected content the profile refuses, and where it sits.
 
+    The profile names the defect it refuses, so the refusal carries the
+    code the contract declares for it: raw HTML and a recognized
+    unsupported construct are two clauses with two remedies.
+    """
+
+    code: str
     message: str
     remedy: str
     line: int | None = None
@@ -180,6 +189,7 @@ def recognized(pattern: re.Pattern[str], inline: Token) -> re.Match[str] | None:
 def html_refusal(spelling: str, at: int | None) -> Refusal:
     """Raw HTML, which the bundle carries no form of."""
     return Refusal(
+        code=RAW_HTML,
         message=(
             f"the raw HTML {spelling!r} is outside the {PROFILE} profile, which "
             f"refuses it rather than copying it into the bundle"
@@ -203,6 +213,7 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
         spelling = found.group()
         construct = "transclusion directive" if found.group(1) else "wiki link"
         yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
             message=(
                 f"the {construct} {spelling!r} names a document the {PROFILE} "
                 f"profile does not resolve"
@@ -215,6 +226,7 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
     found = recognized(FOOTNOTE, inline)
     if found is not None:
         yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
             message=(
                 f"the footnote reference {found.group()!r} names a target the "
                 f"{PROFILE} profile does not carry"
@@ -229,6 +241,7 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
     found = recognized(HEADING_ATTRIBUTE, inline)
     if found is not None:
         yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
             message=(
                 f"the heading attribute {found.group().strip()!r} names the section "
                 f"the heading opens, which the {PROFILE} profile names by its "
