@@ -12,6 +12,15 @@ The command checks the form of every option before it looks for anything
 an option names, so an invalid command line is reported as invalid usage
 rather than as a fault in a tree it may not even have described correctly.
 
+Every entry reference normalizes to a path identity before anything is
+opened: its components split before any escape is decoded, each escape is
+validated and decoded exactly once, and `.` and `..` normalize against
+the allowed source root. A reference the root cannot contain — one
+walking above it, a root-relative or absolute path, a drive path, or a
+scheme or authority naming no local document — fails rather than being
+opened, and a query, an invalid escape, a control character or a
+backslash separator is a command line the grammar does not admit.
+
 Every entry document the run names is read as bytes, required to be valid
 UTF-8, stripped of the transport metadata it carries ahead of its content
 and parsed under the declared profile, and a source carrying a construct
@@ -58,6 +67,12 @@ from prosiform.bundle import (
     group,
     heading_text,
 )
+from prosiform.closure import (
+    Malformed,
+    OutsideRoot,
+    Reference,
+    resolve,
+)
 from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
 from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 from prosiform.source import (
@@ -80,7 +95,6 @@ PUBLICATION_FAILURE = 3
 INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
-FRAGMENT = "#"
 
 MIN_DEPTH = 1
 MAX_DEPTH = 6
@@ -116,7 +130,9 @@ class Failure(Exception):
         self.diagnostic = diagnostic
 
 
-def usage_failure(message: str, code: str = INVALID_USAGE) -> Failure:
+def usage_failure(
+    message: str, code: str = INVALID_USAGE, reference: str | None = None
+) -> Failure:
     """A command line the contract's grammar does not admit.
 
     Every such fault leads a caller to one remedy, so they share one
@@ -126,7 +142,13 @@ def usage_failure(message: str, code: str = INVALID_USAGE) -> Failure:
     """
     return Failure(
         USAGE_FAILURE,
-        Diagnostic(ERROR, message, code=code, remedy=f"run {NAME} --help for usage"),
+        Diagnostic(
+            ERROR,
+            message,
+            code=code,
+            reference=reference,
+            remedy=f"run {NAME} --help for usage",
+        ),
     )
 
 
@@ -287,44 +309,58 @@ def rules(declarations: Sequence[str]) -> dict[str, int]:
     return inforce
 
 
-def document(reference: str) -> str:
-    """The document part of one entry reference, empty for a fragment alone."""
-    return reference.partition(FRAGMENT)[0]
+def entry(text: str) -> Reference:
+    """One entry reference, normalized to the document identity it names.
 
-
-def fragment(reference: str) -> str:
-    """The fragment one entry reference carries, empty where it names none.
-
-    An absent fragment and an empty one are the same whole-document
-    reference, so both read as no fragment here.
+    An entry names a document under the allowed source root, so a
+    reference the root cannot contain fails here rather than being
+    opened. A scheme and an authority name no local document at all,
+    which is the one form the resolution sequence classifies rather than
+    refuses: inside a source such a reference is text the bundle
+    carries, and on the command line it names nothing to bundle.
     """
-    return reference.partition(FRAGMENT)[2]
+    try:
+        found = resolve(text)
+    except Malformed as malformed:
+        raise usage_failure(
+            f"the entry reference {text!r} {malformed}", reference=text
+        ) from malformed
+    except OutsideRoot as outside:
+        raise input_failure(
+            f"the entry reference {text!r} {outside}",
+            code=SOURCE_OUTSIDE_ROOT,
+            remedy="name a document the source root carries",
+            reference=text,
+        ) from outside
+    if found.external:
+        raise input_failure(
+            f"the entry reference {text!r} carries a scheme or an authority, so it "
+            f"names no document the allowed source root can contain",
+            code=SOURCE_OUTSIDE_ROOT,
+            remedy="name a document the source root carries",
+            reference=text,
+        )
+    return found
 
 
-def relative(root: Path, name: str) -> str:
-    """One source's normalized root-relative path, which names its file group."""
-    return (root / name).resolve().relative_to(root).as_posix()
-
-
-def entries(referrer: str | None, references: Sequence[str]) -> list[tuple[str, str]]:
+def distinct(found: Sequence[Reference]) -> list[Reference]:
     """Each distinct document this run reads, and the reference that names it.
 
     A referring document is a source of the run like any other, and two
-    references naming one document name one source.
+    references normalizing to one path name one source.
     """
-    named: list[tuple[str, str]] = []
+    named: list[Reference] = []
     seen: set[str] = set()
-    for reference in ([referrer] if referrer else []) + list(references):
-        name = document(reference)
-        if name and name not in seen:
-            seen.add(name)
-            named.append((reference, name))
+    for one in found:
+        if one.path and one.path not in seen:
+            seen.add(one.path)
+            named.append(one)
     return named
 
 
-def sources(root: Path, named: Sequence[tuple[str, str]]) -> set[Path]:
+def sources(root: Path, named: Sequence[Reference]) -> set[Path]:
     """Every path this run reads from, resolved against the allowed source root."""
-    return {(root / name).resolve() for _, name in named}
+    return {(root / one.path).resolve() for one in named}
 
 
 def location(name: str, at: int | None) -> str:
@@ -332,7 +368,7 @@ def location(name: str, at: int | None) -> str:
     return name if at is None else f"{name}:{at}"
 
 
-def read_entry(root: Path, reference: str, name: str) -> Source:
+def read_entry(root: Path, found: Reference) -> Source:
     """One entry document's content, read under the allowed source root.
 
     The bytes are read without newline translation, so a CRLF source
@@ -340,6 +376,7 @@ def read_entry(root: Path, reference: str, name: str) -> Source:
     strictly, so a source that is not valid UTF-8 fails here as the source
     defect it is rather than reaching the command's generic handler.
     """
+    reference, name = found.original, found.path
     if not is_markdown(name):
         raise input_failure(
             f"the entry reference {reference!r} names a document whose suffix is "
@@ -415,7 +452,7 @@ def directories(root: Path) -> set[str]:
     return found
 
 
-def contributing(root: Path, references: Sequence[str]) -> dict[str, str]:
+def contributing(requested: Sequence[Reference]) -> list[str]:
     """Each file group the bundle carries, by the path that names it.
 
     A reference with no fragment selects a whole document, which is the
@@ -423,13 +460,7 @@ def contributing(root: Path, references: Sequence[str]) -> dict[str, str]:
     groups are ordered by root-relative path so one selection always
     bundles to the same bytes.
     """
-    selected: dict[str, str] = {}
-    for reference in references:
-        if fragment(reference):
-            continue
-        name = document(reference)
-        selected.setdefault(relative(root, name), name)
-    return dict(sorted(selected.items()))
+    return sorted({one.path for one in requested if one.fragment is None})
 
 
 def unambiguous(paths: Sequence[str]) -> None:
@@ -448,13 +479,13 @@ def unambiguous(paths: Sequence[str]) -> None:
         headed[title] = path
 
 
-def compose(root: Path, read: dict[str, Source], references: Sequence[str]) -> str:
+def compose(read: dict[str, Source], requested: Sequence[Reference]) -> str:
     """The complete bundle candidate: its entry line and one group per source."""
-    selected = contributing(root, references)
-    unambiguous(list(selected))
+    selected = contributing(requested)
+    unambiguous(selected)
     groups: list[Group] = []
-    for path, name in selected.items():
-        source = read[name]
+    for path in selected:
+        source = read[path]
         try:
             groups.append(group(path, parse(source.text), lines(source.text)))
         except Overflow as beyond:
@@ -546,17 +577,19 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
         raise usage_failure("--root is required and names the allowed source root")
     if not options.references:
         raise usage_failure("at least one entry reference is required")
+    requested = [entry(reference) for reference in options.references]
     if not options.referrer:
-        for reference in options.references:
-            if not document(reference):
+        for one in requested:
+            if not one.path:
                 raise usage_failure(
-                    f"the fragment-only reference {reference!r} needs --from to "
+                    f"the fragment-only reference {one.original!r} needs --from to "
                     f"name the document it resolves against"
                 )
     inforce = rules(options.group)
 
     root = Path(options.root).resolve()
-    named = entries(options.referrer, options.references)
+    referring = [entry(options.referrer)] if options.referrer else []
+    named = distinct(referring + requested)
     reading = sources(root, named)
     if options.output != STANDARD_OUTPUT:
         destination = Path(options.output).resolve()
@@ -582,14 +615,14 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             )
 
     read: dict[str, Source] = {}
-    for reference, name in named:
-        source = read_entry(root, reference, name)
+    for one in named:
+        source = read_entry(root, one)
         refusal = next(refusals(parse(source.text)), None)
         if refusal is not None:
-            raise refused(name, source, refusal)
-        read[name] = source
+            raise refused(one.path, source, refusal)
+        read[one.path] = source
 
-    selecting = [reference for reference in options.references if fragment(reference)]
+    selecting = [one.original for one in requested if one.fragment is not None]
     if selecting:
         raise Failure(
             INTERNAL_ERROR,
@@ -602,7 +635,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             ),
         )
 
-    bundled = compose(root, read, options.references)
+    bundled = compose(read, requested)
     if options.check:
         return SUCCESS
     if options.output == STANDARD_OUTPUT:

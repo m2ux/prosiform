@@ -1,0 +1,16 @@
+description = "A reference carrying a scheme, and one carrying an authority, are emitted as authored: neither is opened, resolved or rewritten, and a query behind a scheme is carried rather than refused."
+
+clauses = [
+  "Reference normalization and path identity — Resolution sequence, step 3",
+  "Link classification and resource handling — Everything else",
+  "Post-compilation invariants — Reference preservation",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

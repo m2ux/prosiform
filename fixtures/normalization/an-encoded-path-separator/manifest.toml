@@ -1,0 +1,19 @@
+description = "An escape decoding to a path separator is a character of one segment's name rather than a separator, so the reference is refused instead of reaching a document one level down."
+
+clauses = [
+  "Reference normalization and path identity — Resolution sequence, step 6",
+  "Reference normalization and path identity — Resolution sequence, step 2",
+]
+
+[invocation]
+root = "source"
+arguments = ["sub%2Fguide.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+reference = "sub%2Fguide.md"
