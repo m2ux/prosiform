@@ -15,7 +15,8 @@ Read these files first.
 ## Procedure
 
 1. **Task issues.**
-   Verify each criterion with its named instrument before passing its id to [Record Task Delivery](../artifacts/task-body.md#record-task-delivery).
+   Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) for each criterion the delivered task covers, with its current body, delivery findings, delivery revisions and named instruments.
+   - Pass the returned verified criterion ids to [Record Task Delivery](../artifacts/task-body.md#record-task-delivery).
    - Supply the issue JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids, and output body file.
 2. **Epic rows.**
    Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout, and output body file.
