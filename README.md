@@ -1,6 +1,6 @@
 # 🧩 prosiform
 
-[![Status: planning](https://img.shields.io/badge/status-planning-orange.svg)](https://github.com/users/m2ux/projects/18)
+[![Status: building](https://img.shields.io/badge/status-building-orange.svg)](https://github.com/users/m2ux/projects/18)
 [![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
@@ -78,14 +78,23 @@ make check
 | `make format-check` | That same Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That same Python type checks in strict mode. |
 | `make test` | The Python build's suite passes. A run that collects no test fails. |
-| `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
+| `make harness` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
+| `make corpus` | Every fixture the corpus holds, run against the build under test, produces the result its manifest declares. A fixture declaring work a later epic delivers is reported as awaiting it; one that meets its manifest while awaiting fails, as does a run with no build configured. |
 | `make layout` | Each of the three trees holds a tracked file. |
 | `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`prototype/pyproject.toml`](prototype/README.md) declares, and nothing besides. |
 | `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
-The tools the first six call are pinned by [`prototype/uv.lock`](prototype/README.md); `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+The tools the first seven call are pinned by [`prototype/uv.lock`](prototype/README.md); `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+
+`make corpus` runs a build named by configuration rather than one it chooses, so one corpus binds every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a run resolves it from the fixture's own directory:
+
+```bash
+export PROSIFORM_BUILD="uv run --project $PWD/prototype --frozen prosiform"
+```
+
+There is no default and no fallback: with nothing configured the run fails rather than passing over the corpus, because a corpus run that skips sits inside a passing suite saying nothing.
 
 ## 📦 Installation
 
@@ -102,11 +111,11 @@ cd prototype
 uv sync --frozen
 ```
 
-The build declares its dependencies and ships the [glossary](docs/glossary.md) with the package; it implements no behaviour yet, and the status table below tracks the stage it sits in.
+Installing the build puts the `prosiform` command on the path and ships the [glossary](docs/glossary.md) with the package. The status table below tracks the stage the build sits in.
 
 ## 🚀 Invocation
 
-Nothing is built yet. The behavioural contract is specified and the work is planned — this is the interface that contract defines.
+The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses below. The walking skeleton is building bundling under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, and publishes each whole document it names as one file group headed by that document's root-relative path. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, and two documents whose paths differ only by Markdown extension each return `1` naming the defect and the line of the file it sits on. A reference naming a section returns `4`, which says this build cannot carry the request out rather than that the source it names is at fault: dependency traversal and section selection are the stages still to come, so a run bundles the documents its references name and follows no link out of them.
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller read
@@ -125,7 +134,7 @@ prosiform --root skills/work-planner \
 prosiform --root skills/work-planner --check modes/plan-mode.md
 ```
 
-The bundle goes to stdout and diagnostics to stderr. It opens by naming what it was built for, so the caller reaches its procedure without searching:
+Standard output carries exactly one thing per run: the bundle a compiling run publishes, the response an informational run returns, or nothing at all. Diagnostics go to standard error, as text for a reader or, under `--diagnostics json`, as one JSON object per line and nothing else. A bundle opens by naming what it was built for, so the caller reaches its procedure without searching:
 
 ```markdown
 This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.

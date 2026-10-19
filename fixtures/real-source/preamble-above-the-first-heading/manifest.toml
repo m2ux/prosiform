@@ -1,0 +1,20 @@
+description = "A workspace skill reference whose title the file heading absorbs carries five blocks of preamble, three pipe tables and two fenced diagrams beneath that heading, its dashes, arrows and middle dots left as the source spells them."
+
+clauses = [
+  "Input and output contract — Whole documents",
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Preamble",
+  "Markdown and source-heading profile — pipe tables enabled",
+  "Markdown and source-heading profile — Typography",
+  "Parser and source-preserving edits — Untouched content",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["references/design-flow.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

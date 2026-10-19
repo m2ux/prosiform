@@ -1,0 +1,18 @@
+description = "A frontmatter block closed by three dots is removed with its closing line, which the scan reads as a closer rather than as content."
+
+clauses = [
+  "Frontmatter policy — steps 1 through 5",
+  "Markdown and source-heading profile — Encoding",
+  "Validation and failure contract — Preservation",
+  "File-scoped hierarchy — Absorbed title",
+  "Adversarial acceptance fixtures — Frontmatter",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

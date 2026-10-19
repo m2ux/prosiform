@@ -1,5 +1,7 @@
 description = "A fragment naming a heading nested inside a container fails, because only a document-level heading is a selectable section root."
 
+awaiting = "I00:E03"
+
 clauses = [
   "Section extraction and output hierarchy — Nested target",
   "Section extraction and output hierarchy — Source heading index",

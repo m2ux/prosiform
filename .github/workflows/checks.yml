@@ -48,3 +48,11 @@ jobs:
           # outside the repository scope the built-in token is confined to,
           # so the job supplies a token carrying read:project.
           GH_TOKEN: ${{ secrets.PROJECT_READ_TOKEN }}
+          # The corpus runs against a build named here and nowhere else, so
+          # the fixtures bind an implementation rather than importing one.
+          # This change's own build is reached through its console entry
+          # point in the locked environment; the runner invokes it from each
+          # fixture's directory, so the project is named by absolute path.
+          # Unsetting this fails the job rather than passing over the
+          # corpus, which is what makes a green run a statement.
+          PROSIFORM_BUILD: uv run --project ${{ github.workspace }}/prototype --frozen prosiform

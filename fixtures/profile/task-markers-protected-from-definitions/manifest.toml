@@ -1,0 +1,16 @@
+description = "A reference definition whose label spells a task marker turns no marker into a link, so the marker reaches the bundle as text and the document it names is no dependency."
+
+clauses = [
+  "Markdown and source-heading profile — Task lists",
+  "Source-local reference interpretation — definition removal",
+  "Adversarial acceptance fixtures — Profile",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

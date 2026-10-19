@@ -4,6 +4,8 @@ The Python build of prosiform.
 
 It establishes the behavioural contract, runs the [fixture corpus](../fixtures/README.md), and stays in use as a differential oracle once the production build exists.
 
+Installing it puts the `prosiform` command on the path, declared by `[project.scripts]` and entered at `prosiform.cli:main`. The command carries the option set the contract declares, writes its response or its bundle to standard output and its diagnostics to standard error, and returns the exit status its outcome names.
+
 ## Environment
 
 `pyproject.toml` declares the supported Python version and the build's dependencies. `uv.lock` records the exact version and hash of every package those dependencies resolve to, so two checkouts install the same tree.
@@ -37,7 +39,8 @@ The build's tests and static checks are named commands, run from the repository 
 | Command | Runs |
 | --- | --- |
 | `make test` | `pytest` over `tests/`. A run that collects no test exits 5, so a suite that discovers nothing fails. |
-| `make corpus` | `pytest` over `../checks/tests`, which validates every fixture manifest the corpus holds and exercises the runner that decides a fixture's result. The corpus is not this build, so it carries its own command. |
+| `make harness` | `pytest` over `../checks/tests`, which validates every fixture manifest the corpus holds and exercises the runner that decides a fixture's result. The corpus is not this build, so it carries its own commands. |
+| `make corpus` | `../checks/corpus.py` over every fixture the corpus holds, against the build `PROSIFORM_BUILD` names. This build reaches it as its console entry point, `prosiform`, so the corpus runs against the build a change produces rather than against the package it imports. |
 | `make lint` | `ruff check` over the package, its tests and `checks/`. |
 | `make format-check` | `ruff format --check` over those same files. Formatting is reported, not applied. |
 | `make typecheck` | `mypy` in strict mode over those same files. |
@@ -51,7 +54,13 @@ The build's tests and static checks are named commands, run from the repository 
 | [`jsonschema`](https://pypi.org/project/jsonschema/) | `==4.26.0` | Validates a fixture manifest against the corpus schema, which is a published schema language rather than a validator written here. |
 | [`types-jsonschema`](https://pypi.org/project/types-jsonschema/) | `==4.26.0.20261006` | The annotations `jsonschema` does not ship, which strict mode requires. |
 
-`tests/test_profile.py` holds the pinned parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text, typographic substitution off, and raw HTML recognized as a token of its own.
+`tests/test_profile.py` holds the build's configured parser to the clauses the declared profile rests on: pipe tables, double-tilde strikethrough, task-list markers preserved as source text and protected from a reference definition that would turn one into a link, typographic substitution off, raw HTML recognized as a token of its own, Markdown suffixes classified case-insensitively, and each recognized unsupported dependency or section-naming construct refused while the prose, the code span and the escape that resemble one pass untouched.
+
+`tests/test_source.py` holds the transport-metadata scan to the frontmatter policy in both of its directions: one leading byte-order mark removed and a second left as content, a block closed by three hyphens or by three dots and by neither an indented delimiter nor one carrying a trailing space, CRLF terminators recognized, a YAML example inside a code block and a thematic break below the first line left alone, an opener no line closes failing, and the line of the file every location in the stripped content maps back to.
+
+`tests/test_bundle.py` holds the bundle's structure to the clauses the file group rests on: the heading one path generates and the suffix it drops, the escaping that keeps that heading literal, the slug a destination is generated from and the ordinal a repeated one takes, the region a parse exposes for each block with the bytes its source wrote inside it and one blank line between it and the next, a title the path already names absorbed and one it does not kept and shifted, and a shift beyond the sixth level refused.
+
+`tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, the status a request this build cannot carry out returns, and the publication the corpus observes only through standard output — a named output file written through one rename, left untouched by a failing run, and written by no validation-only run.
 
 ## Layout
 

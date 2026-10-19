@@ -1,0 +1,19 @@
+description = "Raw HTML in selected content fails, naming the source and the line that carries it, because the bundle carries Markdown only."
+
+clauses = [
+  "Markdown and source-heading profile — HTML, raw HTML in selected content fails",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RAW_HTML"
+source = "guide.md:3"

@@ -1,0 +1,19 @@
+description = "An explicit entry whose suffix the profile does not classify as Markdown fails, naming the reference as the source spells it."
+
+clauses = [
+  "Markdown and source-heading profile — File suffixes, an explicit entry with another suffix fails",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes.txt"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_ENTRY_SUFFIX"
+reference = "notes.txt"

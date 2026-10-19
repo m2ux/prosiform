@@ -1,0 +1,17 @@
+description = "A validation-only run naming an output file validates the run and leaves that file unwritten, so nothing is published to a stream or to a path."
+
+clauses = [
+  "CLI contract — --check accepts --output FILE, validating the run without writing that file",
+  "CLI contract — --output FILE, atomically publish validated output to a file",
+  "Compile before publishing — no success output is published until the complete candidate has been constructed and validated",
+]
+
+[invocation]
+root = "source"
+arguments = ["--check", "--output", "bundle.md", "guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
+absent = ["bundle.md"]
