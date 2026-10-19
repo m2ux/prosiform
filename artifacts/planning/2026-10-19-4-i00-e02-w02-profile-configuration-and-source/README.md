@@ -13,6 +13,7 @@ It matters because a default parser configuration is not the declared profile, a
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The task's plan: each profile clause traced to the option that enforces it, the profile identifier and where it is reported, and the rule separating a recognized unsupported construct from prose that resembles one |
+| [validation.md](validation.md) | The checks as they were run: the full check set, the profile clauses, the command's statuses over a parsed source, the corpus before and after, and four deliberate faults with the failures they produced |
 
 ## Links
 
