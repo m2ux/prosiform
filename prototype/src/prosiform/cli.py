@@ -53,7 +53,6 @@ from prosiform.bundle import (
     Group,
     Overflow,
     assemble,
-    destinations,
     entry_line,
     group,
     heading_text,
@@ -68,6 +67,7 @@ from prosiform.source import (
     Unterminated,
     content,
     decode,
+    fragments,
     lines,
 )
 
@@ -466,7 +466,7 @@ def compose(root: Path, read: dict[str, Source], references: Sequence[str]) -> s
                 reference=path,
                 source=path,
             ) from beyond
-    assigned = destinations([heading for one in groups for heading in one.headings])
+    assigned = fragments([heading for one in groups for heading in one.headings])
     named = []
     at = 0
     for one in groups:

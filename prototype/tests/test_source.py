@@ -1,4 +1,4 @@
-"""Assert what the scan removes, what it leaves, and where the content began.
+"""Assert what the scan removes and leaves, and what each heading is named.
 
 A removal rule only ever observed removing is half tested, so each case
 the contract excludes is here beside the cases it includes: an indented
@@ -8,17 +8,31 @@ below the first line each leave the document exactly as the file holds
 it. Every case states the content the scan returns and the line that
 content begins on, because the coordinate is as much the result as the
 text is.
+
+The index is asserted on the same terms. A heading is written in each
+syntax that carries one appearance — a code span, an emphasis
+delimiter, a link label, an autolink, an entity, an image and a line
+break — and the case states the one text a reader reads, because a
+derivation reading bytes rather than events would differ on exactly
+those. Each case is the text the renderer this profile tracks derives
+for that heading. The ordinal cases state the count one document keeps,
+the ordinal it passes over, and that a second document begins it again.
 """
 
 import pytest
+from prosiform.profile import parse
 from prosiform.source import (
     MARK,
+    Heading,
     Source,
     Unterminated,
     bare,
     content,
     decode,
+    fragments,
+    index,
     lines,
+    slug,
 )
 
 BODY = "An opening paragraph.\n\n## Run\n\nCarry the procedure out.\n"
@@ -198,3 +212,110 @@ def test_a_mark_decodes_to_one_character() -> None:
 def test_bytes_that_are_not_valid_utf8_fail_rather_than_decoding(data: bytes) -> None:
     with pytest.raises(UnicodeDecodeError):
         decode(data)
+
+
+def indexed(text: str) -> tuple[Heading, ...]:
+    """The heading index of one complete source document."""
+    return index(parse(text))
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("guide", "guide"),
+        ("Guide", "guide"),
+        ("docs/note", "docsnote"),
+        ("modes/plan-mode", "modesplan-mode"),
+        ("Plan Mode", "plan-mode"),
+        ("plan_[v2]", "plan_v2"),
+        ("A Title: Two Parts", "a-title-two-parts"),
+        ("What's new: v1.0!", "whats-new-v10"),
+        ("Café Münster", "café-münster"),
+        ("Two  spaces", "two--spaces"),
+    ],
+)
+def test_a_fragment_is_the_slug_a_renderer_generates(text: str, expected: str) -> None:
+    assert slug(text) == expected
+
+
+def test_a_slug_an_earlier_heading_took_carries_the_renderer_ordinal() -> None:
+    assert fragments(["Run", "Run", "Stop", "Run"]) == [
+        "run",
+        "run-1",
+        "stop",
+        "run-2",
+    ]
+
+
+def test_an_ordinal_a_heading_already_carries_is_passed_over() -> None:
+    assert fragments(["Run", "Run-1", "Run", "Run", "Run-1"]) == [
+        "run",
+        "run-1",
+        "run-2",
+        "run-3",
+        "run-1-1",
+    ]
+
+
+def test_the_ordinal_count_belongs_to_the_sequence_it_was_begun_on() -> None:
+    assert fragments(["Run"]) == fragments(["Run"]) == ["run"]
+
+
+@pytest.mark.parametrize(
+    ("heading", "expected"),
+    [
+        ("# Run the procedure", "Run the procedure"),
+        ("# A `code` span", "A code span"),
+        ("# **Bold** and _thin_", "Bold and thin"),
+        ("# ~~Struck~~ through", "Struck through"),
+        ("# A [label](guide.md) names it", "A label names it"),
+        ("# Caf&eacute; Münster", "Café Münster"),
+        ("# &#x263A; and &amp;", "☺ and &"),
+        ("# An ![A diagram](plan.png) overview", "An  overview"),
+        ("# <https://example.com/a> names it", "https://example.com/a names it"),
+        ("Run\nthe procedure\n===\n", "Run\nthe procedure"),
+    ],
+)
+def test_a_heading_shows_the_text_its_events_carry(heading: str, expected: str) -> None:
+    assert [one.text for one in indexed(heading)] == [expected]
+
+
+def test_a_heading_index_carries_each_heading_in_source_order() -> None:
+    carried = indexed("# Guide\n\n## Run\n\n### Detail\n\n## Stop\n")
+    assert [(one.level, one.text) for one in carried] == [
+        (1, "Guide"),
+        (2, "Run"),
+        (3, "Detail"),
+        (2, "Stop"),
+    ]
+
+
+def test_a_container_nested_heading_is_indexed_with_the_rest() -> None:
+    carried = indexed("# Guide\n\n> ## Quoted\n\n- ### Listed\n\n## Run\n")
+    assert [one.text for one in carried] == ["Guide", "Quoted", "Listed", "Run"]
+
+
+def test_a_nested_heading_numbers_the_heading_that_shares_its_slug() -> None:
+    carried = indexed("# Run\n\n> ## Run\n\n## Run\n")
+    assert [one.fragment for one in carried] == ["run", "run-1", "run-2"]
+
+
+def test_a_heading_carries_the_line_of_the_content_it_opens_on() -> None:
+    carried = indexed("An opening paragraph.\n\n## Run\n")
+    assert [one.line for one in carried] == [3]
+
+
+def test_a_setext_heading_is_indexed_at_the_level_it_opens() -> None:
+    carried = indexed("Guide\n=====\n\nRun\n---\n")
+    assert [(one.level, one.fragment) for one in carried] == [(1, "guide"), (2, "run")]
+
+
+def test_a_document_carrying_no_heading_indexes_nothing() -> None:
+    assert indexed("An opening paragraph.\n") == ()
+
+
+def test_the_duplicate_count_is_fresh_for_each_complete_document() -> None:
+    first = indexed("## Run\n\n## Run\n")
+    second = indexed("## Run\n")
+    assert [one.fragment for one in first] == ["run", "run-1"]
+    assert [one.fragment for one in second] == ["run"]

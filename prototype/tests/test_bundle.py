@@ -2,9 +2,8 @@
 
 The corpus declares what a run publishes. These are the cases beneath
 it: the heading one path generates, the escaping that keeps that heading
-literal, the slug a destination is generated from, the region a parse
-exposes for each block, and the two decisions a group makes about its
-own headings.
+literal, the region a parse exposes for each block, and the two
+decisions a group makes about its own headings.
 """
 
 import pytest
@@ -14,13 +13,11 @@ from prosiform.bundle import (
     Overflow,
     absorbed,
     assemble,
-    destinations,
     entry_line,
     escaped,
     group,
     heading_text,
     regions,
-    slug,
 )
 from prosiform.profile import parse
 from prosiform.source import lines
@@ -91,33 +88,6 @@ def test_a_path_ending_in_a_number_sign_keeps_it_in_its_file_heading() -> None:
     one = grouped("notes/draft #.md", "A document whose path ends in a number sign.\n")
     assert one.text.splitlines()[0] == "# notes/draft \\#"
     assert one.headings[0] == "notes/draft #"
-
-
-@pytest.mark.parametrize(
-    ("text", "expected"),
-    [
-        ("guide", "guide"),
-        ("Guide", "guide"),
-        ("docs/note", "docsnote"),
-        ("modes/plan-mode", "modesplan-mode"),
-        ("Plan Mode", "plan-mode"),
-        ("plan_[v2]", "plan_v2"),
-        ("A Title: Two Parts", "a-title-two-parts"),
-    ],
-)
-def test_a_destination_is_the_slug_a_renderer_generates(
-    text: str, expected: str
-) -> None:
-    assert slug(text) == expected
-
-
-def test_a_slug_an_earlier_heading_took_carries_the_renderer_ordinal() -> None:
-    assert destinations(["Run", "Run", "Stop", "Run"]) == [
-        "run",
-        "run-1",
-        "stop",
-        "run-2",
-    ]
 
 
 def test_the_entry_line_names_one_reference_and_its_destination() -> None:
