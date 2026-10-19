@@ -8,6 +8,7 @@ Read these files first.
 
 - [Issue](../artifacts/issue.md)
 - [Issue Body](../artifacts/issue-body.md)
+- [Acceptance Criteria](../artifacts/acceptance-criteria.md)
 - [Align Mode](align-mode.md)
 - [Task Body](../artifacts/task-body.md)
 - [Pull Request](../artifacts/pull-request.md)
@@ -62,7 +63,7 @@ The main path meets [Outcomes](#outcomes).
    - Name the tasks it works on: one task, or tasks that name each other in Joins.
    - Put any match that is not clear to the user.
 5. **Sync each task issue.**
-   For a task delivered by a merged pull request, run [Verify Selected Criteria](#verify-selected-criteria) with its current body, selected criteria, delivery evidence, revisions and named instruments.
+   For a task delivered by a merged pull request, run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) with its current body, selected criteria, delivery evidence, revisions and named instruments.
    - Run [Record Task Delivery](../artifacts/task-body.md#record-task-delivery) with the task JSON, pull request records, complete issue-link snapshot, delivering pull request number, returned verified criterion ids and output body path.
    - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) before closure.
    - Record the pull request on it with [Comment on Issue](../artifacts/issue.md#comment-on-issue): `Delivered by #950.`
@@ -105,13 +106,13 @@ The main path meets [Outcomes](#outcomes).
        - Continue recording links, verified criteria and Done despite the reported coverage disagreement.
    - After applying the returned findings, repeat Record Epic Delivery with the revised epic body and refreshed delivery records, retaining the complete issue-link snapshot and output body path. Recording the epic's delivery is finished when unmatched, in flight, uncited, note, and unplaced are clear, apart from a pull request the user leaves unmatched.
 7. **Verify.**
-   Run [Verify Selected Criteria](#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
+   Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
    - Retain the returned verified criterion ids and evidence for the tick step.
    - For an unresolved epic criterion requiring further work:
      - Follow [Plan Gap Task](align-mode.md#plan-gap-task) with the current epic JSON and body, delivered task row, criterion ids, findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
      - Resume with its recorded disposition; a criterion that cannot be confirmed stays unticked.
 8. **Tick.**
-   Tick the confirmed criteria with [Tick Verified Criteria](#tick-verified-criteria). It ticks Done as [Tables](../artifacts/issue-body.md#tables) and [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown) state.
+   Tick the confirmed criteria with [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria).
 9. **Patch.**
    Patch each changed body from its output body file with [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
 10. **Close.**
@@ -125,8 +126,8 @@ The main path meets [Outcomes](#outcomes).
 11. **Sync the initiative.**
     Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
     - For returned criteria ready to verify:
-      - Run [Verify Selected Criteria](#verify-selected-criteria) with their ids, current initiative body, delivery findings, delivery revisions and named instruments.
-      - Pass returned verified ids to [Tick Verified Criteria](#tick-verified-criteria) with the initiative JSON, every linked epic record and output body file.
+      - Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) with their ids, current initiative body, delivery findings, delivery revisions and named instruments.
+      - Pass returned verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with the initiative JSON, every linked epic record and output body file.
       - Report the remaining findings as pending.
     - [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) the initiative from its output body file when a tick changed it, so the board sync reads every criterion ticked.
     - [Close Delivered Issue](#close-delivered-issue) the initiative when it reports closable.
@@ -181,7 +182,7 @@ The issue bodies associated with a pull request's delivery.
    Report the coverage disagreements returned in [Delivery Findings](../artifacts/epic.md#delivery-findings), including each pull request and row.
    - Continue recording links, verified criteria and Done.
 4. **Criteria and bodies.**
-   For the epic, run [Tick Verified Criteria](#tick-verified-criteria) with its current JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body path.
+   For the epic, run [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with its current JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body path.
    - Publish that returned epic body and each task body returned by Record Task Delivery through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Return the saved identities and findings to the caller.
 
@@ -278,30 +279,6 @@ Fresh closure evidence assembled across the issue and its linked pull requests.
      - Refresh those inputs.
      - Repeat the completion check before trying again.
    - Report any unmerged link or unmet criterion.
-
-### Verify Selected Criteria
-
-The verification evidence for a supplied set of criteria whose delivery is ready.
-
-1. **Check the evidence.**
-   Confirm the supplied delivery findings establish readiness for each selected criterion.
-   - Return an undelivered or unreadable dependency as a blocker for that criterion.
-2. **Verify each criterion.**
-   Run its named instrument on the branch or branches the delivering pull requests merged into.
-   - Record the result against the tested revisions, meeting [Coverage Reports](../artifacts/issue-body.md#coverage-reports). A failed, unavailable or inconclusive instrument leaves the criterion unverified.
-3. **Return the findings.**
-   Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
-   - Leave body publication and further planning to the caller.
-
-### Tick Verified Criteria
-
-The confirmed criteria and completed rows recorded in an epic or initiative body.
-
-1. **Record the criteria.**
-   - For an epic, run [Record Epic Criteria](../artifacts/epic-issue-body.md#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
-   - For an initiative, run [Record Initiative Criteria](../artifacts/initiative-issue-body.md#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
-2. **Return the body.**
-   Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
 
 ## Outcomes
 

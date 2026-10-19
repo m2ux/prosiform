@@ -13,6 +13,7 @@ Read these files first.
 - [Proposal Body](../artifacts/proposal-body.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Issue Body](../artifacts/issue-body.md)
+- [Acceptance Criteria](../artifacts/acceptance-criteria.md)
 - [Task Body](../artifacts/task-body.md)
 - [Standalone Body](../artifacts/standalone-body.md)
 - [Plan Mode](plan-mode.md)
@@ -105,8 +106,8 @@ The main path meets [Outcomes](#outcomes).
      - Run [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative JSON, every linked epic's current JSON and an output body file.
      - Present the returned [Delivery Findings](../artifacts/initiative.md#delivery-findings) to the user.
    - When the user chooses to verify ready criteria now:
-     - Run [Verify Selected Criteria](sync-mode.md#verify-selected-criteria) with those criterion ids, current initiative body, delivery findings, delivery revisions and named instruments.
-     - Pass only returned verified ids to [Tick Verified Criteria](sync-mode.md#tick-verified-criteria), with the current initiative JSON, all linked epic records and output body file.
+     - Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) with those criterion ids, current initiative body, delivery findings, delivery revisions and named instruments.
+     - Pass only returned verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria), with the current initiative JSON, all linked epic records and output body file.
      - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
      - Report failed verification or deferred findings as pending; no criterion is ticked for them.
    - Apply a Done change in the output body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
@@ -174,8 +175,8 @@ The agreed disposition of criteria a delivered row left unmet.
 1. **Decide the disposition.**
    Present each unmet criterion and its missing evidence to the user.
    - For criteria the user confirms already hold:
-     - Run [Verify Selected Criteria](sync-mode.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments.
-     - Pass returned verified ids to [Tick Verified Criteria](sync-mode.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path.
+     - Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments.
+     - Pass returned verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path.
      - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Retain verified criteria on the delivered task.
    - Record failed verification or unanswered decisions as pending.
