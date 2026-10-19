@@ -48,9 +48,7 @@ The main path meets [Outcomes](#outcomes).
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
    - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) across the drafts.
-   - Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer.
-     - Take the positive integer the user confirms for each epic.
-   - Return each epic draft, its confirmed priority and its format results to the review step.
+   - Return each epic draft and its format results to the review step.
 5. **Review the drafts.**
    Follow [Review Initiative Goal](../artifacts/goal-trace.md#review-initiative-goal).
    - Run [Report Review Finding](../artifacts/review-finding.md#report-review-finding) for each returned finding, with its scope, evidence and proposed resolution.
@@ -63,7 +61,9 @@ The main path meets [Outcomes](#outcomes).
    - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
    - An acceptance criterion is created only once it meets [Initiative Acceptance Criteria](../artifacts/initiative-issue-body.md#initiative-acceptance-criteria).
 6. **Publish.**
-   Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed epic number names among them, before saving the issues.
+   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer.
+   - Take the positive integer the user confirms for each epic.
+   - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
    - For a new initiative:
      - Call [Select Tracker Number](../artifacts/issue.md#select-tracker-number) with the initiative prefix letter.
      - Save it through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), using temporary epic-row links until issue identities exist.
