@@ -406,3 +406,16 @@ Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`,
 | Files across the workspace's skills carrying a `Read these files first` list | 25 |
 
 The closure figures come from a traversal of `](…​.md[#fragment])` links from `skills/work-planner/modes/plan-mode.md`, following each target transitively.
+
+### A Line Break Inside Heading Text
+
+Measured against the GitHub renderer on branch `engineering`, two headings carrying the same words:
+
+| Heading as written | Anchor generated |
+| --- | --- |
+| `Run the procedure` over `and then stop`, underlined | `run-the-procedureand-then-stop` |
+| `## Run the procedure and then stop` | `run-the-procedure-and-then-stop` |
+
+The renderer discards the line break and inserts nothing in its place, so a multiline Setext heading and the one-line heading of the same words take different anchors. The contract states this under `Source-heading resolution`, and `source.slug` already does it.
+
+The question was raised while delivering I00:E03:W03, as an edge no slug-compatibility fixture carried: AC5 binds the source fragment to the renderer's, and no fixture had measured a multiline heading. The measurement closed it with no change to the build.
