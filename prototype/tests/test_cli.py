@@ -25,6 +25,7 @@ from prosiform.cli import (
     TARGET_NOT_FOUND,
     USAGE_FAILURE,
     main,
+    read_entry,
 )
 from prosiform.source import UNTERMINATED_FRONTMATTER
 
@@ -478,7 +479,7 @@ def test_a_first_line_that_is_no_opener_shifts_no_coordinate(
     assert run.diagnostics()[0]["source"] == f"guide.md:{at}"
 
 
-def test_a_crlf_source_reaches_the_parse_unconverted(root: Path) -> None:
+def test_a_crlf_delimited_block_is_stripped_by_the_command(root: Path) -> None:
     (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\nSee [[page]].\r\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
     assert run.status == INPUT_FAILURE
@@ -499,3 +500,10 @@ def test_a_stripped_source_the_profile_accepts_reaches_the_absent_stage(
 ) -> None:
     written(root, "guide.md", "﻿---\ntitle: Guide\n...\n# Guide\n")
     assert invoke("--root", str(root), "guide.md").status == INTERNAL_ERROR
+
+
+def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
+    (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\n# Guide\r\n")
+    read = read_entry(root, "guide.md", "guide.md")
+    assert read.text == "# Guide\r\n"
+    assert read.first_line == 4
