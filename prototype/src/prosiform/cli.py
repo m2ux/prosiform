@@ -21,6 +21,12 @@ scheme or authority naming no local document — fails rather than being
 opened, and a query, an invalid escape, a control character or a
 backslash separator is a command line the grammar does not admit.
 
+The allowed source root is canonicalized once, and every source is read by
+descending its normalized path from that directory without following a
+link, so the root confines what a run opens rather than what a run spells.
+A path reaching a source through a symbolic link below the root fails,
+whatever that link points at.
+
 Every entry document the run names is read as bytes, required to be valid
 UTF-8, stripped of the transport metadata it carries ahead of its content
 and parsed under the declared profile, and a source carrying a construct
@@ -55,6 +61,7 @@ from pathlib import Path
 from typing import IO, NoReturn
 
 from prosiform import PROFILE
+from prosiform.access import Absent, Outside, Symlinked, read_source
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
     HEADING_DEPTH_OVERFLOW,
@@ -105,6 +112,7 @@ INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
+SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
@@ -371,6 +379,11 @@ def location(name: str, at: int | None) -> str:
 def read_entry(root: Path, found: Reference) -> Source:
     """One entry document's content, read under the allowed source root.
 
+    The read descends the normalized path from the canonicalized root one
+    segment at a time and follows no link, so a reference reaching a
+    source through a symbolic link below the root fails rather than
+    arriving at whatever that link points at.
+
     The bytes are read without newline translation, so a CRLF source
     reaches the scan spelled as the file spells it, and they are decoded
     strictly, so a source that is not valid UTF-8 fails here as the source
@@ -385,25 +398,34 @@ def read_entry(root: Path, found: Reference) -> Source:
             remedy=f"name a document ending {' or '.join(SUFFIXES)}",
             reference=reference,
         )
-    path = (root / name).resolve()
-    if not path.is_relative_to(root):
+    try:
+        data = read_source(root, name)
+    except Symlinked as linked:
         raise input_failure(
-            f"the entry reference {reference!r} normalizes to {str(path)!r}, which "
-            f"is outside the allowed source root",
+            f"the entry reference {reference!r} reaches its source through {linked}, "
+            f"a symbolic link below the allowed source root",
+            code=SOURCE_SYMLINK,
+            remedy="name the document the link points at, under the source root",
+            reference=reference,
+        ) from linked
+    except Outside as outside:
+        raise input_failure(
+            f"the entry reference {reference!r} names {outside}, which the allowed "
+            f"source root cannot contain",
             code=SOURCE_OUTSIDE_ROOT,
             remedy="name a document the source root carries",
             reference=reference,
-        )
-    if not path.is_file():
+        ) from outside
+    except Absent as absent:
         raise input_failure(
             f"the entry reference {reference!r} names no document under the "
             f"allowed source root",
             code=TARGET_NOT_FOUND,
             remedy="name a document the source root carries",
             reference=reference,
-        )
+        ) from absent
     try:
-        text = decode(path.read_bytes())
+        text = decode(data)
     except UnicodeDecodeError as undecodable:
         raise input_failure(
             f"the entry reference {reference!r} names a document that is not valid "
