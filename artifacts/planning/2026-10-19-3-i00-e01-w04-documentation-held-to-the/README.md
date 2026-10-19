@@ -12,6 +12,7 @@ It matters because a reader installs from a README and invokes what it names, so
 
 | Artifact | What it holds |
 | --- | --- |
+| [w04.md](w04.md) | The task's plan: how a table is located and a row mapped to a declared item, which declaration sets the table check compares, why no Makefile target is excluded from documentation, and how both checks discover the READMEs they read |
 
 ## Links
 
