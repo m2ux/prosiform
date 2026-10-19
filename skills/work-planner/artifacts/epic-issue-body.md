@@ -9,6 +9,8 @@ Read these files first.
 - [Issue Body](issue-body.md)
 - [Pull Request](pull-request.md)
 - [Epic](epic.md)
+- [Acceptance Criteria](acceptance-criteria.md)
+- [Issue](issue.md)
 
 ## Operations
 
@@ -89,6 +91,29 @@ One epic body with confirmed task-grain and coverage corrections.
    - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
    - Split a task exceeding the allowed criterion grain into the confirmed tasks.
 2. Return the revised body and any cross-body numbering or dependency changes for the caller.
+
+### Plan Gap Task
+
+The agreed disposition of criteria a delivered row left unmet.
+
+**Inputs:** Current epic JSON and body, delivered task row, criterion ids, delivery findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
+
+1. Present each unmet criterion and its missing evidence to the user.
+   - For criteria the user confirms already hold:
+     - Run [Verify Selected Criteria](acceptance-criteria.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments.
+     - Pass returned verified ids to [Tick Verified Criteria](acceptance-criteria.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path.
+     - Publish through [Save Tracker Issue](issue.md#save-tracker-issue).
+   - Retain verified criteria on the delivered task.
+   - Record failed verification or unanswered decisions as pending.
+   - If no criteria need further work, return the saved results and pending findings to the caller.
+   - Continue to the draft step with only the criteria the user confirms need further work, using the saved body.
+2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
+   - Confirm the draft with the user.
+   - On acceptance, call [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
+   - Return an unanswered draft as pending without continuing to the reconcile step.
+3. Run [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
+   - Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+   - Return the saved row and criterion disposition to the caller. Done follows [Tables](issue-body.md#tables).
 
 ## Fields
 

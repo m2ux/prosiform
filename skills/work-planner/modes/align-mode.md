@@ -92,7 +92,7 @@ The main path meets [Outcomes](#outcomes).
    - For each epic being aligned, run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with its current JSON, returned pull request records and complete issue-link snapshot, task records, confirmed matches, project checkout and output body file:
      - **Unmet.**
        - Each task [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) reports unmet is a gap.
-       - Follow [Plan Gap Task](#plan-gap-task).
+       - Follow [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task).
      - **Repair.**
        - Repair Done cells as [Tables](../artifacts/issue-body.md#tables) states.
        - When the preceding Record Epic Delivery call reports a row done, or a tick cleared, run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) from the output body file, without asking.
@@ -147,51 +147,6 @@ The main path meets [Outcomes](#outcomes).
 
     With or without a correction:
     - Report what changed on each issue, including each finding the criteria check reported.
-
-### Repair Issue Format
-
-The saved format corrections for one issue and any unresolved content findings.
-
-1. **Validate the body.**
-   Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
-   - Return an unreadable source as a blocker before editing.
-2. **Save mechanical corrections.**
-   Review the returned diff.
-   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
-   - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
-3. **Resolve local content.**
-   For a non-mechanical finding confined to this body:
-   - Obtain the user's decision.
-   - Run [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
-   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
-4. **Confirm and return.**
-   Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the saved issue.
-   - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
-   - Return the saved body, whether a correction was made, and the validation result to the calling step. A remaining failure is a blocker; this subsection does not enter the main alignment procedure.
-
-### Plan Gap Task
-
-The agreed disposition of criteria a delivered row left unmet.
-
-1. **Decide the disposition.**
-   Present each unmet criterion and its missing evidence to the user.
-   - For criteria the user confirms already hold:
-     - Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) with the supplied body, findings, revisions and instruments.
-     - Pass returned verified ids to [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria) with the current epic JSON, pull request records, complete issue-link snapshot and output body path.
-     - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Retain verified criteria on the delivered task.
-   - Record failed verification or unanswered decisions as pending.
-   - If no criteria need further work, return the saved results and pending findings to the caller.
-   - Continue to the draft step with only the criteria the user confirms need further work, using the saved body.
-2. **Draft and apply.**
-   Draft a further task for the criteria selected for further work, meeting [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
-   - Confirm the draft with the user.
-   - On acceptance, call [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
-   - Return an unanswered draft as pending without continuing to the reconcile step.
-3. **Reconcile and return.**
-   Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the revised epic and the supplied delivery evidence.
-   - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Return the saved row and criterion disposition to the caller. Done follows [Tables](../artifacts/issue-body.md#tables).
 
 ## Outcomes
 

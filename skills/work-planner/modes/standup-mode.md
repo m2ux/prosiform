@@ -11,7 +11,6 @@ Read these files first.
 - [Pull Request](../artifacts/pull-request.md)
 - [Standup Report](../artifacts/standup-report.md)
 - [Issue](../artifacts/issue.md)
-- [Align Mode](align-mode.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 
 ## Procedure
@@ -47,7 +46,7 @@ The main path meets [Outcomes](#outcomes).
    Present the returned report verbatim in a fenced block for copying.
    - Put unresolved findings beneath it.
    - For an unreadable epic body:
-     - Run [Repair Issue Format](align-mode.md#repair-issue-format) with the epic identity, current JSON, [epic template and field conditions](../artifacts/epic-issue-body.md#fields), required related evidence and output body path.
+     - Run [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with the epic identity, current JSON, [epic template and field conditions](../artifacts/epic-issue-body.md#fields), required related evidence and output body path.
      - If it confirms a saved correction, repeat steps 3–6 with refreshed records, retaining the selected board, window and initiative filter.
      - If it reports a blocker or no correction, return the unresolved finding without repeating the same repair.
 

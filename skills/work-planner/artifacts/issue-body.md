@@ -7,6 +7,7 @@ The shape every issue body shares: its title, its Problem and Proposal, its acce
 Read these files first.
 
 - [Requirement Characteristics](../references/requirement-characteristics.md)
+- [Issue](issue.md)
 
 ## Operations
 
@@ -65,6 +66,25 @@ A local issue-shaped record for body validation.
 2. Preserve the existing issue's identity and state when supplied.
 3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
 4. Return the JSON path for validation. No tracker issue is created by this operation.
+
+### Repair Issue Format
+
+The saved format corrections for one issue and any unresolved content findings.
+
+**Inputs:** Issue identity, current JSON, kind template and field conditions, required related evidence and output body path.
+
+1. Run [Validate Issue Body](#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
+   - Return an unreadable source as a blocker before editing.
+2. Review the returned diff.
+   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](issue.md#save-tracker-issue), without asking.
+   - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
+3. Resolve a non-mechanical finding confined to this body.
+   - Obtain the user's decision.
+   - Run [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
+   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+4. Run [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
+   - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
+   - Return the saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
 ## Fields
 

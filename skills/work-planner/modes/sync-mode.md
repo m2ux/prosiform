@@ -9,7 +9,6 @@ Read these files first.
 - [Issue](../artifacts/issue.md)
 - [Issue Body](../artifacts/issue-body.md)
 - [Acceptance Criteria](../artifacts/acceptance-criteria.md)
-- [Align Mode](align-mode.md)
 - [Task Body](../artifacts/task-body.md)
 - [Pull Request](../artifacts/pull-request.md)
 - [Delivery Evidence](../artifacts/delivery-evidence.md)
@@ -39,7 +38,7 @@ The main path meets [Outcomes](#outcomes).
      - Fetch the saved epic.
      - Continue only when its Open Questions section is resolved; otherwise return the unresolved questions as blockers.
    - For an issue rejected by [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body):
-     - Run [Repair Issue Format](align-mode.md#repair-issue-format) with that issue identity, current JSON, kind template and field conditions, required related evidence and output body path.
+     - Run [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with that issue identity, current JSON, kind template and field conditions, required related evidence and output body path.
      - When it returns, fetch the saved body again.
      - Validate that saved body before continuing to the fetch step.
      - Return a remaining format failure as a blocker.
@@ -110,7 +109,7 @@ The main path meets [Outcomes](#outcomes).
    Run [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) for the criteria reported ready to verify, supplying the current issue body, delivery findings, relevant delivery revisions and named instruments.
    - Retain the returned verified criterion ids and evidence for the tick step.
    - For an unresolved epic criterion requiring further work:
-     - Follow [Plan Gap Task](align-mode.md#plan-gap-task) with the current epic JSON and body, delivered task row, criterion ids, findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
+     - Follow [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task) with the current epic JSON and body, delivered task row, criterion ids, findings, delivery records, complete issue-link snapshot, delivery revisions, named instruments and output body path.
      - Resume with its recorded disposition; a criterion that cannot be confirmed stays unticked.
 8. **Tick.**
    Tick the confirmed criteria with [Tick Verified Criteria](../artifacts/acceptance-criteria.md#tick-verified-criteria).
