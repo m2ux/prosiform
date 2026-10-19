@@ -59,7 +59,7 @@ Three trees, each created by the stage that writes into it.
 | [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. Both builds run it. |
 | [`prototype/`](prototype/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
 | [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
-| [`checks/`](checks/README.md) | The checks that hold the layout, the README's references and tables, and the glossary's coverage true. |
+| [`checks/`](checks/README.md) | The checks that hold the layout, every README's references and tables, and the glossary's coverage true. |
 
 The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
 
@@ -81,7 +81,7 @@ make check
 | `make corpus` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), the catalogue of error codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
 | `make layout` | Each of the three trees holds a tracked file. |
 | `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`prototype/pyproject.toml`](prototype/README.md) declares, and nothing besides. |
-| `make links` | Every reference this README carries resolves. |
+| `make links` | Every reference every README in this repository carries resolves. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
