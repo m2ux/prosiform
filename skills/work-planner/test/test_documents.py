@@ -41,9 +41,9 @@ class DocumentInterfaces(unittest.TestCase):
         so a call reaches the layer below it. A protocol that runs a mode, or
         an artifact that names either, inverts that and the lifecycle of one
         user goal becomes a step of the change it was meant to coordinate."""
-        below = {'modes': ('protocols', 'artifacts', 'references'),
-                 'protocols': ('protocols', 'artifacts', 'references'),
-                 'artifacts': ('references',)}
+        below = {'modes': ('modes', 'protocols', 'artifacts'),
+                 'protocols': ('protocols', 'artifacts'),
+                 'artifacts': ('artifacts',)}
         for folder, reachable in below.items():
             for path in sorted((ROOT / folder).glob('*.md')):
                 lines, fenced, _ = checker.scan(path)
@@ -52,10 +52,10 @@ class DocumentInterfaces(unittest.TestCase):
                     if not name:
                         continue
                     destination = (path.parent / name).resolve()
-                    if destination == path or destination.parent.parent != ROOT:
+                    if destination.parent.name not in below:
                         continue
                     with self.subTest(file=path.name, target=target):
-                        self.assertIn(destination.parent.name, reachable + (folder,))
+                        self.assertIn(destination.parent.name, reachable)
 
     def test_artifact_operations_expose_inputs_and_consecutive_steps(self):
         for path in sorted((ROOT / 'artifacts').glob('*.md')):

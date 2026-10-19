@@ -123,27 +123,43 @@ def targets(path, lines, fenced):
             yield index, target
 
 
-def structures(roots):
-    """Each skill root's declared structure, read from its own folder, so the
-    contract a skill gives its directories travels with the skill."""
-    declared = {}
-    for name in roots:
-        root = Path(name).resolve()
-        if (path := root / STRUCTURE).is_file():
-            declared[root] = json.loads(path.read_text())
-    return declared
+def structure_at(directory, cache):
+    """The structure governing a directory, from the nearest `structure.json`
+    at or above it, so a skill's contract reaches its files whether the check
+    is given the skill, the tree holding it, or one directory of it. A tree
+    with none gives an empty structure."""
+    if directory not in cache:
+        path = directory / STRUCTURE
+        if path.is_file():
+            cache[directory] = loaded(path)
+        elif directory.parent == directory:
+            cache[directory] = {}
+        else:
+            cache[directory] = structure_at(directory.parent, cache)
+    return cache[directory]
 
 
-def contract(path, declared):
+def loaded(path):
+    """One structure file, refused whole where an entry states no sections,
+    since a contract that names none would pass every file it covers."""
+    try:
+        structure = json.loads(path.read_text())
+    except json.JSONDecodeError as error:
+        raise ValueError(f'{path}: {error}') from error
+    for key, entry in structure.items():
+        if not isinstance(entry, dict) or not entry.get('sections'):
+            raise ValueError(f'{path}: {key} states no sections')
+    return structure
+
+
+def contract(path, cache):
     """The entry covering this file: its directory's, or the one whose
     `*suffix` its name ends with. A file no entry covers has none."""
-    for root, structure in declared.items():
-        if root in path.parents:
-            if entry := structure.get(path.parent.name):
-                return entry
-            return next((entry for key, entry in structure.items()
-                         if key.startswith('*') and path.name.endswith(key[1:])), None)
-    return None
+    structure = structure_at(path.parent, cache)
+    if entry := structure.get(path.parent.name):
+        return entry
+    return next((entry for key, entry in structure.items()
+                 if key.startswith('*') and path.name.endswith(key[1:])), None)
 
 
 def specifications(headings, section='commands'):
@@ -201,15 +217,16 @@ def procedure_spans(lines, fenced, headings, entry=None):
     return spans
 
 
-def citations(paths, declared=None):
+def citations(paths, structures=None):
     """Which files cite each fragment of each file, and which of them run it.
     A file is a caller where a procedure of it carries the citation, and the
     same question is asked of every citing file."""
+    structures = {} if structures is None else structures
     cited = {}
     called = {}
     for path in paths:
         lines, fenced, headings = scan(path)
-        steps = procedure_spans(lines, fenced, headings, contract(path, declared or {}))
+        steps = procedure_spans(lines, fenced, headings, contract(path, structures))
         for index, target in targets(path, lines, fenced):
             name, _, fragment = target.partition('#')
             if not fragment:
@@ -222,7 +239,7 @@ def citations(paths, declared=None):
     return cited, called
 
 
-def check(path, root, cache, cited, called, declared=None):
+def check(path, root, cache, cited, called, structures=None):
     lines, fenced, headings = scan(path)
     skip = frontmatter(lines)
     where = path.relative_to(root)
@@ -256,7 +273,7 @@ def check(path, root, cache, cited, called, declared=None):
     # skill's entry point holds no command, so a specification there is
     # reported whatever cites it, which is the one placement no caller count
     # can reach.
-    entry = contract(path, declared or {})
+    entry = contract(path, {} if structures is None else structures)
     for index, title in specifications(headings, held_section(entry)):
         if path.name == 'SKILL.md':
             report(index, 'command specification in the entry point', title)
@@ -362,8 +379,12 @@ def main(argv=None):
         root = Path(name).resolve()
         files += [(path, root.parent) for path in sorted(root.rglob('*.md'))]
 
-    declared = structures(options.roots)
-    cited, called = citations([path for path, _ in files], declared)
+    declared = {}
+    try:
+        cited, called = citations([path for path, _ in files], declared)
+    except ValueError as error:
+        print(f'unreadable structure — {error}')
+        return 1
     cache = {}
     findings = []
     for path, root in files:

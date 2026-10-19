@@ -63,7 +63,7 @@ class SkillFileChecks(unittest.TestCase):
 
     def findings(self):
         files = sorted(self.skill.rglob('*.md'))
-        declared = checker.structures([self.skill])
+        declared = {}
         cited, called = checker.citations(files, declared)
         cache = {}
         out = []
@@ -449,7 +449,7 @@ class SkillFileChecks(unittest.TestCase):
         path = self.write('artifacts/issue.md', '# Issue\n\n## Operations\n\n'
                           '### Read Tracker Issue\n\n- Run [Fetch issue](#fetch-issue).\n\n'
                           '## Fields\n\nNumber.\n\n## Commands\n\n### Fetch Issue\n\nFetches it.\n')
-        _, called = checker.citations([path], checker.structures([self.skill]))
+        _, called = checker.citations([path], {})
         self.assertEqual(called[path]['fetch-issue'], {path})
 
     def test_mode_operations_are_specifications_not_procedures(self):
@@ -457,8 +457,42 @@ class SkillFileChecks(unittest.TestCase):
                           '1. **Check.**\n   Run [Check files](#check-files).\n\n'
                           '## Outcomes\n\nDone.\n\n## Operations\n\n### Check Files\n\n'
                           '1. A specimen naming [another](#other).\n\n### Other\n\nA command.\n')
-        _, called = checker.citations([path], checker.structures([self.skill]))
+        _, called = checker.citations([path], {})
         self.assertNotIn('other', called[path])
+
+    def test_a_structure_reaches_files_whatever_root_is_named(self):
+        """The contract comes from the nearest structure file above the file
+        under check, so naming the tree or one directory of a skill applies the
+        same contract as naming the skill."""
+        self.write('modes/plan.md', '# Plan\n\n## Procedure\n\n1. **Check.**  A step.\n\n'
+                   '## Outcomes\n\nDone.\n')
+        for root in (self.root, self.skill, self.skill / 'modes'):
+            with self.subTest(root=root.name):
+                printed = io.StringIO()
+                with redirect_stdout(printed):
+                    status = checker.main([str(root)])
+                self.assertEqual((status, printed.getvalue().splitlines()[-1]),
+                                 (0, '1 files checked, 0 findings'))
+
+    def test_a_structure_entry_without_sections_is_refused(self):
+        """An entry naming no sections would pass every file it covers, so the
+        check reports the contract rather than running on it."""
+        (self.skill / 'structure.json').write_text(json.dumps({'modes': {'required': ['Procedure']}}))
+        self.write('modes/plan.md', '# Plan\n')
+        printed = io.StringIO()
+        with redirect_stdout(printed):
+            status = checker.main([str(self.skill)])
+        self.assertEqual(status, 1)
+        self.assertIn('modes states no sections', printed.getvalue())
+
+    def test_an_unreadable_structure_is_refused(self):
+        (self.skill / 'structure.json').write_text('{')
+        self.write('modes/plan.md', '# Plan\n')
+        printed = io.StringIO()
+        with redirect_stdout(printed):
+            status = checker.main([str(self.skill)])
+        self.assertEqual(status, 1)
+        self.assertIn('unreadable structure', printed.getvalue())
 
     def test_directory_sections_reject_wrong_order_and_rules(self):
         self.write('artifacts/issue.md', '# Issue\n\n## Fields\n\nNumber.\n\n'
