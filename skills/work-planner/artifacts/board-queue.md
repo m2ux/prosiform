@@ -33,7 +33,7 @@ The queue belongs to one theme board, identified as `users/{owner}/projectsV2/{i
 
 A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
 
-The epics of one initiative carry their own sets, assigned when the initiative is planned. Every epic with the same number starts together, and a number is compared only with its siblings'.
+The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
 A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 

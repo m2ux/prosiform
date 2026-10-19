@@ -163,11 +163,10 @@ class Queue:
                 candidates.append(epic_key)
             elif held == 'Ready':
                 self.place(epic_key, 'Backlog')
-        top = max((found for epic_key in candidates
-                   if (found := rank(self.issues[epic_key])) is not None), default=None)
+        ranked = {epic_key: rank(self.issues[epic_key]) for epic_key in candidates}
+        top = max((found for found in ranked.values() if found is not None), default=None)
         for epic_key in candidates:
-            self.place(epic_key, 'Ready' if top is None or rank(self.issues[epic_key]) == top
-                       else 'Backlog')
+            self.place(epic_key, 'Ready' if top is None or ranked[epic_key] == top else 'Backlog')
 
     def park(self) -> None:
         """A Ready epic whose initiative is not In Progress, and was not just returned there, goes Backlog."""

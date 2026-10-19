@@ -48,7 +48,8 @@ The main path meets [Outcomes](#outcomes).
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
    - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) across the drafts.
-   - Put its proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer, and take the positive integer they confirm for each epic.
+   - Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer.
+     - Take the positive integer the user confirms for each epic.
    - Return each epic draft, its confirmed priority and its format results to the review step.
 5. **Review the drafts.**
    Follow [Review Initiative Goal](../artifacts/goal-trace.md#review-initiative-goal).
@@ -86,7 +87,8 @@ The main path meets [Outcomes](#outcomes).
    - Repeat that review until clear.
    - After each round, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) on affected bodies.
    - Whenever tasks or edges change, repeat Check Dependencies and Numbering.
-     - Put its proposed Epic Priority map to the user again where the edges moved an epic's number, and save each confirmed change as that epic's priority label.
+     - Put the proposed Epic Priority map to the user again where the edges moved an epic's number.
+     - Save each confirmed change as that epic's priority label.
    - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
    - Keep local body files as the source for the next pass.
    - Update work-item files and the README inventory for added, renamed or removed tasks.
@@ -122,6 +124,6 @@ The main path meets [Outcomes](#outcomes).
 - **A goal made true.**
   Each clause of the goal the user confirmed is made true by the initiative's criteria, and the epics the initiative lists are the work that delivers those criteria.
 - **Epics that start together.**
-  Each epic carries a number saying which of its siblings it starts alongside, proposed from the dependency graph and settled with the user.
+  The user has settled which of the initiative's epics start alongside each other, from a proposal the dependency graph makes.
 - **Review before creation.**
   Findings on that initiative are folded in before any of its issues are created.
