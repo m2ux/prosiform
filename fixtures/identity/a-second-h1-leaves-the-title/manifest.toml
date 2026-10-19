@@ -1,0 +1,16 @@
+description = "A document carrying a second document-level H1 has no only H1, so the title the path names is kept and the group shifts by one."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

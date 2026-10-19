@@ -1,0 +1,17 @@
+description = "Two sections the source separates, named in reverse by two fragments, reach one file group in their original source order, the section between them absent."
+
+clauses = [
+  "File-scoped hierarchy — Source order",
+  "File-scoped hierarchy — Group shift",
+  "Section extraction and output hierarchy — Boundary",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#gamma", "guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
