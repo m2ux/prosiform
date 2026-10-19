@@ -27,9 +27,10 @@ top-level sections of a file carrying a procedure are the set the guidelines
 name, in the order they name them, Procedure among them, so the reader knows
 what the file carries before opening it. A file carrying no procedure keeps
 its own shape, and a mode file in references carries Rules as well. Files in
-modes use Procedure and Outcomes; artifacts use Operations and Fields. Their
-directory selects that contract. Artifact commands belong to their subject,
-including when only one external procedure calls them.
+modes use Procedure and Outcomes; artifacts use Operations and Fields;
+protocols use Procedure and Effects. Their directory selects that contract.
+Artifact commands belong to their subject, including when only one external
+procedure calls them.
 
 A prerequisite citation is recognised by the canonical form the guidelines
 state, `Read [Name](target) first.`, which separates it from a selection
@@ -62,6 +63,7 @@ LEAD_WIDTH = 100
 SECTIONS = ('Prerequisites', 'Procedure', 'Reference', 'Rules', 'Commands')
 MODE_SECTIONS = ('Prerequisites', 'Procedure', 'Outcomes', 'Guidance', 'Operations')
 ARTIFACT_SECTIONS = ('Prerequisites', 'Operations', 'Fields', 'Guidance', 'Commands')
+PROTOCOL_SECTIONS = ('Prerequisites', 'Procedure', 'Effects', 'Guidance')
 
 
 def anchor_of(text):
@@ -240,11 +242,13 @@ def check(path, root, cache, cited, called):
     # takes the structure the guidelines give it whatever it carries, and a mode
     # states what binds it whatever step it is on, so a mode file carries Rules.
     mode = directory == 'modes' or path.name.endswith('-mode.md')
-    structured = directory in ('modes', 'artifacts')
+    structured = directory in ('modes', 'artifacts', 'protocols')
     allowed = (MODE_SECTIONS if directory == 'modes' else
-               ARTIFACT_SECTIONS if directory == 'artifacts' else SECTIONS)
+               ARTIFACT_SECTIONS if directory == 'artifacts' else
+               PROTOCOL_SECTIONS if directory == 'protocols' else SECTIONS)
     required = (('Procedure', 'Outcomes') if directory == 'modes' else
                 ('Fields',) if directory == 'artifacts' else
+                ('Procedure', 'Effects') if directory == 'protocols' else
                 ('Procedure', 'Rules') if mode else ('Procedure',))
     if structured or mode or (path.name != 'SKILL.md' and procedure_spans(lines, fenced, headings)):
         sections = [(index, title.strip()) for index, level, title in headings if level == 2]

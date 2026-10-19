@@ -1,6 +1,6 @@
 # Guidelines
 
-The rules this skill's files follow alongside the [shared skill guidelines](../guidelines.md). Modes and artifacts use the directory-specific structures below. A rule that binds only modes, only artifacts, or only references is in that section.
+The rules this skill's files follow alongside the [shared skill guidelines](../guidelines.md). Modes, protocols and artifacts use the directory-specific structures below. A rule that binds only modes, only protocols, only artifacts, or only references is in that section.
 
 ## Titles
 
@@ -113,6 +113,31 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. A mode has no Rules section.
 
+## Protocols
+
+Read this before adding or changing a protocol.
+
+- **One change.**
+  A protocol is one change to the work that lands in several artifacts together. It changes when that change does. Where the sequence produces one nameable output shape it is an artifact operation, not a protocol.
+- **Named for the situation.**
+  A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
+- **Entered whole.**
+  One file holds one protocol. A caller runs the file; it does not link a step. A sequence worth calling on its own is its own protocol.
+- **Procedure.**
+  The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
+- **Effects.**
+  Effects state what has changed when the protocol completes, and what a blocker leaves unchanged. An effect is a change to the work, not a user goal and not an artifact's shape. It names no step and links to none.
+- **Calls.**
+  A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. It is run by modes and by other protocols, never by an artifact.
+- **Prerequisites.**
+  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure or Effects link to, including each protocol and mode it runs.
+- **A new protocol.**
+  A new protocol is a new file. An artifact is not edited to name it.
+- **Step rules.**
+  A rule that binds one step sits in that step. A rule that binds every protocol is added to this section.
+- **Sections.**
+  Prerequisites, Procedure, Effects, then Guidance when the file has an assistive statement that is not a step or an effect. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
+
 ## Artifacts
 
 Read this before adding or changing an artifact.
@@ -131,8 +156,8 @@ Read this before adding or changing an artifact.
   Reading, inspecting, planning, populating and validating an artifact can each be operations. Classify the work by its subject and behaviour, not its verb or script name. A read that sequences access steps is an operation; a plan that derives an artifact's state is an operation.
 - **Bodies and lifecycle.**
   A body artifact populates and validates document content. A subject artifact owns its readiness and completion checks from supplied evidence. Reading evidence about related artifacts does not make a check orchestration; coordinating changes to those artifacts does. Creation, metadata, linking and closure belong to the artifact for the tracked object.
-- **No mode.**
-  An artifact never links to a mode, including by naming one in prose.
+- **No mode, no protocol.**
+  An artifact never links to a mode or a protocol, including by naming one in prose.
 - **Fields.**
   Fields defines the artifact's shape and the conditions on its elements. Common field conditions hold for the family; a kind supplements them. Fields is a `##` section, with each named field or group under `###`. The kind's template is a subsection of Fields and holds that kind's table. Field conditions do not state user goals. A condition that gates an action sits in the procedure step that performs it.
 - **No procedure in Fields.**

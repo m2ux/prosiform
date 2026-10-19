@@ -14,7 +14,7 @@ Read these files first.
 - [Delivery Branches](../artifacts/delivery-branches.md)
 - [Delivery Plan](../artifacts/delivery-plan.md)
 - [Issue](../artifacts/issue.md)
-- [Sync Mode](sync-mode.md)
+- [Task Merge](../protocols/task-merge.md)
 - [Guidelines](../guidelines.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Planning Record](../artifacts/planning-record.md)
@@ -65,7 +65,7 @@ The main path meets [Outcomes](#outcomes).
    - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
 5. **Merge.**
    Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for each `merge` line.
-   - Run [Record Task Merge](sync-mode.md#record-task-merge) for each confirmed merge result.
+   - Run [Task Merge](../protocols/task-merge.md) for each confirmed merge result.
 6. **Confirm.**
    Show each `unit` line, with its tasks, coverage, record folder, branch, base and worktree.
    - Confirm the set as an [Interview](../guidelines.md#modes). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
@@ -136,7 +136,7 @@ The confirmed unit carried from its supplied brief through implementation and de
 8. **Merge.**
    Record check results with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), following [Test Plan](../artifacts/pull-request-body.md#test-plan).
    - Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request.
-   - On a confirmed merge, run [Record Task Merge](sync-mode.md#record-task-merge) with that merge result and the unit's current task and epic evidence.
+   - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result and the unit's current task and epic evidence.
    - Resume the defer step when recording returns; a merge or recording blocker remains explicit.
 9. **Defer.**
    Confirm each item with the user.

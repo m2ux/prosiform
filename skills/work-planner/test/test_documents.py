@@ -11,7 +11,7 @@ import check_skill_files as checker
 
 class DocumentInterfaces(unittest.TestCase):
     def test_prerequisites_match_direct_required_reads(self):
-        for folder in ('modes', 'artifacts'):
+        for folder in ('modes', 'artifacts', 'protocols'):
             for path in sorted((ROOT / folder).glob('*.md')):
                 with self.subTest(file=path.name):
                     lines, fenced, headings = checker.scan(path)
@@ -31,10 +31,11 @@ class DocumentInterfaces(unittest.TestCase):
                             continue
                         if sections[i] == 'Prerequisites':
                             declared.add(destination)
-                        elif sections[i] in ('Procedure', 'Operations', 'Fields', 'Outcomes', 'Commands'):
+                        elif sections[i] in ('Procedure', 'Operations', 'Fields',
+                                             'Outcomes', 'Effects', 'Commands'):
                             used.add(destination)
                         if folder == 'artifacts':
-                            self.assertNotEqual(destination.parent.name, 'modes', target)
+                            self.assertNotIn(destination.parent.name, ('modes', 'protocols'), target)
                     self.assertEqual(declared, used)
 
     def test_artifact_operations_expose_inputs_and_consecutive_steps(self):
@@ -65,4 +66,20 @@ class DocumentInterfaces(unittest.TestCase):
             lines, fenced, _ = checker.scan(path)
             for _, target in checker.targets(path, lines, fenced):
                 name = target.partition('#')[0]
-                self.assertNotIn((path.parent / name).resolve().parent.name, ('modes', 'artifacts'))
+                self.assertNotIn((path.parent / name).resolve().parent.name,
+                                 ('modes', 'artifacts', 'protocols'))
+
+    def test_protocols_are_entered_whole(self):
+        """A protocol is one coordinated sequence, so a caller runs the file
+        rather than reaching into a step of it."""
+        for folder in ('modes', 'protocols'):
+            for path in sorted((ROOT / folder).glob('*.md')):
+                lines, fenced, _ = checker.scan(path)
+                for _, target in checker.targets(path, lines, fenced):
+                    name, _, fragment = target.partition('#')
+                    if not name:
+                        continue
+                    destination = (path.parent / name).resolve()
+                    if destination.parent.name == 'protocols' and destination != path:
+                        with self.subTest(file=path.name, target=target):
+                            self.assertEqual(fragment, '')

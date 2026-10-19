@@ -73,7 +73,7 @@ Select the mode as appropriate to fulfill the user request:
 - **Decisions.**
   Ask one at a time, following the [interview rules](guidelines.md#modes). Record each answer in the affected issues and, when there is one, the planning record.
 - **Execution.**
-  A mode coordinates artifact operations through their named inputs. Run another mode or its named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
+  A mode coordinates protocols and artifact operations through their named inputs. A protocol is one change that lands in several artifacts together, and is run whole. Run another mode, a protocol, or a named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
 
 ## Conventions
 
