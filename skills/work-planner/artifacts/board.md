@@ -2,6 +2,12 @@
 
 The theme or proposals board, its membership and each item's status.
 
+## Prerequisites
+
+Read these files first.
+
+- [Issue](issue.md)
+
 ## Operations
 
 ### *Select* Project Board
@@ -70,7 +76,7 @@ The selected board's items and status fields.
 
 1. Run [Find Status Field](#find-status-field) for the board number.
 2. Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
-3. Return the items, Status field and item ids to the caller.
+3. Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
 ### *Read* Board Assignee
 
@@ -135,9 +141,13 @@ An initiative carries one `theme:*` label, and each of its epics carries the sam
 - It is linked to the repository.
 - It holds the theme's initiatives, their epics and their task issues.
 
+### Repositories
+
+A board's repositories are those its items' issues live in, read from each item's issue, deduplicated and ordered with the board's own repository first. An item whose issue is unreadable leaves the list incomplete, which is reported rather than filled by assumption.
+
 ### Assignees
 
-An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee.
+An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so a change is made through [Assign Tracker Issue](issue.md#assign-tracker-issue).
 
 ### Standalone Issues
 

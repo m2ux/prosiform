@@ -40,7 +40,7 @@ The board's status and assignees after its issues record delivery.
 2. Run [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
    - Fetch each unresolved issue.
    - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
-3. Run each emitted call.
+3. Run each emitted call, setting an assignee change through [Assign Tracker Issue](issue.md#assign-tracker-issue).
    - Run [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
    - If that item still shows the preceding status:
      - Repeat its write.

@@ -38,7 +38,7 @@ The main path meets [Outcomes](#outcomes).
    - Report a pending decision or unavailable dependency before dispatch.
 3. **Fetch.**
    Run [Read Board State](../artifacts/board.md#read-board-state) with the selected board identity to obtain its current items and Status field.
-   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for each selected board repository.
+   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](../artifacts/board.md#repositories) Read Board State returned.
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) with those records.
    - Use both snapshots in Plan Available Work.
    - Run [Read Board Configuration](../artifacts/board.md#read-board-configuration).
