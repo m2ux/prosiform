@@ -176,8 +176,8 @@ class Board:
                         return False
         return True
 
-    def prerequisite_epics(self, key: Key, epics: dict[str, Key]) -> set[Key]:
-        """The epics this one depends on: those its task rows name outside it, and those its
+    def referenced_epics(self, key: Key, epics: dict[str, Key]) -> set[Key]:
+        """The epics this one's rows name: those its task rows name outside it, and those its
         initiative row names. epics maps the initiative's Eyy ids to their issues."""
         header, tasks = self.table(key)
         cells = [cell(header, task, 'Depends on') for task in tasks.values()]
