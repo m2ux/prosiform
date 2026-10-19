@@ -13,7 +13,8 @@ from pathlib import Path
 from fixtures import SCRIPTS, epic_body, initiative_body
 
 sys.path.insert(0, str(SCRIPTS))
-from deps import check_initiative, eligible_unjoined, epic_dependencies, main  # noqa: E402
+from deps import (check_initiative, eligible_unjoined, epic_dependencies, epic_priority,  # noqa: E402
+                  main)
 
 
 def run(bodies: list[tuple[str, str]]) -> tuple[int, str]:
@@ -212,3 +213,24 @@ class InitiativeDependencies(unittest.TestCase):
             self.assertEqual(second, first)
             self.assertEqual(tasks, original)
             self.assertEqual(path.read_text(), body)
+
+
+class EpicPriority(unittest.TestCase):
+    def test_epics_with_no_prerequisite_epic_share_the_largest_number(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Other output', [], [])}
+        self.assertEqual(epic_priority(tasks), {'E00': 1, 'E01': 1})
+
+    def test_each_prerequisite_epic_takes_a_larger_number_than_its_dependant(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Consume', ['E00:W01'], []),
+                 'E02:W01': ('Finish', ['E01:W01'], [])}
+        self.assertEqual(epic_priority(tasks), {'E00': 3, 'E01': 2, 'E02': 1})
+
+    def test_an_epic_with_no_tasks_carries_the_largest_number(self):
+        tasks = {'E00:W01': ('Output', [], []), 'E01:W01': ('Consume', ['E00:W01'], [])}
+        self.assertEqual(epic_priority(tasks, ('E00', 'E01', 'E02')), {'E00': 2, 'E01': 1, 'E02': 2})
+
+    def test_the_proposed_priority_is_printed_for_each_epic(self):
+        code, text = run([('E00', epic_body(('W01', 'Output', ''))),
+                          ('E01', epic_body(('W01', 'Consume', 'E00')))])
+        self.assertEqual(code, 0, text)
+        self.assertIn('--- epic priority (epics sharing a number start together)\n2 E00\n1 E01', text)

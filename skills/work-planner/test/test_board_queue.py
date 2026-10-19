@@ -32,11 +32,12 @@ def initiative(number: int, name: str, *rows: tuple[str, str], priority: str = '
 
 
 def epic(number: int, which: str, *tasks: tuple[str, str, str], repo: str = 'o/r',
-         questions: str = '') -> dict:
+         questions: str = '', priority: str = '') -> dict:
     body = epic_body(*tasks)
     if questions:
         body += f'\n## Open Questions\n\n- {questions}\n'
-    return issue(number, f'[I{which}] Epic {number}: Work', body=body, repo=repo)
+    return issue(number, f'[I{which}] Epic {number}: Work', body=body,
+                 labels=(priority,) if priority else (), repo=repo)
 
 
 def queue(items: list[dict], prs: list[dict] | None = None, unplanned: tuple[str, ...] = ()) -> str:
@@ -204,6 +205,43 @@ class Queue(unittest.TestCase):
         out = queue(staged((current, 'In Progress'), (done, 'Done'), (nxt, 'Backlog'), (extra, 'Ready')))
         self.assertIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
         self.assertIn('[I01:E02] Epic 4: Work: Ready → Backlog', out)
+
+    def pair(self, first: str, second: str, held: str = 'Backlog') -> str:
+        """Two epics of the In Progress initiative that can both start, with their priorities."""
+        current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''),
+                             (f"[E01]({url('issues', 3)})", ''))
+        return queue(staged((current, 'In Progress'),
+                            (epic(2, '01:E00', ('W01', 'Go', ''), priority=first), 'Backlog'),
+                            (epic(3, '01:E01', ('W01', 'Go', ''), priority=second), held)))
+
+    def test_epics_sharing_the_highest_number_start_together(self):
+        out = self.pair('priority: 5', 'priority: 5')
+        self.assertIn('[I01:E00] Epic 2: Work: Backlog → Ready', out)
+        self.assertIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
+
+    def test_an_epic_of_a_lower_number_waits_while_the_highest_set_runs(self):
+        out = self.pair('priority: 5', 'priority: 2', held='Ready')
+        self.assertIn('[I01:E00] Epic 2: Work: Backlog → Ready', out)
+        self.assertIn('[I01:E01] Epic 3: Work: Ready → Backlog', out)
+
+    def test_an_epic_with_no_priority_waits_while_a_labelled_sibling_can_start(self):
+        out = self.pair('priority: 2', '')
+        self.assertIn('[I01:E00] Epic 2: Work: Backlog → Ready', out)
+        self.assertNotIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
+
+    def test_epics_with_no_priority_start_together(self):
+        out = self.pair('', '')
+        self.assertIn('[I01:E00] Epic 2: Work: Backlog → Ready', out)
+        self.assertIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
+
+    def test_a_lower_set_waits_while_a_higher_one_is_under_way(self):
+        current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''),
+                             (f"[E01]({url('issues', 3)})", ''))
+        started = epic(2, '01:E00', (f"[W01]({url('pull', 9)})", 'Go', ''), priority='priority: 5')
+        later = epic(3, '01:E01', ('W01', 'Go', ''), priority='priority: 2')
+        out = queue(staged((current, 'In Progress'), (started, 'In Progress'), (later, 'Backlog')),
+                    [pr(9, '[I01:E00] Go', merged='2026-01-01T00:00:00Z')])
+        self.assertNotIn('[I01:E01] Epic 3: Work: Backlog → Ready', out)
 
     def test_an_open_question_keeps_the_next_epic_in_backlog(self):
         current = initiative(1, 'Current: Work', (f"[E00]({url('issues', 2)})", ''))

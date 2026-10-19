@@ -11,6 +11,7 @@ Read these files first.
 - [Pull Request](../artifacts/pull-request.md)
 - [Board Queue](../artifacts/board-queue.md)
 - [Issue](../artifacts/issue.md)
+- [Repository Labels](../artifacts/repository-labels.md)
 - [Guidelines](../guidelines.md)
 
 ## Procedure
@@ -48,6 +49,7 @@ The main path meets [Outcomes](#outcomes).
      - Ask for a positive integer or none.
      - Record the initiative's identity as confirmed unplanned when the user chooses none.
    - After an answer:
+     - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the priority label each confirmed number names, for every repository holding one of those initiatives.
      - Call [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with each initiative identity and its confirmed priority-label addition.
      - Run [Read Board State](../artifacts/board.md#read-board-state) again.
      - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
@@ -69,4 +71,4 @@ The main path meets [Outcomes](#outcomes).
 - **A parallel work map.**
   Initiatives the user ranks with the same priority run together. One left unordered waits.
 - **Epics follow the initiative.**
-  On the initiative that is underway, the epic that is next can start, and a partly completed epic stays underway.
+  On the initiative that is underway, the epics planned to start together can start, and a partly completed epic stays underway.
