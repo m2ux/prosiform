@@ -13,6 +13,7 @@ It matters because the corpus harness delivered by [I00:E01] decides a fixture's
 | Artifact | What it holds |
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: the option set and its defaults, the stream discipline, the outcome-to-status mapping, and what the command does not yet do |
+| [validation.md](validation.md) | The checks this task carries, as they were run: the procedure, the tested revision, the observed output of each, and the criteria no check here observes |
 
 ## Links
 
