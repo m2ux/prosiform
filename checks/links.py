@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Assert every reference a document carries resolves.
+"""Assert every reference every README the repository owns resolves.
+
+The documents are found rather than listed, so a tree added later brings its
+README into the check by being committed. Naming documents on the command line
+checks those instead, which is for reading one document while editing it.
 
 Four classes of reference, each resolved by what it names:
 
@@ -26,28 +30,16 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from documents import ROOT, readmes, strip_code_fences
+
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
 INLINE_LINK = re.compile(r"\]\(\s*<?([^()<>\s]+)>?\s*(?:\"[^\"]*\")?\s*\)")
 REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*<?(\S+)>?", re.MULTILINE)
-FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$", re.MULTILINE)
 SLUG_KEPT = frozenset("-_ ")
 
 USER_AGENT = "prosiform-link-check"
-
-
-def strip_code_fences(text: str) -> str:
-    """Blank out fenced blocks, whose contents are examples rather than links."""
-    out, fenced = [], False
-    for line in text.splitlines():
-        if FENCE.match(line):
-            fenced = not fenced
-            out.append("")
-            continue
-        out.append("" if fenced else line)
-    return "\n".join(out)
 
 
 def slug(heading: str) -> str:
@@ -269,8 +261,8 @@ def main() -> int:
     parser.add_argument(
         "documents",
         nargs="*",
-        default=["README.md"],
-        help="documents to check, relative to the repository root",
+        help="documents to check, relative to the repository root, in place of "
+        "every README the repository owns",
     )
     parser.add_argument(
         "--online",
@@ -279,9 +271,15 @@ def main() -> int:
     )
     arguments = parser.parse_args()
 
+    named = [(ROOT / name).resolve() for name in arguments.documents]
+    documents = named or readmes()
     failures = []
-    for name in arguments.documents:
-        document = (ROOT / name).resolve()
+    for document in documents:
+        name = (
+            document.relative_to(ROOT).as_posix()
+            if document.is_relative_to(ROOT)
+            else str(document)
+        )
         if not document.exists():
             failures.append(f"{name} — the document to check does not exist")
             continue
@@ -294,7 +292,7 @@ def main() -> int:
     if failures:
         print(f"\nlink check: {len(failures)} unresolved reference(s)", file=sys.stderr)
         return 1
-    print("\nlink check: every reference resolved")
+    print(f"\nlink check: every reference in {len(documents)} document(s) resolved")
     return 0
 
 
