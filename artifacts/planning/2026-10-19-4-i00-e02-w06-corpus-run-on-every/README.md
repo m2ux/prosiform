@@ -12,7 +12,8 @@ It matters because the corpus has never been executed by anything but a person. 
 
 | Artifact | What it holds |
 | --- | --- |
-| [w06.md](w06.md) | The task's plan: the runner's invocation as a job step, how a fixture awaiting a later row is told from one reporting a defect, the job's reporting, and its failure when no build is configured |
+| [w06.md](w06.md) | The task's plan: the rule that separates a fixture awaiting later work from one reporting a defect and what it rejects, the corpus run's reporting, its failure when no build is configured, and where it joins the checks |
+| [validation.md](validation.md) | The checks as they were run: the corpus count at the base and at the head, and the four continuous-integration runs that observe the job's behaviour |
 
 ## Links
 
@@ -25,3 +26,4 @@ It matters because the corpus has never been executed by anything but a person. 
 | W04 record | [Whole-document emission under a filename heading](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w04-whole-document-emission-under) |
 | W05 record | [Fixtures from unmodified workspace skills](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w05-fixtures-from-unmodified-workspace) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
+| Pull request | [#56 \[I00:E02\] Corpus Run on Every Change](https://github.com/m2ux/prosiform/pull/56) |
