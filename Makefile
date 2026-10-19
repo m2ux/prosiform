@@ -7,8 +7,13 @@
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `prototype/uv.lock` records and resolves
 # nothing. The corpus checks read `jsonschema` from that same group, so they
-# run through it; the layout, table, link and vocabulary checks depend on the
-# standard library alone and run under `python3` directly.
+# run through it; the smoke, layout, table, link and vocabulary checks depend
+# on the standard library alone and run under `python3` directly.
+#
+# `make smoke` is the one check that does not run the build from this
+# checkout: it builds the wheel, installs it into a throwaway environment and
+# invokes the command by name from a directory of its own, which is how a
+# caller reaches an installed entry point.
 #
 # `make corpus` runs the corpus against a build named by configuration:
 # `PROSIFORM_BUILD` holds that build's command line, and the target fails
@@ -22,9 +27,9 @@ UV_RUN := uv run --project prototype --frozen
 TOOL_CONFIG := prototype/pyproject.toml
 PYTHON_SOURCES := prototype/src prototype/tests checks
 
-.PHONY: check test harness corpus lint format-check typecheck lock-check layout tables links vocabulary
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary
 
-check: lock-check lint format-check typecheck test harness corpus layout tables links vocabulary
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary
 
 test:
 	cd prototype && uv run --frozen pytest
@@ -34,6 +39,9 @@ harness:
 
 corpus:
 	$(UV_RUN) python checks/corpus.py
+
+smoke:
+	python3 checks/smoke.py
 
 lint:
 	$(UV_RUN) ruff check --config $(TOOL_CONFIG) $(PYTHON_SOURCES)

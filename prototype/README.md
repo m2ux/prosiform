@@ -32,6 +32,8 @@ The wheel carries [`docs/glossary.md`](../docs/glossary.md) at `prosiform/docs/g
 uv build --wheel
 ```
 
+`make smoke` builds that wheel, installs it into a throwaway environment and invokes the command by name from a directory unrelated to this repository, so the packaging metadata is held to producing an installable build with a resolvable entry point on every change rather than at release time.
+
 ## Checks
 
 The build's tests and static checks are named commands, run from the repository root alongside [the checks the repository carries](../checks/README.md). Each tool is declared in the `dev` dependency group and pinned by the lockfile, so the version that checks a change on a working copy is the version that checks it in continuous integration.
