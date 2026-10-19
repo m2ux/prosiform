@@ -1,6 +1,6 @@
 # Epic Integration
 
-One epic base merged into its long-lived branch, on current branch, epic and pull-request evidence. The base names the target it merges into.
+One epic base merged into its long-lived branch, on current branch, epic and pull-request evidence.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ Read these files first.
 
 1. **Prepare the evidence.**
    - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, which gates the merge this protocol makes.
-   - Follow [Review Pull Request](review-pull-request.md) with the actual task merges.
+   - Follow [Review Pull Request](review-pull-request.md) with the actual task merges, the epic's issue and that confirmed setting.
    - Run [Understand Mode](../modes/understand-mode.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).

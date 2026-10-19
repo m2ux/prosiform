@@ -129,13 +129,14 @@ The confirmed unit carried from its supplied brief through implementation and de
 6. **Implement.**
    Deliver the work in the worktree, with every test the work item names, as [Tables](../artifacts/issue-body.md#tables) state.
 7. **Open the pull request.**
-   Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository where the session holds no confirmed setting.
-   - Open it with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), supplying the unit's task issue where one exists and that confirmed setting, so the title, the base, the Test Plan, and the issue links meet [Titles](../artifacts/pull-request-body.md#titles), [Branches](../artifacts/delivery-branches.md#branches), [Test Coverage](../artifacts/pull-request-body.md#test-coverage), and [Issue Links](../artifacts/pull-request.md#issue-links).
+   Open the unit's pull request with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), so the title, the base, the Test Plan, and the issue links meet [Titles](../artifacts/pull-request-body.md#titles), [Branches](../artifacts/delivery-branches.md#branches), [Test Coverage](../artifacts/pull-request-body.md#test-coverage), and [Issue Links](../artifacts/pull-request.md#issue-links).
+   - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, where the session holds no confirmed setting.
+   - Supply that setting and the unit's task issue, where one exists, so the pull request opens linked to it.
    - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) for the unit's tasks.
    - Run [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the returned body.
 8. **Merge.**
    Record check results with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), following [Test Plan](../artifacts/pull-request-body.md#test-plan).
-   - Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request, with the project checkout.
+   - Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request, with the unit's worktree as the project checkout.
    - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result and the unit's current task and epic evidence.
    - Resume the defer step when recording returns; a merge or recording blocker remains explicit.
 9. **Defer.**

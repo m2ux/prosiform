@@ -38,7 +38,7 @@ The current long-lived target merged into an epic base.
 
 1. Take the long-lived target and the worktree path from the base name, meeting [Epic Bases](#epic-bases).
 2. Run [Fetch Remote Branch](#fetch-remote-branch) in the project checkout with that epic base; stop on failure.
-3. Run [Add Epic Base Worktree](#add-epic-base-worktree) for an absent worktree, and reuse an existing one.
+3. Run [Add Epic Base Worktree](#add-epic-base-worktree) for an absent worktree, and reuse an existing one; stop on failure, which a base checked out elsewhere returns.
 4. Run [Fetch Remote Branch](#fetch-remote-branch) in that worktree with the long-lived target, such as `main`; stop on failure.
 5. Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the target branch name, such as `main`, to merge `origin/main`. A conflict stops the update, leaves the pull request open and is reported.
 6. After a successful merge:
@@ -123,7 +123,7 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - **Example.**
   An epic base cut from `main` is `i07/e00/main`.
 - The base's last segment is its long-lived branch, which gives the target it merges and is merged into.
-- Each base is worked in one worktree, at the path its own name gives under the project's worktree directory.
+- Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
 - **Example.**
   `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
 - Every pull request delivering the epic's tasks targets that epic base.
@@ -262,6 +262,8 @@ git fetch origin pull/950/head
 Creates the worktree for an existing epic base.
 
 **Inputs:** Project checkout, worktree path and fetched epic base.
+
+- The path resolves against the directory the command runs in, so supply it as [Epic Bases](#epic-bases) anchors it rather than relative to a linked worktree.
 
 ```bash
 git worktree add '<worktree-path>' '<epic-base>'
