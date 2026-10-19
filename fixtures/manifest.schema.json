@@ -47,7 +47,7 @@
       }
     },
     "expected": {
-      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared.",
+      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared. A run that must also leave the filesystem alone names each path it must not create.",
       "type": "object",
       "additionalProperties": false,
       "required": ["exit_status", "stdout", "diagnostics"],
@@ -65,6 +65,13 @@
           "description": "The diagnostics the run must emit on standard error, in order. A run emitting none declares an empty list.",
           "type": "array",
           "items": { "$ref": "#/$defs/diagnostic" }
+        },
+        "absent": {
+          "description": "The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A stream comparison cannot reach a file, so the absence is declared rather than inferred. A fixture that already holds one of these paths declares nothing about its run and is malformed. A fixture whose run creates no file names none.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/fixturePath" }
         }
       }
     },

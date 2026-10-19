@@ -19,8 +19,17 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from manifests import CORPUS, MANIFEST_NAME, errors, identity, missing_files, read
+from manifests import (
+    CORPUS,
+    MANIFEST_NAME,
+    errors,
+    identity,
+    missing_files,
+    present_files,
+    read,
+)
 from runner import (
+    ABSENT,
     BUILD,
     BUILD_TIMEOUT,
     DIAGNOSTICS,
@@ -68,6 +77,7 @@ def write_fixture(
     exit_status: int = 0,
     stdout: bytes = b"",
     diagnostics: tuple[dict[str, str], ...] = (),
+    absent: tuple[str, ...] = (),
     complete: bool = True,
 ) -> Path:
     """A fixture directory declaring the result its run must produce."""
@@ -93,6 +103,9 @@ def write_fixture(
     ]
     if complete:
         lines.append(f"exit_status = {exit_status}")
+    if absent:
+        declared_absent = ", ".join(json.dumps(name) for name in absent)
+        lines.append(f"absent = [{declared_absent}]")
     if diagnostics:
         for diagnostic in diagnostics:
             lines.append("")
@@ -108,6 +121,7 @@ def write_fixture(
     if complete:
         assert errors(manifest) == []
         assert missing_files(directory, manifest) == []
+        assert present_files(directory, manifest) == []
     return directory
 
 
@@ -122,6 +136,12 @@ def replaying(directory: Path, stdout: bytes, stderr: bytes, status: int) -> str
     script = (
         f"cat {shlex.quote(str(out))}; cat {shlex.quote(str(err))} >&2; exit {status}"
     )
+    return shlex.join(["/bin/sh", "-c", script])
+
+
+def publishing(name: str, text: str) -> str:
+    """A configured build that writes one file into the directory it runs in."""
+    script = f"printf %s {shlex.quote(text)} > {shlex.quote(name)}"
     return shlex.join(["/bin/sh", "-c", script])
 
 
@@ -256,6 +276,71 @@ def test_a_malformed_fixture_is_refused_without_invoking_the_build(
     assert not result.passed
     assert "exit_status" in detail_of(result, MANIFEST)
     assert not record.exists()
+
+
+def test_a_path_the_run_leaves_absent_holds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A declared path the run never creates is the expectation being met."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        absent=("bundle.md",),
+    )
+    configure(monkeypatch, "/bin/true")
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+    assert not (fixture / "bundle.md").exists()
+
+
+def test_a_path_the_run_creates_names_the_expectation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A run that writes the file it was told to validate without writing fails."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        absent=("bundle.md",),
+    )
+    configure(monkeypatch, publishing("bundle.md", "# Guide\n"))
+    result = run_fixture(fixture)
+    assert not result.passed
+    detail = detail_of(result, ABSENT)
+    assert "the run created bundle.md" in detail
+    assert "8 bytes written" in detail
+
+
+def test_a_path_the_run_creates_is_removed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A corpus run leaves the fixture directory the manifest declares."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        absent=("bundle.md",),
+    )
+    configure(monkeypatch, publishing("bundle.md", "# Guide\n"))
+    assert not run_fixture(fixture).passed
+    assert not (fixture / "bundle.md").exists()
+
+
+def test_a_fixture_already_holding_a_declared_absent_path_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A declaration the directory contradicts says nothing about the run."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        absent=("bundle.md",),
+    )
+    (fixture / "bundle.md").write_bytes(b"# Guide\n")
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    result = run_fixture(fixture)
+    assert not result.passed
+    assert "bundle.md is a path the fixture holds" in detail_of(result, MANIFEST)
+    assert not record.exists()
+    assert (fixture / "bundle.md").exists()
 
 
 def test_the_runner_names_no_implementation_or_language() -> None:
