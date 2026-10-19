@@ -13,7 +13,7 @@ cd prototype
 uv sync --frozen
 ```
 
-`--frozen` installs what the lockfile records and resolves nothing, so a dependency change reaches an environment only by way of a lockfile change. `uv sync --check` reports an environment whose versions have drifted from the lockfile. `uv lock` rewrites the lockfile after an edit to `pyproject.toml`, and `uv lock --check` reports a lockfile that no longer describes the declared dependencies.
+`--frozen` installs what the lockfile records and resolves nothing, so a dependency change reaches an environment only by way of a lockfile change. `uv sync --check` reports an environment whose versions have drifted from the lockfile. `uv lock` rewrites the lockfile after an edit to `pyproject.toml`, and `uv lock --check` reports a lockfile that no longer describes the declared dependencies. `make tables` holds the tables below to what `pyproject.toml` and the [`Makefile`](../Makefile) declare, in both directions, so a dependency added or dropped and a command added or retired reach this document on the change that makes it.
 
 | Declared | Value | Why |
 | --- | --- | --- |
