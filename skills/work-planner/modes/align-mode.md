@@ -16,7 +16,8 @@ Read these files first.
 - [Acceptance Criteria](../artifacts/acceptance-criteria.md)
 - [Task Body](../artifacts/task-body.md)
 - [Standalone Body](../artifacts/standalone-body.md)
-- [Plan Mode](plan-mode.md)
+- [Goal Trace](../artifacts/goal-trace.md)
+- [Review Finding](../artifacts/review-finding.md)
 - [Dependency Graph](../artifacts/dependency-graph.md)
 - [Requirement Characteristics](../references/requirement-characteristics.md)
 - [Pull Request](../artifacts/pull-request.md)
@@ -49,9 +50,9 @@ The main path meets [Outcomes](#outcomes).
    Confirm the returned diff changes structure only.
    - Publish that body and the returned title or label corrections through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), without asking.
 5. **Review the goal.**
-   - For initiative or epic scope, follow [Review Initiative Goal](plan-mode.md#review-initiative-goal) with the current initiative and epic evidence, confirmed goal clauses and marked sources.
+   - For initiative or epic scope, follow [Review Initiative Goal](../artifacts/goal-trace.md#review-initiative-goal) with the current initiative and epic evidence, confirmed goal clauses and marked sources.
    - For proposal, task or standalone scope, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) with the selected body, its kind's field conditions and format inputs; skip initiative goal review when no initiative is in scope.
-   - Present each finding through [Report Review Finding](plan-mode.md#report-review-finding). Numbering changes affect only rows no pull request names.
+   - Present each finding through [Report Review Finding](../artifacts/review-finding.md#report-review-finding). Numbering changes affect only rows no pull request names.
 6. **Resolve content decisions.**
    Decide each non-mechanical finding with the user.
    - Pass confirmed local resolutions to [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections), using the selected kind's template and field conditions.
