@@ -117,14 +117,14 @@ Read this before adding or changing a mode.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every mode is added to this section.
 - **Sections.**
-  Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. A mode has no Rules section.
+  Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
 ## Protocols
 
 Read this before adding or changing a protocol.
 
 - **One change.**
-  A protocol is one change to the work that lands in several artifacts together. It changes when that change does. Where the sequence produces one nameable output shape it is an artifact operation, not a protocol.
+  A protocol is one change to the work that lands in several artifacts together. It changes when that change does. Where the sequence produces one nameable output shape it is an artifact operation, not a protocol, and a derived shape with no persisted document still counts.
 - **Named for the situation.**
   A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
 - **Entered whole.**
@@ -133,10 +133,8 @@ Read this before adding or changing a protocol.
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**
   What a protocol changes, and what a blocker leaves unchanged, is stated by the step that changes it. A protocol carries no section restating the result; a reader following the procedure and its links has it already, and a summary goes stale against the steps it describes.
-- **Calls.**
-  A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. It is run by modes and by other protocols, never by an artifact.
 - **Prerequisites.**
-  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure links to, including each protocol and mode it runs.
+  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure links to, including each protocol it runs.
 - **No spare parts.**
   A protocol nothing runs is not a protocol. One exists because a mode or another protocol follows it.
 - **A new protocol.**
@@ -144,7 +142,7 @@ Read this before adding or changing a protocol.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every protocol is added to this section.
 - **Sections.**
-  Prerequisites, Procedure, then Guidance when the file has an assistive statement that is not a step. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
+  Prerequisites, Procedure, then Guidance when the file has an assistive statement that is not a step. Procedure is required. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
 
 ## Artifacts
 
@@ -182,7 +180,7 @@ Read this before adding or changing an artifact.
 - **Prerequisites.**
   Prerequisites open with `Read these files first.` They list every file the artifact's Operations, Fields or Commands link to. A kind lists `issue-body.md` because it links to it. The common file does not link to a kind.
 - **Operation steps.**
-  Address instructions directly to the agent, leading each step with its action. Steps have no separate bold introductory label. Multiple steps use consecutive numbering; an operation with one step uses one bullet.
+  Address instructions directly to the agent, leading each step with its action. Steps have no separate bold introductory label. Multiple steps use consecutive numbering; an operation with one step uses one bullet and counts as a procedure.
 - **Returned output.**
   State what the operation returns within its instructions. Do not add a separate Result line.
 - **Population conditions.**
@@ -198,7 +196,7 @@ Read this before adding or changing an artifact.
 - **Step rules.**
   Put each action's preconditions and refusal conditions in its governing procedure step. Shared preconditions belong to a common procedure that callers invoke. Command specifications require the resulting evidence or authorization as inputs. A rule that binds every artifact is added to this section.
 - **Sections.**
-  Prerequisites, Operations, Fields, then Guidance when it has an assistive statement that is not a step or a field condition, then Commands when the file has command specifications. An artifact has no Procedure, Outcomes or Rules section.
+  Prerequisites, Operations, Fields, then Guidance when it has an assistive statement that is not a step or a field condition, then Commands when the file has command specifications. Fields is required. An artifact has no Procedure, Outcomes or Rules section.
 
 ## References
 

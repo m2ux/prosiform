@@ -1,6 +1,6 @@
 # Skill Guidelines
 
-How a skill's own files are written: SKILL.md, the references, the templates, and the scripts' docstrings. Every change to a skill follows them. A skill with rules of its own keeps them in `guidelines.md` beside its entry point or in `references/guidelines.md`. Its directory-specific structure follows the rules below.
+How a skill's own files are written: SKILL.md, the references, the templates, and the scripts' docstrings. Every change to a skill follows them. A skill with rules of its own keeps them in `guidelines.md` beside its entry point or in `references/guidelines.md`, and those rules define the structure of every directory it adds.
 
 ## Frontmatter
 
@@ -21,8 +21,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 
 - **SKILL.md.**  The skill's entry point, at the top of its folder.
 - **References.**
-  - `references/` holds one `<mode>-mode.md` per mode, `guidelines.md` when the skill has rules of its own, and each guide the modes share.
-  - A skill may put modes in `modes/`, cross-artifact sequences in `protocols/`, artifact contracts and their embedded templates in `artifacts/`, and its guidelines beside SKILL.md. These files take the directory-specific structure below.
+  - A mode file is named `<mode>-mode.md`. `references/` holds `guidelines.md` when the skill has rules of its own, and each guide the modes share.
+  - A skill may add directories of its own, one for its modes among them, and keep its guidelines beside SKILL.md. Its guidelines state what those files carry and the sections they take, and `structure.json` beside SKILL.md declares those sections to the shared check.
   - Scripts and tests each have a folder of their own. Standalone templates use `templates/`.
 - **Shared.**
   `skills/` holds this file beside the `scripts/` and `test/` folders for checks that every skill runs. A check binding one skill lives in that skill's own folders.
@@ -62,34 +62,6 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - An alternative way in is a step of the Procedure.
 - **Procedure.**
   A `## Procedure` of numbered steps, each opening with a bold label. Where the file holds several procedures, each is a sub-section of it.
-
-## Modes, Protocols and Artifacts Directories
-
-- **Modes.**
-  Files in `modes/` use Prerequisites, Procedure, Outcomes, optional Guidance, and optional Operations. Procedure and Outcomes are required; Operations holds cross-artifact command specifications.
-- **Protocols.**
-  Files in `protocols/` use Prerequisites, Procedure, and optional Guidance. Procedure is required. One file holds one protocol, so a caller runs the file and reaches into no step of it.
-- **Artifacts.**
-  Files in `artifacts/` use Prerequisites, optional Operations, Fields, optional Guidance, and optional Commands. Fields is required. Operations holds named procedures; Commands holds their implementation specifications. Templates are fenced Markdown under Fields.
-- **Ownership.**
-  Modes coordinate one user goal; protocols coordinate one change across several artifacts; artifact operations perform and validate work on their own subject. Artifact command ownership follows the subject, independent of caller count. A single-step artifact operation uses one bullet and counts as a procedure.
-- **Reached or absent.**
-  Every operation, protocol and command a file carries is one its own procedures or its callers reach. A split that distributes one document into many invents surface on the way, so it is audited for what nothing reaches as well as for what it dropped.
-- **What each terminal section states.**
-  A mode's Outcomes state the user goal met, which its steps do not carry. An artifact's Fields state the shape of its subject, which is a contract rather than a sequence. A protocol states what it changed in the steps that change it, so it carries no closing summary; one would restate the procedure and go stale against it.
-- **Direction.**
-  A mode runs protocols and artifact operations. A protocol runs artifact operations, other protocols, and a mode where that mode is the unit of work. An artifact runs neither a mode nor a protocol, and names neither.
-- **Choosing between a protocol and an artifact.**
-  Name the one output shape the sequence produces: where there is one, it is an artifact operation, and a derived shape with no persisted document still counts. Where only the sequence can be named because the change lands in several artifacts at once, it is a protocol.
-- **Scope.**
-  These section sets apply only to `modes/`, `protocols/` and `artifacts/`. Other procedure files take the Procedure files and Mode files rules.
-
-## Mode files
-
-- **Opening.**  `# <Name> mode`, then a paragraph on what the mode does.
-- **Sections.**
-  A mode carries a procedure, so a mode file takes the [procedure-file sections](#procedure-files) and their order, and carries Rules as well as Procedure.
-- **Rules.**  A statement that binds only this mode goes in the mode's `## Rules`.
 
 ## Layout
 
