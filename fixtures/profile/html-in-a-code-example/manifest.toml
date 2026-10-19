@@ -1,0 +1,17 @@
+description = "An HTML example inside a code block is content rather than markup, so it bundles byte for byte while raw HTML in selected content is refused."
+
+clauses = [
+  "Markdown and source-heading profile — HTML",
+  "Source markup policy — raw HTML in selected content",
+  "Parser and source-preserving edits — Untouched content",
+  "Adversarial acceptance fixtures — Profile",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
