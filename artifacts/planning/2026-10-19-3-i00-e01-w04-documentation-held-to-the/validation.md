@@ -291,6 +291,8 @@ link check: every reference in 5 document(s) resolved
 vocabulary check: 34 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 20 source(s)
 ```
 
+It ran again on `1b58d32`, the merge commit on the epic base `i00/e01/main`, and completed with conclusion `success`: [run 39211526354](https://github.com/m2ux/prosiform/actions/runs/39211526354). The trigger names the base as well as the task branch, so the merge result is checked and not only the change that produced it.
+
 **The link check reads five documents from the runner.** The credential the job exports resolves the tracker references in the root README, and the checkout's full history resolves both engineering-branch references, so the widened set needs nothing the job did not already supply.
 
 ## What the checks do not establish
