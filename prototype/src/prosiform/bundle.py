@@ -31,9 +31,10 @@ an overflow rather than a heading, and the group refuses it.
 
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
-where an earlier heading already took that slug. The walk below
-reproduces that rule over the headings the bundle emits, so the entry
-line's link resolves in the document a reader opens.
+where an earlier heading already took that slug. That is the rule the
+source model applies over one document's headings, applied here over the
+headings the bundle emits, so the entry line's link resolves in the
+document a reader opens.
 """
 
 import re
@@ -44,6 +45,7 @@ from pathlib import PurePosixPath
 from markdown_it.token import Token
 
 from prosiform.profile import SUFFIXES
+from prosiform.source import headings, level, slug, visible
 
 MAX_LEVEL = 6
 SHIFT = 1
@@ -56,12 +58,8 @@ TERMINATOR = "\n"
 
 ATX = "#"
 HEADING_OPEN = "heading_open"
-INLINE = "inline"
-TEXT = "text"
-CODE_INLINE = "code_inline"
 
 ANCHOR = "#"
-ORDINAL = "-"
 
 ENTRY_OPENING = "This bundle was built for "
 ENTRY_CLOSING = "; everything else is material it references."
@@ -72,10 +70,6 @@ OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
 ATX_PREFIX = re.compile(r"^( {0,3})(#{1,6})")
-
-SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
-SLUG_SPACE = " "
-SLUG_HYPHEN = "-"
 
 
 class Overflow(Exception):
@@ -126,28 +120,6 @@ def escaped(text: str) -> str:
     return OPENER.sub(r"\\\1", text)
 
 
-def slug(text: str) -> str:
-    """The fragment a renderer generates for a heading carrying this text."""
-    return SLUG_DISCARDED.sub("", text.lower()).replace(SLUG_SPACE, SLUG_HYPHEN)
-
-
-def destinations(headings: Sequence[str]) -> list[str]:
-    """The destination of each emitted heading, in bundle order.
-
-    The first heading to carry a slug takes it; each later one takes the
-    slug and its ordinal, counting from one. This is the renderer's own
-    rule, reproduced so the two agree.
-    """
-    taken: dict[str, int] = {}
-    assigned = []
-    for heading in headings:
-        name = slug(heading)
-        seen = taken.get(name, 0)
-        taken[name] = seen + 1
-        assigned.append(name if seen == 0 else f"{name}{ORDINAL}{seen}")
-    return assigned
-
-
 def entry_line(named: Sequence[tuple[str, str]]) -> str:
     """The bundle's opening line: each entry reference, linked to its destination.
 
@@ -166,31 +138,9 @@ def listed(items: Sequence[str]) -> str:
     return f"{ENTRY_JOIN.join(items[:-1])}{ENTRY_LAST}{items[-1]}"
 
 
-def level(token: Token) -> int:
-    """The level a heading token opens at, whatever syntax it is written in."""
-    return int(token.tag[1:])
-
-
 def is_atx(token: Token) -> bool:
     """Whether a heading is written with the heading syntax a shift edits."""
     return token.markup.startswith(ATX)
-
-
-def visible(inline: Token) -> str:
-    """The text a heading shows, which is what its destination is generated from."""
-    children = inline.children or []
-    return "".join(
-        child.content for child in children if child.type in (TEXT, CODE_INLINE)
-    )
-
-
-def headings(tokens: Sequence[Token]) -> list[tuple[Token, Token]]:
-    """Every heading the source carries, each with the inline token holding its text."""
-    found = []
-    for index, token in enumerate(tokens[:-1]):
-        if token.type == HEADING_OPEN and tokens[index + 1].type == INLINE:
-            found.append((token, tokens[index + 1]))
-    return found
 
 
 def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
@@ -218,7 +168,7 @@ def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
     heading, where that heading is its only H1, sits at the document
     level, and slugs to the final segment of the file heading's path.
     """
-    carried = headings(tokens)
+    carried = list(headings(tokens))
     if not carried:
         return None
     opening, inline = carried[0]

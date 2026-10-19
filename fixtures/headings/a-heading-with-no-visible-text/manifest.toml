@@ -1,0 +1,18 @@
+description = "A heading whose visible text is empty once a renderer discards it names nothing, and leaves the fragment of every heading after it the one that heading's own text produces."
+
+awaiting = "I00:E10"
+
+clauses = [
+  "Source-heading resolution — GitHub-compatible slugs and duplicate tracking",
+  "Section extraction and output hierarchy — Source heading index",
+  "Input and output contract — Sections",
+]
+
+[invocation]
+root = "source"
+arguments = ["article.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
