@@ -74,6 +74,19 @@ def missing_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
     return missing
 
 
+def identity(fixture: Path, corpus: Path = CORPUS) -> str:
+    """A fixture's identity: its path under the corpus.
+
+    A directory outside the corpus is identified by its absolute path, so
+    a fixture written for one run still names itself.
+    """
+    resolved = fixture.resolve()
+    try:
+        return resolved.relative_to(corpus.resolve()).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
 def fixtures(corpus: Path = CORPUS) -> list[Path]:
     """Every fixture directory in the corpus, in path order.
 

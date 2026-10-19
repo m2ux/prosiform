@@ -9,13 +9,17 @@ as a bundling.
 from pathlib import Path
 
 import pytest
-from manifests import CORPUS, MANIFEST_NAME, errors, fixtures, missing_files, read
+from manifests import (
+    CORPUS,
+    MANIFEST_NAME,
+    errors,
+    fixtures,
+    identity,
+    missing_files,
+    read,
+)
 
 FIXTURES = fixtures()
-
-
-def identity(fixture: Path) -> str:
-    return fixture.relative_to(CORPUS).as_posix()
 
 
 def test_the_corpus_holds_a_fixture() -> None:
