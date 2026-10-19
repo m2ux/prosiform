@@ -106,7 +106,7 @@ Installing the build puts the `prosiform` command on the path and ships the [glo
 
 ## 🚀 Invocation
 
-The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses below. Bundling is the stage under it, and the walking skeleton is building it now: a run that names an entry reference returns `4`, which says this build cannot carry the request out rather than that the source it names is at fault.
+The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses below. Bundling is the stage under it, and the walking skeleton is building it now: a run reads and parses every source its entry references name under the `skill-markdown-v1` profile, so a source carrying raw HTML or an unsupported dependency or section-naming construct returns `1` naming the construct and where it sits, and a source the profile accepts returns `4`, which says this build cannot carry the request out rather than that the source it names is at fault.
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller read

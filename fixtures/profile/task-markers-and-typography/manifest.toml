@@ -1,0 +1,17 @@
+description = "Source task-list markers reach the bundle as the three characters the source wrote, and punctuation inviting typographic substitution reaches it unchanged."
+
+clauses = [
+  "Markdown and source-heading profile — Task lists",
+  "Markdown and source-heading profile — Typography",
+  "Parser and source-preserving edits — Untouched content",
+  "Adversarial acceptance fixtures — Profile",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

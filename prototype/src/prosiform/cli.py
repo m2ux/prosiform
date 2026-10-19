@@ -12,11 +12,13 @@ The command checks the form of every option before it looks for anything
 an option names, so an invalid command line is reported as invalid usage
 rather than as a fault in a tree it may not even have described correctly.
 
-A run whose options are valid and which names an entry reference reaches
-the compilation stage. That stage is not part of this build: the run
-publishes nothing and returns the unexpected-internal-error status, which
-says that the build cannot carry the request out rather than that anything
-is wrong with the source it names.
+Every entry document the run names is read and parsed under the declared
+profile, and a source carrying a construct that profile refuses fails as
+the refusal it is. A run whose sources the profile accepts reaches the
+bundling stage. That stage is not part of this build: the run publishes
+nothing and returns the unexpected-internal-error status, which says that
+the build cannot carry the request out rather than that anything is wrong
+with the source it names.
 """
 
 import argparse
@@ -28,8 +30,11 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
 
+from markdown_it.token import Token
+
 from prosiform import PROFILE
 from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
+from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 
 NAME = "prosiform"
 
@@ -45,6 +50,8 @@ FRAGMENT = "#"
 MIN_DEPTH = 1
 MAX_DEPTH = 6
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
+SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
+TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DIAGNOSTICS_OPTION = "--diagnostics"
@@ -75,11 +82,24 @@ def usage_failure(message: str, code: str | None = None) -> Failure:
     )
 
 
-def input_failure(message: str, code: str | None = None, remedy: str = "") -> Failure:
-    """A command line that is well formed and names something that is not there."""
+def input_failure(
+    message: str,
+    code: str | None = None,
+    remedy: str = "",
+    reference: str | None = None,
+    source: str | None = None,
+) -> Failure:
+    """A command line that is well formed and names something the run refuses."""
     return Failure(
         INPUT_FAILURE,
-        Diagnostic(ERROR, message, code=code, remedy=remedy or None),
+        Diagnostic(
+            ERROR,
+            message,
+            code=code,
+            reference=reference,
+            source=source,
+            remedy=remedy or None,
+        ),
     )
 
 
@@ -224,11 +244,69 @@ def document(reference: str) -> str:
     return reference.partition(FRAGMENT)[0]
 
 
-def sources(root: Path, referrer: str | None, references: Sequence[str]) -> set[Path]:
+def entries(referrer: str | None, references: Sequence[str]) -> list[tuple[str, str]]:
+    """Each distinct document this run reads, and the reference that names it.
+
+    A referring document is a source of the run like any other, and two
+    references naming one document name one source.
+    """
+    named: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for reference in ([referrer] if referrer else []) + list(references):
+        name = document(reference)
+        if name and name not in seen:
+            seen.add(name)
+            named.append((reference, name))
+    return named
+
+
+def sources(root: Path, named: Sequence[tuple[str, str]]) -> set[Path]:
     """Every path this run reads from, resolved against the allowed source root."""
-    named = [referrer] if referrer else []
-    named += [document(reference) for reference in references]
-    return {(root / name).resolve() for name in named if name}
+    return {(root / name).resolve() for _, name in named}
+
+
+def location(name: str, at: int | None) -> str:
+    """One source location: the document, and the line where the parser knows one."""
+    return name if at is None else f"{name}:{at}"
+
+
+def read_entry(root: Path, reference: str, name: str) -> list[Token]:
+    """One entry document, read under the allowed source root and parsed."""
+    if not is_markdown(name):
+        raise input_failure(
+            f"the entry reference {reference!r} names a document whose suffix is "
+            f"outside the {PROFILE} profile",
+            remedy=f"name a document ending {' or '.join(SUFFIXES)}",
+            reference=reference,
+        )
+    path = (root / name).resolve()
+    if not path.is_relative_to(root):
+        raise input_failure(
+            f"the entry reference {reference!r} normalizes to {str(path)!r}, which "
+            f"is outside the allowed source root",
+            code=SOURCE_OUTSIDE_ROOT,
+            remedy="name a document the source root carries",
+            reference=reference,
+        )
+    if not path.is_file():
+        raise input_failure(
+            f"the entry reference {reference!r} names no document under the "
+            f"allowed source root",
+            code=TARGET_NOT_FOUND,
+            remedy="name a document the source root carries",
+            reference=reference,
+        )
+    return parse(path.read_text(encoding="utf-8"))
+
+
+def refused(name: str, refusal: Refusal) -> Failure:
+    """One construct the profile refuses, reported against the source carrying it."""
+    return input_failure(
+        refusal.message,
+        remedy=refusal.remedy,
+        reference=refusal.reference,
+        source=location(name, refusal.line),
+    )
 
 
 def directories(root: Path) -> set[str]:
@@ -279,7 +357,8 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
     inforce = rules(options.group)
 
     root = Path(options.root).resolve()
-    reading = sources(root, options.referrer, options.references)
+    named = entries(options.referrer, options.references)
+    reading = sources(root, named)
     if options.output != STANDARD_OUTPUT:
         destination = Path(options.output).resolve()
         if destination in reading:
@@ -302,12 +381,18 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
                 remedy="name a directory the source root carries",
             )
 
+    for reference, name in named:
+        tokens = read_entry(root, reference, name)
+        refusal = next(refusals(tokens), None)
+        if refusal is not None:
+            raise refused(name, refusal)
+
     raise Failure(
         INTERNAL_ERROR,
         Diagnostic(
             ERROR,
-            "this build carries no compilation stage, so the entry references "
-            "it was given cannot be bundled",
+            "this build reads and parses the sources its entry references name "
+            "and carries no bundling stage, so they cannot be bundled",
             remedy="use a build that carries one",
         ),
     )

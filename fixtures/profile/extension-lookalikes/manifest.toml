@@ -1,0 +1,17 @@
+description = "Prose that resembles an unsupported extension bundles untouched, because recognition reads only text the parser left as text and spellings the source wrote unescaped."
+
+clauses = [
+  "Markdown and source-heading profile — Unsupported extensions",
+  "Markdown and source-heading profile — Bare text",
+  "Source-local reference interpretation — unresolved bracketed text remains literal",
+  "Adversarial acceptance fixtures — Profile",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
