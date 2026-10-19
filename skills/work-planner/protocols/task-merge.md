@@ -21,7 +21,7 @@ Read these files first.
    - Follow [Issue Delivery](issue-delivery.md) for the delivered unit.
    - Close an eligible task issue through [Issue Closure](issue-closure.md).
 2. **Review.**
-   Follow [Review Pull Request](review-pull-request.md) for the affected epic base.
+   Follow [Review Pull Request](review-pull-request.md) for the affected epic base, with the epic's issue and the repository setting confirmed for the session.
 3. **Complete when ready.**
    When every task and criterion is complete:
    - Follow [Epic Integration](epic-integration.md) with the epic identity and body, review identity, project checkout, current delivery records, complete issue-link snapshot and criterion verification evidence. A draft or unmet merge condition stays pending.
