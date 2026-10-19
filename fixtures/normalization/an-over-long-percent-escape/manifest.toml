@@ -1,0 +1,19 @@
+description = "An over-long encoding of a path separator is not valid UTF-8 and is refused, rather than being decoded to the separator the shortest form would spell."
+
+clauses = [
+  "Reference normalization and path identity — Resolution sequence, step 5",
+  "Reference normalization and path identity — Resolution sequence, step 6",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes%C0%AF.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+reference = "notes%C0%AF.md"

@@ -1,0 +1,19 @@
+description = "An entry reference written as a protocol-relative URL carries an authority, so it names no document the allowed source root can contain and is refused rather than read as a path of two empty leading segments."
+
+clauses = [
+  "Reference normalization and path identity — a protocol-relative URL",
+  "Link classification and resource handling — Everything else",
+]
+
+[invocation]
+root = "source"
+arguments = ["//example.com/guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_OUTSIDE_ROOT"
+reference = "//example.com/guide.md"

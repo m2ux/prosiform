@@ -1,0 +1,16 @@
+description = "A filesystem path written as ordinary prose is left as text and resolves as no dependency, so the document it names joins no group and the forms a reference would be refused for are carried unchanged."
+
+clauses = [
+  "Markdown and source-heading profile — Bare text",
+  "Link classification and resource handling — The mark",
+  "Post-compilation invariants — Reference preservation",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
