@@ -13,6 +13,7 @@ It matters because the criterion naming that run has gone unticked since the com
 | Artifact | What it holds |
 | --- | --- |
 | [w08.md](w08.md) | The task's plan: what a manifest can state about a file the run must not create, the two fixtures and the source each runs over, and the escape set's addition |
+| [validation.md](validation.md) | The checks as they were run: the corpus at the base and at the head, the run AC10 names, each check's procedure and result, and the observed failure of both fixtures when a validation-only run publishes |
 
 ## Links
 
