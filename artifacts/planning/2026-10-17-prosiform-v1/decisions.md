@@ -402,6 +402,20 @@ The alternative was to rank an epic by its first row rather than by its last. Th
 
 This was found by reading `board-queue.py` after the queue offered one unit where two were expected. The board reported nothing: a deadlocked map and a correctly waiting epic look the same from outside.
 
+## D40 — Marking a Resource Is an Authoring Error
+
+A mark means bundle this. A resource — an image, a stylesheet, any reference that is not a local Markdown document — is never bundled, so marking one asks for something the tool will not do.
+
+The contract said two things about it. [D32](#d32--the-mark-is-authoring-syntax-and-does-not-reach-the-bundle) holds that a mark appears in a source and never in a bundle; the design holds that a resource is emitted as authored. Together they publish `[¬ diagram](plan.png)` whole, mark included, and nothing ever removes it, because the mark is dropped by the rewrite and a resource is never rewritten.
+
+A marked resource therefore fails with a code the catalogue declares. D32's invariant holds with no exception, and an author who marks a diagram learns at the run rather than finding authoring syntax in a published bundle.
+
+The alternative was to emit it as authored and narrow D32 to say a mark survives on a reference nothing rewrites. It was refused because it retires the invariant to accommodate one case, and because a bundle carrying a mark offers its reader a signal that means nothing to them.
+
+The cost is a new error code, which moves the design and the schema in one window across two branches. The refusal is therefore delivered by a row rather than written here: the clause and the catalogue entry land together, and the corpus states both the refusal and an unmarked resource bundling beside it. [I00:E04:W05](https://github.com/m2ux/prosiform/issues/6) carries it under AC17.
+
+Until that row lands the corpus asserts neither outcome, which was [I00:E04:W03](https://github.com/m2ux/prosiform/pull/77)'s deliberate choice on finding the collision.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
