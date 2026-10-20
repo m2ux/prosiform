@@ -183,3 +183,55 @@ beside it.
 
 The `I00 Prototype` row in `README.md`'s status table is unchanged, as
 recommended above. The user has not ruled on it.
+
+### Correction: Import Sorting, and a Cache That Hid It
+
+The flatten merged green locally and failed continuous integration on all
+three branches at `make lint`: four `I001` errors in the build's test modules
+on `main`, two more in the modules E04 adds.
+
+Ruff infers a first-party package by looking for it under its `src` roots,
+which default to `[".", "src"]`. When `--config` names a file, those roots
+resolve against the directory ruff is **invoked from**, not against the
+configuration file. `make lint` runs from the repository root, so the roots
+are the repository root and `src/`. With the package at `src/src/prosiform`
+neither root matched and `prosiform` sorted as third-party; at `src/prosiform`
+the `src` root matches exactly, so it sorts first-party and wants a section
+break the modules did not carry.
+
+`src/pyproject.toml` now declares the package rather than leaving it to that
+inference:
+
+```toml
+[tool.ruff.lint.isort]
+known-first-party = ["prosiform"]
+```
+
+An inference that reads the working directory sorts the same file one way from
+the repository root and another from the build tree. Naming the package
+settles it wherever ruff is called, which is the condition the slot needs: a
+tool invoked from either place agrees about what the tree holds.
+
+The section break reached six test modules — four on `main`
+(`test_bundle.py`, `test_cli.py`, `test_profile.py`, `test_source.py`) and the
+two E04 adds (`test_access.py`, `test_closure.py`), one blank line each,
+applied by `ruff check --fix`.
+
+**The local run was not a clean one.** A warm `.ruff_cache` in each working
+tree served results computed under the previous layout, so `make lint` passed
+on a tree whose imports no longer sorted. Continuous integration starts cold
+and caught it within the minute. A layout change invalidates the cache's
+premise without invalidating the cache, so a check run after one is worth
+nothing until `.ruff_cache` is removed. Every validation recorded below was
+re-run from a cold cache.
+
+### Final State
+
+| Branch | Commit | CI |
+| --- | --- | --- |
+| `main` | `9f78c39`, merge of PR #80 (`fix/name-the-first-party-package`) onto `72dfb3f` (PR #79) | success |
+| `i00/e04/main` | `626b00a` — merge of `main`, plus the section break in this epic's two test modules | success |
+| `i00/e07/main` | `a025146`, merge of `main` | success |
+
+`git ls-files src/src` empty on all three. Fixture counts hold: 67, 96, 67,
+each with its two awaited. `make smoke` passes on E07 from a cold cache.
