@@ -219,9 +219,11 @@ from prosiform.limits import (
     Limits,
 )
 from prosiform.profile import (
+    PARSER_REFERENCE_LIMIT,
     REFERENCES,
     SUFFIXES,
     Refusal,
+    Suppressed,
     is_markdown,
     parse,
     refusals,
@@ -390,6 +392,28 @@ def unindexable(crossed: Crossed, path: str, chain: Sequence[str]) -> Failure:
         remedy=crossed.remedy,
         reference=path,
         source=path,
+        chain=chain,
+    )
+
+
+def declined(
+    suppressed: Suppressed, path: str, source: Source, chain: Sequence[str]
+) -> Failure:
+    """One reference lookup the parser declined, as the failure to index its source.
+
+    The lookup never ran, so the reference it would have resolved is
+    named by nothing the run holds: the diagnostic names the source and
+    the first span the parser was reading when it declined, which is
+    where an author finds the nesting to write the reference out of. A
+    span the parser records no line for is reported against the source
+    alone.
+    """
+    return input_failure(
+        f"the source {path!r} cannot be safely indexed: {suppressed}",
+        code=PARSER_REFERENCE_LIMIT,
+        remedy=suppressed.remedy,
+        reference=path,
+        source=location(path, source.line(suppressed.line)),
         chain=chain,
     )
 
@@ -1257,6 +1281,8 @@ def traverse(
                 limits.hold(NESTING, nesting(tokens))
             except Crossed as crossed:
                 raise unindexable(crossed, one.path, one.chain) from crossed
+            except Suppressed as suppressed:
+                raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
             limits.hold(INPUT_BYTES, total)
             generated(root, one.path, source, tokens, one.chain)
