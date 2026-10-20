@@ -1,0 +1,16 @@
+description = "A bundle whose text names no resource emits no portability warning, so a relative path inside a command example and a reference carrying a scheme each leave the stream empty."
+
+clauses = [
+  "Resources are text",
+  "Link classification and resource handling — Everything else",
+  "Adversarial acceptance fixtures — Resources",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

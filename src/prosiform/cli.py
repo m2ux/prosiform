@@ -117,7 +117,7 @@ from collections.abc import Collection, Iterator, Sequence
 from dataclasses import dataclass, replace
 from importlib.metadata import version
 from pathlib import Path
-from typing import IO, NoReturn
+from typing import IO, Any, NoReturn
 
 from markdown_it.token import Token
 
@@ -135,14 +135,24 @@ from prosiform.bundle import (
     heading_text,
 )
 from prosiform.closure import (
+    DRIVE,
     Malformed,
     OutsideRoot,
     Reference,
+    components,
+    external,
     inside,
     marked,
     resolve,
 )
-from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
+from prosiform.diagnostics import (
+    ERROR,
+    FORMATS,
+    TEXT,
+    WARNING,
+    Diagnostic,
+    Reporter,
+)
 from prosiform.limits import (
     BUDGETS,
     EXPANSION_DEPTH,
@@ -157,12 +167,24 @@ from prosiform.limits import (
     Crossed,
     Limits,
 )
-from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
+from prosiform.profile import (
+    REFERENCES,
+    SUFFIXES,
+    Refusal,
+    is_markdown,
+    parse,
+    refusals,
+)
+from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
     ENCODING,
+    HREF,
+    INLINE,
     NESTED_SECTION_TARGET,
+    REFERENCE_USES,
+    SRC,
     UNTERMINATED_FRONTMATTER,
     Ambiguous,
     Nested,
@@ -208,6 +230,8 @@ SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
+
+RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DECIMAL = re.compile(r"^[0-9]+$")
@@ -826,7 +850,12 @@ def traverse(
     referrer: Reference | None,
     requested: Sequence[Reference],
     limits: Limits,
-) -> tuple[dict[str, Source], dict[str, list[Token]], list[Reference]]:
+) -> tuple[
+    dict[str, Source],
+    dict[str, list[Token]],
+    dict[str, dict[str, Definition]],
+    list[Reference],
+]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
     The entry references are the first frontier. Each round reads the
@@ -855,6 +884,7 @@ def traverse(
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
+    defined: dict[str, dict[str, Definition]] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
     limits.hold(TARGETS, len(seen))
@@ -872,13 +902,17 @@ def traverse(
             limits.hold(FILE_BYTES, opened.size)
             total += opened.size
             limits.hold(INPUT_BYTES, total)
-            tokens = parse(source.text, limits.of(NESTING))
+            environment: dict[str, Any] = {}
+            tokens = parse(source.text, limits.of(NESTING), environment)
             limits.hold(NESTING, nesting(tokens))
             refusal = next(refusals(tokens), None)
             if refusal is not None:
                 raise refused(one.path, source, refusal)
             read[one.path] = source
             parsed[one.path] = tokens
+            defined[one.path] = definitions(
+                environment.get(REFERENCES, {}), lines(source.text)
+            )
             limits.hold(FILES, len(read))
         discovered: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
@@ -897,7 +931,7 @@ def traverse(
                 discovered.append(one)
         found.extend(discovered)
         frontier = discovered
-    return read, parsed, found
+    return read, parsed, defined, found
 
 
 def unambiguous(paths: Sequence[str]) -> None:
@@ -919,6 +953,7 @@ def unambiguous(paths: Sequence[str]) -> None:
 def assembled(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
+    defined: dict[str, dict[str, Definition]],
     selected: dict[str, list[Reference]],
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
@@ -934,6 +969,7 @@ def assembled(
                     path,
                     tokens,
                     lines(source.text),
+                    defined[path],
                     selection(tokens, selecting, entries),
                     assigned,
                 )
@@ -1014,6 +1050,7 @@ def resolving(bundled: str, assigned: Sequence[str], budget: int) -> None:
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
+    defined: dict[str, dict[str, Definition]],
     referrer: Reference | None,
     entries: Collection[Reference],
     found: Sequence[Reference],
@@ -1031,11 +1068,12 @@ def compose(
     """
     selected = contributing(referrer, found)
     unambiguous(list(selected))
-    headed = assembled(read, parsed, selected, entries, None)
+    headed = assembled(read, parsed, defined, selected, entries, None)
     assigned = fragments([heading for one in headed for heading in one.headings])
     groups = assembled(
         read,
         parsed,
+        defined,
         selected,
         entries,
         destination_map(list(selected), headed, assigned),
@@ -1043,6 +1081,38 @@ def compose(
     bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
     resolving(bundled, assigned, limits.of(NESTING))
     return bundled
+
+
+def resource(destination: str) -> bool:
+    """Whether one destination names a resource rather than a document or a section.
+
+    A resource is what the bundle carries as text: a reference naming
+    no Markdown document under the allowed root. A fragment names a
+    place in the bundle itself, and a reference carrying a scheme, an
+    authority or a drive letter names something no directory the bundle
+    is read from decides, so neither is one.
+    """
+    written = components(destination).path
+    if not written or external(written) or DRIVE.match(written) is not None:
+        return False
+    return not is_markdown(written)
+
+
+def resourced(bundled: str, budget: int) -> bool:
+    """Whether the published bundle's text names at least one resource.
+
+    The bundle is read as a renderer reads it, so a resource a source
+    wrote as a reference-style use is counted at the inline form the
+    bundle publishes it as. A bundle whose text names none carries
+    nothing to warn about.
+    """
+    return any(
+        resource(str(child.attrGet(HREF) or child.attrGet(SRC) or ""))
+        for token in parse(bundled, budget)
+        if token.type == INLINE
+        for child in token.children or []
+        if child.type in REFERENCE_USES
+    )
 
 
 def publish(text: str, stream: IO[str]) -> None:
@@ -1100,7 +1170,7 @@ def publish_file(text: str, destination: Path) -> None:
         ) from refused
 
 
-def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
+def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
     grammar = parser()
     options = grammar.parse_args(list(arguments))
@@ -1147,7 +1217,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
 
     limits = budgets(options)
     try:
-        read, parsed, found = traverse(root, referring, requested, limits)
+        read, parsed, defined, found = traverse(root, referring, requested, limits)
     except Crossed as crossed:
         raise crossing(crossed) from crossed
     if options.output != STANDARD_OUTPUT:
@@ -1156,11 +1226,21 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             raise usage_failure(
                 f"the output path {options.output!r} names an input source"
             )
-    bundled = compose(read, parsed, referring, requested, found, limits)
+    bundled = compose(read, parsed, defined, referring, requested, found, limits)
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    if resourced(bundled, limits.of(NESTING)):
+        reporter.emit(
+            Diagnostic(
+                WARNING,
+                "the bundle names at least one resource, which it carries as the "
+                "text its source wrote, so a reader opening the bundle from "
+                "another directory may not find it",
+                code=RESOURCE_PORTABILITY,
+            )
+        )
     if options.check:
         return SUCCESS
     if options.output == STANDARD_OUTPUT:
@@ -1181,7 +1261,7 @@ def main(
     arguments = list(sys.argv[1:] if argv is None else argv)
     reporter = Reporter(err, diagnostic_format(arguments))
     try:
-        return execute(arguments, out)
+        return execute(arguments, out, reporter)
     except Failure as outcome:
         reporter.emit(outcome.diagnostic)
         return outcome.status

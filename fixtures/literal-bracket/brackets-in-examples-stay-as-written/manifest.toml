@@ -1,0 +1,16 @@
+description = "A bracketed example inside a code span or a fenced block is unchanged where the source defines the label it spells, and the definition behind it is still removed."
+
+clauses = [
+  "Source-local reference interpretation — step 5",
+  "Source-local reference interpretation — step 6",
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

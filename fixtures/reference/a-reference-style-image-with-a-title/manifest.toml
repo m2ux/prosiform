@@ -1,0 +1,20 @@
+description = "A reference-style image and a reference-style link are published inline with their visible content, their alternative content and their titles preserved as the source spelled them."
+
+clauses = [
+  "Source-local reference interpretation — step 1",
+  "Source-local reference interpretation — step 2",
+  "Resources are text",
+  "Adversarial acceptance fixtures — References",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"

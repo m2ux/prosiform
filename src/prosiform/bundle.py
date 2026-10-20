@@ -19,9 +19,16 @@ regions is not source content: a blank line above the first region, the
 blank line a removed reference definition was separated by, and the
 spacing between any two blocks are the bundle's own, and the bundle
 writes one blank line between regions wherever it joins them. Inside a
-region nothing is touched, so an indented thematic break keeps its
-indent, a delimiter keeps its trailing spaces and a code example keeps
-its bytes.
+region nothing is touched but the lines a link-reference definition
+occupies, so an indented thematic break keeps its indent, a delimiter
+keeps its trailing spaces and a code example keeps its bytes.
+
+Each resolved reference-style use in selected content is published
+inline, and every original definition node is removed, the definitions
+no use names included. A definition a container carries is dropped
+where it sits, with the blank line the container separated it by, and
+a definition at the document level lies between two regions and is
+dropped by the slice that takes them.
 
 The file heading absorbs the source's first heading when that heading is
 the document's only H1 and its slug equals the slug of the final segment
@@ -65,7 +72,7 @@ one heading and resolves to another.
 """
 
 import re
-from collections.abc import Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 
@@ -73,7 +80,7 @@ from markdown_it.token import Token
 
 from prosiform.closure import Reference, inside
 from prosiform.profile import SUFFIXES
-from prosiform.rewrite import destinations, rewritten, unmarked
+from prosiform.rewrite import Definition, destinations, rewritten, unmarked
 from prosiform.source import (
     LINE_FEED,
     LINK_OPEN,
@@ -84,6 +91,7 @@ from prosiform.source import (
     inlines,
     level,
     lines,
+    opening_markers,
     regions,
     shown,
     slug,
@@ -114,9 +122,6 @@ OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
-CONTAINER_PREFIX = re.compile(
-    r"^(?:[ \t]*(?:>|[-*+](?=[ \t])|\d{1,9}[.)](?=[ \t])))*[ \t]*"
-)
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
 
@@ -243,23 +248,30 @@ def rewrite(
     selected: Sequence[Token],
     assigned: dict[tuple[str, str | None], str],
     path: str,
+    defined: Mapping[str, Definition],
 ) -> list[str]:
-    """The source's physical lines, each marked link in selected content rewritten.
+    """The source's physical lines, as the bundle publishes the selected content.
 
     A rewrite edits the lines one inline token occupies and writes no
     line break into them, so the lines the group then slices are the
     lines the source wrote, one for one. Content the run did not select
     is left alone: no reference in it was resolved, so no destination
-    was assigned to one.
+    was assigned to one, and a definition it names is removed with the
+    rest rather than published around it.
+
+    A source declaring no definition carries no reference-style use, so
+    a token holding no marked link is the text its source wrote.
     """
     written = list(physical)
     for inline in inlines(tokens, selected):
         marks = destinations(inline)
-        if not marks or inline.map is None:
+        if inline.map is None or (not marks and not defined):
             continue
         start, end = inline.map
         targets = [assigned[key(path, one)] for one in marks]
-        written[start:end] = lines(rewritten("".join(written[start:end]), targets))
+        written[start:end] = lines(
+            rewritten("".join(written[start:end]), inline, targets, defined)
+        )
     return written
 
 
@@ -303,12 +315,6 @@ def shifted(line: str, by: int) -> str:
         line,
         count=1,
     )
-
-
-def opening_markers(line: str) -> str:
-    """The container markers and indent one line opens with, before its content."""
-    written = CONTAINER_PREFIX.match(line)
-    return "" if written is None else written.group(0)
 
 
 def terminator(line: str) -> str:
@@ -356,8 +362,17 @@ def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
     ]
 
 
+def blank(line: str) -> bool:
+    """Whether one line carries nothing but the markers the container opens it with."""
+    return not bare(line)[len(opening_markers(line)) :].strip()
+
+
 def region(
-    physical: Sequence[str], tokens: Sequence[Token], token: Token, by: int
+    physical: Sequence[str],
+    tokens: Sequence[Token],
+    token: Token,
+    by: int,
+    removed: Collection[int] = (),
 ) -> str:
     """One region as the lines its source occupies, each heading it holds shifted.
 
@@ -367,21 +382,35 @@ def region(
     rewritten last to first, because a Setext heading becomes one line
     where its source wrote several and an earlier heading's lines would
     otherwise move out from under it.
+
+    A line a definition occupies is dropped, and so is the blank line
+    a container separated the definition from the content above it by:
+    a definition is not content, and the spacing around it is the
+    bundle's own wherever it joins what remains. A line marked for
+    removal is held as the absence it is rather than as an index, so a
+    heading rewritten above it moves it without losing it.
     """
     start, end = token.map or (0, 0)
-    carried = list(physical[start:end])
-    if not by:
-        return "".join(carried).rstrip("\r\n")
-    for opening in reversed(carried_headings(tokens, token)):
-        at, closing = opening.map or (0, 0)
-        if is_atx(opening):
-            carried[at - start] = shifted(carried[at - start], by)
-        else:
-            written = converted(physical[at:closing], level(opening) + by)
-            carried[at - start : closing - start] = [
-                written + terminator(physical[closing - 1])
-            ]
-    return "".join(carried).rstrip("\r\n")
+    carried: list[str | None] = [
+        None if at in removed else line
+        for at, line in enumerate(physical[start:end], start=start)
+    ]
+    dropped = len(carried) - len([line for line in carried if line is not None])
+    if by:
+        for opening in reversed(carried_headings(tokens, token)):
+            at, closing = opening.map or (0, 0)
+            if is_atx(opening):
+                written = carried[at - start]
+                carried[at - start] = None if written is None else shifted(written, by)
+            else:
+                carried[at - start : closing - start] = [
+                    converted(physical[at:closing], level(opening) + by)
+                    + terminator(physical[closing - 1])
+                ]
+    kept = [line for line in carried if line is not None]
+    while dropped and kept and blank(kept[-1]):
+        kept.pop()
+    return "".join(kept).rstrip("\r\n")
 
 
 def emitted_text(token: Token, text: str, by: int) -> str:
@@ -400,6 +429,7 @@ def group(
     path: str,
     tokens: Sequence[Token],
     physical: Sequence[str],
+    defined: Mapping[str, Definition] | None = None,
     selected: Selection | None = None,
     assigned: dict[tuple[str, str | None], str] | None = None,
 ) -> Group:
@@ -422,8 +452,19 @@ def group(
     it carries the links pointing at them. The headings a group reports
     are the same either way, because the rewrite edits a destination
     and a mark and nothing a heading is slugged from.
+
+    The definition environment is this source's own, which is what its
+    reference-style uses resolve against and which no other source
+    reaches. Every line a definition occupies is dropped from the
+    content the group emits, the lines of a definition no use names
+    included, so the bundle carries the uses and none of the
+    declarations behind them.
     """
     title = heading_text(path)
+    environment: Mapping[str, Definition] = {} if defined is None else defined
+    removed = {
+        at for one in environment.values() for at in range(one.lines[0], one.lines[1])
+    }
     emitting = (
         {id(token) for token in regions(tokens)}
         if selected is None
@@ -446,7 +487,7 @@ def group(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path)
+        else rewrite(physical, tokens, chosen, assigned, path, environment)
     )
     for token in chosen:
         if token is absorbing:
@@ -462,7 +503,7 @@ def group(
             entries.append(len(shown))
         shown.extend(emitted_text(one, text[id(one)], by) for one in carried)
         answering.extend(named[id(one)] for one in carried)
-        emitted.append(region(written, tokens, token, by))
+        emitted.append(region(written, tokens, token, by, removed))
     return Group(
         SEPARATOR.join(emitted),
         tuple(shown),

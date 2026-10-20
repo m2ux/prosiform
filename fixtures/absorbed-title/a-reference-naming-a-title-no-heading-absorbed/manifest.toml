@@ -1,0 +1,16 @@
+description = "A reference naming a source heading no file heading absorbed resolves to that heading's own destination, so absorption changes the destination of the title it absorbed and of nothing else."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "Bundle destinations",
+  "Adversarial acceptance fixtures — File hierarchy",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

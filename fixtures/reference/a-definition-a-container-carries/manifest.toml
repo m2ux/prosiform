@@ -1,0 +1,15 @@
+description = "A definition written inside a block quote is removed with the rest, and the blank line the container separated it by goes with it."
+
+clauses = [
+  "Source-local reference interpretation — step 4",
+  "Adversarial acceptance fixtures — Definition inventory",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
