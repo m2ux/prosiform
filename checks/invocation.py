@@ -49,7 +49,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 
-from documents import ROOT, tables
+from documents import ROOT, plain, tables
 from runner import BUILD, BuildNotConfigured, build_under_test
 
 README = ROOT / "README.md"
@@ -73,7 +73,6 @@ CONTINUATION = re.compile(r"^ {4,}(\S.*?)\s*$")
 COLUMN = re.compile(r"\s{2,}")
 STATUS = re.compile(r"^ {2}([0-9]+)\s{2,}(\S.*?)\s*$")
 SECTION_HEADING = re.compile(r"^##\s+(.*)$")
-MARKDOWN_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
 PROFILE = re.compile(r"\(([^()\s]+)\)\s*$")
 
 STATEMENTS = (
@@ -105,11 +104,6 @@ class Argument:
 def flat(text: str) -> str:
     """One line of text, its runs of whitespace collapsed to single spaces."""
     return " ".join(text.split())
-
-
-def plain(cell: str) -> str:
-    """A cell reduced to its text: a link to its label, a code span to its code."""
-    return flat(MARKDOWN_LINK.sub(r"\1", cell).replace("`", ""))
 
 
 def reported(*arguments: str) -> str:

@@ -79,6 +79,18 @@ def strip_code_fences(text: str) -> str:
     return "\n".join(out)
 
 
+MARKDOWN_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+
+
+def plain(cell: str) -> str:
+    """A cell reduced to its text: a link to its label, a code span to its code.
+
+    Runs of whitespace collapse to single spaces, so a cell wrapped
+    across a table's source lines compares as the one line it states.
+    """
+    return " ".join(MARKDOWN_LINK.sub(r"\1", cell).replace("`", "").split())
+
+
 def cells(line: str) -> list[str]:
     """The cells of one pipe-table row, without their surrounding pipes."""
     return [part.strip() for part in CELL_SEPARATOR.split(line.strip())[1:-1]]
