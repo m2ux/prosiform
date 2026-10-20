@@ -16,6 +16,7 @@ The answer is that both are held to and the boundary stays at 500 or above with 
 | --- | --- |
 | [w12.md](w12.md) | The task's plan: the evidence gathered for each status and the verdict it supports |
 | [validation.md](validation.md) | The measurement that decided each status, the tests that hold it, and the checks the delivery was held to |
+| [changes.md](changes.md) | The plan changes this session applied, the one it held, and the debt it deferred |
 
 ## Links
 
@@ -26,3 +27,5 @@ The answer is that both are held to and the boundary stays at 500 or above with 
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Prior verdict | [W11 record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-20-39-i00-e11-w11-a-host-that-forbids) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
+| Pull request | [#121 \[I00:E11\] A Host Answering 401 or 405 to Both Methods](https://github.com/m2ux/prosiform/pull/121) |
+| Raised by this row | [#127 \[I00:E11:W16\] Verdict Boundary](https://github.com/m2ux/prosiform/issues/127) |
