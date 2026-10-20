@@ -22,9 +22,7 @@ The task graph and the row numbers it permits, checked and renumbered across the
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](issue.md#read-tracker-issue).
    - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
 2. Resolve each finding with the user.
-   - Preserve task edges when correcting a whole-epic edge.
-   - Name the producing row for each consumed output, meeting [Edges](#edges).
-   - Retain a whole-epic edge only where [Whole-Epic Edges](#whole-epic-edges) permits it.
+   - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
    - Read tasks for implied consumption edges.
    - Account for every independent pair as [Joins](#joins) states.
    - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
@@ -36,7 +34,7 @@ The task graph and the row numbers it permits, checked and renumbered across the
    - Inspect every reported range.
    - Search prose for references the script cannot see.
    - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each binding whole-epic edge in the planning record.
+   - Record the printed longest chains and each derived [whole-epic edge](#whole-epic-edges) in the planning record.
    - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
 
 ## Fields
@@ -48,9 +46,19 @@ The task graph and the row numbers it permits, checked and renumbered across the
 
 A task edge names the producing row for each output the depending row consumes. An edge a task's prose implies is carried explicitly.
 
+- **An edge names rows, never an epic.**
+  A row naming an epic gates its task on every row of that epic, including the rows it consumes nothing from, which is how a [whole-epic edge](#whole-epic-edges) the rows do not justify reaches the initiative.
+- **A task consuming an output from every row of an epic names each of those rows.**
+  The whole-epic reach is then what the rows establish, and each edge still carries the output it is for.
+
 ### Whole-Epic Edges
 
-An initiative Depends on cell takes the epics it derives, as [Work Breakdown](initiative-issue-body.md#work-breakdown) states. A whole-epic edge holds only where every prerequisite row is required; a narrower dependency stays in the task graph.
+An initiative Depends on cell takes the epics it derives, as [Work Breakdown](initiative-issue-body.md#work-breakdown) states. It derives one only where every row of the dependent epic requires every row of the prerequisite, through the task edges alone: a task row names rows, so no cell can assert a whole epic that the rows do not already establish.
+
+- **The edge is the coarsest gate the plan has.**
+  It holds the dependent epic until the prerequisite closes, not until the row it consumes merges, and it drops the dependent a [priority](#epic-priority) number, so the board keeps it out of Ready while the prerequisite runs.
+- **Its cost is why it is derived and never written.**
+  A narrower dependency stays in the task graph, where it gates the row that consumes the output rather than the epic around it.
 
 ### Epic Priority
 
@@ -85,12 +93,13 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 **Inputs:** Initiative body file, each epic id with its body file, and each task id with its work-item file.
 
 - Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, and the `<epic-id>:<task-id>=<work-item-file>` argument once per work item.
+- The command runs in `<workspace>` while body files are kept outside the repository, so pass each one as an absolute path.
 
 - Initiative edges follow the [whole-epic prerequisite rule](initiative-issue-body.md#work-breakdown); narrower dependencies stay in the task graph.
 - It also reports dependencies listed twice or already implied, and Joins pairs.
 - It prints each pair of tasks in an epic where neither depends on the other and the two do not name each other in Joins.
-- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention).
-- It prints each whole-epic dependency with that epic's row count, the binding row and its level, and the earliest row and its level.
+- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
+- A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states.
 - It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
 - It reads bodies from [Read Tracker Issue](issue.md#read-tracker-issue), or local drafts.
 
@@ -101,7 +110,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 **Example:**
 
 ```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=live-936.md E00=live-943.md E01=live-937.md E00:W01=e00/w01.md E01:W01=e01/w01.md
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md
 ```
 
 ### Renumber Tasks

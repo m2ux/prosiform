@@ -19,28 +19,25 @@ A dependency is one of:
   W03             a task in the same epic
   W04–W09         a range of tasks in the same epic
   E01:W02         a task in another epic
-  E01             every task in another epic
   #750            an external issue, not checked
   I05:E00:W02     another initiative's epic or task, not checked
 Markdown links are read by their text, so [E01:W02](https://…/issues/937) is E01:W02.
 
 Problems (exit status 1): a Task cell naming a second, different task id, unknown references,
 a work item declaring no component or naming no row,
+a task row naming an epic rather than the rows it consumes,
 a task depending on itself or a later task in its epic,
 an epic depending on a later epic, cycles, a dependency listed twice, and a dependency that another
-in the same cell already implies. The tasks a whole-epic dependency expands to are not reported as
-implied or listed twice. Joins problems: a task joining one that does not join it back, and two joined
-tasks where one depends on the other, directly or through a task outside the pair.
+in the same cell already implies. Joins problems: a task joining one that does not join it back, and
+two joined tasks where one depends on the other, directly or through a task outside the pair.
 Also printed: each pair of tasks in an epic where neither depends on the other and the two do not
-name each other in Joins, and each whole-epic dependency, with that epic's row count, the binding
-row and its level, and the earliest row and its level. The binding row has the highest level in the
-epic, and the earliest row the lowest. Where several share that level, the section names the lowest
-task id.
+name each other in Joins.
 With I=, the initiative's Depends on cells are checked: each epic's cell names exactly the other
 epics required in full by every task or joined unit, less transitive epic dependencies, and names no task.
 Another initiative's epic (I05:E00) or an issue (#750) may also be named.
 Advisory: task numbers that do not follow the order tasks can start.
-Also printed: each pair of rows in different epics whose work items declare one component, each
+Also printed: each pair of rows in different epics whose work items declare one component, the rows
+no work item was given for, so a partial contention report names what it passed over, each
 task's level (0 = can start now), the longest chains, and the proposed priority of each epic.
 Epics sharing a priority number start together, so prerequisite depth sets the number and
 contention separates it: an epic with no prerequisite epic carries the largest, and an epic
@@ -66,7 +63,7 @@ def cells(line: str) -> list[str]:
     return [c.strip() for c in LINK.sub(r'\1', line).strip().strip('|').split('|')]
 
 
-def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict, list[tuple[str, str]]]:
+def parse(epics: dict[str, Path]) -> tuple[dict, list[str]]:
     rows = {}
     problems = []
     for epic, path in epics.items():
@@ -93,12 +90,9 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict, list[tuple[str
                                      row.get('Joins', ''))
 
     tasks = {}
-    whole: dict[str, set[str]] = {}
-    edges: list[tuple[str, str]] = []
     for key, (description, deps, accompany) in rows.items():
         epic = key.split(':')[0]
         dep_list = []
-        whole[key] = set()
         for d in (x.strip() for x in deps.split(',') if x.strip()):
             rng = RANGE.fullmatch(d)
             if rng:
@@ -108,14 +102,7 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict, list[tuple[str
             elif TASK.fullmatch(d):
                 dep_list.append(d)
             elif EPIC.fullmatch(d):
-                own = [k for k in rows if k.startswith(d + ':')]
-                if not own:
-                    problems.append(f'{key}: depends on epic {d}, which was not given or has no tasks')
-                else:
-                    dep_list += own
-                    whole[key] |= set(own)
-                    if (key, d) not in edges:
-                        edges.append((key, d))
+                problems.append(f'{key}: names epic {d}; a task row names the rows it consumes')
             elif re.fullmatch(r'W\d\d', d):
                 dep_list.append(f'{epic}:{d}')
             else:
@@ -124,7 +111,7 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict, list[tuple[str
         for a in (x.strip() for x in accompany.split(',') if x.strip()):
             acc.append(a if a.startswith('E') else f'{epic}:{a}')
         tasks[key] = (description, dep_list, acc)
-    return tasks, problems, whole, edges
+    return tasks, problems
 
 
 def read_components(items: dict[str, Path]) -> tuple[dict[str, str], list[str]]:
@@ -164,22 +151,6 @@ def eligible_unjoined(tasks: dict, ancestors) -> list[str]:
             if right in tasks[left][2] and left in tasks[right][2]:
                 continue
             lines.append(f'{left} and {right} can share a pull request and do not name each other')
-    return lines
-
-
-def whole_epic_lines(tasks: dict, edges: list[tuple[str, str]], level) -> list[str]:
-    """Each whole-epic dependency, with the epic's row count, binding row and earliest row."""
-    lines = []
-    for dependent, epic in sorted(edges):
-        own = sorted(k for k in tasks if k.startswith(epic + ':'))
-        if not own:
-            continue
-        lo = min(level(k) for k in own)
-        hi = max(level(k) for k in own)
-        earliest = next(k for k in own if level(k) == lo)
-        binding = next(k for k in own if level(k) == hi)
-        lines.append(f'{dependent} depends on {epic} ({len(own)} rows), '
-                     f'binding {binding} level {hi}, earliest {earliest} level {lo}')
     return lines
 
 
@@ -293,7 +264,7 @@ def main(argv: list[str]) -> int:
             items[name] = Path(path)
         else:
             epics[name] = Path(path)
-    tasks, problems, whole, edges = parse(epics)
+    tasks, problems = parse(epics)
     components, missing = read_components(items)
     problems += missing
     for key in sorted(components):
@@ -347,12 +318,12 @@ def main(argv: list[str]) -> int:
             return reach[n]
 
         for key, (_, deps, _) in tasks.items():
-            for d in sorted({d for d in deps if deps.count(d) > 1} - whole[key]):
+            for d in sorted({d for d in deps if deps.count(d) > 1}):
                 problems.append(f'{key}: {d} is listed twice')
             listed = [d for d in dict.fromkeys(deps) if d in tasks]
             for d in listed:
                 by = next((o for o in listed if o != d and d in ancestors(o)), None)
-                if by and d not in whole[key]:
+                if by:
                     problems.append(f'{key}: {d} is already implied by {by}')
         for key, (_, _, acc) in tasks.items():
             for a in acc:
@@ -394,12 +365,13 @@ def main(argv: list[str]) -> int:
     print('\n--- levels (0 = can start now)')
     for n in sorted(tasks, key=lambda k: (lv(k), k)):
         print(lv(n), n, '-', tasks[n][0][:70])
-    print('\n--- whole epics')
-    print('\n'.join(whole_epic_lines(tasks, edges, lv)) or 'none')
     pairs = contention(components)
+    unchecked = sorted(key for key in tasks if key not in components)
     print('\n--- component contention: rows of different epics extending one component')
     print('\n'.join(f'{left} and {right} both extend {components[left]}'
                     for left, right in pairs) or 'none')
+    if unchecked:
+        print('not checked, no work item given:', ', '.join(unchecked))
     print('\n--- epic priority (epics sharing a number start together)')
     proposed = epic_priority(tasks, tuple(epics),
                              {(left.split(':')[0], right.split(':')[0]) for left, right in pairs})

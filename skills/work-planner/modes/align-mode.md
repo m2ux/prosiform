@@ -60,7 +60,7 @@ The main path meets [Outcomes](#outcomes).
    - Remove the misplaced section.
    - For a standalone body, call [Revise Standalone Body](../artifacts/standalone-body.md#revise-standalone-body).
    - Pass confirmed task splits and Coverage corrections to [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
-   - Preserve narrower task dependencies when correcting whole-epic dependencies through the dependency step.
+   - Replace an epic a task row names with the rows it consumes when correcting dependencies through the dependency step.
    - For a wrong-kind body:
      - Confirm either its rewrite to the intended template or its tracker kind/title change.
      - Keep the initiative row consistent with any epic title change.

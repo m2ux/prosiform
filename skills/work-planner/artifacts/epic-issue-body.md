@@ -171,7 +171,7 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
   Coverage names the epic's criteria the task must meet. Each row claims only criteria its work makes true; it cannot claim a criterion another row delivers alone or one its work cannot meet. A complete task's cell is empty.
 - **Depends on.**
   A task row names the rows it depends on. An earlier task in the epic (`W03`, `W04–W09`), a row of an earlier epic (`[E01:W02](…)`), or something outside the initiative (`#750`, `[I05:E00:W02](…)`).
-  - A task row names a whole epic (`[E01](…)`) only when every row of that epic must hold before the task starts, which is when the task consumes an output every row of the epic produces. The dependency is the row that produces the output the task consumes.
+  - A task row names rows, never an epic. A task consuming an output from every row of an epic names each of those rows (`[E01:W01](…), [E01:W02](…)`), so each edge carries the output it is for.
   - Cross-epic dependencies name rows before any issue of the epic is created. Both tables exist, and each edge names the row that produces what the dependent row consumes.
   - A dependency listed twice or already implied by another in the cell is unsound. A task that measures, extends or consumes another task's output depends on it, even when the prose does not say so.
 - **Task grain.**

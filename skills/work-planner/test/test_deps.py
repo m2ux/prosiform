@@ -70,36 +70,27 @@ class EligibleUnjoined(unittest.TestCase):
         self.assertNotIn('E06:W01 and E06:W02', text)
 
 
-class WholeEpics(unittest.TestCase):
-    def test_reports_an_unearned_whole_epic_edge(self):
-        upstream = epic_body(
-            ('W01', 'Finding roster', ''),
-            ('W02', 'Train weights', 'W01'),
-            ('W03', 'Publish model', 'W02'),
-        )
-        dependent = epic_body(('W01', 'Attribute intake', 'E01'))
-        code, text = run([('E01', upstream), ('E02', dependent)])
-        row = next(line for line in dependent.splitlines() if line.startswith('| W01 |'))
-        self.assertEqual(code, 0)
-        self.assertNotIn('E01:W03', row)
-        self.assertNotIn('Publish model', row)
-        self.assertIn(
-            'E02:W01 depends on E01 (3 rows), binding E01:W03 level 2, earliest E01:W01 level 0',
-            text)
-        self.assertNotIn('already implied', text)
+class EpicNamedInATaskRow(unittest.TestCase):
+    CHAIN = (('W01', 'Finding roster', ''), ('W02', 'Train weights', 'W01'),
+             ('W03', 'Publish model', 'W02'))
 
-    def test_narrowed_edge_is_not_a_whole_epic(self):
-        upstream = epic_body(
-            ('W01', 'Finding roster', ''),
-            ('W02', 'Train weights', 'W01'),
-            ('W03', 'Publish model', 'W02'),
-        )
-        dependent = epic_body(('W01', 'Attribute intake', 'E01:W01'))
-        code, text = run([('E01', upstream), ('E02', dependent)])
-        self.assertEqual(code, 0)
-        self.assertIn('--- whole epics\nnone', text)
-        self.assertNotIn('depends on E01 (', text)
+    def test_a_task_row_naming_an_epic_is_a_problem(self):
+        code, text = run([('E01', epic_body(*self.CHAIN)),
+                          ('E02', epic_body(('W01', 'Attribute intake', 'E01')))])
+        self.assertEqual(code, 1)
+        self.assertIn('E02:W01: names epic E01; a task row names the rows it consumes', text)
+
+    def test_the_producing_row_is_the_edge(self):
+        code, text = run([('E01', epic_body(*self.CHAIN)),
+                          ('E02', epic_body(('W01', 'Attribute intake', 'E01:W01')))])
+        self.assertEqual(code, 0, text)
         self.assertIn('1 E02:W01', text)
+
+    def test_naming_every_row_still_derives_the_initiative_edge(self):
+        code, text = run([('I', initiative_body(('E00', ''), ('E01', 'E00'))),
+                          ('E00', epic_body(('W01', 'Roster', ''), ('W02', 'Weights', ''))),
+                          ('E01', epic_body(('W01', 'Consume both', 'E00:W01, E00:W02')))])
+        self.assertEqual(code, 0, text)
 
 
 class TaskCells(unittest.TestCase):
@@ -173,9 +164,10 @@ class InitiativeDependencies(unittest.TestCase):
         code, text = self.check(producer, consumer, '')
         self.assertEqual(code, 0, text)
 
-    def test_whole_epic_task_edge_does_not_gate_an_independent_start(self):
+    def test_every_producing_row_named_does_not_gate_an_independent_start(self):
         producer = epic_body(('W01', 'Output', ''), ('W02', 'Other output', ''))
-        consumer = epic_body(('W01', 'Independent start', ''), ('W02', 'Consume all', 'E00'))
+        consumer = epic_body(('W01', 'Independent start', ''),
+                             ('W02', 'Consume all', 'E00:W01, E00:W02'))
         code, text = self.check(producer, consumer, '')
         self.assertEqual(code, 0, text)
 
@@ -190,8 +182,8 @@ class InitiativeDependencies(unittest.TestCase):
     def test_redundant_transitive_whole_epic_gate_is_reported(self):
         bodies = [('I', initiative_body(('E00', ''), ('E01', 'E00'), ('E02', 'E00, E01'))),
                   ('E00', epic_body(('W01', 'Output', ''))),
-                  ('E01', epic_body(('W01', 'Consume', 'E00'))),
-                  ('E02', epic_body(('W01', 'Finish', 'E01')))]
+                  ('E01', epic_body(('W01', 'Consume', 'E00:W01'))),
+                  ('E02', epic_body(('W01', 'Finish', 'E01:W01')))]
         code, text = run(bodies)
         self.assertEqual(code, 1)
         self.assertIn('initiative E02: Depends on should be E01', text)
@@ -252,6 +244,18 @@ class ComponentContention(unittest.TestCase):
                       text)
         self.assertIn('--- epic priority (epics sharing a number start together)\n1 E08\n1 E09', text)
 
+    def test_a_row_with_no_work_item_is_named_as_unchecked(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''), ('W02', 'Emit', 'W01'))),
+                          ('E08:W01', work_item(self.BUNDLE))])
+        self.assertEqual(code, 0, text)
+        self.assertIn('not checked, no work item given: E08:W02', text)
+
+    def test_a_complete_set_of_work_items_names_nothing_as_unchecked(self):
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E08:W01', work_item(self.BUNDLE))])
+        self.assertEqual(code, 0, text)
+        self.assertNotIn('not checked', text)
+
     def test_a_work_item_declaring_no_component_is_a_problem(self):
         code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
                           ('E08:W01', '## Overview\n\nWhat the task delivers.\n')])
@@ -298,6 +302,6 @@ class EpicPriority(unittest.TestCase):
 
     def test_the_proposed_priority_is_printed_for_each_epic(self):
         code, text = run([('E00', epic_body(('W01', 'Output', ''))),
-                          ('E01', epic_body(('W01', 'Consume', 'E00')))])
+                          ('E01', epic_body(('W01', 'Consume', 'E00:W01')))])
         self.assertEqual(code, 0, text)
         self.assertIn('--- epic priority (epics sharing a number start together)\n2 E00\n1 E01', text)
