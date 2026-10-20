@@ -118,9 +118,12 @@ def opened(root: Path, path: str) -> int:
         os.close(held)
         raise
     os.close(held)
-    if not stat.S_ISREG(os.fstat(file).st_mode):
+    try:
+        if not stat.S_ISREG(os.fstat(file).st_mode):
+            raise Absent(path)
+    except BaseException:
         os.close(file)
-        raise Absent(path)
+        raise
     return file
 
 
