@@ -23,4 +23,5 @@ It matters because a reference splits at the first number sign and reads the rem
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Origin | [I00:E02:W08 validation record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w08-check-fixtures-for-a) |
+| Pull request | [#126 \[I00:E11\] A Path Carrying a Number Sign](https://github.com/m2ux/prosiform/pull/126) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |

@@ -72,6 +72,12 @@ Every target of `make check`, run in the delivery worktree at `87b7ff0`. The cor
 - **The warning each passing run emits is declared.** Both passing fixtures carry `W_ENTRY_DESTINATION` in their manifests with the resolved destination, so a build that stopped reporting it would fail rather than pass quietly.
 - **The destination `notesdraft-` is the renderer's, not a defect.** The slug rule discards the separator and the number sign and turns the remaining space into a hyphen, so a trailing hyphen is what the path produces. The entry line links the heading it generated, which is what the fixture holds it to.
 
+## Plan Changes
+
+No change of a kind the allowance names was applied: no task or epic was created, nothing migrated, no priority or board status moved, and no issue took on scope it was not planned with. None was held either.
+
+One record correction accompanies the delivery. The epic's reference for AC7's origin read that no entry reference can name a path carrying a number sign. The resolution sequence splits a reference before any escape is decoded, so the encoded spelling names it, and the reference now states the origin with that reading. It moved to the end of the list as R14, which leaves the reference labels in sequence.
+
 ## Limitations
 
 The corpus declares what this build does on a filesystem that admits a number sign and a trailing space in a filename. A platform refusing either name cannot materialise the source tree, and the fixture fails there as an unwritable tree rather than as a disagreement about the contract. No fixture of this corpus states what such a platform should do, and nothing in this row changes that.
