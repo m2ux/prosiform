@@ -1,0 +1,16 @@
+description = "Two references spelling one document differently name one file group, which carries both selections in source order, because group identity is the path the normalization produced rather than the text a reference was written as."
+
+clauses = [
+  "Reference normalization and path identity — Equivalent references",
+  "File-scoped hierarchy",
+  "Section extraction and output hierarchy",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#stop", "./guide.md#run-it"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

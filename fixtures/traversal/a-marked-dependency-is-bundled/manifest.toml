@@ -1,0 +1,16 @@
+description = "A marked local Markdown link in selected content is resolved against the document carrying it, bundled and present: one naming a document carries the whole of it, one naming a section carries that section, and an unmarked mention of a third document carries nothing."
+
+clauses = [
+  "Link classification and resource handling — Marked local Markdown document links",
+  "Link classification and resource handling — Unmarked local Markdown links",
+  "Compile before publishing — Discover the recursive dependency graph",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
