@@ -598,6 +598,18 @@ Four of the five published examples are fixtures. The fifth is the grouped one, 
 
 The replacement wording for `design.md` is recorded in [#113](https://github.com/m2ux/prosiform/pull/113) and lands when this epic merges to `main`, on [D50](#d50--a-source-that-moved-under-the-run-carries-one-code-declared-when-the-epic-lands)'s reasoning: the new text states that the corpus bundles that tree through each invocation, which is not true of `main` until the epic is there.
 
+## D55 — A Heading the File Heading Already Names Is Not an Ancestor, and the Promotion Is the Pipeline's Order
+
+Two things settled while I00:E09:W02 delivered heading-only structural ancestors.
+
+**A source heading the file heading already names is not emitted as a structural ancestor**, whether or not its section was selected, because the file heading stands in its place in the outline. Read without that rule, a document's own `# Guide` is an eligible unselected ancestor of `guide.md#procedure`, and the bundle publishes `# guide` then `## Guide` — a second heading a reader cannot tell from the first, taking the slug `guide-1`. The first implementation did exactly that and moved **30 of the 176 passing fixtures**. Letting the named-but-unselected title be absorbed instead was refused: it drops the group's shift to zero and lifts every such group's headings a level, a larger change to published output than the criterion asks for. Under the adopted rule all 176 publish byte-identical output. The clause lands in `design.md` when the epic merges to `main`.
+
+**Ancestor promotion needs no mechanism, and its guarantee is an ordering.** Dependency closure expands a marked reference into its target's whole section before any group is assembled, and ancestry derives ancestors from the selection as closure finally left it, so a heading a reference named is selected content by the time ancestry runs. An ancestor is only ever a heading no reference named. `fixtures/ancestor-promotion/a-link-to-a-heading-only-ancestor` shows both halves in one bundle: `Alpha` carries its body because a marked link names it, `Beta` stays heading-only because nothing does.
+
+The row that delivered this reported the guarantee as `candidate.answers()` refusing a generated part. **That is not what decides it.** `answers()` refuses a `Generated` that is not the filename wrapper, but `Ancestor` is neither `Carried` nor `Generated` — `Emitted` is the union of all three — so an ancestor reaches the clause matching on origin fragment and would answer a target naming it. The guarantee rests on closure promotion alone, which is why [I00:E09:W06](https://github.com/m2ux/prosiform/issues/60) is kept as a row: a criterion held by an ordering needs a fixture written to catch the ordering changing, not one that happens to exercise it.
+
+Neither branch was wrong alone and the pair was. W01's usage-example bundles and W02's ancestors were each green on their own base, and together three expectations failed, because a bundle that selects a section now opens the chain of headings that placed it. The expectations gained 18 lines and lost none, which is the shape a heading-only ancestor takes, and the correction landed on the branch whose change moved the output.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
