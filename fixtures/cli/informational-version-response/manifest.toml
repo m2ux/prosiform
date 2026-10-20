@@ -1,0 +1,16 @@
+description = "The version response reports the tool and the profile identifier, and the version between them is the build's own, so the response is stated as the text it carries rather than as bytes."
+
+clauses = [
+  "CLI contract — --version, report tool version and profile identifier",
+  "Markdown and source-heading profile — skill-markdown-v1",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+root = "source"
+arguments = ["--version"]
+
+[expected]
+exit_status = 0
+stdout_contains = ["prosiform ", "(skill-markdown-v1)"]
+diagnostics = []
