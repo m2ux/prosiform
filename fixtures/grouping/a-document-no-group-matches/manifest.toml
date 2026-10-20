@@ -1,0 +1,21 @@
+description = "A document no grouping rule names keeps its own file group, headed by its root-relative path, beside the merged group the rule produces. One bundle therefore carries both arrangements, and the groups are ordered by root-relative path with the merged one taking the first of its members'."
+
+clauses = [
+  "Grouping — Group membership",
+  "Input and output contract — Dependency order",
+  "Grouping — Group naming",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "modes:2", "entry.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "entry"
+resolved = "entry"

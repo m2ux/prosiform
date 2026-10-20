@@ -1,0 +1,21 @@
+description = "Two documents of one name in different directories contribute one heading text to one merged section, so the name is emitted once and each document's content hangs beneath it under a variant heading. One trailing path segment is the documents' shared stem and does not tell them apart, so each variant heading carries the two segments that do."
+
+clauses = [
+  "Grouping — Group membership",
+  "Grouping — Variants by document",
+  "Grouping — Document content above the grouping depth",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "guides:2", "guides/alpha/notes.md#findings"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Findings"
+resolved = "findings"

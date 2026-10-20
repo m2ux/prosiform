@@ -1,0 +1,24 @@
+description = "One entry bundled under a grouping rule selects the content the same entry selects without one and reports the same entry destination, and differs only in how that content is arranged: one group headed by the directory slug in title case, an Overview section carrying the member that has a preamble, and one heading for each distinct source heading at the grouping depth."
+
+clauses = [
+  "Grouping",
+  "Grouping — Group membership",
+  "Grouping — Group structure",
+  "Grouping — Group naming",
+  "Grouping — Variants by document",
+  "Grouping — Document content above the grouping depth",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "modes:2", "modes/plan-mode.md#operations"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Operations"
+resolved = "operations"
