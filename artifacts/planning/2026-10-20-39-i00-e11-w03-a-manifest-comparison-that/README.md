@@ -13,6 +13,7 @@ It matters because the corpus is today weaker than the contract it encodes: thre
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The task's plan: the declaration's shape, what it compares and the fixtures that exercise it |
+| [validation.md](validation.md) | What the comparison was measured to do, against a response it must accept and one it must refuse, and the gate the delivery was held to |
 
 ## Links
 
