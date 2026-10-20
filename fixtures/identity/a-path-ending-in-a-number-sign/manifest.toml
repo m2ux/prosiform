@@ -1,0 +1,21 @@
+description = "A path ending in a space and a number sign is escaped as literal heading text, so the heading naming the file keeps that character where an ATX closing sequence would take it off."
+
+clauses = [
+  "File-scoped hierarchy — escape the path as literal heading text",
+  "Reference normalization and path identity — Resolution sequence, step 2",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes/draft%20%23.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes/draft #"
+resolved = "notesdraft-"

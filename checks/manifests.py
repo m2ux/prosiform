@@ -28,6 +28,8 @@ MANIFEST_NAME = "manifest.toml"
 
 CATALOGUES = {"error": "errorCode", "warning": "warningCode"}
 
+ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
+
 
 @cache
 def schema() -> dict[str, Any]:
@@ -73,15 +75,36 @@ def errors(manifest: dict[str, Any]) -> list[str]:
     ]
 
 
+def absent_root(manifest: dict[str, Any]) -> bool:
+    """Whether the manifest declares a run that cannot find its allowed root.
+
+    `E_ROOT_NOT_FOUND` is the contract's name for that outcome, so a
+    manifest expecting it has declared that `invocation.root` names no
+    directory. The declaration is the diagnostic itself, which is why no
+    field beside the root repeats it.
+    """
+    declared = manifest.get("expected", {}).get("diagnostics", [])
+    return any(
+        isinstance(diagnostic, dict) and diagnostic.get("code") == ROOT_NOT_FOUND
+        for diagnostic in declared
+    )
+
+
 def missing_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
     """Every path the manifest names that the fixture does not hold.
 
     The schema states a path's shape; whether the fixture carries what the
-    path names is a fact about the directory.
+    path names is a fact about the directory. A fixture declaring that the
+    run cannot find its allowed source root is the one that names a root
+    it does not hold, and `present_files` holds it to that.
     """
     missing = []
     root = manifest.get("invocation", {}).get("root")
-    if isinstance(root, str) and not (fixture / root).is_dir():
+    if (
+        isinstance(root, str)
+        and not absent_root(manifest)
+        and not (fixture / root).is_dir()
+    ):
         missing.append(f"invocation.root: {root} is not a directory")
     stdout = manifest.get("expected", {}).get("stdout")
     if isinstance(stdout, str) and not (fixture / stdout).is_file():
@@ -94,14 +117,20 @@ def present_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
 
     A declaration the directory contradicts before the run says nothing
     about the run, so it is a defect in the fixture rather than a
-    difference the run produced.
+    difference the run produced. A fixture declaring that the run cannot
+    find its allowed source root declares that root absent, so a fixture
+    holding it is refused the same way.
     """
     declared = manifest.get("expected", {}).get("absent", [])
-    return [
+    present = [
         f"expected.absent: {name} is a path the fixture holds"
         for name in declared
         if isinstance(name, str) and (fixture / name).exists()
     ]
+    root = manifest.get("invocation", {}).get("root")
+    if isinstance(root, str) and absent_root(manifest) and (fixture / root).exists():
+        present.append(f"invocation.root: {root} is a path the fixture holds")
+    return present
 
 
 def identity(fixture: Path, corpus: Path = CORPUS) -> str:
@@ -124,3 +153,25 @@ def fixtures(corpus: Path = CORPUS) -> list[Path]:
     directory and a fixture's identity is its path under the corpus.
     """
     return sorted(path.parent for path in corpus.rglob(MANIFEST_NAME))
+
+
+def declared_codes(severity: str, corpus: Path = CORPUS) -> set[str]:
+    """Every code the corpus's fixtures declare at one severity.
+
+    A fixture states a diagnostic by naming its severity and its code
+    together, so the codes the corpus reaches are read from the manifests
+    that carry them rather than from a list held beside the corpus. A
+    fixture added anywhere is counted by being a fixture.
+
+    A fixture awaiting later work declares its diagnostics like any
+    other: the expectation is the corpus's the moment the manifest
+    carries it, whatever the build under test currently produces.
+    """
+    return {
+        diagnostic["code"]
+        for fixture in fixtures(corpus)
+        for diagnostic in read(fixture / MANIFEST_NAME)
+        .get("expected", {})
+        .get("diagnostics", [])
+        if diagnostic.get("severity") == severity
+    }
