@@ -1,0 +1,31 @@
+description = "A run asking for JSON diagnostics writes one JSON object per line on the diagnostic stream and nothing else, whatever else it emits, while the bundle reaches standard output."
+
+clauses = [
+  "Exit status and JSON diagnostics — with --diagnostics json, emit one JSON object per stderr line",
+  "Exit status and JSON diagnostics — do not mix JSON diagnostics with progress prose",
+  "Exit status and JSON diagnostics — warnings may accompany success",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md", "notes.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes"
+resolved = "notes"

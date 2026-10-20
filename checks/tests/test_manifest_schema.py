@@ -8,6 +8,10 @@ stated. A diagnostic's code comes from the catalogue its severity
 selects, so a fixture cannot expect a failure the contract does not
 define, and cannot declare a warning where an error belongs.
 
+A diagnostic about a reference declares the fields that reference
+carries, the inclusion chain among them, and a chain reaching nothing is
+no chain.
+
 A run that must leave a path untouched declares it, because a comparison
 of the two streams says nothing about a file. The declaration carries
 fixture-relative paths, one apiece, and a fixture whose run creates no
@@ -181,6 +185,18 @@ def test_an_empty_diagnostic_list_is_a_declaration() -> None:
     manifest = complete()
     manifest["expected"]["diagnostics"] = []
     assert errors(manifest) == []
+
+
+def test_a_diagnostic_declaring_an_inclusion_chain_validates() -> None:
+    manifest = complete()
+    manifest["expected"]["diagnostics"][0]["chain"] = ["guide.md", "../outside.md"]
+    assert errors(manifest) == []
+
+
+def test_an_empty_inclusion_chain_fails() -> None:
+    manifest = complete()
+    manifest["expected"]["diagnostics"][0]["chain"] = []
+    assert errors(manifest), "a chain reaching nothing passed validation"
 
 
 def test_a_manifest_declaring_an_absent_path_validates() -> None:

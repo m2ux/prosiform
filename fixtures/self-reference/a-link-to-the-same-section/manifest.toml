@@ -16,4 +16,6 @@ stdout = "expected/stdout.md"
 severity = "error"
 code = "E_SELF_REFERENCE"
 reference = "guide.md#alpha"
+resolved = "guide.md#alpha"
 source = "guide.md:5"
+chain = ["guide.md#alpha", "guide.md#alpha"]
