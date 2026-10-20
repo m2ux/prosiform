@@ -7,7 +7,7 @@ clauses = [
   "Adversarial acceptance fixtures — Definition inventory",
 ]
 
-awaiting = "I00:E11:W09"
+awaiting = "I00:E08:W05"
 
 [invocation]
 root = "source"
