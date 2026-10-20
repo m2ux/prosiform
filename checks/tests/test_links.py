@@ -3,10 +3,12 @@
 A reference is unresolved when the host answered and said the target is
 not there. A host returning a server error, and a host refusing the caller
 with 403, each said nothing about the target, so they carry a verdict of
-their own and leave the run passing. The two are
+their own and leave the run passing. A host answering 401, and one
+answering 405 to both methods, each answered about the target, so the
+document is held to that answer. These are
 measured against a server this test runs on the loopback interface, which
 answers the statuses each case needs and counts the requests it received,
-so the retry is observed rather than assumed.
+so the retry and the GET re-ask are observed rather than assumed.
 """
 
 import threading
@@ -191,3 +193,61 @@ def test_an_unauthorised_page_is_an_unresolved_reference(
     answers, address = serving
     answers.statuses = [401]
     assert links.retried(lambda: links.reach(address)) == "HTTP 401"
+
+
+def test_an_unauthorised_page_is_decided_on_the_answer_to_head(
+    serving: tuple[Answers, str],
+) -> None:
+    answers, address = serving
+    answers.statuses = [401]
+    links.retried(lambda: links.reach(address))
+    assert answers.requests == 1
+
+
+def test_a_document_naming_an_unauthorised_page_fails(
+    serving: tuple[Answers, str], tmp_path: Path
+) -> None:
+    answers, address = serving
+    answers.statuses = [401]
+    failures, unanswered = links.check(document(tmp_path, address), online=True)
+    assert unanswered == []
+    assert len(failures) == 1
+    assert "HTTP 401" in failures[0]
+
+
+def test_a_host_refusing_the_method_on_both_is_an_unresolved_reference(
+    serving: tuple[Answers, str],
+) -> None:
+    answers, address = serving
+    answers.statuses = [405]
+    assert links.retried(lambda: links.reach(address)) == "HTTP 405"
+
+
+def test_a_host_refusing_the_method_on_both_is_asked_with_each_once(
+    serving: tuple[Answers, str],
+) -> None:
+    answers, address = serving
+    answers.statuses = [405]
+    links.retried(lambda: links.reach(address))
+    assert answers.requests == 2
+
+
+def test_a_host_refusing_the_method_on_head_and_serving_get_resolves(
+    serving: tuple[Answers, str],
+) -> None:
+    answers, address = serving
+    answers.by_method = {"HEAD": [405]}
+    answers.statuses = [200]
+    assert links.retried(lambda: links.reach(address)) is None
+    assert answers.requests == 2
+
+
+def test_a_document_naming_a_host_refusing_the_method_fails(
+    serving: tuple[Answers, str], tmp_path: Path
+) -> None:
+    answers, address = serving
+    answers.statuses = [405]
+    failures, unanswered = links.check(document(tmp_path, address), online=True)
+    assert unanswered == []
+    assert len(failures) == 1
+    assert "HTTP 405" in failures[0]
