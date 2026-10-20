@@ -1,0 +1,18 @@
+description = "A heading a retained container carries is one the bundle emits and one the renderer indexes, so it takes an ordinal and the headings behind it are numbered from a count that holds it; the entry line's destination is therefore the renderer's third Run rather than its first."
+
+clauses = [
+  "Bundle destinations — Ordinal assignment",
+  "Bundle destinations — Uniqueness",
+  "Bundle destinations — Resolvable where the bundle is read",
+  "Source-heading resolution — enumerate headings in source order, container-nested included",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["article.md", "guide.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

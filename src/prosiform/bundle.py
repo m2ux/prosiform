@@ -46,10 +46,12 @@ heading stays the Setext heading its source wrote.
 
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
-where an earlier heading already took that slug. That is the rule the
-source model applies over one document's headings, applied here over the
-headings the bundle emits, so the entry line's link resolves in the
-document a reader opens.
+where an earlier heading already took that slug. The ordinal is assigned
+over every heading the bundle emits, in bundle order, a heading a
+retained container carries included: the renderer indexes that heading
+beside the rest and numbers the headings after it from a count that
+holds it, so a map built from the document-level headings alone names
+one heading and resolves to another.
 """
 
 import re
@@ -347,14 +349,14 @@ def group(
             if id(token) in naming:
                 entries.append(0)
             continue
-        for opening in carried_headings(tokens, token):
+        carried = carried_headings(tokens, token)
+        for opening in carried:
             depth = level(opening) + by
             if depth > MAX_LEVEL:
                 raise Overflow(text[id(opening)], depth)
-        if token.type == HEADING_OPEN:
-            if id(token) in naming:
-                entries.append(len(shown))
-            shown.append(emitted_text(token, text[id(token)], by))
+        if token.type == HEADING_OPEN and id(token) in naming:
+            entries.append(len(shown))
+        shown.extend(emitted_text(one, text[id(one)], by) for one in carried)
         emitted.append(region(physical, tokens, token, by))
     return Group(SEPARATOR.join(emitted), tuple(shown), tuple(entries))
 
