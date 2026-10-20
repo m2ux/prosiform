@@ -29,6 +29,10 @@ Instead:
 - **Heredocs** — allowed (`<<`, `<<<`). Use for multi-line input.
 - **Commit messages** — `git commit -F - <<'EOF' … EOF`, or write the message to a file and `git commit -F <file>`. Never `git commit -m "$(cat …)"`.
 
+**The hook does not catch every path.** A command carrying a sandbox override has been observed executing with `$(...)` and `$VAR` in it. Treat the list above as a rule you keep rather than a rule the hook keeps for you: a construct that slips through is still forbidden, and the next invocation of it may not slip.
+
+**A hook matches the raw command string, so it can fire on text that is not a command.** The assisted-label hook rejects any invocation whose text contains `gh pr create` or `gh issue create` without `--label bot:ai-assisted` — including a `git commit` whose message quotes one of those strings, or a `grep` searching for it. Compose the text in a file rather than inline when it must name one: write the message with a script and pass it as `git commit -F <file>`.
+
 Unsure whether a command will trip? Write it to a file and dry-run the hook: `python3 __WORKSPACE__/.claude/hooks/block-dynamic-shell.py --test < /tmp/cmd.txt` (passing it as an argument would trip the hook on your own test call).
 
 # Sandboxed execution (`sbx`)
