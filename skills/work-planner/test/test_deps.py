@@ -14,7 +14,7 @@ from fixtures import SCRIPTS, epic_body, initiative_body, work_item
 
 sys.path.insert(0, str(SCRIPTS))
 from deps import (check_initiative, contention, eligible_unjoined, epic_dependencies,  # noqa: E402
-                  epic_priority, main)
+                  epic_priority, main, normalise)
 
 
 def run(bodies: list[tuple[str, str]]) -> tuple[int, str]:
@@ -97,6 +97,16 @@ class EpicNamedInATaskRow(unittest.TestCase):
                           ('E01', epic_body(('W01', 'Consume', 'E00:W01, E00:W03')))])
         self.assertEqual(code, 1)
         self.assertIn('E01:W01: E00:W01 is already implied by E00:W03', text)
+
+    def test_the_named_epic_still_reaches_the_rows_it_stands_for(self):
+        """A body carrying the retired form is reported once, not told to drop a correct gate."""
+        code, text = run([('I', initiative_body(('E00', ''), ('E01', 'E00'))),
+                          ('E00', epic_body(('W01', 'Output', ''))),
+                          ('E01', epic_body(('W01', 'Consume all', 'E00')))])
+        self.assertEqual(code, 1)
+        self.assertIn('E01:W01: names epic E00; a task row names the rows it consumes', text)
+        self.assertNotIn('Depends on should be empty', text)
+        self.assertNotIn('overbroad', text)
 
     def test_naming_every_row_still_derives_the_initiative_edge(self):
         code, text = run([('I', initiative_body(('E00', ''), ('E01', 'E00'))),
@@ -255,6 +265,30 @@ class ComponentContention(unittest.TestCase):
         self.assertIn('--- component contention: rows of different epics extending one component\nnone',
                       text)
         self.assertIn('--- epic priority (epics sharing a number start together)\n1 E08\n1 E09', text)
+
+    def test_one_path_spelt_two_ways_is_one_component(self):
+        self.assertEqual(normalise('`src/a.ts`.'), 'src/a.ts')
+        self.assertEqual(normalise('./src/a.ts'), 'src/a.ts')
+        self.assertEqual(normalise('[src/a.ts](https://example.test/a)'), 'src/a.ts')
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E09', epic_body(('W01', 'Extend assembly again', ''))),
+                          ('E08:W01', '**Component:** `src/a.ts`.\n'),
+                          ('E09:W01', '**Component:** ./src/a.ts\n')])
+        self.assertEqual(code, 0, text)
+        self.assertIn('E08:W01 and E09:W01 both extend src/a.ts', text)
+
+    def test_an_unreadable_work_item_is_a_problem(self):
+        with tempfile.TemporaryDirectory() as directory:
+            epic = Path(directory) / 'E08.md'
+            epic.write_text(epic_body(('W01', 'Extend assembly', '')))
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main([f'E08={epic}', f'E08:W01={directory}/gone/w01.md'])
+        text = output.getvalue()
+        self.assertEqual(code, 1)
+        self.assertIn('E08:W01: work item', text)
+        self.assertIn('is unreadable', text)
+        self.assertIn('--- epic priority', text)
 
     def test_a_row_with_no_work_item_is_named_as_unchecked(self):
         code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''), ('W02', 'Emit', 'W01'))),

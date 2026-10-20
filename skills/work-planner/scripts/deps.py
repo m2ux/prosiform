@@ -7,6 +7,8 @@ Usage:
 An argument naming a row is that row's work item, a file whose declaration line names the one
 component its implementation extends:
   **Component:** src/bundle/assembly.ts
+A declared component is read without its link, a wrapping code span, a trailing full stop or a
+leading ./, so two spellings of one path are one component.
 
 Each remaining file is an epic issue body holding the agent-engineering Work Breakdown table:
   | Task | Description | Coverage | Depends on | Joins | Done |
@@ -25,10 +27,12 @@ Markdown links are read by their text, so [E01:W02](https://…/issues/937) is E
 
 Problems (exit status 1): a Task cell naming a second, different task id, unknown references,
 a work item declaring no component or naming no row,
-a task row naming an epic rather than the rows it consumes,
+an unreadable work item, a task row naming an epic rather than the rows it consumes,
 a task depending on itself or a later task in its epic,
 an epic depending on a later epic, cycles, a dependency listed twice, and a dependency that another
-in the same cell already implies. Joins problems: a task joining one that does not join it back, and
+in the same cell already implies. A named epic still reaches the rows it stands for, so one body
+carrying the retired form is reported once rather than taking its initiative's gates down with it.
+Joins problems: a task joining one that does not join it back, and
 two joined tasks where one depends on the other, directly or through a task outside the pair.
 Also printed: each pair of tasks in an epic where neither depends on the other and the two do not
 name each other in Joins.
@@ -63,7 +67,7 @@ def cells(line: str) -> list[str]:
     return [c.strip() for c in LINK.sub(r'\1', line).strip().strip('|').split('|')]
 
 
-def parse(epics: dict[str, Path]) -> tuple[dict, list[str]]:
+def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict[str, set[str]]]:
     rows = {}
     problems = []
     for epic, path in epics.items():
@@ -90,9 +94,11 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str]]:
                                      row.get('Joins', ''))
 
     tasks = {}
+    expanded: dict[str, set[str]] = {}
     for key, (description, deps, accompany) in rows.items():
         epic = key.split(':')[0]
         dep_list = []
+        expanded[key] = set()
         for d in (x.strip() for x in deps.split(',') if x.strip()):
             rng = RANGE.fullmatch(d)
             if rng:
@@ -103,6 +109,9 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str]]:
                 dep_list.append(d)
             elif EPIC.fullmatch(d):
                 problems.append(f'{key}: names epic {d}; a task row names the rows it consumes')
+                own = [k for k in rows if k.startswith(d + ':')]
+                dep_list += own
+                expanded[key] |= set(own)
             elif re.fullmatch(r'W\d\d', d):
                 dep_list.append(f'{epic}:{d}')
             else:
@@ -111,18 +120,33 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str]]:
         for a in (x.strip() for x in accompany.split(',') if x.strip()):
             acc.append(a if a.startswith('E') else f'{epic}:{a}')
         tasks[key] = (description, dep_list, acc)
-    return tasks, problems
+    return tasks, problems, expanded
+
+
+def normalise(component: str) -> str:
+    """One spelling of a declared component: the link text, without a wrapping code span, a
+    trailing full stop or a leading `./`, so two spellings of one path are one component."""
+    text = LINK.sub(r'\1', component).strip()
+    if text.endswith('.'):
+        text = text[:-1].strip()
+    text = text.strip('`').strip()
+    return text[2:] if text.startswith('./') else text
 
 
 def read_components(items: dict[str, Path]) -> tuple[dict[str, str], list[str]]:
     """The component each work item declares, keyed by its row, and the items declaring none."""
     components, problems = {}, []
     for key, path in items.items():
+        try:
+            lines = path.read_text().splitlines()
+        except OSError as error:
+            problems.append(f'{key}: work item {path} is unreadable ({error.strerror})')
+            continue
         declared = ''
-        for line in path.read_text().splitlines():
+        for line in lines:
             found = COMPONENT.match(line.strip())
             if found:
-                declared = LINK.sub(r'\1', found[1]).strip().strip('`')
+                declared = normalise(found[1])
                 break
         if declared:
             components[key] = declared
@@ -264,7 +288,7 @@ def main(argv: list[str]) -> int:
             items[name] = Path(path)
         else:
             epics[name] = Path(path)
-    tasks, problems = parse(epics)
+    tasks, problems, expanded = parse(epics)
     components, missing = read_components(items)
     problems += missing
     for key in sorted(components):
@@ -318,12 +342,12 @@ def main(argv: list[str]) -> int:
             return reach[n]
 
         for key, (_, deps, _) in tasks.items():
-            for d in sorted({d for d in deps if deps.count(d) > 1}):
+            for d in sorted({d for d in deps if deps.count(d) > 1} - expanded[key]):
                 problems.append(f'{key}: {d} is listed twice')
             listed = [d for d in dict.fromkeys(deps) if d in tasks]
             for d in listed:
                 by = next((o for o in listed if o != d and d in ancestors(o)), None)
-                if by:
+                if by and d not in expanded[key]:
                     problems.append(f'{key}: {d} is already implied by {by}')
         for key, (_, _, acc) in tasks.items():
             for a in acc:
