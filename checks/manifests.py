@@ -153,3 +153,25 @@ def fixtures(corpus: Path = CORPUS) -> list[Path]:
     directory and a fixture's identity is its path under the corpus.
     """
     return sorted(path.parent for path in corpus.rglob(MANIFEST_NAME))
+
+
+def declared_codes(severity: str, corpus: Path = CORPUS) -> set[str]:
+    """Every code the corpus's fixtures declare at one severity.
+
+    A fixture states a diagnostic by naming its severity and its code
+    together, so the codes the corpus reaches are read from the manifests
+    that carry them rather than from a list held beside the corpus. A
+    fixture added anywhere is counted by being a fixture.
+
+    A fixture awaiting later work declares its diagnostics like any
+    other: the expectation is the corpus's the moment the manifest
+    carries it, whatever the build under test currently produces.
+    """
+    return {
+        diagnostic["code"]
+        for fixture in fixtures(corpus)
+        for diagnostic in read(fixture / MANIFEST_NAME)
+        .get("expected", {})
+        .get("diagnostics", [])
+        if diagnostic.get("severity") == severity
+    }
