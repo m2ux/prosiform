@@ -36,9 +36,13 @@ from prosiform.source import (
     index,
     lines,
     links,
+    nesting,
+    occurrences,
+    owner,
     regions,
     section,
     slug,
+    visible,
 )
 
 BODY = "An opening paragraph.\n\n## Run\n\nCarry the procedure out.\n"
@@ -455,3 +459,63 @@ def test_a_link_outside_the_given_regions_is_not_reported() -> None:
     chosen = section(tokens, "two")
     assert chosen is not None
     assert [one.destination for one in links(tokens, chosen)] == ["b.md"]
+
+
+def test_a_position_above_the_first_section_root_belongs_to_the_document() -> None:
+    tokens = parse("A preamble line.\n\n# Guide\n\nGuide body.\n")
+    assert owner(tokens, 0) is None
+
+
+def test_a_position_inside_a_section_belongs_to_that_section() -> None:
+    tokens = parse("# Guide\n\n## Alpha\n\nAlpha body.\n")
+    holder = owner(tokens, 4)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
+
+
+def test_a_position_belongs_to_the_innermost_section_containing_it() -> None:
+    tokens = parse("# Guide\n\n## Alpha\n\n### Detail\n\nDetail body.\n")
+    holder = owner(tokens, 6)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Detail"
+
+
+def test_a_position_inside_a_container_belongs_to_the_section_holding_it() -> None:
+    tokens = parse("# Guide\n\n## Alpha\n\n> - Quoted body.\n")
+    holder = owner(tokens, 4)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
+
+
+def test_a_heading_a_container_carries_roots_no_section_to_own_by() -> None:
+    tokens = parse("# Guide\n\n> ## Quoted\n>\n> Quoted body.\n")
+    holder = owner(tokens, 4)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Guide"
+
+
+def test_a_document_nesting_no_container_nests_nothing() -> None:
+    assert nesting(parse("# Guide\n\nGuide body.\n")) == 0
+
+
+def test_container_nesting_counts_block_quotes_and_list_items() -> None:
+    assert nesting(parse("> > > deep\n")) == 3
+    assert nesting(parse("- a\n  - b\n    - c\n")) == 3
+    assert nesting(parse("> - quoted item\n")) == 2
+
+
+def test_container_nesting_is_the_deepest_run_rather_than_the_last() -> None:
+    assert nesting(parse("> > deep\n\nshallow\n")) == 2
+
+
+def test_link_and_image_uses_are_counted_once_per_occurrence() -> None:
+    tokens = parse("# Guide\n\n[a](a.md) and [a](a.md) and ![p](p.png).\n")
+    assert occurrences(tokens, tuple(regions(tokens))) == 3
+
+
+def test_a_use_outside_the_given_regions_is_not_counted() -> None:
+    text = "# One\n\n[a](a.md)\n\n# Two\n\n[b](b.md)\n"
+    tokens = parse(text)
+    chosen = section(tokens, "two")
+    assert chosen is not None
+    assert occurrences(tokens, chosen) == 1

@@ -35,15 +35,18 @@ prose, and so is a brace block anywhere but the end of a heading.
 import re
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
+from functools import cache
 from pathlib import PurePosixPath
 
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
 
 from prosiform import PROFILE
+from prosiform.limits import NESTING
 
 PRESET = "commonmark"
 ENABLED = ("table", "strikethrough")
+HEADROOM = 20
 
 SUFFIXES = (".md", ".markdown")
 
@@ -89,17 +92,24 @@ class Refusal:
     reference: str | None = None
 
 
-def parser() -> MarkdownIt:
-    """The parser the profile configures: CommonMark and its two extensions."""
-    return MarkdownIt(PRESET).enable(list(ENABLED))
+@cache
+def parser(budget: int) -> MarkdownIt:
+    """The parser the profile configures: CommonMark and its two extensions.
+
+    The parser carries a nesting ceiling of its own, and reaching it
+    makes it read the rest of a construct as text rather than refuse
+    it. The ceiling therefore sits above the nesting budget the run
+    declares, far enough that the inline structure of an ordinary
+    document is unaffected, so a source nested deeper than the budget
+    is counted past the boundary and refused rather than quietly read
+    as something else.
+    """
+    return MarkdownIt(PRESET, {"maxNesting": budget + HEADROOM}).enable(list(ENABLED))
 
 
-PARSER = parser()
-
-
-def parse(text: str) -> list[Token]:
+def parse(text: str, budget: int = NESTING.default) -> list[Token]:
     """One source, parsed under the profile, its task markers left as text."""
-    tokens = PARSER.parse(text)
+    tokens = parser(budget).parse(text)
     for inline in item_openings(tokens):
         if linked_marker(inline):
             unlink_marker(inline)
