@@ -69,7 +69,7 @@ Select the mode as appropriate to fulfill the user request:
 ## Rules
 
 - **Linked sections.**
-  Read a heading-linked section and its subsections, stopping before the next heading of equal or higher level. Read that file's Prerequisites first; reading prerequisites does not execute procedures. Preserve boundaries in batched reads and recover truncated output. Reuse complete prerequisites already read at the same revision. Explicit whole-document requirements still apply.
+  Read a heading-linked section and its subsections, stopping before the next heading of equal or higher level. Read that file's Prerequisites first; reading prerequisites does not execute procedures. A mode named in another mode's Prerequisites is read as a document, and its own Prerequisites load only where a step runs it. Preserve boundaries in batched reads and recover truncated output. Reuse complete prerequisites already read at the same revision. Explicit whole-document requirements still apply.
 - **Decisions.**
   Ask one at a time, following the [interview rules](guidelines.md#modes). Record each answer in the affected issues and, when there is one, the planning record.
 - **Layers.**

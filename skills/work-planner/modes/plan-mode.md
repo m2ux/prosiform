@@ -31,6 +31,7 @@ The main path meets [Outcomes](#outcomes).
 
 1. **Take the proposal.**
    - When the user names a proposal, its associated issue body defines the problem scope.
+   - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
    - When no proposal is named:
      - Run [Propose Mode](propose-mode.md) with the user's goal.
      - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
