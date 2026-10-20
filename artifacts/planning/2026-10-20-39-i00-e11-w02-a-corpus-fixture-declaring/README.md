@@ -14,6 +14,8 @@ It matters because the corpus is the contract in executable form. A declared cod
 | --- | --- |
 | [w02.md](w02.md) | The task's plan: the declared warnings, the fixtures that state them and what each run expects |
 | [validation.md](validation.md) | The coverage measured, the checks the delivery was held to and the review |
+| [changes.md](changes.md) | The plan changes this session applied and those it held |
+
 ## Links
 
 | Resource | Link |
@@ -22,3 +24,5 @@ It matters because the corpus is the contract in executable form. A declared cod
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
+| Pull request | [#123 \[I00:E11\] Every Declared Warning Stated by a Fixture](https://github.com/m2ux/prosiform/pull/123) |
+| Raised by this row | [#129 \[I00:E11:W17\] Error Code Coverage](https://github.com/m2ux/prosiform/issues/129) |
