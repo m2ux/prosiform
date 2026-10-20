@@ -36,8 +36,6 @@ Every rule the procedure requires.
 
 The marker is lifted, so the corpus run holds the fixture to its manifest from here on. The corpus reports 203 fixtures, 202 passing and 1 awaited, against 201 passing and 2 awaited on the base; the one remaining marker is `grouping/a-rule-matching-no-document-in-the-closure`, which awaits `I00:E11:W14`.
 
-<a id="the-reference-fixtures"></a>
-
 ## The Walk
 
 The unit tests state what one run of inline events yields and what each reader takes from it. They run under `make test`.
