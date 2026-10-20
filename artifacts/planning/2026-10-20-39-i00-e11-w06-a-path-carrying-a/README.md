@@ -13,6 +13,7 @@ It matters because a reference splits at the first number sign and reads the rem
 | Artifact | What it holds |
 | --- | --- |
 | [w06.md](w06.md) | The task's plan: the reading the contract takes and the fixtures that state it |
+| [validation.md](validation.md) | The reading the contract takes, the three fixtures, the mutations each one catches, and the gate |
 
 ## Links
 
