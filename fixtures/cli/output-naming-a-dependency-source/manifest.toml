@@ -1,0 +1,19 @@
+description = "An output path naming a document the run reached as a dependency is refused as invalid usage, so a run never publishes over a source it read rather than only over one its entry references named."
+
+clauses = [
+  "CLI contract — --output, a path naming an input source is refused",
+  "Compile before publishing — step 4, discover the recursive dependency graph",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+root = "source"
+arguments = ["--output", "source/note.md", "guide.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
