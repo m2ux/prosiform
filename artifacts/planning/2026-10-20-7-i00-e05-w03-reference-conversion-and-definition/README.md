@@ -23,7 +23,7 @@ W02 also left one case raised rather than resolved: a marked reference-style lin
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | W03's plan: the definition environment, the inline conversion, the escaping and the removal |
-| [w04.md](w04.md) | W04's plan: the absorbed slug mapped to the file heading's destination |
+| [w04.md](../2026-10-20-7-i00-e05-w04-a-reference-naming-an/w04.md) | W04's plan, in its own record: the absorbed slug mapped to the file heading's destination |
 
 ## Links
 
