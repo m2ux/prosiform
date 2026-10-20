@@ -456,6 +456,8 @@ This was found by the session delivering `I00:E05:W02`, which declared a fixture
 
 A task row naming another epic's row waits for that epic. The initiative row states the gate, and the rows beside it move independently, so the finest grain the plan gates at is one epic.
 
+The half of this decision that wrote epic-grain gates into the initiative table is retired by [D53](#d53--an-initiative-gate-is-derived-and-the-priority-map-sequences-what-it-leaves-open). What remains is the spelling below.
+
 Every `Depends on` cell naming another epic links that epic and names the row: `[E05:W02](issues/7)`. The link is what gates and the row is why.
 
 This decision first spelled the cell `[E05](issues/7) (W02)`, on the reading that `[E05:W02]` promised a precision the link did not carry — a reader scheduling `I00:E07:W02` would take it for one merged row and find it waiting on four. The reading was right and the spelling was wrong. `board.py`'s `met` already requires both: a cell whose text ends in `:W02` is satisfied when the epic is closed as completed **and** that row is delivered, so the documented form gates on the epic exactly as this decision asks.
@@ -567,6 +569,20 @@ The cells are now empty for every pair that will not share a pull request, and e
 Four delivered rows were dispatched against cells that said otherwise. E11's W07, W08 and W11 named each other and shipped as [#91](https://github.com/m2ux/prosiform/pull/91), [#100](https://github.com/m2ux/prosiform/pull/100) and [#97](https://github.com/m2ux/prosiform/pull/97); E08's W01 and W02 named each other and shipped as [#105](https://github.com/m2ux/prosiform/pull/105) and [#104](https://github.com/m2ux/prosiform/pull/104). Nothing delivered is wrong — each row was reviewed and gated on its own — but the grouping the plan asserted did not happen, and the rows are recorded above as taking their own pull requests because that is what they did and what suits them.
 
 Reading the column as a concurrency hint was refused. It would make the delivered split correct retrospectively at the cost of diverging from the definition the skill owns, and the skill is not this repository's to change. A separate question the column does not answer is which rows may be dispatched at once; that is [D38](#d38--a-priority-set-asserts-concurrency-and-the-components-decide-whether-it-holds)'s component contention, and it stays where it is.
+
+## D53 — An Initiative Gate Is Derived, and the Priority Map Sequences What It Leaves Open
+
+An initiative row's `Depends on` names the epics the task graph makes whole-epic prerequisites, and nothing else. `deps.py` derives the set as the epics every one of whose rows is a prerequisite of every row of the dependant, reduced transitively, and reports anything else as overbroad. The work-planner settled this in [workflow-server#1292](https://github.com/m2ux/workflow-server/issues/1292) and is applying it to other plans in [#1463](https://github.com/m2ux/workflow-server/issues/1463), so this plan follows it rather than carrying a second model.
+
+The cells are now E08 on E05, E10 on E06, and E09 on nothing. E08's named E06, but `E08:W05` consumes nothing from that epic — it takes `E05:W03` alone — so E06 gates four rows rather than the epic, and the epic can begin when E05 closes. E10's named E08 for the same kind of reason. Two cross-epic edges in E02 that another edge in the same cell already implied were dropped, which changes no reach.
+
+**E09's gate is empty although no E09 row can start without a prerequisite.** `E09:W01` takes `E04:W03` and `E09:W02` takes `E03:W04`, so no epic gates every row and the derivation collapses to nothing. An empty cell is satisfied by definition, so the initiative table no longer holds E09 back at all.
+
+What holds it is the priority map. E09 sits at 3 behind the validation gate at 4, and the bar [D39](#d39--an-in-progress-epic-holds-the-bar-it-was-ranked-at) computes released it only when that epic closed — which is what happened, and the empty cell would not have changed it. The ordering that matters for E09 lives in its rows' own `Depends on` cells, which name the rows they consume and are read when a row is dispatched.
+
+This is a real reliance and it is recorded rather than hidden: an epic with no common whole-epic prerequisite is sequenced by its rank and by its rows, and a change to the priority map can release it earlier than its work allows. Keeping the untrue gate was refused because a cell asserting a prerequisite the graph does not carry misleads the next reader exactly as the unreadable spelling did, and reporting a permanently dirty check trains a reader to ignore it.
+
+Delivered as I00:E11:W15, against [#112](https://github.com/m2ux/prosiform/issues/112). The dependency check reports no problem against I00 for the first time.
 
 ## Evidence
 
