@@ -21,8 +21,12 @@ Every change this row applied under its allowance, and every change it held.
 
 | Held | Why |
 | --- | --- |
-| Refusing a marked image with `E_MARKED_RESOURCE` | `required` reads links and an image is not one. The fix changes what the traversal classifies rather than what the rewrite emits, which is another row's surface. Declared as a fixture awaiting `I00:E10` and raised as an issue |
+| Refusing a marked image with `E_MARKED_RESOURCE` | `required` reads links and an image is not one. The fix changes what the traversal classifies rather than what the rewrite emits, which is another row's surface. Declared as a fixture awaiting `I00:E11` and raised as [#87](https://github.com/m2ux/prosiform/issues/87), placed as `I00:E11:W08`.|
 | Converting a marked reference-style link to inline form | `I00:E05:W03` delivers the conversion. Until it lands the run raises an internal error rather than publishing a bundle naming a source path. Declared as a fixture awaiting that row |
 | Recording in `design.md` which part of the entry line landed in which row | `w02.md` proposed it. The design states the system as it is, and a delivery order is not part of the system; it is recorded here instead |
 
-Nothing outside the allowance was needed. No task was created, no row migrated, nothing re-prioritised.
+## Applied — Task Creation
+
+`I00:E11:W08` and the criterion it covers, `AC9`, were added to [#39](https://github.com/m2ux/prosiform/issues/39) as the placement of [#87](https://github.com/m2ux/prosiform/issues/87). The epic's reference list gains `R8` naming the gap. Nothing was renumbered: the list already carries two entries labelled `R6`, and a number a pull request names is preserved.
+
+No row was created in `I00:E05`, none migrated, nothing re-prioritised, and nothing outside the allowance was needed.
