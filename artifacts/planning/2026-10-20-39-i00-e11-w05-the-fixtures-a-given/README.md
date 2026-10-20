@@ -14,6 +14,7 @@ It matters because a session learns what its work turns green from a red run or 
 | --- | --- |
 | [w05.md](w05.md) | The task's plan: the declaration the report reads, its invocation and its output |
 | [validation.md](validation.md) | The tests that observe AC6, the gate the delivery was held to, and the review |
+| [changes.md](changes.md) | The plan changes this session applied, and the one it held for the user |
 
 ## Links
 
@@ -23,4 +24,6 @@ It matters because a session learns what its work turns green from a red run or 
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Origin | [I00:E02:W06 validation record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w06-corpus-run-on-every) |
+| Pull request | [#120 \[I00:E11\] The Fixtures a Given Piece of Work Unblocks](https://github.com/m2ux/prosiform/pull/120) |
+| Epic review | [#125 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/pull/125) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
