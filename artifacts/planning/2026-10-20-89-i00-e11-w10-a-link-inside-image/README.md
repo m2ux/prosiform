@@ -14,6 +14,7 @@ It matters because the mark is authoring syntax that never reaches a reader, and
 | --- | --- |
 | [w10.md](w10.md) | The task's plan: where discovery reads inline events and what reaching the nested run changes |
 | [validation.md](validation.md) | What the build was measured to do and the checks the delivery was held to |
+| [changes.md](changes.md) | The plan changes this session applied, and the one it holds |
 
 ## Links
 
@@ -23,4 +24,6 @@ It matters because the mark is authoring syntax that never reaches a reader, and
 | Task issue | [#89 A Marked Link Inside Image Alternative Content Reaches the Bundle With Its Mark](https://github.com/m2ux/prosiform/issues/89) |
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
+| Pull request | [#132 \[I00:E11\] A Link Inside Image Alternative Content Read as the Reference It Is](https://github.com/m2ux/prosiform/pull/132) |
+| Deferred debt | [#135 \[I00:E11:W20\] Nested Link Rewriting](https://github.com/m2ux/prosiform/issues/135) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
