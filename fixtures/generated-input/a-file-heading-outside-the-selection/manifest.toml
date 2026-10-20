@@ -1,0 +1,20 @@
+description = "A source opening on a file heading is refused although the run selected a later section, because what a document opens on is a fact about the file rather than about the regions a run selected."
+
+clauses = [
+  "Generated input policy",
+  "Validation scope — whole-file checks, generated-input detection",
+]
+
+[invocation]
+root = "source"
+arguments = ["report.md#findings"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_GENERATED_INPUT"
+reference = "notes"
+source = "report.md:1"

@@ -81,7 +81,7 @@ def write_fixture(
     arguments: tuple[str, ...] = ("guide.md",),
     exit_status: int = 0,
     stdout: bytes = b"",
-    diagnostics: tuple[dict[str, str], ...] = (),
+    diagnostics: tuple[dict[str, Any], ...] = (),
     absent: tuple[str, ...] = (),
     complete: bool = True,
 ) -> Path:
@@ -519,6 +519,33 @@ def test_a_declared_resolved_identity_that_differs_is_reported(
     assert "diagnostic 1 carries another resolved" in detail
     assert "expected 'guide'" in detail
     assert "produced 'guide-1'" in detail
+
+
+def test_a_declared_inclusion_chain_that_differs_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    declared = {**OUTSIDE_ROOT, "chain": ["guide.md", "../outside.md"]}
+    fixture = write_fixture(
+        tmp_path / "fixture", exit_status=1, diagnostics=(declared,)
+    )
+    emitted = dict(declared)
+    emitted["chain"] = ["guide.md"]
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 1))
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1 carries another chain" in detail
+
+
+def test_a_declared_inclusion_chain_the_run_omits_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    declared = {**OUTSIDE_ROOT, "chain": ["guide.md", "../outside.md"]}
+    fixture = write_fixture(
+        tmp_path / "fixture", exit_status=1, diagnostics=(declared,)
+    )
+    emitted = dict(OUTSIDE_ROOT)
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 1))
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1 carries no chain" in detail
 
 
 def test_a_standard_error_line_that_is_not_a_diagnostic_is_reported(

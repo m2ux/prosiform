@@ -33,7 +33,7 @@ prose, and so is a brace block anywhere but the end of a heading.
 """
 
 import re
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from functools import cache
 from pathlib import PurePosixPath
@@ -283,8 +283,15 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
         )
 
 
-def refusals(tokens: Sequence[Token]) -> Iterator[Refusal]:
-    """Every construct the profile refuses, in the order the source carries them."""
+def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
+    """Every construct the profile refuses, in the order the run carries them.
+
+    The tokens are whatever run a caller holds them to, and the caller
+    decides which: the profile says what it refuses, and the scope of
+    the refusal is a question about the bundling rather than about the
+    construct. A run narrowed to the regions one source contributes
+    therefore reports what that content carries and nothing else.
+    """
     heading = False
     for token in tokens:
         if token.nesting == 1:

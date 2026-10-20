@@ -17,7 +17,8 @@ heading each emitted heading answers to. Every check below compares one
 against the other, so an agreement means the candidate says what its
 construction recorded rather than that it is internally consistent.
 
-The invariants checked here are target integrity, exactly-once coverage,
+The invariants checked here are block boundary safety, target
+integrity, exactly-once coverage,
 absence of new links, absence of surviving definitions, reference
 preservation, outline preservation, depth safety, group isolation, entry
 line integrity, one intended destination per rewritten link, and the two
@@ -25,24 +26,31 @@ sides of region accounting: a candidate holding fewer regions than the
 provenance claims has omitted one, and a candidate holding more carries
 content no source range accounts for.
 
-Two invariants the contract names are not checked here, and are absent
-rather than weakened:
+Block boundary safety is the first of them, because an absorbed region
+is also a missing one: a candidate whose unterminated code example
+swallowed the group written after it holds fewer regions than the
+provenance claims, and reporting that as an omission would name the
+count rather than the boundary that lost it. The check reads the line
+each emitted part opens on from the assembly, and requires the reparse
+to open a region of its own there. A part the reparse places inside the
+one above it is a boundary the run refuses, and it is refused rather
+than repaired: no fence is closed and no code example is rewritten on
+the author's behalf, because a document the tool silently completed is
+no longer the document the author wrote.
 
-- **Ownership stability** is a property of the construction rather than
-  of the candidate. Link ownership and direct-self-reference
-  classification are read from a source's own token stream and a
-  position in it, and consolidation changes neither, so a check
-  comparing ownership before and after would compare one call of
-  `source.owner` with another call of the same function on the same
-  arguments. A check that cannot fail reports a guarantee nobody has.
-- **Block-syntax preservation** — whether a generated heading or a
-  region boundary absorbs content into an unintended container — is the
-  block boundary safety epic's, and the structural pairing below stops
-  short of it: it holds the candidate's regions to the provenance one
-  for one, and says nothing about what a boundary merged inside one.
+One invariant the contract names is not checked here, and is absent
+rather than weakened. **Ownership stability** is a property of the
+construction rather than of the candidate. Link ownership and
+direct-self-reference classification are read from a source's own token
+stream and a position in it, and consolidation changes neither, so a
+check comparing ownership before and after would compare one call of
+`source.owner` with another call of the same function on the same
+arguments. A check that cannot fail reports a guarantee nobody has.
 
-A failure raises `Invalid`, which names the invariant and what
-disagreed. Nothing is published while a check fails.
+An unsafe boundary raises `Unsafe`, which names the source regions
+either side of it and the container that absorbed one into the other.
+Every other failure raises `Invalid`, which names the invariant and
+what disagreed. Nothing is published while a check fails.
 """
 
 from collections.abc import Collection, Iterator, Mapping, Sequence
@@ -59,6 +67,7 @@ from prosiform.bundle import (
     carried_headings,
     emitted_visible,
     key,
+    openings,
 )
 from prosiform.closure import Reference, marked
 from prosiform.profile import REFERENCES, parse
@@ -97,6 +106,21 @@ CODE_BLOCKS = ("fence", "code_block")
 
 LINK = "link"
 
+UNSAFE_BUNDLE_BOUNDARY = "E_UNSAFE_BUNDLE_BOUNDARY"
+
+ENTRY_LINE = "the entry line"
+
+CONTAINERS = {
+    "fence": "code example",
+    "code_block": "indented code example",
+    "bullet_list_open": "list",
+    "ordered_list_open": "list",
+    "blockquote_open": "quote",
+    "html_block": "HTML block",
+    "paragraph_open": "paragraph",
+    "table_open": "table",
+}
+
 TARGET_INTEGRITY = "target integrity"
 EXACTLY_ONCE = "exactly-once coverage"
 NO_NEW_LINKS = "no new links"
@@ -119,6 +143,37 @@ class Invalid(Exception):
         super().__init__(f"{invariant}: {detail}")
         self.invariant = invariant
         self.detail = detail
+
+
+class Unsafe(Exception):
+    """A bundle boundary placing one emitted part inside a container of the part above.
+
+    The two parts are named as the source regions they carry, because a
+    boundary is a defect of the documents being bundled together rather
+    than of a position in the output, and the container is named as the
+    construct a reader of the bundle would find the later part inside.
+    The path carried is the source whose region opens the container,
+    which is the document an author closes the construct in, rather
+    than the source of the content that landed inside it.
+    """
+
+    def __init__(
+        self, carried: str, absorbed: str, container: str, path: str | None, at: int
+    ) -> None:
+        super().__init__(
+            f"{absorbed} is placed inside the {container} that {carried} opens, "
+            f"at line {at} of the bundle"
+        )
+        self.carried = carried
+        self.absorbed = absorbed
+        self.container = container
+        self.path = path
+        self.at = at
+        self.code = UNSAFE_BUNDLE_BOUNDARY
+        self.remedy = (
+            f"end the {container} in the source before the content that follows "
+            f"it, or select content that does not end inside one"
+        )
 
 
 class Use:
@@ -310,6 +365,87 @@ def prose(tokens: Sequence[Token], span: Token) -> list[Token]:
         for inline in inlines(tokens, [span])
         if inline.map is not None and inline.map[0] not in occupied
     ]
+
+
+def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
+    """What each emitted part of the bundle carries, in bundle order.
+
+    A group writes its file heading and then one part for each source
+    range it selected, so a part after the first is named by the range
+    the provenance records for it: a boundary then names two documents
+    and the lines they were taken from rather than two offsets into the
+    output. A part the provenance records no range for is named by its
+    position, because the count is the structural pairing's to report
+    and a boundary still has to say which part it concerns.
+    """
+    named: list[tuple[str, str]] = []
+    for one in groups:
+        path = one.record.path
+        named.append((f"the file heading for {path!r}", path))
+        for at in range(1, len(one.parts)):
+            if at <= len(one.record.ranges):
+                carried = one.record.ranges[at - 1]
+                named.append(
+                    (
+                        f"the region at lines {carried.lines} of {carried.path!r}",
+                        carried.path,
+                    )
+                )
+            else:
+                named.append((f"the region at position {at} of {path!r}", path))
+    return named
+
+
+def container(spans: Sequence[Token], at: int) -> Token | None:
+    """The document-level block of the candidate that holds one line below its own.
+
+    A region opening on the line is no container of it, so the search
+    is for a block the line falls strictly inside: that block is what a
+    reader of the bundle finds the content at that line within.
+    """
+    return next(
+        (
+            token
+            for token in spans
+            if token.map is not None and token.map[0] < at < token.map[1]
+        ),
+        None,
+    )
+
+
+def boundaries(
+    physical: Sequence[str], spans: Sequence[Token], groups: Sequence[Group]
+) -> None:
+    """Hold each emitted part to opening a region of the candidate's own.
+
+    The assembly writes one blank line between parts, and a blank line
+    separates most blocks. It does not end an unterminated code
+    example, and it does not separate two lists that share a marker or
+    a list from an indented block below it, so a part can land inside
+    the part above it without producing invalid Markdown. The reparse
+    is what reveals it: a part whose opening line begins no
+    document-level region of the candidate was absorbed by the part
+    that holds it.
+
+    A part the candidate has no line for at all is an omission rather
+    than a boundary, and the structural pairing names it as one.
+    """
+    named = parts(groups)
+    started = {token.map[0] for token in spans if token.map is not None}
+    entry_end = spans[0].map[1] if spans and spans[0].map is not None else 1
+    for at, (opens, (what, path)) in enumerate(
+        zip(openings(groups, entry_end), named, strict=True)
+    ):
+        if opens in started or opens >= len(physical):
+            continue
+        holding = container(spans, opens)
+        carried, opening = named[at - 1] if at else (ENTRY_LINE, path)
+        kind = (
+            "container"
+            if holding is None
+            else CONTAINERS.get(holding.type, holding.type)
+        )
+        raise Unsafe(carried, what, kind, opening, opens + 1)
 
 
 def structure(
@@ -714,9 +850,9 @@ def validate(
     The record is held to itself first — each selected region carried
     once, each heading at the level and in the order its source wrote —
     and the candidate is then reparsed in candidate mode and held to
-    the record. A failure raises before anything is published, so a
-    candidate that disagrees with its source provenance publishes
-    nothing.
+    the record, the boundaries between its parts first. A failure
+    raises before anything is published, so a candidate that disagrees
+    with its source provenance publishes nothing.
     """
     coverage(groups)
     for one in groups:
@@ -725,6 +861,7 @@ def validate(
     tokens = parse(bundled, budget, environment)
     physical = lines(bundled)
     spans = list(regions(tokens))
+    boundaries(physical, spans, groups)
     paired = structure(spans, groups)
     leakage(environment)
     outline(tokens, groups)

@@ -15,7 +15,14 @@ kind declares rather than reaching a filesystem.
 
 import pytest
 
-from prosiform.closure import Malformed, OutsideRoot, inside, marked, resolve
+from prosiform.closure import (
+    Malformed,
+    OutsideRoot,
+    identity,
+    inside,
+    marked,
+    resolve,
+)
 
 
 def test_a_reference_names_its_document_and_no_section() -> None:
@@ -158,3 +165,21 @@ def test_a_fragment_alone_names_a_section_of_the_document_carrying_it() -> None:
 
 def test_a_reference_a_source_carries_keeps_the_text_it_was_written_as() -> None:
     assert inside("docs/guide.md", "#run-it").original == "#run-it"
+
+
+def test_an_identity_is_the_document_a_whole_document_reference_names() -> None:
+    assert identity(resolve("docs/guide.md")) == "docs/guide.md"
+
+
+def test_an_identity_names_the_section_where_the_reference_does() -> None:
+    assert identity(resolve("docs/guide.md#alpha")) == "docs/guide.md#alpha"
+
+
+def test_a_fragment_alone_takes_its_identity_from_the_base_it_is_read_against() -> None:
+    assert identity(resolve("#alpha"), "docs/guide.md") == "docs/guide.md#alpha"
+
+
+def test_two_spellings_of_one_section_share_an_identity() -> None:
+    assert identity(resolve("./%67uide.md#alpha")) == identity(
+        resolve("guide.md#alpha")
+    )

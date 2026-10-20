@@ -1,0 +1,19 @@
+description = "An authored title carrying a slash bundles, because the path its text spells names no document under the allowed source root once a Markdown suffix is appended."
+
+clauses = [
+  "Generated input policy — a title naming no document under the root",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes"
+resolved = "notes"

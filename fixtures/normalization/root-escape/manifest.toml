@@ -20,3 +20,4 @@ severity = "error"
 code = "E_SOURCE_OUTSIDE_ROOT"
 reference = "../outside.md"
 source = "guide.md:3"
+chain = ["guide.md", "../outside.md"]

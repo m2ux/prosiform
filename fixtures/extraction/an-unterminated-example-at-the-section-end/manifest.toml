@@ -1,7 +1,5 @@
 description = "A section whose last block is a code example the source never closes would absorb the group after it, which is the unsafe boundary the run refuses rather than closes."
 
-awaiting = "I00:E08"
-
 clauses = [
   "Block boundaries",
   "Section extraction and output hierarchy — Boundary",

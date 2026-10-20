@@ -120,6 +120,15 @@
           "description": "The referring source location, as a fixture-root-relative path and an optional line.",
           "type": "string",
           "minLength": 1
+        },
+        "chain": {
+          "description": "The inclusion chain that reached the reference: the identity of each reference followed from an entry reference, in order, the one this diagnostic concerns last. An entry reference stands at the head of a chain of one.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
@@ -148,6 +157,7 @@
         "E_RESOURCE_LIMIT",
         "E_ROOT_NOT_FOUND",
         "E_SELF_REFERENCE",
+        "E_SOURCE_CHANGED",
         "E_SOURCE_OUTSIDE_ROOT",
         "E_SOURCE_SYMLINK",
         "E_TARGET_NOT_FOUND",

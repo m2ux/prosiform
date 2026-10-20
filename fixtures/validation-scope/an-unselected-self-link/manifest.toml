@@ -1,0 +1,20 @@
+description = "A marked link naming the very section that carries it, written in a section no reference selected, leaves a run that selected another section of the same file successful."
+
+clauses = [
+  "Validation scope — validate self-reference within the selected dependency closure",
+  "Validation scope — an unrelated self-link in an unselected sibling must not fail bundling",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#procedure"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Procedure"
+resolved = "procedure"

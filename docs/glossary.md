@@ -66,7 +66,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **validation** | Checking a candidate against the provenance recorded while building it. Mandatory, and prior to any output. |
 | **provenance** | The record of which source region produced which span of the candidate, kept separately from generated structure. |
 | **invariant** | A property validation establishes, such as exactly-once coverage or one intended destination per rewritten reference. |
-| **diagnostic** | One message a run emits to standard error, carrying a severity, a stable code, the reference or location it concerns, and a remedy where one is accurate. |
+| **diagnostic** | One message a run emits to standard error, carrying a severity, a stable code, the reference or location it concerns, the identity that reference resolved to and the chain of references that reached it where it has them, and a remedy where one is accurate. |
 | **publication** | Emitting a validated bundle to standard output or to a file, atomically. |
 | **delivery** | Transporting a published bundle to the caller. A successful build does not establish a successful delivery. |
 

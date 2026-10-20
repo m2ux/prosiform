@@ -18,6 +18,7 @@ from prosiform.bundle import (
     escaped,
     group,
     heading_text,
+    openings,
 )
 from prosiform.profile import parse
 from prosiform.source import lines
@@ -290,3 +291,34 @@ def test_an_absorbed_group_reaches_the_sixth_level_without_overflow() -> None:
 def test_a_bundle_ends_in_exactly_one_newline() -> None:
     bundled = assemble("Line.", [grouped("guide.md", "# Guide\n")])
     assert bundled == "Line.\n\n# guide\n"
+
+
+def test_a_group_is_its_parts_one_blank_line_apart() -> None:
+    text = "# Guide\n\nOpening prose.\n\n## Rules\n"
+    carried = grouped("guide.md", text)
+    assert carried.parts == ("# guide", "Opening prose.", "## Rules")
+    assert carried.text == "# guide\n\nOpening prose.\n\n## Rules"
+
+
+def test_each_part_opens_one_blank_line_below_the_part_above_it() -> None:
+    text = "# Guide\n\nOpening prose.\n\n- A rule.\n- Another rule.\n"
+    carried = grouped("guide.md", text)
+    bundled = assemble("Line.", [carried])
+    assert openings([carried], 1) == [2, 4, 6]
+    assert [lines(bundled)[at] for at in openings([carried], 1)] == [
+        "# guide\n",
+        "Opening prose.\n",
+        "- A rule.\n",
+    ]
+
+
+def test_the_parts_of_two_groups_open_in_bundle_order() -> None:
+    first = grouped("guide.md", "# Guide\n\nOpening prose.\n")
+    second = grouped("note.md", "# Note\n")
+    bundled = assemble("Line.", [first, second])
+    assert openings([first, second], 1) == [2, 4, 6]
+    assert [lines(bundled)[at] for at in openings([first, second], 1)] == [
+        "# guide\n",
+        "Opening prose.\n",
+        "# note\n",
+    ]

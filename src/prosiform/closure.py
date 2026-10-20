@@ -118,6 +118,13 @@ class Reference:
     at, which a diagnostic about it names, because the document that
     refuses it is not the document it was written in. A command-line
     reference is written on the command line and holds none.
+
+    It holds the inclusion chain as well: the identities followed from
+    an entry reference to this one, this one last. How a reference was
+    reached is a fact about the occurrence rather than about what it
+    names, which is why it sits here beside the location rather than in
+    a record kept in step with the references it describes. An entry
+    reference stands at the head of its own chain.
     """
 
     original: str
@@ -125,6 +132,22 @@ class Reference:
     fragment: str | None = None
     external: bool = False
     origin: str | None = None
+    chain: tuple[str, ...] = ()
+
+
+def identity(reference: Reference, base: str = "") -> str:
+    """One reference as the document and the section it names, in one string.
+
+    This is the name a chain hop is written as and the name two
+    spellings of one dependency share. A fragment-only reference names
+    a section of the document it is written against, which the base
+    supplies, so the hop names a document wherever the reference was
+    written.
+    """
+    path = reference.path or base
+    if reference.fragment is None:
+        return path
+    return f"{path}{FRAGMENT}{reference.fragment}"
 
 
 @dataclass(frozen=True)

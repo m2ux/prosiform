@@ -1,0 +1,20 @@
+description = "One group ending on a list and the next opening on one are separated by the file heading the later group is headed by, which no list absorbs, so two documents that would merge if written one after the other bundle as the two groups they are."
+
+clauses = [
+  "Block boundaries",
+  "File-scoped hierarchy",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

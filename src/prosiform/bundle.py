@@ -18,7 +18,11 @@ of the section it names. What lies between two
 regions is not source content: a blank line above the first region, the
 blank line a removed reference definition was separated by, and the
 spacing between any two blocks are the bundle's own, and the bundle
-writes one blank line between regions wherever it joins them. Inside a
+writes one blank line between regions wherever it joins them. A group
+is held as those parts rather than as the text they join into, so the
+line each part opens on is a figure the assembly states and candidate
+validation reads back to prove that no part landed inside the one above
+it. Inside a
 region nothing is touched but the lines a link-reference definition
 occupies, so an indented thematic break keeps its indent, a delimiter
 keeps its trailing spaces and a code example keeps its bytes.
@@ -147,6 +151,12 @@ class Overflow(Exception):
 class Group:
     """One file group: the Markdown it emits, and the record of where it came from.
 
+    The group is held as the parts it emits — its file heading, then one
+    part for each selected source region — rather than as the Markdown
+    those parts join into, because the separation between two of them is
+    the bundle's own and the bundle states it in one place. The text the
+    group publishes is those parts with one blank line between each.
+
     The headings the group emits and the source fragment each answers to
     are read from that record, so the group states them once. The first
     is the file heading, which answers to the whole document and so to
@@ -155,9 +165,14 @@ class Group:
     because the heading itself is not emitted.
     """
 
-    text: str
+    parts: tuple[str, ...]
     entries: tuple[int, ...]
     record: Record
+
+    @property
+    def text(self) -> str:
+        """The Markdown the group publishes: its parts, one blank line apart."""
+        return SEPARATOR.join(self.parts)
 
     @property
     def headings(self) -> tuple[str, ...]:
@@ -278,12 +293,17 @@ def rewrite(
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
-    A rewrite edits the lines one inline token occupies and writes no
-    line break into them, so the lines the group then slices are the
-    lines the source wrote, one for one. Content the run did not select
-    is left alone: no reference in it was resolved, so no destination
-    was assigned to one, and a definition it names is removed with the
-    rest rather than published around it.
+    A rewrite edits the lines one inline token occupies and reports one
+    entry for each of them, so the lines the group then slices are the
+    lines the source wrote, one for one, and a token map taken from the
+    parse names the same content after the rewrite as before it. A
+    definition the author spelled across more than one line is published
+    with the line feeds it carries, and the entry for the line that
+    gained one holds it.
+
+    Content the run did not select is left alone: no reference in it was
+    resolved, so no destination was assigned to one, and a definition it
+    names is removed with the rest rather than published around it.
 
     A source declaring no definition carries no reference-style use, so
     a token holding no marked link is the text its source wrote.
@@ -295,9 +315,7 @@ def rewrite(
             continue
         start, end = inline.map
         targets = [assigned[key(path, one)] for one in marks]
-        written[start:end] = lines(
-            rewritten("".join(written[start:end]), inline, targets, defined)
-        )
+        written[start:end] = rewritten(written[start:end], inline, targets, defined)
     return written
 
 
@@ -556,12 +574,38 @@ def group(
         )
         emitted.append(region(written, tokens, token, by, removed))
     return Group(
-        SEPARATOR.join(emitted),
+        tuple(emitted),
         tuple(entries),
         Record(path, by, tuple(emitting_headings), tuple(ranges)),
     )
 
 
 def assemble(line: str, groups: Sequence[Group]) -> str:
-    """The bundle: its entry line, then each group, terminated by one newline."""
-    return SEPARATOR.join([line, *(one.text for one in groups)]) + TERMINATOR
+    """The bundle: its entry line, then each emitted part, one blank line apart.
+
+    One blank line between two maximal emitted regions is the separation
+    the contract requires, and it is written here and nowhere else, so
+    the geometry `openings` reads back is the geometry this writes.
+    """
+    return (
+        SEPARATOR.join([line, *(part for one in groups for part in one.parts)])
+        + TERMINATOR
+    )
+
+
+def openings(groups: Sequence[Group], after: int) -> list[int]:
+    """The line of the bundle each emitted part opens on, in bundle order.
+
+    A part opens one blank line below the last line of the part above
+    it, which is the separation `assemble` writes and the only spacing
+    between two parts. The first of them opens one blank line below
+    `after`, the last line the entry line occupies: that figure is read
+    from the candidate rather than assumed, because a heading the entry
+    line names can carry a line break into the text it shows.
+    """
+    at = after + 1
+    found: list[int] = []
+    for part in (part for one in groups for part in one.parts):
+        found.append(at)
+        at += len(lines(part)) + 1
+    return found

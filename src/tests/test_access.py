@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from prosiform.access import Absent, Outside, Symlinked, read_source
+from prosiform.access import Absent, Outside, Symlinked, present, read_source
 
 GUIDE = "# Guide\n"
 SECRET = "# Secret\n"
@@ -105,3 +105,16 @@ def test_a_broken_link_is_refused_as_a_link_rather_than_as_a_missing_file(
     os.symlink("nowhere.md", root / "dangling.md")
     with pytest.raises(Symlinked):
         read_source(root, "dangling.md")
+
+
+def test_a_document_the_root_yields_is_present(root: Path) -> None:
+    assert present(root, "guide.md")
+    assert present(root, "docs/note.md")
+
+
+def test_a_path_the_walk_refuses_is_absent_to_the_probe(root: Path) -> None:
+    os.symlink("../outside/secret.md", root / "escaping.md")
+    assert not present(root, "missing.md")
+    assert not present(root, "escaping.md")
+    assert not present(root, "docs")
+    assert not present(root, "../outside/secret.md")

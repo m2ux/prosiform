@@ -5,11 +5,19 @@ a fixture cannot reach: a response whose text belongs to this build rather
 than to the contract, a write the stream refuses, and the status a request
 this build cannot carry out returns. Each case names a run, its status,
 and what each of the two streams carried.
+
+A source changing while the run reads it is such a case. A fixture
+declares a static source tree and the runner drives one command, so the
+corpus can state what a run does about a tree, never what it does about
+a tree being written. The recheck is therefore held here on both terms:
+the comparison itself, over a tree written between the two reads, and a
+whole run whose source is written as the run reads it, which publishes
+nothing to either stream or to a named file.
 """
 
 import json
 import os
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -18,12 +26,14 @@ from typing import IO, Any
 import pytest
 
 from prosiform import PROFILE
+from prosiform.access import read_source
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
     HEADING_DEPTH_OVERFLOW,
     Group,
     assemble,
 )
+from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY
 from prosiform.cli import (
     ENTRY_DESTINATION,
     INPUT_FAILURE,
@@ -36,6 +46,7 @@ from prosiform.cli import (
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
     SELF_REFERENCE,
+    SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
     SOURCE_SYMLINK,
     SUCCESS,
@@ -43,13 +54,21 @@ from prosiform.cli import (
     UNEXPECTED_INTERNAL_ERROR,
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
+    Failure,
+    canonical,
     main,
     read_document,
+    recheck,
 )
 from prosiform.closure import resolve
 from prosiform.limits import FILES, RESOURCE_LIMIT
 from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
-from prosiform.source import NESTED_SECTION_TARGET, UNTERMINATED_FRONTMATTER
+from prosiform.source import (
+    NESTED_SECTION_TARGET,
+    UNTERMINATED_FRONTMATTER,
+    Capture,
+    hashed,
+)
 
 
 @dataclass(frozen=True)
@@ -367,6 +386,50 @@ def written(root: Path, name: str, text: str) -> None:
     path.write_text(text)
 
 
+def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac gone](missing.md).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#nowhere")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["chain"] == ["guide.md#nowhere"]
+
+
+def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
+    written(root, "entry.md", "# Entry\n\nSee [\u00ac notes](docs/notes.md#detail).\n")
+    written(
+        root,
+        "docs/notes.md",
+        "# Notes\n\n## Detail\n\nSee [\u00ac other](other.md#nowhere).\n",
+    )
+    written(root, "docs/other.md", "# Other\n\n## Here\n\nContent.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "entry.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
+    reported = run.diagnostics()[0]
+    assert reported["chain"] == [
+        "entry.md",
+        "docs/notes.md#detail",
+        "docs/other.md#nowhere",
+    ]
+    assert reported["reference"] == "other.md#nowhere"
+    assert reported["resolved"] == "docs/other.md"
+    assert reported["source"] == "docs/notes.md:5"
+
+
+def test_a_document_a_dependency_reached_reports_the_route_to_it(root: Path) -> None:
+    written(root, "entry.md", "# Entry\n\nSee [\u00ac notes](docs/notes.md).\n")
+    written(root, "docs/notes.md", "# Notes\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "entry.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [RAW_HTML]
+    assert run.diagnostics()[0]["chain"] == ["entry.md", "docs/notes.md"]
+
+
+def test_a_usage_failure_reaching_no_document_carries_no_chain(root: Path) -> None:
+    run = invoke("--root", str(root), "--diagnostics", "json", "--group", "x", "g.md")
+    assert run.status == USAGE_FAILURE
+    assert "chain" not in run.diagnostics()[0]
+
+
 @pytest.mark.parametrize(
     ("source", "code"),
     [
@@ -574,12 +637,16 @@ def test_a_crlf_delimited_block_is_stripped_by_the_command(root: Path) -> None:
 
 
 def test_a_referring_document_is_stripped_too(root: Path) -> None:
-    written(root, "guide.md", "---\ntitle: Guide\n---\n# Guide\n\n<div>raw</div>\n")
+    written(
+        root,
+        "guide.md",
+        "---\ntitle: Guide\n---\n# Guide\n\n## Run\n\n<div>raw</div>\n",
+    )
     run = invoke(
         "--root", str(root), "--diagnostics", "json", "--from", "guide.md", "#run"
     )
     assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["source"] == "guide.md:6"
+    assert run.diagnostics()[0]["source"] == "guide.md:8"
 
 
 def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
@@ -1003,6 +1070,147 @@ def test_a_crossed_nesting_budget_fails_rather_than_reinterpreting_the_source(
     assert run.diagnostics()[0]["code"] == RESOURCE_LIMIT
 
 
+def test_a_parsing_safety_budget_an_unselected_construct_crosses_names_the_source(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSelected.\n\n## Beta\n\n" + "> " * 12 + "Deep.\n",
+    )
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--max-nesting",
+        "3",
+        "guide.md#alpha",
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert reported["source"] == "guide.md"
+    assert reported["reference"] == "guide.md"
+    assert reported["chain"] == ["guide.md#alpha"]
+    assert "cannot be safely indexed" in reported["message"]
+
+
+def test_a_source_byte_budget_is_an_indexing_failure_too(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSelected.\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--max-file-bytes",
+        "8",
+        "guide.md#alpha",
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert reported["source"] == "guide.md"
+    assert "cannot be safely indexed" in reported["message"]
+
+
+def test_a_run_wide_budget_names_no_single_source(root: Path) -> None:
+    chained(root)
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-files", "2", "alpha.md"
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert "source" not in reported
+    assert "cannot be safely indexed" not in reported["message"]
+
+
+def scoped(root: Path) -> None:
+    """A document whose unselected section carries every defect at once."""
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSee [¬ gamma](other.md#gamma).\n\n"
+        "## Beta\n\nSee [¬ gone](missing.md) and [¬ here](guide.md#beta).\n\n"
+        "<div>raw</div>\n",
+    )
+    written(
+        root,
+        "other.md",
+        "# Other\n\n## Gamma\n\nCited.\n\n## Delta\n\n<div>raw</div>\n",
+    )
+
+
+def test_an_unselected_broken_link_does_not_fail_the_run(root: Path) -> None:
+    scoped(root)
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "### Alpha" in run.stdout
+
+
+def test_an_unselected_self_link_does_not_fail_the_run(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSelected.\n\n## Beta\n\nSee [¬ here](guide.md#beta).\n",
+    )
+    assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
+
+
+def test_the_same_sibling_fails_once_the_closure_includes_it(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSee [¬ beta](guide.md#beta).\n\n"
+        "## Beta\n\nSee [¬ gone](missing.md).\n",
+    )
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == TARGET_NOT_FOUND
+    assert reported["reference"] == "missing.md"
+
+
+def test_a_profile_refusal_a_named_document_did_not_select_does_not_fail(
+    root: Path,
+) -> None:
+    scoped(root)
+    assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
+
+
+def test_a_profile_refusal_a_reached_document_did_not_select_does_not_fail(
+    root: Path,
+) -> None:
+    scoped(root)
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "### Gamma" in run.stdout
+    assert "Delta" not in run.stdout
+
+
+def test_a_profile_refusal_the_run_selected_still_fails(root: Path) -> None:
+    scoped(root)
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#beta")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RAW_HTML
+    assert reported["chain"] == ["guide.md#beta"]
+
+
+def test_a_refusal_in_a_reached_document_the_closure_selected_fails(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [¬ other](other.md).\n")
+    written(root, "other.md", "# Other\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RAW_HTML
+    assert reported["source"] == "other.md:3"
+    assert reported["chain"] == ["guide.md", "other.md"]
+
+
 def test_a_target_at_the_expansion_depth_is_bundled(root: Path) -> None:
     chained(root)
     run = invoke("--root", str(root), "--max-expansion-depth", "2", "alpha.md")
@@ -1064,3 +1272,139 @@ def test_a_candidate_disagreeing_with_its_provenance_publishes_nothing(
     assert not destination.exists()
     assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
     assert "no accidental omissions" in run.diagnostics()[0]["message"]
+
+
+def captured_for(root: Path, path: str) -> dict[str, Capture]:
+    """What one source was when it was read, as discovery captures it."""
+    return {path: Capture(canonical(root, path), hashed(read_source(root, path)))}
+
+
+def test_a_source_nothing_wrote_passes_the_recheck(root: Path) -> None:
+    recheck(root, captured_for(root, "guide.md"), {})
+
+
+def test_a_source_written_after_the_read_fails_the_recheck(root: Path) -> None:
+    captured = captured_for(root, "guide.md")
+    (root / "guide.md").write_text("# Guide\n\nA line the run never read.\n")
+    with pytest.raises(Failure) as raised:
+        recheck(root, captured, {"guide.md": ("guide.md",)})
+    assert raised.value.diagnostic.code == SOURCE_CHANGED
+    assert raised.value.status == INPUT_FAILURE
+
+
+def test_a_source_removed_after_the_read_fails_the_recheck(root: Path) -> None:
+    captured = captured_for(root, "guide.md")
+    (root / "guide.md").unlink()
+    with pytest.raises(Failure) as raised:
+        recheck(root, captured, {"guide.md": ("guide.md",)})
+    assert raised.value.diagnostic.code == SOURCE_CHANGED
+
+
+def test_a_source_resolving_elsewhere_fails_the_recheck(tmp_path: Path) -> None:
+    for name in ("one", "two"):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "guide.md").write_text("# Guide\n")
+    os.symlink(tmp_path / "one", tmp_path / "now")
+    root = tmp_path / "now"
+    captured = captured_for(root, "guide.md")
+    (tmp_path / "now").unlink()
+    os.symlink(tmp_path / "two", tmp_path / "now")
+    with pytest.raises(Failure) as raised:
+        recheck(root, captured, {"guide.md": ("guide.md",)})
+    assert raised.value.diagnostic.code == SOURCE_CHANGED
+    assert str(tmp_path / "two" / "guide.md") in raised.value.diagnostic.message
+
+
+def writing_once(root: Path, write: Callable[[Path], object]) -> Callable[..., bytes]:
+    """A read that writes the source tree once, as a run's first read returns."""
+    reads: list[str] = []
+
+    def reading(at: Path, path: str) -> bytes:
+        data = read_source(at, path)
+        reads.append(path)
+        if len(reads) == 1:
+            write(root / path)
+        return data
+
+    return reading
+
+
+def test_a_source_written_during_the_run_publishes_nothing(
+    root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "prosiform.cli.read_source",
+        writing_once(root, lambda path: path.write_text("# Guide\n\nRewritten.\n")),
+    )
+    output = tmp_path / "bundle.md"
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(output),
+        "guide.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
+    assert not output.exists()
+
+
+def test_a_source_removed_during_the_run_publishes_nothing(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "prosiform.cli.read_source",
+        writing_once(root, lambda path: path.unlink()),
+    )
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
+
+
+def test_a_title_the_allowed_source_root_cannot_contain_names_no_document(
+    root: Path,
+) -> None:
+    (root.parent / "outside.md").write_text("# Outside\n")
+    (root / "titled.md").write_text("# ../outside\n\nBody.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "titled.md")
+    assert run.status == SUCCESS
+    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+
+
+def test_an_unsafe_boundary_is_an_input_failure(tmp_path: Path) -> None:
+    (tmp_path / "guide.md").write_text(
+        "# Guide\n\n- The first list.\n\n[notes]: notes.md\n\n- The second list.\n"
+    )
+    run = invoke("--root", str(tmp_path), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    one = run.diagnostics()[0]
+    assert one["code"] == UNSAFE_BUNDLE_BOUNDARY
+    assert one["reference"] == "guide.md"
+    assert one["source"] == "guide.md"
+    assert "is placed inside the list that" in one["message"]
+    assert one["remedy"]
+
+
+def test_an_unsafe_boundary_publishes_no_file(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "guide.md").write_text(
+        "# Guide\n\n- The first list.\n\n[notes]: notes.md\n\n- The second list.\n"
+    )
+    destination = tmp_path / "bundle.md"
+    run = invoke(
+        "--root",
+        str(source),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(destination),
+        "guide.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert not destination.exists()

@@ -64,6 +64,7 @@ severity = "error"
 code = "E_SOURCE_OUTSIDE_ROOT"
 reference = "../outside.md"
 source = "guide.md:3"
+chain = ["guide.md", "../outside.md"]
 ```
 
 | Field | Declares |
@@ -74,7 +75,7 @@ source = "guide.md:3"
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
-| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects. A run emitting none declares an empty list. |
+| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `reference`, `resolved`, `source` and `chain` a diagnostic about a reference carries. A run emitting none declares an empty list. |
 | `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it is one the corpus declares ahead of the build. |
 
@@ -110,7 +111,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Five fixtures carry the marker. `ancestor-promotion/a-link-to-a-heading-only-ancestor` awaits `I00:E09:W02`, which delivers the structural ancestors a reference promotes into their content. `extraction/an-unterminated-example-at-the-section-end` awaits `I00:E08`, which delivers boundary safety: a code example a source never closes absorbs the group written after it, and the run refuses that boundary rather than closing the example. `rewriting/marking-an-image` awaits `I00:E11:W08`, which refuses a marked image as the marked resource it is: dependency classification reads links and an image is not one, so the bundle carries the mark its own rule forbids. `reference/a-definition-spelled-across-two-lines` awaits `I00:E11:W09`, which publishes a definition the author spelled across two lines inline, because the emission writes no line break into the lines an inline token occupies. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own.
+Two fixtures carry the marker. `ancestor-promotion/a-link-to-a-heading-only-ancestor` awaits `I00:E09:W02`, which delivers the structural ancestors a reference promotes into their content. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own.
 
 ## The schema
 
@@ -141,6 +142,7 @@ An error decides a failing run.
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
 | `E_ROOT_NOT_FOUND` | CLI contract — an allowed source root naming no directory. |
 | `E_SELF_REFERENCE` | Self-reference and ancestor-reference behavior — a marked reference naming the very node that carries it. |
+| `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — a normalized path outside the allowed root. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |
 | `E_TARGET_NOT_FOUND` | Validation and failure contract — a local Markdown reference resolving to nothing. |
