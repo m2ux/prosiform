@@ -520,6 +520,16 @@ The emission is unconditional on a successful run, so it changes what every succ
 
 `I00:E07:W02` therefore covers `AC2` and `AC3`, and `W05` covers `AC6`.
 
+## D49 — An Image Is a Resource Whatever It Points At
+
+The contract stated a marked resource two ways. One clause groups images with non-Markdown references and makes both text; the next fails a mark on "a reference that is not a local Markdown document", which keys on the target. For a marked image naming a Markdown file the two disagree: the target is a local Markdown document and the syntax is an image.
+
+An image is a resource whatever it points at. Image syntax embeds rather than links, so a document named that way is no more bundleable than a picture is, and a mark asking for it asks for something no reading of the contract can supply. The clause now says so.
+
+Keying the refusal on the target was refused because it leaves the case with no outcome. A marked image naming a Markdown file would be neither a resource to refuse nor a link to bundle, and the only remaining behaviour is to emit it as authored, which publishes the mark that [D32](#d32--the-mark-is-authoring-syntax-and-does-not-reach-the-bundle) forbids in a bundle.
+
+This was found by the session delivering I00:E11:W08, which reported the widening against itself rather than leaving it for a reader to discover in the diff.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
