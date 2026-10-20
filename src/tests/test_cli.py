@@ -621,7 +621,7 @@ def test_a_successful_run_reports_each_entry_reference_and_its_destination(
     )
     assert run.status == SUCCESS
     assert [
-        (one["severity"], one["code"], one["reference"], one["destination"])
+        (one["severity"], one["code"], one["reference"], one["resolved"])
         for one in run.diagnostics()
     ] == [
         ("warning", ENTRY_DESTINATION, "Step", "step"),
@@ -639,7 +639,7 @@ def test_an_entry_destination_is_reported_in_the_format_the_run_declares(
         f"{ENTRY_DESTINATION}: the entry reference 'guide' resolves to the "
         "destination 'guide', which the bundle's entry line links it to\n"
         "  reference: guide\n"
-        "  destination: guide\n"
+        "  resolved: guide\n"
     )
 
 

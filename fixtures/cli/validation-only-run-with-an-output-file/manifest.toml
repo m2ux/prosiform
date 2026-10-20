@@ -19,4 +19,4 @@ absent = ["bundle.md"]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
 reference = "guide"
-destination = "guide"
+resolved = "guide"

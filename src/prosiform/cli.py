@@ -1277,7 +1277,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 f"{target!r}, which the bundle's entry line links it to",
                 code=ENTRY_DESTINATION,
                 reference=reference,
-                destination=target,
+                resolved=target,
             )
         )
     return SUCCESS

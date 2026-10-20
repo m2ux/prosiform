@@ -63,7 +63,7 @@ REPORT = (
     "W_ENTRY_DESTINATION: the entry reference 'guide' resolves to the "
     "destination 'guide', which the bundle's entry line links it to\n"
     "  reference: guide\n"
-    "  destination: guide\n"
+    "  resolved: guide\n"
 )
 
 

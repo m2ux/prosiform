@@ -3,11 +3,12 @@
 A diagnostic is one message a run emits to standard error. It carries a
 severity, the stable code of the defect it reports, a message, and the
 further fields the contract names where they are known: the reference it
-concerns, the destination that reference resolved to, the source location
-it was found at, and a remedy where one can be stated accurately. The code
-is required because the contract names one for every failing outcome it
-declares, so a diagnostic without one would report a defect the contract
-does not name.
+concerns, the identity that reference resolved to, the source location it
+was found at, and a remedy where one can be stated accurately. A resolved
+identity is a bundle destination where the reference reached one and a
+canonical source path where it reached a document. The code is required
+because the contract names one for every failing outcome it declares, so a
+diagnostic without one would report a defect the contract does not name.
 
 Text renders a diagnostic for a reader. JSON renders it as data, one object
 per line and nothing else on the stream, so a caller parses standard error
@@ -37,7 +38,7 @@ class Diagnostic:
     message: str
     code: str
     reference: str | None = None
-    destination: str | None = None
+    resolved: str | None = None
     source: str | None = None
     remedy: str | None = None
 

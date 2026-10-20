@@ -111,8 +111,8 @@
           "type": "string",
           "minLength": 1
         },
-        "destination": {
-          "description": "The bundle destination the reference resolved to, as the fragment a renderer generates for the heading it names, written without the leading number sign the bundle's own link carries.",
+        "resolved": {
+          "description": "The identity the reference resolved to. For an entry reference it is the bundle destination, the fragment a renderer generates for the heading it names, written without the leading number sign the bundle's own link carries.",
           "type": "string",
           "minLength": 1
         },

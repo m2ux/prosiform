@@ -71,7 +71,7 @@ ENTRY_DESTINATION = {
     "severity": "warning",
     "code": "W_ENTRY_DESTINATION",
     "reference": "guide",
-    "destination": "guide",
+    "resolved": "guide",
 }
 
 
@@ -506,17 +506,17 @@ def test_a_declared_diagnostic_field_that_differs_is_reported(
     assert "diagnostic 1 carries no source" in detail
 
 
-def test_a_declared_destination_that_differs_is_reported(
+def test_a_declared_resolved_identity_that_differs_is_reported(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fixture = write_fixture(
         tmp_path / "fixture", exit_status=0, diagnostics=(ENTRY_DESTINATION,)
     )
     emitted = dict(ENTRY_DESTINATION)
-    emitted["destination"] = "guide-1"
+    emitted["resolved"] = "guide-1"
     configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 0))
     detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
-    assert "diagnostic 1 carries another destination" in detail
+    assert "diagnostic 1 carries another resolved" in detail
     assert "expected 'guide'" in detail
     assert "produced 'guide-1'" in detail
 

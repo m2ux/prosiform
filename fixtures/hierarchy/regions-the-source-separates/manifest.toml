@@ -19,10 +19,10 @@ stdout = "expected/stdout.md"
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
 reference = "Alpha"
-destination = "alpha"
+resolved = "alpha"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
 reference = "Gamma"
-destination = "gamma"
+resolved = "gamma"
