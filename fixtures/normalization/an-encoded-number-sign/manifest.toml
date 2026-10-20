@@ -1,0 +1,21 @@
+description = "An encoded number sign is a character of a filename, so the reference names a section of the document whose path carries it and the generated file heading shows that character as literal heading text."
+
+clauses = [
+  "Reference normalization and path identity — notes%23draft.md#run",
+  "Reference normalization and path identity — Resolution sequence, step 2",
+  "File-scoped hierarchy — escape the path as literal heading text",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes%23draft.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Run"
+resolved = "run"
