@@ -14,6 +14,7 @@ It matters because the checks are what the repository trusts to read its own doc
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: the checks under test, the slug comparison and the parsing cases |
 | [validation.md](validation.md) | The test procedure, the runs and what each one establishes |
+| [changes.md](changes.md) | The plan changes this session applied, and how the debt it found was classified |
 
 ## Links
 
@@ -23,4 +24,5 @@ It matters because the checks are what the repository trusts to read its own doc
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Slug observation | [W04 validation record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-18-26-i00-e00-w04-continuous-integration-running-those) |
+| Pull request | [#131 \[I00:E11\] Tests for the Standalone Checks, Slug Rule Included](https://github.com/m2ux/prosiform/pull/131) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
