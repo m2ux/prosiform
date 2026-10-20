@@ -103,6 +103,8 @@ prosiform --root DIR [OPTIONS] REF [REF ...]
 | `--version` | Report tool version and profile identifier. |
 | `--help` | Show usage, defaults, and exit-status meanings. |
 
+Each resource budget adds one option of its own, declared with its default and its counting rule at Resource limits.
+
 `--check` accepts `--output FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
 A command line the grammar above does not admit is refused with `E_INVALID_USAGE`. A missing `--root`, no entry reference, an option the contract does not declare, an option value outside the set its row names, a fragment-only reference with no `--from`, and an output path naming an input source are all one defect — the command line's own form — and they lead a caller to one remedy, so they take one code and the message says which fault it was. A grouping rule keeps `E_INVALID_GROUP_RULE`, which names a defect in the rule's value rather than in the grammar that admits the option. A `--root` naming no directory is well formed and names a root that is not there: it fails with `E_ROOT_NOT_FOUND` as the input failure it is.
@@ -317,7 +319,7 @@ Keep parsed-file caching separate from included-region tracking. Reach a fixed p
 
 Direct self-reference is invalid, while a nested reference back to an ancestor resolves to the existing ancestor destination. This distinction is confirmed and is evaluated using source-section identity, not merely file identity or the scope of the entry argument.
 
-- **Direct self-reference:** A link from section A to the same canonical section A is a compile error.
+- **Direct self-reference:** A marked link from section A to the same canonical section A fails with `E_SELF_REFERENCE`. A mark asks the bundle to carry the node the link is written in, which is the node already carrying it; an unmarked link naming its own section is a mention, and the bundle emits it as authored.
 - **Ancestor reference:** During traversal A → B → A, B's reference to A becomes an internal link to the existing A destination. Do not expand or duplicate A.
 - **Shared dependency:** A → C and B → C include C once; both links resolve to its destination.
 - **Different section in the same file:** A link to a distinct section is not a direct self-reference solely because the file is the same.
@@ -356,6 +358,7 @@ A mention is not a dependency. An author naming a document without marking the l
 - **Unmarked local Markdown links:** Emit as authored. The reference is not resolved, the document it names is not opened, and the link is not rewritten even where the bundle carries that document because another reference marked it. What one author marked cannot change what another author's reference says.
 - **Fragment-only links:** A marked fragment-only link resolves against the original source document's heading index, then follows the same bundling and rewriting rules. An unmarked one is emitted as authored.
 - **Everything else:** A reference carrying a scheme or an authority is not a local document reference. Emit it as authored and never open, fetch or interpret it. No scheme is permitted or refused, because which scheme it carries decides nothing: carrying one at all is what puts the reference outside the tool's interest. Images and other non-Markdown references are text by the same rule.
+- **A marked resource:** Marking a reference that is not a local Markdown document fails with `E_MARKED_RESOURCE`. A mark means bundle this and a resource is never bundled, so the request cannot be met. Emitting it as authored cannot meet it either: the mark is dropped by the rewrite and a resource is never rewritten, so the bundle would carry a mark, which the mark's own rule forbids.
 - **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
 - **Examples:** Do not follow apparent links inside code spans, fenced code blocks, or other literal example content.
 
@@ -424,6 +427,8 @@ Use deterministic configurable limits and fail rather than truncate. These are a
 | `--max-links` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
 | `--max-nesting` | `64` | Supported syntactic container nesting; exceeding the limit is an error. |
 | `--max-expansion-depth` | `8` | Link hops from the nearest entry reference to a reached target, counted along its shortest path. |
+
+Crossing any of these fails the compilation with `E_RESOURCE_LIMIT`, and the diagnostic names the budget crossed and the figure that crossed it. One code covers all eight because one remedy does: the sources are restructured or the number is raised, and the figure the run reports is what says which.
 
 Accept positive decimal integer overrides; zero must not mean unlimited. Traverse iteratively; the expansion-depth budget is a declared constraint on how far a chain of references may reach, not a recursive-call-depth cap, and a cyclic graph within the budget bundles normally.
 

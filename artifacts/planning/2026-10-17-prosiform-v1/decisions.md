@@ -430,6 +430,18 @@ The cost is the one [#52](https://github.com/m2ux/prosiform/issues/52) already r
 
 `E_PARSER_REFERENCE_LIMIT` is not this code and keeps its own meaning: an internal parser limit suppressing a reference lookup, which is a defect in indexing rather than a declared budget an author chose.
 
+## D42 — A Marked Self-Reference Carries a Code of Its Own
+
+The contract holds that a link from a section to that same canonical section is a compile error, and it named no code for the failure. Every failing outcome the contract names carries one, so the criterion stating the behaviour could not be delivered: a diagnostic reports a code, and there was none to report.
+
+`E_SELF_REFERENCE` is that code. It names a marked reference whose target is the node that owns it — a section linking to itself, or a document's preamble linking to that whole document — and it is refused rather than resolved, because the mark asks the bundle to carry what the bundle is already carrying at that point.
+
+It is not folded into `E_RESOURCE_LIMIT`'s one-code-for-eight shape, nor into `E_TARGET_NOT_FOUND`. The target exists and the reference resolves; what fails is the relationship between the reference and the node that wrote it, and the remedy is to drop the mark or name another node rather than to restore anything. A code naming a defect the author can act on is worth its entry, and `E_UNSUPPORTED_CONSTRUCT` would mislead: a self-link is grammatical Markdown the profile reads perfectly well.
+
+The alternative of leaving the criterion undeliverable was refused for the same reason [D41](#d41--one-code-names-a-crossed-budget-and-the-message-names-which) refused it there: the contract states the behaviour, a row is delivering it, and the gap is one entry wide.
+
+This was found by a delivery session measuring the build against the criterion rather than reading the plan, which had the catalogue ending at twenty-three. It ends at twenty-four, and the third clause lands in the same two-branch window as the other two.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
