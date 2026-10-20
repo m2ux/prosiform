@@ -13,6 +13,7 @@ It matters because this is where the marking proposal [P03](https://github.com/m
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The task's plan: the classification, the worklist traversal, the fixed-point condition, and the glossary definition this row corrects |
+| [validation.md](validation.md) | The validation record: the behaviour measured before the design was built to it, the instrument behind each criterion, and the output each command returned |
 
 ## Links
 
