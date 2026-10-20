@@ -12,7 +12,9 @@ It matters because a bundle is navigable only if every reference reaches exactly
 
 | Artifact | What it holds |
 | --- | --- |
-| [w01.md](w01.md) | The task's plan: the slug, the ordinal assigned in bundle order, the ambiguity refusal, and the headings the numbering runs over |
+| [w01.md](w01.md) | The task's plan: the slug, the ordinal assigned over the emitted headings in bundle order, the two ambiguity refusals, and the headings the numbering runs over |
+| [validation.md](validation.md) | What the renderer was measured to do, what the base was measured to do, and the checks the delivery was held to |
+| [changes.md](changes.md) | Every change applied under the session's allowance and every change held |
 
 ## Links
 
