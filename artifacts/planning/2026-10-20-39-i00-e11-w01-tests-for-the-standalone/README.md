@@ -13,6 +13,7 @@ It matters because the checks are what the repository trusts to read its own doc
 | Artifact | What it holds |
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: the checks under test, the slug comparison and the parsing cases |
+| [validation.md](validation.md) | The test procedure, the runs and what each one establishes |
 
 ## Links
 
