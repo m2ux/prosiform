@@ -188,6 +188,8 @@ The two catalogues stay distinct: an error diagnostic naming a warning code, and
 
 A test holds each catalogue to the design's own text: it collects every code the design carries under a prefix — `E_` for an error and `W_` for a warning — and requires the schema to enumerate exactly those, so neither catalogue can drift from the contract it is derived from.
 
+Each code the warning catalogue holds is declared by a fixture, which a further test requires. A warning accompanies a successful run, so the code states what such a run writes to standard error and a fixture is where that statement is made; a code the catalogue carries and no manifest names is a claim nothing exercises. A fixture awaiting later work counts, because a manifest declares its diagnostics whatever the build under test currently produces.
+
 ## Running a fixture
 
 The runner takes one fixture, invokes the build under test against its source tree, and decides pass or fail by comparing the run with the manifest. The build is named by configuration rather than written in the corpus, so one fixture binds every implementation:
