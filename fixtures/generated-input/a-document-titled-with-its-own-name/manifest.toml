@@ -1,0 +1,20 @@
+description = "A document titled with the path that names it points at itself, so the title names no document other than the one being read and the document bundles."
+
+clauses = [
+  "Generated input policy — a document titled with its own name is not detected",
+  "File-scoped hierarchy — File heading",
+]
+
+[invocation]
+root = "source"
+arguments = ["docs/guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "docs/guide"
+resolved = "docsguide"
