@@ -1,0 +1,27 @@
+description = "An ancestor two selections stand beneath is emitted once, above both of them, rather than once for each selection that needed it."
+
+clauses = [
+  "Heading-only structural ancestors — Deduplication",
+  "File-scoped hierarchy — Source order",
+  "Adversarial acceptance fixtures — Partial outlines, deduplicated ancestor structural ancestors",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#one", "guide.md#two"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "One"
+resolved = "one"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Two"
+resolved = "two"

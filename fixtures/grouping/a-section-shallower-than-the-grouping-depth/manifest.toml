@@ -1,0 +1,27 @@
+description = "A section shallower than the grouping depth is content above that depth, so it is carried under its member's overview subsection with the outline beneath it, while the headings at the grouping depth are merged into the group's own sections."
+
+clauses = [
+  "Grouping — Document content above the grouping depth",
+  "Grouping — Group structure",
+  "Grouping — Document-keyed sections",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "parts:3", "parts/one.md", "parts/two.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "One"
+resolved = "one"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Two"
+resolved = "two"

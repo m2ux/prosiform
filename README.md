@@ -52,7 +52,7 @@ Every term the contract uses is defined once, in the [glossary](docs/glossary.md
 
 ## 🗂️ Repository Layout
 
-Three trees, each created by the stage that writes into it.
+Each tree is created by the stage that writes into it.
 
 | Tree | Holds |
 | --- | --- |
@@ -60,6 +60,7 @@ Three trees, each created by the stage that writes into it.
 | [`src/`](src/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
 | [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
 | [`checks/`](checks/README.md) | The checks that hold the layout, every document's references, the README tables, and the glossary's coverage true. |
+| [`example/`](example/README.md) | The example skill tree the design's usage examples name, which the corpus bundles through each of them. |
 
 The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
 
@@ -147,29 +148,29 @@ The command answers to every option the contract declares, and `prosiform --help
 
 Each effect is that argument's own help text, so the default an option carries is stated where the option is. A budget is a positive decimal integer; zero is refused rather than read as unlimited.
 
-The walking skeleton is building bundling under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content marks — a link whose text opens with `¬` — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. An unmarked link is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a marked reference the allowed source root cannot contain each return `1` naming the defect and the line of the file it sits on. A marked link still carries its mark and its source destination into the bundle, because destination identity and link rewriting are the stage still to come.
+Bundling runs under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content marks — a link whose text opens with `¬` — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. An unmarked link is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a marked reference the allowed source root cannot contain each return `1` naming the defect and the line of the file it sits on. A marked link reaches the bundle with its mark removed and its destination repointed at the heading the bundle emits for what it named.
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller read
 # to find it, SKILL.md, is not an entry reference and is not bundled.
-prosiform --root skills/work-planner modes/plan-mode.md
+prosiform --root example/work-tracker modes/plan-mode.md
 
 # Selected sections
-prosiform --root skills/work-planner 'artifacts/epic.md#delivery-findings'
+prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
 
 # Every document under a named directory merged at a heading level
-prosiform --root skills/work-planner \
+prosiform --root example/work-tracker \
   --group artifacts:2 --group modes:2 \
   modes/plan-mode.md
 
 # Compile and validate without publishing
-prosiform --root skills/work-planner --check modes/plan-mode.md
+prosiform --root example/work-tracker --check modes/plan-mode.md
 ```
 
 Standard output carries exactly one thing per run: the bundle a compiling run publishes, the response an informational run returns, or nothing at all. Diagnostics go to standard error, as text for a reader or, under `--diagnostics json`, as one JSON object per line and nothing else. A bundle opens by naming what it was built for, so the caller reaches its procedure without searching:
 
 ```markdown
-This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
+This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.
 ```
 
 ### Exit statuses

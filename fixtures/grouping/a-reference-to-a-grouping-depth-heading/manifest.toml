@@ -1,0 +1,21 @@
+description = "A reference to a source heading at the grouping depth resolves to the variant heading carrying the document it named where the name carries variants, and to the merged heading itself where the name occurs once in the group. A fragment reference selects the section it names and not the preamble above it, so neither member contributes an overview subsection here."
+
+clauses = [
+  "Grouping — Merged section references",
+  "Grouping — Document-keyed sections",
+  "Grouping — Verbatim names",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "modes:2", "entry.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "entry"
+resolved = "entry"

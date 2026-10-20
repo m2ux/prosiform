@@ -1,0 +1,24 @@
+description = "The usage example that names a procedure bundles that procedure and the two documents its marked prerequisites reach, leaving the routing document it cites out of the bundle and its reference to it as authored."
+
+clauses = [
+  "CLI contract — Usage examples",
+  "Input and output contract — Whole documents",
+  "Link classification and resource handling — Marked local Markdown document links",
+  "Link classification and resource handling — Unmarked local Markdown links",
+  "Compile before publishing — Discover the recursive dependency graph",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["modes/plan-mode.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "modes/plan-mode"
+resolved = "modesplan-mode"
