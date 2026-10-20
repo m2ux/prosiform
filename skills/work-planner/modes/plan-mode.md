@@ -31,7 +31,8 @@ The main path meets [Outcomes](#outcomes).
 
 1. **Take the proposal.**
    - When the user names a proposal, its associated issue body defines the problem scope.
-   - When no proposal is named:
+   - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
+   - When neither a proposal nor an existing initiative is named:
      - Run [Propose Mode](propose-mode.md) with the user's goal.
      - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
 2. **Prepare the planning record.**
@@ -44,10 +45,10 @@ The main path meets [Outcomes](#outcomes).
    - Run [Draft Initiative Issue Body](../artifacts/initiative-issue-body.md#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path. The epics' acceptance criteria carry the detail that makes the initiative's criteria true.
 4. **Populate the epics.**
    Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
-   - Call [Populate Work Item](../artifacts/work-item.md#populate-work-item) for each task with its scope, design, criteria and test requirements.
+   - Call [Populate Work Item](../artifacts/work-item.md#populate-work-item) for each task with its scope, design, the component its implementation extends, criteria and test requirements.
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
-   - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) across the drafts.
+   - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) across the drafts and the returned work-item files.
    - Return each epic draft and its format results to the review step.
 5. **Review the drafts.**
    Follow [Review Initiative Goal](../artifacts/goal-trace.md#review-initiative-goal).
@@ -86,8 +87,8 @@ The main path meets [Outcomes](#outcomes).
    - Apply confirmed resolutions.
    - Repeat that review until clear.
    - After each round, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) on affected bodies.
-   - Whenever tasks or edges change, repeat Check Dependencies and Numbering.
-     - Put the proposed Epic Priority map to the user again where the edges moved an epic's number.
+   - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering.
+     - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
      - Save each confirmed change as that epic's priority label.
    - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
    - Keep local body files as the source for the next pass.

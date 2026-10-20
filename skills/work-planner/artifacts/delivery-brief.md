@@ -15,7 +15,7 @@ Read these files first.
 
 One complete prompt file for a confirmed delivery unit.
 
-**Inputs:** Epic URL, task ids, Descriptions, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, change allowance, supplied session procedure and output path.
+**Inputs:** Epic URL, task ids, Descriptions, each task's component, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, change allowance, supplied session procedure and output path.
 
 1. Write the supplied identity, context and execution instructions to the prompt file, at the supplied output path or where [Location](#location) puts it.
    - Each part must meet [Fields](#fields).
@@ -33,7 +33,7 @@ The brief names the epic issue URL, task ids, Descriptions, covered acceptance c
 
 ### Planning Record
 
-The brief names the reserved planning folder and engineering worktree. Each task has one work-item file, registered in that folder's README. Its row retains the folder link while reserved.
+The brief names the reserved planning folder and engineering worktree. Each task has one work-item file in that folder, registered in its README, and the brief carries the component the caller read from the file the plan was checked against, which is the one this file declares. Its row retains the folder link while reserved.
 
 ### Validation Scope
 
