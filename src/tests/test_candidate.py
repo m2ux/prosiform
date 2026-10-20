@@ -108,10 +108,10 @@ def built(
         for path in documents:
             selected.setdefault(path, []).append(Reference(path, path))
     selected = dict(sorted(selected.items()))
-    headed = assembled(read, parsed, defined, selected, requested, None)
+    headed = assembled(read, parsed, defined, selected, requested, None, {})
     assigned = fragments([one for each in headed for one in each.headings])
-    targets = destination_map(list(selected), headed, assigned)
-    groups = assembled(read, parsed, defined, selected, requested, targets)
+    targets = destination_map(headed, assigned)
+    groups = assembled(read, parsed, defined, selected, requested, targets, {})
     bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
     return Built(bundled, groups, assigned, targets, requested, read, parsed)
 
@@ -322,7 +322,9 @@ def overflowing(one: Group) -> Group:
     """The group with one carried heading recorded beyond the sixth level."""
     first = one.record.carried()[0]
     deepened = replace(
-        first, level=7, origin=replace(first.origin, level=7 - one.record.shift)
+        first,
+        level=7,
+        origins=(replace(first.origins[0], level=7 - first.origins[0].shift),),
     )
     return replace(
         one,
@@ -339,7 +341,9 @@ def promoted(one: Group) -> Group:
     """The group with one carried heading recorded at its filename heading's level."""
     first = one.record.carried()[0]
     raised = replace(
-        first, level=1, origin=replace(first.origin, level=1 - one.record.shift)
+        first,
+        level=1,
+        origins=(replace(first.origins[0], level=1 - first.origins[0].shift),),
     )
     return replace(
         one,
@@ -368,7 +372,9 @@ def test_a_generated_record_carries_no_source_range() -> None:
 def test_a_carried_record_names_the_source_heading_it_answers_to() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md#rules"])
     carried = one.groups[0].record.carried()
-    assert carried[0] == Carried("Rules", 2, Origin("guide.md", 5, 2, "rules"))
+    assert carried[0] == Carried(
+        "Rules", 2, (Origin("guide.md", 5, 2, "rules", 0),), (("guide.md", "rules"),)
+    )
 
 
 def test_a_range_names_the_lines_of_its_source_it_occupies() -> None:
@@ -443,7 +449,7 @@ def test_a_group_an_unterminated_code_example_absorbs_fails() -> None:
     boundary = unsafely(one)
     assert boundary.code == UNSAFE_BUNDLE_BOUNDARY
     assert boundary.container == "code example"
-    assert boundary.absorbed == "the file heading for 'note.md'"
+    assert boundary.absorbed == "the heading for 'note.md'"
     assert boundary.carried == "the region at lines (4, 8) of 'guide.md'"
 
 
@@ -512,7 +518,7 @@ def test_an_ancestor_the_group_drops_fails() -> None:
 def test_an_ancestor_placing_no_part_fails() -> None:
     one = built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False)
     carried = one.groups[0]
-    stray = Ancestor("Beta", 3, Origin("guide.md", 99, 2, "beta"))
+    stray = Ancestor("Beta", 3, (Origin("guide.md", 99, 2, "beta", 1),))
     one.groups = [
         replace(
             carried,

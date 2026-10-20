@@ -104,9 +104,12 @@ A reference with no fragment, or with an empty one, selects the whole
 document. A reference carrying a nonempty fragment selects the section
 that fragment names, which runs to the next document-level heading of
 equal or higher level; a fragment alone selects from the document
-`--from` names. Each document a run selects from becomes one file group
-of the bundle, carrying every region the run's references selected from
-it, and the groups are ordered by root-relative path. A fragment naming
+`--from` names. Each document a run selects from carries every region
+the run's references selected from it into one group of the bundle: its
+own file group, or the merged group a grouping rule puts it in with the
+other documents under a directory of that slug. The groups are ordered
+by root-relative path, a merged group taking the first of its members'.
+A fragment naming
 a heading a container carries names no section and fails as an
 unsupported target; one naming no heading of its document names
 nothing, and fails as the reference to a missing target it is.
@@ -150,10 +153,11 @@ import os
 import re
 import sys
 import tempfile
-from collections.abc import Collection, Iterator, Sequence
+from collections.abc import Collection, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import IO, Any, NoReturn
 
 from markdown_it.token import Token
@@ -199,6 +203,7 @@ from prosiform.diagnostics import (
     Diagnostic,
     Reporter,
 )
+from prosiform.grouping import merged, prepared
 from prosiform.limits import (
     BUDGETS,
     EXPANSION_DEPTH,
@@ -1286,10 +1291,38 @@ def traverse(
     return read, parsed, defined, captured, found
 
 
-def unambiguous(selected: dict[str, list[Reference]]) -> None:
-    """Hold each file heading to naming one source, as a reader must read it."""
+def membership(path: str, inforce: Mapping[str, int]) -> str | None:
+    """The slug of the group one document belongs to, where a rule names one.
+
+    A document belongs to the group whose slug matches the deepest
+    directory segment of its path, so a rule naming an inner directory
+    takes precedence over one naming a directory above it. A document
+    no rule matches keeps its own file group.
+    """
+    return next(
+        (
+            segment
+            for segment in reversed(PurePosixPath(path).parts[:-1])
+            if segment in inforce
+        ),
+        None,
+    )
+
+
+def unambiguous(
+    selected: dict[str, list[Reference]], inforce: Mapping[str, int]
+) -> None:
+    """Hold each file heading to naming one source, as a reader must read it.
+
+    A merged group is headed by its directory slug rather than by a
+    path, so a member of one heads no file group and two members
+    sharing a title are told apart by the names the arrangement gives
+    them.
+    """
     headed: dict[str, str] = {}
     for path, selecting in selected.items():
+        if membership(path, inforce) is not None:
+            continue
         title = heading_text(path)
         if title in headed:
             raise input_failure(
@@ -1310,55 +1343,96 @@ def assembled(
     selected: dict[str, list[Reference]],
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
+    inforce: Mapping[str, int],
 ) -> list[Group]:
-    """One group per contributing source, its links rewritten where a map says so."""
+    """Each group the bundle carries, its links rewritten where a map says so.
+
+    A document no grouping rule names is its own file group. Every
+    other document joins the merged group its slug names, which carries
+    its members in root-relative path order. The groups are ordered by
+    root-relative path, a merged group taking the first of its
+    members', so one selection always bundles to the same bytes.
+    """
     groups: list[Group] = []
+    merging: dict[str, list[str]] = {}
     for path, selecting in selected.items():
-        source = read[path]
+        named = membership(path, inforce)
+        if named is not None:
+            merging.setdefault(named, []).append(path)
+            continue
         tokens = parsed[path]
-        try:
+        with overflowing(path, selecting):
             groups.append(
                 group(
                     path,
                     tokens,
-                    lines(source.text),
+                    lines(read[path].text),
                     defined[path],
                     selection(path, tokens, selecting, entries),
                     assigned,
                 )
             )
-        except Overflow as beyond:
-            raise input_failure(
-                f"{path!r} emits the heading {beyond.heading!r} at level "
-                f"{beyond.level}, which is beyond H{MAX_LEVEL}",
-                code=HEADING_DEPTH_OVERFLOW,
-                remedy="raise the heading in the source, or select a section of it",
-                reference=path,
-                source=path,
-                chain=selecting[0].chain,
-            ) from beyond
-    return groups
+    for named, paths in merging.items():
+        depth = inforce[named]
+        with overflowing(paths[0], selected[paths[0]]):
+            groups.append(
+                merged(
+                    named,
+                    depth,
+                    [
+                        prepared(
+                            path,
+                            parsed[path],
+                            lines(read[path].text),
+                            defined[path],
+                            selection(path, parsed[path], selected[path], entries),
+                            assigned,
+                            depth,
+                        )
+                        for path in paths
+                    ],
+                )
+            )
+    return sorted(groups, key=lambda one: one.order)
+
+
+@contextmanager
+def overflowing(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
+    """One assembly, a heading beyond the sixth level reported as the input it is."""
+    try:
+        yield
+    except Overflow as beyond:
+        raise input_failure(
+            f"{beyond.path!r} emits the heading {beyond.heading!r} at level "
+            f"{beyond.level}, which is beyond H{MAX_LEVEL}",
+            code=HEADING_DEPTH_OVERFLOW,
+            remedy="raise the heading in the source, or select a section of it",
+            reference=beyond.path,
+            source=beyond.path,
+            chain=selecting[0].chain if selecting else (),
+        ) from beyond
 
 
 def destination_map(
-    paths: Sequence[str], groups: Sequence[Group], assigned: Sequence[str]
+    groups: Sequence[Group], assigned: Sequence[str]
 ) -> dict[tuple[str, str | None], str]:
     """The destination each resolved target was given, by the identity naming it.
 
-    A whole-document reference names a source and no fragment, and
-    takes the destination of that source's file heading. A fragment
-    names the heading its text produced, and takes that heading's own
-    destination, which a file heading that absorbed the heading holds
-    in its place. A destination is scoped to the bundle, so the map is
-    one map over every group rather than one map for each.
+    Each emitted heading records the targets it is where they resolve:
+    a file heading answers to its whole document and to the title it
+    absorbed, a carried heading to the fragment its author's text
+    produced, a merged heading to that fragment in every document that
+    contributed it, and a variant heading or a member's overview
+    subsection to the document it names. A destination is scoped to the
+    bundle, so the map is one map over every group rather than one map
+    for each.
     """
     found: dict[tuple[str, str | None], str] = {}
     at = 0
-    for path, one in zip(paths, groups, strict=True):
-        for offset, fragment in enumerate(one.sources):
-            found.setdefault((path, fragment), assigned[at + offset])
-        if one.absorbed is not None:
-            found.setdefault((path, one.absorbed), assigned[at])
+    for one in groups:
+        for offset, targets in enumerate(one.targets):
+            for target in targets:
+                found.setdefault(target, assigned[at + offset])
         at += len(one.headings)
     return found
 
@@ -1390,6 +1464,7 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
+    inforce: Mapping[str, int],
 ) -> tuple[str, list[tuple[str, str]]]:
     """The complete bundle candidate, and the entry destinations it opens on.
 
@@ -1415,11 +1490,11 @@ def compose(
     as the input failure it is.
     """
     selected = contributing(referrer, found)
-    unambiguous(selected)
-    headed = assembled(read, parsed, defined, selected, entries, None)
+    unambiguous(selected, inforce)
+    headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
-    targets = destination_map(list(selected), headed, assigned)
-    groups = assembled(read, parsed, defined, selected, entries, targets)
+    targets = destination_map(headed, assigned)
+    groups = assembled(read, parsed, defined, selected, entries, targets, inforce)
     named = entries_named(groups, assigned)
     bundled = assemble(entry_line(named), groups)
     try:
@@ -1588,7 +1663,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             raise usage_failure(
                 f"the output path {options.output!r} names an input source"
             )
-    bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
+    bundled, named = compose(
+        read, parsed, defined, referring, requested, found, limits, inforce
+    )
     recheck(root, captured, reaching(contributing(referring, found)))
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))

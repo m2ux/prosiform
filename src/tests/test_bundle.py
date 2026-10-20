@@ -391,7 +391,7 @@ def test_an_ancestor_title_is_emitted_as_literal_text() -> None:
 def test_an_ancestor_record_names_its_source_heading_and_original_level() -> None:
     one = selecting("guide.md", OUTLINED, "one").record.ancestors()[0]
     assert (one.text, one.level, one.kind) == ("Alpha", 3, STRUCTURAL_ANCESTOR)
-    assert one.origin == Origin("guide.md", 1, 2, "alpha")
+    assert one.origins == (Origin("guide.md", 1, 2, "alpha", 1),)
 
 
 def test_an_ancestor_accounts_for_the_part_it_emits_and_carries_no_range() -> None:
