@@ -1,7 +1,5 @@
 description = "A grouping rule whose directories contribute no document to the closure is no error: it arranges nothing, and the run reports it on standard error and publishes the bundle the closure makes without it."
 
-awaiting = "I00:E11:W14"
-
 clauses = [
   "Grouping",
 ]

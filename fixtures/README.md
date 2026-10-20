@@ -77,7 +77,7 @@ chain = ["guide.md", "../outside.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, so every clause maps to the fixtures that cover it. |
-| `invocation.root` | The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. |
+| `invocation.root` | The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture names a directory it does. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
@@ -105,6 +105,26 @@ absent = ["bundle.md"]
 
 A fixture that already holds a path it declares absent is malformed and is refused before the build is invoked, because a declaration the directory contradicts before the run states nothing about the run.
 
+## A root the run cannot find
+
+The contract declares an outcome for an allowed source root naming no directory: the command line is well formed and the root is not there, so the run fails with `E_ROOT_NOT_FOUND` and exit status 1. A fixture states it by declaring that diagnostic and carrying no source tree:
+
+```toml
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ROOT_NOT_FOUND"
+```
+
+The declared diagnostic is the whole of the declaration, so nothing beside `invocation.root` repeats it. A fixture declaring that code is held to a root it does not hold, and one declaring any other outcome to a root that is a directory it does: either contradiction is malformed and is refused before the build is invoked, as a path declared absent is.
+
 ## A fixture ahead of the build
 
 The corpus states the contract, and the contract is delivered epic by epic, so a fixture may declare behaviour no build produces yet. Such a fixture names the work that delivers it:
@@ -117,7 +137,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Two fixtures carry the marker. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own. `grouping/a-rule-matching-no-document-in-the-closure` awaits `I00:E11:W14`, which reports a rule contributing no document on standard error rather than refusing the run.
+One fixture carries the marker. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own.
 
 ## The schema
 
@@ -170,6 +190,8 @@ The two catalogues stay distinct: an error diagnostic naming a warning code, and
 
 A test holds each catalogue to the design's own text: it collects every code the design carries under a prefix — `E_` for an error and `W_` for a warning — and requires the schema to enumerate exactly those, so neither catalogue can drift from the contract it is derived from.
 
+Each code the warning catalogue holds is declared by a fixture, which a further test requires. A warning accompanies a successful run, so the code states what such a run writes to standard error and a fixture is where that statement is made; a code the catalogue carries and no manifest names is a claim nothing exercises. A fixture awaiting later work counts, because a manifest declares its diagnostics whatever the build under test currently produces.
+
 ## Running a fixture
 
 The runner takes one fixture, invokes the build under test against its source tree, and decides pass or fail by comparing the run with the manifest. The build is named by configuration rather than written in the corpus, so one fixture binds every implementation:
@@ -198,6 +220,14 @@ make corpus
 ```
 
 Every fixture in this tree runs against the build `PROSIFORM_BUILD` names, in path order, and each one's verdict is printed under its identity — its path under `fixtures/`. A fixture that differs from its manifest fails the run and its differences are printed under its name; one awaiting later work is reported as awaiting it; one awaiting work it already meets fails the run. The run ends on a count of the fixtures against each verdict, and returns a nonzero status when any fixture failed it or when no build is configured.
+
+## Reading what a piece of work unblocks
+
+```bash
+uv run --project src --frozen python checks/corpus.py --awaiting I00:E11:W14
+```
+
+The fixtures declaring they await the named work are printed by identity, with a count beneath them, so a session starting that work reads which fixtures it turns green before it changes anything. The request reads the manifests and runs nothing, so it needs no build and returns zero whatever it finds. The name is compared as a manifest declares it: `I00:E11` and `I00:E11:W14` are separate requests, and a fixture is found by the identity its marker carries.
 
 ## Running the checks
 
