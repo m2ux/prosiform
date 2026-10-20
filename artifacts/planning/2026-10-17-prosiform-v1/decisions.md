@@ -554,6 +554,18 @@ AC4 was reworded in the same row. It read "the resolved identity where one exist
 
 The inclusion chain names the route to the document rather than to the particular selecting reference. Where several references select one document the chain names the first discovered, which is the shortest route. Per-reference attribution would thread the per-reference region sets through dependency discovery and would change the order refusals are raised within one document, for a precision the contract's own worked example does not ask for.
 
+## D52 — Joins Names the Rows That Share a Pull Request, Not the Rows That May Run Together
+
+The skill defines the column at `artifacts/epic-issue-body.md`: *"Joins. The tasks that share one pull request. Each names the other... the pull request holds their order."* A pair that does not share one is named in the planning record with why, and its cell is empty. `artifacts/delivery-plan.md` says the same from the other side: a unit is one row or the rows that name each other in Joins, and one unit is one pull request's work.
+
+E09 and E11 were planned against the completeness rule instead. `deps.py` reports every pair in an epic where neither row depends on the other and neither names the other in Joins, so naming every independent pair in Joins silenced the report without recording anything. E11's thirteen rows each named the other twelve, which read as written asks for one pull request for a whole epic. The check passed because the plan was written to make it pass, and this record's claim that every unlisted pair was ordered by a dependency was false for E07, E08, E09, E10 and E11.
+
+The cells are now empty for every pair that will not share a pull request, and each set is recorded in [the review record](review.md). E04's W05 and W06 keep theirs and both link [#82](https://github.com/m2ux/prosiform/pull/82), which is the column used as defined.
+
+Four delivered rows were dispatched against cells that said otherwise. E11's W07, W08 and W11 named each other and shipped as [#91](https://github.com/m2ux/prosiform/pull/91), [#100](https://github.com/m2ux/prosiform/pull/100) and [#97](https://github.com/m2ux/prosiform/pull/97); E08's W01 and W02 named each other and shipped as [#105](https://github.com/m2ux/prosiform/pull/105) and [#104](https://github.com/m2ux/prosiform/pull/104). Nothing delivered is wrong — each row was reviewed and gated on its own — but the grouping the plan asserted did not happen, and the rows are recorded above as taking their own pull requests because that is what they did and what suits them.
+
+Reading the column as a concurrency hint was refused. It would make the delivered split correct retrospectively at the cost of diverging from the definition the skill owns, and the skill is not this repository's to change. A separate question the column does not answer is which rows may be dispatched at once; that is [D38](#d38--a-priority-set-asserts-concurrency-and-the-components-decide-whether-it-holds)'s component contention, and it stays where it is.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:

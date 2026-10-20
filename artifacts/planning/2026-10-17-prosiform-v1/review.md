@@ -90,7 +90,15 @@ The dependency check reports task pairs within one epic where neither depends on
 | I02 E00 W01, W02, W03 | Each reproducer pins a different parser capability, and each result is read on its own into the gate report. One pull request per reproducer keeps a failed gate attributable to the evidence that failed it. |
 | I02 E01 W02, W03 | Edit application and the suppression signal touch different parser surfaces, and the suppression signal's shape depends on the route the gate report records, so joining them would couple an edit mechanism to an undecided interface. |
 
+| I00 E07 W02, W03, W04, W05 | Four rows of one epic touching four surfaces: the transport wrapper, the documented invocation, the released-version report and the entry-destination stream. Each is a separate deliverable a caller can read on its own, and a defect in one should not hold the rest out of the epic base. |
+| I00 E08 W01, W02, W03, W04, W05 | Delivered as five pull requests. W01 and W02 are disjoint in components — the bundle assembly and the candidate against the source read and the command — so neither gains from sharing a branch, and W05 corrects a defect of a closed epic that is unrelated to the rest. |
+| I00 E09 W01, W02, W03, W04, W05, W06 | The epic's rows are an example tree, structural ancestors, grouping, a depth-overflow refusal and a measured budget. They share no component and each produces evidence read on its own, so one pull request per row keeps a failing criterion attributable to the row that failed it. |
+| I00 E10 W03, W04, W05 | The independence check, the installation claims and the internal-error outcome are three separate observations of the delivered build. W04 and W05 share a pull request; W03 is a check of its own and takes one. |
+| I00 E11 W01–W14 | The deferred-debt epic's rows are unrelated defects collected from across the initiative, sharing no component and no criterion. The epic ships in waves ([D46](decisions.md)), and a wave is a set of rows dispatched together rather than a set sharing one pull request. |
+
 Every other pair in every epic is ordered by a dependency.
+
+The Joins column states the rows that **share one pull request**, which the skill defines at `artifacts/epic-issue-body.md`. It is not a statement that two rows may run concurrently. A pair that will not share a pull request is recorded above instead, and its cell is empty. [D52](decisions.md) records the correction and the four delivered rows whose cells said otherwise.
 
 ## Checks
 
