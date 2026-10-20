@@ -36,6 +36,19 @@ of its correctness.
   reference**, and a fragment that is present is looked up as the exact
   text it decoded to.
 
+A reference is a dependency when its author marked it: the link text
+opens with `¬`. Marking is what requires a document, and linking cites
+one, so the shape a reference takes decides nothing about whether the
+bundle carries it. The module says whether a link carries the mark and
+what the reference names; it is the command that resolves a marked one
+and leaves an unmarked one alone.
+
+A link inside a source is written relative to the document carrying
+it, and a fragment alone names a section of that same document. Both
+bases come from the document the link was written in rather than from
+the one that discovered it, so a document names the same dependency
+however the run reached it.
+
 A drive letter is read before a scheme, because `C:` is spelled as both.
 A drive path names a local document the root cannot contain, and reading
 it as a scheme would emit it as authored.
@@ -48,9 +61,11 @@ and which exit status that refusal returns.
 
 import re
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from prosiform.source import ENCODING
+
+MARK = "¬"
 
 FRAGMENT = "#"
 QUERY = "?"
@@ -98,12 +113,18 @@ class Reference:
     local document, and holds the text it was authored as. Every other
     reference holds the root-relative path it normalized to and the
     section it names, which is absent for a whole-document reference.
+
+    A reference a source carries also holds the location it is written
+    at, which a diagnostic about it names, because the document that
+    refuses it is not the document it was written in. A command-line
+    reference is written on the command line and holds none.
     """
 
     original: str
     path: str
     fragment: str | None = None
     external: bool = False
+    origin: str | None = None
 
 
 @dataclass(frozen=True)
@@ -218,6 +239,18 @@ def normalized(base: str, segments: Sequence[str]) -> str:
     return SEPARATOR.join(walked)
 
 
+def marked(opening: str) -> bool:
+    """Whether a link's author marked it as a reference the bundle must carry.
+
+    The mark opens the link text, so text the mark sits inside names a
+    document the way any prose does. It is ordinary text to the
+    profile, which is why marking adds no construct the grammar has to
+    recognize and a renderer knowing nothing of this tool shows the
+    link.
+    """
+    return opening.startswith(MARK)
+
+
 def resolve(text: str, base: str = "") -> Reference:
     """One reference as the document and the section it names.
 
@@ -257,3 +290,19 @@ def resolve(text: str, base: str = "") -> Reference:
         path,
         admissible(decoded(written.fragment, FRAGMENT_PART), FRAGMENT_PART),
     )
+
+
+def inside(document: str, text: str) -> Reference:
+    """One reference a source carries, as the document and the section it names.
+
+    A link is written relative to the document carrying it, so its base
+    is that document's own directory and never the directory of
+    whichever document discovered the link. A fragment alone names a
+    section of the document it is written in, which the directory
+    cannot say, so the document itself is the path such a reference
+    normalizes to.
+    """
+    found = resolve(text, document.rpartition(SEPARATOR)[0])
+    if components(text).path:
+        return found
+    return replace(found, path=document)
