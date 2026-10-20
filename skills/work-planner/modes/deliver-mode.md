@@ -123,6 +123,13 @@ The confirmed unit carried from its supplied brief through implementation and de
    - Resolve a missing test before implementation.
 6. **Implement.**
    Deliver the work in the worktree, with every test the work item names, as [Tables](../artifacts/issue-body.md#tables) state.
+   - Group the unit's rows by the component each declares, and give each group to the sub-agent dispatch this session provides when the unit has more than one group.
+   - Give each sub-agent the unit's worktree, its group's work items, and the criteria those rows' Coverage names.
+   - A sub-agent writes the files its work items name, runs the tests they name, and commits nothing.
+   - A plan change a sub-agent meets returns to this session, which holds the allowance the brief names.
+   - Write a file two groups reach — a shared test, an index, a manifest — in this session.
+   - Stage and commit each returning group's own files, then run the unit's tests once every group has returned.
+   - A unit of one group, and a session with no sub-agent dispatch, is delivered by this session.
 7. **Open the pull request.**
    Open the unit's pull request with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), so the title, the base, the Test Plan, and the issue links meet [Titles](../artifacts/pull-request-body.md#titles), [Branches](../artifacts/delivery-branches.md#branches), [Test Coverage](../artifacts/pull-request-body.md#test-coverage), and [Issue Links](../artifacts/pull-request.md#issue-links).
    - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, where the session holds no confirmed setting.
@@ -164,6 +171,7 @@ The confirmed unit carried from its supplied brief through implementation and de
   The user has each confirmed unit of the theme board in a session, with a planning record held for that session.
 - **Parallel where the plan allows it.**
   The units offered are those of the epics planned to start together, and an epic planned for later is not offered while they run.
+  Within a unit, work that can proceed together does.
 - **Passed work merged.**
   Each open pull request whose test plan has passed is merged, and one a conflict blocks stays open with the conflict named.
 - **Review visible on the board.**
