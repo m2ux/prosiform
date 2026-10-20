@@ -1,0 +1,23 @@
+description = "A structural ancestor's title is emitted as the literal text its author wrote, so the link, the image and the raw HTML inside it reach the bundle as characters rather than as live constructs, and the marked link among them requires nothing: the document it names is bundled nowhere."
+
+clauses = [
+  "Heading-only structural ancestors — Heading text",
+  "Generic bundling",
+  "Reference preservation",
+  "Validation scope",
+  "Adversarial acceptance fixtures — Partial outlines, no structural ancestor-link dependency leakage",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#detail"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Detail"
+resolved = "detail"

@@ -1,0 +1,22 @@
+description = "A structural ancestor supplies its heading and nothing else: its own body, the sibling beside the selection and the branch beside it reach the bundle nowhere, while the selection keeps the descendants its section holds."
+
+clauses = [
+  "Heading-only structural ancestors",
+  "Generic bundling",
+  "No accidental expansion",
+  "Adversarial acceptance fixtures — Partial outlines, no ancestor-body leakage",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#detail"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Detail"
+resolved = "detail"
