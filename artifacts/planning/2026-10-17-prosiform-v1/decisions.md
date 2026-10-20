@@ -374,7 +374,7 @@ The modelled cost of the shipping slice falls from about fifteen row-equivalents
 
 The derived priority map ranks by prerequisite depth. It places Deferred Debt in the first set, because the rows deferred so far name only closed work, and it places Destination Identity there too, because no whole-epic edge holds it even though no row of it is free. Depth is not the whole of the reason an epic runs when it does.
 
-The map is therefore set as Outline Hierarchy, Dependency Closure and Field Deployment at 7; Destination Identity at 6; Candidate Validation at 5; the Validation Gate at 4; Outline and Closure Completion at 3; Corpus Conformance at 2; Deferred Debt at 1. The separation of the last two is [D38](#d38--a-priority-set-asserts-concurrency-and-the-components-decide-whether-it-holds)'s. Field Deployment joins the first set on the strength of one free row and finishes as the rest of the chain reaches it. Deferred Debt is last because its epic exists to be cleared after delivery, which no edge states.
+The map is therefore set as Outline Hierarchy, Dependency Closure and Field Deployment at 7; Destination Identity at 6; Candidate Validation at 5; the Validation Gate at 4; Outline and Closure Completion at 3; Corpus Conformance at 2; Deferred Debt at 1. [D39](#d39--an-in-progress-epic-holds-the-bar-it-was-ranked-at) revises Field Deployment's place. The separation of the last two is [D38](#d38--a-priority-set-asserts-concurrency-and-the-components-decide-whether-it-holds)'s. Field Deployment joins the first set on the strength of one free row and finishes as the rest of the chain reaches it. Deferred Debt is last because its epic exists to be cleared after delivery, which no edge states.
 
 The alternative was to encode the intended order as dependency edges so the derivation would produce it. It was refused for the reason recorded in [D35](#d35--the-initiative-row-gates-only-what-every-row-needs).
 
@@ -389,6 +389,18 @@ Two epics of one set may not both hold rows that extend one component. The Valid
 The alternative was to cut epics by component rather than by behaviour. It was refused because the criteria state behaviour, and an epic whose rows share a module but no criterion cannot say what its closure establishes.
 
 This was found by reading every work item by hand after the map had been applied to the tracker. Nothing in the plan, the dependency check or the board reported it, which is [m2ux/workflow-server#1461](https://github.com/m2ux/workflow-server/issues/1461).
+
+## D39 — An In-Progress Epic Holds the Bar It Was Ranked At
+
+An epic is Ready when it carries the highest priority number among the epics that can start **and those already running**: `top = max(rank over candidates + running)`. An epic In Progress therefore holds the bar at its own number for as long as it stays In Progress, and it stays there until its rows deliver.
+
+Field Deployment was ranked into the first set so its packaging row could start immediately, which it did, delivering two rows. Its remaining rows need Destination Identity and Candidate Validation, so it cannot leave In Progress until they land — and while it sits there at the top number, Destination Identity beneath it can never become Ready. The map could not reach its own second step.
+
+The order is therefore spread so that no epic shares a number and each sits where its remaining rows sit: Dependency Closure at 8, Destination Identity at 7, Candidate Validation at 6, Field Deployment at 5, the Validation Gate at 4, Outline and Closure Completion at 3, Corpus Conformance at 2, Deferred Debt at 1. Every handoff resolves: as each epic closes, the highest number among what can start exceeds the number any stalled epic holds.
+
+The alternative was to rank an epic by its first row rather than by its last. That is what put Field Deployment at the top, and it bought a real early delivery. It is refused as a general rule because the number an epic carries is read while it runs, not only when it starts, and an epic whose first row is free and whose last row is deep will hold the bar high for the whole of its life.
+
+This was found by reading `board-queue.py` after the queue offered one unit where two were expected. The board reported nothing: a deadlocked map and a correctly waiting epic look the same from outside.
 
 ## Evidence
 
