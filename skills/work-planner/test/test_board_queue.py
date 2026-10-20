@@ -378,6 +378,15 @@ class UnresolvableGates(unittest.TestCase):
         self.assertIn('[I01:E00] Epic 3: Work: Backlog → Ready', done.stdout)
         self.assertEqual(done.returncode, 0)
 
+    def test_a_note_from_reading_delivery_leaves_the_exit_status_alone(self):
+        one = initiative(1, 'Theme: Work', (f"[E00]({url('issues', 3)})", ''))
+        done = queue_run(staged(
+            (one, 'In Progress'),
+            (epic(3, '01:E00', (f"[W01]({url('issues', 9)})", 'Go', '')), 'Backlog')))
+        self.assertIn('cannot resolve', done.stdout)
+        self.assertIn('[I01:E00] Epic 3: Work: Backlog → Ready', done.stdout)
+        self.assertEqual(done.returncode, 0)
+
 
 if __name__ == '__main__':
     unittest.main()

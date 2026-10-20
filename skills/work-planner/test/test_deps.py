@@ -80,7 +80,7 @@ class UnresolvableEntries(unittest.TestCase):
     def test_an_entry_naming_no_row_and_linking_no_issue_cannot_resolve(self):
         code, text = run([('E06', epic_body(('W01', 'One', ''), ('W02', 'Two', 'E05 (W04)')))])
         self.assertEqual(code, 1)
-        self.assertIn("E06:W02: cannot resolve 'E05 (W04)': it names no row and links no issue", text)
+        self.assertIn("E06:W02: cannot resolve E05 (W04): it names no row and links no issue", text)
 
     def test_a_row_no_epic_given_carries_cannot_resolve(self):
         code, text = run([('E06', epic_body(('W01', 'One', ''), ('W02', 'Two', 'W07')))])
@@ -113,6 +113,23 @@ class RecordedPairs(unittest.TestCase):
     def test_a_pair_in_neither_joins_nor_the_record_is_reported(self):
         _, text = self.check('- **E06:W01 and E06:W03.** Each row changes its own file.\n')
         self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_line_naming_more_than_a_pair_accounts_for_none(self):
+        _, text = self.check('- Rows in this unit: E06:W01, E06:W02 and E06:W03.\n')
+        self.assertIn(f'E06:W01 and E06:W03 {RESOLUTIONS}', text)
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_record_that_is_not_text_is_a_problem(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'epic.md'
+            path.write_text(UNJOINED_EPIC)
+            joins = Path(directory) / 'joins.md'
+            joins.write_bytes(b'\xff\xfe E06:W01 and E06:W03')
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main([f'E06={path}', f'R={joins}'])
+        self.assertEqual(code, 1)
+        self.assertIn('joins.md is unreadable', output.getvalue())
 
     def test_a_record_that_cannot_be_read_is_a_problem(self):
         with tempfile.TemporaryDirectory() as directory:

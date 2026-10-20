@@ -27,7 +27,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from board import UNRESOLVABLE, Board, Resolution, linked_issue, open_questions, rows, weakest
+from board import Board, Resolution, linked_issue, open_questions, rows, weakest
 from format import cell, id_cell, row_id
 from statuses import PLACED, QUEUE, Changes, Jurisdiction, StatusField, board_items, key_of, label
 from sync import PR_REF, Unreadable, pull_requests
@@ -116,6 +116,7 @@ class Queue:
         self.shelved: set = set()
         self.board = Board(issues, [], home, prs)
         self.wanted: dict = {}
+        self.unresolvable: list[str] = []
         self.notes: list[str] = []
         self.children: dict = {}
         self.parents: dict = {}
@@ -167,6 +168,7 @@ class Queue:
             elif (answer := is_next(self.board, key, epic_key, depends, epics, why)) is Resolution.MET:
                 candidates.append(epic_key)
             elif answer is Resolution.UNRESOLVABLE:
+                self.unresolvable.append(why)
                 continue
             elif held == 'Ready':
                 self.place(epic_key, 'Backlog')
@@ -326,9 +328,7 @@ def main() -> int:
         changes.place(key, queue.line(key), issues[key], status.get(key), new, item_ids[key], home)
     asking = any(note.strip().startswith(('order', 'ask')) for note in queue.notes)
     printed = changes.report(notes=queue.notes, unresolved=queue.board.unresolved, asking=asking)
-    if any(UNRESOLVABLE in note for note in queue.board.unresolved):
-        return 1
-    return printed
+    return 1 if queue.unresolvable else printed
 
 
 if __name__ == '__main__':

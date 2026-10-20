@@ -127,7 +127,7 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict[str, set[str]]]
             elif re.fullmatch(r'W\d\d', d):
                 dep_list.append(f'{epic}:{d}')
             else:
-                problems.append(f'{key}: cannot resolve {d!r}: it names no row and links no issue')
+                problems.append(f'{key}: cannot resolve {d}: it names no row and links no issue')
         acc = []
         for a in (x.strip() for x in accompany.split(',') if x.strip()):
             acc.append(a if a.startswith('E') else f'{epic}:{a}')
@@ -175,21 +175,21 @@ def contention(components: dict[str, str]) -> list[tuple[str, str]]:
 
 
 def recorded_pairs(paths: list[Path]) -> tuple[set[frozenset[str]], list[str]]:
-    """The pairs a planning record accounts for. A line naming two task ids accounts for that pair,
-    which is the form a joins artifact takes, and a line naming more accounts for each of its
-    pairs."""
+    """The pairs a planning record accounts for. One line naming exactly two task ids accounts for
+    that pair, which is the form a joins artifact takes. A line naming more is prose about several
+    rows, not an account of any one pair, so it accounts for none."""
     found: set[frozenset[str]] = set()
     problems = []
     for path in paths:
         try:
-            text = path.read_text()
-        except OSError as error:
-            problems.append(f'record {path} is unreadable ({error.strerror})')
+            text = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeDecodeError) as error:
+            problems.append(f'record {path} is unreadable ({error})')
             continue
         for line in text.splitlines():
-            ids = sorted(set(TASK.findall(line)))
-            for i, left in enumerate(ids):
-                found.update(frozenset((left, right)) for right in ids[i + 1:])
+            ids = set(TASK.findall(line))
+            if len(ids) == 2:
+                found.add(frozenset(ids))
     return found, problems
 
 

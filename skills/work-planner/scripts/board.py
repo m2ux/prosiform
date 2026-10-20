@@ -155,7 +155,11 @@ class Board:
         return self.tables[key]
 
     def row_delivered(self, key: Key, task: str, why: str) -> Resolution:
-        header, found = self.table(key)
+        try:
+            header, found = self.table(key)
+        except Unreadable as exc:
+            self.unresolved.append(f'{why}: {UNRESOLVABLE} {task}: {exc}')
+            return Resolution.UNRESOLVABLE
         r = found.get(task)
         if r is None:
             self.unresolved.append(f'{why}: {UNRESOLVABLE} {task}: {label(key, self.home)} has no such row')

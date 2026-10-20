@@ -128,6 +128,17 @@ class UnresolvableDependencies(unittest.TestCase):
         board, key = self.consumer('W02, W07')
         self.assertIs(board.met('W02, W07', key, {}, 'E01:W03'), Resolution.UNRESOLVABLE)
 
+    def test_an_unreadable_table_cannot_resolve_rather_than_ending_the_run(self):
+        producer = issue(2, '[I01:E00] Producer: Work', body=epic_body(
+            (f"[W01]({url('pull', 9)}), [W02]({url('pull', 9)})", 'Produce', '')))
+        key = ('o/r', 3)
+        dependency = f"[E00:W01]({url('issues', 2)})"
+        consumer = issue(3, '[I01:E01] Consumer: Work', body=epic_body(('W01', 'Consume', dependency)))
+        board = Board({('o/r', 2): producer, key: consumer}, [], 'o/r')
+        self.assertIs(board.met(dependency, key, {}, 'E01:W01'), Resolution.UNRESOLVABLE)
+        self.assertEqual(board.unresolved, ['E01:W01: cannot resolve W01: W01: every link on a task row '
+                                            'names that row; resolve the others'])
+
 
 class EpicPrerequisites(unittest.TestCase):
     def test_an_initiative_row_dependency_gates_the_whole_epic(self):

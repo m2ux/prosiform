@@ -52,7 +52,7 @@ A task edge names the producing row for each output the depending row consumes. 
 - **A task consuming from every row of an epic names the producing row for each output.**
   An edge another in the cell already implies is dropped, so a prerequisite chain is named by its last row, and the whole-epic reach is what the rows establish either way.
 - **An entry that cannot resolve is a permanent condition, not a prerequisite to come.**
-  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, is reported as unresolvable and gates no placement. Every tool reading the cell gives it that verdict and that wording, so one field carries one answer.
+  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. Every tool reading the cell reports it as such, naming the entry as written, and treats it as the permanent condition it is rather than as delivery still to come.
 
 ### Whole-Epic Edges
 
@@ -86,7 +86,7 @@ Every pair of tasks in an epic where neither depends on the other is named in th
 - **Both resolutions are stated where the pair is reported.**
   Naming the pair in Joins asserts one pull request; the record entry says why there are two. A report naming only the first makes the assertion the cheaper answer.
 - **The record is read, so the second resolution closes the line.**
-  A record file names both ids of a pair on one of its lines, which is the form a joins artifact takes, and the pair leaves the report. What remains is the set named in neither.
+  A record file gives each pair a line of its own naming its two ids, which is the form a joins artifact takes, and the pair leaves the report. A line naming more rows than that is prose about them and accounts for none, so no enumeration empties the report. What remains is the set named in neither.
 
 ### Numbering Map
 
@@ -106,7 +106,7 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 - Initiative edges follow the [whole-epic prerequisite rule](initiative-issue-body.md#work-breakdown); narrower dependencies stay in the task graph.
 - It also reports dependencies listed twice or already implied, and Joins pairs.
 - It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
-- An entry it cannot resolve is a problem, named in the wording every tool reading that cell gives it, as [Edges](#edges) states.
+- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
 - It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
 - A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
 - It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.

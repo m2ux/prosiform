@@ -6,7 +6,6 @@ The queue for one theme board: initiative priority sets, status and assignee cha
 
 Read these files first.
 
-- [Dependency Graph](dependency-graph.md)
 - [Epic Issue Body](epic-issue-body.md)
 
 ## Operations
@@ -86,9 +85,10 @@ The answer a caller applies where it resolves an `order` or `ask` line on its ow
 
 A `Depends on` entry that names no row and links no issue, names an issue the run was not given, or names a row the epic it points to does not carry, cannot resolve. No delivery makes it readable, so it is told apart from a prerequisite that has not landed.
 
-- The report names the row and the entry as written, and the run exits nonzero, which is the severity the [dependency check](dependency-graph.md#check-dependencies) gives the same entry.
-- The epic that row gates keeps the Status it holds. A run proposes no move for it, so a Ready epic is not returned to Backlog on an entry nobody can read.
+- The report names the row and the entry as written, and a run that met one while deciding a placement exits nonzero.
+- The epic that row gates keeps the Status it holds. The run proposes no move for it, so a Ready epic is not returned to Backlog on an entry nobody can read.
 - Every entry of a cell is read, so a cell carrying two names both.
+- A note raised while reading delivery rather than deciding a placement is reported and leaves the exit status alone.
 
 ### Completeness
 
@@ -100,7 +100,7 @@ A complete queue may still propose changes. Live board state has converged when 
 
 ### Compute Board Queue
 
-Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue. It exits nonzero on an [unresolvable dependency](#unresolvable-dependencies).
+Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue. It exits nonzero where an [unresolvable dependency](#unresolvable-dependencies) stopped it placing a row.
 
 **Inputs:** Current board and delivery snapshots, board identity, assignee login, output directory, resolved dependency evidence, confirmed unplanned initiatives and the permitted Status scope.
 
