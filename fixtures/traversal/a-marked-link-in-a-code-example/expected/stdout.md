@@ -2,7 +2,7 @@ This bundle was built for [guide](#guide); everything else is material it refere
 
 # guide
 
-The procedure requires [¬ the shared rules](rules.md).
+The procedure requires [the shared rules](#rules).
 
 A dependency is written `[¬ the draft](draft.md)` inline, and
 

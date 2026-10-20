@@ -44,6 +44,16 @@ line an ATX heading is, each line break reading as the space it already
 read as. A group that shifts by nothing has no level to write, so the
 heading stays the Setext heading its source wrote.
 
+Each marked link in selected content is rewritten to the destination of
+the target it resolved to, through the map the bundle's own headings
+produce. A whole-document reference takes the destination of that
+file's heading, a fragment takes the destination of the heading it
+named, and a fragment-only link resolves inside its own source first
+and then takes that heading's destination. A destination is scoped to
+the whole bundle, so a reference from one group to another is spelled
+as one inside a group is. The mark goes with the rewrite, because a
+reader of the bundle has no use for authoring syntax.
+
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
 where an earlier heading already took that slug. The ordinal is assigned
@@ -61,14 +71,21 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
+from prosiform.closure import Reference, inside
 from prosiform.profile import SUFFIXES
+from prosiform.rewrite import destinations, rewritten, unmarked
 from prosiform.source import (
     LINE_FEED,
+    LINK_OPEN,
+    TEXT,
     Selection,
     bare,
     headings,
+    inlines,
     level,
+    lines,
     regions,
+    shown,
     slug,
     visible,
 )
@@ -114,11 +131,21 @@ class Overflow(Exception):
 
 @dataclass(frozen=True)
 class Group:
-    """One file group: the Markdown it emits and the headings it emits, in order."""
+    """One file group: the Markdown it emits and the headings it emits, in order.
+
+    Each emitted heading is paired with the source fragment it answers
+    to, which is what a reference naming it resolved to, and the first
+    is the file heading, which answers to the whole document and so to
+    no fragment of it. A file heading that absorbed a source heading
+    answers to that heading's fragment as well, which is held apart
+    because the heading itself is not emitted.
+    """
 
     text: str
     headings: tuple[str, ...]
     entries: tuple[int, ...]
+    sources: tuple[str | None, ...]
+    absorbed: str | None = None
 
 
 def heading_text(path: str) -> str:
@@ -175,9 +202,71 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
+def emitted_visible(inline: Token) -> str:
+    """The text one inline token shows once the bundle has rewritten its marks.
+
+    A heading can carry a marked link, and the rewrite drops the mark
+    from the text that link shows. The heading the bundle emits is
+    therefore the heading the renderer slugs, so the destination it
+    takes names the heading a reader finds.
+    """
+    children = inline.children or []
+    return "".join(
+        unmarked(child.content)
+        if child.type == TEXT and at and children[at - 1].type == LINK_OPEN
+        else shown(child)
+        for at, child in enumerate(children)
+    )
+
+
 def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
     """The visible text of each heading token, keyed by the token's identity."""
-    return {id(opening): visible(inline) for opening, inline in headings(tokens)}
+    return {
+        id(opening): emitted_visible(inline) for opening, inline in headings(tokens)
+    }
+
+
+def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
+    """The source fragment each heading token answers to, keyed by its identity.
+
+    A source fragment is the slug of the text the author wrote, which
+    is what a reference into that document resolved against, and the
+    text the bundle emits for the same heading can differ from it where
+    the heading carries a mark the rewrite drops.
+    """
+    return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
+
+
+def rewrite(
+    physical: Sequence[str],
+    tokens: Sequence[Token],
+    selected: Sequence[Token],
+    assigned: dict[tuple[str, str | None], str],
+    path: str,
+) -> list[str]:
+    """The source's physical lines, each marked link in selected content rewritten.
+
+    A rewrite edits the lines one inline token occupies and writes no
+    line break into them, so the lines the group then slices are the
+    lines the source wrote, one for one. Content the run did not select
+    is left alone: no reference in it was resolved, so no destination
+    was assigned to one.
+    """
+    written = list(physical)
+    for inline in inlines(tokens, selected):
+        marks = destinations(inline)
+        if not marks or inline.map is None:
+            continue
+        start, end = inline.map
+        targets = [assigned[key(path, one)] for one in marks]
+        written[start:end] = lines(rewritten("".join(written[start:end]), targets))
+    return written
+
+
+def key(path: str, destination: str) -> tuple[str, str | None]:
+    """The identity one link's destination names, as the map holding it spells it."""
+    found: Reference = inside(path, destination)
+    return found.path, found.fragment
 
 
 def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
@@ -312,6 +401,7 @@ def group(
     tokens: Sequence[Token],
     physical: Sequence[str],
     selected: Selection | None = None,
+    assigned: dict[tuple[str, str | None], str] | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -324,6 +414,14 @@ def group(
     absorption is the file heading standing in for a heading the group
     carries. A group that emits none therefore shifts, and a reference
     to an absorbed title resolves to the file heading's own destination.
+
+    A destination map rewrites each marked link the selected content
+    carries. The map is built from the headings every group emits, so
+    it is known only once every group exists: a group built without one
+    reports the headings that produce it, and the same group built with
+    it carries the links pointing at them. The headings a group reports
+    are the same either way, because the rewrite edits a destination
+    and a mark and nothing a heading is slugged from.
     """
     title = heading_text(path)
     emitting = (
@@ -340,11 +438,17 @@ def group(
     by = 0 if absorbing is not None else SHIFT
     emitted = [f"{ATX} {escaped(title)}"]
     shown = [title]
+    answering: list[str | None] = [None]
     entries = [0] if selected is None else []
     text = shown_text(tokens)
-    for token in regions(tokens):
-        if id(token) not in emitting:
-            continue
+    named = source_fragments(tokens)
+    chosen = [token for token in regions(tokens) if id(token) in emitting]
+    written = (
+        list(physical)
+        if assigned is None
+        else rewrite(physical, tokens, chosen, assigned, path)
+    )
+    for token in chosen:
         if token is absorbing:
             if id(token) in naming:
                 entries.append(0)
@@ -357,8 +461,15 @@ def group(
         if token.type == HEADING_OPEN and id(token) in naming:
             entries.append(len(shown))
         shown.extend(emitted_text(one, text[id(one)], by) for one in carried)
-        emitted.append(region(physical, tokens, token, by))
-    return Group(SEPARATOR.join(emitted), tuple(shown), tuple(entries))
+        answering.extend(named[id(one)] for one in carried)
+        emitted.append(region(written, tokens, token, by))
+    return Group(
+        SEPARATOR.join(emitted),
+        tuple(shown),
+        tuple(entries),
+        tuple(answering),
+        None if absorbing is None else named[id(absorbing)],
+    )
 
 
 def assemble(line: str, groups: Sequence[Group]) -> str:

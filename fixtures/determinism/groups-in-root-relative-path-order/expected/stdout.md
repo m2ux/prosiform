@@ -6,8 +6,8 @@ Alpha body.
 
 # mike
 
-Mike body, which needs [¬alpha](alpha.md).
+Mike body, which needs [alpha](#alpha).
 
 # zulu
 
-Zulu body, which needs [¬mike](mike.md).
+Zulu body, which needs [mike](#mike).

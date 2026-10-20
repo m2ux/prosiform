@@ -2,7 +2,7 @@ This bundle was built for [alpha](#alpha), [One](#one) and [Two](#two); everythi
 
 # alpha
 
-Alpha body, which needs [¬zeta](zeta.md).
+Alpha body, which needs [zeta](#zeta).
 
 # beta
 
@@ -12,7 +12,7 @@ Beta body.
 
 ### One
 
-One body, which needs [¬beta](beta.md).
+One body, which needs [beta](#beta).
 
 ### Two
 

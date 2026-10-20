@@ -2,11 +2,11 @@ This bundle was built for [alpha](#alpha); everything else is material it refere
 
 # alpha
 
-Alpha requires [¬ beta](beta.md).
+Alpha requires [beta](#beta).
 
 # beta
 
-Beta requires [¬ gamma](gamma.md).
+Beta requires [gamma](#gamma).
 
 # gamma
 

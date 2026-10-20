@@ -4,7 +4,7 @@ This bundle was built for [Alpha](#alpha); everything else is material it refere
 
 ### Alpha
 
-Alpha requires [¬ Beta](guide.md#beta), a different section.
+Alpha requires [Beta](#beta), a different section.
 
 ### Beta
 
