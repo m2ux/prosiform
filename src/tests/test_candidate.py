@@ -574,3 +574,37 @@ def test_an_ancestor_publishing_a_live_link_fails() -> None:
     ]
     one.bundled = one.bundled.replace("### Alpha", linked, 1)
     assert refused(one).invariant == NO_NEW_LINKS
+
+
+NESTED_IMAGE = """# Guide
+
+A picture ![of the [¬ shared rules](rules.md) it names](plan.png).
+"""
+
+RULES = """# Rules
+
+Every rule the procedure requires.
+"""
+
+
+def test_a_marked_link_inside_image_alternative_content_validates() -> None:
+    built({"guide.md": NESTED_IMAGE, "rules.md": RULES}, ["guide.md"]).validate()
+
+
+def test_a_link_inside_image_alternative_content_the_bundle_altered_fails() -> None:
+    one = built({"guide.md": NESTED_IMAGE, "rules.md": RULES}, ["guide.md"])
+    carried = one.groups[0]
+    one.groups = [
+        replace(
+            carried,
+            parts=tuple(
+                part.replace("[shared rules](#rules)", "[other rules](#rules)")
+                for part in carried.parts
+            ),
+        ),
+        *one.groups[1:],
+    ]
+    one.bundled = one.bundled.replace(
+        "[shared rules](#rules)", "[other rules](#rules)", 1
+    )
+    assert refused(one).invariant == REFERENCE_PRESERVATION

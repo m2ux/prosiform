@@ -468,7 +468,29 @@ def test_an_image_opens_with_its_alternative_content_s_first_text() -> None:
 
 def test_an_image_opening_on_a_link_opens_with_nothing() -> None:
     found = selected("![[¬ the rules](rules.md) shown](plan.png)\n")
-    assert [(one.destination, one.opening) for one in found] == [("plan.png", "")]
+    assert found[0].destination == "plan.png"
+    assert found[0].opening == ""
+
+
+def test_a_link_inside_image_alternative_content_is_a_use_of_its_own() -> None:
+    found = selected("A picture ![of the [¬ rules](rules.md) it names](plan.png).\n")
+    assert [(one.destination, one.opening, one.resource) for one in found] == [
+        ("plan.png", "of the ", True),
+        ("rules.md", "¬ rules", False),
+    ]
+
+
+def test_an_image_inside_image_alternative_content_is_a_use_of_its_own() -> None:
+    found = selected("![a ![inner](inner.png) outer](plan.png)\n")
+    assert [(one.destination, one.resource) for one in found] == [
+        ("plan.png", True),
+        ("inner.png", True),
+    ]
+
+
+def test_a_link_inside_image_alternative_content_is_located_at_its_block() -> None:
+    text = "# Guide\n\nA picture ![of the [¬ rules](rules.md) it names](plan.png).\n"
+    assert selected(text)[1].line == 3
 
 
 def test_an_apparent_image_inside_a_code_span_is_no_use() -> None:
@@ -546,6 +568,11 @@ def test_container_nesting_is_the_deepest_run_rather_than_the_last() -> None:
 def test_link_and_image_uses_are_counted_once_per_occurrence() -> None:
     tokens = parse("# Guide\n\n[a](a.md) and [a](a.md) and ![p](p.png).\n")
     assert occurrences(tokens, tuple(regions(tokens))) == 3
+
+
+def test_a_use_inside_image_alternative_content_is_counted() -> None:
+    text = "# Guide\n\nA picture ![of the [¬ rules](rules.md) it names](plan.png).\n"
+    assert occurrences(parse(text), tuple(regions(parse(text)))) == 2
 
 
 def test_a_use_outside_the_given_regions_is_not_counted() -> None:
