@@ -31,7 +31,9 @@ from prosiform.candidate import (
     PRESERVATION,
     REFERENCE_PRESERVATION,
     TARGET_INTEGRITY,
+    UNSAFE_BUNDLE_BOUNDARY,
     Invalid,
+    Unsafe,
     validate,
 )
 from prosiform.cli import (
@@ -368,3 +370,95 @@ def test_a_range_names_the_lines_of_its_source_it_occupies() -> None:
 def test_a_definition_line_is_recorded_as_removed_rather_than_absent() -> None:
     one = built({"guide.md": DEFINED}, ["guide.md"])
     assert one.groups[0].record.ranges[0].kept() == [2, 3]
+
+
+UNTERMINATED = """# Guide
+
+A worked example:
+
+~~~markdown
+## Stop
+
+An example the document never closes.
+"""
+
+ADJACENT = """# Guide
+
+- The item the first list carries.
+
+[notes]: notes.md
+
+- The item the second list carries.
+"""
+
+NESTED = """# Guide
+
+- The item the outer list carries.
+  - The item nested inside it.
+
+[notes]: notes.md
+
+- The item the list below carries.
+"""
+
+MARKUP = """# Guide
+
+- The item the list carries.
+
+[notes]: notes.md
+
+    <div>Markup the source wrote as a code example.</div>
+"""
+
+TERMINATED = """# Guide
+
+~~~yaml
+blocks:
+  - the first
+  - the second
+~~~
+
+- The item the list below the example carries.
+"""
+
+
+def unsafely(one: Built) -> Unsafe:
+    """The boundary the validation pass refuses this candidate for."""
+    with pytest.raises(Unsafe) as raised:
+        one.validate()
+    return raised.value
+
+
+def test_a_group_an_unterminated_code_example_absorbs_fails() -> None:
+    one = built({"guide.md": UNTERMINATED, "note.md": NOTE}, ["guide.md"])
+    boundary = unsafely(one)
+    assert boundary.code == UNSAFE_BUNDLE_BOUNDARY
+    assert boundary.container == "code example"
+    assert boundary.absorbed == "the file heading for 'note.md'"
+    assert boundary.carried == "the region at lines (4, 8) of 'guide.md'"
+
+
+def test_an_unterminated_code_example_is_refused_rather_than_closed() -> None:
+    one = built({"guide.md": UNTERMINATED, "note.md": NOTE}, ["guide.md"])
+    unsafely(one)
+    assert one.bundled.count("~~~") == 1
+
+
+def test_a_list_the_list_above_it_absorbs_fails() -> None:
+    boundary = unsafely(built({"guide.md": ADJACENT}, ["guide.md"]))
+    assert boundary.container == "list"
+    assert boundary.absorbed == "the region at lines (6, 7) of 'guide.md'"
+
+
+def test_a_region_a_nested_container_absorbs_fails() -> None:
+    assert unsafely(built({"guide.md": NESTED}, ["guide.md"])).container == "list"
+
+
+def test_a_code_example_a_list_reads_as_markup_fails() -> None:
+    boundary = unsafely(built({"guide.md": MARKUP}, ["guide.md"]))
+    assert boundary.container == "list"
+    assert boundary.path == "guide.md"
+
+
+def test_a_terminated_example_whose_entries_look_like_a_list_validates() -> None:
+    built({"guide.md": TERMINATED}, ["guide.md"]).validate()
