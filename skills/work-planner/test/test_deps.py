@@ -74,6 +74,20 @@ class EligibleUnjoined(unittest.TestCase):
         self.assertNotIn('E06:W01 and E06:W02', text)
 
 
+class UnresolvableEntries(unittest.TestCase):
+    """The verdict the dependency check gives an entry that cannot resolve."""
+
+    def test_an_entry_naming_no_row_and_linking_no_issue_cannot_resolve(self):
+        code, text = run([('E06', epic_body(('W01', 'One', ''), ('W02', 'Two', 'E05 (W04)')))])
+        self.assertEqual(code, 1)
+        self.assertIn("E06:W02: cannot resolve 'E05 (W04)': it names no row and links no issue", text)
+
+    def test_a_row_no_epic_given_carries_cannot_resolve(self):
+        code, text = run([('E06', epic_body(('W01', 'One', ''), ('W02', 'Two', 'W07')))])
+        self.assertEqual(code, 1)
+        self.assertIn('E06:W02: cannot resolve E06:W07: no epic given carries that row', text)
+
+
 class RecordedPairs(unittest.TestCase):
     """The planning-record entry an empty Joins cell rests on."""
 
