@@ -612,6 +612,22 @@ That row measured the sensitivity rather than asserting it. Returning `needed` f
 
 Neither branch was wrong alone and the pair was. W01's usage-example bundles and W02's ancestors were each green on their own base, and together three expectations failed, because a bundle that selects a section now opens the chain of headings that placed it. The expectations gained 18 lines and lost none, which is the shape a heading-only ancestor takes, and the correction landed on the branch whose change moved the output.
 
+## D56 — The Output Budget Refuses the Bundling the Proposal Measured
+
+`--max-output-bytes` defaults to 262,144. The closure the proposal used as its evidence bundles to **311,022 bytes**, 48,878 over, and the run publishes nothing:
+
+```text
+E_RESOURCE_LIMIT: the run reached 311022 bytes of the complete bundle, which crosses the --max-output-bytes budget of 262144
+```
+
+The figure was reproduced from a clean extraction by following the documented procedure, and the raised-budget run publishes a file of exactly that size, so the refusal's number is the complete bundle rather than a partial count. The bundle is 97.8% of the 318,018 bytes its sources hold: one heading per document and the rewritten destinations cost less than the marks removed.
+
+**The closure is this repository's own history, not another repository's.** `skills/work-planner` sits on the `workspace` branch at `acac858`, the commit the proposal's own links name, and `git archive` reproduces it from any clone. AC7 was reworded twice over this: once to move the evidence out of the corpus under [D47](#d47--a-criterion-names-the-evidence-that-can-exist), and again because the first rewording said "another repository" on a premise that was wrong. The measurement is a procedure any clone can re-take, which is a stronger claim than a figure recorded from one machine.
+
+**The proposal's closure and the build's are different graphs.** The proposal measured the transitive closure of Markdown links; the build follows marked references, and the skill carries no mark anywhere. Bundling Plan Mode unmarked yields one document and 9,595 bytes. Reproducing the measurement therefore means marking the tree first, which the documented procedure does, and one reference needs a hand repair because `guidelines.md` names a heading `SKILL.md` does not carry at that commit. Left as a citation instead, the closure is 35 documents and 292,514 bytes — still over the budget, so the verdict holds either way.
+
+The decision the number now permits — whether to raise the default — is left open. 327,680 would admit this bundling with about five per cent of headroom.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
