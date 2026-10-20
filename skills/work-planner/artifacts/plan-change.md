@@ -41,6 +41,8 @@ The caller names the change kinds its run applies without asking. A run the user
 | Re-prioritisation | A priority label, a queue order or a board status |
 | Folded work | Criteria, scope or design added to an existing issue because the work in hand needs it |
 
+An option deciding to leave work where it is changes no plan, so it needs no allowance and takes no entry, unlike a change [held](#held-change) for the user to decide.
+
 ### Initiative Creation
 
 A new initiative is outside every allowance. The work stays where it is, open and unplaced, until the user decides where it belongs.

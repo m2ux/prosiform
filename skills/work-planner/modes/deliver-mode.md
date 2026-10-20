@@ -95,20 +95,8 @@ The main path meets [Outcomes](#outcomes).
    - The agent running this mode starts each unit through the sub-agent dispatch of the session it was called from, and that dispatch is the only way a unit's session starts.
    - When that session provides no sub-agent dispatch, this mode reports that and stops before any unit begins.
    - The sub-agent works in the unit's worktree, reads the brief, and has the engineering worktree in reach for the planning record.
-   - Leave the dispatched session running its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work below.
+   - Leave the dispatched session running its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
    - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as [Task Branches](../artifacts/delivery-branches.md#task-branches) defines.
-   - Raise issues arising from one work item as standalone issues.
-   - Once its pull request is open and its epic delivery is recorded:
-     - Run [Hoist Mode](hoist-mode.md) for those issue identities, with the allowance the brief names.
-     - Resume the delivery session with their placement results.
-   - Technical debt a unit finds while validating its work — running its tests, auditing the definitions it changed, reviewing its pull request — is classified, and the classification decides where it is fixed.
-     - **Blocking.**
-       - The unit's own criteria cannot be verified without it, so the unit fixes it, whatever its size.
-     - **Trivial.**
-       - It blocks nothing and needs no work item of its own, so the unit fixes it.
-     - **Non-trivial.**
-       - It blocks nothing and would warrant a work item of its own. The unit defers it to this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt), and the epic in hand keeps the scope it was planned with.
-     - The session's own classification decides, and a deferral is a plan change it records through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
 9. **Report.**
    Each pull request merged, and each left open by a conflict; each epic moved to In Review; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
    - Report the run's [change list](../artifacts/plan-change.md#change-list) as a list of its own, so each plan change this run applied, and each it held for the user, is read in one place.
@@ -145,11 +133,21 @@ The confirmed unit carried from its supplied brief through implementation and de
    - Follow [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request, with the unit's worktree as the project checkout.
    - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result, the unit's current task and epic evidence, and the board identity the brief names.
    - Resume the defer step when recording returns; a merge or recording blocker remains explicit.
-9. **Defer.**
-   Create each deferred item as a standalone issue through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Run [Hoist Mode](hoist-mode.md) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt).
-   - Run [Record Plan Change](../artifacts/plan-change.md#record-plan-change) with the placement it returns.
-   - Resume the arising-issues step with its saved placement or reported blocker.
+9. **Classify and defer the debt.**
+   Classify the technical debt this unit's validation finds — running its tests, auditing the definitions it changed, reviewing its pull request — which decides where it is fixed.
+   - **Blocking.**
+     - The unit's own criteria cannot be verified without it, so the unit fixes it, whatever its size.
+   - **Trivial.**
+     - It blocks nothing and needs no work item of its own, so the unit fixes it.
+   - **Non-trivial.**
+     - It blocks nothing and would warrant a work item of its own, so the unit defers it and the epic in hand keeps the scope it was planned with.
+   - The session's own classification decides.
+   - For each deferred item:
+     - Create it as a standalone issue through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
+     - Run [Hoist Mode](hoist-mode.md) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt).
+     - Where the initiative has no such epic, the placement raises it as a new epic, carrying the criterion its initiative row covers.
+     - Run [Record Plan Change](../artifacts/plan-change.md#record-plan-change) with the placement it returns.
+   - Resume the arising-issues step with each saved placement or reported blocker.
 10. **Arising issues.**
     Create each issue that arose during delivery as a standalone issue with [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), with no agent-engineering prefix.
     - Run [Hoist Mode](hoist-mode.md) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.

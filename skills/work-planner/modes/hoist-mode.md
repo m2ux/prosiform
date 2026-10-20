@@ -27,7 +27,7 @@ The main path meets [Outcomes](#outcomes).
    - Supply that evidence and planning-record references to [Draft Issue Placement](../artifacts/placement.md#draft-issue-placement) for each option.
    - Present the returned options best first, with Leave last.
 4. **Decide each placement.**
-   Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each orphan's best option, with the allowance the caller supplied.
+   Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each orphan's best option that changes the plan, with the allowance the caller supplied.
    - An automatic option is confirmed as it stands, and recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
    - A held option under a supplied allowance leaves the orphan where it is, recorded the same way with the option it recommends, so the user decides it in a later run.
    - A held option with no allowance supplied is offered as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
