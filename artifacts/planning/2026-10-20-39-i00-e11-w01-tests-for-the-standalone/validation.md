@@ -89,9 +89,9 @@ exit 0
 ruff check          All checks passed!
 ruff format --check 50 files already formatted
 mypy                Success: no issues found in 49 source files
-pytest (src)        603 passed in 0.59s
-pytest (harness)    443 passed in 6.22s
-corpus              203 fixture(s), 201 pass, 0 fail, 2 awaited, 0 unexpected pass
+pytest (src)        606 passed in 0.66s
+pytest (harness)    464 passed in 9.29s
+corpus              207 fixture(s), 206 pass, 0 fail, 1 awaited, 0 unexpected pass
 smoke               prosiform installs into an environment and bundles a reference from a source root
 layout              3 tree(s) present
 tables              14 command(s) and 7 declaration(s)
@@ -99,6 +99,8 @@ links               every reference in 12 document(s) resolved
 vocabulary          34 contract term(s) marked, every one defined
 invocation          27 statement(s) of the documented invocation
 ```
+
+The run is on the revision carrying the epic base's own merge into this branch, so the counts include the rows merged into `i00/e11/main` ahead of it. The runs under T1 to T3 are on the revision before that merge, where the harness suite stood at 443.
 
 The link check's run is online and resolves the new `checks/README.md` reference to `tests/anchors.json`.
 
