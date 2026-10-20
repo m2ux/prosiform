@@ -8,6 +8,7 @@ Read these files first.
 
 - [Issue](../artifacts/issue.md)
 - [Placement](../artifacts/placement.md)
+- [Plan Change](../artifacts/plan-change.md)
 - [Guidelines](../guidelines.md)
 - [Issue Body](../artifacts/issue-body.md)
 - [Dependency Graph](../artifacts/dependency-graph.md)
@@ -25,10 +26,13 @@ The main path meets [Outcomes](#outcomes).
    Read each candidate's body and discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue), with the initiative and epic bodies whose themes or criteria it touches.
    - Supply that evidence and planning-record references to [Draft Issue Placement](../artifacts/placement.md#draft-issue-placement) for each option.
    - Present the returned options best first, with Leave last.
-4. **Offer.**
-   Offer each orphan as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
-   - Leave is last.
-   - Placing an orphan in another initiative's issue needs that answer as its approval.
+4. **Decide each placement.**
+   Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each orphan's best option, with the allowance the caller supplied.
+   - An automatic option is confirmed as it stands, and recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
+   - A held option under a supplied allowance leaves the orphan where it is, recorded the same way with the option it recommends, so the user decides it in a later run.
+   - A held option with no allowance supplied is offered as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
+     - Leave is last.
+     - Placing an orphan in another initiative's issue needs that answer as its approval.
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
 5. **Apply.**
    Run [Apply Issue Placement](../artifacts/placement.md#apply-issue-placement) with each confirmed placement and its current source and destination records.
@@ -37,7 +41,7 @@ The main path meets [Outcomes](#outcomes).
 6. **Review.**
    - Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) on every issue the hoist changed or created.
    - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) on each initiative that gained a task or epic.
-   - Resolve each finding with the user.
+   - Resolve each finding with the user, or apply the correction where the caller supplied an allowance.
    - Apply confirmed body corrections through [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections).
    - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Repeat Validate Issue Body with the saved affected bodies.
@@ -45,6 +49,7 @@ The main path meets [Outcomes](#outcomes).
    - Report any unresolved finding.
 7. **Report.**
    Report each orphan's placement, the issues changed, created or closed, and the orphans left.
+   - Return the [change list](../artifacts/plan-change.md#change-list) with it, so the caller reports each placement this mode made and each it held.
 
 ## Outcomes
 
@@ -52,5 +57,5 @@ The main path meets [Outcomes](#outcomes).
   The user has each chosen standalone issue joined to an initiative, epic or task, or left open.
 - **Cited work included.**
   A standalone issue an agent-engineering issue cites is placed, or taken into the issue that already carries that work.
-- **The user's choice.**
-  An orphan moves only on the user's word, including a placement settled before the hoist.
+- **The decision respected.**
+  An orphan moves on the user's word, or on the allowance its caller supplied, and work needing a decision outside that allowance stays where it is.
