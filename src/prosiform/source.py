@@ -48,7 +48,15 @@ sequence of headings a bundle emits.
 Every heading the profile recognizes is indexed, a container-nested one
 included: eligibility to be selected is a later decision, and a heading
 a container carries is one a renderer reading the bundle indexes beside
-the rest.
+the rest. The first of them is read on its own as well, because a
+document opening on a top-level heading of its own may be opening on a
+generated file heading, and what that heading's text names is the whole
+of the signal a caller has.
+
+A source is also recorded as the file it was read from: the canonical
+path that read arrived at, and a hash of the bytes it held. The pair is
+a record of a read, which a later read of the same source can be
+compared against.
 
 A reference use is read from the same events. What a document requires
 is written in the marks its author wrote, and either a link or an image
@@ -85,6 +93,7 @@ bounds, and the link and image occurrences a run of regions carries,
 each counted once where the source wrote it.
 """
 
+import hashlib
 import re
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
@@ -93,6 +102,8 @@ from markdown_it.token import Token
 
 ENCODING = "utf-8"
 MARK = "﻿"
+DIGEST = "sha256"
+TOP_LEVEL = 1
 
 OPENER = "---"
 CLOSERS = ("---", "...")
@@ -167,6 +178,27 @@ class Source:
     def line(self, at: int | None) -> int | None:
         """The line of the original file one line of this content occupies."""
         return None if at is None else at + self.first_line - 1
+
+
+@dataclass(frozen=True)
+class Capture:
+    """What one source was at the moment the run read it.
+
+    The identity is the canonical filesystem path that read arrived at
+    and the digest is taken over the bytes the file held, so comparing
+    a later read against both answers whether a document is still the
+    one the run read. It records a read rather than holding a file
+    still: a source can be written again after any comparison, and a
+    digest taken over one file says nothing about the others.
+    """
+
+    identity: str
+    digest: str
+
+
+def hashed(data: bytes) -> str:
+    """One source's content hash, taken over the bytes its file held."""
+    return hashlib.new(DIGEST, data).hexdigest()
 
 
 def lines(text: str) -> list[str]:
@@ -306,17 +338,39 @@ class Heading:
     line: int | None
 
 
+def headed(opening: Token, inline: Token) -> Heading:
+    """One heading, read from the token opening it and the text it shows."""
+    return Heading(
+        level=level(opening),
+        text=visible(inline),
+        fragment=slug(visible(inline)),
+        line=None if opening.map is None else opening.map[0] + 1,
+    )
+
+
 def index(tokens: Sequence[Token]) -> tuple[Heading, ...]:
     """Every heading one complete source document carries, in source order."""
-    return tuple(
-        Heading(
-            level=level(opening),
-            text=visible(inline),
-            fragment=slug(visible(inline)),
-            line=None if opening.map is None else opening.map[0] + 1,
-        )
-        for opening, inline in headings(tokens)
-    )
+    return tuple(headed(opening, inline) for opening, inline in headings(tokens))
+
+
+def opening_heading(tokens: Sequence[Token]) -> Heading | None:
+    """The document-level H1 a source's first heading is, where it is one.
+
+    A file heading is a document's own first heading, written at the
+    top level. A first heading deeper than that, and a first heading a
+    container carries, each leave the document opening on none, and a
+    heading-like line inside code is no heading at all, so the parser
+    yields nothing here to read.
+    """
+    first = next(headings(tokens), None)
+    if first is None:
+        return None
+    opening, inline = first
+    if level(opening) != TOP_LEVEL:
+        return None
+    if not any(opening is region for region in regions(tokens)):
+        return None
+    return headed(opening, inline)
 
 
 def regions(tokens: Sequence[Token]) -> Iterator[Token]:
