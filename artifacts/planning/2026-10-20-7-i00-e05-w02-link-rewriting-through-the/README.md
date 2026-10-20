@@ -15,6 +15,8 @@ The row is where the mark leaves the bundle. A dependency is a reference whose a
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The task's plan: the link kinds carrying a local destination, the map lookup and rewrite, the entry line this row completes, and the expected bundles the rewrite changes |
+| [validation.md](validation.md) | What the row measured on its base, the two-pass construction it chose for a map known only once every group exists, the invariant the run validates, and the statements that turned out wrong |
+| [changes.md](changes.md) | The contract changes and folded work the allowance covered, and the work held and reported |
 
 ## Links
 
