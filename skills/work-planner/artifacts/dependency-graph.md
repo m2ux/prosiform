@@ -51,6 +51,8 @@ A task edge names the producing row for each output the depending row consumes. 
   A row naming an epic gates its task on every row of that epic, including the rows it consumes nothing from, which is how a [whole-epic edge](#whole-epic-edges) the rows do not justify reaches the initiative.
 - **A task consuming from every row of an epic names the producing row for each output.**
   An edge another in the cell already implies is dropped, so a prerequisite chain is named by its last row, and the whole-epic reach is what the rows establish either way.
+- **An entry that cannot resolve is a permanent condition, not a prerequisite to come.**
+  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. Every tool reading the cell names the entry as written, leaves the row where it stands rather than placing it as work still to come, and exits nonzero.
 
 ### Whole-Epic Edges
 
@@ -81,6 +83,11 @@ Two task rows in different epics whose work items declare one [component](work-i
 
 Every pair of tasks in an epic where neither depends on the other is named in the epic's Joins, or accounted for in the planning record.
 
+- **Both resolutions are stated where the pair is reported.**
+  Naming the pair in Joins asserts one pull request; the record entry says why there are two. A report naming only the first makes the assertion the cheaper answer.
+- **The record is read, so the second resolution closes the line.**
+  A record file gives each pair a line of its own naming its two ids, which is the form a joins artifact takes, and the pair leaves the report. A line naming more rows than that is prose about them and accounts for none, so no enumeration empties the report. What remains is the set named in neither.
+
 ### Numbering Map
 
 A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
@@ -91,14 +98,15 @@ A comma-separated list of `<old-number>:<new-number>` pairs assigning each old n
 
 Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
 
-**Inputs:** Initiative body file, each epic id with its body file, and each task id with its work-item file.
+**Inputs:** Initiative body file, each epic id with its body file, each task id with its work-item file, and each planning-record file accounting for independent pairs.
 
-- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, and the `<epic-id>:<task-id>=<work-item-file>` argument once per work item.
+- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
 - The command runs in `<workspace>` while body files are kept outside the repository, so pass each one as an absolute path.
 
 - Initiative edges follow the [whole-epic prerequisite rule](initiative-issue-body.md#work-breakdown); narrower dependencies stay in the task graph.
 - It also reports dependencies listed twice or already implied, and Joins pairs.
-- It prints each pair of tasks in an epic where neither depends on the other and the two do not name each other in Joins.
+- It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
+- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
 - It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
 - A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
 - It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
@@ -106,13 +114,13 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 - It reads bodies from [Read Tracker Issue](issue.md#read-tracker-issue), or local drafts.
 
 ```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>'
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
 ```
 
 **Example:**
 
 ```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md R=/records/joins.md
 ```
 
 ### Renumber Tasks

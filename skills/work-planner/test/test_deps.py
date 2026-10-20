@@ -30,6 +30,18 @@ def run(bodies: list[tuple[str, str]]) -> tuple[int, str]:
     return code, output.getvalue()
 
 
+RESOLUTIONS = 'can share a pull request: name each other in Joins, or account for the pair in the planning record'
+
+UNJOINED_EPIC = (
+    '## Work Breakdown\n\n'
+    '| Task | Description | Coverage | Depends on | Joins | Done |\n'
+    '| --- | --- | --- | --- | --- | --- |\n'
+    '| W01 | One | AC1 | | | |\n'
+    '| W02 | Two | AC1 | W01 | | |\n'
+    '| W03 | Three | AC1 | | | |\n'
+)
+
+
 class EligibleUnjoined(unittest.TestCase):
     def test_skips_a_dependency_and_a_named_pair(self):
         def ancestors(name):
@@ -42,32 +54,92 @@ class EligibleUnjoined(unittest.TestCase):
             'E06:W04': ('d', [], ['E06:W03']),
         }
         self.assertEqual(eligible_unjoined(tasks, ancestors), [
-            'E06:W01 and E06:W03 can share a pull request and do not name each other',
-            'E06:W01 and E06:W04 can share a pull request and do not name each other',
-            'E06:W02 and E06:W03 can share a pull request and do not name each other',
-            'E06:W02 and E06:W04 can share a pull request and do not name each other',
+            f'E06:W01 and E06:W03 {RESOLUTIONS}',
+            f'E06:W01 and E06:W04 {RESOLUTIONS}',
+            f'E06:W02 and E06:W03 {RESOLUTIONS}',
+            f'E06:W02 and E06:W04 {RESOLUTIONS}',
         ])
 
     def test_main_prints_the_section(self):
-        body = (
-            '## Work Breakdown\n\n'
-            '| Task | Description | Coverage | Depends on | Joins | Done |\n'
-            '| --- | --- | --- | --- | --- | --- |\n'
-            '| W01 | One | AC1 | | | |\n'
-            '| W02 | Two | AC1 | W01 | | |\n'
-            '| W03 | Three | AC1 | | | |\n'
-        )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'epic.md'
-            path.write_text(body)
+            path.write_text(UNJOINED_EPIC)
             output = io.StringIO()
             with redirect_stdout(output):
                 code = main([f'E06={path}'])
         text = output.getvalue()
         self.assertEqual(code, 0)
-        self.assertIn('E06:W01 and E06:W03 can share a pull request and do not name each other', text)
-        self.assertIn('E06:W02 and E06:W03 can share a pull request and do not name each other', text)
+        self.assertIn(f'E06:W01 and E06:W03 {RESOLUTIONS}', text)
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
         self.assertNotIn('E06:W01 and E06:W02', text)
+
+
+class UnresolvableEntries(unittest.TestCase):
+    """The verdict the dependency check gives an entry that cannot resolve."""
+
+    def test_an_entry_naming_no_row_and_linking_no_issue_cannot_resolve(self):
+        code, text = run([('E06', epic_body(('W01', 'One', ''), ('W02', 'Two', 'E05 (W04)')))])
+        self.assertEqual(code, 1)
+        self.assertIn("E06:W02: cannot resolve E05 (W04): it names no row and links no issue", text)
+
+    def test_a_row_no_epic_given_carries_cannot_resolve(self):
+        code, text = run([('E06', epic_body(('W01', 'One', ''), ('W02', 'Two', 'W07')))])
+        self.assertEqual(code, 1)
+        self.assertIn('E06:W02: cannot resolve E06:W07: no epic given carries that row', text)
+
+
+class RecordedPairs(unittest.TestCase):
+    """The planning-record entry an empty Joins cell rests on."""
+
+    def check(self, record: str | None):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'epic.md'
+            path.write_text(UNJOINED_EPIC)
+            args = [f'E06={path}']
+            if record is not None:
+                joins = Path(directory) / 'joins.md'
+                joins.write_text(record)
+                args.append(f'R={joins}')
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main(args)
+        return code, output.getvalue()
+
+    def test_a_recorded_pair_leaves_the_section(self):
+        _, text = self.check('- **E06:W01 and E06:W03.** Each row changes its own file.\n')
+        self.assertNotIn('E06:W01 and E06:W03', text)
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_pair_in_neither_joins_nor_the_record_is_reported(self):
+        _, text = self.check('- **E06:W01 and E06:W03.** Each row changes its own file.\n')
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_line_naming_more_than_a_pair_accounts_for_none(self):
+        _, text = self.check('- Rows in this unit: E06:W01, E06:W02 and E06:W03.\n')
+        self.assertIn(f'E06:W01 and E06:W03 {RESOLUTIONS}', text)
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_record_that_is_not_text_is_a_problem(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'epic.md'
+            path.write_text(UNJOINED_EPIC)
+            joins = Path(directory) / 'joins.md'
+            joins.write_bytes(b'\xff\xfe E06:W01 and E06:W03')
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main([f'E06={path}', f'R={joins}'])
+        self.assertEqual(code, 1)
+        self.assertIn('joins.md is unreadable', output.getvalue())
+
+    def test_a_record_that_cannot_be_read_is_a_problem(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'epic.md'
+            path.write_text(UNJOINED_EPIC)
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main([f'E06={path}', f'R={Path(directory) / "absent.md"}'])
+        self.assertEqual(code, 1)
+        self.assertIn('absent.md is unreadable', output.getvalue())
 
 
 class EpicNamedInATaskRow(unittest.TestCase):
@@ -155,6 +227,51 @@ class TaskCells(unittest.TestCase):
         self.assertIn('E06:W01: Task cell also names W02', text)
 
 
+class MalformedTaskIds(unittest.TestCase):
+    """A task id is a W and two digits, and one that departs from it is named."""
+
+    @staticmethod
+    def table(*rows: str) -> str:
+        return (
+            '## Work Breakdown\n\n'
+            '| Task | Description | Coverage | Depends on | Joins | Done |\n'
+            '| --- | --- | --- | --- | --- | --- |\n'
+            + ''.join(rows)
+        )
+
+    def test_a_malformed_head_is_named_and_yields_no_row(self):
+        code, text = run([('E06', self.table(
+            '| W010 | Too many digits | AC1 | | | |\n',
+            '| W02 | Sound | AC2 | | | |\n',
+        ))])
+        self.assertEqual(code, 1)
+        self.assertIn('E06: Task cell names malformed task id W010', text)
+        self.assertNotIn('E06:W01 ', text)
+        self.assertIn('0 E06:W02 - Sound', text)
+
+    def test_a_short_head_is_named_rather_than_skipped(self):
+        code, text = run([('E06', self.table('| W1 | Too few digits | AC1 | | | |\n'))])
+        self.assertEqual(code, 1)
+        self.assertIn('E06: Task cell names malformed task id W1', text)
+
+    def test_a_malformed_later_id_is_named_and_keeps_its_row(self):
+        code, text = run([('E06', self.table(
+            '| [W01](https://example.test/pull/950), [W012](https://example.test/pull/960)'
+            ' | Mistyped second link | AC1 | | | |\n',
+        ))])
+        self.assertEqual(code, 1)
+        self.assertIn('E06: Task cell names malformed task id W012', text)
+        self.assertNotIn('also names', text)
+        self.assertIn('0 E06:W01 - Mistyped second link', text)
+
+    def test_a_prose_cell_is_skipped_in_silence(self):
+        code, text = run([('E06', self.table(
+            '| Notes | A prose row | | | | |\n',
+            '| W01 | Sound | AC1 | | | |\n',
+        ))])
+        self.assertEqual(code, 0)
+        self.assertIn('--- problems\nnone', text)
+        self.assertIn('0 E06:W01 - Sound', text)
 class InitiativeDependencies(unittest.TestCase):
     def check(self, producer, consumer, gate):
         return run([('I', initiative_body(('E00', ''), ('E01', gate))),

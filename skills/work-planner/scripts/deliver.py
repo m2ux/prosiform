@@ -18,10 +18,11 @@ one epic start in the order that epic's own graph sets, whatever its siblings wa
 name each other in Joins are one unit, and a unit is one session's work.
 
 Printed: a unit line for each available unit, with the record folder, branch and worktree its ids and
-Description give it; a hold line for each reserved row; a blocked line for a free row whose
+Description give it; an unresolvable line for a row gated on a dependency entry nothing can resolve,
+naming the entry; a hold line for each reserved row; a blocked line for a free row whose
 dependencies are not delivered or whose joined task is unavailable; a merge line for an open pull
 request that targets the epic base when its test plan has passed; and an unresolved line for an
-issue not given.
+issue not given. A run that met an unresolvable entry exits 1.
 
 --reserve sets the record folder as each row's single link. The record README links its work item.
 --release frees the row by replacing that folder link with its work-item file link. Both write the
@@ -36,7 +37,7 @@ from collections import Counter
 from datetime import date as day
 from pathlib import Path
 
-from board import Board, rows
+from board import Board, Resolution, rows
 from statuses import key_of, label, pages, status_of
 from format import LINK, TICK, cell, done_mark, id_cell, join_sections, row, row_id, split_sections
 from sync import Unreadable, long_lived_names, plan_rows, pull_requests, table
@@ -149,15 +150,23 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
         if not task:
             continue
         held = reservation(ident)
+        cause = ''
         if done_mark(cell(header, r, 'Done')) == TICK:
             state[task] = 'done'
         elif in_flight(ident):
             state[task] = 'running'
         elif held:
             state[task] = 'held'
-        elif not prerequisites:
+        elif prerequisites is Resolution.UNRESOLVABLE:
+            state[task] = 'unresolvable'
+            cause = "its epic's prerequisite"
+        elif (answer := board.met(cell(header, r, 'Depends on'), key, epics,
+                                  f'{label(key, board.home)} {task}')) is Resolution.UNRESOLVABLE:
+            state[task] = 'unresolvable'
+            cause = cell(header, r, 'Depends on')
+        elif prerequisites is Resolution.UNMET:
             state[task] = 'prerequisite'
-        elif not board.met(cell(header, r, 'Depends on'), key, epics, f'{label(key, board.home)} {task}'):
+        elif answer is Resolution.UNMET:
             state[task] = 'blocked'
         else:
             state[task] = 'free'
@@ -165,6 +174,7 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
         detail[task] = {'description': cell(header, r, 'Description').split(' →', 1)[0].strip(),
                         'coverage': cell(header, r, 'Coverage'), 'held': held,
                         'issue': int(found[1]) if found else None,
+                        'cause': cause,
                         'depends': cell(header, r, 'Depends on')}
     return header, body, state, detail
 
@@ -234,7 +244,7 @@ def survey(args: argparse.Namespace) -> int:
             epics.setdefault(parsed[0], {})[f'E{parsed[1]}'] = key
 
     when = args.date or day.today().isoformat()
-    available = held = waiting = 0
+    available = held = waiting = unreadable = 0
     for key in sorted(issues):
         issue = issues[key]
         if not is_epic(issue) or status.get(key) not in STARTED:
@@ -252,6 +262,13 @@ def survey(args: argparse.Namespace) -> int:
             tag = ident_tag(initiative, epic, first)
             ids = '+'.join(unit)
             if states <= {'done', 'running'}:
+                continue
+            if 'unresolvable' in states:
+                for task in unit:
+                    if state[task] == 'unresolvable':
+                        print(f'  unresolvable I{initiative}:E{epic}:{task}: '
+                              f'{detail[task]["cause"]} cannot resolve')
+                        unreadable += 1
                 continue
             if 'held' in states:
                 for task in unit:
@@ -281,8 +298,9 @@ def survey(args: argparse.Namespace) -> int:
         print(line)
     for note in dict.fromkeys(board.unresolved):
         print(f'  unresolved: {note}')
-    print(f'  available: {available}, held: {held}, blocked: {waiting}, merge: {len(merging)}')
-    return 0
+    print(f'  available: {available}, held: {held}, blocked: {waiting}, '
+          f'unresolvable: {unreadable}, merge: {len(merging)}')
+    return 1 if unreadable else 0
 
 
 def base_url(header: list[str], body: list[list[str]], given: str | None) -> str:
