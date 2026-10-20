@@ -65,6 +65,14 @@ validation-only run publishes nothing, to either stream or to a named
 file; a run naming an output file writes it atomically, through a
 neighbouring temporary file renamed into place, so a reader of that path
 sees the previous bytes or the whole bundle and never a partial one.
+
+An output path naming a source the run read is refused. The comparison
+is made over the completed closure, which is where the full set of
+paths a run read is known, so a document the run reached as a
+dependency is a document the run will not write over. Each source is
+located at its root-relative path under the canonicalized root and
+never through a symbolic link, because the read follows no link and a
+resolution would name a file the run never opened.
 """
 
 import argparse
@@ -379,24 +387,19 @@ def entry(text: str) -> Reference:
     return found
 
 
-def distinct(found: Sequence[Reference]) -> list[Reference]:
-    """Each distinct document this run reads, and the reference that names it.
+def sources(root: Path, read: Collection[str]) -> set[Path]:
+    """Where every source the run read sits, under the allowed source root.
 
-    A referring document is a source of the run like any other, and two
-    references normalizing to one path name one source.
+    A source is located by joining its root-relative path to the
+    canonicalized root and by nothing further. The read descends that
+    path one segment at a time and follows no link, so each segment
+    names the directory entry the walk opened and the join is already
+    the file the bytes came from. A resolution through a symbolic link
+    would instead name a file the run never read, and a comparison
+    against that file answers a question about the link rather than
+    about the source.
     """
-    named: list[Reference] = []
-    seen: set[str] = set()
-    for one in found:
-        if one.path and one.path not in seen:
-            seen.add(one.path)
-            named.append(one)
-    return named
-
-
-def sources(root: Path, named: Sequence[Reference]) -> set[Path]:
-    """Every path this run reads from, resolved against the allowed source root."""
-    return {(root / one.path).resolve() for one in named}
+    return {root / path for path in read}
 
 
 def location(name: str, at: int | None) -> str:
@@ -827,14 +830,6 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
 
     root = Path(options.root).resolve()
     referring = entry(options.referrer) if options.referrer else None
-    named = distinct(([referring] if referring is not None else []) + requested)
-    reading = sources(root, named)
-    if options.output != STANDARD_OUTPUT:
-        destination = Path(options.output).resolve()
-        if destination in reading:
-            raise usage_failure(
-                f"the output path {options.output!r} names an input source"
-            )
 
     if not root.is_dir():
         raise input_failure(
@@ -853,6 +848,12 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             )
 
     read, parsed, found = traverse(root, referring, requested)
+    if options.output != STANDARD_OUTPUT:
+        destination = Path(options.output).resolve()
+        if destination in sources(root, read):
+            raise usage_failure(
+                f"the output path {options.output!r} names an input source"
+            )
     bundled = compose(read, parsed, referring, requested, found)
     if options.check:
         return SUCCESS

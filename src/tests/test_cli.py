@@ -27,6 +27,7 @@ from prosiform.cli import (
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
     SOURCE_OUTSIDE_ROOT,
+    SOURCE_SYMLINK,
     SUCCESS,
     TARGET_NOT_FOUND,
     UNSUPPORTED_ENTRY_SUFFIX,
@@ -254,9 +255,41 @@ def test_an_output_path_naming_the_referring_document_is_invalid_usage(
         "guide.md",
         "--output",
         str(root / "guide.md"),
-        "#a-section",
+        "#guide",
     )
     assert run.status == USAGE_FAILURE
+
+
+def test_an_output_path_naming_a_dependency_source_is_invalid_usage(
+    root: Path,
+) -> None:
+    (root / "guide.md").write_text(
+        "# Guide\n\nIt needs [\u00acthe note](docs/note.md).\n"
+    )
+    note = root / "docs" / "note.md"
+    run = invoke("--root", str(root), "--output", str(note), "guide.md")
+    assert run.status == USAGE_FAILURE
+    assert "input source" in run.stderr
+    assert note.read_text() == "# Note\n"
+
+
+def test_a_source_reached_through_a_link_is_no_identity_the_output_check_holds(
+    root: Path, tmp_path: Path
+) -> None:
+    outside = tmp_path.parent / "outside.md"
+    outside.write_text("# Outside\n")
+    (root / "alias.md").symlink_to(outside)
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(outside),
+        "alias.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_SYMLINK]
 
 
 def test_an_output_path_naming_no_input_source_is_accepted(
