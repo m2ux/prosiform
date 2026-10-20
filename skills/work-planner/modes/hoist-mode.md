@@ -41,7 +41,7 @@ The main path meets [Outcomes](#outcomes).
 6. **Review.**
    - Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) on every issue the hoist changed or created.
    - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) on each initiative that gained a task or epic.
-   - Resolve each finding with the user, or apply the correction where the caller supplied an allowance.
+   - Resolve each finding as [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) returns it: an automatic correction is applied, and a held one is resolved with the user.
    - Apply confirmed body corrections through [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections).
    - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Repeat Validate Issue Body with the saved affected bodies.

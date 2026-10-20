@@ -73,7 +73,7 @@ The main path meets [Outcomes](#outcomes).
      - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
      - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
      - Confirm the units it returns before any of them is dispatched.
-   - This is the run's one question, and every plan change after it follows [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy).
+   - No plan change after this step is put to the user. Each follows [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy).
 7. **Hold.**
    For each confirmed unit, before its session starts:
    - Add its record with [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record), named as the `unit` line gives it.
