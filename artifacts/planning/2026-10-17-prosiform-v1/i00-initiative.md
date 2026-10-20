@@ -56,8 +56,8 @@ Modular Markdown authoring separates the destination a link names from the conte
 | [E05](https://github.com/m2ux/prosiform/issues/7) | Destination Identity | AC2 | | |
 | [E06](https://github.com/m2ux/prosiform/issues/8) | Candidate Validation | AC4, AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
 | [E07](https://github.com/m2ux/prosiform/issues/19) | Field Deployment | AC11, AC12 | | |
-| [E08](https://github.com/m2ux/prosiform/issues/59) | Validation Gate | AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | |
-| [E09](https://github.com/m2ux/prosiform/issues/60) | Outline and Closure Completion | AC5, AC14 | | |
+| [E08](https://github.com/m2ux/prosiform/issues/59) | Validation Gate | AC6 | [E05](https://github.com/m2ux/prosiform/issues/7) | ✓ |
+| [E09](https://github.com/m2ux/prosiform/issues/60) | Outline and Closure Completion | AC5, AC14 | | ✓ |
 | [E10](https://github.com/m2ux/prosiform/issues/9) | Corpus Conformance | AC9 | [E06](https://github.com/m2ux/prosiform/issues/8) | |
 | [E11](https://github.com/m2ux/prosiform/issues/39) | Deferred Debt | AC15 | | |
 
@@ -69,7 +69,7 @@ The order these epics start in is carried by each one's priority label rather th
 - [ ] **AC2.** Each internal reference in a published bundle resolves to exactly one destination within that bundle, as the corpus runner's destination check shows.
 - [x] **AC3.** Each selected source region appears once in a published bundle however many reference paths reach it, as the corpus runner's output comparison shows.
 - [ ] **AC4.** Selected instruction wording and code examples are byte-identical to their sources apart from the transformations the declared profile names, as the corpus runner's preservation check shows.
-- [ ] **AC5.** Each selected section keeps its ancestor chain and its relative depth beneath the heading naming its source file, as the corpus runner's outline comparison shows.
+- [x] **AC5.** Each selected section keeps its ancestor chain and its relative depth beneath the heading naming its source file, as the corpus runner's outline comparison shows.
 - [ ] **AC6.** A bundling that fails validation publishes nothing, exits nonzero and writes a diagnostic carrying the defect, its source location, the offending reference and the inclusion chain, as the corpus's failure fixtures show.
 - [x] **AC7.** A document bundles with no markup beyond ordinary Markdown links and headings, as the fixtures taken from unmodified workspace skills show.
 - [x] **AC8.** A fixture declares its sources, its invocation and its expected result, and the runner decides pass or fail from that declaration alone, as the runner's own test suite shows.
@@ -78,7 +78,7 @@ The order these epics start in is carried by each one's priority label rather th
 - [ ] **AC11.** An agent bundles its context by invoking the installed tool rather than by reading the linked documents itself, as the installation smoke run against a documented entry point shows.
 - [ ] **AC12.** A bundle the transport cannot deliver whole is reported as a delivery failure rather than as a truncated success, as the corpus's delivery fixtures show.
 - [x] **AC13.** A corpus run reproduces on a fresh checkout at the dependency versions a lockfile records, as the continuous-integration run shows.
-- [ ] **AC14.** The output budget rests on the measured size of a real bundling rather than an assumed figure, as the recorded measurement shows.
+- [x] **AC14.** The output budget rests on the measured size of a real bundling rather than an assumed figure, as the recorded measurement shows.
 - [ ] **AC15.** The technical debt this initiative's delivery defers is fixed, as the Done column of its final epic's Work Breakdown shows.
 
 ## Non-Goals
