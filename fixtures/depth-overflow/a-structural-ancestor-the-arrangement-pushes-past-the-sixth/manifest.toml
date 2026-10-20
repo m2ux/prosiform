@@ -1,0 +1,28 @@
+description = "A heading no selection reached, retained to preserve the outline of one that was, fails the run when its group's arrangement would place it at the seventh level, so the depth check reaches structural ancestors and not only carried headings."
+
+clauses = [
+  "Heading-only structural ancestors — Depth",
+  "File-scoped hierarchy — Depth overflow",
+  "Post-compilation invariants — Depth safety",
+  "Grouping — Variants by document",
+]
+
+[invocation]
+root = "source"
+arguments = [
+  "--group",
+  "references:1",
+  "references/alpha.md#the-sixth",
+  "references/beta.md#standards",
+]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "references/alpha.md"
+source = "references/alpha.md"
+chain = ["references/alpha.md#the-sixth"]

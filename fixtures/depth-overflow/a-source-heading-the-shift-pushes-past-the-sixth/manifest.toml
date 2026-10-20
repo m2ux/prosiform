@@ -1,0 +1,22 @@
+description = "A source heading the group's shift would place at the seventh level fails before publication, naming the heading and the level it would take, and standard output carries nothing."
+
+clauses = [
+  "File-scoped hierarchy — Depth overflow",
+  "Post-compilation invariants — Depth safety",
+  "Adversarial acceptance fixtures — File hierarchy, H6 overflow",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "guide.md"
+source = "guide.md"
+chain = ["guide.md"]
