@@ -134,6 +134,7 @@ from prosiform.bundle import (
     group,
     heading_text,
 )
+from prosiform.candidate import validate
 from prosiform.closure import (
     DRIVE,
     Malformed,
@@ -194,7 +195,6 @@ from prosiform.source import (
     content,
     decode,
     fragments,
-    headings,
     lines,
     links,
     nesting,
@@ -202,7 +202,6 @@ from prosiform.source import (
     owner,
     regions,
     section,
-    visible,
 )
 
 NAME = "prosiform"
@@ -1028,25 +1027,6 @@ def entries_named(
     return named
 
 
-def resolving(bundled: str, assigned: Sequence[str], budget: int) -> None:
-    """Hold the published bundle to the destination map that produced it.
-
-    The candidate is read back as a renderer reads it, and the fragment
-    the renderer generates for each heading it finds is compared with
-    the destination the map assigned that heading. Every rewritten link
-    names one of those destinations, so an agreement here is each
-    rewritten link resolving to exactly one heading of the bundle, and
-    a disagreement is a bundle the run must not publish.
-    """
-    tokens = parse(bundled, budget)
-    emitted = fragments([visible(inline) for _, inline in headings(tokens)])
-    if emitted != list(assigned):
-        raise AssertionError(
-            f"the bundle carries {len(emitted)} heading(s) against the "
-            f"{len(assigned)} the destination map names"
-        )
-
-
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -1070,16 +1050,20 @@ def compose(
     unambiguous(list(selected))
     headed = assembled(read, parsed, defined, selected, entries, None)
     assigned = fragments([heading for one in headed for heading in one.headings])
-    groups = assembled(
+    targets = destination_map(list(selected), headed, assigned)
+    groups = assembled(read, parsed, defined, selected, entries, targets)
+    bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
+    validate(
+        bundled,
+        groups,
+        assigned,
+        targets,
+        referrer,
+        entries,
         read,
         parsed,
-        defined,
-        selected,
-        entries,
-        destination_map(list(selected), headed, assigned),
+        limits.of(NESTING),
     )
-    bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
-    resolving(bundled, assigned, limits.of(NESTING))
     return bundled
 
 
