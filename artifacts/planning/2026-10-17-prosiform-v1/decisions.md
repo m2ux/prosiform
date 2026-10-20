@@ -530,6 +530,18 @@ Keying the refusal on the target was refused because it leaves the case with no 
 
 This was found by the session delivering I00:E11:W08, which reported the widening against itself rather than leaving it for a reader to discover in the diff.
 
+## D50 — A Source That Moved Under the Run Carries One Code, Declared When the Epic Lands
+
+The contract tells a run to recheck every source before publication and to fail with a retry message, and names no code for it. The catalogue had none either, and `E_PUBLICATION_FAILED` is not it: that is an output destination refusing a write, not a source moving while the bundle was built.
+
+The code is `E_SOURCE_CHANGED`, and one code covers a source that changed, disappeared or resolved elsewhere. Each is the same fact — the bytes discovery captured are no longer the bytes the path names — and a caller's remedy is the same in all three, so splitting them would ask an agent to distinguish cases it would act on identically.
+
+Three codes were refused for that reason, and so was reusing `E_PUBLICATION_FAILED`, which would report a failure of the output where the fault is in the input.
+
+The declaration in `design.md` lands when the epic merges to `main`, not when the row does. `checks/tests/test_catalogue.py` holds the schema's codes to the design's on `origin/engineering`, so the two sides are only ever consistent together: declaring the code early reddens `main` for the length of the epic, while declaring it late reddens the epic's own branches, where the work that needs the code is. The red travels with the epic. [D46](#d46--the-deferred-debt-epic-ships-in-waves) sets the same precedent for a wave.
+
+Raised while delivering I00:E08:W02, which also applied [D47](#d47--a-criterion-names-the-evidence-that-can-exist) to AC2: a fixture declares a static source tree and the runner drives one command, so the corpus can state the capture and the recheck but not a source changing mid-run. AC2 now names the evidence that can exist, and no hook was added to the product to let the corpus reach the rest.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
