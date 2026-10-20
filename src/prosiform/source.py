@@ -50,13 +50,17 @@ included: eligibility to be selected is a later decision, and a heading
 a container carries is one a renderer reading the bundle indexes beside
 the rest.
 
-A link is read from the same events. What a document requires is
-written in its links, so the model reports each link a given run of
-regions carries: where it points, the literal text its content opens
-on, and the line of its block. A link inside a code span or a code
-block is an example rather than a link and the parser produces none,
-and an image is a reference to a resource rather than to a document,
-so neither reaches a caller asking what this content links to.
+A reference use is read from the same events. What a document requires
+is written in the marks its author wrote, and either a link or an image
+can carry one, so the model reports each link and each image a given
+run of regions carries: where it points, the literal text its content
+opens on, the line of its block, and whether it names a resource
+whatever it points at. An image names one, because a picture is carried
+as the text its author wrote rather than bundled, and the mark a caller
+finds on one is therefore a request the bundle cannot meet. An apparent
+link inside a code span or a code block is example content the parser
+produces no use for, so none reaches a caller asking what this content
+references.
 
 That later decision is the section below. A document is a run of
 maximal regions, each a block the document itself carries, and a
@@ -380,20 +384,26 @@ def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
 
 
 @dataclass(frozen=True)
-class Link:
-    """One link a source carries, read from the events the parser produced.
+class Use:
+    """One reference use a source carries, read from the parser's events.
 
     The destination is the one the parser resolved, so a reference-style
     use and an inline one arrive the same way and a Markdown escape has
-    already been read. The opening is the literal text the link's
-    content begins with, which is where a dependency's mark is written:
-    a link whose content opens on a code span, an emphasis or an image
-    begins with no text and opens with nothing.
+    already been read. The opening is the literal text the use's content
+    begins with, which is where a dependency's mark is written: content
+    opening on a code span, an emphasis or an image begins with no text
+    and opens with nothing.
+
+    A resource is a reference the bundle carries as the text its author
+    wrote rather than opening it, which an image is whatever file it
+    points at: the alternative content of an image describes a picture,
+    and no picture is a document the bundle can carry.
     """
 
     destination: str
     opening: str
     line: int | None
+    resource: bool
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
@@ -402,6 +412,20 @@ def opening_text(children: Sequence[Token], at: int) -> str:
     if following is None or following.type != TEXT:
         return ""
     return following.content
+
+
+def alternative_text(image: Token) -> str:
+    """The literal text one image's alternative content begins with.
+
+    An image's alternative content is a run of its own, so its opening
+    is the first event of that run rather than the event following the
+    image, which is the text beside the picture.
+    """
+    children = image.children or []
+    first = children[0] if children else None
+    if first is None or first.type != TEXT:
+        return ""
+    return first.content
 
 
 def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
@@ -414,27 +438,38 @@ def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Toke
             yield token
 
 
-def links(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Link]:
-    """Every link the given regions of one source carry, in source order.
+def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
+    """Every reference use the given regions of one source carry, in source order.
 
-    A link is what the parser read as one, so an apparent link inside a
-    code span or a code block is text the document carries and is not
-    one of these, and an image names a resource rather than a document
-    and is not one either. The line is the line of this content the
-    link's own block opens on, which is as near the link as the parser
-    records a position.
+    A use is what the parser read as one, so an apparent link inside a
+    code span or a code block is text the document carries and is none
+    of these. A link names whatever its destination resolves to and an
+    image names a resource, and each carries the opening its own
+    content begins with, so a mark is read from the use that was
+    written. The line is the line of this content the use's own block
+    opens on, which is as near the use as the parser records a
+    position.
     """
     for token in inlines(tokens, selected):
+        line = None if token.map is None else token.map[0] + 1
         children = token.children or []
         for at, child in enumerate(children):
-            if child.type != LINK_OPEN:
-                continue
-            destination = child.attrGet(HREF)
-            yield Link(
-                "" if destination is None else str(destination),
-                opening_text(children, at),
-                None if token.map is None else token.map[0] + 1,
-            )
+            if child.type == LINK_OPEN:
+                destination = child.attrGet(HREF)
+                yield Use(
+                    "" if destination is None else str(destination),
+                    opening_text(children, at),
+                    line,
+                    resource=False,
+                )
+            elif child.type == IMAGE:
+                destination = child.attrGet(SRC)
+                yield Use(
+                    "" if destination is None else str(destination),
+                    alternative_text(child),
+                    line,
+                    resource=True,
+                )
 
 
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
