@@ -482,14 +482,27 @@ def alternative_text(image: Token) -> str:
     return first.content
 
 
-def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
-    """Each inline token the given regions of one document carry, in source order."""
+def within(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
+    """Each token the given regions of one document carry, in source order.
+
+    A token belongs to a region when the line it opens on falls inside
+    that region's span, so a container's own opening and everything it
+    holds arrive together and a check reading this run sees the same
+    structure the whole document would show it, narrowed to what the
+    run selected. A token the parser records no position for opens
+    nothing and belongs to no region.
+    """
     spans = [token.map for token in selected if token.map is not None]
     for token in tokens:
-        if token.type != INLINE or token.map is None:
+        if token.map is None:
             continue
         if any(start <= token.map[0] < end for start, end in spans):
             yield token
+
+
+def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
+    """Each inline token the given regions of one document carry, in source order."""
+    return (token for token in within(tokens, selected) if token.type == INLINE)
 
 
 def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:

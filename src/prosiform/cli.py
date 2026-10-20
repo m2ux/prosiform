@@ -29,10 +29,25 @@ whatever that link points at.
 
 Every entry document the run names is read as bytes, required to be valid
 UTF-8, stripped of the transport metadata it carries ahead of its content
-and parsed under the declared profile, and a source carrying a construct
-that profile refuses fails as the refusal it is. Every location a
-diagnostic reports is the location in the file the author holds, whatever
-the strip removed ahead of it.
+and parsed under the declared profile, and selected content carrying a
+construct that profile refuses fails as the refusal it is. Every location
+a diagnostic reports is the location in the file the author holds,
+whatever the strip removed ahead of it.
+
+Validation follows the selection rather than the file. A whole document is
+parsed to index it, because heading enumeration, the definitions selected
+uses resolve against, the ambiguity of a requested fragment and what a
+document opens on are facts about the file; but link resolution,
+self-reference, the profile's refusals and the authored-occurrence budget
+are held over the regions the run selected, so a defect in a section
+nobody asked for decides no outcome. A section closure later reaches is
+selected content like any other, and its defects are then its run's.
+
+A parsing-safety budget is the exception the contract draws: it is held
+over the complete opened source, because a parser indexes a whole file
+however narrow the requested section is. Crossing one is reported as an
+inability to index that source rather than as a dependency on whatever
+construct crossed it, since the run reached for no such dependency.
 
 A dependency is a reference its author marked, by opening the link text
 with `¬`, and the run resolves one against the document carrying it,
@@ -235,6 +250,7 @@ from prosiform.source import (
     regions,
     section,
     uses,
+    within,
 )
 
 NAME = "prosiform"
@@ -351,6 +367,26 @@ def crossing(crossed: Crossed) -> Failure:
     the figure that crossed it so a caller knows which to act on.
     """
     return input_failure(str(crossed), code=RESOURCE_LIMIT, remedy=crossed.remedy)
+
+
+def unindexable(crossed: Crossed, path: str, chain: Sequence[str]) -> Failure:
+    """One budget crossed while indexing a source, as the failure to index it.
+
+    A parsing-safety budget is held over the complete opened source, so
+    the construct that crosses one sits wherever the author wrote it and
+    the run selected nothing by reading it. Reporting a dependency would
+    name a reference the run never followed and send an author to look
+    for one, so the diagnostic names the source that cannot be indexed
+    and the route the run took to open it.
+    """
+    return input_failure(
+        f"the source {path!r} cannot be safely indexed: {crossed}",
+        code=RESOURCE_LIMIT,
+        remedy=crossed.remedy,
+        reference=path,
+        source=path,
+        chain=chain,
+    )
 
 
 class Parser(argparse.ArgumentParser):
@@ -1171,6 +1207,17 @@ def traverse(
     rounds discover a document at the hop its nearest entry reference
     reaches it in.
 
+    Reading a document and validating what it contributes are two
+    stages, and the selection divides them. Opening a source holds the
+    facts the whole file decides — its bytes, its nesting, what it
+    opens on, the definitions it declares — and a parsing-safety
+    budget crossed there is the source failing to index rather than a
+    dependency. The round then reads each group's selected regions for
+    the dependencies they mark and the constructs the profile refuses
+    there, so an unselected section is content the run parsed and
+    never asked for. A selection only grows, so a region a later round
+    adds is held to the same checks in the round that adds it.
+
     A round is one link hop: an entry reference stands at no hops, and
     a reference a round discovers stands at that round's number. A
     selection only grows, so the round a reference is first discovered
@@ -1198,15 +1245,15 @@ def traverse(
                 continue
             opened = read_document(root, one)
             source = opened.source
-            limits.hold(FILE_BYTES, opened.size)
+            environment: dict[str, Any] = {}
+            try:
+                limits.hold(FILE_BYTES, opened.size)
+                tokens = parse(source.text, limits.of(NESTING), environment)
+                limits.hold(NESTING, nesting(tokens))
+            except Crossed as crossed:
+                raise unindexable(crossed, one.path, one.chain) from crossed
             total += opened.size
             limits.hold(INPUT_BYTES, total)
-            environment: dict[str, Any] = {}
-            tokens = parse(source.text, limits.of(NESTING), environment)
-            limits.hold(NESTING, nesting(tokens))
-            refusal = next(refusals(tokens), None)
-            if refusal is not None:
-                raise refused(one.path, source, refusal, one.chain)
             generated(root, one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
@@ -1224,6 +1271,9 @@ def traverse(
             counted[path] = occurrences(parsed[path], regions_read)
             limits.hold(LINKS, sum(counted.values()))
             reached = selecting[0].chain
+            refusal = next(refusals(within(parsed[path], regions_read)), None)
+            if refusal is not None:
+                raise refused(path, read[path], refusal, reached)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 if (one.path, one.fragment) in seen:
                     continue

@@ -637,12 +637,16 @@ def test_a_crlf_delimited_block_is_stripped_by_the_command(root: Path) -> None:
 
 
 def test_a_referring_document_is_stripped_too(root: Path) -> None:
-    written(root, "guide.md", "---\ntitle: Guide\n---\n# Guide\n\n<div>raw</div>\n")
+    written(
+        root,
+        "guide.md",
+        "---\ntitle: Guide\n---\n# Guide\n\n## Run\n\n<div>raw</div>\n",
+    )
     run = invoke(
         "--root", str(root), "--diagnostics", "json", "--from", "guide.md", "#run"
     )
     assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["source"] == "guide.md:6"
+    assert run.diagnostics()[0]["source"] == "guide.md:8"
 
 
 def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
