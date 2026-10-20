@@ -441,7 +441,7 @@ The wrapper must enforce any smaller transport limit; 256 KiB is not universally
 
 ## Source consistency
 
-Read each distinct source once during discovery and keep its parsed content, canonical identity, and content hash for the entire compile. Before publication, recheck all sources and fail with a retry message if any content or identity has changed.
+Read each distinct source once during discovery and keep its parsed content, canonical identity, and content hash for the entire compile. Before publication, recheck all sources and fail with `E_SOURCE_CHANGED` and a retry message if any content or identity has changed. One code covers a source that changed, disappeared or resolved elsewhere: each is the same fact, that the bytes discovery captured are no longer the bytes the path names.
 
 This is change detection, not a transactional filesystem snapshot: files can change again after a check. When strict reproducibility is required, bundle from an immutable source snapshot; do not claim that hashing alone supplies cross-file atomicity.
 
