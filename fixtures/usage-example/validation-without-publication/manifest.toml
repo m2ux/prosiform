@@ -1,0 +1,21 @@
+description = "The usage example that compiles and validates without publishing reaches the same closure and emits nothing on standard output."
+
+clauses = [
+  "CLI contract — Usage examples",
+  "CLI contract — --check, discover, bundle and validate without emitting or publishing the bundle",
+  "Validation scope",
+]
+
+[invocation]
+root = "source"
+arguments = ["--check", "artifacts/epic-issue-body.md#record-epic-delivery"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Record Epic Delivery"
+resolved = "record-epic-delivery"

@@ -52,7 +52,7 @@ Every term the contract uses is defined once, in the [glossary](docs/glossary.md
 
 ## 🗂️ Repository Layout
 
-Three trees, each created by the stage that writes into it.
+Each tree is created by the stage that writes into it.
 
 | Tree | Holds |
 | --- | --- |
@@ -60,6 +60,7 @@ Three trees, each created by the stage that writes into it.
 | [`src/`](src/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
 | [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
 | [`checks/`](checks/README.md) | The checks that hold the layout, every document's references, the README tables, and the glossary's coverage true. |
+| [`example/`](example/README.md) | The example skill tree the design's usage examples name, which the corpus bundles through each of them. |
 
 The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
 
@@ -152,18 +153,18 @@ The walking skeleton is building bundling under it: a run reads every source its
 ```bash
 # A procedure and everything it reaches. The routing document the caller read
 # to find it, SKILL.md, is not an entry reference and is not bundled.
-prosiform --root skills/work-planner modes/plan-mode.md
+prosiform --root example/work-tracker modes/plan-mode.md
 
 # Selected sections
-prosiform --root skills/work-planner 'artifacts/epic.md#delivery-findings'
+prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
 
 # Every document under a named directory merged at a heading level
-prosiform --root skills/work-planner \
+prosiform --root example/work-tracker \
   --group artifacts:2 --group modes:2 \
   modes/plan-mode.md
 
 # Compile and validate without publishing
-prosiform --root skills/work-planner --check modes/plan-mode.md
+prosiform --root example/work-tracker --check modes/plan-mode.md
 ```
 
 Standard output carries exactly one thing per run: the bundle a compiling run publishes, the response an informational run returns, or nothing at all. Diagnostics go to standard error, as text for a reader or, under `--diagnostics json`, as one JSON object per line and nothing else. A bundle opens by naming what it was built for, so the caller reaches its procedure without searching:
