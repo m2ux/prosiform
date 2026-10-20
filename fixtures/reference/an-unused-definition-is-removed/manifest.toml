@@ -1,0 +1,15 @@
+description = "Every original definition node is removed from emitted content, the definitions no use names and the second definition of one label included."
+
+clauses = [
+  "Source-local reference interpretation — step 4",
+  "Adversarial acceptance fixtures — Definition inventory",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

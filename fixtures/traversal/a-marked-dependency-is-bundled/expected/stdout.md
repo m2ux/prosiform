@@ -2,8 +2,8 @@ This bundle was built for [guide](#guide); everything else is material it refere
 
 # guide
 
-The procedure requires [¬ the shared rules](rules.md) whole and
-[¬ the review step](process.md#review) in part. It mentions
+The procedure requires [the shared rules](#rules) whole and
+[the review step](#review) in part. It mentions
 [the changelog](changelog.md), which it cites rather than requires.
 
 # process

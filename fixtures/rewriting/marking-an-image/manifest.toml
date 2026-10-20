@@ -1,0 +1,23 @@
+description = "Marking an image fails the run, because an image names a resource and a mark asks for a bundled document, so the alternative is a bundle carrying the mark its own rule forbids."
+
+awaiting = "I00:E11"
+
+clauses = [
+  "Link classification and resource handling — A marked resource",
+  "Link classification and resource handling — The mark",
+  "Resources are text",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_MARKED_RESOURCE"
+reference = "plan.png"
+source = "guide.md:3"

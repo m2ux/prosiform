@@ -24,6 +24,7 @@ import pytest
 from prosiform.profile import parse
 from prosiform.source import (
     MARK,
+    Ambiguous,
     Heading,
     Link,
     Nested,
@@ -305,9 +306,9 @@ def test_a_container_nested_heading_is_indexed_with_the_rest() -> None:
     assert [one.text for one in carried] == ["Guide", "Quoted", "Listed", "Run"]
 
 
-def test_a_nested_heading_numbers_the_heading_that_shares_its_slug() -> None:
+def test_a_heading_takes_the_slug_its_own_text_produces() -> None:
     carried = indexed("# Run\n\n> ## Run\n\n## Run\n")
-    assert [one.fragment for one in carried] == ["run", "run-1", "run-2"]
+    assert [one.fragment for one in carried] == ["run", "run", "run"]
 
 
 def test_a_heading_carries_the_line_of_the_content_it_opens_on() -> None:
@@ -324,11 +325,9 @@ def test_a_document_carrying_no_heading_indexes_nothing() -> None:
     assert indexed("An opening paragraph.\n") == ()
 
 
-def test_the_duplicate_count_is_fresh_for_each_complete_document() -> None:
-    first = indexed("## Run\n\n## Run\n")
-    second = indexed("## Run\n")
-    assert [one.fragment for one in first] == ["run", "run-1"]
-    assert [one.fragment for one in second] == ["run"]
+def test_a_heading_spelling_an_ordinal_takes_the_slug_of_that_text() -> None:
+    carried = indexed("## Run\n\n## Run 1\n")
+    assert [one.fragment for one in carried] == ["run", "run-1"]
 
 
 def spans(text: str, fragment: str) -> list[str] | None:
@@ -408,11 +407,23 @@ def test_a_setext_heading_roots_a_section() -> None:
     assert spans(text, "run") == ["heading_open", "paragraph_open"]
 
 
-def test_a_fragment_selects_the_heading_its_ordinal_names() -> None:
+def test_a_fragment_two_headings_of_one_source_produce_names_neither() -> None:
     text = "## Run\n\nFirst.\n\n## Run\n\nSecond.\n"
-    found = section(parse(text), "run-1")
-    assert found is not None
-    assert [token.map for token in found] == [[4, 5], [6, 7]]
+    with pytest.raises(Ambiguous) as refused:
+        section(parse(text), "run")
+    assert refused.value.fragment == "run"
+    assert refused.value.lines == (1, 5)
+
+
+def test_an_ordinal_names_no_heading_of_a_source() -> None:
+    text = "## Run\n\nFirst.\n\n## Run\n\nSecond.\n"
+    assert section(parse(text), "run-1") is None
+
+
+def test_an_ambiguity_is_reported_before_a_nested_target() -> None:
+    text = "## Run\n\nFirst.\n\n> ## Run\n>\n> Quoted.\n"
+    with pytest.raises(Ambiguous):
+        section(parse(text), "run")
 
 
 def selected(text: str) -> list[Link]:

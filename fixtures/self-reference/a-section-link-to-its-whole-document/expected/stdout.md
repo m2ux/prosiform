@@ -4,7 +4,7 @@ This bundle was built for [Alpha](#alpha); everything else is material it refere
 
 ## Alpha
 
-Alpha requires [¬ the guide](guide.md), the document that holds it.
+Alpha requires [the guide](#guide), the document that holds it.
 
 ## Beta
 
