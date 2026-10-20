@@ -9,6 +9,7 @@ Read these files first.
 - [Issue](issue.md)
 - [Initiative Issue Body](initiative-issue-body.md)
 - [Work Item](work-item.md)
+- [Plan Change](plan-change.md)
 
 ## Operations
 
@@ -16,12 +17,12 @@ Read these files first.
 
 The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
 
-**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, and explicitly authorized outside-initiative files.
+**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, and explicitly authorized outside-initiative files.
 
 1. Use the supplied local drafts when reviewing unpublished work.
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](issue.md#read-tracker-issue).
    - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
-2. Resolve each finding with the user.
+2. Resolve each finding, as [Check Plan Change Autonomy](plan-change.md#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](plan-change.md#held-change) states.
    - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
    - Read tasks for implied consumption edges.
    - Account for every independent pair as [Joins](#joins) states.
