@@ -31,6 +31,7 @@ A unit is one task row or tasks that name each other in Joins, as [Work Breakdow
 - A `unit` line names one session's tasks, Coverage, record folder, branch, base and worktree. One base is `base i07/e00/main`; several are `bases i07/e00/main i07/e00/workflows`.
 - A `hold` line names a row a session holds and the record it links.
 - A `blocked` line names a free row whose dependencies are undelivered or whose joined task is unavailable.
+- An `unresolvable` line names a free row carrying a `Depends on` entry nothing can resolve, and the entry as written. The row waits on no delivery, so it is told apart from a blocked one, and a run meeting one exits nonzero.
 - A `merge` line names an open pull request whose test plan has passed and the epic base it targets.
 - An unresolved issue reference identifies missing dependency evidence.
 

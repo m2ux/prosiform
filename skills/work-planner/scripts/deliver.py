@@ -155,10 +155,14 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
             state[task] = 'running'
         elif held:
             state[task] = 'held'
-        elif prerequisites is not Resolution.MET:
+        elif prerequisites is Resolution.UNRESOLVABLE:
+            state[task] = 'unresolvable'
+        elif prerequisites is Resolution.UNMET:
             state[task] = 'prerequisite'
-        elif board.met(cell(header, r, 'Depends on'), key, epics,
-                       f'{label(key, board.home)} {task}') is not Resolution.MET:
+        elif (answer := board.met(cell(header, r, 'Depends on'), key, epics,
+                                  f'{label(key, board.home)} {task}')) is Resolution.UNRESOLVABLE:
+            state[task] = 'unresolvable'
+        elif answer is Resolution.UNMET:
             state[task] = 'blocked'
         else:
             state[task] = 'free'
@@ -235,7 +239,7 @@ def survey(args: argparse.Namespace) -> int:
             epics.setdefault(parsed[0], {})[f'E{parsed[1]}'] = key
 
     when = args.date or day.today().isoformat()
-    available = held = waiting = 0
+    available = held = waiting = unreadable = 0
     for key in sorted(issues):
         issue = issues[key]
         if not is_epic(issue) or status.get(key) not in STARTED:
@@ -260,6 +264,11 @@ def survey(args: argparse.Namespace) -> int:
                         print(f'  hold I{initiative}:E{epic}:{task}: {detail[task]["held"]}')
                         held += 1
                 continue
+            if 'unresolvable' in states:
+                print(f'  unresolvable I{initiative}:E{epic}:{ids}: '
+                      f'depends on {detail[first]["depends"]}; the entry cannot resolve')
+                unreadable += 1
+                continue
             if states != {'free'}:
                 reason = ('prerequisite epic not completed' if 'prerequisite' in states
                           else f'depends on {detail[first]["depends"]}' if state[first] == 'blocked'
@@ -282,8 +291,9 @@ def survey(args: argparse.Namespace) -> int:
         print(line)
     for note in dict.fromkeys(board.unresolved):
         print(f'  unresolved: {note}')
-    print(f'  available: {available}, held: {held}, blocked: {waiting}, merge: {len(merging)}')
-    return 0
+    print(f'  available: {available}, held: {held}, blocked: {waiting}, '
+          f'unresolvable: {unreadable}, merge: {len(merging)}')
+    return 1 if unreadable else 0
 
 
 def base_url(header: list[str], body: list[list[str]], given: str | None) -> str:

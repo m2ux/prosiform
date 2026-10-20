@@ -52,7 +52,7 @@ A task edge names the producing row for each output the depending row consumes. 
 - **A task consuming from every row of an epic names the producing row for each output.**
   An edge another in the cell already implies is dropped, so a prerequisite chain is named by its last row, and the whole-epic reach is what the rows establish either way.
 - **An entry that cannot resolve is a permanent condition, not a prerequisite to come.**
-  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. Every tool reading the cell reports it as such, naming the entry as written, and treats it as the permanent condition it is rather than as delivery still to come.
+  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. Every tool reading the cell names the entry as written, leaves the row where it stands rather than placing it as work still to come, and exits nonzero.
 
 ### Whole-Epic Edges
 

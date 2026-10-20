@@ -294,6 +294,7 @@ def main() -> int:
     prs = pull_requests(args.prs)
     attach_links(prs, args.links)
     unresolved: list[str] = []
+    unplaceable: list[str] = []
     board = Board(issues, unresolved, home, prs)
 
     header, epic_rows = rows(initiative)
@@ -349,6 +350,9 @@ def main() -> int:
                 gates = weakest([board.epic_prerequisites_met(number, epic_ids, f'E{epic_key}:{tid}'),
                                  board.met(cell(task_header, tr, 'Depends on'), number, epic_ids,
                                            f'E{epic_key}:{tid}')])
+                if gates is Resolution.UNRESOLVABLE:
+                    unplaceable.append(f'E{epic_key}:{tid}')
+                    continue
                 status[task_issue] = 'Ready' if gates is Resolution.MET else 'Backlog'
             task_epic[task_issue] = number
         if epic['state'] == 'closed':
@@ -405,7 +409,8 @@ def main() -> int:
         item_id, held = on_board.get(key, (None, None))
         changes.place(key, f"{label(key, home)} {issues[key]['title']}", issues[key],
                       held, wanted, item_id, home)
-    return changes.report(unresolved=unresolved)
+    printed = changes.report(unresolved=unresolved)
+    return 1 if unplaceable else printed
 
 
 if __name__ == '__main__':

@@ -153,6 +153,22 @@ class Survey(unittest.TestCase):
         self.assertIn('blocked I07:E00:W02: depends on W01', output)
         self.assertIn('available: 1, held: 0, blocked: 1', output)
 
+    def test_an_entry_that_cannot_resolve_is_told_from_a_blocked_row(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            items_path, prs_path = root / 'items.json', root / 'prs.json'
+            items_path.write_text(json.dumps(staged(
+                (epic(943, ('W01', 'Queue plan', '', ''),
+                      ('W02', 'Dispatch', 'E05 (W04)', '')), 'In Progress'))))
+            prs_path.write_text('')
+            done = run('deliver.py', '--items', str(items_path), '--prs', str(prs_path),
+                       '--date', TODAY)
+        self.assertIn('unit I07:E00:W01', done.stdout)
+        self.assertIn('unresolvable I07:E00:W02: depends on E05 (W04); the entry cannot resolve',
+                      done.stdout)
+        self.assertIn('available: 1, held: 0, blocked: 0, unresolvable: 1', done.stdout)
+        self.assertEqual(done.returncode, 1)
+
     def test_joined_tasks_are_one_unit(self):
         output = survey(staged((epic(943, ('W01', 'Queue plan', '', 'W02'),
                                      ('W02', 'Dispatch', '', 'W01')), 'In Progress')))

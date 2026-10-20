@@ -218,7 +218,8 @@ class InitiativeStatus(unittest.TestCase):
 
     def open_pair(self, initiative_status: str, epic_status: str, epic: dict | None = None,
                   pulls: str = '', held: tuple[dict, ...] = (), tasks: tuple[dict, ...] = (),
-                  statuses: tuple[str, ...] = ('Backlog', 'Ready', 'In Progress', 'Done')) -> str:
+                  statuses: tuple[str, ...] = ('Backlog', 'Ready', 'In Progress', 'Done'),
+                  code: int = 0) -> str:
         epic = epic or issue(2, '[I01:E00] First: Epic', body=epic_body(('W01', 'Go', '')))
         initiative = issue(1, '[I01] First: Initiative',
                            body=initiative_body((f"[E00]({url('issues', 2)})", '')))
@@ -252,8 +253,15 @@ class InitiativeStatus(unittest.TestCase):
                        '--links', str(held_links), *(['--tasks', *task_paths] if task_paths else []),
                        '--board', 'users/o/projectsV2/9', '--fields', str(fields), '--items', str(items),
                        '--out', str(Path(tmp, 'out')), '--assignee', 'me')
-            self.assertEqual(done.returncode, 0, done.stderr)
+            self.assertEqual(done.returncode, code, done.stderr)
             return done.stdout
+
+    def test_a_task_gated_on_an_unresolvable_entry_keeps_its_status(self):
+        epic = issue(2, '[I01:E00] First: Epic', body=epic_body(('W01', 'Go', 'E05 (W04)')))
+        task = issue(3, '[I01:E00:W01] Go: Work')
+        out = self.open_pair('In Progress', 'Ready', epic, tasks=(task,), code=1)
+        self.assertIn('cannot resolve E05 (W04)', out)
+        self.assertNotIn('[I01:E00:W01] Go: Work:', out)
 
     def test_an_unstarted_epic_stays_in_backlog(self):
         out = self.open_pair('Backlog', 'Backlog')
