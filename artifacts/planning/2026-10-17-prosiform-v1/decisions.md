@@ -506,6 +506,20 @@ Leaving the wording and explaining the gap in the validation record was refused.
 
 This was found while reviewing the delivery, which showed the criterion by other means and said so rather than reporting the fixtures the wording asked for.
 
+## D48 — An Entry Destination Is a Warning, and the Row That Emits It Is Its Own
+
+`I00:E07:AC6` asks that a successful run report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format. The build computes those pairs already. Emitting them needs a diagnostic, and the catalogue has no entry for one.
+
+The code is `W_ENTRY_DESTINATION`, a warning. A warning is the severity that accompanies a successful run, which is when this is reported, and it lands without touching the schema's severity enum or the test that holds each severity to a catalogue. The two-branch window between `fixtures/manifest.schema.json` and the contract on `engineering` is then one code wide.
+
+A third severity was refused on cost rather than on fit. A notice is the honest name for data that is neither a failure nor a concern, and the existing warnings each flag something imperfect while an entry destination flags nothing. But it would take the schema's enum, a third catalogue, the harness test that pairs the two, and the contract on `engineering`, to carry a distinction no caller has asked for. The severity is read by the corpus and by a calling agent, and neither is misled by a record that says a run succeeded and names what it resolved.
+
+Rewording the criterion to have the wrapper read destinations from the bundle's entry line was refused outright: the contract states that the entry line is what reaches the agent and the diagnostic stream is what a caller acts on as data, and the two are deliberately separate statements of the same thing.
+
+The emission is unconditional on a successful run, so it changes what every successful fixture declares: **103 fixtures declare `exit_status = 0`, and 99 of those declare no diagnostics at all**. That is why it is `W05` rather than part of `W02`. The wrapper and the transport limit are one subject and the catalogue entry with its corpus-wide consequence is another, and a row that merges only when both are done holds the wrapper out of `main` behind a change to a hundred manifests.
+
+`I00:E07:W02` therefore covers `AC2` and `AC3`, and `W05` covers `AC6`.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
