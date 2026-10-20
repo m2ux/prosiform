@@ -87,8 +87,8 @@ The main path meets [Outcomes](#outcomes).
    - Apply confirmed resolutions.
    - Repeat that review until clear.
    - After each round, run [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) on affected bodies.
-   - Whenever tasks or edges change, repeat Check Dependencies and Numbering.
-     - Put the proposed Epic Priority map to the user again where the edges moved an epic's number.
+   - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering.
+     - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
      - Save each confirmed change as that epic's priority label.
    - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
    - Keep local body files as the source for the next pass.

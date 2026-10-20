@@ -366,7 +366,7 @@ def main(argv: list[str]) -> int:
     for n in sorted(tasks, key=lambda k: (lv(k), k)):
         print(lv(n), n, '-', tasks[n][0][:70])
     pairs = contention(components)
-    unchecked = sorted(key for key in tasks if key not in components)
+    unchecked = sorted(key for key in tasks if key not in items)
     print('\n--- component contention: rows of different epics extending one component')
     print('\n'.join(f'{left} and {right} both extend {components[left]}'
                     for left, right in pairs) or 'none')

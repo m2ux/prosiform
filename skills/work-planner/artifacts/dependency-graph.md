@@ -34,7 +34,7 @@ The task graph and the row numbers it permits, checked and renumbered across the
    - Inspect every reported range.
    - Search prose for references the script cannot see.
    - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each derived [whole-epic edge](#whole-epic-edges) in the planning record.
+   - Record the printed longest chains and each printed contending pair in the planning record.
    - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
 
 ## Fields
@@ -48,8 +48,8 @@ A task edge names the producing row for each output the depending row consumes. 
 
 - **An edge names rows, never an epic.**
   A row naming an epic gates its task on every row of that epic, including the rows it consumes nothing from, which is how a [whole-epic edge](#whole-epic-edges) the rows do not justify reaches the initiative.
-- **A task consuming an output from every row of an epic names each of those rows.**
-  The whole-epic reach is then what the rows establish, and each edge still carries the output it is for.
+- **A task consuming from every row of an epic names the producing row for each output.**
+  An edge another in the cell already implies is dropped, so a prerequisite chain is named by its last row, and the whole-epic reach is what the rows establish either way.
 
 ### Whole-Epic Edges
 

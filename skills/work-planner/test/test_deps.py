@@ -86,6 +86,18 @@ class EpicNamedInATaskRow(unittest.TestCase):
         self.assertEqual(code, 0, text)
         self.assertIn('1 E02:W01', text)
 
+    def test_a_prerequisite_chain_is_named_by_its_last_row(self):
+        code, text = run([('I', initiative_body(('E00', ''), ('E01', 'E00'))),
+                          ('E00', epic_body(*self.CHAIN)),
+                          ('E01', epic_body(('W01', 'Consume the model', 'E00:W03')))])
+        self.assertEqual(code, 0, text)
+
+    def test_naming_a_row_its_sibling_implies_is_a_problem(self):
+        code, text = run([('E00', epic_body(*self.CHAIN)),
+                          ('E01', epic_body(('W01', 'Consume', 'E00:W01, E00:W03')))])
+        self.assertEqual(code, 1)
+        self.assertIn('E01:W01: E00:W01 is already implied by E00:W03', text)
+
     def test_naming_every_row_still_derives_the_initiative_edge(self):
         code, text = run([('I', initiative_body(('E00', ''), ('E01', 'E00'))),
                           ('E00', epic_body(('W01', 'Roster', ''), ('W02', 'Weights', ''))),
@@ -261,6 +273,7 @@ class ComponentContention(unittest.TestCase):
                           ('E08:W01', '## Overview\n\nWhat the task delivers.\n')])
         self.assertEqual(code, 1)
         self.assertIn('E08:W01: work item declares no component', text)
+        self.assertNotIn('not checked', text)
 
     def test_a_work_item_naming_no_row_is_a_problem(self):
         code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
