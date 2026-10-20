@@ -456,9 +456,11 @@ This was found by the session delivering `I00:E05:W02`, which declared a fixture
 
 A task row naming another epic's row waits for that epic. The initiative row states the gate, and the rows beside it move independently, so the finest grain the plan gates at is one epic.
 
-Every `Depends on` cell naming another epic therefore links that epic and names the row in parentheses: `[E05](issues/7) (W02)`. The link is what gates and the parenthetical is why, which is the reading the cell already had and did not say.
+Every `Depends on` cell naming another epic links that epic and names the row: `[E05:W02](issues/7)`. The link is what gates and the row is why.
 
-The cells said `[E05:W02](issues/7)`, whose text promised a precision the link did not carry. A reader scheduling `I00:E07:W02` would have read it as waiting on one merged row and found it waiting on four.
+This decision first spelled the cell `[E05](issues/7) (W02)`, on the reading that `[E05:W02]` promised a precision the link did not carry — a reader scheduling `I00:E07:W02` would take it for one merged row and find it waiting on four. The reading was right and the spelling was wrong. `board.py`'s `met` already requires both: a cell whose text ends in `:W02` is satisfied when the epic is closed as completed **and** that row is delivered, so the documented form gates on the epic exactly as this decision asks.
+
+The parenthetical form is read by nothing. `deps.py` reports it as an unreadable dependency, and `met` answers `links no issue`, which is **False** — so a row carrying it is never satisfied rather than gated on its epic. Twenty-three cells across eleven epics carried it, and the dependency graph was unreadable for the whole initiative while they did. The reason a row names another epic's row belongs in the row's prose and in this record, where it does not have to parse.
 
 Gating at the row was refused. A merged row is not a settled surface: a later row in the same epic revises what the earlier one delivered, and three contract changes landed in `I00:E05` after `W02` merged. An epic that closed has stopped moving, which is the property a dependant needs. The cost is a wave of wall-clock per dependent row, paid knowingly.
 
