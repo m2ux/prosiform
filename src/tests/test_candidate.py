@@ -304,7 +304,7 @@ def test_an_entry_line_naming_another_destination_fails() -> None:
 
 def test_a_filename_wrapper_does_not_stand_in_for_a_missing_region() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
-    emptied = replace(one.groups[0].record, ranges=())
+    emptied = replace(one.groups[0].record, parts=())
     one.groups = [replace(one.groups[0], record=emptied)]
     assert refused(one).invariant == NO_EXPANSION
 
@@ -346,7 +346,7 @@ def promoted(one: Group) -> Group:
 def doubled(one: Group) -> Group:
     """The group with one source range recorded twice."""
     first = one.record.ranges[0]
-    return replace(one, record=replace(one.record, ranges=(first, *one.record.ranges)))
+    return replace(one, record=replace(one.record, parts=(first, *one.record.parts)))
 
 
 def test_a_generated_record_carries_no_source_range() -> None:
