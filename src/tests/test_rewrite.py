@@ -4,7 +4,8 @@ The corpus declares what a run publishes. These are the cases beneath
 it: the extents a code span masks, the definition environment a source
 declares, the uses that environment resolves, the inline form a
 reference-style use is published as, the text the mark leaves behind,
-and the refusal content the emission cannot edit raises.
+the line each published entry answers to, and the refusal content the
+emission cannot edit raises.
 """
 
 from typing import Any
@@ -140,7 +141,7 @@ def test_the_mark_leaves_the_text_that_followed_it(label: str, expected: str) ->
 def test_a_marked_link_is_written_to_its_destination(
     text: str, assigned: list[str], expected: str
 ) -> None:
-    assert rewritten(text, inline_of(text), assigned, {}) == expected
+    assert "".join(rewritten(lines(text), inline_of(text), assigned, {})) == expected
 
 
 @pytest.mark.parametrize(
@@ -203,14 +204,14 @@ def test_a_resolved_reference_style_use_is_published_inline(
     body: str, definition: str, assigned: list[str], expected: str
 ) -> None:
     inline, defined = read(f"{body}\n\n{definition}")
-    assert rewritten(body, inline, assigned, defined) == expected
+    assert "".join(rewritten(lines(body), inline, assigned, defined)) == expected
 
 
 def test_a_definition_of_one_source_resolves_no_other_source_brackets() -> None:
     text = "A [runner] bracket."
     inline, defined = read(f"{text}\n")
     assert defined == {}
-    assert rewritten(text, inline, [], defined) == text
+    assert "".join(rewritten(lines(text), inline, [], defined)) == text
 
 
 def test_a_task_marker_a_definition_spells_is_no_use() -> None:
@@ -219,20 +220,49 @@ def test_a_task_marker_a_definition_spells_is_no_use() -> None:
     tokens = parse(text, env=environment)
     defined = definitions(environment.get(REFERENCES, {}), lines(text))
     inline = next(token for token in tokens if token.type == INLINE)
-    assert rewritten("- [x] done\n", inline, [], defined) == "- [x] done\n"
+    assert rewritten(["- [x] done\n"], inline, [], defined) == ["- [x] done\n"]
 
 
 def test_a_link_the_emission_cannot_edit_is_refused() -> None:
     text = "`[¬ rules](rules.md)`"
     with pytest.raises(Unrewritable):
-        rewritten(text, inline_of(text), ["rules"], {})
+        rewritten(lines(text), inline_of(text), ["rules"], {})
 
 
-def test_a_rewrite_writes_no_line_break_into_the_text() -> None:
+def test_a_rewrite_reports_one_entry_for_each_line_it_was_given() -> None:
     text = "The procedure requires\n[¬ the shared rules](rules.md) whole.\n"
-    assert rewritten(text, inline_of(text), ["rules"], {}).count("\n") == text.count(
-        "\n"
-    )
+    written = rewritten(lines(text), inline_of(text), ["rules"], {})
+    assert written == [
+        "The procedure requires\n",
+        "[the shared rules](#rules) whole.\n",
+    ]
+
+
+def test_a_definition_spelled_across_two_lines_is_published_as_authored() -> None:
+    body = "A [full][rules] use.\n"
+    definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
+    inline, defined = read(f"{body}\n{definition}")
+    assert rewritten(lines(body), inline, [], defined) == [
+        'A [full](rules.md "The Rules,\nwritten out") use.\n'
+    ]
+
+
+def test_a_marked_use_of_such_a_definition_takes_its_assigned_destination() -> None:
+    body = "A [¬ full][rules] use.\n"
+    definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
+    inline, defined = read(f"{body}\n{definition}")
+    assert rewritten(lines(body), inline, ["rules"], defined) == [
+        'A [full](#rules "The Rules,\nwritten out") use.\n'
+    ]
+
+
+def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> None:
+    body = "A [full][\nrules] use.\n"
+    definition = "[rules]: rules.md\n"
+    inline, defined = read(f"{body}\n{definition}")
+    written = rewritten(lines(body), inline, [], defined)
+    assert len(written) == 2
+    assert "".join(written) == "A [full](rules.md) use.\n"
 
 
 @pytest.mark.parametrize(
