@@ -44,6 +44,12 @@ target-version = "py313"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "BLE", "UP"]
 
+[tool.ruff.lint.isort]
+# The package is named rather than inferred. Inference reads `src` relative to
+# the directory ruff is invoked from, so the same file sorts one way from the
+# repository root and another from this one.
+known-first-party = ["prosiform"]
+
 [tool.mypy]
 python_version = "3.13"
 strict = true
