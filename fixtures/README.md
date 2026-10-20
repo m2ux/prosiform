@@ -28,7 +28,7 @@ fixtures/
 
 A source tree carries a symbolic link where the clause under test is about one. Git records a link as its own object — mode `120000`, the target as its content — so a fixture declaring the no-symlink source policy declares it as a link rather than as a file holding a path, and a runner materialises the tree the manifest describes.
 
-A link's target is a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the allowed root is declared without naming anything of the host.
+A link inside a source tree targets a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the allowed root is declared without naming anything of the host. The one link that leaves a fixture is the `source` of a `usage-example/` fixture, which is the tree itself rather than a file within it.
 
 A checkout whose filesystem or configuration cannot create a link writes the target path into a regular file instead. Such a tree no longer states what the fixture declares, and the fixture fails rather than passing against a file that looks like a document.
 
@@ -39,6 +39,12 @@ Most families write their sources for the clause they exercise. The `real-source
 A copied source is not edited. A document that needs an edit to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
 
 A document joins the family when its closure is itself: no local Markdown document reference, and fragment-only references only where the destination the bundle generates is the fragment the source already spells. Such a document bundles to the same bytes under a build that traverses references and one that has nothing to traverse, so its expected bundle states the contract rather than a stage of the work.
+
+## The example tree
+
+The `usage-example/` family runs the invocations the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) publishes as its usage examples, so an example that stops being a valid invocation fails a run rather than going quietly stale.
+
+Each of its fixtures reaches [`example/work-tracker/`](../example/README.md) through a `source` symbolic link, because the design and the corpus must name one tree: a copy per fixture would let the published invocation and the invocation under test drift apart. The tree is the repository's own example material, maintained with the contract, rather than a source written for one clause.
 
 ## The manifest
 
