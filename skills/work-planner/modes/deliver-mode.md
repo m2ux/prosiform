@@ -73,7 +73,7 @@ The main path meets [Outcomes](#outcomes).
      - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
      - Run [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) again with refreshed board items, pull request records, project checkout, epic-base names, every resolved off-board issue file, and the record date when supplied.
      - Confirm the units it returns before any of them is dispatched.
-   - This is the run's one question. Every plan change after it follows [Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy).
+   - This is the run's one question, and every plan change after it follows [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy).
 7. **Hold.**
    For each confirmed unit, before its session starts:
    - Add its record with [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record), named as the `unit` line gives it.
@@ -119,7 +119,7 @@ The confirmed unit carried from its supplied brief through implementation and de
 
 1. **Read the brief.**
    Read the supplied [Delivery Brief](../artifacts/delivery-brief.md).
-   - Use its confirmed unit, criteria, tests, selected branch and bases, worktree and planning-folder identity.
+   - Use its confirmed unit, criteria, tests, selected branch and bases, worktree, planning-folder identity and change allowance.
    - Return missing context before starting.
 2. **Confirm the reservation.**
    Confirm the supplied reserved folder exists and its rows remain held for this session before changing its worktree.
