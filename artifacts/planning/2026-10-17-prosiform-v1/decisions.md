@@ -628,6 +628,22 @@ The figure was reproduced from a clean extraction by following the documented pr
 
 The decision the number now permits — whether to raise the default — is left open. 327,680 would admit this bundling with about five per cent of headroom.
 
+## D57 — Grouping Reaches the Assembly, and Two Criteria Were Asking for Evidence That Cannot Exist
+
+`--group SLUG:DEPTH` was parsed and validated and never reached the assembly: every bundling emitted file groups whether a rule was in force or not. I00:E09:W03 built the arrangement, and the single-document assumptions it had to remove are the larger part of the change. `Record` held one path and one shift per group; `Origin` now carries the shift, so one group places its members at different levels. Targets were derived twice, by the destination map from the group and by `candidate.answers` from the record, and both assumed one heading answers one document; every emitted heading now records what it answers and both readers read that. Coverage read ranges per group in one increasing order and now reads them per source, because two documents arranged into one group interleave.
+
+**Grouping is decided before ancestry.** The rules fix membership, the grouping depth and each contribution's shift; ancestry then runs inside that arrangement, so only a heading at or below the grouping depth is ever emitted as a structural ancestor. Above that depth the group's own structure — the group heading, `Overview`, the member subsection — supplies the chain. A member's own H1 is never an ancestor, because the overview subsection names it exactly as a file heading does.
+
+[D55](#d55--a-heading-the-file-heading-already-names-is-not-an-ancestor-and-the-promotion-is-the-pipelines-order)'s *Named titles* rule holds at grouping depth 2 and below and does not at depth 1, where a member's H1 is itself at the grouping depth: it becomes a merged heading while the overview subsection still names the stem, so a document whose H1 matches its stem emits two headings a reader cannot tell apart. The design's **Residual ambiguity** clause already declares that outcome, so the rule was not extended.
+
+Two criteria were reworded under [D47](#d47--a-criterion-names-the-evidence-that-can-exist).
+
+**AC3** asked that one entry bundled with and without a group report *the same* entry destinations. It cannot: a whole-document entry resolves to a file heading without a rule and to an overview subsection with one, so the destination necessarily differs. It now asks for an entry destination for each entry reference under either arrangement, and the fixture pair proves the content identical by comparing non-heading lines with destinations masked.
+
+**AC5** asked that a rule matching no document warn and arrange nothing. The warning is `W_EMPTY_GROUP_RULE`, which nothing raises — the gap [D51](#d51--a-declared-code-nothing-can-raise-is-a-finding-not-a-fix-in-passing) found, planned as I00:E11:W14. Splitting it across the two epics was refused in the shape that would have left E09 waiting on E11: E11's **AC16** already stated the warning half word for word, so AC5 keeps the refusals and the arranging, AC16 keeps the warning, and neither epic gates the other.
+
+Three readings the design leaves open were taken and are recorded here rather than in the code alone: merged sections are ordered by first appearance across members in root-relative path order; "a trailing word the section already states" is a slug match tolerating one plural `s`, without which the rule could never fire, since a directory naming a kind is named in the plural; and a structural ancestor now answers no target, which closes the looseness D55 identified in `candidate.answers()` without moving any output, because no destination was ever assigned to one.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
