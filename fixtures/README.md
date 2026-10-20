@@ -110,7 +110,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Two fixtures carry the marker. `extraction/nested-section-target` awaits `I00:E03`, which delivers section extraction, and `normalization/root-escape` awaits `I00:E04`, which delivers dependency traversal.
+Two fixtures carry the marker. `normalization/root-escape` awaits `I00:E04`, which delivers dependency traversal. `extraction/an-unterminated-example-at-the-section-end` awaits `I00:E08`, which delivers boundary safety: a code example a source never closes absorbs the group written after it, and the run refuses that boundary rather than closing the example.
 
 ## The schema
 

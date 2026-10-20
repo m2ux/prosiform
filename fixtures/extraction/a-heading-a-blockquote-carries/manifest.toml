@@ -1,0 +1,16 @@
+description = "A heading a blockquote carries ends no document-level section, so the blocks after the quote belong to the section the quote sits in, and the heading is emitted at its group's shift inside the container that holds it."
+
+clauses = [
+  "Section extraction and output hierarchy — Containers",
+  "Section extraction and output hierarchy — Enclosing inclusion",
+  "File-scoped hierarchy — Containers",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#run"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

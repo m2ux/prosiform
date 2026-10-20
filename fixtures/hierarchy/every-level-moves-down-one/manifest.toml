@@ -1,0 +1,15 @@
+description = "Every heading of a group whose title the path does not name moves down exactly one level, H1 through H5, keeping the visible text it carries and the depth it sits at relative to the headings around it."
+
+clauses = [
+  "File-scoped hierarchy — Group shift",
+  "File-scoped hierarchy — Heading syntax",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

@@ -1,0 +1,17 @@
+# Guide
+
+## Run
+
+Carry the procedure out.
+
+~~~markdown
+## Stop
+
+Heading-like text a code example carries.
+~~~
+
+The block after the example, still inside the section.
+
+## Stop
+
+Stop it.

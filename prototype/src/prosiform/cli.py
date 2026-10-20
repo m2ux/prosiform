@@ -35,13 +35,15 @@ diagnostic reports is the location in the file the author holds, whatever
 the strip removed ahead of it.
 
 A reference with no fragment, or with an empty one, selects the whole
-document, and each document so selected becomes one file group of the
-bundle, the groups ordered by root-relative path. A reference carrying a
-nonempty fragment names a section, and section selection is not part of
-this build: such a run publishes nothing and returns the
-unexpected-internal-error status, which says that the build cannot carry
-the request out rather than that anything is wrong with the source it
-names.
+document. A reference carrying a nonempty fragment selects the section
+that fragment names, which runs to the next document-level heading of
+equal or higher level; a fragment alone selects from the document
+`--from` names. Each document a run selects from becomes one file group
+of the bundle, carrying every region the run's references selected from
+it, and the groups are ordered by root-relative path. A fragment naming
+a heading a container carries names no section and fails as an
+unsupported target; one naming no heading of its document names
+nothing, and fails as the reference to a missing target it is.
 
 The bundle is published once the whole candidate is built. A
 validation-only run publishes nothing, to either stream or to a named
@@ -60,6 +62,8 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
 
+from markdown_it.token import Token
+
 from prosiform import PROFILE
 from prosiform.access import Absent, Outside, Symlinked, read_source
 from prosiform.bundle import (
@@ -69,7 +73,6 @@ from prosiform.bundle import (
     Group,
     Overflow,
     assemble,
-    destinations,
     entry_line,
     group,
     heading_text,
@@ -85,12 +88,18 @@ from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 from prosiform.source import (
     CLOSERS,
     ENCODING,
+    NESTED_SECTION_TARGET,
     UNTERMINATED_FRONTMATTER,
+    Nested,
+    Selection,
     Source,
     Unterminated,
     content,
     decode,
+    fragments,
     lines,
+    regions,
+    section,
 )
 
 NAME = "prosiform"
@@ -474,15 +483,76 @@ def directories(root: Path) -> set[str]:
     return found
 
 
-def contributing(requested: Sequence[Reference]) -> list[str]:
+def contributing(
+    referrer: Reference | None, requested: Sequence[Reference]
+) -> dict[str, list[Reference]]:
     """Each file group the bundle carries, by the path that names it.
 
-    A reference with no fragment selects a whole document, which is the
-    group. Two references naming one document name one group, and the
-    groups are ordered by root-relative path so one selection always
-    bundles to the same bytes.
+    A reference naming a document selects from that document, and a
+    fragment alone selects from the document `--from` names. The path
+    is the identity the reference normalized to, so two references
+    spelling one document name one group, which carries what each of
+    them selected, and the groups are ordered by root-relative path so
+    one selection always bundles to the same bytes.
     """
-    return sorted({one.path for one in requested if one.fragment is None})
+    selected: dict[str, list[Reference]] = {}
+    for one in requested:
+        name = one.path or (referrer.path if referrer is not None else "")
+        selected.setdefault(name, []).append(one)
+    return dict(sorted(selected.items()))
+
+
+def selection(
+    tokens: Sequence[Token], references: Sequence[Reference]
+) -> Selection | None:
+    """What one source contributes, as the references naming it select it.
+
+    A reference with no fragment selects every region the document
+    holds. A fragment is the section name the normalization decoded, so
+    the heading it is looked up against is the text the author wrote
+    however the reference spelled it. Every fragment is resolved
+    whatever else the run selected, because a fragment naming no
+    heading names nothing however much of its document reaches the
+    bundle, and the heading each one resolves to stays identifiable so
+    the entry line links what the caller asked for. A whole document
+    selected by nothing else is the selection `None`, whose entry is
+    the file heading.
+    """
+    wanted: set[int] = set()
+    named: list[Token] = []
+    whole = False
+    for one in references:
+        spelled = one.fragment
+        if spelled is None:
+            whole = True
+            continue
+        try:
+            found = section(tokens, spelled)
+        except Nested as nested:
+            raise input_failure(
+                f"the reference {one.original!r} names a heading a container "
+                f"carries, which is no selectable section root",
+                code=NESTED_SECTION_TARGET,
+                remedy="name a heading the document carries at its own level",
+                reference=one.original,
+            ) from nested
+        if found is None:
+            raise input_failure(
+                f"the reference {one.original!r} names no heading of the document "
+                f"it selects from",
+                code=TARGET_NOT_FOUND,
+                remedy="name a heading the document carries",
+                reference=one.original,
+            )
+        named.append(found[0])
+        wanted.update(id(token) for token in found)
+    if whole:
+        if not named:
+            return None
+        return Selection(tuple(regions(tokens)), tuple(named))
+    return Selection(
+        tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
+    )
 
 
 def unambiguous(paths: Sequence[str]) -> None:
@@ -501,15 +571,22 @@ def unambiguous(paths: Sequence[str]) -> None:
         headed[title] = path
 
 
-def compose(read: dict[str, Source], requested: Sequence[Reference]) -> str:
+def compose(
+    read: dict[str, Source],
+    referrer: Reference | None,
+    requested: Sequence[Reference],
+) -> str:
     """The complete bundle candidate: its entry line and one group per source."""
-    selected = contributing(requested)
-    unambiguous(selected)
+    selected = contributing(referrer, requested)
+    unambiguous(list(selected))
     groups: list[Group] = []
-    for path in selected:
+    for path, selecting in selected.items():
         source = read[path]
+        tokens = parse(source.text)
         try:
-            groups.append(group(path, parse(source.text), lines(source.text)))
+            groups.append(
+                group(path, tokens, lines(source.text), selection(tokens, selecting))
+            )
         except Overflow as beyond:
             raise input_failure(
                 f"{path!r} emits the heading {beyond.heading!r} at level "
@@ -519,11 +596,12 @@ def compose(read: dict[str, Source], requested: Sequence[Reference]) -> str:
                 reference=path,
                 source=path,
             ) from beyond
-    assigned = destinations([heading for one in groups for heading in one.headings])
+    assigned = fragments([heading for one in groups for heading in one.headings])
     named = []
     at = 0
     for one in groups:
-        named.append((one.headings[0], assigned[at]))
+        for entry in one.entries:
+            named.append((one.headings[entry], assigned[at + entry]))
         at += len(one.headings)
     return assemble(entry_line(named), groups)
 
@@ -610,8 +688,8 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
     inforce = rules(options.group)
 
     root = Path(options.root).resolve()
-    referring = [entry(options.referrer)] if options.referrer else []
-    named = distinct(referring + requested)
+    referring = entry(options.referrer) if options.referrer else None
+    named = distinct(([referring] if referring is not None else []) + requested)
     reading = sources(root, named)
     if options.output != STANDARD_OUTPUT:
         destination = Path(options.output).resolve()
@@ -644,20 +722,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             raise refused(one.path, source, refusal)
         read[one.path] = source
 
-    selecting = [one.original for one in requested if one.fragment is not None]
-    if selecting:
-        raise Failure(
-            INTERNAL_ERROR,
-            Diagnostic(
-                ERROR,
-                f"this build bundles whole documents and carries no section "
-                f"selection, so {selecting[0]!r} names content it cannot select",
-                code=UNEXPECTED_INTERNAL_ERROR,
-                remedy="use a build that carries one, or name the whole document",
-            ),
-        )
-
-    bundled = compose(read, requested)
+    bundled = compose(read, referring, requested)
     if options.check:
         return SUCCESS
     if options.output == STANDARD_OUTPUT:

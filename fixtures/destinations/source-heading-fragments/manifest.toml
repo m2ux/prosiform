@@ -1,0 +1,23 @@
+description = "Each source heading takes the fragment a renderer generates for it — punctuation discarded, inline markup read through, text outside ASCII lowered and kept, and a repeated heading numbered apart — each observed as the destination a later file group takes behind it."
+
+clauses = [
+  "Source-heading resolution — derive visible heading text from parser events",
+  "Source-heading resolution — GitHub-compatible slugs and duplicate tracking",
+  "Destination identity and link rewriting — Ordinal assignment",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = [
+  "article.md",
+  "café-münster.md",
+  "notes.md",
+  "the-code-span-and-bold-text.md",
+  "whats-new-v10.md",
+]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
