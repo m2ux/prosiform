@@ -280,6 +280,7 @@ TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
+EMPTY_GROUP_RULE = "W_EMPTY_GROUP_RULE"
 ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
@@ -1320,6 +1321,22 @@ def membership(path: str, inforce: Mapping[str, int]) -> str | None:
     )
 
 
+def idle(
+    inforce: Mapping[str, int], selected: Mapping[str, Sequence[Reference]]
+) -> list[str]:
+    """Each grouping rule in force that arranges no document, in declaration order.
+
+    A rule is read against the closure rather than against the source
+    tree: a directory holding documents the traversal never reached
+    arranges as little as an empty one. Membership is the arrangement's
+    own rule, so a rule an inner one out-ranks on every document it
+    could have taken is idle, because the group it names carries none
+    of them.
+    """
+    arranging = {membership(path, inforce) for path in selected}
+    return [slug for slug in inforce if slug not in arranging]
+
+
 def unambiguous(
     selected: dict[str, list[Reference]], inforce: Mapping[str, int]
 ) -> None:
@@ -1697,6 +1714,15 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             publish(bundled, stdout)
         else:
             publish_file(bundled, Path(options.output).resolve())
+    for slug in idle(inforce, contributing(referring, found)):
+        reporter.emit(
+            Diagnostic(
+                WARNING,
+                f"the grouping rule for {slug!r} arranges nothing, because the "
+                f"closure carries no document under a directory of that slug",
+                code=EMPTY_GROUP_RULE,
+            )
+        )
     for reference, target in named:
         reporter.emit(
             Diagnostic(
