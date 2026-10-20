@@ -24,6 +24,8 @@ W02 also left one case raised rather than resolved: a marked reference-style lin
 | --- | --- |
 | [w03.md](w03.md) | W03's plan: the definition environment, the inline conversion, the escaping and the removal |
 | [w04.md](../2026-10-20-7-i00-e05-w04-a-reference-naming-an/w04.md) | W04's plan, in its own record: the absorbed slug mapped to the file heading's destination |
+| [findings.md](findings.md) | What the delivery measured, the parser agreement the scan keeps, and the two findings it deferred |
+| [changes.md](changes.md) | Every change the delivery made beyond the two rows, and what it did not need |
 
 ## Links
 
