@@ -1,0 +1,16 @@
+description = "An image, a web URL and another non-Markdown reference in selected content are emitted as authored and are neither opened, fetched nor traversed, while the marked local Markdown link beside them is bundled."
+
+clauses = [
+  "Link classification and resource handling — Everything else",
+  "Resources are text",
+  "No-symlink source policy — Non-Markdown resource links",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

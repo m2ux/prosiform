@@ -1,0 +1,16 @@
+description = "Two bundled headings carrying one slug take a destination apiece, and the two marked references naming them are rewritten to one each, so every destination in the published bundle resolves to exactly one heading in it."
+
+clauses = [
+  "Bundle destinations — Ordinal assignment",
+  "Bundle destinations — Uniqueness",
+  "Post-compilation invariants — One intended destination",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

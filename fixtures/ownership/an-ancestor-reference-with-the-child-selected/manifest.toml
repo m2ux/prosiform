@@ -1,0 +1,15 @@
+description = "A nested section selected on its own owns its link, which names the including ancestor and expands the closure to that ancestor once."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Link ownership",
+  "Post-compilation invariants — Ownership stability",
+]
+
+[invocation]
+root = "source"
+arguments = ["manual.md#step"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

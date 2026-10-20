@@ -1,0 +1,19 @@
+description = "A symbolic link below the allowed root is refused although its target is a document the root holds, so one document is reached by one path and a dependency base does not vary with the alias discovered first."
+
+clauses = [
+  "No-symlink source policy",
+  "Reference normalization and path identity — Resolution sequence, step 8",
+]
+
+[invocation]
+root = "source"
+arguments = ["alias.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "alias.md"

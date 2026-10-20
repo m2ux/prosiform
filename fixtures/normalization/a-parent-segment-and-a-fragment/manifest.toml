@@ -1,0 +1,16 @@
+description = "A reference carrying a parent segment and a fragment normalizes to the confined path and then selects the section the fragment names, so normalization and selection compose."
+
+clauses = [
+  "Reference normalization and path identity — sub/../guide.md#run",
+  "Reference normalization and path identity — Resolution sequence, step 7",
+  "Section extraction and output hierarchy",
+]
+
+[invocation]
+root = "source"
+arguments = ["docs/../guide.md#run-it"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

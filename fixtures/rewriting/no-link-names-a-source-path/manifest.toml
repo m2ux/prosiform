@@ -1,0 +1,16 @@
+description = "A bundle whose every link is marked carries no link naming a source path: a whole-document reference, a section reference and a fragment-only reference are each rewritten to the destination of the target they resolved to."
+
+clauses = [
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Uniqueness",
+  "Post-compilation invariants — One intended destination",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

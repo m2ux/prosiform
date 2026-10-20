@@ -1,0 +1,20 @@
+description = "A marked self-link spelled with a relative segment and a percent escape fails as a direct self-reference, because identity is decided after the path and the fragment resolve rather than by comparing link strings."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Direct self-reference",
+  "Self-reference and ancestor-reference behavior — Equivalent references",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SELF_REFERENCE"
+reference = "./%67uide.md#alpha"
+source = "guide.md:5"

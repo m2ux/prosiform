@@ -1,0 +1,17 @@
+description = "A budget override of zero is refused as a command line the grammar does not admit, because zero does not mean unlimited."
+
+clauses = [
+  "Resource limits — positive decimal integer overrides",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-files", "0", "alpha.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"

@@ -1,0 +1,16 @@
+description = "A subsection named alongside the section containing it is represented by that section alone, so the region the two selections share is emitted once."
+
+clauses = [
+  "Compile before publishing — step 5, consolidate selections",
+  "Groups — emit each selected region once",
+  "Section extraction and output hierarchy — Source order",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#detail", "guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

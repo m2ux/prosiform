@@ -1,0 +1,14 @@
+description = "A marked link to a distinct section of the same file is no direct self-reference, and the section it names is bundled beside the one that named it."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Different section in the same file",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

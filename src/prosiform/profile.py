@@ -35,15 +35,19 @@ prose, and so is a brace block anywhere but the end of a heading.
 import re
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
+from functools import cache
 from pathlib import PurePosixPath
+from typing import Any
 
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
 
 from prosiform import PROFILE
+from prosiform.limits import NESTING
 
 PRESET = "commonmark"
 ENABLED = ("table", "strikethrough")
+HEADROOM = 20
 
 SUFFIXES = (".md", ".markdown")
 
@@ -57,9 +61,12 @@ LINK_CLOSE = "link_close"
 HTML_BLOCK = "html_block"
 HTML_INLINE = "html_inline"
 
+REFERENCES = "references"
+
 TASK_MARKERS = ("[x]", "[X]")
 MARKER_LENGTH = 3
 MARKER_LABELS = ("x", "X")
+MARKER = "marker"
 MARKER_CHILDREN = 3
 
 UNESCAPED = r"(?<!\\)"
@@ -89,17 +96,34 @@ class Refusal:
     reference: str | None = None
 
 
-def parser() -> MarkdownIt:
-    """The parser the profile configures: CommonMark and its two extensions."""
-    return MarkdownIt(PRESET).enable(list(ENABLED))
+@cache
+def parser(budget: int) -> MarkdownIt:
+    """The parser the profile configures: CommonMark and its two extensions.
+
+    The parser carries a nesting ceiling of its own, and reaching it
+    makes it read the rest of a construct as text rather than refuse
+    it. The ceiling therefore sits above the nesting budget the run
+    declares, far enough that the inline structure of an ordinary
+    document is unaffected, so a source nested deeper than the budget
+    is counted past the boundary and refused rather than quietly read
+    as something else.
+    """
+    return MarkdownIt(PRESET, {"maxNesting": budget + HEADROOM}).enable(list(ENABLED))
 
 
-PARSER = parser()
+def parse(
+    text: str,
+    budget: int = NESTING.default,
+    env: dict[str, Any] | None = None,
+) -> list[Token]:
+    """One source, parsed under the profile, its task markers left as text.
 
-
-def parse(text: str) -> list[Token]:
-    """One source, parsed under the profile, its task markers left as text."""
-    tokens = PARSER.parse(text)
+    The environment the parse fills holds the link-reference definitions
+    the source declared, which is the definition environment its own
+    reference-style uses resolve against. A caller that reads them
+    supplies the mapping the parse writes them into.
+    """
+    tokens = parser(budget).parse(text, {} if env is None else env)
     for inline in item_openings(tokens):
         if linked_marker(inline):
             unlink_marker(inline)
@@ -156,10 +180,16 @@ def linked_marker(inline: Token) -> bool:
 
 
 def unlink_marker(inline: Token) -> None:
-    """Return a linked task marker to the literal text the source wrote."""
+    """Return a linked task marker to the literal text the source wrote.
+
+    The token records that it carries one, because the marker is the
+    one bracket pair a definition does not make a link of and a scan
+    over the source text has no list structure to read that from.
+    """
     children = inline.children or []
     marker = Token(TEXT, "", 0, content=inline.content[:MARKER_LENGTH])
     inline.children = [marker, *children[MARKER_CHILDREN:]]
+    inline.meta[MARKER] = True
 
 
 def line(token: Token) -> int | None:

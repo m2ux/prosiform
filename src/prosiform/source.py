@@ -31,20 +31,32 @@ each direct what is read without being read. The derivation therefore
 reads the event stream and nothing else, which is why a heading written
 three ways with one appearance indexes once.
 
-The fragment is the one a renderer generates: the visible text lowered,
-the characters the renderer discards removed, and each remaining space
-a hyphen. Where a slug is already taken the renderer numbers the
-heading apart, counting from one and passing over every ordinal
-something already carries, so a heading whose own text spells an
-ordinal takes that ordinal from the heading that would otherwise have
-been numbered into it. The count is kept per complete source document,
-so a heading's fragment follows from the document that carries it
-rather than from anything bundled beside it.
+A heading's fragment is the slug its own visible text produces: the text
+lowered, the characters the renderer discards removed, and each
+remaining space a hyphen. Nothing numbers two headings of one source
+apart, so a fragment names a heading by what its author wrote and not by
+how many similar headings precede it. A fragment no heading's text
+produces names nothing; a fragment two headings' text produces names
+neither, which is the refusal `Ambiguous` raises, and the author
+disambiguates by retitling.
+
+The renderer's own ordinal belongs to a bundle destination rather than to
+a source fragment, because the tool assigns it over a document it
+generated in one pass. `fragments` below is that rule, applied to the
+sequence of headings a bundle emits.
 
 Every heading the profile recognizes is indexed, a container-nested one
 included: eligibility to be selected is a later decision, and a heading
-left out of the index would change the fragment of every heading after
-it that shares its slug.
+a container carries is one a renderer reading the bundle indexes beside
+the rest.
+
+A link is read from the same events. What a document requires is
+written in its links, so the model reports each link a given run of
+regions carries: where it points, the literal text its content opens
+on, and the line of its block. A link inside a code span or a code
+block is an example rather than a link and the parser produces none,
+and an image is a reference to a resource rather than to a document,
+so neither reaches a caller asking what this content links to.
 
 That later decision is the section below. A document is a run of
 maximal regions, each a block the document itself carries, and a
@@ -55,6 +67,18 @@ the document returns to that level or above. A heading a container
 carries is therefore neither a root nor a boundary — it sits inside one
 region, so the region it sits in is what the document holds there — and
 a fragment naming one names a section the model does not have.
+
+A link belongs to the innermost such section containing it, and to the
+document itself where no section does: the content above a document's
+first eligible heading is the document's own. Ownership is read from the
+document's structure and from nothing a run selected, so the section a
+link belongs to is the same whether that section was selected on its own
+or inside a larger region that consolidated it.
+
+The document also counts what a budget is declared over: the container
+blocks it nests at its deepest point, which is what a nesting budget
+bounds, and the link and image occurrences a run of regions carries,
+each counted once where the source wrote it.
 """
 
 import re
@@ -73,14 +97,25 @@ LINE_FEED = "\n"
 CARRIAGE_RETURN = "\r"
 
 PHYSICAL_LINE = re.compile(r"[^\n]*\n|[^\n]+")
+CONTAINER_PREFIX = re.compile(
+    r"^(?:[ \t]*(?:>|[-*+](?=[ \t])|\d{1,9}[.)](?=[ \t])))*[ \t]*"
+)
 
 UNTERMINATED_FRONTMATTER = "E_UNTERMINATED_FRONTMATTER"
 NESTED_SECTION_TARGET = "E_NESTED_SECTION_TARGET"
+AMBIGUOUS_SOURCE_HEADING = "E_AMBIGUOUS_SOURCE_HEADING"
 
 HEADING_OPEN = "heading_open"
 INLINE = "inline"
 TEXT = "text"
 CODE_INLINE = "code_inline"
+LINK_OPEN = "link_open"
+IMAGE = "image"
+REFERENCE_USES = (LINK_OPEN, IMAGE)
+CONTAINER_OPEN = ("blockquote_open", "list_item_open")
+CONTAINER_CLOSE = ("blockquote_close", "list_item_close")
+HREF = "href"
+SRC = "src"
 BREAKS = ("softbreak", "hardbreak")
 
 SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
@@ -97,6 +132,17 @@ class Nested(Exception):
             f"the fragment {fragment!r} names a heading a container carries"
         )
         self.fragment = fragment
+
+
+class Ambiguous(Exception):
+    """A fragment two headings of one source produce, which names neither."""
+
+    def __init__(self, fragment: str, lines: Sequence[int | None]) -> None:
+        super().__init__(
+            f"the fragment {fragment!r} names {len(lines)} headings of one document"
+        )
+        self.fragment = fragment
+        self.lines = tuple(lines)
 
 
 class Unterminated(Exception):
@@ -134,6 +180,12 @@ def bare(physical: str) -> str:
     """One physical line without the LF or CRLF that terminates it."""
     stripped = physical.removesuffix(LINE_FEED)
     return stripped.removesuffix(CARRIAGE_RETURN)
+
+
+def opening_markers(line: str) -> str:
+    """The container markers and indent one line opens with, before its content."""
+    written = CONTAINER_PREFIX.match(line)
+    return "" if written is None else written.group(0)
 
 
 def decode(data: bytes) -> str:
@@ -195,7 +247,7 @@ def slug(text: str) -> str:
 
 
 def fragments(shown_texts: Sequence[str]) -> list[str]:
-    """The fragment of each heading, in the order a renderer reads them.
+    """The fragment a renderer generates for each heading of one sequence.
 
     The first heading to carry a slug takes it, and a later one takes
     the slug and an ordinal, counting from one. An ordinal something
@@ -204,7 +256,9 @@ def fragments(shown_texts: Sequence[str]) -> list[str]:
     takes the next free ordinal instead. Two headings therefore never
     share a fragment.
 
-    This is the renderer's own rule, and the counts it keeps belong to
+    This is the renderer's own rule, reproduced so a destination and the
+    document it names agree. The sequence it runs over is the headings
+    the bundle emits, in bundle order, and the counts it keeps belong to
     one run over one sequence, so a sequence begun again is numbered
     from the start.
     """
@@ -240,7 +294,7 @@ def headings(tokens: Sequence[Token]) -> Iterator[tuple[Token, Token]]:
 
 @dataclass(frozen=True)
 class Heading:
-    """One source heading: its level, the text it shows and the fragment it takes."""
+    """One source heading: its level, the text it shows and that text's slug."""
 
     level: int
     text: str
@@ -250,18 +304,14 @@ class Heading:
 
 def index(tokens: Sequence[Token]) -> tuple[Heading, ...]:
     """Every heading one complete source document carries, in source order."""
-    carried = list(headings(tokens))
-    shown_texts = [visible(inline) for _, inline in carried]
     return tuple(
         Heading(
             level=level(opening),
-            text=text,
-            fragment=fragment,
+            text=visible(inline),
+            fragment=slug(visible(inline)),
             line=None if opening.map is None else opening.map[0] + 1,
         )
-        for (opening, _), text, fragment in zip(
-            carried, shown_texts, fragments(shown_texts), strict=True
-        )
+        for opening, inline in headings(tokens)
     )
 
 
@@ -299,17 +349,22 @@ def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
     container carries neither roots nor ends one.
 
     A fragment naming no heading of this document selects nothing and is
-    reported as the reference to nothing it is. A fragment naming a
-    container-nested heading names a heading the document carries and a
-    section it does not, which is the refusal `Nested` raises.
+    reported as the reference to nothing it is. A fragment two headings
+    produce names neither, and is refused as the ambiguity it is before
+    anything asks what either heading roots: the run cannot say which
+    heading was meant, so it cannot say that the one that was meant
+    roots no section. A fragment naming one heading a container carries
+    names a heading the document carries and a section it does not,
+    which is the refusal `Nested` raises.
     """
     carried = [opening for opening, _ in headings(tokens)]
     named = index(tokens)
-    at = next(
-        (one for one, each in enumerate(named) if each.fragment == fragment), None
-    )
-    if at is None:
+    found = [one for one, each in enumerate(named) if each.fragment == fragment]
+    if len(found) > 1:
+        raise Ambiguous(fragment, [named[one].line for one in found])
+    if not found:
         return None
+    at = found[0]
     spans = list(regions(tokens))
     start = opens(spans, carried[at])
     if start is None:
@@ -322,6 +377,125 @@ def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
             end = following
             break
     return tuple(spans[start:end])
+
+
+@dataclass(frozen=True)
+class Link:
+    """One link a source carries, read from the events the parser produced.
+
+    The destination is the one the parser resolved, so a reference-style
+    use and an inline one arrive the same way and a Markdown escape has
+    already been read. The opening is the literal text the link's
+    content begins with, which is where a dependency's mark is written:
+    a link whose content opens on a code span, an emphasis or an image
+    begins with no text and opens with nothing.
+    """
+
+    destination: str
+    opening: str
+    line: int | None
+
+
+def opening_text(children: Sequence[Token], at: int) -> str:
+    """The literal text the link opened at one position begins with."""
+    following = children[at + 1] if at + 1 < len(children) else None
+    if following is None or following.type != TEXT:
+        return ""
+    return following.content
+
+
+def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
+    """Each inline token the given regions of one document carry, in source order."""
+    spans = [token.map for token in selected if token.map is not None]
+    for token in tokens:
+        if token.type != INLINE or token.map is None:
+            continue
+        if any(start <= token.map[0] < end for start, end in spans):
+            yield token
+
+
+def links(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Link]:
+    """Every link the given regions of one source carry, in source order.
+
+    A link is what the parser read as one, so an apparent link inside a
+    code span or a code block is text the document carries and is not
+    one of these, and an image names a resource rather than a document
+    and is not one either. The line is the line of this content the
+    link's own block opens on, which is as near the link as the parser
+    records a position.
+    """
+    for token in inlines(tokens, selected):
+        children = token.children or []
+        for at, child in enumerate(children):
+            if child.type != LINK_OPEN:
+                continue
+            destination = child.attrGet(HREF)
+            yield Link(
+                "" if destination is None else str(destination),
+                opening_text(children, at),
+                None if token.map is None else token.map[0] + 1,
+            )
+
+
+def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
+    """How many link and image uses the given regions of one source carry.
+
+    A budget over references is declared over what an author wrote, so
+    the count is of occurrences in the source rather than of the
+    documents they reach: one document named five times is five
+    occurrences, and an image is one of them because opening a resource
+    costs what opening a document costs.
+    """
+    return sum(
+        1
+        for token in inlines(tokens, selected)
+        for child in token.children or []
+        if child.type in REFERENCE_USES
+    )
+
+
+def nesting(tokens: Sequence[Token]) -> int:
+    """The deepest run of container blocks one complete source nests.
+
+    A container block is a block quote or a list item, which is what
+    CommonMark calls one: a list is how its items are grouped rather
+    than a level of its own, so three nested bullets nest three deep.
+    The count is over the complete opened source, because a parser
+    indexes the whole document however narrow the requested section is.
+    """
+    depth = 0
+    deepest = 0
+    for token in tokens:
+        if token.type in CONTAINER_OPEN:
+            depth += 1
+            deepest = max(deepest, depth)
+        elif token.type in CONTAINER_CLOSE:
+            depth -= 1
+    return deepest
+
+
+def owner(tokens: Sequence[Token], at: int) -> Token | None:
+    """The eligible section one position belongs to, or nothing for the preamble.
+
+    The owner is the innermost eligible section containing the
+    position, which is the last section root the document opens at or
+    above it: a heading a container carries roots no section, so
+    content inside that container belongs to the section the container
+    sits in. A position above the document's first section root belongs
+    to the document itself, which is what nothing names here.
+
+    The position is read from the document's own structure, so a
+    selection does not enter the answer and consolidating a section
+    into a larger region leaves every owner it held unchanged.
+    """
+    found: Token | None = None
+    for token in regions(tokens):
+        start = 0 if token.map is None else token.map[0]
+        if start > at:
+            break
+        if token.type == HEADING_OPEN:
+            found = token
+    return found
 
 
 @dataclass(frozen=True)

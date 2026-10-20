@@ -19,17 +19,27 @@ Four classes of reference, each resolved by what it names:
   turns on. An issue, a pull request or a project board is read through
   the GitHub API with the caller's credentials, because a private
   repository answers an unauthenticated request with 404. Without
-  `--online` such a reference counts as unresolved and the check fails, so
-  a pass always means every reference was resolved.
+  `--online` such a reference counts as unresolved and the check fails,
+  so an offline run cannot pass.
+
+A host that says nothing is told apart from a reference that does not
+resolve. A server error, a timeout or a dropped connection means the host
+reported nothing about the target, so after a bounded number of attempts it
+is counted as unreachable and the run passes carrying that verdict. A check
+that fails on a third party teaches a reader to re-run it rather than to
+read it, which is the habit that lets a genuine broken reference through.
 """
 
 import argparse
 import re
 import subprocess
 import sys
+import time
 import unicodedata
 import urllib.error
 import urllib.request
+from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 
 from documents import ROOT, documents, strip_code_fences
@@ -42,6 +52,43 @@ HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$", re.MULTILINE)
 SLUG_KEPT = frozenset("-_ ")
 
 USER_AGENT = "prosiform-link-check"
+
+ATTEMPTS = 3
+DELAY = 2.0
+TIMEOUT = 20
+SERVER_ERROR = re.compile(r"HTTP 5\d\d")
+
+
+@dataclass(frozen=True)
+class Unreachable:
+    """A host that did not answer, which is not an unresolved reference.
+
+    A reference is unresolved when the host answered and said the target
+    is not there. A host returning a server error, timing out or dropping
+    the connection has said nothing about the target, so it carries a
+    verdict of its own and leaves the run passing.
+    """
+
+    reason: str
+
+
+Outcome = str | Unreachable | None
+
+
+def retried(resolve: Callable[[], Outcome]) -> Outcome:
+    """One address resolved, reattempted while the host says nothing.
+
+    The delay grows with each attempt, so a host restarting behind a load
+    balancer is given longer than one that answered at once. An outcome
+    the host did state is returned on the attempt that produced it.
+    """
+    outcome = resolve()
+    for attempt in range(1, ATTEMPTS):
+        if not isinstance(outcome, Unreachable):
+            return outcome
+        time.sleep(DELAY * attempt)
+        outcome = resolve()
+    return outcome
 
 
 def slug(heading: str) -> str:
@@ -168,8 +215,13 @@ GITHUB_USER_PROJECT = re.compile(
 )
 
 
-def gh_api(arguments: list[str]) -> str | None:
-    """Run an authenticated GitHub API call, or report why it did not answer."""
+def gh_api(arguments: list[str]) -> Outcome:
+    """Run an authenticated GitHub API call, or report why it did not answer.
+
+    A missing command is the caller's to fix and fails the check. A call
+    that timed out or came back carrying a server status is the host
+    saying nothing, which is a verdict of its own.
+    """
     try:
         result = subprocess.run(
             ["gh", "api", *arguments], capture_output=True, text=True, timeout=30
@@ -179,13 +231,16 @@ def gh_api(arguments: list[str]) -> str | None:
             "gh is not installed, and a private reference needs an authenticated read"
         )
     except subprocess.TimeoutExpired:
-        return "gh did not answer within 30s"
+        return Unreachable("gh did not answer within 30s")
     if result.returncode != 0:
-        return result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
+        reason = (
+            result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
+        )
+        return Unreachable(reason) if SERVER_ERROR.search(reason) else reason
     return None
 
 
-def resolve_github(target: str) -> str | None:
+def resolve_github(target: str) -> Outcome:
     """Resolve a tracker reference with the caller's credentials.
 
     A private repository answers an unauthenticated request with 404, so an
@@ -196,7 +251,8 @@ def resolve_github(target: str) -> str | None:
     if issue:
         owner, repository, kind, number = issue.groups()
         endpoint = "issues" if kind == "issues" else "pulls"
-        return gh_api([f"repos/{owner}/{repository}/{endpoint}/{number}", "--silent"])
+        path = f"repos/{owner}/{repository}/{endpoint}/{number}"
+        return retried(lambda: gh_api([path, "--silent"]))
 
     project = GITHUB_USER_PROJECT.match(target)
     if project:
@@ -206,36 +262,76 @@ def resolve_github(target: str) -> str | None:
             f'{{ {owner_field}(login: "{login}") '
             f"{{ projectV2(number: {number}) {{ id }} }} }}"
         )
-        return gh_api(["graphql", "-f", f"query={query}", "--silent"])
+        return retried(lambda: gh_api(["graphql", "-f", f"query={query}", "--silent"]))
 
-    return resolve_http(target)
+    return retried(lambda: reach(target))
 
 
-def resolve_http(target: str) -> str | None:
-    request = urllib.request.Request(
-        target, method="HEAD", headers={"User-Agent": USER_AGENT}
+def verdict(status: int) -> Outcome:
+    """What a status the host returned says about the target.
+
+    A server status is the host reporting its own trouble and states
+    nothing about the target. A client status is an answer about the
+    target, and the check holds the document to it.
+    """
+    if status < 400:
+        return None
+    if status >= 500:
+        return Unreachable(f"HTTP {status}")
+    return f"HTTP {status}"
+
+
+def fetched(target: str, method: str | None) -> int:
+    """The status one request to an address returns."""
+    headers = {"User-Agent": USER_AGENT}
+    request = (
+        urllib.request.Request(target, method=method, headers=headers)
+        if method
+        else urllib.request.Request(target, headers=headers)
     )
+    with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        return int(response.status)
+
+
+def reach(target: str) -> Outcome:
+    """One attempt at a remote address.
+
+    A host answering 403 or 405 to HEAD is answering about the method
+    rather than the target, so the address is asked for again with GET
+    before its status is read. A connection that failed, timed out or was
+    dropped is the host saying nothing and takes the unreachable verdict;
+    anything else the request raises is the reference's own fault and
+    fails the check.
+    """
     try:
-        with urllib.request.urlopen(request, timeout=20) as response:
-            if response.status < 400:
-                return None
-            return f"HTTP {response.status}"
+        return verdict(fetched(target, "HEAD"))
     except urllib.error.HTTPError as error:
-        if error.code in (403, 405):
-            try:
-                get = urllib.request.Request(target, headers={"User-Agent": USER_AGENT})
-                with urllib.request.urlopen(get, timeout=20) as response:
-                    return None if response.status < 400 else f"HTTP {response.status}"
-            except Exception as retry_error:  # noqa: BLE001 - reported verbatim
-                return f"{type(retry_error).__name__}: {retry_error}"
-        return f"HTTP {error.code}"
+        if error.code not in (403, 405):
+            return verdict(error.code)
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        return Unreachable(f"{type(error).__name__}: {error}")
+    except Exception as error:  # noqa: BLE001 - reported verbatim
+        return f"{type(error).__name__}: {error}"
+    try:
+        return verdict(fetched(target, None))
+    except urllib.error.HTTPError as error:
+        return verdict(error.code)
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        return Unreachable(f"{type(error).__name__}: {error}")
     except Exception as error:  # noqa: BLE001 - reported verbatim
         return f"{type(error).__name__}: {error}"
 
 
-def check(document: Path, online: bool) -> list[str]:
-    failures = []
+def check(document: Path, online: bool) -> tuple[list[str], list[str]]:
+    """Every reference one document carries, resolved.
+
+    The unresolved references come back beside the ones whose host said
+    nothing, because the two decide the run differently.
+    """
+    failures: list[str] = []
+    unanswered: list[str] = []
     for target in references(document.read_text()):
+        reason: Outcome
         if is_repository_tree_url(target):
             reason = resolve_repository_url(target)
             kind = "repository"
@@ -251,11 +347,13 @@ def check(document: Path, online: bool) -> list[str]:
         else:
             reason = resolve_local(document, target)
             kind = "local"
-        if reason:
+        if isinstance(reason, Unreachable):
+            unanswered.append(f"{target} — {reason.reason}")
+        elif reason:
             failures.append(f"{target} — {reason}")
         else:
             print(f"ok   {kind:10} {target}")
-    return failures
+    return failures, unanswered
 
 
 def main() -> int:
@@ -275,7 +373,8 @@ def main() -> int:
 
     named = [(ROOT / name).resolve() for name in arguments.documents]
     selected = named or documents()
-    failures = []
+    failures: list[str] = []
+    unanswered: list[str] = []
     for document in selected:
         name = (
             document.relative_to(ROOT).as_posix()
@@ -285,16 +384,22 @@ def main() -> int:
         if not document.exists():
             failures.append(f"{name} — the document to check does not exist")
             continue
-        failures += [
-            f"{name}: {failure}" for failure in check(document, arguments.online)
-        ]
+        unresolved, unreached = check(document, arguments.online)
+        failures += [f"{name}: {failure}" for failure in unresolved]
+        unanswered += [f"{name}: {one}" for one in unreached]
 
+    for one in unanswered:
+        print(f"WARN {one}", file=sys.stderr)
     for failure in failures:
         print(f"FAIL {failure}", file=sys.stderr)
     if failures:
         print(f"\nlink check: {len(failures)} unresolved reference(s)", file=sys.stderr)
         return 1
-    print(f"\nlink check: every reference in {len(selected)} document(s) resolved")
+    resolved = f"link check: every reference in {len(selected)} document(s) resolved"
+    if unanswered:
+        print(f"\n{resolved}, except {len(unanswered)} whose host did not answer")
+        return 0
+    print(f"\n{resolved}")
     return 0
 
 

@@ -1,0 +1,18 @@
+description = "A relative image and another relative non-Markdown reference are emitted byte-identical and never opened, and the bundle carrying them warns that resource portability is not guaranteed without failing the run."
+
+clauses = [
+  "Resources are text",
+  "Link classification and resource handling — Everything else",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"

@@ -1,0 +1,17 @@
+description = "Two sources defining one label each resolve their own use against their own definition, so the bundle carries two destinations for one label."
+
+clauses = [
+  "Source-local reference interpretation",
+  "Source-local reference interpretation — step 1",
+  "Source-local reference interpretation — step 4",
+  "Adversarial acceptance fixtures — References",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

@@ -1,0 +1,14 @@
+description = "A target exactly as far from an entry reference as the expansion-depth budget allows is bundled, so the budget refuses what lies beyond it and nothing short of it."
+
+clauses = [
+  "Resource limits — --max-expansion-depth",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-expansion-depth", "2", "alpha.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

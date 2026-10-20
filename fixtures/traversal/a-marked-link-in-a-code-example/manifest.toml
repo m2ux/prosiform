@@ -1,0 +1,15 @@
+description = "A marked link written inside a code span or a fenced code block is an example rather than a link, so the document it names is not a dependency and the bundle does not carry it."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Source-local reference interpretation — Leave examples inside code spans and code blocks unchanged",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

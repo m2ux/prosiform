@@ -1,0 +1,19 @@
+description = "A source the run would reach through a symbolic link is refused by the no-symlink policy, so the output check never resolves a source path through a link and never claims identity with a file the run does not read."
+
+clauses = [
+  "No-symlink source policy",
+  "CLI contract — --output, a path naming an input source is refused",
+]
+
+[invocation]
+root = "source"
+arguments = ["--output", "real.md", "alias.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "alias.md"

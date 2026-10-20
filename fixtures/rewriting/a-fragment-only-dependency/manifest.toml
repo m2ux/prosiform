@@ -1,0 +1,16 @@
+description = "A marked fragment-only link resolves against its own source's heading index and is rewritten to the bundle destination that heading took, so a reference inside one document reaches the place that document now occupies."
+
+clauses = [
+  "Bundle destinations — Internal links",
+  "Link classification and resource handling — Fragment-only links",
+  "Source-local reference interpretation — step 3",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#procedure"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

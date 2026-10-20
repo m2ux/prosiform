@@ -1,0 +1,21 @@
+description = "A marked link written inside an image's alternative content is bundled and rewritten to its target's destination, so no published bundle carries the mark or names a source path."
+
+clauses = [
+  "Link classification and resource handling — The mark",
+  "Link classification and resource handling — Marked local Markdown document links",
+  "Bundle destinations",
+]
+
+awaiting = "I00:E11:W10"
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"

@@ -1,0 +1,14 @@
+description = "A marked link from a nested section back to the ancestor already selected resolves to that ancestor's existing destination, expanding nothing and duplicating nothing."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Ancestor reference",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

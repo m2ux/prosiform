@@ -1,0 +1,19 @@
+description = "A definition whose destination and title the author spelled across two lines is published inline carrying both as authored, and the definition is not emitted."
+
+clauses = [
+  "Source-local reference interpretation — step 1",
+  "Source-local reference interpretation — step 2",
+  "Source-local reference interpretation — step 4",
+  "Adversarial acceptance fixtures — Definition inventory",
+]
+
+awaiting = "I00:E08:W05"
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

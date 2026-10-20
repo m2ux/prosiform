@@ -19,9 +19,16 @@ regions is not source content: a blank line above the first region, the
 blank line a removed reference definition was separated by, and the
 spacing between any two blocks are the bundle's own, and the bundle
 writes one blank line between regions wherever it joins them. Inside a
-region nothing is touched, so an indented thematic break keeps its
-indent, a delimiter keeps its trailing spaces and a code example keeps
-its bytes.
+region nothing is touched but the lines a link-reference definition
+occupies, so an indented thematic break keeps its indent, a delimiter
+keeps its trailing spaces and a code example keeps its bytes.
+
+Each resolved reference-style use in selected content is published
+inline, and every original definition node is removed, the definitions
+no use names included. A definition a container carries is dropped
+where it sits, with the blank line the container separated it by, and
+a definition at the document level lies between two regions and is
+dropped by the slice that takes them.
 
 The file heading absorbs the source's first heading when that heading is
 the document's only H1 and its slug equals the slug of the final segment
@@ -44,29 +51,58 @@ line an ATX heading is, each line break reading as the space it already
 read as. A group that shifts by nothing has no level to write, so the
 heading stays the Setext heading its source wrote.
 
+Each marked link in selected content is rewritten to the destination of
+the target it resolved to, through the map the bundle's own headings
+produce. A whole-document reference takes the destination of that
+file's heading, a fragment takes the destination of the heading it
+named, and a fragment-only link resolves inside its own source first
+and then takes that heading's destination. A destination is scoped to
+the whole bundle, so a reference from one group to another is spelled
+as one inside a group is. The mark goes with the rewrite, because a
+reader of the bundle has no use for authoring syntax.
+
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
-where an earlier heading already took that slug. That is the rule the
-source model applies over one document's headings, applied here over the
-headings the bundle emits, so the entry line's link resolves in the
-document a reader opens.
+where an earlier heading already took that slug. The ordinal is assigned
+over every heading the bundle emits, in bundle order, a heading a
+retained container carries included: the renderer indexes that heading
+beside the rest and numbers the headings after it from a count that
+holds it, so a map built from the document-level headings alone names
+one heading and resolves to another.
 """
 
 import re
-from collections.abc import Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
+from prosiform.closure import Reference, inside
 from prosiform.profile import SUFFIXES
+from prosiform.provenance import (
+    FILENAME_WRAPPER,
+    Carried,
+    Emitted,
+    Generated,
+    Origin,
+    Range,
+    Record,
+)
+from prosiform.rewrite import Definition, destinations, rewritten, unmarked
 from prosiform.source import (
     LINE_FEED,
+    LINK_OPEN,
+    TEXT,
     Selection,
     bare,
     headings,
+    inlines,
     level,
+    lines,
+    opening_markers,
     regions,
+    shown,
     slug,
     visible,
 )
@@ -95,9 +131,6 @@ OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
-CONTAINER_PREFIX = re.compile(
-    r"^(?:[ \t]*(?:>|[-*+](?=[ \t])|\d{1,9}[.)](?=[ \t])))*[ \t]*"
-)
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
 
@@ -112,11 +145,38 @@ class Overflow(Exception):
 
 @dataclass(frozen=True)
 class Group:
-    """One file group: the Markdown it emits and the headings it emits, in order."""
+    """One file group: the Markdown it emits, and the record of where it came from.
+
+    The headings the group emits and the source fragment each answers to
+    are read from that record, so the group states them once. The first
+    is the file heading, which answers to the whole document and so to
+    no fragment of it. A file heading that absorbed a source heading
+    answers to that heading's fragment as well, which is held apart
+    because the heading itself is not emitted.
+    """
 
     text: str
-    headings: tuple[str, ...]
     entries: tuple[int, ...]
+    record: Record
+
+    @property
+    def headings(self) -> tuple[str, ...]:
+        """The visible text of each heading the group emits, in bundle order."""
+        return tuple(one.text for one in self.record.headings)
+
+    @property
+    def sources(self) -> tuple[str | None, ...]:
+        """The source fragment each emitted heading answers to, in bundle order."""
+        return tuple(
+            one.origin.fragment if isinstance(one, Carried) else None
+            for one in self.record.headings
+        )
+
+    @property
+    def absorbed(self) -> str | None:
+        """The source fragment the file heading absorbed, where it absorbed one."""
+        first = self.record.headings[0]
+        return first.absorbed if isinstance(first, Generated) else None
 
 
 def heading_text(path: str) -> str:
@@ -173,9 +233,78 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
+def emitted_visible(inline: Token) -> str:
+    """The text one inline token shows once the bundle has rewritten its marks.
+
+    A heading can carry a marked link, and the rewrite drops the mark
+    from the text that link shows. The heading the bundle emits is
+    therefore the heading the renderer slugs, so the destination it
+    takes names the heading a reader finds.
+    """
+    children = inline.children or []
+    return "".join(
+        unmarked(child.content)
+        if child.type == TEXT and at and children[at - 1].type == LINK_OPEN
+        else shown(child)
+        for at, child in enumerate(children)
+    )
+
+
 def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
     """The visible text of each heading token, keyed by the token's identity."""
-    return {id(opening): visible(inline) for opening, inline in headings(tokens)}
+    return {
+        id(opening): emitted_visible(inline) for opening, inline in headings(tokens)
+    }
+
+
+def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
+    """The source fragment each heading token answers to, keyed by its identity.
+
+    A source fragment is the slug of the text the author wrote, which
+    is what a reference into that document resolved against, and the
+    text the bundle emits for the same heading can differ from it where
+    the heading carries a mark the rewrite drops.
+    """
+    return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
+
+
+def rewrite(
+    physical: Sequence[str],
+    tokens: Sequence[Token],
+    selected: Sequence[Token],
+    assigned: dict[tuple[str, str | None], str],
+    path: str,
+    defined: Mapping[str, Definition],
+) -> list[str]:
+    """The source's physical lines, as the bundle publishes the selected content.
+
+    A rewrite edits the lines one inline token occupies and writes no
+    line break into them, so the lines the group then slices are the
+    lines the source wrote, one for one. Content the run did not select
+    is left alone: no reference in it was resolved, so no destination
+    was assigned to one, and a definition it names is removed with the
+    rest rather than published around it.
+
+    A source declaring no definition carries no reference-style use, so
+    a token holding no marked link is the text its source wrote.
+    """
+    written = list(physical)
+    for inline in inlines(tokens, selected):
+        marks = destinations(inline)
+        if inline.map is None or (not marks and not defined):
+            continue
+        start, end = inline.map
+        targets = [assigned[key(path, one)] for one in marks]
+        written[start:end] = lines(
+            rewritten("".join(written[start:end]), inline, targets, defined)
+        )
+    return written
+
+
+def key(path: str, destination: str) -> tuple[str, str | None]:
+    """The identity one link's destination names, as the map holding it spells it."""
+    found: Reference = inside(path, destination)
+    return found.path, found.fragment
 
 
 def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
@@ -212,12 +341,6 @@ def shifted(line: str, by: int) -> str:
         line,
         count=1,
     )
-
-
-def opening_markers(line: str) -> str:
-    """The container markers and indent one line opens with, before its content."""
-    written = CONTAINER_PREFIX.match(line)
-    return "" if written is None else written.group(0)
 
 
 def terminator(line: str) -> str:
@@ -265,8 +388,17 @@ def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
     ]
 
 
+def blank(line: str) -> bool:
+    """Whether one line carries nothing but the markers the container opens it with."""
+    return not bare(line)[len(opening_markers(line)) :].strip()
+
+
 def region(
-    physical: Sequence[str], tokens: Sequence[Token], token: Token, by: int
+    physical: Sequence[str],
+    tokens: Sequence[Token],
+    token: Token,
+    by: int,
+    removed: Collection[int] = (),
 ) -> str:
     """One region as the lines its source occupies, each heading it holds shifted.
 
@@ -276,21 +408,35 @@ def region(
     rewritten last to first, because a Setext heading becomes one line
     where its source wrote several and an earlier heading's lines would
     otherwise move out from under it.
+
+    A line a definition occupies is dropped, and so is the blank line
+    a container separated the definition from the content above it by:
+    a definition is not content, and the spacing around it is the
+    bundle's own wherever it joins what remains. A line marked for
+    removal is held as the absence it is rather than as an index, so a
+    heading rewritten above it moves it without losing it.
     """
     start, end = token.map or (0, 0)
-    carried = list(physical[start:end])
-    if not by:
-        return "".join(carried).rstrip("\r\n")
-    for opening in reversed(carried_headings(tokens, token)):
-        at, closing = opening.map or (0, 0)
-        if is_atx(opening):
-            carried[at - start] = shifted(carried[at - start], by)
-        else:
-            written = converted(physical[at:closing], level(opening) + by)
-            carried[at - start : closing - start] = [
-                written + terminator(physical[closing - 1])
-            ]
-    return "".join(carried).rstrip("\r\n")
+    carried: list[str | None] = [
+        None if at in removed else line
+        for at, line in enumerate(physical[start:end], start=start)
+    ]
+    dropped = len(carried) - len([line for line in carried if line is not None])
+    if by:
+        for opening in reversed(carried_headings(tokens, token)):
+            at, closing = opening.map or (0, 0)
+            if is_atx(opening):
+                written = carried[at - start]
+                carried[at - start] = None if written is None else shifted(written, by)
+            else:
+                carried[at - start : closing - start] = [
+                    converted(physical[at:closing], level(opening) + by)
+                    + terminator(physical[closing - 1])
+                ]
+    kept = [line for line in carried if line is not None]
+    while dropped and kept and blank(kept[-1]):
+        kept.pop()
+    return "".join(kept).rstrip("\r\n")
 
 
 def emitted_text(token: Token, text: str, by: int) -> str:
@@ -309,7 +455,9 @@ def group(
     path: str,
     tokens: Sequence[Token],
     physical: Sequence[str],
+    defined: Mapping[str, Definition] | None = None,
     selected: Selection | None = None,
+    assigned: dict[tuple[str, str | None], str] | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -322,8 +470,27 @@ def group(
     absorption is the file heading standing in for a heading the group
     carries. A group that emits none therefore shifts, and a reference
     to an absorbed title resolves to the file heading's own destination.
+
+    A destination map rewrites each marked link the selected content
+    carries. The map is built from the headings every group emits, so
+    it is known only once every group exists: a group built without one
+    reports the headings that produce it, and the same group built with
+    it carries the links pointing at them. The headings a group reports
+    are the same either way, because the rewrite edits a destination
+    and a mark and nothing a heading is slugged from.
+
+    The definition environment is this source's own, which is what its
+    reference-style uses resolve against and which no other source
+    reaches. Every line a definition occupies is dropped from the
+    content the group emits, the lines of a definition no use names
+    included, so the bundle carries the uses and none of the
+    declarations behind them.
     """
     title = heading_text(path)
+    environment: Mapping[str, Definition] = {} if defined is None else defined
+    removed = {
+        at for one in environment.values() for at in range(one.lines[0], one.lines[1])
+    }
     emitting = (
         {id(token) for token in regions(tokens)}
         if selected is None
@@ -337,26 +504,62 @@ def group(
         absorbing = None
     by = 0 if absorbing is not None else SHIFT
     emitted = [f"{ATX} {escaped(title)}"]
-    shown = [title]
-    entries = [0] if selected is None else []
     text = shown_text(tokens)
-    for token in regions(tokens):
-        if id(token) not in emitting:
-            continue
+    named = source_fragments(tokens)
+    wrapper = Generated(
+        title,
+        1,
+        FILENAME_WRAPPER,
+        None if absorbing is None else named[id(absorbing)],
+    )
+    emitting_headings: list[Emitted] = [wrapper]
+    ranges: list[Range] = []
+    entries = [0] if selected is None else []
+    chosen = [token for token in regions(tokens) if id(token) in emitting]
+    written = (
+        list(physical)
+        if assigned is None
+        else rewrite(physical, tokens, chosen, assigned, path, environment)
+    )
+    for token in chosen:
         if token is absorbing:
             if id(token) in naming:
                 entries.append(0)
             continue
-        for opening in carried_headings(tokens, token):
+        carried = carried_headings(tokens, token)
+        for opening in carried:
             depth = level(opening) + by
             if depth > MAX_LEVEL:
                 raise Overflow(text[id(opening)], depth)
-        if token.type == HEADING_OPEN:
-            if id(token) in naming:
-                entries.append(len(shown))
-            shown.append(emitted_text(token, text[id(token)], by))
-        emitted.append(region(physical, tokens, token, by))
-    return Group(SEPARATOR.join(emitted), tuple(shown), tuple(entries))
+        if token.type == HEADING_OPEN and id(token) in naming:
+            entries.append(len(emitting_headings))
+        emitting_headings.extend(
+            Carried(
+                emitted_text(one, text[id(one)], by),
+                level(one) + by,
+                Origin(
+                    path,
+                    None if one.map is None else one.map[0] + 1,
+                    level(one),
+                    named[id(one)],
+                ),
+            )
+            for one in carried
+        )
+        start, end = token.map or (0, 0)
+        ranges.append(
+            Range(
+                path,
+                (start, end),
+                tuple(at for at in range(start, end) if at in removed),
+            )
+        )
+        emitted.append(region(written, tokens, token, by, removed))
+    return Group(
+        SEPARATOR.join(emitted),
+        tuple(entries),
+        Record(path, by, tuple(emitting_headings), tuple(ranges)),
+    )
 
 
 def assemble(line: str, groups: Sequence[Group]) -> str:

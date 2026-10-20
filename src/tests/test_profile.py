@@ -17,6 +17,7 @@ from importlib.metadata import version
 
 import pytest
 
+from prosiform.limits import NESTING
 from prosiform.profile import is_markdown, parse, parser, refusals
 
 PARSER = "markdown-it-py"
@@ -27,7 +28,7 @@ LINK_OPEN = "link_open"
 
 def render(text: str) -> str:
     """One source rendered by the parser the profile configures."""
-    return str(parser().render(text))
+    return str(parser(NESTING.default).render(text))
 
 
 def links(text: str) -> list[str]:

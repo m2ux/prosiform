@@ -218,6 +218,16 @@ def test_a_heading_a_container_carries_is_shifted_where_it_sits(
     assert carried.text == f"# guide\n\n## Another Name\n\n{expected}"
 
 
+def test_a_heading_a_container_carries_is_one_the_group_emits() -> None:
+    carried = grouped("guide.md", "# Guide\n\n> ## Quoted\n>\n> Inside.\n\n## Run\n")
+    assert carried.headings == ("guide", "Quoted", "Run")
+
+
+def test_a_heading_a_code_example_holds_is_no_heading_the_group_emits() -> None:
+    carried = grouped("guide.md", "# Guide\n\n> ```\n> ## Not A Heading\n> ```\n")
+    assert carried.headings == ("guide",)
+
+
 def test_a_container_keeps_the_heading_like_text_a_code_example_holds() -> None:
     written = "> ```markdown\n> ## Not A Heading\n> ```"
     carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
