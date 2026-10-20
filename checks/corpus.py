@@ -24,12 +24,20 @@ A failing fixture is named by its identity — its path under `fixtures/` —
 and its differences are printed under it, so a red run names which
 fixture and where it differed.
 
+`--awaiting WORK` reports the fixtures declaring that work instead of
+running the corpus, so a session starting a piece of work reads which
+fixtures it unblocks before it changes anything. The name is matched as
+the manifest declares it, so a marker naming an epic and one naming a
+task within it are separate requests. The report reads manifests alone
+and needs no build.
+
 The build under test comes from configuration and from nowhere else. An
 absent `PROSIFORM_BUILD` fails the run: a corpus that skips because it
 found no build sits inside a passing suite saying nothing, and a fixture
 is never reported as holding against a build that never ran.
 """
 
+import argparse
 import sys
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -37,7 +45,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from manifests import CORPUS, MANIFEST_NAME, fixtures, read
+from manifests import CORPUS, MANIFEST_NAME, fixtures, identity, read
 from runner import BuildNotConfigured, Result, build_under_test, run_fixture
 
 AWAITING = "awaiting"
@@ -127,8 +135,46 @@ def report(outcomes: list[Outcome]) -> list[str]:
     return lines
 
 
-def main(corpus: Path = CORPUS) -> int:
-    """Run the corpus and return the status its verdict decides."""
+def unblocked(work: str, corpus: Path = CORPUS) -> list[Path]:
+    """Every fixture declaring it awaits the named work, in path order.
+
+    The name is compared as the manifest declares it, so a marker naming
+    an epic and one naming a task within it answer separate requests.
+    """
+    return [
+        fixture
+        for fixture in fixtures(corpus)
+        if awaiting(read(fixture / MANIFEST_NAME)) == work
+    ]
+
+
+def unblocked_report(work: str, corpus: Path = CORPUS) -> list[str]:
+    """Each fixture the named work unblocks, then how many there are."""
+    found = unblocked(work, corpus)
+    return [identity(fixture, corpus) for fixture in found] + [
+        f"awaiting {work}: {len(found)} fixture(s)"
+    ]
+
+
+def requested(argv: list[str]) -> str | None:
+    """The work a request names, or nothing when the corpus is to be run."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--awaiting",
+        metavar="WORK",
+        help="report the fixtures declaring they await this work, in place of "
+        "running the corpus",
+    )
+    named: str | None = parser.parse_args(argv).awaiting
+    return named
+
+
+def main(corpus: Path = CORPUS, *, awaited: str | None = None) -> int:
+    """Run the corpus, or report what one piece of work unblocks."""
+    if awaited is not None:
+        for line in unblocked_report(awaited, corpus):
+            print(line)
+        return 0
     try:
         build_under_test()
     except BuildNotConfigured as absent:
@@ -145,4 +191,4 @@ def main(corpus: Path = CORPUS) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(awaited=requested(sys.argv[1:])))
