@@ -166,7 +166,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-One fixture carries the marker. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own.
+No fixture carries the marker.
 
 ## The schema
 

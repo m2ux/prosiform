@@ -135,6 +135,11 @@ def test_the_mark_leaves_the_text_that_followed_it(label: str, expected: str) ->
             ["a", "b"],
             "[a](#a) and [b](#b)",
         ),
+        (
+            "A picture ![of the [¬ rules](rules.md) it names](plan.png).",
+            ["rules"],
+            "A picture ![of the [rules](#rules) it names](plan.png).",
+        ),
         ("nothing to rewrite", [], "nothing to rewrite"),
     ],
 )
@@ -272,6 +277,12 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
         ("The procedure cites [rules](rules.md).", []),
         ("A fragment [¬ alpha](#alpha) of its own.", ["#alpha"]),
         ("An example `[¬ draft](draft.md)` of one.", []),
+        ("A picture ![of the [¬ rules](rules.md) it names](plan.png).", ["rules.md"]),
+        ("A picture ![of the [rules](rules.md) it names](plan.png).", []),
+        (
+            "![[¬ one](one.md)](a.png) and [¬ two](two.md)",
+            ["one.md", "two.md"],
+        ),
     ],
 )
 def test_the_parser_names_each_marked_link_a_token_carries(
