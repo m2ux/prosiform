@@ -96,3 +96,4 @@ The order these epics start in is carried by each one's priority label rather th
 - **R1.** **Source.** [v1 design](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md) — the behavioural contract these criteria answer to: input and output, Markdown profile, section extraction, destination identity, validation invariants and resource limits.
 - **R2.** [Planning decisions](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — why the prototype is a retained oracle, where the corpus lives, and the measured evidence behind the Problem.
 - **R3.** [Proposal](https://github.com/m2ux/prosiform/issues/1) — the scoped problem and the goal clauses these criteria trace to.
+
