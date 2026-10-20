@@ -1,0 +1,15 @@
+description = "The same link, with its section consolidated into the ancestor it names, is owned by the same section and classified as the same ancestor reference, so the bundle carries the same regions and consolidation changes no classification."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Link ownership",
+  "Post-compilation invariants — Ownership stability",
+]
+
+[invocation]
+root = "source"
+arguments = ["manual.md#procedure"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

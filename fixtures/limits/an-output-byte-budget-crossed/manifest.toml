@@ -1,0 +1,17 @@
+description = "A complete bundle larger than the output budget fails the run rather than being truncated to fit, and nothing is published."
+
+clauses = [
+  "Resource limits — --max-output-bytes",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-output-bytes", "64", "alpha.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"

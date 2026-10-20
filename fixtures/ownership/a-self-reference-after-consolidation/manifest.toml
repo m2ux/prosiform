@@ -1,0 +1,20 @@
+description = "A section's link to itself stays a direct self-reference when the whole document is what the run selected, because ownership is stored apart from the region a run consolidated it into."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Link ownership",
+  "Post-compilation invariants — Ownership stability",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SELF_REFERENCE"
+reference = "guide.md#detail"
+source = "guide.md:9"

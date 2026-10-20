@@ -1,0 +1,17 @@
+description = "A source whose raw bytes exceed the per-source budget fails the run, the figure counted over the bytes the file holds."
+
+clauses = [
+  "Resource limits — --max-file-bytes",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-file-bytes", "16", "alpha.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"
