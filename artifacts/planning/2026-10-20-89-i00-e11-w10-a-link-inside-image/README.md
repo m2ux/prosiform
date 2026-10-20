@@ -13,6 +13,7 @@ It matters because the mark is authoring syntax that never reaches a reader, and
 | Artifact | What it holds |
 | --- | --- |
 | [w10.md](w10.md) | The task's plan: where discovery reads inline events and what reaching the nested run changes |
+| [validation.md](validation.md) | What the build was measured to do and the checks the delivery was held to |
 
 ## Links
 
