@@ -8,7 +8,8 @@ An argument naming a row is that row's work item, a file whose declaration line 
 component its implementation extends:
   **Component:** src/bundle/assembly.ts
 A declared component is read without its link, a wrapping code span, a trailing full stop or a
-leading ./, so two spellings of one path are one component.
+leading ./, so two spellings of one path are one component. A value still carrying the template's
+{{…}} placeholder declares none.
 
 Each remaining file is an epic issue body holding the agent-engineering Work Breakdown table:
   | Task | Description | Coverage | Depends on | Joins | Done |
@@ -40,8 +41,9 @@ With I=, the initiative's Depends on cells are checked: each epic's cell names e
 epics required in full by every task or joined unit, less transitive epic dependencies, and names no task.
 Another initiative's epic (I05:E00) or an issue (#750) may also be named.
 Advisory: task numbers that do not follow the order tasks can start.
-Also printed: each pair of rows in different epics whose work items declare one component, the rows
-no work item was given for, so a partial contention report names what it passed over, each
+Also printed: each pair of rows in different epics whose work items declare one component, every
+row no component was read for, whether its work item was absent, unreadable or undeclared, so a
+partial contention report names what it passed over, each
 task's level (0 = can start now), the longest chains, and the proposed priority of each epic.
 Epics sharing a priority number start together, so prerequisite depth sets the number and
 contention separates it: an epic with no prerequisite epic carries the largest, and an epic
@@ -58,6 +60,7 @@ TASK = re.compile(r'E\d\d:W\d\d')
 EPIC = re.compile(r'E\d\d')
 WID = re.compile(r'W\d\d')
 COMPONENT = re.compile(r'\*\*Component:\*\*\s*(.+?)\s*$')
+PLACEHOLDER = re.compile(r'\{\{.*\}\}')
 EXTERNAL = re.compile(r'#\d+|I\d\d:E\d\d(?::W\d\d)?')
 INITIATIVE_EPIC = re.compile(r'#\d+|I\d\d:E\d\d')
 MAX_CHAINS = 10
@@ -148,7 +151,7 @@ def read_components(items: dict[str, Path]) -> tuple[dict[str, str], list[str]]:
             if found:
                 declared = normalise(found[1])
                 break
-        if declared:
+        if declared and not PLACEHOLDER.search(declared):
             components[key] = declared
         else:
             problems.append(f'{key}: work item declares no component')
@@ -390,12 +393,12 @@ def main(argv: list[str]) -> int:
     for n in sorted(tasks, key=lambda k: (lv(k), k)):
         print(lv(n), n, '-', tasks[n][0][:70])
     pairs = contention(components)
-    unchecked = sorted(key for key in tasks if key not in items)
+    unchecked = sorted(key for key in tasks if key not in components)
     print('\n--- component contention: rows of different epics extending one component')
     print('\n'.join(f'{left} and {right} both extend {components[left]}'
                     for left, right in pairs) or 'none')
     if unchecked:
-        print('not checked, no work item given:', ', '.join(unchecked))
+        print('not checked, no component read:', ', '.join(unchecked))
     print('\n--- epic priority (epics sharing a number start together)')
     proposed = epic_priority(tasks, tuple(epics),
                              {(left.split(':')[0], right.split(':')[0]) for left, right in pairs})

@@ -82,7 +82,7 @@ The main path meets [Outcomes](#outcomes).
 8. **Check dependencies.**
    Check them whenever an initiative or epic is aligned.
    - Take the initiative's body and every epic's body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue).
-   - Take each task row's work-item file from the initiative's planning record, which holds one per task whatever that row currently links, so contention is measured rather than reported as unchecked.
+   - Take each task row's work-item file from the planning record that registered it, which holds one per task whatever that row currently links, so contention is measured rather than reported as unchecked.
    - Follow [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) with those bodies, those work-item files, current pull request records, confirmed maps when any, and explicitly authorized outside-initiative files.
    - Resume this alignment with its checked bodies or unresolved findings.
    - Put each problem it reports to the user. An initiative Depends on cell takes the epics it derives, as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.

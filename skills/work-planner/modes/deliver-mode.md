@@ -71,7 +71,7 @@ The main path meets [Outcomes](#outcomes).
    - Confirm the set as an [Interview](../guidelines.md#modes). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
 7. **Hold.**
    For each confirmed unit, before its session starts:
-   - Read the component each of the unit's rows declares from the work-item file its epic's planning record holds, before a reservation replaces the row's link.
+   - Read the component each of the unit's rows declares from the work-item file the planning record that registered it holds, before a reservation replaces the row's link.
    - Add its record with [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record), named as the `unit` line gives it.
    - Run [Publish Planning Record](../artifacts/planning-record.md#publish-planning-record) for the record's folder.
    - Run [Reserve Task Rows](../artifacts/epic-issue-body.md#reserve-task-rows) for the unit's tasks.

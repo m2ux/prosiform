@@ -294,7 +294,7 @@ class ComponentContention(unittest.TestCase):
         code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''), ('W02', 'Emit', 'W01'))),
                           ('E08:W01', work_item(self.BUNDLE))])
         self.assertEqual(code, 0, text)
-        self.assertIn('not checked, no work item given: E08:W02', text)
+        self.assertIn('not checked, no component read: E08:W02', text)
 
     def test_a_complete_set_of_work_items_names_nothing_as_unchecked(self):
         code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
@@ -307,7 +307,19 @@ class ComponentContention(unittest.TestCase):
                           ('E08:W01', '## Overview\n\nWhat the task delivers.\n')])
         self.assertEqual(code, 1)
         self.assertIn('E08:W01: work item declares no component', text)
-        self.assertNotIn('not checked', text)
+        self.assertIn('not checked, no component read: E08:W01', text)
+
+    def test_a_work_item_still_carrying_the_placeholder_declares_none(self):
+        placeholder = '**Component:** {{The one component this task implementation extends}}\n'
+        code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
+                          ('E09', epic_body(('W01', 'Extend assembly again', ''))),
+                          ('E08:W01', placeholder), ('E09:W01', placeholder)])
+        self.assertEqual(code, 1)
+        self.assertIn('E08:W01: work item declares no component', text)
+        self.assertIn('E09:W01: work item declares no component', text)
+        self.assertIn('--- component contention: rows of different epics extending one component\nnone',
+                      text)
+        self.assertIn('--- epic priority (epics sharing a number start together)\n1 E08\n1 E09', text)
 
     def test_a_work_item_naming_no_row_is_a_problem(self):
         code, text = run([('E08', epic_body(('W01', 'Extend assembly', ''))),
