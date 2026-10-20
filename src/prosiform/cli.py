@@ -149,10 +149,12 @@ from prosiform.limits import (
 )
 from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 from prosiform.source import (
+    AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
     ENCODING,
     NESTED_SECTION_TARGET,
     UNTERMINATED_FRONTMATTER,
+    Ambiguous,
     Nested,
     Selection,
     Source,
@@ -660,6 +662,15 @@ def selection(
             continue
         try:
             found = section(tokens, spelled)
+        except Ambiguous as shared:
+            raise input_failure(
+                f"the reference {one.original!r} names {len(shared.lines)} headings "
+                f"of the document it selects from, which it cannot tell apart",
+                code=AMBIGUOUS_SOURCE_HEADING,
+                remedy="retitle one of the headings so each takes a slug of its own",
+                reference=one.original,
+                source=one.origin,
+            ) from shared
         except Nested as nested:
             raise input_failure(
                 f"the reference {one.original!r} names a heading a container "
@@ -707,7 +718,10 @@ def self_referent(
     the same whether the owning section was selected on its own or
     inside a region that consolidated it. A fragment naming no section
     of the document names nothing here either, and the run reports it
-    as the reference to a missing target it is.
+    as the reference to a missing target it is. A fragment the document
+    refuses — one two of its headings produce, or one naming a heading
+    a container carries — names no node to compare against, and the
+    refusal is reported where the reference is resolved.
     """
     if found.path != path or at is None:
         return False
@@ -718,7 +732,7 @@ def self_referent(
         return False
     try:
         named = section(tokens, found.fragment)
-    except Nested:
+    except (Ambiguous, Nested):
         return False
     return named is not None and named[0] is holder
 

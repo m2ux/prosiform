@@ -3,7 +3,7 @@ description = "Each source heading takes the fragment a renderer generates for i
 clauses = [
   "Source-heading resolution — derive visible heading text from parser events",
   "Source-heading resolution — GitHub-compatible slugs and duplicate tracking",
-  "Destination identity and link rewriting — Ordinal assignment",
+  "Bundle destinations — Ordinal assignment",
   "Entry line",
 ]
 

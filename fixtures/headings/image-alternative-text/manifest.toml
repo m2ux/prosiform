@@ -2,7 +2,7 @@ description = "A heading carrying an image takes the fragment the words beside t
 
 clauses = [
   "Source-heading resolution — derive visible heading text from parser events",
-  "Destination identity and link rewriting — Ordinal assignment",
+  "Bundle destinations — Ordinal assignment",
   "Entry line",
 ]
 

@@ -31,20 +31,24 @@ each direct what is read without being read. The derivation therefore
 reads the event stream and nothing else, which is why a heading written
 three ways with one appearance indexes once.
 
-The fragment is the one a renderer generates: the visible text lowered,
-the characters the renderer discards removed, and each remaining space
-a hyphen. Where a slug is already taken the renderer numbers the
-heading apart, counting from one and passing over every ordinal
-something already carries, so a heading whose own text spells an
-ordinal takes that ordinal from the heading that would otherwise have
-been numbered into it. The count is kept per complete source document,
-so a heading's fragment follows from the document that carries it
-rather than from anything bundled beside it.
+A heading's fragment is the slug its own visible text produces: the text
+lowered, the characters the renderer discards removed, and each
+remaining space a hyphen. Nothing numbers two headings of one source
+apart, so a fragment names a heading by what its author wrote and not by
+how many similar headings precede it. A fragment no heading's text
+produces names nothing; a fragment two headings' text produces names
+neither, which is the refusal `Ambiguous` raises, and the author
+disambiguates by retitling.
+
+The renderer's own ordinal belongs to a bundle destination rather than to
+a source fragment, because the tool assigns it over a document it
+generated in one pass. `fragments` below is that rule, applied to the
+sequence of headings a bundle emits.
 
 Every heading the profile recognizes is indexed, a container-nested one
 included: eligibility to be selected is a later decision, and a heading
-left out of the index would change the fragment of every heading after
-it that shares its slug.
+a container carries is one a renderer reading the bundle indexes beside
+the rest.
 
 A link is read from the same events. What a document requires is
 written in its links, so the model reports each link a given run of
@@ -96,6 +100,7 @@ PHYSICAL_LINE = re.compile(r"[^\n]*\n|[^\n]+")
 
 UNTERMINATED_FRONTMATTER = "E_UNTERMINATED_FRONTMATTER"
 NESTED_SECTION_TARGET = "E_NESTED_SECTION_TARGET"
+AMBIGUOUS_SOURCE_HEADING = "E_AMBIGUOUS_SOURCE_HEADING"
 
 HEADING_OPEN = "heading_open"
 INLINE = "inline"
@@ -123,6 +128,17 @@ class Nested(Exception):
             f"the fragment {fragment!r} names a heading a container carries"
         )
         self.fragment = fragment
+
+
+class Ambiguous(Exception):
+    """A fragment two headings of one source produce, which names neither."""
+
+    def __init__(self, fragment: str, lines: Sequence[int | None]) -> None:
+        super().__init__(
+            f"the fragment {fragment!r} names {len(lines)} headings of one document"
+        )
+        self.fragment = fragment
+        self.lines = tuple(lines)
 
 
 class Unterminated(Exception):
@@ -221,7 +237,7 @@ def slug(text: str) -> str:
 
 
 def fragments(shown_texts: Sequence[str]) -> list[str]:
-    """The fragment of each heading, in the order a renderer reads them.
+    """The fragment a renderer generates for each heading of one sequence.
 
     The first heading to carry a slug takes it, and a later one takes
     the slug and an ordinal, counting from one. An ordinal something
@@ -230,7 +246,9 @@ def fragments(shown_texts: Sequence[str]) -> list[str]:
     takes the next free ordinal instead. Two headings therefore never
     share a fragment.
 
-    This is the renderer's own rule, and the counts it keeps belong to
+    This is the renderer's own rule, reproduced so a destination and the
+    document it names agree. The sequence it runs over is the headings
+    the bundle emits, in bundle order, and the counts it keeps belong to
     one run over one sequence, so a sequence begun again is numbered
     from the start.
     """
@@ -266,7 +284,7 @@ def headings(tokens: Sequence[Token]) -> Iterator[tuple[Token, Token]]:
 
 @dataclass(frozen=True)
 class Heading:
-    """One source heading: its level, the text it shows and the fragment it takes."""
+    """One source heading: its level, the text it shows and that text's slug."""
 
     level: int
     text: str
@@ -276,18 +294,14 @@ class Heading:
 
 def index(tokens: Sequence[Token]) -> tuple[Heading, ...]:
     """Every heading one complete source document carries, in source order."""
-    carried = list(headings(tokens))
-    shown_texts = [visible(inline) for _, inline in carried]
     return tuple(
         Heading(
             level=level(opening),
-            text=text,
-            fragment=fragment,
+            text=visible(inline),
+            fragment=slug(visible(inline)),
             line=None if opening.map is None else opening.map[0] + 1,
         )
-        for (opening, _), text, fragment in zip(
-            carried, shown_texts, fragments(shown_texts), strict=True
-        )
+        for opening, inline in headings(tokens)
     )
 
 
@@ -325,17 +339,22 @@ def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
     container carries neither roots nor ends one.
 
     A fragment naming no heading of this document selects nothing and is
-    reported as the reference to nothing it is. A fragment naming a
-    container-nested heading names a heading the document carries and a
-    section it does not, which is the refusal `Nested` raises.
+    reported as the reference to nothing it is. A fragment two headings
+    produce names neither, and is refused as the ambiguity it is before
+    anything asks what either heading roots: the run cannot say which
+    heading was meant, so it cannot say that the one that was meant
+    roots no section. A fragment naming one heading a container carries
+    names a heading the document carries and a section it does not,
+    which is the refusal `Nested` raises.
     """
     carried = [opening for opening, _ in headings(tokens)]
     named = index(tokens)
-    at = next(
-        (one for one, each in enumerate(named) if each.fragment == fragment), None
-    )
-    if at is None:
+    found = [one for one, each in enumerate(named) if each.fragment == fragment]
+    if len(found) > 1:
+        raise Ambiguous(fragment, [named[one].line for one in found])
+    if not found:
         return None
+    at = found[0]
     spans = list(regions(tokens))
     start = opens(spans, carried[at])
     if start is None:
