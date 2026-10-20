@@ -46,6 +46,14 @@ included: eligibility to be selected is a later decision, and a heading
 left out of the index would change the fragment of every heading after
 it that shares its slug.
 
+A link is read from the same events. What a document requires is
+written in its links, so the model reports each link a given run of
+regions carries: where it points, the literal text its content opens
+on, and the line of its block. A link inside a code span or a code
+block is an example rather than a link and the parser produces none,
+and an image is a reference to a resource rather than to a document,
+so neither reaches a caller asking what this content links to.
+
 That later decision is the section below. A document is a run of
 maximal regions, each a block the document itself carries, and a
 container is one region whatever it holds. Only a heading that is such
@@ -81,6 +89,8 @@ HEADING_OPEN = "heading_open"
 INLINE = "inline"
 TEXT = "text"
 CODE_INLINE = "code_inline"
+LINK_OPEN = "link_open"
+HREF = "href"
 BREAKS = ("softbreak", "hardbreak")
 
 SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
@@ -322,6 +332,64 @@ def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
             end = following
             break
     return tuple(spans[start:end])
+
+
+@dataclass(frozen=True)
+class Link:
+    """One link a source carries, read from the events the parser produced.
+
+    The destination is the one the parser resolved, so a reference-style
+    use and an inline one arrive the same way and a Markdown escape has
+    already been read. The opening is the literal text the link's
+    content begins with, which is where a dependency's mark is written:
+    a link whose content opens on a code span, an emphasis or an image
+    begins with no text and opens with nothing.
+    """
+
+    destination: str
+    opening: str
+    line: int | None
+
+
+def opening_text(children: Sequence[Token], at: int) -> str:
+    """The literal text the link opened at one position begins with."""
+    following = children[at + 1] if at + 1 < len(children) else None
+    if following is None or following.type != TEXT:
+        return ""
+    return following.content
+
+
+def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
+    """Each inline token the given regions of one document carry, in source order."""
+    spans = [token.map for token in selected if token.map is not None]
+    for token in tokens:
+        if token.type != INLINE or token.map is None:
+            continue
+        if any(start <= token.map[0] < end for start, end in spans):
+            yield token
+
+
+def links(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Link]:
+    """Every link the given regions of one source carry, in source order.
+
+    A link is what the parser read as one, so an apparent link inside a
+    code span or a code block is text the document carries and is not
+    one of these, and an image names a resource rather than a document
+    and is not one either. The line is the line of this content the
+    link's own block opens on, which is as near the link as the parser
+    records a position.
+    """
+    for token in inlines(tokens, selected):
+        children = token.children or []
+        for at, child in enumerate(children):
+            if child.type != LINK_OPEN:
+                continue
+            destination = child.attrGet(HREF)
+            yield Link(
+                "" if destination is None else str(destination),
+                opening_text(children, at),
+                None if token.map is None else token.map[0] + 1,
+            )
 
 
 @dataclass(frozen=True)
