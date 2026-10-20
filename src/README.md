@@ -1,4 +1,4 @@
-# Prototype
+# Source
 
 The Python build of prosiform.
 
@@ -11,7 +11,7 @@ Installing it puts the `prosiform` command on the path, declared by `[project.sc
 `pyproject.toml` declares the supported Python version and the build's dependencies. `uv.lock` records the exact version and hash of every package those dependencies resolve to, so two checkouts install the same tree.
 
 ```bash
-cd prototype
+cd src
 uv sync --frozen
 ```
 

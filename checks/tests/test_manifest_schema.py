@@ -161,7 +161,7 @@ def test_a_diagnostic_naming_no_code_fails() -> None:
 
 def test_an_unknown_field_fails() -> None:
     manifest = complete()
-    manifest["runner"] = "prototype"
+    manifest["runner"] = "src"
     assert errors(manifest), "a field the schema does not describe passed validation"
 
 

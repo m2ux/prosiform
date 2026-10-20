@@ -5,7 +5,7 @@
 # first failure. Continuous integration calls these same targets.
 #
 # The Python tools come from the build's locked development dependency group:
-# `uv run --frozen` installs what `prototype/uv.lock` records and resolves
+# `uv run --frozen` installs what `src/uv.lock` records and resolves
 # nothing. The corpus checks read `jsonschema` from that same group, so they
 # run through it; the layout, table, link and vocabulary checks depend on the
 # standard library alone and run under `python3` directly.
@@ -18,16 +18,16 @@
 # Every target below is named by a command table in one of the repository's
 # READMEs, which `make tables` holds true in both directions.
 
-UV_RUN := uv run --project prototype --frozen
-TOOL_CONFIG := prototype/pyproject.toml
-PYTHON_SOURCES := prototype/src prototype/tests checks
+UV_RUN := uv run --project src --frozen
+TOOL_CONFIG := src/pyproject.toml
+PYTHON_SOURCES := src/src src/tests checks
 
 .PHONY: check test harness corpus lint format-check typecheck lock-check layout tables links vocabulary
 
 check: lock-check lint format-check typecheck test harness corpus layout tables links vocabulary
 
 test:
-	cd prototype && uv run --frozen pytest
+	cd src && uv run --frozen pytest
 
 harness:
 	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests
@@ -45,7 +45,7 @@ typecheck:
 	$(UV_RUN) mypy --config-file $(TOOL_CONFIG) $(PYTHON_SOURCES)
 
 lock-check:
-	cd prototype && uv lock --check
+	cd src && uv lock --check
 
 layout:
 	python3 checks/layout.py
