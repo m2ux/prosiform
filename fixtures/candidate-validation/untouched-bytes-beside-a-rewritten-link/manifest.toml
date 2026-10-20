@@ -1,0 +1,16 @@
+description = "A region carrying a rewritten marked link keeps every byte the rewrite does not reach: an indented thematic break keeps its indent and a line break keeps the two spaces that wrote it."
+
+clauses = [
+  "Preservation — Untouched non-heading bytes and code examples are not reformatted or repaired",
+  "Post-compilation invariants — Reference preservation",
+  "Post-compilation invariants — No new links",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
