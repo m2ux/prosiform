@@ -111,7 +111,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Three fixtures carry the marker. `ancestor-promotion/a-link-to-a-heading-only-ancestor` awaits `I00:E09:W02`, which delivers the structural ancestors a reference promotes into their content. `reference/a-definition-spelled-across-two-lines` awaits `I00:E08:W05`, which publishes a definition the author spelled across two lines inline, because the emission writes no line break into the lines an inline token occupies. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own.
+Two fixtures carry the marker. `ancestor-promotion/a-link-to-a-heading-only-ancestor` awaits `I00:E09:W02`, which delivers the structural ancestors a reference promotes into their content. `reference/a-marked-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own.
 
 ## The schema
 

@@ -293,12 +293,17 @@ def rewrite(
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
-    A rewrite edits the lines one inline token occupies and writes no
-    line break into them, so the lines the group then slices are the
-    lines the source wrote, one for one. Content the run did not select
-    is left alone: no reference in it was resolved, so no destination
-    was assigned to one, and a definition it names is removed with the
-    rest rather than published around it.
+    A rewrite edits the lines one inline token occupies and reports one
+    entry for each of them, so the lines the group then slices are the
+    lines the source wrote, one for one, and a token map taken from the
+    parse names the same content after the rewrite as before it. A
+    definition the author spelled across more than one line is published
+    with the line feeds it carries, and the entry for the line that
+    gained one holds it.
+
+    Content the run did not select is left alone: no reference in it was
+    resolved, so no destination was assigned to one, and a definition it
+    names is removed with the rest rather than published around it.
 
     A source declaring no definition carries no reference-style use, so
     a token holding no marked link is the text its source wrote.
@@ -310,9 +315,7 @@ def rewrite(
             continue
         start, end = inline.map
         targets = [assigned[key(path, one)] for one in marks]
-        written[start:end] = lines(
-            rewritten("".join(written[start:end]), inline, targets, defined)
-        )
+        written[start:end] = rewritten(written[start:end], inline, targets, defined)
     return written
 
 
