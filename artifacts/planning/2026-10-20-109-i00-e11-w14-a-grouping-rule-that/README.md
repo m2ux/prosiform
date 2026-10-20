@@ -13,6 +13,7 @@ It matters because a rule that did nothing looks exactly like a rule that worked
 | Artifact | What it holds |
 | --- | --- |
 | [w14.md](w14.md) | The task's plan: where the closure is known, what the warning carries and the fixtures that state both cases |
+| [validation.md](validation.md) | The checks run over the delivery, their results, the review of the change and the defect it found in the arrangement |
 
 ## Links
 
