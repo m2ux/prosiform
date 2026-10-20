@@ -14,6 +14,7 @@ It matters because the corpus is today weaker than the contract it encodes: thre
 | --- | --- |
 | [w03.md](w03.md) | The task's plan: the declaration's shape, what it compares and the fixtures that exercise it |
 | [validation.md](validation.md) | What the comparison was measured to do, against a response it must accept and one it must refuse, and the gate the delivery was held to |
+| [change-list.md](change-list.md) | Every plan change this delivery applied, and the row numbering it settled |
 
 ## Links
 
@@ -22,5 +23,6 @@ It matters because the corpus is today weaker than the contract it encodes: thre
 | Epic issue | [#39 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/issues/39) |
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
-| Defect | [#52 Fixture Comparison of Diagnostic Message Text](https://github.com/m2ux/prosiform/issues/52) |
+| Task issue | [#52 \[I00:E11:W03\] Fixture Comparison](https://github.com/m2ux/prosiform/issues/52) |
+| Pull request | [#128 \[I00:E11\] A Manifest Comparison That No Single Build's Text Binds](https://github.com/m2ux/prosiform/pull/128) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
