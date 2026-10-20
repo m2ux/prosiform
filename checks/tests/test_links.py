@@ -1,4 +1,12 @@
-"""Assert the link check tells a silent host apart from a missing target.
+"""Assert the link check reads a document's references and the answers it gets.
+
+What the check resolves is what it read, so the reading is held to a document
+it would be read wrongly: a fenced example carrying references of its own, a
+reference written twice, and a heading repeated, whose second occurrence takes
+a fragment of its own. The heading-slug rule the fragments rest on is held to
+GitHub's own anchors in `test_slug.py`.
+
+A silent host is told apart from a missing target.
 
 A reference is unresolved when the host answered and said the target is
 not there. A host returning a server error, and a host refusing the caller
@@ -191,3 +199,82 @@ def test_an_unauthorised_page_is_an_unresolved_reference(
     answers, address = serving
     answers.statuses = [401]
     assert links.retried(lambda: links.reach(address)) == "HTTP 401"
+
+
+FENCED = """\
+# Doc
+
+A [plain reference](docs/one.md) and an <https://example.com/angle> address.
+
+[definition]: docs/two.md
+
+```markdown
+A [fenced reference](docs/never.md) is an example rather than a reference.
+
+[fenced definition]: docs/never-either.md
+```
+
+The [same reference](docs/one.md) written twice is one reference.
+
+## A Heading
+
+## A Heading
+"""
+
+
+def test_every_reference_a_document_carries_is_read() -> None:
+    assert links.references(FENCED) == ["docs/one.md", "docs/two.md"]
+
+
+def test_a_fenced_reference_is_an_example_rather_than_a_reference() -> None:
+    found = links.references(FENCED)
+    assert "docs/never.md" not in found
+    assert "docs/never-either.md" not in found
+
+
+def test_a_reference_written_twice_is_read_once() -> None:
+    assert links.references(FENCED).count("docs/one.md") == 1
+
+
+def test_a_repeated_heading_generates_a_numbered_fragment() -> None:
+    assert links.fragments_of(FENCED) == {"doc", "a-heading", "a-heading-1"}
+
+
+def test_a_fragment_a_heading_generates_resolves(tmp_path: Path) -> None:
+    document = tmp_path / "doc.md"
+    document.write_text(FENCED)
+    assert links.resolve_local(document, "#a-heading-1") is None
+
+
+def test_a_fragment_no_heading_generates_is_unresolved(tmp_path: Path) -> None:
+    document = tmp_path / "doc.md"
+    document.write_text(FENCED)
+    assert links.resolve_local(document, "#a-heading-2") == (
+        "no heading in doc.md generates #a-heading-2"
+    )
+
+
+def test_a_path_the_tree_does_not_hold_is_unresolved(tmp_path: Path) -> None:
+    document = tmp_path / "doc.md"
+    document.write_text(FENCED)
+    assert links.resolve_local(document, "absent.md") == "absent.md does not exist"
+
+
+def test_a_fragment_on_a_named_document_resolves_against_its_headings(
+    tmp_path: Path,
+) -> None:
+    document = tmp_path / "doc.md"
+    document.write_text("# Doc\n\nIt names [a heading](other.md#a-heading).\n")
+    (tmp_path / "other.md").write_text(FENCED)
+    assert links.resolve_local(document, "other.md#a-heading") is None
+    assert links.resolve_local(document, "other.md#absent") == (
+        "no heading in other.md generates #absent"
+    )
+
+
+def test_a_blob_or_tree_address_into_this_repository_is_resolved_by_git() -> None:
+    prefix = links.REPOSITORY_URL_PREFIX
+    assert links.is_repository_tree_url(f"{prefix}blob/engineering/README.md")
+    assert links.is_repository_tree_url(f"{prefix}tree/engineering/artifacts")
+    assert not links.is_repository_tree_url(f"{prefix}issues/39")
+    assert not links.is_repository_tree_url("https://example.com/blob/main/README.md")
