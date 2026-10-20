@@ -1,0 +1,20 @@
+description = "Marking an image fails the run even where it names a Markdown document, because image syntax embeds rather than links and a document named that way is no more bundleable than a picture."
+
+clauses = [
+  "Link classification and resource handling — A marked resource",
+  "Link classification and resource handling — Everything else",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_MARKED_RESOURCE"
+reference = "rules.md"
+source = "guide.md:3"

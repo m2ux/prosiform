@@ -784,6 +784,30 @@ def test_marking_a_reference_outside_the_profile_s_suffixes_is_refused(
     assert run.stdout == ""
 
 
+def test_marking_an_image_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![\u00ac the architecture](plan.png).\n")
+    (root / "plan.png").write_text("Never opened.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+    assert run.stdout == ""
+
+
+def test_marking_an_image_naming_a_markdown_file_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![\u00ac the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nThe rules.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+
+
+def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![the architecture](plan.png).\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "![the architecture](plan.png)" in run.stdout
+
+
 def test_marking_a_reference_carrying_a_scheme_is_refused(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee [¬ the spec](https://e.test/s.md).\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
