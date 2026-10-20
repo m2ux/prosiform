@@ -452,6 +452,32 @@ The alternative of running `I00:E11` before `I00:E10` was refused: it puts the c
 
 This was found by the session delivering `I00:E05:W02`, which declared a fixture against a defect it had just placed in `I00:E11` and reported the tension rather than choosing a marker that read better.
 
+## D44 — A Cross-Epic Dependency Gates on the Epic, and the Row Names the Reason
+
+A task row naming another epic's row waits for that epic. The initiative row states the gate, and the rows beside it move independently, so the finest grain the plan gates at is one epic.
+
+Every `Depends on` cell naming another epic therefore links that epic and names the row in parentheses: `[E05](issues/7) (W02)`. The link is what gates and the parenthetical is why, which is the reading the cell already had and did not say.
+
+The cells said `[E05:W02](issues/7)`, whose text promised a precision the link did not carry. A reader scheduling `I00:E07:W02` would have read it as waiting on one merged row and found it waiting on four.
+
+Gating at the row was refused. A merged row is not a settled surface: a later row in the same epic revises what the earlier one delivered, and three contract changes landed in `I00:E05` after `W02` merged. An epic that closed has stopped moving, which is the property a dependant needs. The cost is a wave of wall-clock per dependent row, paid knowingly.
+
+This was found by reading `I00:E07:W02` against the queue, which held it blocked on the epic while its cell named a row that had already merged.
+
+## D45 — An Internal Error on Accepted Input Does Not Wait for the Deferred-Debt Epic
+
+A link-reference definition whose destination or title the author spelled across two lines ends the run in `E_UNEXPECTED_INTERNAL_ERROR`. The input is valid CommonMark, the profile refuses nothing in it, and the contract states that a resolved reference is published inline with its title preserved.
+
+It is delivered by [I00:E08](https://github.com/m2ux/prosiform/issues/59) as `W05` and `AC9`, and `I00:E11` carries neither a row nor a criterion for it.
+
+The defect belongs to the reference conversion `I00:E05` delivered, and that epic is closed. No later epic owns reference handling, so placement was a choice between the validation gate and the deferred-debt epic. The validation gate takes it because its rows close the ways a bundle can be wrong that first use exposed, which is what this is.
+
+Leaving it in the deferred-debt epic was refused on the severity rather than the subject. A wrong bundle is a bundle, and a caller who can see it can work around it; a run that publishes nothing and reports a fault in the tool leaves the caller nothing to act on and tells the author their correct document is not the problem. That class does not wait behind every other epic.
+
+[D43](#d43--conformance-counts-an-unmapped-contract-not-a-tracked-defect) reads the fixture's marker, so the marker moves with the row: `fixtures/reference/a-definition-spelled-across-two-lines` awaits `I00:E08:W05` and states queued work rather than a tracked defect.
+
+`W09` and `AC10` are absent from `I00:E11` rather than reused, and `W10` keeps its number. The two defects beside this one stay where they were placed: both publish a bundle, and both are wrong in it rather than instead of it.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
