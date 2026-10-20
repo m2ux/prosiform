@@ -492,6 +492,20 @@ The convention is this epic's rather than a general licence. An epic whose rows 
 
 This was decided after `I00:E11:W07` shipped ahead of its epic and spent the epic's only review pull request on one row.
 
+## D47 — A Criterion Names the Evidence That Can Exist
+
+`I00:E06:AC1` asked that a candidate disagreeing with its recorded source provenance publish nothing and fail, *as the validation fixtures show*. No such fixture can exist.
+
+A corpus fixture declares a source tree, an invocation and the bytes published. A candidate disagreeing with its own provenance is not something a source tree produces against a build that works; only a broken build produces one. Writing the fixture would mean shipping a deliberate defect, or a mutation hook in the product that exists for the corpus to pull — and a hook that can make the compiler lie is a worse thing to carry than the fixture is a good one.
+
+The criterion now names the unit cases for each invariant and the end-to-end run for the published outcome, which is the evidence that can exist. `I00:E10:AC8` already uses that phrasing for the same situation, an outcome no fixture can reach.
+
+The corpus still carries six fixtures for this epic. They exercise each invariant on sources that validate, which is the half a fixture can state: that a correct bundle passes every check.
+
+Leaving the wording and explaining the gap in the validation record was refused. `I00:E10` maps every behavioural clause to the fixtures that exercise it, so a criterion claiming fixture evidence that does not exist becomes an uncovered clause there, and the reasoning would be rediscovered by whoever meets it.
+
+This was found while reviewing the delivery, which showed the criterion by other means and said so rather than reporting the fixtures the wording asked for.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
