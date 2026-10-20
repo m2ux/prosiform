@@ -50,6 +50,9 @@ REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 INLINE_LINK = re.compile(r"\]\(\s*<?([^()<>\s]+)>?\s*(?:\"[^\"]*\")?\s*\)")
 REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*<?(\S+)>?", re.MULTILINE)
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$", re.MULTILINE)
+CODE_SPAN = re.compile(r"`([^`]*)`")
+LINK_TEXT = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+UNDERSCORE_EMPHASIS = re.compile(r"(?<![_\w])_{1,2}([^_\n]+)_{1,2}(?![_\w])")
 SLUG_KEPT = frozenset("-_ ")
 
 USER_AGENT = "prosiform-link-check"
@@ -95,15 +98,20 @@ def retried(resolve: Callable[[], Outcome]) -> Outcome:
 def slug(heading: str) -> str:
     """The fragment GitHub generates for a heading.
 
-    A code span and a link reduce to their text. What survives is lowercased
+    A code span, a link and a run of emphasis reduce to their text, which is
+    what the rendering they mark leaves behind. What survives is lowercased
     and holds its letters, numbers and combining marks, its hyphens and its
     underscores; punctuation and symbols, an emoji among them, are dropped.
     Each remaining space becomes a hyphen, and nothing is trimmed, so a
     heading opening with an emoji yields a leading hyphen: `## ✅ Checks`
     generates `#-checks`.
+
+    An underscore inside a word is a character of that word rather than a
+    mark, so `Snake_case` keeps it while `_underlined_` does not.
     """
-    text = re.sub(r"`([^`]*)`", r"\1", heading)
-    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    text = CODE_SPAN.sub(r"\1", heading)
+    text = LINK_TEXT.sub(r"\1", text)
+    text = UNDERSCORE_EMPHASIS.sub(r"\1", text)
     kept = [
         character
         for character in text.lower()
