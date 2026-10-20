@@ -29,6 +29,12 @@ Instead:
 - **Heredocs** — allowed (`<<`, `<<<`). Use for multi-line input.
 - **Commit messages** — `git commit -F - <<'EOF' … EOF`, or write the message to a file and `git commit -F <file>`. Never `git commit -m "$(cat …)"`.
 
+**The hook does not catch every path.** A command carrying a sandbox override has been observed executing with `$(...)` and `$VAR` in it. Treat the list above as a rule you keep rather than a rule the hook keeps for you: a construct that slips through is still forbidden, and the next invocation of it may not slip.
+
+**A hook matches the raw command string, so it can fire on text that is not a command.** The assisted-label hook rejects any invocation whose text contains `gh pr create` or `gh issue create` without `--label bot:ai-assisted` — including a `git commit` whose message quotes one of those strings, or a `grep` searching for it. Compose the text in a file rather than inline when it must name one: write the message with a script and pass it as `git commit -F <file>`.
+
+**A permission classifier refuses some git commands a hook would pass.** `git pull --ff-only` inside a worktree is refused as `[Merge Without Review]`, and so is a command that pairs a fetch with a three-dot range. The refusal is about the outcome, not the spelling, so re-running it another way is not the answer. Bring a branch up to date with `git fetch` and read the result, and publish with a plain `git push`; both are unaffected.
+
 Unsure whether a command will trip? Write it to a file and dry-run the hook: `python3 __WORKSPACE__/.claude/hooks/block-dynamic-shell.py --test < /tmp/cmd.txt` (passing it as an argument would trip the hook on your own test call).
 
 # Sandboxed execution (`sbx`)
@@ -59,8 +65,10 @@ A run that exits non-zero ends with a line naming the roots it could write, so `
 **Projects (classic) is sunset, and `gh 2.46.0` still asks for it.** The classic `Project` family — `projectCards` among them — answers with a hard `NOT_FOUND` carrying the [sunset notice](https://github.blog/changelog/2024-05-23-sunset-notice-projects-classic/). A hard error nulls its parent and fails the whole query, so a `gh` subcommand whose built-in query names that field dies whatever you asked it for.
 
 - **Denied here** — `gh pr view <n>` and `gh pr edit`, which name `repository.pullRequest.projectCards`.
-- **Reach the same data with `--json`** — `gh pr view <n> --json number,title,state`, `gh issue view <n> --json …`. The `--json` form builds its query from the fields named, so the classic field never enters it.
-- **Unaffected** — `gh pr create`, `gh pr list`, `gh pr status`, `gh issue list`, `gh issue edit`, `gh project *`, and `gh api` in both its REST and GraphQL forms.
+- **A `--json` field name that does not exist lists the valid ones.** `gh pr list --json merged` is rejected; the field is `mergedAt`. The error prints the whole set, so a wrong guess costs one call.
+- **Reach the same data with `--json`** — `gh pr view <n> --json number,title,state`, `gh issue view <n> --json …`. The `--json` form builds its query from the fields named, so the classic field never enters it. It resolves against the enclosing workspace's default repository rather than the worktree's `origin`, so from a worktree it can answer about another repository's issue of the same number. Name the repository: `gh api repos/{owner}/{repo}/pulls/<n>`.
+- **Unaffected** — `gh pr list`, `gh pr status`, `gh issue list`, `gh issue edit`, `gh project *`, and `gh api` in both its REST and GraphQL forms.
+- **`gh pr create` fails on some repositories** — it answers `GraphQL: Head sha can't be blank … No commits between <base> and <head>, Head ref must be a branch` although both refs exist on the remote and the branch is pushed. Raise a pull request through REST instead, which is the default here anyway. A PreToolUse hook also rejects `gh pr create` without `--label bot:ai-assisted`; the REST create carries no label, so add it afterwards with `gh api --method POST repos/{owner}/{repo}/issues/<n>/labels`.
 - **`gh 2.73.0` retires this bullet list.** It feature-detects classic projects, and the Ubuntu archive is what pins this host to 2.46.0.
 
 **GraphQL is permitted, and REST stays the default.** REST is the shape every issue and pull request operation takes:
