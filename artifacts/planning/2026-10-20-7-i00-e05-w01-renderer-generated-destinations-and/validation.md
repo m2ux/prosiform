@@ -78,3 +78,40 @@ corpus check: 127 fixture(s), 124 pass, 0 fail, 3 awaited, 0 unexpected pass
 ```
 
 All eleven targets of `make check` passed on the base before any change.
+
+## The Delivery
+
+Every target of `make check` passed against the delivery branch, with `PROSIFORM_BUILD` naming the build in this unit's worktree.
+
+```
+corpus check: 130 fixture(s), 127 pass, 0 fail, 3 awaited, 0 unexpected pass
+```
+
+```
+destinations/a-heading-a-container-carries: pass
+identity/an-ordinal-names-no-source-heading: pass
+identity/two-headings-sharing-a-slug: pass
+```
+
+`make test` passed 401 tests and `make harness` 271.
+
+Continuous integration run [39382768119](https://github.com/m2ux/prosiform/actions/runs/39382768119) on `cc8a756` concluded `success`. Its first attempt failed on the link check, against two `pypi.org` pages `src/README.md` names and this branch does not touch: `https://pypi.org/project/markdown-it-py/` answered `503` to five consecutive direct requests from the host at the same moment. The run was re-run once the page recovered, and the flakiness is raised as [#84](https://github.com/m2ux/prosiform/issues/84). No merge was taken on local evidence while that run was pending.
+
+## The Behaviour After the Design Was Built To It
+
+```
+prosiform --root source a.md b.md#run
+
+This bundle was built for [a](#a) and [Run](#run-1); everything else is material it references.
+```
+
+```
+prosiform --root source 'guide.md#run'
+
+E_AMBIGUOUS_SOURCE_HEADING: the reference 'guide.md#run' names 2 headings of the
+document it selects from, which it cannot tell apart
+  reference: guide.md#run
+  remedy: retitle one of the headings so each takes a slug of its own
+```
+
+Exit 1, and no bundle on standard output. The new destination fixture's expected bundle was put back through `POST /markdown`, and the `#run-2` its entry line carries is the anchor GitHub generates for the heading that reference named.
