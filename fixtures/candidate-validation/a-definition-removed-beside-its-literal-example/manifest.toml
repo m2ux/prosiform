@@ -1,0 +1,16 @@
+description = "The definition a use names is removed from the bundle while the example of a definition inside a code block is carried as written, so no definition node survives emission."
+
+clauses = [
+  "Source and candidate validation modes — Candidate mode",
+  "Post-compilation invariants — No definition leakage",
+  "Preservation — Untouched non-heading bytes and code examples are not reformatted or repaired",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

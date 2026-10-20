@@ -1,0 +1,16 @@
+description = "A marked link whose target's heading text is carried by another group as well reaches the heading its source named rather than the one whose slug coincides."
+
+clauses = [
+  "Source and candidate validation modes — Candidate mode",
+  "Post-compilation invariants — Target integrity",
+  "Post-compilation invariants — One intended destination",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

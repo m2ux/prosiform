@@ -9,6 +9,7 @@ and what each of the two streams carried.
 
 import json
 import os
+from collections.abc import Sequence
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -17,9 +18,15 @@ from typing import IO, Any
 import pytest
 
 from prosiform import PROFILE
-from prosiform.bundle import AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW
+from prosiform.bundle import (
+    AMBIGUOUS_FILE_GROUP,
+    HEADING_DEPTH_OVERFLOW,
+    Group,
+    assemble,
+)
 from prosiform.cli import (
     INPUT_FAILURE,
+    INTERNAL_ERROR,
     INVALID_ENCODING,
     INVALID_GROUP_RULE,
     INVALID_USAGE,
@@ -32,6 +39,7 @@ from prosiform.cli import (
     SOURCE_SYMLINK,
     SUCCESS,
     TARGET_NOT_FOUND,
+    UNEXPECTED_INTERNAL_ERROR,
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
     main,
@@ -940,3 +948,30 @@ def test_a_budget_override_that_is_no_positive_decimal_integer_is_refused(
 def test_a_budget_stands_at_the_number_the_profile_declares(root: Path) -> None:
     assert FILES.default == 256
     assert invoke("--root", str(root), "guide.md").status == SUCCESS
+
+
+def test_a_candidate_disagreeing_with_its_provenance_publishes_nothing(
+    root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n\nMore body.\n")
+    destination = tmp_path / "bundle.md"
+    assembling = assemble
+
+    def dropping(line: str, groups: Sequence[Group]) -> str:
+        return assembling(line, groups).replace("\n\nMore body.", "")
+
+    monkeypatch.setattr("prosiform.cli.assemble", dropping)
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "-o",
+        str(destination),
+        "guide.md",
+    )
+    assert run.status == INTERNAL_ERROR
+    assert run.stdout == ""
+    assert not destination.exists()
+    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
+    assert "no accidental omissions" in run.diagnostics()[0]["message"]

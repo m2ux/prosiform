@@ -1,0 +1,16 @@
+description = "Two selected regions carrying identical prose are two regions, so the bundle publishes both and exactly-once coverage holds."
+
+clauses = [
+  "Source and candidate validation modes — Candidate mode",
+  "Post-compilation invariants — Exactly-once coverage",
+  "Post-compilation invariants — repeated identical prose in different source regions is not duplication by itself",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#rules", "guide.md#notes"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
