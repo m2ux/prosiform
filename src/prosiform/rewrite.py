@@ -1,11 +1,18 @@
 """Source-local reference interpretation: a definition environment and its edits.
 
-A bundle is assembled from the physical lines its sources wrote, and a
-link destination sits inside one of those lines. The rewrite is
-therefore an edit to spans of text rather than a re-rendering of the
+A bundle is assembled from the physical lines its sources wrote. The
+rewrite is an edit to spans of text rather than a re-rendering of the
 content around it: everything outside the spans one use occupies — the
 mark, the destination, and the label a reference-style use names — is
 the bytes the source wrote.
+
+A definition is a block and a use is a span, so a destination or title
+the author spelled across more than one line is published into a span
+that lies within one. The published text carries the line feeds the
+author wrote, and the rewrite reports its result as one entry for each
+line the source wrote, holding an inserted line feed inside the entry
+for the line that gained it. A caller slicing by the source's line
+count therefore slices the same lines whatever the spelling cost.
 
 A span is located in the lines an inline token occupies, because that is
 where the parser says inline content is. A code span is masked out
@@ -43,6 +50,7 @@ dropping it would join two lines the source kept apart.
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from itertools import accumulate, pairwise
 from typing import Any
 
 from markdown_it.common.utils import normalizeReference
@@ -72,7 +80,6 @@ ANGLE_CLOSE = ">"
 COLON = ":"
 
 SEPARATOR = " \t"
-LINE_FEED = "\n"
 SPACE = " "
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
@@ -423,16 +430,13 @@ def published(held: Definition, destination: str | None) -> str:
     The destination is the one the bundle assigned the use's target
     where the use is marked, and the one its definition was authored
     with where it is not. The title is the definition's own, carried as
-    the author spelled it. A definition whose destination or title the
-    author wrote across two lines cannot be published on the one line
-    its use occupies.
+    the author spelled it, so a title the author broke across two lines
+    reaches the bundle broken in the same place: the title is the
+    author's text and the conversion moves it rather than reflowing it.
     """
     target = held.destination if destination is None else destination
     title = f"{SPACE}{held.title}" if held.title else ""
-    written = f"{TARGET_OPEN}{target}{title}{TARGET_CLOSE}"
-    if LINE_FEED in written:
-        raise Unrewritable(f"the definition spelling {written!r} spans two lines")
-    return written
+    return f"{TARGET_OPEN}{target}{title}{TARGET_CLOSE}"
 
 
 def mark_span(text: str, label: tuple[int, int]) -> tuple[int, int] | None:
@@ -470,19 +474,42 @@ def edits(text: str, one: Use, destination: str | None) -> list[tuple[int, int, 
     return found
 
 
+def moved(at: int, start: int, end: int, width: int) -> int:
+    """One offset into a text, as one edit to that text leaves it.
+
+    An offset the edited span precedes moves by what the replacement
+    added or took away. One inside the span lands at the end of the
+    replacement, because the text it stood between is gone, and one
+    before the span does not move at all.
+    """
+    if at <= start:
+        return at
+    if at >= end:
+        return at + width - (end - start)
+    return start + width
+
+
 def rewritten(
-    text: str,
+    physical: Sequence[str],
     inline: Token,
     assigned: Sequence[str],
     defined: Mapping[str, Definition],
-) -> str:
-    """One run of inline text, as the bundle publishes it.
+) -> list[str]:
+    """The lines one run of inline text occupies, as the bundle publishes them.
 
     Each resolved reference-style use is published inline, and each
     marked link points at the destination the bundle assigned its
     target. The spans are edited last to first, so an earlier edit does
     not move the span the next one names.
+
+    The result holds one entry for each line given, so the published
+    text of a source line is found where that line was. A replacement
+    carrying a line feed — a definition the author spelled across more
+    than one line — makes its entry longer rather than making another
+    entry, and a line boundary the replacement swallowed lands at the
+    end of it.
     """
+    text = "".join(physical)
     found = uses(text, defined, bool(inline.meta.get(MARKER)))
     if len(found) != carried(inline.children):
         raise Unrewritable(
@@ -501,7 +528,9 @@ def rewritten(
         )
     targets = dict(zip((id(one) for one in marks), assigned, strict=True))
     written = text
+    bounds = list(accumulate(len(line) for line in physical))
     applied = [edit for one in found for edit in edits(text, one, targets.get(id(one)))]
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
-    return written
+        bounds = [moved(at, start, end, len(replacement)) for at in bounds]
+    return [written[opening:closing] for opening, closing in pairwise([0, *bounds])]
