@@ -1,0 +1,20 @@
+description = "A terminated YAML example whose entries are spelled as list items is a code example on both readings, so the boundary check finds the regions around it where the assembly placed them and the bundle carries the example byte for byte."
+
+clauses = [
+  "Block boundaries",
+  "Compile before publishing — Preservation",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

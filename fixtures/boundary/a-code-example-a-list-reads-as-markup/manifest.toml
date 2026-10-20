@@ -1,0 +1,21 @@
+description = "An indented code example below a list is indented no further than the list's own content, so joining the two places it inside the list item, where its four spaces are prose indentation and its content is an HTML block rather than the example the author wrote. The run refuses the boundary, which is the only place an HTML block can reach a bundle at all: a source carrying raw HTML is refused before bundling."
+
+awaiting = "I00:E08:W03"
+
+clauses = [
+  "Block boundaries",
+  "Source markup policy",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSAFE_BUNDLE_BOUNDARY"
+reference = "guide.md"
