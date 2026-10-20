@@ -615,8 +615,6 @@ def group(
     for token in regions(tokens):
         if id(token) in needed:
             depth = level(token) + by
-            if depth > MAX_LEVEL:
-                raise Overflow(text[id(token)], depth, path)
             shows = single_line(text[id(token)])
             ancestor = Ancestor(
                 shows,
