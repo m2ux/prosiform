@@ -57,7 +57,7 @@ Three trees, each created by the stage that writes into it.
 | Tree | Holds |
 | --- | --- |
 | [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. Both builds run it. |
-| [`prototype/`](prototype/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
+| [`src/`](src/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
 | [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
 | [`checks/`](checks/README.md) | The checks that hold the layout, every document's references, the README tables, and the glossary's coverage true. |
 
@@ -82,33 +82,33 @@ make check
 | `make corpus` | Every fixture the corpus holds, run against the build under test, produces the result its manifest declares. A fixture declaring work a later epic delivers is reported as awaiting it; one that meets its manifest while awaiting fails, as does a run with no build configured. |
 | `make smoke` | The build installs into an environment and its entry point bundles a reference from a source root, resolved by name from a directory unrelated to this repository. |
 | `make layout` | Each of the three trees holds a tracked file. |
-| `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`prototype/pyproject.toml`](prototype/README.md) declares, and nothing besides. |
+| `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`src/pyproject.toml`](src/README.md) declares, and nothing besides. |
 | `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
-The tools the first seven call are pinned by [`prototype/uv.lock`](prototype/README.md); `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+The tools the first seven call are pinned by [`src/uv.lock`](src/README.md); `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
 
 `make corpus` runs a build named by configuration rather than one it chooses, so one corpus binds every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a run resolves it from the fixture's own directory:
 
 ```bash
-export PROSIFORM_BUILD="uv run --project $PWD/prototype --frozen prosiform"
+export PROSIFORM_BUILD="uv run --project $PWD/src --frozen prosiform"
 ```
 
 There is no default and no fallback: with nothing configured the run fails rather than passing over the corpus, because a corpus run that skips sits inside a passing suite saying nothing.
 
 ## 📦 Installation
 
-prosiform installs from the Python build in [`prototype/`](prototype/README.md):
+prosiform installs from the Python build in [`src/`](src/README.md):
 
 ```bash
-pip install ./prototype
+pip install ./src
 ```
 
 A working copy takes its environment from the lockfile, which records the exact version of every dependency a checkout installs:
 
 ```bash
-cd prototype
+cd src
 uv sync --frozen
 ```
 
@@ -177,7 +177,7 @@ Three stages, in order. Progress is on the **[Bundling board](https://github.com
 | --- | --- | --- |
 | **[I00 Prototype](https://github.com/m2ux/prosiform/issues/2)** | A Python build, a language-neutral fixture corpus, and the tool installed for agents to invoke | In Progress |
 | **[I01 Field Refinement](https://github.com/m2ux/prosiform/issues/20)** | The specification settled by real use, frozen at a tagged revision | Ready |
-| **[I02 Production](https://github.com/m2ux/prosiform/issues/10)** | A Rust build implementing that revision, with the prototype retained as its differential oracle | Planned |
+| **[I02 Production](https://github.com/m2ux/prosiform/issues/10)** | A Rust build implementing that revision, with the Python build retained as its differential oracle | Planned |
 
 The fixture corpus is the contract: it declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing one.
 

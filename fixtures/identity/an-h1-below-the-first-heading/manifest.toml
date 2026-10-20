@@ -1,0 +1,16 @@
+description = "An H1 the path names but another heading precedes is not the document's first heading, so it is kept and the group shifts by one."
+
+clauses = [
+  "File-scoped hierarchy — Absorbed title",
+  "File-scoped hierarchy — Group shift",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

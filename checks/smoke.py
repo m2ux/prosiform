@@ -10,7 +10,7 @@ it was started in, and that reads nothing out of the repository that built
 it.
 
 Every other run of the build in these checks goes through
-`uv run --project prototype`, which names the checkout. That run proves
+`uv run --project src`, which names the checkout. That run proves
 the behaviour and says nothing about the packaging, so a wheel that
 installed no command, or one that shipped without the glossary, would pass
 the whole gate. This check is the one that observes the three properties
@@ -28,7 +28,7 @@ path nor the search.
 
 The steps depend on each other in order, so the run stops at the first one
 that fails and names it. The environment is created on the Python version
-`prototype/.python-version` names, so the version an installation is
+`src/.python-version` names, so the version an installation is
 proved against is the version the build declares rather than a second
 declaration here.
 """
@@ -40,7 +40,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PROJECT = ROOT / "prototype"
+PROJECT = ROOT / "src"
 PYTHON_VERSION = PROJECT / ".python-version"
 
 COMMAND = "prosiform"

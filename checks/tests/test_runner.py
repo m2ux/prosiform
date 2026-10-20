@@ -48,7 +48,6 @@ IMPLEMENTATION_NAMES = (
     "python",
     "pytest",
     "pyproject",
-    "prototype",
     "cargo",
     "rust",
     "node",
