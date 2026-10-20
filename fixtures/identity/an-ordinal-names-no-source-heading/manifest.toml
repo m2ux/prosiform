@@ -1,0 +1,20 @@
+description = "A source fragment carries no ordinal: the renderer's ordinal belongs to a bundle destination the tool assigns over a document it generated, so a fragment spelling one names no heading of the source and is refused as the missing target it is."
+
+clauses = [
+  "Source-heading resolution — two headings in one source producing the same slug",
+  "Reference normalization and path identity — Resolution sequence, step 5",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#run-1"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "guide.md#run-1"
