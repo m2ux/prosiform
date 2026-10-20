@@ -542,6 +542,18 @@ The declaration in `design.md` lands when the epic merges to `main`, not when th
 
 Raised while delivering I00:E08:W02, which also applied [D47](#d47--a-criterion-names-the-evidence-that-can-exist) to AC2: a fixture declares a static source tree and the runner drives one command, so the corpus can state the capture and the recheck but not a source changing mid-run. AC2 now names the evidence that can exist, and no hook was added to the product to let the corpus reach the rest.
 
+## D51 — A Declared Code Nothing Can Raise Is a Finding, Not a Fix in Passing
+
+I00:E08:W03's review ran every code the catalogue declares against the build and recorded what each carries. Two are unreachable: `E_PARSER_REFERENCE_LIMIT` appears only inside a docstring in `limits.py`, and `W_EMPTY_GROUP_RULE` appears nowhere under `src/`. The contract declares both. The detection was never built for either.
+
+Each is reported as its own issue rather than fixed inside the row that found it. A code needs a detection, a diagnostic and fixtures of its own, and the row delivering diagnostic content would have carried three unrelated deliveries under one criterion. Raised as [#108](https://github.com/m2ux/prosiform/issues/108) and [#109](https://github.com/m2ux/prosiform/issues/109).
+
+The review is worth keeping as a standing shape: hold every declared code to the build, and report the ones nothing reaches. A catalogue test holds the schema and the contract to each other and says nothing about whether the product can raise what both declare.
+
+AC4 was reworded in the same row. It read "the resolved identity where one exists and the inclusion chain", qualifying only the resolved identity, but a diagnostic about the command line itself stands at the end of no chain and is written at no source location, and `E_UNEXPECTED_INTERNAL_ERROR` carries neither by an explicit clause. The criterion now asks for each field wherever the defect it reports has one, which is [D47](#d47--a-criterion-names-the-evidence-that-can-exist) applied again.
+
+The inclusion chain names the route to the document rather than to the particular selecting reference. Where several references select one document the chain names the first discovered, which is the shortest route. Per-reference attribution would thread the per-reference region sets through dependency discovery and would change the order refusals are raised within one document, for a precision the contract's own worked example does not ask for.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
