@@ -14,7 +14,7 @@ So a source path carrying a number sign is nameable by an entry reference, and t
 
 The build changes nothing. The behaviour the fixtures declare is the behaviour it has; what this row moves is the obligation, out of one implementation's unit tests and into the language-neutral corpus.
 
-## <a id="fixtures"></a>The Fixtures
+## The Fixtures
 
 | Fixture | Invocation | What it declares |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ The build changes nothing. The behaviour the fixtures declare is the behaviour i
 
 Each is a directory under `fixtures/` holding `manifest.toml`, a `source/` tree and the expected standard output, which is the shape every fixture of this corpus takes.
 
-## <a id="corpus"></a>The Corpus Run
+## The Corpus Run
 
 `make corpus` at `87b7ff0`, with the locked environment's console entry point named to the runner as `PROSIFORM_BUILD`.
 
@@ -34,7 +34,7 @@ corpus check: 206 fixture(s), 204 pass, 0 fail, 2 awaited, 0 unexpected pass
 
 Two hundred and six fixtures, where the base runs two hundred and three. The three this row adds each pass, and no fixture of the base changed verdict.
 
-## <a id="mutation"></a>What the Fixtures Catch
+## What the Fixtures Catch
 
 A fixture that passes says nothing until a build that denies its claim fails it. Each claim was denied in turn, in the worktree, and the corpus re-run; both mutations were reverted and the delivered tree carries neither.
 
@@ -45,7 +45,7 @@ A fixture that passes says nothing until a build that denies its claim fails it.
 
 The second mutation leaves `normalization/an-unencoded-number-sign` passing, which is correct: that fixture's reference carries no escape, so decoding it first changes nothing about where it splits.
 
-## <a id="gate"></a>The Gate
+## The Gate
 
 Every target of `make check`, run in the delivery worktree at `87b7ff0`. The corpus and invocation targets name the locked environment's console entry point as the build under test.
 
