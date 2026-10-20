@@ -442,6 +442,16 @@ The alternative of leaving the criterion undeliverable was refused for the same 
 
 This was found by a delivery session measuring the build against the criterion rather than reading the plan, which had the catalogue ending at twenty-three. It ends at twenty-four, and the third clause lands in the same two-branch window as the other two.
 
+## D43 — Conformance Counts an Unmapped Contract, Not a Tracked Defect
+
+`I00:E10:AC6` asked that no fixture carry an `awaiting` marker when Corpus Conformance is measured. `I00:E11` is the deferred-debt epic and runs after every other epic in the initiative, so a fixture awaiting one of its rows still carries its marker at the moment E10 is measured. The criterion could not hold whatever the corpus looked like.
+
+The criterion now excludes a marker naming `I00:E11`. A marker is a claim about what the corpus does not yet prove, and the two kinds differ: a marker naming a row still to come says the contract is mapped and the work is queued, while a marker naming the deferred-debt epic says a defect is known, placed and scheduled. Conformance is the assertion that the contract is mapped to the corpus, and a tracked defect does not contradict it.
+
+The alternative of running `I00:E11` before `I00:E10` was refused: it puts the conformance gate behind every deferred defect, and the ordering exists so that a defect found late does not hold the gate open. Making the figure come out by marking a fixture `I00:E10` instead was also refused — a marker names the work that delivers the behaviour, and a marker pointing at the epic that merely measures it would be false where it matters most.
+
+This was found by the session delivering `I00:E05:W02`, which declared a fixture against a defect it had just placed in `I00:E11` and reported the tension rather than choosing a marker that read better.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
