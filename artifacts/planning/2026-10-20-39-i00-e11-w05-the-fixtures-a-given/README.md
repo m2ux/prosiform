@@ -13,6 +13,7 @@ It matters because a session learns what its work turns green from a red run or 
 | Artifact | What it holds |
 | --- | --- |
 | [w05.md](w05.md) | The task's plan: the declaration the report reads, its invocation and its output |
+| [validation.md](validation.md) | The tests that observe AC6, the gate the delivery was held to, and the review |
 
 ## Links
 
