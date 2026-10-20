@@ -50,7 +50,7 @@ dropping it would join two lines the source kept apart.
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from itertools import accumulate
+from itertools import accumulate, pairwise
 from typing import Any
 
 from markdown_it.common.utils import normalizeReference
@@ -533,7 +533,4 @@ def rewritten(
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
         bounds = [moved(at, start, end, len(replacement)) for at in bounds]
-    return [
-        written[opening:closing]
-        for opening, closing in zip([0, *bounds[:-1]], bounds, strict=True)
-    ]
+    return [written[opening:closing] for opening, closing in pairwise([0, *bounds])]
