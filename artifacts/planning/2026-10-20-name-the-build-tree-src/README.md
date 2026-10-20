@@ -120,3 +120,66 @@ the packaging root survived the rename.
 - The package name `prosiform`, the module names, the profile identifier
   `skill-markdown-v1`, the console entry point.
 - Issue bodies, epics, initiatives, board items.
+
+## Follow-up: the Package Sits Directly Under the Slot
+
+The literal rename left `src/src/prosiform/` — Python's own src-layout nested
+inside the slot. The slot's self-containment, its own manifest, lockfile and
+interpreter pin, is what lets another build substitute in; a second source
+directory inside it names the same idea twice. The package moved to
+`src/prosiform/`, and `pyproject.toml`, `uv.lock`, `.python-version`,
+`.gitignore`, `README.md` and `tests/` stayed where they were.
+
+`git mv src/src/prosiform src/prosiform`, history preserved. Three references
+followed it:
+
+| File | What |
+| --- | --- |
+| `src/pyproject.toml` | `packages = ["prosiform"]` |
+| `src/README.md` | the layout table's package row reads `prosiform/` |
+| `Makefile` | `PYTHON_SOURCES := src/prosiform src/tests checks` |
+
+`checks/smoke.py` needed nothing: it names the project root, not the package
+inside it.
+
+### The Language-Neutrality Guard
+
+`checks/tests/test_runner.py` keeps `"src/prosiform"` in `IMPLEMENTATION_NAMES`
+unchanged. That string is now the package's path from the repository root
+exactly, rather than the tail of a longer one, so it still names what it
+guards. The two alternatives both fail: a bare `"src"` matches the word
+"source", which `runner.py` uses throughout in its own vocabulary; a bare
+`"prosiform"` is the tool's own name and appears legitimately wherever the
+runner speaks about the thing under test. The path is the one form that is
+specific to the implementation and absent from neutral prose.
+
+### Branches
+
+| Branch | Commit | `git ls-files src/src` |
+| --- | --- | --- |
+| `main` | `72dfb3f`, merge of PR #79 from `chore/flatten-the-package-under-src` (`69c67ed`) | empty |
+| `i00/e04/main` | `2d6f221`, merge of `main` | empty |
+| `i00/e07/main` | `55ad1a4`, merge of `main` | empty |
+
+E04's `access.py` and `closure.py` raised the same file-location conflict as
+before and were already staged at `src/prosiform/`; resolving was `git add`.
+E07 merged clean, the earlier `README.md` conflict having been settled on the
+first pass.
+
+### Verification
+
+Fixture counts hold: 67 on `main`, 96 on `i00/e04/main`, 67 on
+`i00/e07/main`, each with its two awaited. `make check` passes whole on all
+three.
+
+`make smoke` passes on E07, which is the check that proves the packaging
+rather than merely agreeing with it: it builds the wheel, installs it into a
+throwaway environment outside the repository, resolves `prosiform` by name in
+that environment alone and bundles a source from a directory beside it. The
+built wheel carries `prosiform/` at its root with `prosiform/docs/glossary.md`
+beside it.
+
+### Still Open
+
+The `I00 Prototype` row in `README.md`'s status table is unchanged, as
+recommended above. The user has not ruled on it.
