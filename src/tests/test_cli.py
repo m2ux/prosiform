@@ -35,6 +35,7 @@ from prosiform.bundle import (
 )
 from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY
 from prosiform.cli import (
+    EMPTY_GROUP_RULE,
     ENTRY_DESTINATION,
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -242,6 +243,66 @@ def test_a_grouping_slug_naming_no_directory_is_an_input_failure(root: Path) -> 
     )
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [INVALID_GROUP_RULE]
+
+
+def test_a_grouping_rule_the_closure_leaves_idle_is_reported_as_arranging_nothing(
+    root: Path,
+) -> None:
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--group", "docs:2", "guide.md"
+    )
+    assert run.status == SUCCESS
+    assert [one["code"] for one in run.diagnostics()] == [
+        EMPTY_GROUP_RULE,
+        ENTRY_DESTINATION,
+    ]
+    warned = run.diagnostics()[0]
+    assert warned["severity"] == "warning"
+    assert "'docs'" in warned["message"]
+
+
+def test_a_grouping_rule_the_closure_carries_a_document_under_arranges_it(
+    root: Path,
+) -> None:
+    written(root, "docs/note.md", "# Note\n\n## Run\n\nDo it.\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--group",
+        "docs:2",
+        "docs/note.md",
+    )
+    assert run.status == SUCCESS
+    assert EMPTY_GROUP_RULE not in [one["code"] for one in run.diagnostics()]
+
+
+def test_each_idle_grouping_rule_is_reported_and_an_arranging_one_is_not(
+    root: Path,
+) -> None:
+    written(root, "notes/kept.md", "# Kept\n\n## Run\n\nDo it.\n")
+    written(root, "other/unused.md", "# Unused\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--group",
+        "docs:2",
+        "--group",
+        "notes:2",
+        "--group",
+        "other:2",
+        "notes/kept.md",
+    )
+    assert run.status == SUCCESS
+    warned = [
+        one["message"] for one in run.diagnostics() if one["code"] == EMPTY_GROUP_RULE
+    ]
+    assert len(warned) == 2
+    assert "'docs'" in warned[0]
+    assert "'other'" in warned[1]
 
 
 def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -> None:
