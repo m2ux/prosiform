@@ -34,6 +34,21 @@ that profile refuses fails as the refusal it is. Every location a
 diagnostic reports is the location in the file the author holds, whatever
 the strip removed ahead of it.
 
+A dependency is a reference its author marked, by opening the link text
+with `¬`, and the run resolves one against the document carrying it,
+reads it and bundles it. Every other reference is text the bundle
+carries as its author wrote it: an unmarked local Markdown link is not
+resolved, the document it names is not opened, and it stays as authored
+even where the bundle carries that document because another reference
+marked it. A reference carrying a scheme or an authority and one naming
+a file outside the profile's suffixes are text by the same rule, whether
+marked or not, and an apparent link inside a code span or a code block
+is an example rather than a reference. Marking is therefore what the run
+follows, and the content a run reads for marks is the content it
+selected. Traversal repeats over what each round adds until no round
+adds anything, so a reference graph with a cycle reaches a fixed point
+carrying each reachable region once.
+
 A reference with no fragment, or with an empty one, selects the whole
 document. A reference carrying a nonempty fragment selects the section
 that fragment names, which runs to the next document-level heading of
@@ -57,7 +72,8 @@ import os
 import re
 import sys
 import tempfile
-from collections.abc import Sequence
+from collections.abc import Collection, Iterator, Sequence
+from dataclasses import replace
 from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
@@ -81,6 +97,8 @@ from prosiform.closure import (
     Malformed,
     OutsideRoot,
     Reference,
+    inside,
+    marked,
     resolve,
 )
 from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
@@ -98,6 +116,7 @@ from prosiform.source import (
     decode,
     fragments,
     lines,
+    links,
     regions,
     section,
 )
@@ -385,8 +404,12 @@ def location(name: str, at: int | None) -> str:
     return name if at is None else f"{name}:{at}"
 
 
-def read_entry(root: Path, found: Reference) -> Source:
-    """One entry document's content, read under the allowed source root.
+def read_document(root: Path, found: Reference) -> Source:
+    """One document's content, read under the allowed source root.
+
+    A refusal is worded for the reference that asked for the document
+    and located where that reference is written, so a run says which
+    link it could not follow and which document carries it.
 
     The read descends the normalized path from the canonicalized root one
     segment at a time and follows no link, so a reference reaching a
@@ -399,6 +422,7 @@ def read_entry(root: Path, found: Reference) -> Source:
     defect it is rather than reaching the command's generic handler.
     """
     reference, name = found.original, found.path
+    written = "the entry reference" if found.origin is None else "the reference"
     if not is_markdown(name):
         raise input_failure(
             f"the entry reference {reference!r} names a document whose suffix is "
@@ -411,33 +435,35 @@ def read_entry(root: Path, found: Reference) -> Source:
         data = read_source(root, name)
     except Symlinked as linked:
         raise input_failure(
-            f"the entry reference {reference!r} reaches its source through {linked}, "
+            f"{written} {reference!r} reaches its source through {linked}, "
             f"a symbolic link below the allowed source root",
             code=SOURCE_SYMLINK,
             remedy="name the document the link points at, under the source root",
             reference=reference,
+            source=found.origin,
         ) from linked
     except Outside as outside:
         raise input_failure(
-            f"the entry reference {reference!r} names {outside}, which the allowed "
+            f"{written} {reference!r} names {outside}, which the allowed "
             f"source root cannot contain",
             code=SOURCE_OUTSIDE_ROOT,
             remedy="name a document the source root carries",
             reference=reference,
+            source=found.origin,
         ) from outside
     except Absent as absent:
         raise input_failure(
-            f"the entry reference {reference!r} names no document under the "
-            f"allowed source root",
+            f"{written} {reference!r} names no document under the allowed source root",
             code=TARGET_NOT_FOUND,
             remedy="name a document the source root carries",
             reference=reference,
+            source=found.origin,
         ) from absent
     try:
         text = decode(data)
     except UnicodeDecodeError as undecodable:
         raise input_failure(
-            f"the entry reference {reference!r} names a document that is not valid "
+            f"{written} {reference!r} names a document that is not valid "
             f"{ENCODING.upper()}: byte {undecodable.start}, "
             f"{undecodable.reason}",
             code=INVALID_ENCODING,
@@ -449,7 +475,7 @@ def read_entry(root: Path, found: Reference) -> Source:
         return content(text)
     except Unterminated as unclosed:
         raise input_failure(
-            f"the entry reference {reference!r} names a document whose frontmatter "
+            f"{written} {reference!r} names a document whose frontmatter "
             f"opener is closed by no later line of exactly "
             f"{' or '.join(CLOSERS)}",
             code=UNTERMINATED_FRONTMATTER,
@@ -503,7 +529,9 @@ def contributing(
 
 
 def selection(
-    tokens: Sequence[Token], references: Sequence[Reference]
+    tokens: Sequence[Token],
+    references: Sequence[Reference],
+    entries: Collection[Reference],
 ) -> Selection | None:
     """What one source contributes, as the references naming it select it.
 
@@ -513,18 +541,24 @@ def selection(
     however the reference spelled it. Every fragment is resolved
     whatever else the run selected, because a fragment naming no
     heading names nothing however much of its document reaches the
-    bundle, and the heading each one resolves to stays identifiable so
-    the entry line links what the caller asked for. A whole document
-    selected by nothing else is the selection `None`, whose entry is
-    the file heading.
+    bundle.
+
+    An entry reference is one the caller named, and the entry line
+    links what the caller asked for, so only the heading an entry
+    resolved to stays identifiable. A whole document an entry selected
+    and nothing else named is the selection `None`, whose entry is the
+    file heading; a whole document only a dependency selected enters
+    the entry line not at all.
     """
     wanted: set[int] = set()
     named: list[Token] = []
     whole = False
+    entered = False
     for one in references:
         spelled = one.fragment
         if spelled is None:
             whole = True
+            entered = entered or one in entries
             continue
         try:
             found = section(tokens, spelled)
@@ -535,6 +569,7 @@ def selection(
                 code=NESTED_SECTION_TARGET,
                 remedy="name a heading the document carries at its own level",
                 reference=one.original,
+                source=one.origin,
             ) from nested
         if found is None:
             raise input_failure(
@@ -543,16 +578,112 @@ def selection(
                 code=TARGET_NOT_FOUND,
                 remedy="name a heading the document carries",
                 reference=one.original,
+                source=one.origin,
             )
-        named.append(found[0])
+        if one in entries:
+            named.append(found[0])
         wanted.update(id(token) for token in found)
     if whole:
-        if not named:
+        if not named and entered:
             return None
         return Selection(tuple(regions(tokens)), tuple(named))
     return Selection(
         tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
     )
+
+
+def required(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+) -> Iterator[Reference]:
+    """Every dependency the selected content of one source marks.
+
+    A link the author marked is a reference the bundle must carry, and
+    every other link is text: a mention is not resolved, the document
+    it names is not opened, and nothing about its shape is examined. A
+    marked reference carrying a scheme or an authority names no local
+    document, and one naming a file outside the profile's suffixes
+    names a resource; both are text by the same rule, and marking
+    neither opens them nor refuses them.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for link in links(tokens, selected):
+        if not marked(link.opening):
+            continue
+        at = location(path, source.line(link.line))
+        try:
+            found = inside(path, link.destination)
+        except OutsideRoot as outside:
+            raise input_failure(
+                f"the reference {link.destination!r} {outside}",
+                code=SOURCE_OUTSIDE_ROOT,
+                remedy="name a document the source root carries, or cite it "
+                "without the mark",
+                reference=link.destination,
+                source=at,
+            ) from outside
+        except Malformed as malformed:
+            raise input_failure(
+                f"the reference {link.destination!r} {malformed}",
+                code=TARGET_NOT_FOUND,
+                remedy="write the dependency as a reference the profile resolves",
+                reference=link.destination,
+                source=at,
+            ) from malformed
+        if found.external or not is_markdown(found.path):
+            continue
+        yield replace(found, origin=at)
+
+
+def traverse(
+    root: Path, referrer: Reference | None, requested: Sequence[Reference]
+) -> tuple[dict[str, Source], dict[str, list[Token]], list[Reference]]:
+    """Every source the run reads and every reference it carries, at the fixed point.
+
+    The entry references are the first frontier. Each round reads the
+    sources its frontier names, then reads every group's selected
+    content for the dependencies it marks; a dependency naming a
+    document and section the run already carries adds nothing, and the
+    round that discovers no new one is the fixed point. A reference
+    graph with a cycle therefore terminates on the identity each
+    reference normalized to rather than on a depth the traversal
+    refuses at.
+
+    The selection of a group grows as later content marks more of its
+    document, so every group is read again each round. What the
+    traversal returns is what the bundle is composed from, so the
+    bundle follows from the closure rather than from the order its
+    documents were discovered in.
+    """
+    read: dict[str, Source] = {}
+    parsed: dict[str, list[Token]] = {}
+    found = list(requested)
+    seen = {(one.path, one.fragment) for one in found}
+    frontier = ([referrer] if referrer is not None else []) + list(requested)
+    while frontier:
+        for one in frontier:
+            if not one.path or one.path in read:
+                continue
+            source = read_document(root, one)
+            tokens = parse(source.text)
+            refusal = next(refusals(tokens), None)
+            if refusal is not None:
+                raise refused(one.path, source, refusal)
+            read[one.path] = source
+            parsed[one.path] = tokens
+        discovered: list[Reference] = []
+        for path, selecting in contributing(referrer, found).items():
+            chosen = selection(parsed[path], selecting, requested)
+            for one in required(path, read[path], parsed[path], chosen):
+                if (one.path, one.fragment) in seen:
+                    continue
+                seen.add((one.path, one.fragment))
+                discovered.append(one)
+        found.extend(discovered)
+        frontier = discovered
+    return read, parsed, found
 
 
 def unambiguous(paths: Sequence[str]) -> None:
@@ -573,19 +704,26 @@ def unambiguous(paths: Sequence[str]) -> None:
 
 def compose(
     read: dict[str, Source],
+    parsed: dict[str, list[Token]],
     referrer: Reference | None,
-    requested: Sequence[Reference],
+    entries: Collection[Reference],
+    found: Sequence[Reference],
 ) -> str:
     """The complete bundle candidate: its entry line and one group per source."""
-    selected = contributing(referrer, requested)
+    selected = contributing(referrer, found)
     unambiguous(list(selected))
     groups: list[Group] = []
     for path, selecting in selected.items():
         source = read[path]
-        tokens = parse(source.text)
+        tokens = parsed[path]
         try:
             groups.append(
-                group(path, tokens, lines(source.text), selection(tokens, selecting))
+                group(
+                    path,
+                    tokens,
+                    lines(source.text),
+                    selection(tokens, selecting, entries),
+                )
             )
         except Overflow as beyond:
             raise input_failure(
@@ -714,15 +852,8 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
                 remedy="name a directory the source root carries",
             )
 
-    read: dict[str, Source] = {}
-    for one in named:
-        source = read_entry(root, one)
-        refusal = next(refusals(parse(source.text)), None)
-        if refusal is not None:
-            raise refused(one.path, source, refusal)
-        read[one.path] = source
-
-    bundled = compose(read, referring, requested)
+    read, parsed, found = traverse(root, referring, requested)
+    bundled = compose(read, parsed, referring, requested, found)
     if options.check:
         return SUCCESS
     if options.output == STANDARD_OUTPUT:

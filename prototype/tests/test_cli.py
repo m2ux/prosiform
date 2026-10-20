@@ -31,7 +31,7 @@ from prosiform.cli import (
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
     main,
-    read_entry,
+    read_document,
 )
 from prosiform.closure import resolve
 from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
@@ -546,7 +546,7 @@ def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
 
 def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
     (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\n# Guide\r\n")
-    read = read_entry(root, resolve("guide.md"))
+    read = read_document(root, resolve("guide.md"))
     assert read.text == "# Guide\r\n"
     assert read.first_line == 4
 

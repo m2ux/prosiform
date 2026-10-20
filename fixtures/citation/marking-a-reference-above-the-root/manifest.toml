@@ -1,0 +1,21 @@
+description = "Marking a reference that names material above the allowed source root fails the run with the resolved path named, because a marked reference is one the bundle must carry and the root cannot contain the document it names."
+
+clauses = [
+  "Explicitly linked source structure — Explicit dependencies",
+  "Link classification and resource handling — Marked local Markdown document links",
+  "Reference normalization and path identity — a normalized path outside the root",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_OUTSIDE_ROOT"
+reference = "../guidelines.md"
+source = "guide.md:3"

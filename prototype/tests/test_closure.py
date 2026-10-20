@@ -14,7 +14,7 @@ kind declares rather than reaching a filesystem.
 """
 
 import pytest
-from prosiform.closure import Malformed, OutsideRoot, resolve
+from prosiform.closure import Malformed, OutsideRoot, inside, marked, resolve
 
 
 def test_a_reference_names_its_document_and_no_section() -> None:
@@ -123,3 +123,37 @@ def test_a_separator_a_segment_decodes_to_is_refused(reference: str) -> None:
 def test_a_backslash_separator_is_refused() -> None:
     with pytest.raises(Malformed):
         resolve("sub\\guide.md")
+
+
+def test_a_link_text_opening_with_the_mark_is_a_dependency() -> None:
+    assert marked("¬ Record Epic Delivery")
+
+
+def test_a_link_text_carrying_the_mark_elsewhere_is_a_mention() -> None:
+    assert not marked("the ¬ operator")
+
+
+def test_a_link_text_with_no_mark_is_a_mention() -> None:
+    assert not marked("Record Epic Delivery")
+
+
+def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
+    assert inside("docs/guide.md", "other.md").path == "docs/other.md"
+
+
+def test_a_link_walking_out_of_its_own_directory_normalizes_against_it() -> None:
+    assert inside("docs/guide.md", "../notes.md").path == "notes.md"
+
+
+def test_a_link_above_the_root_names_a_document_the_root_cannot_contain() -> None:
+    with pytest.raises(OutsideRoot):
+        inside("guide.md", "../outside.md")
+
+
+def test_a_fragment_alone_names_a_section_of_the_document_carrying_it() -> None:
+    found = inside("docs/guide.md", "#run-it")
+    assert (found.path, found.fragment) == ("docs/guide.md", "run-it")
+
+
+def test_a_reference_a_source_carries_keeps_the_text_it_was_written_as() -> None:
+    assert inside("docs/guide.md", "#run-it").original == "#run-it"

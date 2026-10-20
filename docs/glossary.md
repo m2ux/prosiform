@@ -32,8 +32,8 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **entry reference** | A reference supplied as an argument. Traversal starts at each one. |
 | **entry point** | The routing document a caller reads to choose an entry reference. It is not an argument, so it is never bundled. |
 | **target** | The document or section a reference resolves to, after path and fragment normalization. |
-| **dependency** | A target reached by a reference from selected content. Only a Markdown link creates one. |
-| **closure** | The transitive closure of the reference relation over the entry references: every target reachable by following references from selected content. |
+| **dependency** | A target its author marked as required, by opening the reference's link text with `¬`. It is resolved, bundled and rewritten; a reference left unmarked cites the document it names and creates none. |
+| **closure** | The transitive closure of the reference relation over the entry references: every target reachable by following marked references from selected content. |
 | **expansion depth** | Link hops from the nearest entry reference to a target, along its shortest path. |
 | **resource** | A reference target that is not a local Markdown document: an image, a remote address, any other non-Markdown link. It is emitted as authored and never opened, rebased or resolved. |
 
