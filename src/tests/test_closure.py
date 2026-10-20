@@ -14,6 +14,7 @@ kind declares rather than reaching a filesystem.
 """
 
 import pytest
+
 from prosiform.closure import Malformed, OutsideRoot, inside, marked, resolve
 
 
