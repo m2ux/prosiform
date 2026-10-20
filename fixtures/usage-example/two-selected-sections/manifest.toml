@@ -1,0 +1,32 @@
+description = "The usage example that names two sections selects each from the document that carries it, and the marked reference inside the first carries the second document's section it names."
+
+clauses = [
+  "CLI contract — Usage examples",
+  "Input and output contract — Selected sections",
+  "Section extraction and output hierarchy — Boundary",
+  "Compile before publishing — Discover the recursive dependency graph",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = [
+  "artifacts/epic-issue-body.md#record-epic-delivery",
+  "artifacts/epic.md#delivery-findings",
+]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Record Epic Delivery"
+resolved = "record-epic-delivery"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Delivery Findings"
+resolved = "delivery-findings"
