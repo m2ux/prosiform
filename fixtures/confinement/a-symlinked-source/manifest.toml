@@ -1,0 +1,19 @@
+description = "A source that is a symbolic link below the allowed root is refused, so the run opens the document the root holds or none at all."
+
+clauses = [
+  "No-symlink source policy",
+  "Reference normalization and path identity — Resolution sequence, step 8",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "guide.md"

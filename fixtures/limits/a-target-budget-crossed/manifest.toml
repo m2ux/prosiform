@@ -1,0 +1,17 @@
+description = "A run discovering more distinct document and section targets than the target budget names fails at the target that crosses it."
+
+clauses = [
+  "Resource limits — --max-targets",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-targets", "2", "alpha.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"

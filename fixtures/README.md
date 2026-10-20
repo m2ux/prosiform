@@ -24,6 +24,14 @@ fixtures/
 
 `source/` is the tree the run is confined to. `expected/` holds the bytes the run must produce. They are separate because an expected bundle is itself Markdown, and a bundle offered as input is refused under the generated-input policy.
 
+## A symbolic link in a source tree
+
+A source tree carries a symbolic link where the clause under test is about one. Git records a link as its own object — mode `120000`, the target as its content — so a fixture declaring the no-symlink source policy declares it as a link rather than as a file holding a path, and a runner materialises the tree the manifest describes.
+
+A link's target is a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the allowed root is declared without naming anything of the host.
+
+A checkout whose filesystem or configuration cannot create a link writes the target path into a regular file instead. Such a tree no longer states what the fixture declares, and the fixture fails rather than passing against a file that looks like a document.
+
 ## Copied sources
 
 Most families write their sources for the clause they exercise. The `real-source/` family does not: each of its sources is a document copied byte for byte from one of this workspace's skills, at the root-relative path that skill gives it. A source written to exercise one clause exercises that clause and says nothing about the documents the tool exists to bundle, so this family is where the corpus meets prose nobody wrote for it.
@@ -102,7 +110,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Two fixtures carry the marker. `normalization/root-escape` awaits `I00:E04`, which delivers dependency traversal. `extraction/an-unterminated-example-at-the-section-end` awaits `I00:E08`, which delivers boundary safety: a code example a source never closes absorbs the group written after it, and the run refuses that boundary rather than closing the example.
+Three fixtures carry the marker. `ancestor-promotion/a-link-to-a-heading-only-ancestor` awaits `I00:E09:W02`, which delivers the structural ancestors a reference promotes into their content. `traversal/a-relative-resource-warns` awaits `I00:E05:W03`, which delivers the portability warning a bundle carrying a relative resource emits. `extraction/an-unterminated-example-at-the-section-end` awaits `I00:E08`, which delivers boundary safety: a code example a source never closes absorbs the group written after it, and the run refuses that boundary rather than closing the example.
 
 ## The schema
 
@@ -125,11 +133,14 @@ An error decides a failing run.
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_GROUP_RULE` | Grouping — a depth outside 1 through 6, an unknown slug, or a repeated slug. |
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
+| `E_MARKED_RESOURCE` | Link classification and resource handling — a marked reference naming a resource rather than a local Markdown document. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
 | `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write. |
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
+| `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
 | `E_ROOT_NOT_FOUND` | CLI contract — an allowed source root naming no directory. |
+| `E_SELF_REFERENCE` | Self-reference and ancestor-reference behavior — a marked reference naming the very node that carries it. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — a normalized path outside the allowed root. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |
 | `E_TARGET_NOT_FOUND` | Validation and failure contract — a local Markdown reference resolving to nothing. |

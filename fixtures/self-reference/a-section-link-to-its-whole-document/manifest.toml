@@ -1,0 +1,15 @@
+description = "A marked link from a section back to the whole document holding it is an ancestor inclusion rather than a direct self-reference, because a document node and its heading-section nodes are distinct identities."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Preamble ownership",
+  "Self-reference and ancestor-reference behavior — Whole-document selection",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

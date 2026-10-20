@@ -25,6 +25,7 @@ from prosiform.profile import parse
 from prosiform.source import (
     MARK,
     Heading,
+    Link,
     Nested,
     Source,
     Unterminated,
@@ -34,9 +35,14 @@ from prosiform.source import (
     fragments,
     index,
     lines,
+    links,
+    nesting,
+    occurrences,
+    owner,
     regions,
     section,
     slug,
+    visible,
 )
 
 BODY = "An opening paragraph.\n\n## Run\n\nCarry the procedure out.\n"
@@ -407,3 +413,109 @@ def test_a_fragment_selects_the_heading_its_ordinal_names() -> None:
     found = section(parse(text), "run-1")
     assert found is not None
     assert [token.map for token in found] == [[4, 5], [6, 7]]
+
+
+def selected(text: str) -> list[Link]:
+    """Every link the whole of one document carries."""
+    tokens = parse(text)
+    return list(links(tokens, list(regions(tokens))))
+
+
+def test_a_link_is_read_as_its_destination_and_its_opening_text() -> None:
+    found = selected("[¬ the rules](rules.md)\n")
+    assert [(one.destination, one.opening) for one in found] == [
+        ("rules.md", "¬ the rules")
+    ]
+
+
+def test_an_apparent_link_inside_a_code_span_is_no_link() -> None:
+    assert selected("A `[¬ the rules](rules.md)` example.\n") == []
+
+
+def test_an_apparent_link_inside_a_code_block_is_no_link() -> None:
+    assert selected("~~~\n[¬ the rules](rules.md)\n~~~\n") == []
+
+
+def test_an_image_is_no_link() -> None:
+    assert selected("![a diagram](diagram.png)\n") == []
+
+
+def test_a_link_a_container_carries_is_one_of_its_region_s_links() -> None:
+    found = selected("> Quoting [¬ the rules](rules.md).\n")
+    assert [one.destination for one in found] == ["rules.md"]
+
+
+def test_a_link_whose_text_opens_on_markup_opens_with_nothing() -> None:
+    assert selected("[**bold**](rules.md)\n")[0].opening == ""
+
+
+def test_a_link_is_located_at_the_line_its_block_opens_on() -> None:
+    assert selected("# Guide\n\nSee [¬ the rules](rules.md).\n")[0].line == 3
+
+
+def test_a_link_outside_the_given_regions_is_not_reported() -> None:
+    text = "# One\n\nSee [¬ a](a.md).\n\n# Two\n\nSee [¬ b](b.md).\n"
+    tokens = parse(text)
+    chosen = section(tokens, "two")
+    assert chosen is not None
+    assert [one.destination for one in links(tokens, chosen)] == ["b.md"]
+
+
+def test_a_position_above_the_first_section_root_belongs_to_the_document() -> None:
+    tokens = parse("A preamble line.\n\n# Guide\n\nGuide body.\n")
+    assert owner(tokens, 0) is None
+
+
+def test_a_position_inside_a_section_belongs_to_that_section() -> None:
+    tokens = parse("# Guide\n\n## Alpha\n\nAlpha body.\n")
+    holder = owner(tokens, 4)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
+
+
+def test_a_position_belongs_to_the_innermost_section_containing_it() -> None:
+    tokens = parse("# Guide\n\n## Alpha\n\n### Detail\n\nDetail body.\n")
+    holder = owner(tokens, 6)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Detail"
+
+
+def test_a_position_inside_a_container_belongs_to_the_section_holding_it() -> None:
+    tokens = parse("# Guide\n\n## Alpha\n\n> - Quoted body.\n")
+    holder = owner(tokens, 4)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
+
+
+def test_a_heading_a_container_carries_roots_no_section_to_own_by() -> None:
+    tokens = parse("# Guide\n\n> ## Quoted\n>\n> Quoted body.\n")
+    holder = owner(tokens, 4)
+    assert holder is not None
+    assert visible(tokens[tokens.index(holder) + 1]) == "Guide"
+
+
+def test_a_document_nesting_no_container_nests_nothing() -> None:
+    assert nesting(parse("# Guide\n\nGuide body.\n")) == 0
+
+
+def test_container_nesting_counts_block_quotes_and_list_items() -> None:
+    assert nesting(parse("> > > deep\n")) == 3
+    assert nesting(parse("- a\n  - b\n    - c\n")) == 3
+    assert nesting(parse("> - quoted item\n")) == 2
+
+
+def test_container_nesting_is_the_deepest_run_rather_than_the_last() -> None:
+    assert nesting(parse("> > deep\n\nshallow\n")) == 2
+
+
+def test_link_and_image_uses_are_counted_once_per_occurrence() -> None:
+    tokens = parse("# Guide\n\n[a](a.md) and [a](a.md) and ![p](p.png).\n")
+    assert occurrences(tokens, tuple(regions(tokens))) == 3
+
+
+def test_a_use_outside_the_given_regions_is_not_counted() -> None:
+    text = "# One\n\n[a](a.md)\n\n# Two\n\n[b](b.md)\n"
+    tokens = parse(text)
+    chosen = section(tokens, "two")
+    assert chosen is not None
+    assert occurrences(tokens, chosen) == 1

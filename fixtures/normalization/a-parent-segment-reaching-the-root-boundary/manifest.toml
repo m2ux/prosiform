@@ -1,0 +1,15 @@
+description = "A parent segment that normalizes exactly onto the allowed source root is confined to it, so the reference bundles the document the root holds rather than being refused at the boundary."
+
+clauses = [
+  "Reference normalization and path identity — sub/../guide.md#run",
+  "Reference normalization and path identity — Resolution sequence, step 7",
+]
+
+[invocation]
+root = "source"
+arguments = ["docs/../guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

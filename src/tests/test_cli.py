@@ -23,17 +23,22 @@ from prosiform.cli import (
     INVALID_ENCODING,
     INVALID_GROUP_RULE,
     INVALID_USAGE,
+    MARKED_RESOURCE,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
+    SELF_REFERENCE,
     SOURCE_OUTSIDE_ROOT,
+    SOURCE_SYMLINK,
     SUCCESS,
     TARGET_NOT_FOUND,
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
     main,
-    read_entry,
+    read_document,
 )
+from prosiform.closure import resolve
+from prosiform.limits import FILES, RESOURCE_LIMIT
 from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
 from prosiform.source import NESTED_SECTION_TARGET, UNTERMINATED_FRONTMATTER
 
@@ -117,10 +122,7 @@ def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:
     assert run.status == SUCCESS
 
 
-@pytest.mark.parametrize(
-    "option",
-    ["--max-files", "--max-output-bytes", "--max-nesting", "--manifest", "--watch"],
-)
+@pytest.mark.parametrize("option", ["--manifest", "--watch", "--cache"])
 def test_an_option_the_contract_does_not_declare_is_refused(
     root: Path, option: str
 ) -> None:
@@ -253,9 +255,41 @@ def test_an_output_path_naming_the_referring_document_is_invalid_usage(
         "guide.md",
         "--output",
         str(root / "guide.md"),
-        "#a-section",
+        "#guide",
     )
     assert run.status == USAGE_FAILURE
+
+
+def test_an_output_path_naming_a_dependency_source_is_invalid_usage(
+    root: Path,
+) -> None:
+    (root / "guide.md").write_text(
+        "# Guide\n\nIt needs [\u00acthe note](docs/note.md).\n"
+    )
+    note = root / "docs" / "note.md"
+    run = invoke("--root", str(root), "--output", str(note), "guide.md")
+    assert run.status == USAGE_FAILURE
+    assert "input source" in run.stderr
+    assert note.read_text() == "# Note\n"
+
+
+def test_a_source_reached_through_a_link_is_no_identity_the_output_check_holds(
+    root: Path, tmp_path: Path
+) -> None:
+    outside = tmp_path.parent / "outside.md"
+    outside.write_text("# Outside\n")
+    (root / "alias.md").symlink_to(outside)
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(outside),
+        "alias.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_SYMLINK]
 
 
 def test_an_output_path_naming_no_input_source_is_accepted(
@@ -546,7 +580,7 @@ def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
 
 def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
     (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\n# Guide\r\n")
-    read = read_entry(root, "guide.md", "guide.md")
+    read = read_document(root, resolve("guide.md")).source
     assert read.text == "# Guide\r\n"
     assert read.first_line == 4
 
@@ -729,3 +763,180 @@ def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     run = invoke("--root", str(root), "--check", "--diagnostics", "json", "guide.md")
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
+
+
+def test_marking_a_reference_outside_the_profile_s_suffixes_is_refused(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [¬ the diagram](plan.png).\n")
+    (root / "plan.png").write_text("Never opened.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+    assert run.stdout == ""
+
+
+def test_marking_a_reference_carrying_a_scheme_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [¬ the spec](https://e.test/s.md).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+
+
+def test_an_unmarked_resource_is_emitted_as_authored(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the spec](https://e.test/s.md).\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[the spec](https://e.test/s.md)" in run.stdout
+
+
+def test_a_marked_link_to_the_section_carrying_it_is_a_self_reference(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ A](guide.md#alpha).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+    assert run.stdout == ""
+
+
+def test_identity_is_compared_after_the_path_and_the_fragment_resolve(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ A](./%67uide.md#alpha).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+
+
+def test_a_preamble_link_to_its_own_document_is_a_self_reference(root: Path) -> None:
+    written(root, "guide.md", "See [¬ the guide](guide.md).\n\n## Alpha\n\nBody.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+
+
+def test_a_section_link_to_its_whole_document_is_an_ancestor_inclusion(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ it](guide.md).\n")
+    assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
+
+
+def test_a_link_to_another_section_of_one_file_is_no_self_reference(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSee [¬ B](guide.md#beta).\n\n## Beta\n\nBody.\n",
+    )
+    assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
+
+
+def test_classification_is_the_same_before_and_after_consolidation(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nBody.\n\n### Detail\n\nSee [¬ A](guide.md#alpha).\n",
+    )
+    child = invoke("--root", str(root), "guide.md#detail")
+    consolidated = invoke("--root", str(root), "guide.md#alpha")
+    assert child.status == SUCCESS
+    assert consolidated.status == SUCCESS
+    assert child.stdout.partition("\n\n")[2] == consolidated.stdout.partition("\n\n")[2]
+
+
+def test_a_self_reference_survives_consolidation_into_the_whole_document(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\n### Detail\n\nSee [¬ D](guide.md#detail).\n",
+    )
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+
+
+def chained(root: Path) -> None:
+    """A root holding a three-document chain of marked dependencies."""
+    written(root, "alpha.md", "# Alpha\n\nSee [¬ b](beta.md).\n")
+    written(root, "beta.md", "# Beta\n\nSee [¬ g](gamma.md).\n")
+    written(root, "gamma.md", "# Gamma\n\nThe end.\n")
+
+
+@pytest.mark.parametrize(
+    ("option", "value"),
+    [
+        ("--max-files", "2"),
+        ("--max-file-bytes", "16"),
+        ("--max-input-bytes", "60"),
+        ("--max-output-bytes", "64"),
+        ("--max-targets", "2"),
+        ("--max-links", "1"),
+        ("--max-expansion-depth", "1"),
+    ],
+)
+def test_a_crossed_budget_fails_the_run_and_names_the_option(
+    root: Path, option: str, value: str
+) -> None:
+    chained(root)
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", option, value, "alpha.md"
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert option in reported["message"]
+    assert run.stdout == ""
+
+
+def test_a_crossed_nesting_budget_fails_rather_than_reinterpreting_the_source(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\n" + "> " * 12 + "The bottom.\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-nesting", "3", "guide.md"
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == RESOURCE_LIMIT
+
+
+def test_a_target_at_the_expansion_depth_is_bundled(root: Path) -> None:
+    chained(root)
+    run = invoke("--root", str(root), "--max-expansion-depth", "2", "alpha.md")
+    assert run.status == SUCCESS
+    assert "# gamma" in run.stdout
+
+
+def test_a_crossed_budget_publishes_no_output_file(root: Path, tmp_path: Path) -> None:
+    chained(root)
+    destination = tmp_path / "bundle.md"
+    run = invoke(
+        "--root",
+        str(root),
+        "--max-output-bytes",
+        "64",
+        "-o",
+        str(destination),
+        "alpha.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert not destination.exists()
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "1.5", "0x10", " 1", ""])
+def test_a_budget_override_that_is_no_positive_decimal_integer_is_refused(
+    root: Path, value: str
+) -> None:
+    run = invoke("--root", str(root), f"--max-files={value}", "guide.md")
+    assert run.status == USAGE_FAILURE
+
+
+def test_a_budget_stands_at_the_number_the_profile_declares(root: Path) -> None:
+    assert FILES.default == 256
+    assert invoke("--root", str(root), "guide.md").status == SUCCESS

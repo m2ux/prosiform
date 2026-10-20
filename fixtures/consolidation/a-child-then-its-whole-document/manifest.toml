@@ -1,0 +1,16 @@
+description = "A section selected first and its whole document included later by a dependency is one region: the document's group carries the larger region alone, and a reference marked in the part the entry did not select is resolved."
+
+clauses = [
+  "Compile before publishing — Expanding coverage",
+  "Compile before publishing — step 5, consolidate selections",
+  "Groups — emit each selected region once",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

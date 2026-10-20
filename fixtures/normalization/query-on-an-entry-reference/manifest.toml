@@ -1,0 +1,20 @@
+description = "A schemeless reference carrying a query is refused by code rather than opened as a document whose name holds the query."
+
+clauses = [
+  "Reference normalization and path identity — Resolution sequence, step 4",
+  "Reference normalization and path identity — guide.md?view=raw#run",
+  "CLI contract — a command line the contract's grammar does not admit",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md?view=raw"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+reference = "guide.md?view=raw"
