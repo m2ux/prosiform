@@ -23,11 +23,12 @@ Four classes of reference, each resolved by what it names:
   so an offline run cannot pass.
 
 A host that says nothing is told apart from a reference that does not
-resolve. A server error, a timeout or a dropped connection means the host
-reported nothing about the target, so after a bounded number of attempts it
-is counted as unreachable and the run passes carrying that verdict. A check
-that fails on a third party teaches a reader to re-run it rather than to
-read it, which is the habit that lets a genuine broken reference through.
+resolve. A server error, a refusal of the caller, a timeout or a dropped
+connection means the host reported nothing about the target, so after a
+bounded number of attempts it is counted as unreachable and the run passes
+carrying that verdict. A check that fails on a third party teaches a reader
+to re-run it rather than to read it, which is the habit that lets a genuine
+broken reference through.
 """
 
 import argparse
@@ -56,17 +57,17 @@ USER_AGENT = "prosiform-link-check"
 ATTEMPTS = 3
 DELAY = 2.0
 TIMEOUT = 20
-SERVER_ERROR = re.compile(r"HTTP 5\d\d")
+SAYS_NOTHING = re.compile(r"HTTP (?:5\d\d|403)")
 
 
 @dataclass(frozen=True)
 class Unreachable:
-    """A host that did not answer, which is not an unresolved reference.
+    """A host that said nothing, which is not an unresolved reference.
 
     A reference is unresolved when the host answered and said the target
-    is not there. A host returning a server error, timing out or dropping
-    the connection has said nothing about the target, so it carries a
-    verdict of its own and leaves the run passing.
+    is not there. A host returning a server error, refusing the caller,
+    timing out or dropping the connection has said nothing about the
+    target, so it carries a verdict of its own and leaves the run passing.
     """
 
     reason: str
@@ -219,8 +220,8 @@ def gh_api(arguments: list[str]) -> Outcome:
     """Run an authenticated GitHub API call, or report why it did not answer.
 
     A missing command is the caller's to fix and fails the check. A call
-    that timed out or came back carrying a server status is the host
-    saying nothing, which is a verdict of its own.
+    that timed out or came back carrying a server status or a refusal of
+    the caller is the host saying nothing, which is a verdict of its own.
     """
     try:
         result = subprocess.run(
@@ -236,7 +237,7 @@ def gh_api(arguments: list[str]) -> Outcome:
         reason = (
             result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
         )
-        return Unreachable(reason) if SERVER_ERROR.search(reason) else reason
+        return Unreachable(reason) if SAYS_NOTHING.search(reason) else reason
     return None
 
 
@@ -271,12 +272,16 @@ def verdict(status: int) -> Outcome:
     """What a status the host returned says about the target.
 
     A server status is the host reporting its own trouble and states
-    nothing about the target. A client status is an answer about the
-    target, and the check holds the document to it.
+    nothing about the target. A forbidden status is the host refusing
+    this caller: it turns on the address the request came from and the
+    agent it named, so the same target answers one reader and refuses
+    another, and it states nothing about the target either. Any other
+    client status is an answer about the target, and the check holds the
+    document to it.
     """
     if status < 400:
         return None
-    if status >= 500:
+    if status >= 500 or status == 403:
         return Unreachable(f"HTTP {status}")
     return f"HTTP {status}"
 
@@ -296,9 +301,10 @@ def fetched(target: str, method: str | None) -> int:
 def reach(target: str) -> Outcome:
     """One attempt at a remote address.
 
-    A host answering 403 or 405 to HEAD is answering about the method
+    A host answering 403 or 405 to HEAD may be answering about the method
     rather than the target, so the address is asked for again with GET
-    before its status is read. A connection that failed, timed out or was
+    before its status is read, and a host that serves the page to GET
+    resolves. A connection that failed, timed out or was
     dropped is the host saying nothing and takes the unreachable verdict;
     anything else the request raises is the reference's own fault and
     fails the check.
