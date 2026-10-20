@@ -30,6 +30,18 @@ def run(bodies: list[tuple[str, str]]) -> tuple[int, str]:
     return code, output.getvalue()
 
 
+RESOLUTIONS = 'can share a pull request: name each other in Joins, or account for the pair in the planning record'
+
+UNJOINED_EPIC = (
+    '## Work Breakdown\n\n'
+    '| Task | Description | Coverage | Depends on | Joins | Done |\n'
+    '| --- | --- | --- | --- | --- | --- |\n'
+    '| W01 | One | AC1 | | | |\n'
+    '| W02 | Two | AC1 | W01 | | |\n'
+    '| W03 | Three | AC1 | | | |\n'
+)
+
+
 class EligibleUnjoined(unittest.TestCase):
     def test_skips_a_dependency_and_a_named_pair(self):
         def ancestors(name):
@@ -42,32 +54,61 @@ class EligibleUnjoined(unittest.TestCase):
             'E06:W04': ('d', [], ['E06:W03']),
         }
         self.assertEqual(eligible_unjoined(tasks, ancestors), [
-            'E06:W01 and E06:W03 can share a pull request and do not name each other',
-            'E06:W01 and E06:W04 can share a pull request and do not name each other',
-            'E06:W02 and E06:W03 can share a pull request and do not name each other',
-            'E06:W02 and E06:W04 can share a pull request and do not name each other',
+            f'E06:W01 and E06:W03 {RESOLUTIONS}',
+            f'E06:W01 and E06:W04 {RESOLUTIONS}',
+            f'E06:W02 and E06:W03 {RESOLUTIONS}',
+            f'E06:W02 and E06:W04 {RESOLUTIONS}',
         ])
 
     def test_main_prints_the_section(self):
-        body = (
-            '## Work Breakdown\n\n'
-            '| Task | Description | Coverage | Depends on | Joins | Done |\n'
-            '| --- | --- | --- | --- | --- | --- |\n'
-            '| W01 | One | AC1 | | | |\n'
-            '| W02 | Two | AC1 | W01 | | |\n'
-            '| W03 | Three | AC1 | | | |\n'
-        )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'epic.md'
-            path.write_text(body)
+            path.write_text(UNJOINED_EPIC)
             output = io.StringIO()
             with redirect_stdout(output):
                 code = main([f'E06={path}'])
         text = output.getvalue()
         self.assertEqual(code, 0)
-        self.assertIn('E06:W01 and E06:W03 can share a pull request and do not name each other', text)
-        self.assertIn('E06:W02 and E06:W03 can share a pull request and do not name each other', text)
+        self.assertIn(f'E06:W01 and E06:W03 {RESOLUTIONS}', text)
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
         self.assertNotIn('E06:W01 and E06:W02', text)
+
+
+class RecordedPairs(unittest.TestCase):
+    """The planning-record entry an empty Joins cell rests on."""
+
+    def check(self, record: str | None):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'epic.md'
+            path.write_text(UNJOINED_EPIC)
+            args = [f'E06={path}']
+            if record is not None:
+                joins = Path(directory) / 'joins.md'
+                joins.write_text(record)
+                args.append(f'R={joins}')
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main(args)
+        return code, output.getvalue()
+
+    def test_a_recorded_pair_leaves_the_section(self):
+        _, text = self.check('- **E06:W01 and E06:W03.** Each row changes its own file.\n')
+        self.assertNotIn('E06:W01 and E06:W03', text)
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_pair_in_neither_joins_nor_the_record_is_reported(self):
+        _, text = self.check('- **E06:W01 and E06:W03.** Each row changes its own file.\n')
+        self.assertIn(f'E06:W02 and E06:W03 {RESOLUTIONS}', text)
+
+    def test_a_record_that_cannot_be_read_is_a_problem(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'epic.md'
+            path.write_text(UNJOINED_EPIC)
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main([f'E06={path}', f'R={Path(directory) / "absent.md"}'])
+        self.assertEqual(code, 1)
+        self.assertIn('absent.md is unreadable', output.getvalue())
 
 
 class EpicNamedInATaskRow(unittest.TestCase):
