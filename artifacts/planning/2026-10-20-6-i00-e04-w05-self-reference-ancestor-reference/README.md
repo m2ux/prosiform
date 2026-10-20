@@ -6,7 +6,7 @@
 
 This record holds the local plan for two joined rows of [I00:E04] Dependency Closure, delivered as one pull request. W05 classifies a reference by the identity it resolves to rather than by the text it was written as: a link from a section to that same canonical section fails as a direct self-reference, a link back to an including ancestor resolves to the destination already there, and ownership is recorded apart from inclusion so consolidating a selection cannot change what a link was classified as. It also refuses a marked resource, which asks the tool to bundle something it never bundles. W06 counts the eight budgets the profile names and fails the compilation at the first boundary crossed, with nothing published and nothing truncated.
 
-It matters because both rows close gaps the contract left open. The absorbed collision between [D32](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md)'s invariant and the resource rule is settled by [D40](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) as a refusal, and the eight declared budgets had no code to report a crossing at all, which [D41](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) settles as one code naming the budget in its message. Both codes land in one catalogue window.
+It matters because both rows close gaps the contract left open. The absorbed collision between [D32](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md)'s invariant and the resource rule is settled by [D40](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) as a refusal, and the eight declared budgets had no code to report a crossing at all, which [D41](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) settles as one code naming the budget in its message. Three codes land in one catalogue window: measuring the build found that AC4's failing half had no code either, which [D42](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) settles as E_SELF_REFERENCE.
 
 ## Artifacts
 
@@ -14,6 +14,8 @@ It matters because both rows close gaps the contract left open. The absorbed col
 | --- | --- |
 | [w05.md](w05.md) | W05's plan: the ownership record, the identity comparison, the two outcomes, and the marked-resource refusal |
 | [w06.md](w06.md) | W06's plan: the counters, their placement, the override parsing, and the code a crossed budget reports |
+| [validation.md](validation.md) | The validation record: the behaviour measured before the design was built to it, the instrument behind each criterion, the output each check returned, and the design-push window |
+| [changes.md](changes.md) | The change list: every plan change this session applied, every one it held, and what the brief got wrong |
 
 ## Links
 
