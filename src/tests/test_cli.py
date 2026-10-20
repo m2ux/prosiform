@@ -1070,6 +1070,147 @@ def test_a_crossed_nesting_budget_fails_rather_than_reinterpreting_the_source(
     assert run.diagnostics()[0]["code"] == RESOURCE_LIMIT
 
 
+def test_a_parsing_safety_budget_an_unselected_construct_crosses_names_the_source(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSelected.\n\n## Beta\n\n" + "> " * 12 + "Deep.\n",
+    )
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--max-nesting",
+        "3",
+        "guide.md#alpha",
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert reported["source"] == "guide.md"
+    assert reported["reference"] == "guide.md"
+    assert reported["chain"] == ["guide.md#alpha"]
+    assert "cannot be safely indexed" in reported["message"]
+
+
+def test_a_source_byte_budget_is_an_indexing_failure_too(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSelected.\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--max-file-bytes",
+        "8",
+        "guide.md#alpha",
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert reported["source"] == "guide.md"
+    assert "cannot be safely indexed" in reported["message"]
+
+
+def test_a_run_wide_budget_names_no_single_source(root: Path) -> None:
+    chained(root)
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-files", "2", "alpha.md"
+    )
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RESOURCE_LIMIT
+    assert "source" not in reported
+    assert "cannot be safely indexed" not in reported["message"]
+
+
+def scoped(root: Path) -> None:
+    """A document whose unselected section carries every defect at once."""
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSee [¬ gamma](other.md#gamma).\n\n"
+        "## Beta\n\nSee [¬ gone](missing.md) and [¬ here](guide.md#beta).\n\n"
+        "<div>raw</div>\n",
+    )
+    written(
+        root,
+        "other.md",
+        "# Other\n\n## Gamma\n\nCited.\n\n## Delta\n\n<div>raw</div>\n",
+    )
+
+
+def test_an_unselected_broken_link_does_not_fail_the_run(root: Path) -> None:
+    scoped(root)
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "### Alpha" in run.stdout
+
+
+def test_an_unselected_self_link_does_not_fail_the_run(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSelected.\n\n## Beta\n\nSee [¬ here](guide.md#beta).\n",
+    )
+    assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
+
+
+def test_the_same_sibling_fails_once_the_closure_includes_it(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSee [¬ beta](guide.md#beta).\n\n"
+        "## Beta\n\nSee [¬ gone](missing.md).\n",
+    )
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == TARGET_NOT_FOUND
+    assert reported["reference"] == "missing.md"
+
+
+def test_a_profile_refusal_a_named_document_did_not_select_does_not_fail(
+    root: Path,
+) -> None:
+    scoped(root)
+    assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
+
+
+def test_a_profile_refusal_a_reached_document_did_not_select_does_not_fail(
+    root: Path,
+) -> None:
+    scoped(root)
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "### Gamma" in run.stdout
+    assert "Delta" not in run.stdout
+
+
+def test_a_profile_refusal_the_run_selected_still_fails(root: Path) -> None:
+    scoped(root)
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#beta")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RAW_HTML
+    assert reported["chain"] == ["guide.md#beta"]
+
+
+def test_a_refusal_in_a_reached_document_the_closure_selected_fails(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [¬ other](other.md).\n")
+    written(root, "other.md", "# Other\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == RAW_HTML
+    assert reported["source"] == "other.md:3"
+    assert reported["chain"] == ["guide.md", "other.md"]
+
+
 def test_a_target_at_the_expansion_depth_is_bundled(root: Path) -> None:
     chained(root)
     run = invoke("--root", str(root), "--max-expansion-depth", "2", "alpha.md")
