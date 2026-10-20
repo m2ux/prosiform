@@ -46,6 +46,7 @@ from prosiform.source import (
     slug,
     uses,
     visible,
+    within,
 )
 
 BODY = "An opening paragraph.\n\n## Run\n\nCarry the procedure out.\n"
@@ -553,6 +554,24 @@ def test_a_use_outside_the_given_regions_is_not_counted() -> None:
     chosen = section(tokens, "two")
     assert chosen is not None
     assert occurrences(tokens, chosen) == 1
+
+
+def test_the_tokens_within_the_given_regions_exclude_the_rest() -> None:
+    text = "# One\n\n<div>raw</div>\n\n# Two\n\nPlain.\n"
+    tokens = parse(text)
+    chosen = section(tokens, "two")
+    assert chosen is not None
+    assert "html_block" not in [token.type for token in within(tokens, chosen)]
+    assert "html_block" in [token.type for token in within(tokens, list(tokens))]
+
+
+def test_a_container_and_what_it_holds_are_within_one_region() -> None:
+    tokens = parse("# One\n\n> - held\n")
+    chosen = section(tokens, "one")
+    assert chosen is not None
+    held = [token.type for token in within(tokens, chosen)]
+    assert "blockquote_open" in held
+    assert "list_item_open" in held
 
 
 def test_a_document_opening_on_a_top_level_heading_names_it() -> None:

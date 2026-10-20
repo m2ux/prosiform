@@ -1,0 +1,21 @@
+description = "The sibling section whose broken link failed no run that left it unselected fails the run whose closure reaches it, because a section the closure includes is selected content like any other."
+
+clauses = [
+  "Validation scope — if closure expands to include that sibling, its links become subject to validation",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#procedure"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "reading-list.md"
+source = "guide.md:9"
+chain = ["guide.md#procedure", "reading-list.md"]
