@@ -772,8 +772,7 @@ def recheck(root: Path, captured: dict[str, Capture]) -> None:
         except Unreadable as unreadable:
             raise changed(
                 path,
-                f"is no longer a document the allowed source root yields: "
-                f"{unreadable}",
+                f"is no longer a document the allowed source root yields: {unreadable}",
             ) from unreadable
         now = canonical(root, path)
         if now != was.identity:
