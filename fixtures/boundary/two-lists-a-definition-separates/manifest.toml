@@ -1,7 +1,5 @@
 description = "Two lists a link-reference definition separates in the source are two regions, and the blank line the bundle joins them by does not separate two lists that share a marker, so the second would be read as further items of the first and the run refuses the boundary."
 
-awaiting = "I00:E08:W03"
-
 clauses = [
   "Block boundaries",
 ]

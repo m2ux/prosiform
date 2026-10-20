@@ -1,7 +1,5 @@
 description = "A region ending inside nested containers is joined to the region below it by a blank line, which closes neither container, so the later region is read as a further item of the outer list and the run refuses the boundary rather than publishing content a reader finds one level in."
 
-awaiting = "I00:E08:W03"
-
 clauses = [
   "Block boundaries",
 ]
