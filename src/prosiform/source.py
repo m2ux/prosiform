@@ -97,6 +97,9 @@ LINE_FEED = "\n"
 CARRIAGE_RETURN = "\r"
 
 PHYSICAL_LINE = re.compile(r"[^\n]*\n|[^\n]+")
+CONTAINER_PREFIX = re.compile(
+    r"^(?:[ \t]*(?:>|[-*+](?=[ \t])|\d{1,9}[.)](?=[ \t])))*[ \t]*"
+)
 
 UNTERMINATED_FRONTMATTER = "E_UNTERMINATED_FRONTMATTER"
 NESTED_SECTION_TARGET = "E_NESTED_SECTION_TARGET"
@@ -112,6 +115,7 @@ REFERENCE_USES = (LINK_OPEN, IMAGE)
 CONTAINER_OPEN = ("blockquote_open", "list_item_open")
 CONTAINER_CLOSE = ("blockquote_close", "list_item_close")
 HREF = "href"
+SRC = "src"
 BREAKS = ("softbreak", "hardbreak")
 
 SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
@@ -176,6 +180,12 @@ def bare(physical: str) -> str:
     """One physical line without the LF or CRLF that terminates it."""
     stripped = physical.removesuffix(LINE_FEED)
     return stripped.removesuffix(CARRIAGE_RETURN)
+
+
+def opening_markers(line: str) -> str:
+    """The container markers and indent one line opens with, before its content."""
+    written = CONTAINER_PREFIX.match(line)
+    return "" if written is None else written.group(0)
 
 
 def decode(data: bytes) -> str:
