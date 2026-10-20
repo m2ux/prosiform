@@ -12,6 +12,7 @@ Read these files first.
 - [Board Queue](../artifacts/board-queue.md)
 - [Issue](../artifacts/issue.md)
 - [Repository Labels](../artifacts/repository-labels.md)
+- [Plan Change](../artifacts/plan-change.md)
 - [Guidelines](../guidelines.md)
 
 ## Procedure
@@ -23,7 +24,7 @@ The main path meets [Outcomes](#outcomes).
    - Use the returned owner and board number for the sync and fetch steps.
    - Resolve a pending theme selection before continuing.
 2. **Sync.**
-   Run [Sync Mode](sync-mode.md) for each open initiative on the selected board.
+   Run [Sync Mode](sync-mode.md) for each open initiative on the selected board, with the allowance the caller supplied.
    - Wait for its saved delivery results before the fetch step.
    - Return any blocker that prevents current delivery from being established.
 3. **Fetch.**
@@ -42,12 +43,14 @@ The main path meets [Outcomes](#outcomes).
    - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the current board items, initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved issue file and confirmed unplanned initiative identity.
    - Repeat while references remain unresolved; an unavailable issue leaves the queue pending.
 6. **Resolve queue decisions.**
-   Ask only from an `order` or `ask` line in [Report Lines](../artifacts/board-queue.md#report-lines).
-   - Follow the interview rules in the [guidelines](../guidelines.md#modes).
-   - For `order`, ask for the [parallel work map](../artifacts/board-queue.md#priority-sets): a positive integer on each listed initiative, or leave it unordered.
+   Decide only from an `order` or `ask` line in [Report Lines](../artifacts/board-queue.md#report-lines), each of which is a re-prioritisation.
+   - Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each line, with the allowance the caller supplied.
+     - An automatic line takes its [recommended decision](../artifacts/board-queue.md#recommended-decisions), recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
+     - A held line, and an automatic one the recommendation leaves without an answer, is put to the user, following the interview rules in the [guidelines](../guidelines.md#modes).
+   - For `order`, the answer is the [parallel work map](../artifacts/board-queue.md#priority-sets): a positive integer on each listed initiative, or none left unordered.
    - For `ask`:
-     - Ask for a positive integer or none.
-     - Record the initiative's identity as confirmed unplanned when the user chooses none.
+     - The answer is a positive integer or none.
+     - Record the initiative's identity as confirmed unplanned when the answer is none.
    - After an answer:
      - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the priority label each confirmed number names, for every repository holding one of those initiatives.
      - Call [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with each initiative identity and its confirmed priority-label addition.
@@ -55,6 +58,7 @@ The main path meets [Outcomes](#outcomes).
      - Call [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
    - Resolve any further missing evidence through step 5.
    - Repeat this step while a decision is pending. An unanswered question leaves the queue pending.
+   - Return the [change list](../artifacts/plan-change.md#change-list) with the queue, so the caller reports each decision this mode made and each it held.
 7. **Write.**
    Once the queue is [complete](../artifacts/board-queue.md#completeness), run each proposed Status and assignee call it returned.
    - Run [Read Board State](../artifacts/board.md#read-board-state) again.
@@ -69,6 +73,6 @@ The main path meets [Outcomes](#outcomes).
 - **A queue.**
   The user has a queue for one theme: which initiatives are underway together, which are next, and which wait.
 - **A parallel work map.**
-  Initiatives the user ranks with the same priority run together. One left unordered waits.
+  Initiatives ranked with the same priority run together. One left unordered waits.
 - **Epics follow the initiative.**
   On the initiative that is underway, the epics planned to start together can start, and a partly completed epic stays underway.

@@ -21,6 +21,7 @@ Read these files first.
 - [Issue Closure](../protocols/issue-closure.md)
 - [Review Pull Request](../protocols/review-pull-request.md)
 - [Epic Integration](../protocols/epic-integration.md)
+- [Plan Change](../artifacts/plan-change.md)
 
 ## Procedure
 
@@ -91,7 +92,9 @@ The main path meets [Outcomes](#outcomes).
        - Link the pull request as in the match step.
      - **Unplaced.**
        - Draft the missing task row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
-       - Confirm it with the user; an unanswered placement stays pending.
+       - Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for the row, which is a task creation, with the allowance the caller supplied.
+         - An automatic row is confirmed as drafted and recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
+         - A held row is confirmed with the user; an unanswered placement stays pending.
        - Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
        - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
        - Repeat Record Epic Delivery with the saved epic and refreshed task records. An unanswered placement stays pending.

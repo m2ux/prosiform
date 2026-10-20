@@ -73,6 +73,13 @@ The queue contains calls for Status and assignee changes to initiatives and epic
 | `wait` | An open pull request names one of an initiative's epics | That initiative and the pull request |
 | `next` | An initiative is In Progress and has epics that are Ready | Those epics |
 
+### Recommended Decisions
+
+The answer a caller applies where it resolves an `order` or `ask` line on its own.
+
+- For `order`, priority 1 on every open initiative already In Progress or named by an open pull request, and no number on the rest. Where no initiative qualifies, nothing is under way and the line has no recommended answer.
+- For `ask`, the number of the highest set already running, so the initiative joins it, or 1 where no initiative carries a priority label.
+
 ### Completeness
 
 An `order` or `ask` line means a decision is pending. An unresolved issue reference means dependency evidence is missing. Either leaves the queue incomplete.
