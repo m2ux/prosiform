@@ -233,6 +233,7 @@ TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
+ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
@@ -1067,8 +1068,13 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-) -> str:
-    """The complete bundle candidate: its entry line and one group per source.
+) -> tuple[str, list[tuple[str, str]]]:
+    """The complete bundle candidate, and the entry destinations it opens on.
+
+    The candidate is its entry line and one group per source. The pairs
+    returned are the ones that entry line is written from, so what a
+    caller reads on the diagnostic stream and what the bundle states in
+    its opening line are one computation rather than two.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -1084,7 +1090,8 @@ def compose(
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(list(selected), headed, assigned)
     groups = assembled(read, parsed, defined, selected, entries, targets)
-    bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
+    named = entries_named(groups, assigned)
+    bundled = assemble(entry_line(named), groups)
     validate(
         bundled,
         groups,
@@ -1096,7 +1103,7 @@ def compose(
         parsed,
         limits.of(NESTING),
     )
-    return bundled
+    return bundled, named
 
 
 def resource(destination: str) -> bool:
@@ -1242,7 +1249,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             raise usage_failure(
                 f"the output path {options.output!r} names an input source"
             )
-    bundled = compose(read, parsed, defined, referring, requested, found, limits)
+    bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:
@@ -1257,12 +1264,22 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 code=RESOURCE_PORTABILITY,
             )
         )
-    if options.check:
-        return SUCCESS
-    if options.output == STANDARD_OUTPUT:
-        publish(bundled, stdout)
-    else:
-        publish_file(bundled, Path(options.output).resolve())
+    if not options.check:
+        if options.output == STANDARD_OUTPUT:
+            publish(bundled, stdout)
+        else:
+            publish_file(bundled, Path(options.output).resolve())
+    for reference, target in named:
+        reporter.emit(
+            Diagnostic(
+                WARNING,
+                f"the entry reference {reference!r} resolves to the destination "
+                f"{target!r}, which the bundle's entry line links it to",
+                code=ENTRY_DESTINATION,
+                reference=reference,
+                destination=target,
+            )
+        )
     return SUCCESS
 
 
