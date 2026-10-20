@@ -13,6 +13,7 @@ It matters because a reference the parser silently declined to resolve is a depe
 | Artifact | What it holds |
 | --- | --- |
 | [w13.md](w13.md) | The task's plan: where suppression is observed, what the diagnostic carries and the two fixtures that separate exhaustion from omission |
+| [validation.md](validation.md) | The signal the detection was chosen on, the boundary measured around the parser's ceiling, and the fixtures, unit cases and check suite the delivery was held to |
 
 ## Links
 
