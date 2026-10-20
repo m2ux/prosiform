@@ -7,6 +7,11 @@ name: its failure is reported as awaited and leaves the verdict green,
 while a run in which it meets its manifest fails, so the marker cannot
 outlive the work it waits on.
 
+The same markers answer a request: asked which fixtures await one named
+piece of work, the corpus reports them from the manifests alone, so a
+session starting that work reads what it unblocks before it changes
+anything.
+
 The build under test is a canned program each case configures, as in the
 runner's own tests: the comparison belongs to the runner and what these
 cases exercise is the verdict drawn from it. A corpus with no build
@@ -26,7 +31,10 @@ from corpus import (
     main,
     outcome,
     report,
+    requested,
     summary,
+    unblocked,
+    unblocked_report,
 )
 from manifests import MANIFEST_NAME, errors, missing_files, read
 from runner import BUILD, Difference, Result
@@ -257,3 +265,55 @@ def test_the_whole_corpus_runs_against_the_build(
     assert "3 fixture(s), 3 pass" in printed
     for name in ("one", "two", "three"):
         assert str(tmp_path / "corpus" / name) in printed
+
+
+def awaiting_corpus(tmp_path: Path) -> Path:
+    """A corpus of three fixtures, two of them awaiting different work."""
+    corpus = tmp_path / "corpus"
+    write_fixture(corpus / "met")
+    write_fixture(corpus / "one", stdout=b"# Other\n", awaits="I00:E03")
+    write_fixture(corpus / "two", stdout=b"# Other\n", awaits="I00:E04:W02")
+    return corpus
+
+
+def test_the_report_names_what_one_piece_of_work_unblocks(tmp_path: Path) -> None:
+    corpus = awaiting_corpus(tmp_path)
+    assert unblocked("I00:E03", corpus) == [corpus / "one"]
+    assert unblocked("I00:E04:W02", corpus) == [corpus / "two"]
+
+
+def test_the_report_names_no_fixture_awaiting_other_work(tmp_path: Path) -> None:
+    corpus = awaiting_corpus(tmp_path)
+    assert unblocked_report("I00:E03", corpus) == [
+        "one",
+        "awaiting I00:E03: 1 fixture(s)",
+    ]
+
+
+def test_work_no_fixture_awaits_unblocks_nothing(tmp_path: Path) -> None:
+    corpus = awaiting_corpus(tmp_path)
+    assert unblocked_report("I00:E99", corpus) == ["awaiting I00:E99: 0 fixture(s)"]
+
+
+def test_a_marker_naming_an_epic_is_not_the_task_within_it(tmp_path: Path) -> None:
+    corpus = awaiting_corpus(tmp_path)
+    assert unblocked("I00:E04", corpus) == []
+
+
+def test_the_report_answers_without_a_build(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    corpus = awaiting_corpus(tmp_path)
+    monkeypatch.delenv(BUILD, raising=False)
+    assert main(corpus, awaited="I00:E03") == 0
+    printed = capsys.readouterr().out
+    assert "one" in printed
+    assert "two" not in printed
+
+
+def test_a_request_names_the_work_it_asks_about() -> None:
+    assert requested(["--awaiting", "I00:E03"]) == "I00:E03"
+
+
+def test_a_run_naming_no_work_runs_the_corpus() -> None:
+    assert requested([]) is None

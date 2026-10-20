@@ -278,6 +278,15 @@ def verdict(status: int) -> Outcome:
     another, and it states nothing about the target either. Any other
     client status is an answer about the target, and the check holds the
     document to it.
+
+    401 and 405 are answers a reader meets too. 405 names the methods the
+    address allows, and the method the reader uses is the one this check
+    falls back to, so a host refusing both is serving no reader. 401 names
+    an authorization scheme, and a reference a reader must hold credentials
+    to follow is one the document should say so about; it is also the status
+    `gh api` returns when this check's own credentials are missing, so
+    counting it as silence would let a run that read no tracker reference
+    pass.
     """
     if status < 400:
         return None
@@ -304,7 +313,10 @@ def reach(target: str) -> Outcome:
     A host answering 403 or 405 to HEAD may be answering about the method
     rather than the target, so the address is asked for again with GET
     before its status is read, and a host that serves the page to GET
-    resolves. A connection that failed, timed out or was
+    resolves. A host refusing GET as well is read by `verdict`, which
+    forbids the one and holds the document to the other. 401 turns on
+    credentials rather than on the method, so it is decided on the answer
+    to HEAD. A connection that failed, timed out or was
     dropped is the host saying nothing and takes the unreachable verdict;
     anything else the request raises is the reference's own fault and
     fails the check.

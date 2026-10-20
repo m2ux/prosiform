@@ -35,7 +35,7 @@
       "required": ["root", "arguments"],
       "properties": {
         "root": {
-          "description": "The fixture-relative directory holding the source tree. It is the allowed source root the run is confined to.",
+          "description": "The fixture-relative directory holding the source tree. It is the allowed source root the run is confined to. A fixture whose expected diagnostics name E_ROOT_NOT_FOUND declares a run that cannot find this root, so there the path is one the fixture must not hold; every other fixture holds it as a directory.",
           "$ref": "#/$defs/fixturePath"
         },
         "arguments": {

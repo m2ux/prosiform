@@ -15,6 +15,7 @@ only a real build can produce.
 
 import json
 import shlex
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -78,6 +79,10 @@ ENTRY_DESTINATION = {
     "reference": "guide",
     "resolved": "guide",
 }
+ROOT_NOT_FOUND = {
+    "severity": "error",
+    "code": "E_ROOT_NOT_FOUND",
+}
 
 
 def write_fixture(
@@ -90,10 +95,16 @@ def write_fixture(
     diagnostics: tuple[dict[str, Any], ...] = (),
     absent: tuple[str, ...] = (),
     complete: bool = True,
+    source: bool = True,
 ) -> Path:
-    """A fixture directory declaring the result its run must produce."""
-    (directory / "source").mkdir(parents=True, exist_ok=True)
-    (directory / "source" / "guide.md").write_bytes(b"# Guide\n")
+    """A fixture directory declaring the result its run must produce.
+
+    A fixture declaring that the run cannot find its allowed source root
+    carries no source tree, which is what `source` leaves out.
+    """
+    if source:
+        (directory / "source").mkdir(parents=True, exist_ok=True)
+        (directory / "source" / "guide.md").write_bytes(b"# Guide\n")
     (directory / "expected").mkdir(parents=True, exist_ok=True)
     (directory / "expected" / "stdout.md").write_bytes(stdout)
 
@@ -356,6 +367,57 @@ def test_a_fixture_already_holding_a_declared_absent_path_is_refused(
     assert "bundle.md is a path the fixture holds" in detail_of(result, MANIFEST)
     assert not record.exists()
     assert (fixture / "bundle.md").exists()
+
+
+def test_a_fixture_declaring_an_absent_root_is_decided_from_its_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The one fixture whose allowed source root is a path it does not hold."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=1,
+        diagnostics=(ROOT_NOT_FOUND,),
+        source=False,
+    )
+    configure(
+        monkeypatch, replaying(tmp_path, b"", diagnostic_lines(ROOT_NOT_FOUND), 1)
+    )
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+    assert not (fixture / "source").exists()
+
+
+def test_a_fixture_declaring_an_absent_root_it_holds_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A root the fixture carries contradicts the outcome the manifest declares."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=1,
+        diagnostics=(ROOT_NOT_FOUND,),
+        source=False,
+    )
+    (fixture / "source").mkdir()
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    result = run_fixture(fixture)
+    assert not result.passed
+    assert "source is a path the fixture holds" in detail_of(result, MANIFEST)
+    assert not record.exists()
+
+
+def test_a_fixture_naming_a_root_it_does_not_hold_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Every other fixture names a root that is a directory it carries."""
+    fixture = write_fixture(tmp_path / "fixture")
+    shutil.rmtree(fixture / "source")
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    result = run_fixture(fixture)
+    assert not result.passed
+    assert "source is not a directory" in detail_of(result, MANIFEST)
+    assert not record.exists()
 
 
 def test_the_runner_names_no_implementation_or_language() -> None:
