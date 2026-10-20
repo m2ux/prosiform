@@ -124,10 +124,11 @@ The confirmed unit carried from its supplied brief through implementation and de
 6. **Implement.**
    Deliver the work in the worktree, with every test the work item names, as [Tables](../artifacts/issue-body.md#tables) state.
    - Group the unit's rows by the component each declares, and give each group to the sub-agent dispatch this session provides when the unit has more than one group.
-   - Give each sub-agent the unit's worktree, its group's work items, and the criteria and tests those rows' Coverage names.
-   - Write any file two groups reach — a shared test, an index, a manifest — in this session, so one writer holds it.
-   - Stage and commit each group's work as it returns, checked against the criteria its rows cover.
-   - Run the unit's tests in this session once every group has returned.
+   - Give each sub-agent the unit's worktree, its group's work items, and the criteria those rows' Coverage names.
+   - A sub-agent writes the files its work items name, runs the tests they name, and commits nothing.
+   - A plan change a sub-agent meets returns to this session, which holds the allowance the brief names.
+   - Write a file two groups reach — a shared test, an index, a manifest — in this session.
+   - Stage and commit each returning group's own files, then run the unit's tests once every group has returned.
    - A unit of one group, and a session with no sub-agent dispatch, is delivered by this session.
 7. **Open the pull request.**
    Open the unit's pull request with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), so the title, the base, the Test Plan, and the issue links meet [Titles](../artifacts/pull-request-body.md#titles), [Branches](../artifacts/delivery-branches.md#branches), [Test Coverage](../artifacts/pull-request-body.md#test-coverage), and [Issue Links](../artifacts/pull-request.md#issue-links).
