@@ -77,7 +77,7 @@ chain = ["guide.md", "../outside.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, so every clause maps to the fixtures that cover it. |
-| `invocation.root` | The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. |
+| `invocation.root` | The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture names a directory it does. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
@@ -104,6 +104,26 @@ absent = ["bundle.md"]
 ```
 
 A fixture that already holds a path it declares absent is malformed and is refused before the build is invoked, because a declaration the directory contradicts before the run states nothing about the run.
+
+## A root the run cannot find
+
+The contract declares an outcome for an allowed source root naming no directory: the command line is well formed and the root is not there, so the run fails with `E_ROOT_NOT_FOUND` and exit status 1. A fixture states it by declaring that diagnostic and carrying no source tree:
+
+```toml
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ROOT_NOT_FOUND"
+```
+
+The declared diagnostic is the whole of the declaration, so nothing beside `invocation.root` repeats it. A fixture declaring that code is held to a root it does not hold, and one declaring any other outcome to a root that is a directory it does: either contradiction is malformed and is refused before the build is invoked, as a path declared absent is.
 
 ## A fixture ahead of the build
 
