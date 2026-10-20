@@ -7,6 +7,7 @@ The instructions and context supplied to one delivery session.
 Read these files first.
 
 - [Pull Request Body](pull-request-body.md)
+- [Plan Change](plan-change.md)
 
 ## Operations
 
@@ -14,7 +15,7 @@ Read these files first.
 
 One complete prompt file for a confirmed delivery unit.
 
-**Inputs:** Epic URL, task ids, Descriptions, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, supplied session procedure and output path.
+**Inputs:** Epic URL, task ids, Descriptions, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, change allowance, supplied session procedure and output path.
 
 1. Write the supplied identity, context and execution instructions to the prompt file, at the supplied output path or where [Location](#location) puts it.
    - Each part must meet [Fields](#fields).
@@ -37,6 +38,10 @@ The brief names the reserved planning folder and engineering worktree. Each task
 ### Validation Scope
 
 The brief carries the tests required by the unit's criteria, meeting [Test Coverage](pull-request-body.md#test-coverage). It identifies the work item's test rows and requires implementation and verification of that scope.
+
+### Change Autonomy
+
+The brief names the supplied [allowance](plan-change.md#allowance): the plan changes the session applies on its own. It requires the session's [change list](plan-change.md#change-list) with its result, holding what it applied and what it held.
 
 ### Execution Instructions
 
