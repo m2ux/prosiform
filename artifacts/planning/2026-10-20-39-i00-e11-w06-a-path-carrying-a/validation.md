@@ -1,6 +1,6 @@
 ## Overview
 
-What the contract settles for `I00:E11:AC7`, the fixtures that state it, and the checks the delivery was measured against at `471e797`.
+What the contract settles for `I00:E11:AC7`, the fixtures that state it, and the checks the delivery was measured against at `87b7ff0`.
 
 ## The Reading the Contract Takes
 
@@ -26,7 +26,7 @@ Each is a directory under `fixtures/` holding `manifest.toml`, a `source/` tree 
 
 ## <a id="corpus"></a>The Corpus Run
 
-`make corpus` at `471e797`, with the locked environment's console entry point named to the runner as `PROSIFORM_BUILD`.
+`make corpus` at `87b7ff0`, with the locked environment's console entry point named to the runner as `PROSIFORM_BUILD`.
 
 ```text
 corpus check: 206 fixture(s), 204 pass, 0 fail, 2 awaited, 0 unexpected pass
@@ -47,7 +47,7 @@ The second mutation leaves `normalization/an-unencoded-number-sign` passing, whi
 
 ## <a id="gate"></a>The Gate
 
-Every target of `make check`, run in the delivery worktree at `471e797`. The corpus and invocation targets name the locked environment's console entry point as the build under test.
+Every target of `make check`, run in the delivery worktree at `87b7ff0`. The corpus and invocation targets name the locked environment's console entry point as the build under test.
 
 | Target | Result |
 | --- | --- |
@@ -56,7 +56,7 @@ Every target of `make check`, run in the delivery worktree at `471e797`. The cor
 | `make format-check` | 45 files already formatted |
 | `make typecheck` | Success: no issues found in 44 source files |
 | `make test` | 603 passed |
-| `make harness` | 382 passed |
+| `make harness` | 395 passed |
 | `make corpus` | 206 fixture(s), 204 pass, 0 fail, 2 awaited, 0 unexpected pass |
 | `make smoke` | prosiform installs into an environment and bundles a reference from a source root |
 | `make layout` | 3 tree(s) present |
