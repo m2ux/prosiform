@@ -20,7 +20,10 @@ construction recorded rather than that it is internally consistent.
 The invariants checked here are target integrity, exactly-once coverage,
 absence of new links, absence of surviving definitions, reference
 preservation, outline preservation, depth safety, group isolation, entry
-line integrity and one intended destination per rewritten link.
+line integrity, one intended destination per rewritten link, and the two
+sides of region accounting: a candidate holding fewer regions than the
+provenance claims has omitted one, and a candidate holding more carries
+content no source range accounts for.
 
 Two invariants the contract names are not checked here, and are absent
 rather than weakened:
@@ -105,6 +108,7 @@ GROUP_ISOLATION = "group isolation"
 ENTRY_LINE_INTEGRITY = "entry line integrity"
 ONE_DESTINATION = "one intended destination"
 NO_OMISSIONS = "no accidental omissions"
+NO_EXPANSION = "no accidental expansion"
 PRESERVATION = "preservation"
 
 
@@ -322,8 +326,9 @@ def structure(
     """
     expected = 1 + sum(1 + len(one.record.ranges) for one in groups)
     if len(spans) != expected:
+        short = len(spans) < expected
         raise Invalid(
-            NO_OMISSIONS,
+            NO_OMISSIONS if short else NO_EXPANSION,
             f"the candidate holds {len(spans)} region(s) against the {expected} "
             f"the provenance accounts for",
         )

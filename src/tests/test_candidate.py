@@ -23,6 +23,7 @@ from prosiform.candidate import (
     EXACTLY_ONCE,
     GROUP_ISOLATION,
     NO_DEFINITION_LEAKAGE,
+    NO_EXPANSION,
     NO_NEW_LINKS,
     NO_OMISSIONS,
     ONE_DESTINATION,
@@ -192,7 +193,7 @@ def test_a_missing_selected_region_fails() -> None:
 def test_a_region_the_provenance_does_not_account_for_fails() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
     one.bundled = f"{one.bundled}\nAn unaccounted paragraph.\n"
-    assert refused(one).invariant == NO_OMISSIONS
+    assert refused(one).invariant == NO_EXPANSION
 
 
 def test_a_destination_reaching_another_heading_fails() -> None:
@@ -216,7 +217,7 @@ def test_a_destination_map_the_candidate_does_not_generate_fails() -> None:
 def test_an_emitted_heading_the_provenance_does_not_record_fails() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
     one.bundled = f"{one.bundled}\n## An unrecorded heading\n"
-    assert refused(one).invariant == NO_OMISSIONS
+    assert refused(one).invariant == NO_EXPANSION
 
 
 def test_a_surviving_definition_fails() -> None:
@@ -303,7 +304,7 @@ def test_a_filename_wrapper_does_not_stand_in_for_a_missing_region() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
     emptied = replace(one.groups[0].record, ranges=())
     one.groups = [replace(one.groups[0], record=emptied)]
-    assert refused(one).invariant == NO_OMISSIONS
+    assert refused(one).invariant == NO_EXPANSION
 
 
 def overflowing(one: Group) -> Group:
