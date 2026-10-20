@@ -13,4 +13,15 @@ arguments = ["article.md", "café.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "article"
+destination = "article"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "caf\u00e9"
+destination = "caf\u00e9-1"

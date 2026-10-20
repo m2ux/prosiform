@@ -13,4 +13,21 @@ arguments = ["middle.md#two", "alpha.md", "middle.md#one"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "alpha"
+destination = "alpha"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "One"
+destination = "one"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Two"
+destination = "two"

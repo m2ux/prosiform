@@ -20,4 +20,33 @@ arguments = [
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "article"
+destination = "article"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "caf\u00e9-m\u00fcnster"
+destination = "caf\u00e9-m\u00fcnster-1"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes"
+destination = "notes-2"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "the-code-span-and-bold-text"
+destination = "the-code-span-and-bold-text-1"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "whats-new-v10"
+destination = "whats-new-v10-1"

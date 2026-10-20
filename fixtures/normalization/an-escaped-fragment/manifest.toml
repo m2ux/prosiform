@@ -13,4 +13,9 @@ arguments = ["guide.md#run%2Dit"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Run It"
+destination = "run-it"

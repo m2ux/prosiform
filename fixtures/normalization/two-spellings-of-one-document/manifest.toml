@@ -13,4 +13,15 @@ arguments = ["guide.md#stop", "./guide.md#run-it"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Run It"
+destination = "run-it"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Stop"
+destination = "stop"

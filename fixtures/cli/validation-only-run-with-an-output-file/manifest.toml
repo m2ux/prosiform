@@ -13,5 +13,10 @@ arguments = ["--check", "--output", "bundle.md", "guide.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
 absent = ["bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+destination = "guide"
