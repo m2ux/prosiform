@@ -20,7 +20,7 @@
 
 UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
-PYTHON_SOURCES := src/src src/tests checks
+PYTHON_SOURCES := src/prosiform src/tests checks
 
 .PHONY: check test harness corpus lint format-check typecheck lock-check layout tables links vocabulary
 
