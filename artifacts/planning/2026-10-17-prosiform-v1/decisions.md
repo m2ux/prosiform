@@ -416,6 +416,20 @@ The cost is a new error code, which moves the design and the schema in one windo
 
 Until that row lands the corpus asserts neither outcome, which was [I00:E04:W03](https://github.com/m2ux/prosiform/pull/77)'s deliberate choice on finding the collision.
 
+## D41 — One Code Names a Crossed Budget, and the Message Names Which
+
+The contract declares eight resource budgets and holds that crossing one fails the compilation rather than truncating its output. It named no code for the failure, and the catalogue carried none, so the criterion stating the behaviour could not be delivered: a diagnostic reports a code, and there was none to report.
+
+`E_RESOURCE_LIMIT` covers all eight. The diagnostic names the budget crossed and what it counted.
+
+This follows `E_INVALID_USAGE`, which already covers every command line the grammar does not admit on the ground that one remedy serves them all. A crossed budget is the same shape: whichever it is, the sources need restructuring or the number needs raising, and the figure the run reports is what tells an author which.
+
+The alternative of one code per budget was refused for the size it adds — eight catalogue entries and eight clauses — against eight remedies more alike than different. A split between the five size budgets and the two that constrain a graph's shape was refused because it invents a category no criterion names.
+
+The cost is the one [#52](https://github.com/m2ux/prosiform/issues/52) already records: the corpus compares a diagnostic's severity, code, reference and source, never its message, so eight budgets behind one code are eight fixtures the corpus cannot tell apart. This decision widens that gap rather than creating it, and the row that closes #52 closes it for these too.
+
+`E_PARSER_REFERENCE_LIMIT` is not this code and keeps its own meaning: an internal parser limit suppressing a reference lookup, which is a defect in indexing rather than a declared budget an author chose.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
