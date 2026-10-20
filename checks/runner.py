@@ -59,7 +59,7 @@ STDOUT = "expected.stdout"
 DIAGNOSTICS = "expected.diagnostics"
 ABSENT = "expected.absent"
 
-DECLARED_FIELDS = ("reference", "resolved", "source")
+DECLARED_FIELDS = ("reference", "resolved", "source", "chain")
 WINDOW = 24
 
 

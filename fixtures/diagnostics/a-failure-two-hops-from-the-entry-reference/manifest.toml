@@ -1,0 +1,23 @@
+description = "A reference two hops from the entry reference fails carrying its code, the location it is written at, the reference as authored, the document it resolved to and the chain of references that reached it."
+
+clauses = [
+  "Validation and failure contract — a stable error code, referring source location, original reference, relevant resolved identity, inclusion chain, and a practical remedy",
+  "Validation and failure contract — Resolution",
+  "Exit status and JSON diagnostics — location, original reference, resolved identity when available, inclusion chain, and remedy when accurate",
+]
+
+[invocation]
+root = "source"
+arguments = ["entry.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "other.md#nowhere"
+resolved = "docs/other.md"
+source = "docs/notes.md:5"
+chain = ["entry.md", "docs/notes.md#detail", "docs/other.md#nowhere"]
