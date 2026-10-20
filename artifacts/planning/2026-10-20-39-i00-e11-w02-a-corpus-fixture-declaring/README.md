@@ -13,7 +13,7 @@ It matters because the corpus is the contract in executable form. A declared cod
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The task's plan: the declared warnings, the fixtures that state them and what each run expects |
-
+| [validation.md](validation.md) | The coverage measured, the checks the delivery was held to and the review |
 ## Links
 
 | Resource | Link |
