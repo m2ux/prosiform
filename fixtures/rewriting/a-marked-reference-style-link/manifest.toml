@@ -1,7 +1,5 @@
 description = "A marked reference-style link is converted to inline form and rewritten to its target's bundle destination, and its definition is not emitted."
 
-awaiting = "I00:E05:W03"
-
 clauses = [
   "Source-local reference interpretation — step 1",
   "Source-local reference interpretation — step 3",

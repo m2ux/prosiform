@@ -1,0 +1,16 @@
+description = "A reference-style use in a selected section resolves against a definition the document carries outside it, is published inline, and the definition is not emitted."
+
+clauses = [
+  "Source-local reference interpretation",
+  "Source-local reference interpretation — step 1",
+  "Source-local reference interpretation — step 4",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#procedure"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

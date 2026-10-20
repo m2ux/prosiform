@@ -4,6 +4,7 @@ clauses = [
   "Source-heading resolution — derive visible heading text from parser events",
   "Bundle destinations — Ordinal assignment",
   "Entry line",
+  "Resources are text",
 ]
 
 [invocation]
@@ -13,4 +14,7 @@ arguments = ["article.md", "the--overview.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"

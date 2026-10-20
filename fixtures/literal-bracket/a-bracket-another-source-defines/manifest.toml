@@ -1,0 +1,16 @@
+description = "Bracketed text one source leaves unresolved stays literal where another source of the same bundle defines that label, and names no dependency."
+
+clauses = [
+  "Source-local reference interpretation",
+  "Source-local reference interpretation — step 5",
+  "Adversarial acceptance fixtures — References",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
