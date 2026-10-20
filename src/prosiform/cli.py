@@ -781,14 +781,23 @@ def marked_resource(subject: str, reference: str, at: str) -> Failure:
     A mark asks for a bundled document and the bundle carries a
     resource as the text its author wrote, so the request cannot be
     met: emitting the reference as authored would publish the mark,
-    which nothing rewrites away. The subject names which resource the
-    reference is, because the remedy reads differently for a picture
-    and for a file the profile does not open.
+    which nothing rewrites away.
+
+    Each subject says why it is a resource in its own terms. An image
+    is one whatever it names, because image syntax embeds rather than
+    links; any other reference is one when it names no local Markdown
+    document. Saying it the second way for an image tells an author
+    who marked a Markdown file that the file is not a Markdown file.
     """
+    why = (
+        "image syntax embeds rather than links, so it names no document "
+        "the bundle can carry"
+        if subject == "image"
+        else "it names no local Markdown document"
+    )
     return input_failure(
-        f"the marked {subject} {reference!r} names a resource rather than a "
-        f"local Markdown document, and a resource is carried as its author "
-        f"wrote it rather than bundled",
+        f"the marked {subject} {reference!r} is a resource: {why}, and a "
+        f"resource is carried as its author wrote it rather than bundled",
         code=MARKED_RESOURCE,
         remedy="cite it without the mark",
         reference=reference,
