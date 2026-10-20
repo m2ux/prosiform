@@ -1,6 +1,6 @@
 # Plan Change
 
-One change to the plan that a run makes while it delivers, and whether the run applies it or the user decides it.
+One change to the plan that a run makes as it works, and whether the run applies it or the user decides it.
 
 ## Operations
 
@@ -8,11 +8,11 @@ One change to the plan that a run makes while it delivers, and whether the run a
 
 One pending change assessed against the run's allowance.
 
-**Inputs:** The pending change, its subject, and the allowance the caller was supplied.
+**Inputs:** The pending change, its subject, the option recommended for it, and the allowance the caller was supplied.
 
 1. Match the change to one kind in [Change Kinds](#change-kinds).
-2. Return it as automatic where the supplied allowance names that kind, carrying the recommended option for the caller to apply.
-3. Return it as held otherwise, meeting [Held Change](#held-change).
+2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
+3. Return it as held otherwise, for the caller to settle as [Held Change](#held-change) states.
    - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
    - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
 
@@ -53,8 +53,10 @@ One list for the run, holding every change it applied and every change it held. 
 
 ### Entry
 
-One line: the kind, the issue or row it changed, and the option applied or recommended. The entry states the change, not the alternatives weighed against it.
+One line: the kind, the issue or row it concerns, and the option applied or recommended. The entry states the change, not the alternatives weighed against it.
 
 ### Held Change
 
 A held change is left unapplied and its subject stays as it stands, so the next run sees the same decision. Its entry carries the recommended option, which is what the user is answering.
+
+A run working under an allowance records and reports a held change rather than asking, since the work it was dispatched for does not wait on an answer. A run supplied no allowance puts it to the user.

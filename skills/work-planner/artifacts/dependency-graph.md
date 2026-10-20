@@ -21,7 +21,7 @@ The task graph and the row numbers it permits, checked and renumbered across the
 1. Use the supplied local drafts when reviewing unpublished work.
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](issue.md#read-tracker-issue).
    - Run [Check Dependencies](#check-dependencies) with the initiative body and every epic body.
-2. Resolve each finding, as [Check Plan Change Autonomy](plan-change.md#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is resolved with the user.
+2. Resolve each finding, as [Check Plan Change Autonomy](plan-change.md#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](plan-change.md#held-change) states.
    - Preserve task edges when correcting a whole-epic edge.
    - Name the producing row for each consumed output, meeting [Edges](#edges).
    - Retain a whole-epic edge only where [Whole-Epic Edges](#whole-epic-edges) permits it.

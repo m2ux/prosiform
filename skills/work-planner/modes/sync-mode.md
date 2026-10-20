@@ -94,7 +94,7 @@ The main path meets [Outcomes](#outcomes).
        - Draft the missing task row against [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown).
        - Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for the row, which is a task creation, with the allowance the caller supplied.
          - An automatic row is confirmed as drafted and recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
-         - A held row is confirmed with the user; an unanswered placement stays pending.
+         - A held row is settled as [Held Change](../artifacts/plan-change.md#held-change) states; an unanswered placement stays pending.
        - Apply the confirmed row through [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows).
        - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
        - Repeat Record Epic Delivery with the saved epic and refreshed task records. An unanswered placement stays pending.

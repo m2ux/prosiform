@@ -25,12 +25,12 @@ The main path meets [Outcomes](#outcomes).
 3. **Triage.**
    Read each candidate's body and discussion through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue), with the initiative and epic bodies whose themes or criteria it touches.
    - Supply that evidence and planning-record references to [Draft Issue Placement](../artifacts/placement.md#draft-issue-placement) for each option.
-   - Present the returned options best first, with Leave last.
+   - Order the returned options best first, with Leave last.
 4. **Decide each placement.**
    Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each orphan's best option that changes the plan, with the allowance the caller supplied.
    - An automatic option is confirmed as it stands, and recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
-   - A held option under a supplied allowance leaves the orphan where it is, recorded the same way with the option it recommends, so the user decides it in a later run.
-   - A held option with no allowance supplied is offered as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
+   - A held option is settled as [Held Change](../artifacts/plan-change.md#held-change) states, leaving the orphan where it is.
+   - An option put to the user is offered as an [Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
      - Leave is last.
      - Placing an orphan in another initiative's issue needs that answer as its approval.
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
@@ -41,7 +41,7 @@ The main path meets [Outcomes](#outcomes).
 6. **Review.**
    - Run [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) on every issue the hoist changed or created.
    - Run [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) on each initiative that gained a task or epic.
-   - Resolve each finding as [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) returns it: an automatic correction is applied, and a held one is resolved with the user.
+   - Resolve each finding as [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) returns it: an automatic correction is applied, and a held one is settled as [Held Change](../artifacts/plan-change.md#held-change) states.
    - Apply confirmed body corrections through [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections).
    - Publish through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
    - Repeat Validate Issue Body with the saved affected bodies.
