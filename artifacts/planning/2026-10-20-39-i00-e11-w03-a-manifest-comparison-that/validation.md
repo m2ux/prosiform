@@ -2,7 +2,7 @@
 
 ## Overview
 
-What the corpus comparison was measured to do on `i00/e11/w03-a-manifest-comparison-that` at `500d91f`, and the checks the delivery was held to.
+What the corpus comparison was measured to do on `i00/e11/w03-a-manifest-comparison-that` at `4fa647b`, and the checks the delivery was held to.
 
 Two observations run against a build other than the one this repository holds. A declaration that leaves a build its own wording cannot be measured against one build alone, so each is run against a response the comparison must accept and one it must refuse, both produced by a stub naming itself through `PROSIFORM_BUILD`. That is the whole of what the configuration is for: the runner invokes what configuration names.
 
@@ -84,7 +84,7 @@ What each fixture declares is the run's own data rather than the build's prose: 
 
 ## The Gate
 
-Measured in the delivery worktree at `500d91f`, with `PROSIFORM_BUILD` naming the build this repository holds.
+Measured in the delivery worktree at `4fa647b`, with `PROSIFORM_BUILD` naming the build this repository holds.
 
 | Target | Result |
 | --- | --- |
@@ -92,9 +92,9 @@ Measured in the delivery worktree at `500d91f`, with `PROSIFORM_BUILD` naming th
 | `make lint` | All checks passed |
 | `make format-check` | 45 files already formatted |
 | `make typecheck` | Success: no issues found in 44 source files |
-| `make test` | 603 passed |
-| `make harness` | 397 passed, seventeen of them this row's |
-| `make corpus` | 204 fixture(s), 202 pass, 0 fail, 2 awaited, 0 unexpected pass |
+| `make test` | 606 passed |
+| `make harness` | 418 passed, seventeen of them this row's |
+| `make corpus` | 208 fixture(s), 207 pass, 0 fail, 1 awaited, 0 unexpected pass |
 | `make smoke` | Installed and bundled a reference from a source root, outside the repository |
 | `make layout` | 3 tree(s) present |
 | `make tables` | 14 command(s) and 7 declaration(s) |
@@ -102,7 +102,7 @@ Measured in the delivery worktree at `500d91f`, with `PROSIFORM_BUILD` naming th
 | `make vocabulary` | 34 contract term(s) across 23 source(s) |
 | `make invocation` | 27 statement(s) of the documented invocation |
 
-The corpus run is 204 fixtures where it was 203, this row's version fixture being the one added.
+The corpus run is 208 fixtures, one of them this row's version fixture.
 
 ## Limitations
 
