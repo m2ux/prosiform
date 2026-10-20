@@ -81,13 +81,14 @@ chain = ["guide.md", "../outside.md"]
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
-| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `reference`, `resolved`, `source` and `chain` a diagnostic about a reference carries. A run emitting none declares an empty list. |
+| `expected.stdout_contains` | The text standard output must carry, declared in place of `stdout` where the whole of the response is a build's own. A manifest declares one of the two and never both. |
+| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it is one the corpus declares ahead of the build. |
 
 The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
-Expected output is a file rather than text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
+A published bundle is expected as a file rather than as text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
 
 A run's working directory is the fixture's own, so a path an invocation writes lands among the fixture's files. A comparison of the two streams says nothing about such a file, which is why a run that must leave one unwritten declares the path:
 
@@ -125,6 +126,34 @@ code = "E_ROOT_NOT_FOUND"
 
 The declared diagnostic is the whole of the declaration, so nothing beside `invocation.root` repeats it. A fixture declaring that code is held to a root it does not hold, and one declaring any other outcome to a root that is a directory it does: either contradiction is malformed and is refused before the build is invoked, as a path declared absent is.
 
+## Text an output carries
+
+Some of what a run writes is the build's own. A version string is the clearest case, and a diagnostic's wording is the same case in a smaller place. A fixture declaring either of them whole would bind the corpus to one implementation, so it declares the text the output must carry instead: a list whose entries are substrings the output contains.
+
+```toml
+[invocation]
+root = "source"
+arguments = ["--version"]
+
+[expected]
+exit_status = 0
+stdout_contains = ["prosiform ", "(skill-markdown-v1)"]
+diagnostics = []
+```
+
+The response reports the tool and the profile identifier, and the version between them belongs to the build. `stdout_contains` is declared in place of `stdout`: every fixture declares its standard output one way or the other, so no run goes uncompared and no fixture states its output twice.
+
+A diagnostic declares the same thing about its message, which is how two faults sharing one error code are told apart:
+
+```toml
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["#a-section", "--from"]
+```
+
+`E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the path that named an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
+
 ## A fixture ahead of the build
 
 The corpus states the contract, and the contract is delivered epic by epic, so a fixture may declare behaviour no build produces yet. Such a fixture names the work that delivers it:
@@ -143,7 +172,7 @@ One fixture carries the marker. `reference/a-marked-link-inside-image-alternativ
 
 [`manifest.schema.json`](manifest.schema.json) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) document, and it is the shape every manifest takes. A manifest is parsed as TOML and validated against it: TOML's value model is a subset of JSON's, so the parsed document validates with no intermediate form. Python reads it with `tomllib` and `jsonschema`; Rust reads it with the `toml` and `jsonschema` crates.
 
-A manifest that leaves out one of the five declarations, carries a field the schema does not describe, or names a code outside the catalogue its diagnostic's severity selects fails validation, so a malformed fixture fails as a fixture rather than as a bundling.
+A manifest that leaves out one of the five declarations, declares its standard output both ways or neither, carries a field the schema does not describe, or names a code outside the catalogue its diagnostic's severity selects fails validation, so a malformed fixture fails as a fixture rather than as a bundling.
 
 ## The catalogues
 
@@ -207,8 +236,9 @@ The runner appends `--root`, the fixture's source tree resolved to an absolute p
 | Expectation | Compared | Located by |
 | --- | --- | --- |
 | `expected.stdout` | Byte for byte against the file the manifest names. | The offset of the first differing byte, the line and byte column it falls on, and a window of each side whose control bytes are spelled out, so a CRLF against an LF is visible. |
+| `expected.stdout_contains` | For each declared entry, that standard output carries it. | Each entry the output is missing, and the output it produced. |
 | `expected.exit_status` | As the integer the contract's categories declare. | The status expected and the status the run returned. |
-| `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a message or a remedy the manifest does not name still matches. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; and the field, with both values, when one differs. |
+| `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a remedy the manifest does not name still matches. A declared `message_contains` holds the message to the text it names, and a diagnostic declaring none is matched without reading its message. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; the field, with both values, when one differs; and each text a message is missing, with the message it carried. |
 | `expected.absent` | Each declared path, after the run. | The path the run created and the bytes it wrote. The file is removed once it is reported, so the directory a fixture leaves behind is the one its manifest declares. |
 
 A standard error line that is not a JSON object is reported as one, because the declared format carries diagnostics and nothing else.

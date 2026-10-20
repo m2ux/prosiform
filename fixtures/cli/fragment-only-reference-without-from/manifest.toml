@@ -4,6 +4,7 @@ clauses = [
   "Reference normalization and path identity — a fragment-only command-line reference requires --from",
   "CLI contract — a command line the grammar does not admit",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+  "CLI contract — one code for the form of the command line, and the message says which fault it was",
 ]
 
 [invocation]
@@ -17,3 +18,4 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
+message_contains = ["#a-section", "--from"]

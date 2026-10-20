@@ -47,10 +47,14 @@
       }
     },
     "expected": {
-      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared. A run that must also leave the filesystem alone names each path it must not create.",
+      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared. Standard output is declared one way or the other: as the bytes the run must reproduce, or as the text it must carry where those bytes belong to one build. A run that must also leave the filesystem alone names each path it must not create.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["exit_status", "stdout", "diagnostics"],
+      "required": ["exit_status", "diagnostics"],
+      "oneOf": [
+        { "required": ["stdout"] },
+        { "required": ["stdout_contains"] }
+      ],
       "properties": {
         "exit_status": {
           "description": "The process exit status, one of the five categories the contract declares: 0 success, 1 input, dependency, policy, safety or resource-limit failure, 2 invalid usage, 3 publication or delivery failure, 4 unexpected internal error.",
@@ -60,6 +64,10 @@
         "stdout": {
           "description": "The fixture-relative path to the bytes standard output must carry. A run that publishes no bundle names a file holding nothing.",
           "$ref": "#/$defs/fixturePath"
+        },
+        "stdout_contains": {
+          "description": "The text standard output must carry, where the whole of the response is a build's own. An informational response reporting a version is such a run: the version belongs to the implementation, and what the contract states is the rest. Declared in place of the bytes, never beside them.",
+          "$ref": "#/$defs/carriedText"
         },
         "diagnostics": {
           "description": "The diagnostics the run must emit on standard error, in order. A run emitting none declares an empty list.",
@@ -106,6 +114,10 @@
           "type": "string",
           "minLength": 1
         },
+        "message_contains": {
+          "description": "The text the diagnostic's message carries, declared where the code alone does not identify the fault. One code naming several distinct faults is told apart here: a fixture states the part of the message that identifies its own fault, and each build keeps its own phrasing. A diagnostic declaring none states nothing about its message.",
+          "$ref": "#/$defs/carriedText"
+        },
         "reference": {
           "description": "The original reference the diagnostic concerns, as the source spells it.",
           "type": "string",
@@ -131,6 +143,13 @@
           }
         }
       }
+    },
+    "carriedText": {
+      "description": "Text an output must carry: each entry is a substring that must appear in it. A substring states what identifies the outcome and leaves the wording around it to the build, which is what a comparison of the whole cannot do. One shape serves every such declaration, so a run's output and a diagnostic's message are stated the same way.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
     },
     "fixturePath": {
       "description": "A path inside the fixture directory: forward slashes, no leading slash, and no parent segment, so a fixture reaches nothing outside itself.",

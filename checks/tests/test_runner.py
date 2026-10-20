@@ -38,6 +38,7 @@ from runner import (
     INVOCATION,
     MANIFEST,
     STDOUT,
+    STDOUT_TEXT,
     BuildNotConfigured,
     Result,
     run_fixture,
@@ -68,6 +69,10 @@ NESTED_TARGET = {
     "code": "E_NESTED_SECTION_TARGET",
     "reference": "guide.md#nested",
 }
+INVALID_USAGE = {
+    "severity": "error",
+    "code": "E_INVALID_USAGE",
+}
 ENTRY_DESTINATION = {
     "severity": "warning",
     "code": "W_ENTRY_DESTINATION",
@@ -86,6 +91,7 @@ def write_fixture(
     arguments: tuple[str, ...] = ("guide.md",),
     exit_status: int = 0,
     stdout: bytes = b"",
+    stdout_contains: tuple[str, ...] = (),
     diagnostics: tuple[dict[str, Any], ...] = (),
     absent: tuple[str, ...] = (),
     complete: bool = True,
@@ -115,8 +121,12 @@ def write_fixture(
         f"arguments = [{declared}]",
         "",
         "[expected]",
-        'stdout = "expected/stdout.md"',
     ]
+    if stdout_contains:
+        declared_text = ", ".join(json.dumps(entry) for entry in stdout_contains)
+        lines.append(f"stdout_contains = [{declared_text}]")
+    else:
+        lines.append('stdout = "expected/stdout.md"')
     if complete:
         lines.append(f"exit_status = {exit_status}")
     if absent:
@@ -476,6 +486,125 @@ def test_stdout_carrying_more_than_expected_is_located(
     configure(monkeypatch, replaying(tmp_path, b"# Guide\ntrailing\n", b"", 0))
     detail = detail_of(run_fixture(fixture), STDOUT)
     assert "the run's output carries 9 bytes beyond the end" in detail
+
+
+def test_an_output_carrying_the_declared_text_passes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A response whose whole is the build's own is stated by what it carries."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--version",),
+        stdout_contains=("prosiform ", "(skill-markdown-v1)"),
+    )
+    configure(
+        monkeypatch,
+        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v1)\n", b"", 0),
+    )
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+
+
+def test_an_output_missing_the_declared_text_names_what_is_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The same declaration refuses a response that states another profile."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--version",),
+        stdout_contains=("prosiform ", "(skill-markdown-v1)"),
+    )
+    configure(
+        monkeypatch,
+        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v2)\n", b"", 0),
+    )
+    detail = detail_of(run_fixture(fixture), STDOUT_TEXT)
+    assert "the output does not carry 1 declared text" in detail
+    assert "'(skill-markdown-v1)' is absent" in detail
+    assert "skill-markdown-v2" in detail
+
+
+def test_an_output_declared_as_text_is_not_held_to_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Two builds whose responses differ in every other byte both hold."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--version",),
+        stdout_contains=("prosiform ",),
+    )
+    configure(monkeypatch, replaying(tmp_path, b"prosiform 0.1.0\n", b"", 0))
+    assert run_fixture(fixture).passed
+    configure(
+        monkeypatch, replaying(tmp_path, b"prosiform 17.0.3-rc4 (a build)\n", b"", 0)
+    )
+    assert run_fixture(fixture).passed
+
+
+def test_a_message_carrying_the_declared_text_passes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=2,
+        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "--from"]},),
+    )
+    emitted = dict(INVALID_USAGE)
+    emitted["message"] = (
+        "the fragment-only reference '#a-section' needs --from "
+        "to name the document it resolves against"
+    )
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+
+
+def test_a_message_declaration_tells_two_faults_under_one_code_apart(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One code names several faults, so the fixture states which one it is."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=2,
+        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "--from"]},),
+    )
+    emitted = dict(INVALID_USAGE)
+    emitted["message"] = "the command line names no entry reference"
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1's message does not carry 2 declared texts" in detail
+    assert "'#a-section' is absent" in detail
+    assert "'--from' is absent" in detail
+    assert "names no entry reference" in detail
+
+
+def test_a_diagnostic_carrying_no_message_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=2,
+        diagnostics=({**INVALID_USAGE, "message_contains": ["--from"]},),
+    )
+    configure(
+        monkeypatch, replaying(tmp_path, b"", diagnostic_lines(dict(INVALID_USAGE)), 2)
+    )
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1 carries no message" in detail
+    assert "expected text '--from'" in detail
+
+
+def test_a_diagnostic_declaring_no_message_text_reads_no_message(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Absence compares nothing, so a fixture stating only a code still holds."""
+    fixture = write_fixture(
+        tmp_path / "fixture", exit_status=2, diagnostics=(INVALID_USAGE,)
+    )
+    emitted = dict(INVALID_USAGE)
+    emitted["message"] = "any wording this build chooses"
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
+    assert run_fixture(fixture).passed
 
 
 def test_a_missing_diagnostic_is_reported(
