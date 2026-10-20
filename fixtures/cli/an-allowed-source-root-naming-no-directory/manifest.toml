@@ -1,0 +1,18 @@
+description = "An allowed source root naming no directory fails as the input failure it is, and the run publishes nothing."
+
+clauses = [
+  "CLI contract — a --root naming no directory fails with E_ROOT_NOT_FOUND",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ROOT_NOT_FOUND"
