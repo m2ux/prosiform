@@ -84,3 +84,13 @@ Before the design push, `harness` reported one failure and nothing else: the cat
 The catalogue test reads the design from `origin/engineering` and the catalogue from the schema on the branch under test, so the two halves cannot both hold on every branch at once. The implementation was finished and every other check was green before the design push, so the window is bounded by two pushes rather than by the work.
 
 Continuous integration runs on a push to `main` and to an `i00/**` branch, and on nothing else, so the push to `engineering` starts no run of its own and the window is the interval between it and the branch push that closes it.
+
+| Event | Time |
+| --- | --- |
+| `engineering` pushed, `4f61b90`, carrying the three design clauses and D42 | 2026-10-20T06:17:42Z |
+| The delivery branch pushed, `6235414`, carrying the three catalogue entries | 2026-10-20T06:17:44Z |
+| Run `39379556864` on `6235414` concluded `success` | 2026-10-20T06:22Z |
+| [#82](https://github.com/m2ux/prosiform/pull/82) merged into `i00/e04/main` as `fc4f01e` | 2026-10-20T06:28Z |
+| Run `39379895668` on `fc4f01e` concluded `success` | 2026-10-20T06:31Z |
+
+Two seconds separate the pushes, and no run of any branch fell inside them. A branch that has not yet taken this schema fails the catalogue test until the change reaches it: `main` and `i00/e07/main` are each in that state, each holding a concluded `success` from before the window, and each returns to a green run when the epic base merges upward.

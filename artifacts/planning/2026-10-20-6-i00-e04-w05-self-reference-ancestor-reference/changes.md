@@ -18,7 +18,8 @@
 
 | Kind | Issue or row | What is recommended |
 | --- | --- | --- |
-| — | — | Nothing is held. No finding needed an initiative, and no debt was classified non-trivial, so [#39](https://github.com/m2ux/prosiform/issues/39) takes no new row |
+| Propagation | `main`, `i00/e07/main` | Each holds a twenty-code schema against a design declaring twenty-three, so the catalogue test fails on its next run until the schema reaches it. Neither branch is this unit's to push, and the precedent set by [I00:E02:W07](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-4-i00-e02-w07-an-error-code-for) is to let the merge carry it. Recommended: merge `i00/e04/main` upward at the next integration rather than pushing the schema to either branch directly |
+| — | — | Nothing else is held. No finding needed an initiative, and no debt was classified non-trivial, so [#39](https://github.com/m2ux/prosiform/issues/39) takes no new row |
 
 ## Markers
 
