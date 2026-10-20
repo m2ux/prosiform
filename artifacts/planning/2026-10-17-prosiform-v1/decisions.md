@@ -584,6 +584,20 @@ This is a real reliance and it is recorded rather than hidden: an epic with no c
 
 Delivered as I00:E11:W15, against [#112](https://github.com/m2ux/prosiform/issues/112). The dependency check reports no problem against I00 for the first time.
 
+## D54 — The Usage Examples Name a Tree the Repository Owns, and the Corpus Runs Them
+
+The design's usage examples named `skills/work-planner`, a tree in another repository that is not checked out here. No check read them and no run executed them, so an example that stopped being a valid invocation went stale silently, and the marking the contract requires could not be shown in place because the tree could not be altered from here.
+
+The repository now carries `example/work-tracker`, copied from the closure of one real procedure and renamed, with its command examples rewritten so nothing names another repository's scripts. It is a fourth top-level tree. `checks/layout.py` requires three and forbids no fourth, and `checks/tables.py` holds only the command and declaration tables, so it needed no check changed.
+
+The tree shows both halves of the marking rule in one place, and the case that makes it worth having is `artifacts/epic-issue-body.md`: it cites `[Epic](epic.md)` in its opening prose and requires the same document's `#delivery-findings` section further down. The bundle carries the required section and emits the citation as authored, **in a bundle that holds the document the citation names**. A reader looking for what a mark changes has the same document both ways on one page.
+
+Five fixtures reach the tree through a symbolic link at their `source`, because a manifest's `fixturePath` forbids a parent segment and a tree the examples name must have one path rather than a copy per fixture — copies being the drift this row exists to remove. `checks/runner.py` resolves `invocation.root` before it invokes the build, so the build receives the tree's real path and descends no link; the no-follow guarantee is about sources beneath a root and is untouched. `fixtures/README.md` records this as the one exception to its rule that a link's target is a path inside the fixture.
+
+Four of the five published examples are fixtures. The fifth is the grouped one, which merges nothing until I00:E09:W03 lands, so a fixture for it would either declare bytes identical to the ungrouped run or guess the merge rules W03 settles. Guessing them would be a false statement in the corpus, so AC8 was added to W03's coverage and the fixture is its to add. AC8 is not ticked until it does.
+
+The replacement wording for `design.md` is recorded in [#113](https://github.com/m2ux/prosiform/pull/113) and lands when this epic merges to `main`, on [D50](#d50--a-source-that-moved-under-the-run-carries-one-code-declared-when-the-epic-lands)'s reasoning: the new text states that the corpus bundles that tree through each invocation, which is not true of `main` until the epic is there.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
