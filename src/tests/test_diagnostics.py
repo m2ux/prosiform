@@ -17,6 +17,7 @@ for it.
 """
 
 import json
+from io import StringIO
 
 from prosiform.diagnostics import ERROR, JSON, TEXT, WARNING, Diagnostic, Reporter
 
@@ -71,26 +72,12 @@ def test_a_diagnostic_reaching_nothing_renders_no_chain() -> None:
     assert "chain" not in bare.as_text()
 
 
-class Collected:
-    """A stream holding what the reporter wrote to it."""
-
-    def __init__(self) -> None:
-        self.written = ""
-
-    def write(self, text: str) -> int:
-        self.written += text
-        return len(text)
-
-    def flush(self) -> None:
-        return None
-
-
 def test_each_json_diagnostic_is_one_line_of_its_own() -> None:
-    stream = Collected()
+    stream = StringIO()
     reporter = Reporter(stream, JSON)
     reporter.emit(reaching())
     reporter.emit(Diagnostic(WARNING, "a resource", code="W_RESOURCE_PORTABILITY"))
-    lines = stream.written.splitlines()
+    lines = stream.getvalue().splitlines()
     assert len(lines) == 2
     assert [json.loads(line)["code"] for line in lines] == [
         "E_TARGET_NOT_FOUND",
@@ -99,6 +86,6 @@ def test_each_json_diagnostic_is_one_line_of_its_own() -> None:
 
 
 def test_the_format_the_run_chose_decides_every_diagnostic() -> None:
-    stream = Collected()
+    stream = StringIO()
     Reporter(stream, TEXT).emit(reaching())
-    assert stream.written.startswith("E_TARGET_NOT_FOUND: ")
+    assert stream.getvalue().startswith("E_TARGET_NOT_FOUND: ")
