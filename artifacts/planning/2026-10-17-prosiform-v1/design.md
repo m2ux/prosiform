@@ -114,29 +114,29 @@ A command line the grammar above does not admit is refused with `E_INVALID_USAGE
 ```bash
 # A procedure and everything it reaches. The routing document the caller
 # read to find it, SKILL.md, is not an entry reference and is not bundled.
-prosiform --root skills/work-planner modes/plan-mode.md
+prosiform --root example/work-tracker modes/plan-mode.md
 
 # Grouped: every document under a named directory merged at a heading level.
-prosiform --root skills/work-planner \
+prosiform --root example/work-tracker \
   --group artifacts:2 --group modes:2 \
   modes/plan-mode.md
 
 # Multiple selected targets.
-prosiform --root skills/work-planner \
+prosiform --root example/work-tracker \
   'artifacts/epic-issue-body.md#record-epic-delivery' \
   'artifacts/epic.md#delivery-findings'
 
 # A referring document supplies context for a bare fragment only.
-prosiform --root skills/work-planner \
+prosiform --root example/work-tracker \
   --from artifacts/epic-issue-body.md \
   '#record-epic-delivery'
 
 # Full compilation and validation, without publication.
-prosiform --root skills/work-planner --check \
+prosiform --root example/work-tracker --check \
   'artifacts/epic-issue-body.md#record-epic-delivery'
 ```
 
-These examples describe the agreed interface; no command has been implemented or executed. Missing references produce the specified diagnostics.
+Each example runs against `example/work-tracker`, a tree this repository carries, and the corpus executes it under `fixtures/usage-example/`, so an example that stops being a valid invocation fails a run. Missing references produce the specified diagnostics.
 
 ## Explicitly linked source structure
 
@@ -204,6 +204,7 @@ Structural ancestry is generated structural content, not dependency inclusion:
 - **Heading text:** Render a structural ancestor's original visible title as escaped text, without live source links, images, or HTML. Do not traverse references from an ancestor-only heading or import its body.
 - **Provenance:** Record structural ancestor headings separately from selected content, retaining their canonical source-heading identities and original levels for validation.
 - **Deduplication:** Emit each structural ancestor once. If dependency discovery later selects that ancestor as content, replace its structural ancestor with the normally transformed source heading and selected body rather than adding a second copy.
+- **Named titles:** A source heading the generated file heading already names is not emitted as a structural ancestor, whether or not its section was selected. The file heading stands in its place in the outline, so emitting both publishes two headings a reader cannot tell apart.
 - **Targets:** A structural ancestor is not a substitute for selecting the corresponding source section. A real link to that ancestor expands closure to include the section normally, replacing the structural ancestor with the transformed heading and its selected body; a displayed title does not satisfy a reference.
 - **Depth:** Shift structural ancestor levels by their group's shift. Do not compress skipped levels or invent missing headings that did not exist in the source.
 
