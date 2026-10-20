@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import IO, Any
 
 import pytest
+
 from prosiform import PROFILE
 from prosiform.bundle import AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW
 from prosiform.cli import (

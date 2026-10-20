@@ -7,6 +7,7 @@ decisions a group makes about its own headings.
 """
 
 import pytest
+
 from prosiform.bundle import (
     MAX_LEVEL,
     Group,
