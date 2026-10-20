@@ -478,6 +478,20 @@ Leaving it in the deferred-debt epic was refused on the severity rather than the
 
 `W09` and `AC10` are absent from `I00:E11` rather than reused, and `W10` keeps its number. The two defects beside this one stay where they were placed: both publish a bundle, and both are wrong in it rather than instead of it.
 
+## D46 — The Deferred-Debt Epic Ships in Waves
+
+[I00:E11](https://github.com/m2ux/prosiform/issues/39) merges to `main` through a review pull request per wave of rows, rather than one for the epic. Every other epic keeps one review pull request, opened when its rows are complete.
+
+The epic collects defects found while delivering the others, so its rows arrive over the whole initiative and have no dependency on each other. Holding them all for a single review at the end means a fix sits written and unmerged for as long as the initiative runs, which is the opposite of what a defect epic is for. A row whose absence costs a run on every branch — the link check's verdict was one — cannot wait for the epic it happens to belong to.
+
+A wave is whatever rows are ready together. Each merges to `i00/e11/main` as a task pull request, and the base then opens a review pull request to `main` naming the rows it carries. The base survives the merge and takes the next wave.
+
+Running the rows as standalone tasks against `main` was refused: the epic would stop having a reviewable surface, and a defect's fix would reach `main` without the epic's own gate ever running over the set.
+
+The convention is this epic's rather than a general licence. An epic whose rows build on each other has a reason to review them together, and that reason is why the single review pull request exists.
+
+This was decided after `I00:E11:W07` shipped ahead of its epic and spent the epic's only review pull request on one row.
+
 ## Evidence
 
 Measured on this workspace at commit `acac85867ca963df00251e4cf00a4db11b14bf24`, branch `workspace`:
