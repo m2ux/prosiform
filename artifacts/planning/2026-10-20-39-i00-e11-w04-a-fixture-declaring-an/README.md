@@ -13,6 +13,7 @@ It matters because the outcome is reachable from any caller's command line and i
 | Artifact | What it holds |
 | --- | --- |
 | [w04.md](w04.md) | The task's plan: how the fixture declares a root the run cannot find, and what its run expects |
+| [validation.md](validation.md) | The rule under test, the fixture's run against a build that reports the outcome and one that does not, the checks the delivery was held to, and the review |
 
 ## Links
 
