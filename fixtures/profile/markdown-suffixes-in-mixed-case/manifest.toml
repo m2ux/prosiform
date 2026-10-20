@@ -12,4 +12,15 @@ arguments = ["Guide.MD", "notes/Note.Markdown"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Guide"
+resolved = "guide"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes/Note"
+resolved = "notesnote"

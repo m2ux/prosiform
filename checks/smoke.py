@@ -59,6 +59,12 @@ BUNDLE = (
     "\n"
     "The installed command bundles this document.\n"
 )
+REPORT = (
+    "W_ENTRY_DESTINATION: the entry reference 'guide' resolves to the "
+    "destination 'guide', which the bundle's entry line links it to\n"
+    "  reference: guide\n"
+    "  resolved: guide\n"
+)
 
 
 class Failed(Exception):
@@ -141,10 +147,15 @@ def invoke(
     )
 
 
-def reported(run: subprocess.CompletedProcess[str], what: str) -> str:
-    """One run's standard output, or the reason the run is not one."""
+def succeeded(run: subprocess.CompletedProcess[str], what: str) -> None:
+    """The run's success, or the status and the reason it returned instead."""
     if run.returncode != 0:
         raise Failed(f"{what} exited {run.returncode}\n{run.stderr.strip()}")
+
+
+def reported(run: subprocess.CompletedProcess[str], what: str) -> str:
+    """One run's standard output, the diagnostic stream carrying nothing."""
+    succeeded(run, what)
     if run.stderr:
         raise Failed(f"{what} wrote to standard error\n{run.stderr.strip()}")
     return run.stdout
@@ -163,15 +174,24 @@ def version(environment: Path, elsewhere: Path) -> str:
 
 
 def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
-    """A reference bundled from a source root the repository does not hold."""
-    produced = reported(
-        invoke(environment, elsewhere, "--root", str(sources), ENTRY),
-        f"{COMMAND} --root {sources} {ENTRY}",
-    )
-    if produced != BUNDLE:
+    """A reference bundled from a source root the repository does not hold.
+
+    Standard output carries the bundle and nothing else, and standard
+    error carries the destination the entry reference resolved to, so
+    the installed command's stream split is the one the contract names.
+    """
+    what = f"{COMMAND} --root {sources} {ENTRY}"
+    run = invoke(environment, elsewhere, "--root", str(sources), ENTRY)
+    succeeded(run, what)
+    if run.stdout != BUNDLE:
         raise Failed(
             f"the bundle differs from the one the source names\n"
-            f"expected {BUNDLE!r}\nproduced {produced!r}"
+            f"expected {BUNDLE!r}\nproduced {run.stdout!r}"
+        )
+    if run.stderr != REPORT:
+        raise Failed(
+            f"{what} reports another entry destination\n"
+            f"expected {REPORT!r}\nproduced {run.stderr!r}"
         )
 
 

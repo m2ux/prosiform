@@ -17,4 +17,9 @@ arguments = ["references/design-flow.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "references/design-flow"
+resolved = "referencesdesign-flow"
