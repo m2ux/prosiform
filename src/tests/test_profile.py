@@ -16,6 +16,7 @@ rule whose other half nobody tested.
 from importlib.metadata import version
 
 import pytest
+
 from prosiform.profile import is_markdown, parse, parser, refusals
 
 PARSER = "markdown-it-py"

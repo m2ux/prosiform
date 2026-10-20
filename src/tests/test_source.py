@@ -20,6 +20,7 @@ the ordinal it passes over, and that a second document begins it again.
 """
 
 import pytest
+
 from prosiform.profile import parse
 from prosiform.source import (
     MARK,
