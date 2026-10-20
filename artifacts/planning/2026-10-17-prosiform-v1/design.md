@@ -459,7 +459,7 @@ Successful compilation establishes that the complete candidate passed validation
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
 - **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a *delivery* failure rather than a truncated apparent success.
-- **Entry destinations:** On success, report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format, so a caller can act on it as data. The bundle states the same thing in its entry line, which is what reaches the agent.
+- **Entry destinations:** On success, report each entry reference and the destination it resolved to on the diagnostic stream, in the declared format, so a caller can act on it as data. The report carries `W_ENTRY_DESTINATION`, a warning because it accompanies a run that succeeded. The bundle states the same thing in its entry line, which is what reaches the agent.
 - **Clean Markdown:** Keep success stdout limited to the bundle document. Beyond the entry line, the bundle carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
 - **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
@@ -555,7 +555,7 @@ An unexpected internal error carries `E_UNEXPECTED_INTERNAL_ERROR`. It names the
 
 Every failing outcome this contract names carries a code, so a diagnostic without one reports a defect the contract does not define.
 
-With `--diagnostics json`, emit one JSON object per stderr line, including `severity`, `code`, `message`, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate. Do not mix JSON diagnostics with progress prose.
+With `--diagnostics json`, emit one JSON object per stderr line, including `severity`, `code`, `message`, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate. The resolved identity is named `resolved`: a bundle destination where the reference reached one, and a canonical source path where it reached a document. Do not mix JSON diagnostics with progress prose.
 
 ## Adversarial acceptance fixtures
 
