@@ -422,12 +422,17 @@ def outline(tokens: Sequence[Token], groups: Sequence[Group]) -> None:
                 f"the heading {one.text!r} is emitted at level {level(opening)} "
                 f"against the level {one.level} the provenance records",
             )
-    for group in groups:
-        levels(group.record)
 
 
 def levels(record: Record) -> None:
-    """Hold one group's carried headings to their source levels and source order."""
+    """Hold one group's carried headings to their source levels and source order.
+
+    The record is held to the levels and the order its sources wrote
+    before the candidate is read, because a level beyond the sixth is
+    no heading to a parser: a candidate the record claims an H7 of
+    carries a paragraph there, and reading the candidate first would
+    report the missing heading rather than the depth that lost it.
+    """
     at = 0
     for one in record.carried():
         if one.level != one.origin.level + record.shift:
@@ -701,11 +706,16 @@ def validate(
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
-    The candidate is reparsed in candidate mode and every invariant this
-    module names is checked against the record. A failure raises before
-    anything is published, so a candidate that disagrees with its source
-    provenance publishes nothing.
+    The record is held to itself first — each selected region carried
+    once, each heading at the level and in the order its source wrote —
+    and the candidate is then reparsed in candidate mode and held to
+    the record. A failure raises before anything is published, so a
+    candidate that disagrees with its source provenance publishes
+    nothing.
     """
+    coverage(groups)
+    for one in groups:
+        levels(one.record)
     environment: dict[str, Any] = {}
     tokens = parse(bundled, budget, environment)
     physical = lines(bundled)
@@ -715,7 +725,6 @@ def validate(
     outline(tokens, groups)
     integrity(named(tokens, groups, assigned), targets)
     entry(spans, tokens, referrer, requested, targets)
-    coverage(groups)
     for _, carried, span in paired:
         source = Side(
             parsed[carried.path],
