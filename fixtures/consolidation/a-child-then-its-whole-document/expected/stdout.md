@@ -2,7 +2,7 @@ This bundle was built for [Alpha](#alpha); everything else is material it refere
 
 # detail
 
-Detail body, which needs [¬the whole guide](guide.md).
+Detail body, which needs [the whole guide](#guide).
 
 # extra
 
@@ -12,8 +12,8 @@ Extra body.
 
 ## Alpha
 
-Alpha body, which needs [¬the detail](detail.md).
+Alpha body, which needs [the detail](#detail).
 
 ## Beta
 
-Beta body, which needs [¬the extra](extra.md).
+Beta body, which needs [the extra](#extra).

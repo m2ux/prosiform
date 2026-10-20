@@ -8,7 +8,7 @@ Alpha body.
 
 #### Detail
 
-Detail body, which needs [¬the note](note.md).
+Detail body, which needs [the note](#note).
 
 ### Beta
 
@@ -18,4 +18,4 @@ Gamma body.
 
 # note
 
-Note body, which needs [¬Alpha](guide.md#alpha).
+Note body, which needs [Alpha](#alpha).

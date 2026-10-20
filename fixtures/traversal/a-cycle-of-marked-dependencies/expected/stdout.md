@@ -2,12 +2,12 @@ This bundle was built for [alpha](#alpha); everything else is material it refere
 
 # alpha
 
-Alpha requires [¬ beta](beta.md).
+Alpha requires [beta](#beta).
 
 # beta
 
-Beta requires [¬ gamma](gamma.md) and refers back to [¬ alpha](alpha.md).
+Beta requires [gamma](#gamma) and refers back to [alpha](#alpha).
 
 # gamma
 
-Gamma requires [¬ alpha](alpha.md) too, which closes the cycle.
+Gamma requires [alpha](#alpha) too, which closes the cycle.

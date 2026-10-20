@@ -67,6 +67,16 @@ the same document is neither. Ownership is read from the document's
 structure rather than from what a run selected, so consolidating a
 section into a larger region leaves every classification as it was.
 
+Each marked reference is rewritten to the destination the bundle gave
+the target it resolved to, and the mark goes with the rewrite. A
+destination belongs to the bundle rather than to a group, so the map
+holding one is known only once every group exists: the groups are
+built to learn the headings the bundle emits, and built again through
+the map those headings produce. The candidate is then read back and
+its headings compared with that map, so a bundle is published only
+where each destination it carries resolves to exactly one heading in
+it.
+
 Each budget the profile declares is counted as the design states and
 fails the compilation at the first boundary it crosses, with nothing
 truncated and no bundle published. One code reports every crossing and
@@ -162,6 +172,7 @@ from prosiform.source import (
     content,
     decode,
     fragments,
+    headings,
     lines,
     links,
     nesting,
@@ -169,6 +180,7 @@ from prosiform.source import (
     owner,
     regions,
     section,
+    visible,
 )
 
 NAME = "prosiform"
@@ -904,16 +916,14 @@ def unambiguous(paths: Sequence[str]) -> None:
         headed[title] = path
 
 
-def compose(
+def assembled(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
-    referrer: Reference | None,
+    selected: dict[str, list[Reference]],
     entries: Collection[Reference],
-    found: Sequence[Reference],
-) -> str:
-    """The complete bundle candidate: its entry line and one group per source."""
-    selected = contributing(referrer, found)
-    unambiguous(list(selected))
+    assigned: dict[tuple[str, str | None], str] | None,
+) -> list[Group]:
+    """One group per contributing source, its links rewritten where a map says so."""
     groups: list[Group] = []
     for path, selecting in selected.items():
         source = read[path]
@@ -925,6 +935,7 @@ def compose(
                     tokens,
                     lines(source.text),
                     selection(tokens, selecting, entries),
+                    assigned,
                 )
             )
         except Overflow as beyond:
@@ -936,14 +947,102 @@ def compose(
                 reference=path,
                 source=path,
             ) from beyond
-    assigned = fragments([heading for one in groups for heading in one.headings])
+    return groups
+
+
+def destination_map(
+    paths: Sequence[str], groups: Sequence[Group], assigned: Sequence[str]
+) -> dict[tuple[str, str | None], str]:
+    """The destination each resolved target was given, by the identity naming it.
+
+    A whole-document reference names a source and no fragment, and
+    takes the destination of that source's file heading. A fragment
+    names the heading its text produced, and takes that heading's own
+    destination, which a file heading that absorbed the heading holds
+    in its place. A destination is scoped to the bundle, so the map is
+    one map over every group rather than one map for each.
+    """
+    found: dict[tuple[str, str | None], str] = {}
+    at = 0
+    for path, one in zip(paths, groups, strict=True):
+        for offset, fragment in enumerate(one.sources):
+            found.setdefault((path, fragment), assigned[at + offset])
+        if one.absorbed is not None:
+            found.setdefault((path, one.absorbed), assigned[at])
+        at += len(one.headings)
+    return found
+
+
+def entries_named(
+    groups: Sequence[Group], assigned: Sequence[str]
+) -> list[tuple[str, str]]:
+    """Each entry reference the bundle opens on, as its text and its destination.
+
+    The order is the bundle's own: the groups in root-relative path
+    order, and inside one group the headings in source order. One
+    selection therefore opens on one line however the entry references
+    were written on the command line.
+    """
     named = []
     at = 0
     for one in groups:
         for entry in one.entries:
             named.append((one.headings[entry], assigned[at + entry]))
         at += len(one.headings)
-    return assemble(entry_line(named), groups)
+    return named
+
+
+def resolving(bundled: str, assigned: Sequence[str], budget: int) -> None:
+    """Hold the published bundle to the destination map that produced it.
+
+    The candidate is read back as a renderer reads it, and the fragment
+    the renderer generates for each heading it finds is compared with
+    the destination the map assigned that heading. Every rewritten link
+    names one of those destinations, so an agreement here is each
+    rewritten link resolving to exactly one heading of the bundle, and
+    a disagreement is a bundle the run must not publish.
+    """
+    tokens = parse(bundled, budget)
+    emitted = fragments([visible(inline) for _, inline in headings(tokens)])
+    if emitted != list(assigned):
+        raise AssertionError(
+            f"the bundle carries {len(emitted)} heading(s) against the "
+            f"{len(assigned)} the destination map names"
+        )
+
+
+def compose(
+    read: dict[str, Source],
+    parsed: dict[str, list[Token]],
+    referrer: Reference | None,
+    entries: Collection[Reference],
+    found: Sequence[Reference],
+    limits: Limits,
+) -> str:
+    """The complete bundle candidate: its entry line and one group per source.
+
+    A destination belongs to the bundle rather than to a group, so it
+    is known only once every group exists. The groups are therefore
+    built twice: once to learn the headings the bundle emits, and once
+    more with the map those headings produce, which is what each marked
+    link is rewritten through. The second pass emits the same headings
+    as the first, because a rewrite edits a link's destination and its
+    mark and nothing a heading is slugged from.
+    """
+    selected = contributing(referrer, found)
+    unambiguous(list(selected))
+    headed = assembled(read, parsed, selected, entries, None)
+    assigned = fragments([heading for one in headed for heading in one.headings])
+    groups = assembled(
+        read,
+        parsed,
+        selected,
+        entries,
+        destination_map(list(selected), headed, assigned),
+    )
+    bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
+    resolving(bundled, assigned, limits.of(NESTING))
+    return bundled
 
 
 def publish(text: str, stream: IO[str]) -> None:
@@ -1057,7 +1156,7 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
             raise usage_failure(
                 f"the output path {options.output!r} names an input source"
             )
-    bundled = compose(read, parsed, referring, requested, found)
+    bundled = compose(read, parsed, referring, requested, found, limits)
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:
