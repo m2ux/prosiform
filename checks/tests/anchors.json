@@ -1,0 +1,26 @@
+{
+  "captured": "2026-10-20",
+  "command": "gh api --method POST markdown -f mode=markdown -F text=@headings.md",
+  "document": "# 🧩 prosiform\n\n## 🗂️ Repository Layout\n\n## ✅ Checks\n\n## Why?\n\n## How It Works\n\n## A Heading & Its Fragment\n\n## `code` span and [a link](https://example.com)\n\n## Snake_case and kebab-case\n\n## Version 1.0 of the Build\n\n## Über Café\n\n## naïve — an em dash\n\n## Don't Panic\n\n## 100% Done\n\n## C++ and C#\n\n## 日本語の見出し\n\n## **Bold** and _underlined_ words\n\n## Checks (`make check`)\n\n## Why?\n\n## Trailing hash marks ##\n",
+  "anchors": [
+    "-prosiform",
+    "️-repository-layout",
+    "-checks",
+    "why",
+    "how-it-works",
+    "a-heading--its-fragment",
+    "code-span-and-a-link",
+    "snake_case-and-kebab-case",
+    "version-10-of-the-build",
+    "über-café",
+    "naïve--an-em-dash",
+    "dont-panic",
+    "100-done",
+    "c-and-c",
+    "日本語の見出し",
+    "bold-and-underlined-words",
+    "checks-make-check",
+    "why-1",
+    "trailing-hash-marks"
+  ]
+}
