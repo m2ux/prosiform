@@ -1,0 +1,19 @@
+description = "A run whose nesting reaches the parser's own ceiling on its last valid reference succeeds and bundles what that reference named, so a consumed ceiling is not itself read as a lookup the parser abandoned."
+
+clauses = [
+  "Mandatory parser viability gates — Observable reference-resolution suppression",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-nesting", "1", "guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

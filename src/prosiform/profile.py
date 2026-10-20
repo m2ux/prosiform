@@ -14,6 +14,13 @@ into a link, which would make a task marker a dependency. The parse
 recognizes those positions and returns the marker to the literal text it
 is, so the token stream every later stage reads carries no such link.
 
+The parser holds a nesting ceiling of its own, and a label scan that
+reaches it is abandoned at the end of the paragraph rather than resolved:
+the reference that label opens is read as literal text and its lookup
+never happens. The profile watches that scan, so a lookup the ceiling
+declined is reported rather than published as a bundle missing whatever
+the reference named.
+
 A construct the profile does not support is not simply left unparsed. One
 that names a dependency or a section fails the run, because publishing it
 as literal text would drop that name without reporting it. Recognition is
@@ -40,7 +47,10 @@ from pathlib import PurePosixPath
 from typing import Any
 
 from markdown_it import MarkdownIt
+from markdown_it.parser_inline import ParserInline
+from markdown_it.rules_inline.state_inline import StateInline
 from markdown_it.token import Token
+from markdown_it.utils import EnvType
 
 from prosiform import PROFILE
 from prosiform.limits import NESTING
@@ -78,6 +88,9 @@ LINK_REMEDY = "write the dependency as a Markdown link"
 
 RAW_HTML = "E_RAW_HTML"
 UNSUPPORTED_CONSTRUCT = "E_UNSUPPORTED_CONSTRUCT"
+PARSER_REFERENCE_LIMIT = "E_PARSER_REFERENCE_LIMIT"
+
+NESTING_CEILING = "maxNesting"
 
 
 @dataclass(frozen=True)
@@ -96,6 +109,74 @@ class Refusal:
     reference: str | None = None
 
 
+class Suppressed(Exception):
+    """One reference lookup the parser's nesting ceiling declined to make.
+
+    The lookup never happened, so what the reference named is unknown
+    and no bundle can be published from the parse that abandoned it.
+    The line is the source line of the content the scan was reading,
+    where the parser records one.
+    """
+
+    def __init__(self, line: int | None) -> None:
+        super().__init__(
+            "the parser reached its own nesting ceiling and abandoned a "
+            "reference lookup, so a reference this source carries is read "
+            "as literal text and names a document the run cannot reach"
+        )
+        self.line = line
+
+    @property
+    def remedy(self) -> str:
+        """The remedy a declined lookup leads to, naming the nesting it sits in."""
+        return "write the reference outside the nesting that surrounds it"
+
+
+class Watched(ParserInline):
+    """The inline parser, watched for a reference lookup its ceiling declines.
+
+    A label scan reaching the ceiling is abandoned to the end of the
+    paragraph, which is the one event that tells a declined lookup from
+    the literal bracketed text it leaves behind: a scan over the source
+    sees the same brackets either way. The scan is watched rather than
+    the result compared against a second parse, because an event stream
+    that omits a suppressed reference agrees with another one that omits
+    it too.
+
+    The watch records the outermost content being parsed, which is the
+    inline token the declined lookup sits in, so the parse the caller
+    reads locates it by that content.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.reading: list[str] = []
+        self.declined: str | None = None
+
+    def parse(
+        self, src: str, md: MarkdownIt, env: EnvType, tokens: list[Token]
+    ) -> list[Token]:
+        """One run of inline content, recorded while the parser reads it."""
+        self.reading.append(src)
+        try:
+            return super().parse(src, md, env, tokens)
+        finally:
+            self.reading.pop()
+
+    def skipToken(self, state: StateInline) -> None:  # noqa: N802
+        """One token of a label scan, noting a scan the ceiling abandons."""
+        ceiling = state.level >= state.md.options[NESTING_CEILING]
+        if ceiling and state.pos not in state.cache and self.declined is None:
+            self.declined = self.reading[0]
+        super().skipToken(state)
+
+
+@cache
+def watch(budget: int) -> Watched:
+    """The watched inline parser one configuration of the profile reads with."""
+    return Watched()
+
+
 @cache
 def parser(budget: int) -> MarkdownIt:
     """The parser the profile configures: CommonMark and its two extensions.
@@ -107,8 +188,14 @@ def parser(budget: int) -> MarkdownIt:
     document is unaffected, so a source nested deeper than the budget
     is counted past the boundary and refused rather than quietly read
     as something else.
+
+    The ceiling is reachable all the same, because inline nesting is
+    counted into it and no budget is declared over that, so the parser
+    reads with the watch that reports a lookup the ceiling declines.
     """
-    return MarkdownIt(PRESET, {"maxNesting": budget + HEADROOM}).enable(list(ENABLED))
+    configured = MarkdownIt(PRESET, {NESTING_CEILING: budget + HEADROOM})
+    configured.inline = watch(budget)
+    return configured.enable(list(ENABLED))
 
 
 def parse(
@@ -122,12 +209,32 @@ def parse(
     the source declared, which is the definition environment its own
     reference-style uses resolve against. A caller that reads them
     supplies the mapping the parse writes them into.
+
+    A parse whose nesting ceiling declined a reference lookup raises
+    rather than returning tokens, so every caller reads a token stream
+    the parser resolved in full.
     """
+    watched = watch(budget)
+    watched.declined = None
     tokens = parser(budget).parse(text, {} if env is None else env)
+    if watched.declined is not None:
+        raise Suppressed(declined_line(tokens, watched.declined))
     for inline in item_openings(tokens):
         if linked_marker(inline):
             unlink_marker(inline)
     return tokens
+
+
+def declined_line(tokens: Sequence[Token], content: str) -> int | None:
+    """The source line of the inline content one declined lookup sits in."""
+    return next(
+        (
+            line(token)
+            for token in tokens
+            if token.type == INLINE and token.content == content
+        ),
+        None,
+    )
 
 
 def is_markdown(name: str) -> bool:

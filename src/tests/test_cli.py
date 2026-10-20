@@ -63,7 +63,12 @@ from prosiform.cli import (
 )
 from prosiform.closure import resolve
 from prosiform.limits import FILES, RESOURCE_LIMIT
-from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
+from prosiform.profile import (
+    HEADROOM,
+    PARSER_REFERENCE_LIMIT,
+    RAW_HTML,
+    UNSUPPORTED_CONSTRUCT,
+)
 from prosiform.source import (
     NESTED_SECTION_TARGET,
     UNTERMINATED_FRONTMATTER,
@@ -1500,3 +1505,33 @@ def test_an_unsafe_boundary_publishes_no_file(tmp_path: Path) -> None:
     )
     assert run.status == INPUT_FAILURE
     assert not destination.exists()
+
+
+def surrounded(brackets: int) -> str:
+    """One source whose marked dependency sits under a run of open brackets."""
+    return f"# Guide\n\nThe guide cites {'[' * brackets}¬ the plan](plan.md).\n"
+
+
+def test_a_lookup_the_parser_declines_fails_the_run(root: Path) -> None:
+    written(root, "guide.md", surrounded(1 + HEADROOM + 1))
+    written(root, "plan.md", "# Plan\n\nThe plan.\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-nesting", "1", "guide.md"
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    reported = run.diagnostics()[0]
+    assert reported["code"] == PARSER_REFERENCE_LIMIT
+    assert reported["source"] == "guide.md:3"
+    assert reported["chain"] == ["guide.md"]
+
+
+def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) -> None:
+    written(root, "guide.md", surrounded(1 + HEADROOM))
+    written(root, "plan.md", "# Plan\n\nThe plan.\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-nesting", "1", "guide.md"
+    )
+    assert run.status == SUCCESS
+    assert "The plan." in run.stdout
+    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]

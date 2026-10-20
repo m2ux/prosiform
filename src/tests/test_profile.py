@@ -18,7 +18,14 @@ from importlib.metadata import version
 import pytest
 
 from prosiform.limits import NESTING
-from prosiform.profile import is_markdown, parse, parser, refusals
+from prosiform.profile import (
+    HEADROOM,
+    Suppressed,
+    is_markdown,
+    parse,
+    parser,
+    refusals,
+)
 
 PARSER = "markdown-it-py"
 PINNED_VERSION = "4.2.0"
@@ -147,3 +154,34 @@ def test_a_refusal_names_the_line_and_the_spelling_it_found() -> None:
     assert len(found) == 1
     assert found[0].line == 3
     assert found[0].reference == "[[page]]"
+
+
+def nested(brackets: int, budget: int) -> str:
+    """One source whose marked reference sits under a run of open brackets."""
+    return f"# Guide\n\nThe guide cites {'[' * brackets}¬ the plan](plan.md).\n"
+
+
+def test_a_lookup_the_nesting_ceiling_declines_is_reported() -> None:
+    budget = 1
+    with pytest.raises(Suppressed) as declined:
+        parse(nested(budget + HEADROOM + 1, budget), budget)
+    assert declined.value.line == 3
+
+
+def test_a_ceiling_reached_by_the_last_valid_reference_resolves_it() -> None:
+    budget = 1
+    tokens = parse(nested(budget + HEADROOM, budget), budget)
+    found = [
+        str(child.attrGet("href"))
+        for token in tokens
+        for child in token.children or []
+        if child.type == LINK_OPEN
+    ]
+    assert found == ["plan.md"]
+
+
+def test_a_later_parse_reads_no_earlier_declined_lookup() -> None:
+    budget = 1
+    with pytest.raises(Suppressed):
+        parse(nested(budget + HEADROOM + 1, budget), budget)
+    assert links("A [link](page.md) the ceiling leaves alone.\n") == ["page.md"]
