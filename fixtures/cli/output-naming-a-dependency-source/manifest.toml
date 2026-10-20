@@ -4,6 +4,7 @@ clauses = [
   "CLI contract — --output, a path naming an input source is refused",
   "Compile before publishing — step 4, discover the recursive dependency graph",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+  "CLI contract — one code for the form of the command line, and the message says which fault it was",
 ]
 
 [invocation]
@@ -17,3 +18,4 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
+message_contains = ["source/note.md"]
