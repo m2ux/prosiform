@@ -12,7 +12,7 @@ from pathlib import Path
 from fixtures import SCRIPTS, epic_body, initiative_body, issue, item, links, pr, run, url
 
 sys.path.insert(0, str(SCRIPTS))
-from board import Board  # noqa: E402
+from board import Board, Resolution  # noqa: E402
 from statuses import assignee_calls  # noqa: E402
 
 KEY = ('o/r', 12)
@@ -69,24 +69,64 @@ class RowPrerequisites(unittest.TestCase):
         consumer = issue(3, '[I01:E01] Consumer: Work', body=epic_body(('W01', 'Consume', dependency)))
         pulls = [pr(9, '[I02:E00] Produce', merged='2026-01-01T00:00:00Z', repo='o/other')]
         board = Board({('o/other', 2): upstream, key: consumer}, [], 'o/r', pulls)
-        self.assertFalse(board.met(dependency, key, {}, 'consumer'))
+        self.assertIs(board.met(dependency, key, {}, 'consumer'), Resolution.UNMET)
         upstream['state'], upstream['state_reason'] = 'closed', 'completed'
-        self.assertTrue(board.met(dependency, key, {}, 'consumer'))
+        self.assertIs(board.met(dependency, key, {}, 'consumer'), Resolution.MET)
 
     def test_missing_prerequisite_is_reported_and_blocks(self):
         key = ('o/r', 3)
         dependency = f"[E00:W01]({url('issues', 2)})"
         consumer = issue(3, '[I01:E01] Consumer: Work', body=epic_body(('W01', 'Consume', dependency)))
         board = Board({key: consumer}, [], 'o/r')
-        self.assertFalse(board.met(dependency, key, {}, 'consumer'))
-        self.assertEqual(board.unresolved, ['consumer: #2 not given'])
+        self.assertIs(board.met(dependency, key, {}, 'consumer'), Resolution.UNRESOLVABLE)
+        self.assertEqual(board.unresolved, ['consumer: cannot resolve E00:W01: #2 is not given'])
 
     def test_local_task_dependency_uses_the_task_merge(self):
         key = ('o/r', 2)
         epic = issue(2, '[I01:E00] Local: Work', body=epic_body(
             (f"[W01]({url('pull', 9)})", 'Produce', ''), ('W02', 'Consume', 'W01')))
         board = Board({key: epic}, [], 'o/r', [pr(9, '[I01:E00] Produce', merged='2026-01-01T00:00:00Z')])
-        self.assertTrue(board.met('W01', key, {}, 'local'))
+        self.assertIs(board.met('W01', key, {}, 'local'), Resolution.MET)
+
+
+class UnresolvableDependencies(unittest.TestCase):
+    """An entry the cell cannot resolve, told apart from one waiting on delivery."""
+
+    def consumer(self, dependency: str) -> tuple[Board, tuple[str, int]]:
+        key = ('o/r', 3)
+        epic = issue(3, '[I01:E01] Consumer: Work', body=epic_body(
+            (f"[W01]({url('pull', 9)})", 'Produce', ''), ('W02', 'Consume', dependency)))
+        return Board({key: epic}, [], 'o/r', [pr(9, '[I01:E01] Produce', merged='2026-01-01T00:00:00Z')]), key
+
+    def test_an_entry_naming_no_row_and_linking_no_issue_cannot_resolve(self):
+        board, key = self.consumer('E05 (W04)')
+        self.assertIs(board.met('E05 (W04)', key, {}, 'E01:W02'), Resolution.UNRESOLVABLE)
+        self.assertEqual(board.unresolved,
+                         ['E01:W02: cannot resolve E05 (W04): it names no row and links no issue'])
+
+    def test_a_row_the_epic_does_not_carry_cannot_resolve(self):
+        board, key = self.consumer('W07')
+        self.assertIs(board.met('W07', key, {}, 'E01:W02'), Resolution.UNRESOLVABLE)
+        self.assertEqual(board.unresolved, ['E01:W02: cannot resolve W07: #3 has no such row'])
+
+    def test_a_prerequisite_that_has_not_landed_is_unmet(self):
+        board, key = self.consumer('W02')
+        self.assertIs(board.met('W02', key, {}, 'E01:W03'), Resolution.UNMET)
+        self.assertEqual(board.unresolved, [])
+
+    def test_a_delivered_prerequisite_is_met(self):
+        board, key = self.consumer('W01')
+        self.assertIs(board.met('W01', key, {}, 'E01:W02'), Resolution.MET)
+
+    def test_every_entry_of_a_cell_is_read(self):
+        board, key = self.consumer('W07, W08')
+        self.assertIs(board.met('W07, W08', key, {}, 'E01:W02'), Resolution.UNRESOLVABLE)
+        self.assertEqual(board.unresolved, ['E01:W02: cannot resolve W07: #3 has no such row',
+                                            'E01:W02: cannot resolve W08: #3 has no such row'])
+
+    def test_an_unresolvable_entry_outranks_an_unmet_one(self):
+        board, key = self.consumer('W02, W07')
+        self.assertIs(board.met('W02, W07', key, {}, 'E01:W03'), Resolution.UNRESOLVABLE)
 
 
 class EpicPrerequisites(unittest.TestCase):
@@ -97,9 +137,9 @@ class EpicPrerequisites(unittest.TestCase):
         initiative = issue(1, '[I01] Theme: Work', body=initiative_body(
             (f"[E00]({url('issues', 2)})", ''), (f"[E01]({url('issues', 3)})", f"[E00]({url('issues', 2)})")))
         board = Board({('o/r', 1): initiative, ('o/r', 2): producer, key: consumer}, [], 'o/r')
-        self.assertFalse(board.epic_prerequisites_met(key, {}, 'consumer'))
+        self.assertIs(board.epic_prerequisites_met(key, {}, 'consumer'), Resolution.UNMET)
         producer['state'], producer['state_reason'] = 'closed', 'completed'
-        self.assertTrue(board.epic_prerequisites_met(key, {}, 'consumer'))
+        self.assertIs(board.epic_prerequisites_met(key, {}, 'consumer'), Resolution.MET)
 
     def test_a_task_row_dependency_leaves_the_epic_open(self):
         key = ('o/r', 3)
@@ -107,7 +147,7 @@ class EpicPrerequisites(unittest.TestCase):
             ('W01', 'Consume', f"[E00:W01]({url('issues', 2)})")))
         initiative = issue(1, '[I01] Theme: Work', body=initiative_body((f"[E01]({url('issues', 3)})", '')))
         board = Board({('o/r', 1): initiative, key: consumer}, [], 'o/r')
-        self.assertTrue(board.epic_prerequisites_met(key, {}, 'consumer'))
+        self.assertIs(board.epic_prerequisites_met(key, {}, 'consumer'), Resolution.MET)
 
 
 def board_fields(*names: str) -> list[dict]:

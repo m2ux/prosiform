@@ -62,6 +62,8 @@ import argparse
 import json
 import re
 import sys
+from collections.abc import Iterable
+from enum import Enum
 from pathlib import Path
 
 from format import AC, LINK, cell, id_cell, row_id, split_sections
@@ -114,6 +116,29 @@ def linked_issue(cell: str) -> Key | None:
     return issue_url(link[2]) if link else None
 
 
+class Resolution(Enum):
+    """How far a Depends on entry resolves. MET is delivered and UNMET is waiting on delivery that
+    can still arrive. UNRESOLVABLE is a permanent condition: nothing the plan does next makes the
+    entry readable, so a caller gating a row on it reports the entry rather than holding the row."""
+    MET = 'met'
+    UNMET = 'unmet'
+    UNRESOLVABLE = 'unresolvable'
+
+
+RESOLUTIONS = (Resolution.MET, Resolution.UNMET, Resolution.UNRESOLVABLE)
+UNRESOLVABLE = 'cannot resolve'
+
+
+def weakest(answers: Iterable[Resolution]) -> Resolution:
+    """The least resolved of the answers, every one of them read, so each unresolvable entry of a
+    cell is reported rather than only the first."""
+    found = Resolution.MET
+    for answer in answers:
+        if RESOLUTIONS.index(answer) > RESOLUTIONS.index(found):
+            found = answer
+    return found
+
+
 class Board:
     def __init__(self, issues: dict[Key, dict], unresolved: list[str], home: str, prs: list[dict] | None = None):
         self.issues = issues
@@ -129,12 +154,12 @@ class Board:
             self.tables[key] = header, {i: r for r in body if (i := row_id(id_cell(header, r)))}
         return self.tables[key]
 
-    def row_delivered(self, key: Key, task: str, why: str) -> bool:
+    def row_delivered(self, key: Key, task: str, why: str) -> Resolution:
         header, found = self.table(key)
         r = found.get(task)
         if r is None:
-            self.unresolved.append(f'{why}: {label(key, self.home)} has no row {task}')
-            return False
+            self.unresolved.append(f'{why}: {UNRESOLVABLE} {task}: {label(key, self.home)} has no such row')
+            return Resolution.UNRESOLVABLE
         ident = id_cell(header, r)
         pulls = commits = merged = False
         for found in LINK.finditer(ident):
@@ -148,33 +173,33 @@ class Board:
                 elif pr.get('merged_at'):
                     merged = True
         if commits or merged:
-            return True
+            return Resolution.MET
         if pulls:
-            return False
+            return Resolution.UNMET
         issue = linked_issue(ident)
         if issue is None:
-            return False
+            return Resolution.UNMET
         return self.issue_delivered(issue, why)
 
-    def issue_delivered(self, key: Key, why: str) -> bool:
+    def issue_delivered(self, key: Key, why: str) -> Resolution:
         if key not in self.issues:
-            self.unresolved.append(f'{why}: {label(key, self.home)} not given')
-            return False
-        return completed(self.issues[key])
+            self.unresolved.append(f'{why}: {UNRESOLVABLE} {label(key, self.home)}: it is not given')
+            return Resolution.UNRESOLVABLE
+        return Resolution.MET if completed(self.issues[key]) else Resolution.UNMET
 
-    def epic_prerequisites_met(self, key: Key, epics: dict[str, Key], why: str) -> bool:
+    def epic_prerequisites_met(self, key: Key, epics: dict[str, Key], why: str) -> Resolution:
         """Whether the whole epics an initiative row names as this one's prerequisites have reached
         their long-lived branches. Closed as completed is the delivery evidence sync records after
         an epic's bases merge. A row naming one task of another epic gates that row alone."""
+        answers = []
         for parent, issue in self.issues.items():
             if not re.match(r'^\[I\d\d\]', issue.get('title') or ''):
                 continue
             header, listed = self.table(parent)
             for item in listed.values():
                 if linked_issue(id_cell(header, item)) == key:
-                    if not self.met(cell(header, item, 'Depends on'), parent, epics, why):
-                        return False
-        return True
+                    answers.append(self.met(cell(header, item, 'Depends on'), parent, epics, why))
+        return weakest(answers)
 
     def referenced_epics(self, key: Key, epics: dict[str, Key]) -> set[Key]:
         """The epics this one's rows name: those its task rows name outside it, and those its
@@ -199,10 +224,12 @@ class Board:
                     found.add(prerequisite)
         return found
 
-    def met(self, cell: str, home: Key, epics: dict[str, Key], why: str) -> bool:
-        """Whether every dependency in a Depends on cell is delivered. home is the issue whose table
+    def met(self, cell: str, home: Key, epics: dict[str, Key], why: str) -> Resolution:
+        """How far every dependency in a Depends on cell resolves. home is the issue whose table
         holds the row, and the repository a bare #750 is read against; epics maps the initiative's
-        Eyy ids to their issues."""
+        Eyy ids to their issues. Every entry is read, so a cell carrying two that cannot resolve
+        names both."""
+        answers = []
         for entry in (e.strip() for e in cell.split(',') if e.strip()):
             link = LINK.fullmatch(entry)
             text, url = (link[1], link[2]) if link else (entry, '')
@@ -210,27 +237,27 @@ class Board:
             span = RANGE.match(text)
             task = TASK_REF.search(text)
             if span:
-                ok = all(self.row_delivered(home, f'W{n:02d}', why)
-                         for n in range(int(span[1]), int(span[2]) + 1))
+                answer = weakest([self.row_delivered(home, f'W{n:02d}', why)
+                                  for n in range(int(span[1]), int(span[2]) + 1)])
             elif re.fullmatch(r'W\d\d', text):
-                ok = self.row_delivered(home, text, why)
+                answer = self.row_delivered(home, text, why)
             elif re.fullmatch(r'#\d+', text):
-                ok = self.issue_delivered((home[0], int(text[1:])), why)
+                answer = self.issue_delivered((home[0], int(text[1:])), why)
             else:
                 key = found or epics.get(text.split(':')[0])
                 if key is None:
-                    self.unresolved.append(f'{why}: {text} links no issue')
-                    ok = False
+                    self.unresolved.append(f'{why}: {UNRESOLVABLE} {text}: it names no row and links no issue')
+                    answer = Resolution.UNRESOLVABLE
                 elif task and key not in self.issues:
-                    self.unresolved.append(f'{why}: {label(key, self.home)} not given')
-                    ok = False
+                    self.unresolved.append(f'{why}: {UNRESOLVABLE} {text}: {label(key, self.home)} is not given')
+                    answer = Resolution.UNRESOLVABLE
                 elif task:
-                    ok = (key == home or self.issue_delivered(key, why)) and self.row_delivered(key, task[1], why)
+                    answer = weakest([Resolution.MET if key == home else self.issue_delivered(key, why),
+                                      self.row_delivered(key, task[1], why)])
                 else:
-                    ok = self.issue_delivered(key, why)
-            if not ok:
-                return False
-        return True
+                    answer = self.issue_delivered(key, why)
+            answers.append(answer)
+        return weakest(answers)
 
 
 def main() -> int:
@@ -304,7 +331,7 @@ def main() -> int:
                 if len(found) > 1:
                     unresolved.append(f'E{epic_key}:{tid}: {len(found)} task issues titled {prefix}')
                 task_issue = found[0] if len(found) == 1 else None
-            delivered_any |= board.row_delivered(number, tid, f'E{epic_key}:{tid}')
+            delivered_any |= board.row_delivered(number, tid, f'E{epic_key}:{tid}') is Resolution.MET
             if task_issue is None:
                 continue
             t = tasks[task_issue]
@@ -312,12 +339,13 @@ def main() -> int:
                 status[task_issue] = 'Done' if completed(t) else None
             elif found := pr_status(epic_key, task_issue):
                 status[task_issue] = found
-            elif (not open_questions(t)
-                  and board.epic_prerequisites_met(number, epic_ids, f'E{epic_key}:{tid}')
-                  and board.met(cell(task_header, tr, 'Depends on'), number, epic_ids, f'E{epic_key}:{tid}')):
-                status[task_issue] = 'Ready'
-            else:
+            elif open_questions(t):
                 status[task_issue] = 'Backlog'
+            else:
+                gates = weakest([board.epic_prerequisites_met(number, epic_ids, f'E{epic_key}:{tid}'),
+                                 board.met(cell(task_header, tr, 'Depends on'), number, epic_ids,
+                                           f'E{epic_key}:{tid}')])
+                status[task_issue] = 'Ready' if gates is Resolution.MET else 'Backlog'
             task_epic[task_issue] = number
         if epic['state'] == 'closed':
             status[number] = 'Done' if completed(epic) else None

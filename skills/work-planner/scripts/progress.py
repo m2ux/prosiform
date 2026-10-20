@@ -74,7 +74,7 @@ from collections.abc import Callable
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
-from board import Board, PREFIX, PULL_REF, linked_issue
+from board import Board, PREFIX, PULL_REF, Resolution, linked_issue
 from statuses import Key, key_of, label, pages, status_of
 from format import LINK, cell, epic_name, id_cell, phrase
 from sync import PR_REF, PULL_URL, Unreadable, attach_links, links_issue, pull_requests
@@ -309,8 +309,9 @@ def main() -> int:
             backing = on_board(linked_issue(id_cell(header, r)))
             if linked_issue(id_cell(header, r)) and (not backing or status.get(backing) in ACTIVE):
                 continue
-            if not board.row_delivered(ek, tid, ref) and board.met(
-                    cell(header, r, 'Depends on'), ek, epic_ids.get(scope_of_epic[ek], {}), f'{ref}:{tid}'):
+            if board.row_delivered(ek, tid, ref) is not Resolution.MET and board.met(
+                    cell(header, r, 'Depends on'), ek, epic_ids.get(scope_of_epic[ek], {}),
+                    f'{ref}:{tid}') is Resolution.MET:
                 return {t for t in (backing, owned.get(ek, {}).get(tid)) if t}, f'{tid} {task_name(r, header)}'
         return None
 

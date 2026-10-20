@@ -27,7 +27,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from board import Board, linked_issue, open_questions, rows
+from board import UNRESOLVABLE, Board, Resolution, linked_issue, open_questions, rows, weakest
 from format import cell, id_cell, row_id
 from statuses import PLACED, QUEUE, Changes, Jurisdiction, StatusField, board_items, key_of, label
 from sync import PR_REF, Unreadable, pull_requests
@@ -92,15 +92,18 @@ def partial(board: Board, key: tuple[str, int], why: str) -> bool:
     except Unreadable as exc:
         board.unresolved.append(f'{why}: {exc}')
         return False
-    return any(board.row_delivered(key, task, why) for task in tasks)
+    return any(board.row_delivered(key, task, why) is Resolution.MET for task in tasks)
 
 
 def is_next(board: Board, initiative: tuple[str, int], epic: tuple[str, int] | None, depends: str,
-            epics: dict[str, tuple[str, int]], why: str) -> bool:
+            epics: dict[str, tuple[str, int]], why: str) -> Resolution:
+    """How far the gates on one epic row resolve. An unresolvable gate is the row's own answer, so
+    the caller leaves the epic where it stands rather than reading it as a prerequisite to come."""
     issue = board.issues.get(epic) if epic else None
     if issue is None or issue['state'] != 'open' or open_questions(issue):
-        return False
-    return board.met(depends, initiative, epics, why) and board.epic_prerequisites_met(epic, epics, why)
+        return Resolution.UNMET
+    return weakest([board.met(depends, initiative, epics, why),
+                    board.epic_prerequisites_met(epic, epics, why)])
 
 
 class Queue:
@@ -161,8 +164,10 @@ class Queue:
                 running.append(epic_key)
             elif held == 'In Progress':
                 running.append(epic_key)
-            elif is_next(self.board, key, epic_key, depends, epics, why):
+            elif (answer := is_next(self.board, key, epic_key, depends, epics, why)) is Resolution.MET:
                 candidates.append(epic_key)
+            elif answer is Resolution.UNRESOLVABLE:
+                continue
             elif held == 'Ready':
                 self.place(epic_key, 'Backlog')
         ranked = {epic_key: rank(self.issues[epic_key]) for epic_key in (*candidates, *running)}
@@ -320,7 +325,10 @@ def main() -> int:
             continue
         changes.place(key, queue.line(key), issues[key], status.get(key), new, item_ids[key], home)
     asking = any(note.strip().startswith(('order', 'ask')) for note in queue.notes)
-    return changes.report(notes=queue.notes, unresolved=queue.board.unresolved, asking=asking)
+    printed = changes.report(notes=queue.notes, unresolved=queue.board.unresolved, asking=asking)
+    if any(UNRESOLVABLE in note for note in queue.board.unresolved):
+        return 1
+    return printed
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ The queue for one theme board: initiative priority sets, status and assignee cha
 
 Read these files first.
 
+- [Dependency Graph](dependency-graph.md)
 - [Epic Issue Body](epic-issue-body.md)
 
 ## Operations
@@ -21,6 +22,7 @@ Derives the queue from supplied board and delivery snapshots and confirmed decis
    - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
 2. Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
    - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
+   - Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
    - The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
 
 ## Fields
@@ -80,6 +82,14 @@ The answer a caller applies where it resolves an `order` or `ask` line on its ow
 - For `order`, priority 1 on every open initiative already In Progress or named by an open pull request, and no number on the rest. Where no initiative qualifies, nothing is under way and the line has no recommended answer.
 - For `ask`, the number of the highest set already running, so the initiative joins it, or 1 where no initiative carries a priority label.
 
+### Unresolvable Dependencies
+
+A `Depends on` entry that names no row and links no issue, names an issue the run was not given, or names a row the epic it points to does not carry, cannot resolve. No delivery makes it readable, so it is told apart from a prerequisite that has not landed.
+
+- The report names the row and the entry as written, and the run exits nonzero, which is the severity the [dependency check](dependency-graph.md#check-dependencies) gives the same entry.
+- The epic that row gates keeps the Status it holds. A run proposes no move for it, so a Ready epic is not returned to Backlog on an entry nobody can read.
+- Every entry of a cell is read, so a cell carrying two names both.
+
 ### Completeness
 
 An `order` or `ask` line means a decision is pending. An unresolved issue reference means dependency evidence is missing. Either leaves the queue incomplete.
@@ -90,7 +100,7 @@ A complete queue may still propose changes. Live board state has converged when 
 
 ### Compute Board Queue
 
-Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue.
+Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue. It exits nonzero on an [unresolvable dependency](#unresolvable-dependencies).
 
 **Inputs:** Current board and delivery snapshots, board identity, assignee login, output directory, resolved dependency evidence, confirmed unplanned initiatives and the permitted Status scope.
 
