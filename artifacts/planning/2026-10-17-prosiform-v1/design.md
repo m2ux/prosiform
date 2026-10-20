@@ -208,13 +208,16 @@ Structural ancestry is generated structural content, not dependency inclusion:
 For example, selecting `Alpha` and `Detail` from a source whose original outline is `## Alpha`, `## Beta`, `### Detail` requires a heading-only `Beta` in the bundle:
 
 ```markdown
-# guide.md
+# guide
 
 ### Alpha
+
 Selected Alpha content.
 
 ### Beta
+
 #### Detail
+
 Selected Detail content.
 ```
 
