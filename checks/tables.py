@@ -15,7 +15,7 @@ after something the project does not have.
   declarations, with the version it pins in the `Value` cell beside it. The
   set compared is `requires-python`, which a table writes as `Python`, with
   `[project] dependencies` and the `dev` dependency group of
-  `prototype/pyproject.toml`. A name is compared as the packaging ecosystem
+  `src/pyproject.toml`. A name is compared as the packaging ecosystem
   compares one, case-folded with its separators run together, and reported as
   the table writes it.
 
@@ -34,7 +34,7 @@ import tomllib
 from documents import ROOT, readmes, tables
 
 MAKEFILE = ROOT / "Makefile"
-PYPROJECT = ROOT / "prototype" / "pyproject.toml"
+PYPROJECT = ROOT / "src" / "pyproject.toml"
 PYTHON = "Python"
 
 RULE = re.compile(r"^([A-Za-z0-9_][A-Za-z0-9_.-]*)\s*:(?:[^=]|$)", re.MULTILINE)
@@ -96,7 +96,7 @@ def match_declaration(
     item = plain(record.get("Declared", ""))
     if key(item) not in declared:
         return None, (
-            f"{document}: {item} — the table names it and prototype/pyproject.toml "
+            f"{document}: {item} — the table names it and src/pyproject.toml "
             f"declares no such dependency"
         )
     name, version = declared[key(item)]
@@ -104,7 +104,7 @@ def match_declaration(
     if stated != version:
         return key(item), (
             f"{document}: {name} — the table names '{stated}' and "
-            f"prototype/pyproject.toml declares '{version}'"
+            f"src/pyproject.toml declares '{version}'"
         )
     return key(item), None
 
@@ -150,7 +150,7 @@ def main() -> int:
         )
     for item in sorted(set(declared_items) - named_items):
         failures.append(
-            f"{declared_items[item][0]} — prototype/pyproject.toml declares it and "
+            f"{declared_items[item][0]} — src/pyproject.toml declares it and "
             f"no declaration table names it"
         )
 

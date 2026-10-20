@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 REQUIRED_TREES = {
     "fixtures": "the language-neutral fixture corpus",
-    "prototype": "the Python build",
+    "src": "the build",
     "docs": "the documentation this repository owns",
 }
 

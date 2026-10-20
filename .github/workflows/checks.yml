@@ -35,7 +35,7 @@ jobs:
         uses: astral-sh/setup-uv@v10.3.0
         with:
           # The version the planning records document a local run under. The
-          # Python toolchain itself comes from prototype/uv.lock, which
+          # Python toolchain itself comes from src/uv.lock, which
           # `uv run --frozen` installs and resolves nothing beyond.
           version: "0.11.14"
 
@@ -55,4 +55,4 @@ jobs:
           # fixture's directory, so the project is named by absolute path.
           # Unsetting this fails the job rather than passing over the
           # corpus, which is what makes a green run a statement.
-          PROSIFORM_BUILD: uv run --project ${{ github.workspace }}/prototype --frozen prosiform
+          PROSIFORM_BUILD: uv run --project ${{ github.workspace }}/src --frozen prosiform
