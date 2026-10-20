@@ -70,5 +70,5 @@ The build's tests and static checks are named commands, run from the repository 
 | --- | --- |
 | `pyproject.toml` | The project definition: the supported Python version, the dependencies, the package data and the tool configuration. |
 | `uv.lock` | The exact resolved version and hash of every package. |
-| `src/prosiform/` | The package. |
+| `prosiform/` | The package. |
 | `tests/` | The build's tests. |

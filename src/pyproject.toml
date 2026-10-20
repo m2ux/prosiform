@@ -19,7 +19,7 @@ prosiform = "prosiform.cli:main"
 Homepage = "https://github.com/m2ux/prosiform"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/prosiform"]
+packages = ["prosiform"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "../docs/glossary.md" = "prosiform/docs/glossary.md"
