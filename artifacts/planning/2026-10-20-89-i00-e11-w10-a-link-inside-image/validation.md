@@ -1,6 +1,6 @@
 ## Overview
 
-What the build was measured to do on `i00/e11/w10-a-link-inside-image` at `49325eb`, and the checks the delivery was held to.
+What the build was measured to do on `i00/e11/w10-a-link-inside-image` at `49325eb`, and the checks the delivery was held to at `6513ff9`, where the epic base is merged in.
 
 ## The Defect
 
@@ -34,7 +34,7 @@ A picture ![of the [shared rules](#rules) it names](plan.png).
 Every rule the procedure requires.
 ```
 
-The marker is lifted, so the corpus run holds the fixture to its manifest from here on. The corpus reports 203 fixtures, 202 passing and 1 awaited, against 201 passing and 2 awaited on the base; the one remaining marker is `grouping/a-rule-matching-no-document-in-the-closure`, which awaits `I00:E11:W14`.
+The marker is lifted, so the corpus run holds the fixture to its manifest from here on. On the branch alone the corpus reports 203 fixtures, 202 passing and 1 awaited, against 201 passing and 2 awaited on the base it was cut from. With the epic base merged in, W14 has lifted the grouping fixture's marker too, so the corpus reports 207 fixtures, 207 passing and none awaited, and the corpus README states that no fixture carries the marker.
 
 ## The Walk
 
@@ -54,7 +54,7 @@ The unit tests state what one run of inline events yields and what each reader t
 
 ## The Gate
 
-Measured in the delivery worktree at `49325eb`.
+Measured in the delivery worktree at `6513ff9`.
 
 | Target | Result |
 | --- | --- |
@@ -62,9 +62,9 @@ Measured in the delivery worktree at `49325eb`.
 | `make lint` | All checks passed |
 | `make format-check` | 45 files already formatted |
 | `make typecheck` | Success: no issues found in 44 source files |
-| `make test` | 613 passed |
-| `make harness` | 379 passed |
-| `make corpus` | 203 fixture(s), 202 pass, 0 fail, 1 awaited, 0 unexpected pass |
+| `make test` | 616 passed |
+| `make harness` | 400 passed |
+| `make corpus` | 207 fixture(s), 207 pass, 0 fail, 0 awaited, 0 unexpected pass |
 | `make smoke` | Installed, bundled and glossary shipped |
 | `make layout` | 3 tree(s) present |
 | `make tables` | 14 command(s) and 7 declaration(s) |
