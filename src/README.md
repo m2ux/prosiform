@@ -64,6 +64,8 @@ The build's tests and static checks are named commands, run from the repository 
 
 `tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, the status a request this build cannot carry out returns, and the publication the corpus observes only through standard output — a named output file written through one rename, left untouched by a failing run, and written by no validation-only run.
 
+`tests/test_candidate.py` holds the candidate-validation pass to failing. A validation pass nobody can break reports a guarantee nobody has, so each invariant is given a candidate or a provenance record that disagrees with the other and the invariant it names is asserted: a missing selected region, a region no range accounts for, a destination reaching another heading, a definition that survived emission, literal bracketed text read as a link, a rewritten link showing other text, reformatted bytes, a repaired code example, a heading at another level, and a range recorded twice. The corpus cannot reach any of them: no source document makes a working build disagree with its own record.
+
 ## Layout
 
 | Path | Holds |

@@ -80,6 +80,15 @@ from markdown_it.token import Token
 
 from prosiform.closure import Reference, inside
 from prosiform.profile import SUFFIXES
+from prosiform.provenance import (
+    FILENAME_WRAPPER,
+    Carried,
+    Emitted,
+    Generated,
+    Origin,
+    Range,
+    Record,
+)
 from prosiform.rewrite import Definition, destinations, rewritten, unmarked
 from prosiform.source import (
     LINE_FEED,
@@ -136,10 +145,10 @@ class Overflow(Exception):
 
 @dataclass(frozen=True)
 class Group:
-    """One file group: the Markdown it emits and the headings it emits, in order.
+    """One file group: the Markdown it emits, and the record of where it came from.
 
-    Each emitted heading is paired with the source fragment it answers
-    to, which is what a reference naming it resolved to, and the first
+    The headings the group emits and the source fragment each answers to
+    are read from that record, so the group states them once. The first
     is the file heading, which answers to the whole document and so to
     no fragment of it. A file heading that absorbed a source heading
     answers to that heading's fragment as well, which is held apart
@@ -147,10 +156,27 @@ class Group:
     """
 
     text: str
-    headings: tuple[str, ...]
     entries: tuple[int, ...]
-    sources: tuple[str | None, ...]
-    absorbed: str | None = None
+    record: Record
+
+    @property
+    def headings(self) -> tuple[str, ...]:
+        """The visible text of each heading the group emits, in bundle order."""
+        return tuple(one.text for one in self.record.headings)
+
+    @property
+    def sources(self) -> tuple[str | None, ...]:
+        """The source fragment each emitted heading answers to, in bundle order."""
+        return tuple(
+            one.origin.fragment if isinstance(one, Carried) else None
+            for one in self.record.headings
+        )
+
+    @property
+    def absorbed(self) -> str | None:
+        """The source fragment the file heading absorbed, where it absorbed one."""
+        first = self.record.headings[0]
+        return first.absorbed if isinstance(first, Generated) else None
 
 
 def heading_text(path: str) -> str:
@@ -478,11 +504,17 @@ def group(
         absorbing = None
     by = 0 if absorbing is not None else SHIFT
     emitted = [f"{ATX} {escaped(title)}"]
-    shown = [title]
-    answering: list[str | None] = [None]
-    entries = [0] if selected is None else []
     text = shown_text(tokens)
     named = source_fragments(tokens)
+    wrapper = Generated(
+        title,
+        1,
+        FILENAME_WRAPPER,
+        None if absorbing is None else named[id(absorbing)],
+    )
+    emitting_headings: list[Emitted] = [wrapper]
+    ranges: list[Range] = []
+    entries = [0] if selected is None else []
     chosen = [token for token in regions(tokens) if id(token) in emitting]
     written = (
         list(physical)
@@ -500,16 +532,33 @@ def group(
             if depth > MAX_LEVEL:
                 raise Overflow(text[id(opening)], depth)
         if token.type == HEADING_OPEN and id(token) in naming:
-            entries.append(len(shown))
-        shown.extend(emitted_text(one, text[id(one)], by) for one in carried)
-        answering.extend(named[id(one)] for one in carried)
+            entries.append(len(emitting_headings))
+        emitting_headings.extend(
+            Carried(
+                emitted_text(one, text[id(one)], by),
+                level(one) + by,
+                Origin(
+                    path,
+                    None if one.map is None else one.map[0] + 1,
+                    level(one),
+                    named[id(one)],
+                ),
+            )
+            for one in carried
+        )
+        start, end = token.map or (0, 0)
+        ranges.append(
+            Range(
+                path,
+                (start, end),
+                tuple(at for at in range(start, end) if at in removed),
+            )
+        )
         emitted.append(region(written, tokens, token, by, removed))
     return Group(
         SEPARATOR.join(emitted),
-        tuple(shown),
         tuple(entries),
-        tuple(answering),
-        None if absorbing is None else named[id(absorbing)],
+        Record(path, by, tuple(emitting_headings), tuple(ranges)),
     )
 
 

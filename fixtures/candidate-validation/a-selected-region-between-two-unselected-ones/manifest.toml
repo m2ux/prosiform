@@ -1,0 +1,16 @@
+description = "A section selected from the middle of a document carries that section and no other region, so the bundle holds what the closure selected and nothing beside it."
+
+clauses = [
+  "Source and candidate validation modes — Candidate mode",
+  "Post-compilation invariants — No accidental omissions",
+  "Post-compilation invariants — No accidental expansion",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#middle"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
