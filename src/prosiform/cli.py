@@ -50,11 +50,14 @@ adds anything, so a reference graph with a cycle reaches a fixed point
 carrying each reachable region once.
 
 A mark means bundle this, and the only thing the run bundles is a local
-Markdown document. A marked reference carrying a scheme or an authority,
-and one naming a file outside the profile's suffixes, therefore fail: a
-resource is emitted as the author wrote it and nothing rewrites it, so
-marking one asks for a bundle carrying authoring syntax the mark
-promises never reaches a reader.
+Markdown document. A marked image, a marked reference carrying a scheme
+or an authority, and a marked reference naming a file outside the
+profile's suffixes therefore fail: a resource is emitted as the author
+wrote it and nothing rewrites it, so marking one asks for a bundle
+carrying authoring syntax the mark promises never reaches a reader. An
+image names a resource whatever file it points at, so the mark its
+alternative content opens with is refused on the use rather than on the
+destination.
 
 A marked reference is classified by the identity it resolves to rather
 than by the text it was written as. Each link belongs to the innermost
@@ -196,12 +199,12 @@ from prosiform.source import (
     decode,
     fragments,
     lines,
-    links,
     nesting,
     occurrences,
     owner,
     regions,
     section,
+    uses,
 )
 
 NAME = "prosiform"
@@ -772,6 +775,27 @@ def self_referent(
     return named is not None and named[0] is holder
 
 
+def marked_resource(subject: str, reference: str, at: str) -> Failure:
+    """One marked reference naming a resource, as the refusal the contract declares.
+
+    A mark asks for a bundled document and the bundle carries a
+    resource as the text its author wrote, so the request cannot be
+    met: emitting the reference as authored would publish the mark,
+    which nothing rewrites away. The subject names which resource the
+    reference is, because the remedy reads differently for a picture
+    and for a file the profile does not open.
+    """
+    return input_failure(
+        f"the marked {subject} {reference!r} names a resource rather than a "
+        f"local Markdown document, and a resource is carried as its author "
+        f"wrote it rather than bundled",
+        code=MARKED_RESOURCE,
+        remedy="cite it without the mark",
+        reference=reference,
+        source=at,
+    )
+
+
 def required(
     path: str,
     source: Source,
@@ -780,16 +804,21 @@ def required(
 ) -> Iterator[Reference]:
     """Every dependency the selected content of one source marks.
 
-    A link the author marked is a reference the bundle must carry, and
-    every other link is text: a mention is not resolved, the document
-    it names is not opened, and nothing about its shape is examined.
+    A reference use the author marked is a reference the bundle must
+    carry, and every other use is text: a mention is not resolved, the
+    document it names is not opened, and nothing about its shape is
+    examined.
 
     What a mark asks for is a bundled document, so a marked reference
     that names no local Markdown document names something the bundle
-    will not carry. One carrying a scheme or an authority and one
-    naming a file outside the profile's suffixes are both resources,
-    emitted as authored and rewritten by nothing, and marking one is
-    refused at the run rather than published with its mark intact.
+    will not carry. An image names a resource whatever it points at,
+    and so do a reference carrying a scheme or an authority and one
+    naming a file outside the profile's suffixes; each is emitted as
+    authored and rewritten by nothing, and marking one is refused at
+    the run rather than published with its mark intact. An image is
+    refused on the use it is, before anything asks what its
+    destination resolves to, because no destination makes a picture a
+    document.
 
     A marked reference naming the node that owns it is a direct
     self-reference and is refused. One naming an including ancestor, or
@@ -798,47 +827,41 @@ def required(
     any identity it has seen.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
-    for link in links(tokens, selected):
-        if not marked(link.opening):
+    for use in uses(tokens, selected):
+        if not marked(use.opening):
             continue
-        at = location(path, source.line(link.line))
+        at = location(path, source.line(use.line))
+        if use.resource:
+            raise marked_resource("image", use.destination, at)
         try:
-            found = inside(path, link.destination)
+            found = inside(path, use.destination)
         except OutsideRoot as outside:
             raise input_failure(
-                f"the reference {link.destination!r} {outside}",
+                f"the reference {use.destination!r} {outside}",
                 code=SOURCE_OUTSIDE_ROOT,
                 remedy="name a document the source root carries, or cite it "
                 "without the mark",
-                reference=link.destination,
+                reference=use.destination,
                 source=at,
             ) from outside
         except Malformed as malformed:
             raise input_failure(
-                f"the reference {link.destination!r} {malformed}",
+                f"the reference {use.destination!r} {malformed}",
                 code=TARGET_NOT_FOUND,
                 remedy="write the dependency as a reference the profile resolves",
-                reference=link.destination,
+                reference=use.destination,
                 source=at,
             ) from malformed
         if found.external or not is_markdown(found.path):
-            raise input_failure(
-                f"the marked reference {link.destination!r} names a resource "
-                f"rather than a local Markdown document, and a resource is "
-                f"carried as its author wrote it rather than bundled",
-                code=MARKED_RESOURCE,
-                remedy="cite it without the mark",
-                reference=link.destination,
-                source=at,
-            )
-        if self_referent(tokens, path, link.line, found):
+            raise marked_resource("reference", use.destination, at)
+        if self_referent(tokens, path, use.line, found):
             carrier = "section" if found.fragment is not None else "document"
             raise input_failure(
-                f"the marked reference {link.destination!r} names the {carrier} "
+                f"the marked reference {use.destination!r} names the {carrier} "
                 f"that carries it, which is a direct self-reference",
                 code=SELF_REFERENCE,
                 remedy="cite it without the mark, or name another document or section",
-                reference=link.destination,
+                reference=use.destination,
                 source=at,
             )
         yield replace(found, origin=at)

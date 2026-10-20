@@ -26,23 +26,23 @@ from prosiform.source import (
     MARK,
     Ambiguous,
     Heading,
-    Link,
     Nested,
     Source,
     Unterminated,
+    Use,
     bare,
     content,
     decode,
     fragments,
     index,
     lines,
-    links,
     nesting,
     occurrences,
     owner,
     regions,
     section,
     slug,
+    uses,
     visible,
 )
 
@@ -426,10 +426,10 @@ def test_an_ambiguity_is_reported_before_a_nested_target() -> None:
         section(parse(text), "run")
 
 
-def selected(text: str) -> list[Link]:
-    """Every link the whole of one document carries."""
+def selected(text: str) -> list[Use]:
+    """Every reference use the whole of one document carries."""
     tokens = parse(text)
-    return list(links(tokens, list(regions(tokens))))
+    return list(uses(tokens, list(regions(tokens))))
 
 
 def test_a_link_is_read_as_its_destination_and_its_opening_text() -> None:
@@ -447,8 +447,29 @@ def test_an_apparent_link_inside_a_code_block_is_no_link() -> None:
     assert selected("~~~\n[¬ the rules](rules.md)\n~~~\n") == []
 
 
-def test_an_image_is_no_link() -> None:
-    assert selected("![a diagram](diagram.png)\n") == []
+def test_an_image_is_a_use_naming_a_resource() -> None:
+    found = selected("![a diagram](diagram.png)\n")
+    assert [(one.destination, one.opening, one.resource) for one in found] == [
+        ("diagram.png", "a diagram", True)
+    ]
+
+
+def test_a_link_is_no_resource_use() -> None:
+    assert selected("[¬ the rules](rules.md)\n")[0].resource is False
+
+
+def test_an_image_opens_with_its_alternative_content_s_first_text() -> None:
+    found = selected("![¬ the architecture](plan.png)\n")
+    assert found[0].opening == "¬ the architecture"
+
+
+def test_an_image_opening_on_a_link_opens_with_nothing() -> None:
+    found = selected("![[¬ the rules](rules.md) shown](plan.png)\n")
+    assert [(one.destination, one.opening) for one in found] == [("plan.png", "")]
+
+
+def test_an_apparent_image_inside_a_code_span_is_no_use() -> None:
+    assert selected("A `![a diagram](diagram.png)` example.\n") == []
 
 
 def test_a_link_a_container_carries_is_one_of_its_region_s_links() -> None:
@@ -469,7 +490,7 @@ def test_a_link_outside_the_given_regions_is_not_reported() -> None:
     tokens = parse(text)
     chosen = section(tokens, "two")
     assert chosen is not None
-    assert [one.destination for one in links(tokens, chosen)] == ["b.md"]
+    assert [one.destination for one in uses(tokens, chosen)] == ["b.md"]
 
 
 def test_a_position_above_the_first_section_root_belongs_to_the_document() -> None:
