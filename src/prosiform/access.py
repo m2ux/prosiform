@@ -96,11 +96,13 @@ def descend(parent: int, name: str, flags: int) -> int:
         raise refusal(parent, name, raised) from raised
 
 
-def read_source(root: Path, path: str) -> bytes:
-    """One source's bytes, read by descending its path from the allowed root.
+def opened(root: Path, path: str) -> int:
+    """One source's open descriptor, reached by descending from the allowed root.
 
     The path is root-relative and spelled with forward slashes, which is
-    what a normalized reference carries.
+    what a normalized reference carries. The caller owns the descriptor
+    this returns and closes it; a walk that refuses a segment closes
+    everything it opened and raises instead.
     """
     walked = path.split(SEPARATOR)
     if any(segment in RESERVED for segment in walked):
@@ -108,15 +110,35 @@ def read_source(root: Path, path: str) -> bytes:
     held = os.open(root, ROOT)
     try:
         for name in walked[:-1]:
-            opened = descend(held, name, DIRECTORY)
+            below = descend(held, name, DIRECTORY)
             os.close(held)
-            held = opened
-        opened = descend(held, walked[-1], FILE)
+            held = below
+        file = descend(held, walked[-1], FILE)
+    except BaseException:
         os.close(held)
-        held = opened
-        if not stat.S_ISREG(os.fstat(held).st_mode):
-            raise Absent(path)
-        with os.fdopen(held, "rb", closefd=False) as handle:
-            return handle.read()
-    finally:
-        os.close(held)
+        raise
+    os.close(held)
+    if not stat.S_ISREG(os.fstat(file).st_mode):
+        os.close(file)
+        raise Absent(path)
+    return file
+
+
+def read_source(root: Path, path: str) -> bytes:
+    """One source's bytes, read by descending its path from the allowed root."""
+    with os.fdopen(opened(root, path), "rb") as handle:
+        return handle.read()
+
+
+def present(root: Path, path: str) -> bool:
+    """Whether one root-relative path names a source the allowed root yields.
+
+    The question is the one the read answers, asked without the bytes,
+    so a path the root declines on its own terms names no document here
+    however else the filesystem could reach one.
+    """
+    try:
+        os.close(opened(root, path))
+    except Unreadable:
+        return False
+    return True
