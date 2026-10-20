@@ -41,10 +41,10 @@ An open task issue is In Review when an open pull request ready for review links
 epic or initiative is In Review when every acceptance criterion is ticked. An initiative is In
 Progress when any epic is In Review or In Progress.
 
-The board's Status field offers Backlog, Ready, In Progress and Done. In Review is optional: on a
-board whose Status lacks it, an issue In Review is set In Progress.
+The board's Status field offers Backlog, Ready, In Progress and Done, and In Review optionally;
+statuses.py holds the field, the option body files and the fallback for an option the board lacks.
 
-A dependency within an epic is delivered when its task row is, or its issue is closed as completed. A dependency on another epic's task also requires that epic closed as completed. An epic starts only after every prerequisite epic named by its tasks or its initiative row is completed. A task row is
+A dependency within an epic is delivered when its task row is, or its issue is closed as completed. A dependency on another epic's task also requires that epic closed as completed, which gates the row naming it and leaves its siblings free. An epic starts only after every prerequisite epic its initiative row names is completed. A task row is
 delivered when a linked pull request has merged, or its id links a commit. A row that links a task
 issue and no pull request is delivered when that issue is closed as completed. An open pull request
 does not deliver the task. A bare #750 names an issue in the repository of the issue whose row cites it. A dependency on an issue not
@@ -55,8 +55,8 @@ owner/repo#number.
 An issue from Ready on is assigned to the --assignee user, and one in Backlog has no assignee.
 
 Printed: the gh call for each issue to add, item to remove, Status to set and assignee to add or
-remove. A Status write sends the body file written under --out. Run the calls, fetch the issues and
-items again and re-run: the board is current when nothing is left to do.
+remove, which statuses.py renders within the DELIVERY jurisdiction. Run the calls, fetch the issues
+and items again and re-run: the board is current when nothing is left to do.
 """
 import argparse
 import json
@@ -65,6 +65,8 @@ import sys
 from pathlib import Path
 
 from format import AC, LINK, cell, id_cell, row_id, split_sections
+from statuses import (DELIVERY, STATUSES, Changes, Jurisdiction, Key, StatusField, board_items,
+                      key_of, label)
 from sync import PR_REF, TICKED, Unreadable, attach_links, links_issue, pull_requests, table
 
 PREFIX = re.compile(r'^\[I(\d\d)(?::E(\d\d))?(?::W(\d\d))?\]')
@@ -72,33 +74,7 @@ PULL_REF = re.compile(r'github\.com/([^/]+/[^/]+)/pull/\d+')
 ISSUE_REF = re.compile(r'github\.com/([^/]+/[^/]+)/issues/(\d+)$')
 RANGE = re.compile(r'^W(\d\d)[–-]W(\d\d)$')
 TASK_REF = re.compile(r'(?:^|:)(W\d\d)$')
-STATUSES = ('Backlog', 'Ready', 'In Progress', 'Done')
-OPTIONAL = {'In Review': 'In Progress'}
-QUEUE, STARTED = 'queue', 'started'
-
-
-def pages(path: str) -> list:
-    """A paginated REST response: JSON arrays written one after another."""
-    text, decoder, items, i = Path(path).read_text(), json.JSONDecoder(), [], 0
-    while True:
-        while i < len(text) and text[i].isspace():
-            i += 1
-        if i >= len(text):
-            return items
-        page, i = decoder.raw_decode(text, i)
-        items.extend(page)
-
-
-Key = tuple[str, int]
-
-
-def key_of(issue: dict) -> Key:
-    """An issue's identity across repositories: its owner/repo and number."""
-    return issue['repository_url'].split('/repos/', 1)[1], issue['number']
-
-
-def label(key: Key, home: str) -> str:
-    return f'#{key[1]}' if key[0] == home else f'{key[0]}#{key[1]}'
+UNPLACED, STARTED = 'unplaced', 'started'
 
 
 def load(paths: list[str]) -> dict[Key, dict]:
@@ -136,17 +112,6 @@ def issue_url(url: str) -> Key | None:
 def linked_issue(cell: str) -> Key | None:
     link = LINK.fullmatch(cell)
     return issue_url(link[2]) if link else None
-
-
-def option_name(name) -> str | None:
-    """A single-select option's name, which REST gives as a string or as {raw, html}."""
-    return name['raw'] if isinstance(name, dict) else name
-
-
-def status_of(item: dict) -> str | None:
-    """A board item's Status, None where it has none."""
-    value = next((f.get('value') for f in item.get('fields', []) if f.get('name') == 'Status'), None)
-    return option_name(value and value.get('name'))
 
 
 class Board:
@@ -197,31 +162,42 @@ class Board:
             return False
         return completed(self.issues[key])
 
-    def epic_dependencies_met(self, key: Key, epics: dict[str, Key], why: str) -> bool:
-        """Whether this epic's external prerequisites have reached their long-lived branches.
-
-        Task rows identify the outputs consumed. The initiative row can also name whole epics.
-        Closed as completed is the delivery evidence sync records after an epic's bases merge."""
-        header, tasks = self.table(key)
-        for task in tasks.values():
-            entries = []
-            for entry in cell(header, task, 'Depends on').split(','):
-                entry = entry.strip()
-                link = LINK.fullmatch(entry)
-                text = link[1] if link else entry
-                if text and not re.fullmatch(r'W\d\d', text) and not RANGE.fullmatch(text):
-                    entries.append(entry)
-            if not self.met(', '.join(entries), key, epics, why):
-                return False
+    def epic_prerequisites_met(self, key: Key, epics: dict[str, Key], why: str) -> bool:
+        """Whether the whole epics an initiative row names as this one's prerequisites have reached
+        their long-lived branches. Closed as completed is the delivery evidence sync records after
+        an epic's bases merge. A row naming one task of another epic gates that row alone."""
         for parent, issue in self.issues.items():
             if not re.match(r'^\[I\d\d\]', issue.get('title') or ''):
                 continue
-            header, body = rows(issue)
-            for item in body:
+            header, listed = self.table(parent)
+            for item in listed.values():
                 if linked_issue(id_cell(header, item)) == key:
                     if not self.met(cell(header, item, 'Depends on'), parent, epics, why):
                         return False
         return True
+
+    def referenced_epics(self, key: Key, epics: dict[str, Key]) -> set[Key]:
+        """The epics this one's rows name: those its task rows name outside it, and those its
+        initiative row names. epics maps the initiative's Eyy ids to their issues."""
+        header, tasks = self.table(key)
+        cells = [cell(header, task, 'Depends on') for task in tasks.values()]
+        for parent, issue in self.issues.items():
+            if not re.match(r'^\[I\d\d\]', issue.get('title') or ''):
+                continue
+            head, listed = self.table(parent)
+            cells += [cell(head, item, 'Depends on') for item in listed.values()
+                      if linked_issue(id_cell(head, item)) == key]
+        found = set()
+        for entries in cells:
+            for entry in (e.strip() for e in entries.split(',') if e.strip()):
+                link = LINK.fullmatch(entry)
+                text = link[1] if link else entry
+                if re.fullmatch(r'W\d\d', text) or RANGE.fullmatch(text):
+                    continue
+                prerequisite = epics.get(text.split(':')[0]) or (issue_url(link[2]) if link else None)
+                if prerequisite and prerequisite != key:
+                    found.add(prerequisite)
+        return found
 
     def met(self, cell: str, home: Key, epics: dict[str, Key], why: str) -> bool:
         """Whether every dependency in a Depends on cell is delivered. home is the issue whose table
@@ -255,19 +231,6 @@ class Board:
             if not ok:
                 return False
         return True
-
-
-def assignee_calls(key: Key, status: str, issue: dict, login: str) -> list[str]:
-    """The calls that give an issue at this Status its assignees: the user from Ready on, and nobody
-    in Backlog."""
-    repo, number = key
-    held = [a['login'] for a in issue.get('assignees') or []]
-    path = f'repos/{repo}/issues/{number}/assignees'
-    if status == 'Backlog':
-        return [f"gh api --method DELETE {path} -f 'assignees[]={who}'" for who in held]
-    if login not in held:
-        return [f"gh api --method POST {path} -f 'assignees[]={login}'"]
-    return []
 
 
 def main() -> int:
@@ -350,7 +313,7 @@ def main() -> int:
             elif found := pr_status(epic_key, task_issue):
                 status[task_issue] = found
             elif (not open_questions(t)
-                  and board.epic_dependencies_met(number, epic_ids, f'E{epic_key}:{tid}')
+                  and board.epic_prerequisites_met(number, epic_ids, f'E{epic_key}:{tid}')
                   and board.met(cell(task_header, tr, 'Depends on'), number, epic_ids, f'E{epic_key}:{tid}')):
                 status[task_issue] = 'Ready'
             else:
@@ -365,7 +328,7 @@ def main() -> int:
         elif delivered_any:
             status[number] = STARTED
         else:
-            status[number] = QUEUE
+            status[number] = UNPLACED
 
     epic_status = [status.get(n) for n in epic_ids.values()]
     if initiative['state'] == 'closed':
@@ -377,38 +340,22 @@ def main() -> int:
     elif any(s in ('Done', STARTED) for s in epic_status):
         status[root] = STARTED
     else:
-        status[root] = QUEUE
+        status[root] = UNPLACED
 
-    field = next((f for f in pages(args.fields) if f.get('name') == 'Status'), None)
-    if not field:
-        sys.exit('the board has no Status field')
-    options = {option_name(o['name']): o['id'] for o in field.get('options', [])}
-    missing = [s for s in STATUSES if s not in options]
-    if missing:
-        sys.exit(f"the board's Status field lacks {', '.join(missing)}")
-    for wanted, fallback in OPTIONAL.items():
-        if wanted not in options:
-            status = {k: fallback if s == wanted else s for k, s in status.items()}
-    out = Path(args.out).resolve()
-    out.mkdir(parents=True, exist_ok=True)
-    for name, option in options.items():
-        body = {'fields': [{'id': field['id'], 'value': option}]}
-        (out / f"status-{name.lower().replace(' ', '-')}.json").write_text(json.dumps(body))
+    field = StatusField(args.fields, args.out, STATUSES)
+    status = {k: field.settle(s) for k, s in status.items()}
 
     on_board = {}
-    for item in pages(args.items):
-        content = item.get('content') or {}
-        if item.get('content_type') == 'Issue' and content.get('repository_url'):
-            key = key_of(content)
-            on_board[key] = (item['id'], status_of(item))
-            if key not in status and content['state'] == 'closed' and not completed(content):
-                issues.setdefault(key, content)
-                cited = re.compile(rf"{re.escape(content['html_url'])}\b")
-                if any(cited.search(i.get('body') or '') for i in (initiative, *epics.values(), *tasks.values())):
-                    status[key] = None
+    for key, item_id, held, content in board_items(args.items):
+        on_board[key] = (item_id, held)
+        if key not in status and content['state'] == 'closed' and not completed(content):
+            issues.setdefault(key, content)
+            cited = re.compile(rf"{re.escape(content['html_url'])}\b")
+            if any(cited.search(i.get('body') or '') for i in (initiative, *epics.values(), *tasks.values())):
+                status[key] = None
 
     for key, wanted in list(status.items()):
-        if wanted not in (QUEUE, STARTED):
+        if wanted not in (UNPLACED, STARTED):
             continue
         held_status = on_board[key][1] if key in on_board else None
         if held_status in ('Ready', 'Backlog'):
@@ -421,36 +368,16 @@ def main() -> int:
         if status.get(task_key) == 'Ready' and status.get(epic_key) not in ('Ready', 'In Progress'):
             status[task_key] = 'Backlog'
 
-    print(f"{args.board}: Status field {field['id']}")
-    current, todo = 0, 0
+    changes = Changes(DELIVERY, args.board, field, args.assignee, ' (the board is current)')
     for key, wanted in sorted(status.items()):
-        title = f"{label(key, home)} {issues[key]['title']}"
-        held = on_board.get(key)
-        calls = [] if wanted is None else assignee_calls(key, wanted, issues[key], args.assignee)
-        if wanted is None and held:
-            print(f'  remove {title} (closed, not completed): '
-                  f'gh api --method DELETE {args.board}/items/{held[0]}')
-        elif wanted and not held:
-            print(f'  add {title} ({wanted}): '
-                  f"gh api --method POST {args.board}/items -f type=Issue -F id={issues[key]['id']}")
-        elif wanted and held[1] != wanted:
-            body = out / f"status-{wanted.lower().replace(' ', '-')}.json"
-            print(f"  set {title}: {held[1] or 'no Status'} → {wanted}: "
-                  f'gh api --method PATCH {args.board}/items/{held[0]} --input {body}')
-        elif not calls:
-            current += 1
-            continue
-        for call in calls:
-            print(f'  assign {title} ({wanted}): {call}')
-        todo += 1
-    for note in dict.fromkeys(unresolved):
-        print(f'  unresolved: {note}')
-    print(f'  current: {current}, to do: {todo}' + ('' if todo else ' (the board is current)'))
-    return 0
+        item_id, held = on_board.get(key, (None, None))
+        changes.place(key, f"{label(key, home)} {issues[key]['title']}", issues[key],
+                      held, wanted, item_id, home)
+    return changes.report(unresolved=unresolved)
 
 
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except Unreadable as unreadable:
-        sys.exit(str(unreadable))
+    except (Unreadable, Jurisdiction) as refused:
+        sys.exit(str(refused))

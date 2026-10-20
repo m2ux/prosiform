@@ -11,9 +11,11 @@ requests as sync.py reads them. An issue a row depends on that is not on the boa
 
 A task row's id says where its work stands: a link to a pull request or a commit is work in flight or
 delivered, a link to a planning folder is work a session holds, and anything else is free. A row is
-available when its epic is Ready or In Progress and its prerequisite epics are completed, its Done cell carries no tick, its id is free, and
-every entry in its Depends on cell is delivered. Tasks that name each other in Joins are one unit, and
-a unit is one session's work.
+available when its epic is Ready or In Progress and the prerequisite epics its initiative row names
+are completed, its Done cell carries no tick, its id is free, and every entry in its own Depends on
+cell is delivered. A row waits for what it names and for nothing a sibling row names, so the rows of
+one epic start in the order that epic's own graph sets, whatever its siblings wait on. Tasks that
+name each other in Joins are one unit, and a unit is one session's work.
 
 Printed: a unit line for each available unit, with the record folder, branch and worktree its ids and
 Description give it; a hold line for each reserved row; a blocked line for a free row whose
@@ -34,7 +36,8 @@ from collections import Counter
 from datetime import date as day
 from pathlib import Path
 
-from board import Board, key_of, label, pages, rows, status_of
+from board import Board, rows
+from statuses import key_of, label, pages, status_of
 from format import LINK, TICK, cell, done_mark, id_cell, join_sections, row, row_id, split_sections
 from sync import Unreadable, long_lived_names, plan_rows, pull_requests, table
 
@@ -139,7 +142,7 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
     if not header:
         raise Unreadable(f'{label(key, board.home)} has no Work Breakdown table')
     state, detail = {}, {}
-    prerequisites = board.epic_dependencies_met(key, epics, label(key, board.home))
+    prerequisites = board.epic_prerequisites_met(key, epics, label(key, board.home))
     for r in body:
         ident = id_cell(header, r)
         task = row_id(ident)

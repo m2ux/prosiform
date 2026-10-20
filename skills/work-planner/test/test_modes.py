@@ -1,6 +1,8 @@
 """Mode summaries in each skill's SKILL.md.
 
-A mode bullet names one capability, as the skill guidelines' Modes section states.
+A mode bullet names a request that selects the mode, as the skill guidelines'
+Modes section states. Selectivity is a judgement, so the checks here cover the
+clauses a reader can measure: the phrase's shape and the length of the list.
 """
 import re
 import unittest
@@ -31,7 +33,7 @@ def mode_bullets(text: str) -> list[tuple[str, str]]:
 
 
 def problem(bullet: str) -> str | None:
-    """Why a mode bullet departs from a capability phrase, or None when it holds."""
+    """Why a mode bullet departs from a selecting phrase, or None when it holds."""
     if bullet.endswith('.'):
         return 'a trailing full stop'
     if ', so ' in bullet:
@@ -69,18 +71,28 @@ class ModeSummaries(unittest.TestCase):
             'Sync of the board\'s open initiatives, so Status matches delivery',
             'A parallel work map when nothing is In Progress and no initiative has a priority',
             'The highest priority number In Progress together, and the next number Ready together',
-            'Partly completed epics In Progress on a running initiative, and its next unstarted epic Ready',
+            'Partly completed epics In Progress on a running initiative, and its highest set Ready',
         )
         for bullet in ruled:
             self.assertIsNotNone(problem(bullet), bullet)
 
     def test_a_noun_phrase_and_a_gerund_hold(self):
         held = (
-            'Dependency checks',
+            'Discovery of orphan issues',
             'Closure of complete task issues, epics and initiatives',
-            'Placement of the highest set as In Progress and the next set as Ready',
-            'Conformance with the guidelines and the skill\'s own guidelines',
-            'Scoping the problem: the friction, the evidence, and the boundary',
+            'Placement of initiatives and epics as In Progress or as Ready',
+            'Renumbering of epics and tasks',
+            'Authoring definitions and specified changes',
         )
         for bullet in held:
             self.assertIsNone(problem(bullet), bullet)
+
+    def test_a_list_holds_five_items_after_the_direction(self):
+        # mode_bullets counts the direction and scope item too, so the cap of
+        # five further items is a list of six.
+        for path in sorted(SKILLS.glob('*/SKILL.md')):
+            counted: dict[str, int] = {}
+            for mode, _ in mode_bullets(path.read_text()):
+                counted[mode] = counted.get(mode, 0) + 1
+            for mode, count in counted.items():
+                self.assertLessEqual(count, 6, f'{path.parent.name} {mode}')

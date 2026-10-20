@@ -24,22 +24,20 @@ Workflow Canon is a work-design assistant for shaping workflow-server work aroun
 Read the selected mode's file in full, then follow its links as each step needs them:
 
 - **[Author](references/author-mode.md)**
+  - Forward-looking, scoped to the definitions a change names
   - Authoring definitions and specified changes
   - Closing confirmed findings with their prescribed fixes
-  - Mapped draft walks and verification of written changes
 - **[Audit](references/audit-mode.md)**
-  - Canon questions and conformance of existing definitions
-  - Attribution and verification of findings
-  - Applicability matrices with independent verification
-  - Complete coverage reports
+  - Backward-looking, scoped to the existing definitions under audit
+  - Conformance of existing definitions with the design canon
+  - A single canon question answered against that canon
 - **[Review](references/review-mode.md)**
-  - Scope and revision pairings for integrations
-  - Tracing design and architecture through declarations and consumers
-  - Coverage matched to affected branches and languages
-  - Evidence for findings and readiness
+  - Backward-looking, scoped to one integration's branches
+  - Branches checked for what they amount to taken together
+  - A readiness assessment for an integration
 - **[Revise](references/revise-mode.md)**
+  - Forward-looking, scoped to this skill's own files
   - Changes to this skill's own files
-  - Conformance with shared and local skill guidelines
 
 ## Rules
 

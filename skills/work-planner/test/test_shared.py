@@ -11,7 +11,8 @@ from pathlib import Path
 from fixtures import SCRIPTS, issue, links as held_links, pr, run
 
 sys.path.insert(0, str(SCRIPTS))
-from board import Board, status_of  # noqa: E402
+from board import Board  # noqa: E402
+from statuses import status_of  # noqa: E402
 from format import cell, description, phrase  # noqa: E402
 from sync import Unreadable, attach_links, links_issue  # noqa: E402
 

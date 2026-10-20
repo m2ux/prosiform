@@ -9,7 +9,7 @@ import unittest
 from fixtures import SCRIPTS, issue, pr
 
 sys.path.insert(0, str(SCRIPTS))
-from format import Review  # noqa: E402
+from format import DEPENDENCY, Review  # noqa: E402
 
 
 def body(problem: str, proposal: str) -> str:
@@ -170,11 +170,17 @@ def proposal_body() -> str:
 
 class Proposal(unittest.TestCase):
     def test_a_proposal_needs_no_theme_and_no_work_breakdown(self):
-        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body(),
+        r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=proposal_body(),
                          labels=('type:proposal',)))
         r.run()
         self.assertEqual(r.decide, [])
         self.assertEqual(r.apply, [])
+
+    def test_a_proposal_without_its_prefix_is_a_finding(self):
+        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body(),
+                         labels=('type:proposal',)))
+        r.run()
+        self.assertIn('title has no [P00] prefix', r.decide)
 
     def test_an_unprefixed_issue_does_not_become_a_proposal(self):
         r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body()))
@@ -182,7 +188,7 @@ class Proposal(unittest.TestCase):
         self.assertNotIn('labels: add type:proposal', r.apply)
 
     def test_a_theme_label_is_removed(self):
-        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=proposal_body(),
+        r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=proposal_body(),
                          labels=('type:proposal', 'theme:canon')))
         r.run()
         self.assertIn('labels: remove theme:canon', r.apply)
@@ -195,9 +201,25 @@ class Proposal(unittest.TestCase):
             '## Work Breakdown\n\n| Epic | Description | Coverage | Depends on | Done |\n'
             '| --- | --- | --- | --- | --- |\n| E00 | Work | AC1 | | |\n\n'
             '## Acceptance Criteria\n\n- [ ] **AC1.** Holds.\n\n## Non-Goals')
-        r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=text, labels=('type:proposal',)))
+        r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=text, labels=('type:proposal',)))
         r.run()
         self.assertTrue(any('initiative template' in item for item in r.decide))
+
+
+class TaskRowDependencies(unittest.TestCase):
+    """A task row names rows; the initiative row is the one that names epics."""
+
+    def test_the_epic_kind_takes_only_row_references(self):
+        accepted = ('W03', 'W04–W09', 'E01:W02', 'I05:E00:W02', '#750')
+        for value in accepted:
+            with self.subTest(value=value):
+                self.assertTrue(DEPENDENCY['epic'].fullmatch(value))
+        self.assertIsNone(DEPENDENCY['epic'].fullmatch('E01'))
+
+    def test_the_initiative_kind_takes_epic_references(self):
+        for value in ('E01', 'I05:E00', '#750'):
+            with self.subTest(value=value):
+                self.assertTrue(DEPENDENCY['initiative'].fullmatch(value))
 
 
 class References(unittest.TestCase):
@@ -247,7 +269,8 @@ class References(unittest.TestCase):
         self.assertFalse(any('References:' in item for item in r.decide))
 
     def test_an_epic_written_from_the_template_has_no_references_finding(self):
-        template = (SCRIPTS.parent / 'templates' / 'epic.md').read_text()
+        from format import template_body
+        template = template_body('epic')
         filled = template
         for key, value in (('PLANNING_RECORD_URL',
                             'https://github.com/o/r/blob/workspace/.engineering/artifacts/planning/record'),
@@ -314,13 +337,15 @@ class References(unittest.TestCase):
 WANTED = 'no criterion is the corpus audit'
 
 
-def corpus_review(criterion: str, base: str, corpus: str | None = 'workflows') -> Review:
+def corpus_review(criterion: str, base: str, corpus: str | None = 'workflows',
+                  title: str = '[I01:E00] First: Epic') -> Review:
     """An epic whose one pull request targets base, reviewed for the corpus audit criterion."""
     body = ('## Work Breakdown\n\n| Task | Description | Coverage | Depends on | Joins | Done |\n'
             '| --- | --- | --- | --- | --- | --- |\n| W01 | Work | AC1 | | | |\n\n'
             f'## Acceptance Criteria\n\n- [ ] **AC1.** {criterion}\n')
-    epic = issue(2, '[I01:E00] First: Epic', body=body, labels=('type:epic', 'theme:mechanical'))
-    r = Review(epic, prs=[pr(950, '[I01:E00] Work', base=base)], corpus=corpus)
+    epic = issue(2, title, body=body, labels=('type:epic', 'theme:mechanical'))
+    prefix = title.split(']')[0] + ']'
+    r = Review(epic, prs=[pr(950, f'{prefix} Work', base=base)], corpus=corpus)
     r.run()
     return r
 
@@ -328,6 +353,11 @@ def corpus_review(criterion: str, base: str, corpus: str | None = 'workflows') -
 class CorpusAudit(unittest.TestCase):
     def test_an_epic_reaching_the_corpus_states_the_audit(self):
         r = corpus_review('Holds.', 'i01/e00/workflows')
+        self.assertTrue(any(WANTED in item for item in r.decide))
+
+    def test_a_deferred_debt_epic_reaching_the_corpus_states_the_audit(self):
+        r = corpus_review('Holds.', 'i01/e09/workflows',
+                          title='[I01:E09] Deferred Debt: The Clear-Up This Initiative Owes')
         self.assertTrue(any(WANTED in item for item in r.decide))
 
     def test_an_epic_reaching_the_corpus_through_its_long_lived_branch_states_it(self):
