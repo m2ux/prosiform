@@ -782,6 +782,37 @@ def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
 
 
+def test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "references/alpha.md",
+        "# Conventions\n\n## Standards\n\n### Formatting\n\n#### Headings\n\n"
+        "##### Levels\n\n###### The Sixth\n\nThe note the sixth level carries.\n",
+    )
+    written(
+        root,
+        "references/beta.md",
+        "# Conventions\n\n## Standards\n\nWhat this document holds to.\n",
+    )
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--group",
+        "references:1",
+        "references/alpha.md#the-sixth",
+        "references/beta.md#standards",
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    reported = run.diagnostics()[0]
+    assert reported["code"] == HEADING_DEPTH_OVERFLOW
+    assert "'Levels' at level 7" in reported["message"]
+
+
 def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n\n## Stop\n\nStop it.\n")
     run = invoke("--root", str(root), "guide.md#run")
