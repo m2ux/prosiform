@@ -63,6 +63,18 @@ the document returns to that level or above. A heading a container
 carries is therefore neither a root nor a boundary — it sits inside one
 region, so the region it sits in is what the document holds there — and
 a fragment naming one names a section the model does not have.
+
+A link belongs to the innermost such section containing it, and to the
+document itself where no section does: the content above a document's
+first eligible heading is the document's own. Ownership is read from the
+document's structure and from nothing a run selected, so the section a
+link belongs to is the same whether that section was selected on its own
+or inside a larger region that consolidated it.
+
+The document also counts what a budget is declared over: the container
+blocks it nests at its deepest point, which is what a nesting budget
+bounds, and the link and image occurrences a run of regions carries,
+each counted once where the source wrote it.
 """
 
 import re
@@ -90,6 +102,10 @@ INLINE = "inline"
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
+IMAGE = "image"
+REFERENCE_USES = (LINK_OPEN, IMAGE)
+CONTAINER_OPEN = ("blockquote_open", "list_item_open")
+CONTAINER_CLOSE = ("blockquote_close", "list_item_close")
 HREF = "href"
 BREAKS = ("softbreak", "hardbreak")
 
@@ -390,6 +406,67 @@ def links(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Link]:
                 opening_text(children, at),
                 None if token.map is None else token.map[0] + 1,
             )
+
+
+def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
+    """How many link and image uses the given regions of one source carry.
+
+    A budget over references is declared over what an author wrote, so
+    the count is of occurrences in the source rather than of the
+    documents they reach: one document named five times is five
+    occurrences, and an image is one of them because opening a resource
+    costs what opening a document costs.
+    """
+    return sum(
+        1
+        for token in inlines(tokens, selected)
+        for child in token.children or []
+        if child.type in REFERENCE_USES
+    )
+
+
+def nesting(tokens: Sequence[Token]) -> int:
+    """The deepest run of container blocks one complete source nests.
+
+    A container block is a block quote or a list item, which is what
+    CommonMark calls one: a list is how its items are grouped rather
+    than a level of its own, so three nested bullets nest three deep.
+    The count is over the complete opened source, because a parser
+    indexes the whole document however narrow the requested section is.
+    """
+    depth = 0
+    deepest = 0
+    for token in tokens:
+        if token.type in CONTAINER_OPEN:
+            depth += 1
+            deepest = max(deepest, depth)
+        elif token.type in CONTAINER_CLOSE:
+            depth -= 1
+    return deepest
+
+
+def owner(tokens: Sequence[Token], at: int) -> Token | None:
+    """The eligible section one position belongs to, or nothing for the preamble.
+
+    The owner is the innermost eligible section containing the
+    position, which is the last section root the document opens at or
+    above it: a heading a container carries roots no section, so
+    content inside that container belongs to the section the container
+    sits in. A position above the document's first section root belongs
+    to the document itself, which is what nothing names here.
+
+    The position is read from the document's own structure, so a
+    selection does not enter the answer and consolidating a section
+    into a larger region leaves every owner it held unchanged.
+    """
+    found: Token | None = None
+    for token in regions(tokens):
+        start = 0 if token.map is None else token.map[0]
+        if start > at:
+            break
+        if token.type == HEADING_OPEN:
+            found = token
+    return found
 
 
 @dataclass(frozen=True)

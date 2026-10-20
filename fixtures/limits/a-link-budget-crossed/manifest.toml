@@ -1,0 +1,17 @@
+description = "A run examining more authored link and image occurrences in selected content than the link budget names fails, each occurrence counted once where the source wrote it."
+
+clauses = [
+  "Resource limits — --max-links",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-links", "2", "guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"

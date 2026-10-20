@@ -1,0 +1,20 @@
+description = "Marking a reference that carries a scheme fails the run, because such a reference names no local document and the bundle carries it as text whatever its suffix spells."
+
+clauses = [
+  "Link classification and resource handling — Everything else",
+  "Resources are text",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_MARKED_RESOURCE"
+reference = "https://example.com/spec.md"
+source = "guide.md:3"

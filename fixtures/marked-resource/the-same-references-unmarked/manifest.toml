@@ -1,0 +1,15 @@
+description = "The same image, web URL and non-Markdown reference, unmarked, are emitted as authored and the run succeeds, so a resource is refused for the mark it carries rather than for the shape it takes."
+
+clauses = [
+  "Link classification and resource handling — Everything else",
+  "Resources are text",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

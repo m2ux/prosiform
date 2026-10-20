@@ -1,0 +1,17 @@
+description = "A source nesting container blocks deeper than the nesting budget names fails as the explicit refusal the contract declares, rather than being reinterpreted as the shallower syntax a parser ceiling would leave."
+
+clauses = [
+  "Resource limits — --max-nesting",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-nesting", "3", "guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"

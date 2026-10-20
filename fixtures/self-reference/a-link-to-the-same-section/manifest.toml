@@ -1,0 +1,19 @@
+description = "A marked link from a section to that same canonical section fails as a direct self-reference, because the reference asks the bundle to carry the very section carrying it."
+
+clauses = [
+  "Self-reference and ancestor-reference behavior — Direct self-reference",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SELF_REFERENCE"
+reference = "guide.md#alpha"
+source = "guide.md:5"

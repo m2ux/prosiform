@@ -1,0 +1,17 @@
+description = "A target further from every entry reference than the expansion-depth budget names fails the run, the distance counted in link hops along the shortest path from the nearest entry reference."
+
+clauses = [
+  "Resource limits — --max-expansion-depth",
+]
+
+[invocation]
+root = "source"
+arguments = ["--max-expansion-depth", "1", "alpha.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"
