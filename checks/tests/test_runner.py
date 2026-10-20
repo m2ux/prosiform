@@ -67,6 +67,12 @@ NESTED_TARGET = {
     "code": "E_NESTED_SECTION_TARGET",
     "reference": "guide.md#nested",
 }
+ENTRY_DESTINATION = {
+    "severity": "warning",
+    "code": "W_ENTRY_DESTINATION",
+    "reference": "guide",
+    "resolved": "guide",
+}
 
 
 def write_fixture(
@@ -498,6 +504,21 @@ def test_a_declared_diagnostic_field_that_differs_is_reported(
     assert "expected '../outside.md'" in detail
     assert "produced 'outside.md'" in detail
     assert "diagnostic 1 carries no source" in detail
+
+
+def test_a_declared_resolved_identity_that_differs_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(
+        tmp_path / "fixture", exit_status=0, diagnostics=(ENTRY_DESTINATION,)
+    )
+    emitted = dict(ENTRY_DESTINATION)
+    emitted["resolved"] = "guide-1"
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 0))
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1 carries another resolved" in detail
+    assert "expected 'guide'" in detail
+    assert "produced 'guide-1'" in detail
 
 
 def test_a_standard_error_line_that_is_not_a_diagnostic_is_reported(

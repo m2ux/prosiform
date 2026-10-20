@@ -6,14 +6,22 @@
 #
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `src/uv.lock` records and resolves
-# nothing. The corpus checks read `jsonschema` from that same group, so they
-# run through it; the layout, table, link and vocabulary checks depend on the
-# standard library alone and run under `python3` directly.
+# nothing. The corpus and invocation checks reach the build under test
+# through the corpus runner, which reads `jsonschema` from that same group,
+# so they run through it; the smoke, layout, table, link and vocabulary
+# checks depend on the standard library alone and run under `python3`
+# directly.
+#
+# `make smoke` is the one check that does not run the build from this
+# checkout: it builds the wheel, installs it into a throwaway environment and
+# invokes the command by name from a directory of its own, which is how a
+# caller reaches an installed entry point.
 #
 # `make corpus` runs the corpus against a build named by configuration:
 # `PROSIFORM_BUILD` holds that build's command line, and the target fails
 # without one, so a fixture is never reported as holding against a build that
-# never ran.
+# never ran. `make invocation` reads the documented invocation against that
+# same build's own help output, and fails without one for the same reason.
 #
 # Every target below is named by a command table in one of the repository's
 # READMEs, which `make tables` holds true in both directions.
@@ -22,9 +30,9 @@ UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks
 
-.PHONY: check test harness corpus lint format-check typecheck lock-check layout tables links vocabulary
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation
 
-check: lock-check lint format-check typecheck test harness corpus layout tables links vocabulary
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation
 
 test:
 	cd src && uv run --frozen pytest
@@ -34,6 +42,9 @@ harness:
 
 corpus:
 	$(UV_RUN) python checks/corpus.py
+
+smoke:
+	python3 checks/smoke.py
 
 lint:
 	$(UV_RUN) ruff check --config $(TOOL_CONFIG) $(PYTHON_SOURCES)
@@ -58,3 +69,6 @@ links:
 
 vocabulary:
 	python3 checks/vocabulary.py
+
+invocation:
+	$(UV_RUN) python checks/invocation.py

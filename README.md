@@ -80,15 +80,17 @@ make check
 | `make test` | The Python build's suite passes. A run that collects no test fails. |
 | `make harness` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, and the runner decides a fixture from its manifest and files alone. |
 | `make corpus` | Every fixture the corpus holds, run against the build under test, produces the result its manifest declares. A fixture declaring work a later epic delivers is reported as awaiting it; one that meets its manifest while awaiting fails, as does a run with no build configured. |
+| `make smoke` | The build installs into an environment and its entry point bundles a reference from a source root, resolved by name from a directory unrelated to this repository. |
 | `make layout` | Each of the three trees holds a tracked file. |
 | `make tables` | The command and dependency tables in these READMEs name every target the [`Makefile`](Makefile) declares and every dependency [`src/pyproject.toml`](src/README.md) declares, and nothing besides. |
 | `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
+| `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing besides, each reproducing that build's own help output. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
-The tools the first seven call are pinned by [`src/uv.lock`](src/README.md); `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+The tools the first seven call are pinned by [`src/uv.lock`](src/README.md); `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
 
-`make corpus` runs a build named by configuration rather than one it chooses, so one corpus binds every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a run resolves it from the fixture's own directory:
+`make corpus` and `make invocation` run a build named by configuration rather than one they choose, so one corpus and one documented invocation bind every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a corpus run resolves it from the fixture's own directory:
 
 ```bash
 export PROSIFORM_BUILD="uv run --project $PWD/src --frozen prosiform"
@@ -111,11 +113,41 @@ cd src
 uv sync --frozen
 ```
 
-Installing the build puts the `prosiform` command on the path and ships the [glossary](docs/glossary.md) with the package. The status table below tracks the stage the build sits in.
+Installing the build puts the `prosiform` command on the path and ships the [glossary](docs/glossary.md) with the package, so an installed build carries the vocabulary its diagnostics use. The command is the entry point every caller depends on, and three properties are what make it one:
+
+- **Named on the path.** The installation puts the one documented name in the environment's executable directory, so a caller writes `prosiform` and resolves nothing for itself.
+- **Independent of the working directory.** A run's outcome follows from its options and the source root they name, and from nothing about where the process was started.
+- **Independent of this repository.** The installed build reads nothing out of the tree it was built from, and the source root a caller names is the caller's own.
+
+`make smoke` holds all three on every change: it builds the wheel, installs it into a throwaway environment, and bundles a reference from a source root outside this repository with the command resolved by name from a directory unrelated to it. `prosiform --version` reports the installed version and the `skill-markdown-v1` profile the build implements. The status table below tracks the stage the build sits in.
 
 ## 🚀 Invocation
 
-The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses below. The walking skeleton is building bundling under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content marks — a link whose text opens with `¬` — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. An unmarked link is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a marked reference the allowed source root cannot contain each return `1` naming the defect and the line of the file it sits on. A marked link still carries its mark and its source destination into the bundle, because destination identity and link rewriting are the stage still to come.
+The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses. The tables in this section reproduce that output word for word, and `make invocation` holds each row to the help the build under test prints, so the invocation a caller reads here and the one the command offers cannot drift apart.
+
+| Option | Effect |
+| --- | --- |
+| `REF` | an entry reference: a root-relative document, a document and a fragment, or a fragment alone with --from |
+| `--root DIR` | the allowed source root; required, and resolved from the working directory |
+| `--from DOC` | the root-relative referring document a fragment-only reference resolves against |
+| `-o, --output FILE` | publish the validated bundle to FILE, atomically; default or - is standard output |
+| `--group SLUG:DEPTH` | merge every document under a directory named SLUG at source heading level DEPTH, 1 through 6; repeatable, once per slug |
+| `--check` | discover, bundle and validate without emitting or publishing the bundle; accepted with --output |
+| `--diagnostics {text,json}` | the diagnostic format on standard error; default text |
+| `--max-files N` | the budget of distinct source documents opened; a positive decimal integer, default 256 |
+| `--max-file-bytes N` | the budget of raw bytes in one source; a positive decimal integer, default 1048576 |
+| `--max-input-bytes N` | the budget of raw source bytes, counted once per source; a positive decimal integer, default 16777216 |
+| `--max-output-bytes N` | the budget of bytes of the complete bundle; a positive decimal integer, default 262144 |
+| `--max-targets N` | the budget of distinct document and section targets discovered; a positive decimal integer, default 4096 |
+| `--max-links N` | the budget of authored link and image occurrences in selected content; a positive decimal integer, default 32768 |
+| `--max-nesting N` | the budget of levels of container nesting in one source; a positive decimal integer, default 64 |
+| `--max-expansion-depth N` | the budget of link hops from the nearest entry reference; a positive decimal integer, default 8 |
+| `--version` | report the tool version and the profile identifier |
+| `--help` | show this usage, the defaults, and the exit-status meanings |
+
+Each effect is that argument's own help text, so the default an option carries is stated where the option is. A budget is a positive decimal integer; zero is refused rather than read as unlimited.
+
+The walking skeleton is building bundling under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content marks — a link whose text opens with `¬` — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. An unmarked link is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a marked reference the allowed source root cannot contain each return `1` naming the defect and the line of the file it sits on. A marked link still carries its mark and its source destination into the bundle, because destination identity and link rewriting are the stage still to come.
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller read
@@ -140,15 +172,25 @@ Standard output carries exactly one thing per run: the bundle a compiling run pu
 This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
 ```
 
-A failed run publishes nothing. The caller halts and surfaces the diagnostic rather than reading the sources itself.
+### Exit statuses
+
+A run returns the status naming the category of its outcome, and a caller reads the result from that status rather than from what reached standard output.
 
 | Exit | Meaning |
 | --- | --- |
-| `0` | Compiled, validated, published |
-| `1` | Input, dependency, policy, safety or resource-limit failure |
-| `2` | Invalid usage or option combination |
-| `3` | Publication or delivery failure |
-| `4` | Unexpected internal error |
+| `0` | successful compilation, validation, or informational response |
+| `1` | input, dependency, policy, safety, or resource-limit failure |
+| `2` | invalid usage or option combination |
+| `3` | output publication or delivery failure, a broken pipe among them |
+| `4` | unexpected internal error |
+
+### A failed run stops the work
+
+A failed run publishes nothing. The caller halts and surfaces the diagnostic, and reading the sources itself is unsupported: there is no option, no status and no documented path by which a caller meeting a failure resolves the closure for itself. A fallback restores the behaviour bundling replaces, and restores it silently, so the failure teaches nothing and the next run fails the same way.
+
+### Supported environment
+
+The supported environment is POSIX: Linux and macOS. The confinement of a run to its allowed source root rests on rooted, no-follow source access, which descends a path one segment at a time through the `O_NOFOLLOW`, `O_DIRECTORY` and `O_CLOEXEC` open flags, so a source reached through a symbolic link below the root is refused by the open rather than by a string comparison ahead of it. A platform offering no such flags cannot enforce that policy, and the build refuses to start there rather than weakening the confinement to a check on the spelling of a path.
 
 ## 📏 Measured
 

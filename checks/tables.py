@@ -31,7 +31,7 @@ import re
 import sys
 import tomllib
 
-from documents import ROOT, readmes, tables
+from documents import ROOT, plain, readmes, tables
 
 MAKEFILE = ROOT / "Makefile"
 PYPROJECT = ROOT / "src" / "pyproject.toml"
@@ -40,12 +40,6 @@ PYTHON = "Python"
 RULE = re.compile(r"^([A-Za-z0-9_][A-Za-z0-9_.-]*)\s*:(?:[^=]|$)", re.MULTILINE)
 MAKE_COMMAND = re.compile(r"^make\s+([A-Za-z0-9_.-]+)$")
 REQUIREMENT = re.compile(r"^([A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?)\s*(.*)$")
-MARKDOWN_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
-
-
-def plain(cell: str) -> str:
-    """A cell reduced to its text: a link to its label, a code span to its code."""
-    return MARKDOWN_LINK.sub(r"\1", cell).replace("`", "").strip()
 
 
 def key(name: str) -> str:

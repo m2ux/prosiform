@@ -6,6 +6,8 @@ It establishes the behavioural contract, runs the [fixture corpus](../fixtures/R
 
 Installing it puts the `prosiform` command on the path, declared by `[project.scripts]` and entered at `prosiform.cli:main`. The command carries the option set the contract declares, writes its response or its bundle to standard output and its diagnostics to standard error, and returns the exit status its outcome names.
 
+`prosiform.delivery` is the wrapper a calling agent reaches the command through. It runs the entry point as a process, buffers the whole of standard output, reads the outcome from the process status rather than from the presence of Markdown, and holds the buffered bundle against the response limit the transport declares. A limit it cannot carry the bundle within is a delivery failure that withholds the document rather than cutting it, and the transport names that limit, since the build's own output budget is not universally safe for agent delivery.
+
 ## Environment
 
 `pyproject.toml` declares the supported Python version and the build's dependencies. `uv.lock` records the exact version and hash of every package those dependencies resolve to, so two checkouts install the same tree.
@@ -31,6 +33,8 @@ The wheel carries [`docs/glossary.md`](../docs/glossary.md) at `prosiform/docs/g
 ```bash
 uv build --wheel
 ```
+
+`make smoke` builds that wheel, installs it into a throwaway environment and invokes the command by name from a directory unrelated to this repository, so the packaging metadata is held to producing an installable build with a resolvable entry point on every change rather than at release time.
 
 ## Checks
 
@@ -63,6 +67,8 @@ The build's tests and static checks are named commands, run from the repository 
 `tests/test_closure.py` holds a reference to the path identity the resolution sequence gives it, step by step and in both directions: the components split before any escape is decoded, an escape validated as a percent and two hexadecimal digits, one decoding and no second, a separator or a control character a segment decodes to refused, `.` and `..` normalized against the directory the reference is written in, a path walking above the allowed source root refused, a scheme and an authority classified rather than resolved, a drive letter read as a path rather than as a scheme, and a fragment looked up as the exact text it decoded to.
 
 `tests/test_cli.py` holds the command to its grammar, its two streams and its exit statuses. It carries the cases the corpus cannot reach: a response whose text belongs to this build rather than to the contract, a write the stream refuses, the status a request this build cannot carry out returns, and the publication the corpus observes only through standard output — a named output file written through one rename, left untouched by a failing run, and written by no validation-only run.
+
+`tests/test_delivery.py` holds the wrapper to never returning a bundle the transport did not carry whole: a bundle within the limit delivered and one at it delivered too, a bundle over it withheld with no part of the document and no summary anywhere in the result, a limit of nothing refused, every failing status the contract names read as a failure whatever standard output carried, and three end-to-end runs of the installed entry point through the wrapper. A corpus fixture reaches none of them: the runner drives the command, and the process status, the buffer and the transport's limit are the layer above it.
 
 `tests/test_candidate.py` holds the candidate-validation pass to failing. A validation pass nobody can break reports a guarantee nobody has, so each invariant is given a candidate or a provenance record that disagrees with the other and the invariant it names is asserted: a missing selected region, a region no range accounts for, a destination reaching another heading, a definition that survived emission, literal bracketed text read as a link, a rewritten link showing other text, reformatted bytes, a repaired code example, a heading at another level, and a range recorded twice. The corpus cannot reach any of them: no source document makes a working build disagree with its own record.
 

@@ -25,6 +25,7 @@ from prosiform.bundle import (
     assemble,
 )
 from prosiform.cli import (
+    ENTRY_DESTINATION,
     INPUT_FAILURE,
     INTERNAL_ERROR,
     INVALID_ENCODING,
@@ -92,7 +93,7 @@ def root(tmp_path: Path) -> Path:
 def test_the_version_response_names_the_version_and_the_profile() -> None:
     run = invoke("--version")
     assert run.status == SUCCESS
-    assert run.stdout == f"prosiform 0.0.0 ({PROFILE})\n"
+    assert run.stdout == f"prosiform 0.1.0 ({PROFILE})\n"
     assert run.stderr == ""
 
 
@@ -597,12 +598,76 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
     assert run.status == SUCCESS
-    assert run.stderr == ""
+    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
     assert run.stdout == (
         "This bundle was built for [guide](#guide); "
         "everything else is material it references.\n"
         "\n# guide\n\n## Run\n\nDo it.\n"
     )
+
+
+def test_a_successful_run_reports_each_entry_reference_and_its_destination(
+    root: Path,
+) -> None:
+    written(root, "notes.md", "# Notes\n\n### Step\n\nFirst.\n")
+    written(root, "rules.md", "# Rules\n\n### Step\n\nSecond.\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "notes.md#step",
+        "rules.md#step",
+    )
+    assert run.status == SUCCESS
+    assert [
+        (one["severity"], one["code"], one["reference"], one["resolved"])
+        for one in run.diagnostics()
+    ] == [
+        ("warning", ENTRY_DESTINATION, "Step", "step"),
+        ("warning", ENTRY_DESTINATION, "Step", "step-1"),
+    ]
+
+
+def test_an_entry_destination_is_reported_in_the_format_the_run_declares(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n")
+    run = invoke("--root", str(root), "--diagnostics", "text", "guide.md")
+    assert run.status == SUCCESS
+    assert run.stderr == (
+        f"{ENTRY_DESTINATION}: the entry reference 'guide' resolves to the "
+        "destination 'guide', which the bundle's entry line links it to\n"
+        "  reference: guide\n"
+        "  resolved: guide\n"
+    )
+
+
+def test_a_validation_only_run_reports_the_destinations_it_resolved(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n")
+    run = invoke("--root", str(root), "--check", "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+
+
+def test_a_run_that_cannot_publish_reports_no_entry_destination(
+    root: Path, tmp_path: Path
+) -> None:
+    written(root, "guide.md", "# Guide\n\nBody.\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "-o",
+        str(tmp_path / "absent" / "bundle.md"),
+        "guide.md",
+    )
+    assert run.status == PUBLICATION_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
 
 
 def test_two_sources_sharing_a_basename_stay_distinguishable(root: Path) -> None:

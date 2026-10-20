@@ -111,6 +111,11 @@
           "type": "string",
           "minLength": 1
         },
+        "resolved": {
+          "description": "The identity the reference resolved to. For an entry reference it is the bundle destination, the fragment a renderer generates for the heading it names, written without the leading number sign the bundle's own link carries.",
+          "type": "string",
+          "minLength": 1
+        },
         "source": {
           "description": "The referring source location, as a fixture-root-relative path and an optional line.",
           "type": "string",
@@ -155,7 +160,11 @@
     },
     "warningCode": {
       "description": "The warning catalogue: the stable warning codes the design declares, each prefixed W_. A warning accompanies a successful run rather than deciding a failing one, so a fixture declaring one states what a run writes to standard error while still succeeding. A diagnostic whose severity is warning draws its code from here.",
-      "enum": ["W_EMPTY_GROUP_RULE", "W_RESOURCE_PORTABILITY"]
+      "enum": [
+        "W_EMPTY_GROUP_RULE",
+        "W_ENTRY_DESTINATION",
+        "W_RESOURCE_PORTABILITY"
+      ]
     }
   }
 }
