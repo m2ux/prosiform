@@ -502,7 +502,17 @@ def structure(
             )
         at += 1
         for part in one.record.parts:
-            paired.append((one.record, part, spans[at]))
+            span = spans[at]
+            if isinstance(part, Ancestor) and (
+                span.type != HEADING_OPEN or level(span) != part.level
+            ):
+                raise Invalid(
+                    NO_EXPANSION,
+                    f"the structural ancestor {part.text!r} of {one.record.path!r} "
+                    f"is emitted as a {span.type!r} rather than as a heading at "
+                    f"level {part.level}",
+                )
+            paired.append((one.record, part, span))
             at += 1
     return paired
 
@@ -583,21 +593,15 @@ def placement(record: Record, tokens: Sequence[Token]) -> None:
 def structural(
     record: Record, one: Ancestor, span: Token, tokens: Sequence[Token]
 ) -> None:
-    """Hold one structural ancestor's emitted part to a heading and nothing else.
+    """Hold one structural ancestor's emitted part to carrying nothing live.
 
     The part is one region of the candidate, so a body, a sibling or a
     descendant emitted with it would be a region of its own and the
-    structural pairing would report it. What is left to read is the
-    region itself: it is the heading the record claims, and the title
-    it shows carries no live link and no live image, because the group
-    emitted that title as the literal text its author typed.
+    structural pairing reports it, as it reports a part that is no
+    heading. What is left to read is the title: it carries no live link
+    and no live image, because the group emitted it as the literal text
+    its author typed.
     """
-    if span.type != HEADING_OPEN or level(span) != one.level:
-        raise Invalid(
-            NO_EXPANSION,
-            f"the structural ancestor {one.text!r} of {record.path!r} is emitted "
-            f"as a {span.type!r} rather than as a heading at level {one.level}",
-        )
     found = [use for inline in inlines(tokens, [span]) for _, use in uses(inline)]
     if found:
         raise Invalid(
