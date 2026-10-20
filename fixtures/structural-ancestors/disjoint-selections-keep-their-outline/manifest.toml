@@ -1,0 +1,28 @@
+description = "Two selections from disjoint branches of one outline each keep the ancestor chain their source gave them, the unselected parent of the deeper one emitted as a heading alone."
+
+clauses = [
+  "Heading-only structural ancestors",
+  "Heading-only structural ancestors — Depth",
+  "File-scoped hierarchy — Source order",
+  "Adversarial acceptance fixtures — Partial outlines, disjoint selections such as Alpha and Beta/Detail",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha", "guide.md#detail"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Alpha"
+resolved = "alpha"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Detail"
+resolved = "detail"

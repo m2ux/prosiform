@@ -63,9 +63,12 @@ from markdown_it.token import Token
 from prosiform.bundle import (
     MAX_LEVEL,
     Group,
+    absorbed,
+    ancestry,
     blank,
     carried_headings,
     emitted_visible,
+    heading_text,
     key,
     openings,
 )
@@ -73,8 +76,10 @@ from prosiform.closure import Reference, marked
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     FILENAME_WRAPPER,
+    Ancestor,
     Emitted,
     Generated,
+    Part,
     Range,
     Record,
 )
@@ -370,29 +375,38 @@ def prose(tokens: Sequence[Token], span: Token) -> list[Token]:
 def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
     """What each emitted part of the bundle carries, in bundle order.
 
-    A group writes its file heading and then one part for each source
-    range it selected, so a part after the first is named by the range
-    the provenance records for it: a boundary then names two documents
-    and the lines they were taken from rather than two offsets into the
-    output. A part the provenance records no range for is named by its
-    position, because the count is the structural pairing's to report
-    and a boundary still has to say which part it concerns.
+    A group writes its file heading and then one part for each part the
+    provenance records, so a part after the first is named by that
+    record: a selected range names the document and the lines it was
+    taken from, and a structural ancestor names the heading it emits.
+    A boundary then names two pieces of source rather than two offsets
+    into the output. A part the provenance records nothing for is named
+    by its position, because the count is the structural pairing's to
+    report and a boundary still has to say which part it concerns.
     """
     named: list[tuple[str, str]] = []
     for one in groups:
         path = one.record.path
         named.append((f"the file heading for {path!r}", path))
         for at in range(1, len(one.parts)):
-            if at <= len(one.record.ranges):
-                carried = one.record.ranges[at - 1]
+            if at > len(one.record.parts):
+                named.append((f"the region at position {at} of {path!r}", path))
+                continue
+            part = one.record.parts[at - 1]
+            if isinstance(part, Range):
                 named.append(
                     (
-                        f"the region at lines {carried.lines} of {carried.path!r}",
-                        carried.path,
+                        f"the region at lines {part.lines} of {part.path!r}",
+                        part.path,
                     )
                 )
             else:
-                named.append((f"the region at position {at} of {path!r}", path))
+                named.append(
+                    (
+                        f"the structural ancestor {part.text!r} of {path!r}",
+                        path,
+                    )
+                )
     return named
 
 
@@ -450,17 +464,20 @@ def boundaries(
 
 def structure(
     spans: Sequence[Token], groups: Sequence[Group]
-) -> list[tuple[Record, Range, Token]]:
+) -> list[tuple[Record, Part, Token]]:
     """Pair each region the candidate holds with the provenance that claims it.
 
     The bundle is its entry line, then for each group the filename
-    heading and one region for each selected source range. A candidate
-    holding fewer regions than the provenance claims has dropped one; a
-    candidate holding more carries content no source range accounts for.
-    Generated structure is paired separately from the ranges, so a
-    filename wrapper cannot stand in for a missing selected region.
+    heading and one region for each part the group records: a selected
+    source range, or a structural ancestor. A candidate holding fewer
+    regions than the provenance claims has dropped one; a candidate
+    holding more carries content no part accounts for. The filename
+    wrapper is paired separately from the parts, so it cannot stand in
+    for a missing selected region, and an ancestor is paired as the
+    ancestor it is, so a heading-only part cannot stand in for a
+    selected one either.
     """
-    expected = 1 + sum(1 + len(one.record.ranges) for one in groups)
+    expected = 1 + sum(1 + len(one.record.parts) for one in groups)
     if len(spans) != expected:
         short = len(spans) < expected
         raise Invalid(
@@ -473,7 +490,7 @@ def structure(
             ENTRY_LINE_INTEGRITY,
             f"the candidate opens on a {spans[0].type!r} rather than on its entry line",
         )
-    paired: list[tuple[Record, Range, Token]] = []
+    paired: list[tuple[Record, Part, Token]] = []
     at = 1
     for one in groups:
         opening = spans[at]
@@ -484,10 +501,114 @@ def structure(
                 f"rather than on its filename heading",
             )
         at += 1
-        for carried in one.record.ranges:
-            paired.append((one.record, carried, spans[at]))
+        for part in one.record.parts:
+            span = spans[at]
+            if isinstance(part, Ancestor) and (
+                span.type != HEADING_OPEN or level(span) != part.level
+            ):
+                raise Invalid(
+                    NO_EXPANSION,
+                    f"the structural ancestor {part.text!r} of {one.record.path!r} "
+                    f"is emitted as a {span.type!r} rather than as a heading at "
+                    f"level {part.level}",
+                )
+            paired.append((one.record, part, span))
             at += 1
     return paired
+
+
+def above(tokens: Sequence[Token]) -> dict[int, tuple[int, ...]]:
+    """The source line of each eligible ancestor above each region, by that region.
+
+    A region is keyed by the source line it opens on, and its chain is
+    the lines of the headings open above it, outermost first. The chain
+    is the source document's own outline, which is what a reconstructed
+    one is compared against.
+    """
+    chains = ancestry(tokens)
+    return {
+        token.map[0] + 1: tuple(
+            one.map[0] + 1 for one in chains[id(token)] if one.map is not None
+        )
+        for token in regions(tokens)
+        if token.map is not None
+    }
+
+
+def absorbing(record: Record, tokens: Sequence[Token]) -> set[int]:
+    """The source line of the heading the group's file heading names, if any.
+
+    The file heading names the document's title whether the group
+    emitted that title's section or not, so a section beneath it is
+    placed by the file heading and the title is no structural
+    ancestor. The line is what the outline check reads it as emitted
+    at.
+    """
+    found = absorbed(tokens, heading_text(record.path))
+    if found is None or found.map is None:
+        return set()
+    return {found.map[0] + 1}
+
+
+def placement(record: Record, tokens: Sequence[Token]) -> None:
+    """Hold one group's parts to the outline their source gave them.
+
+    Each part the group emits is placed by the chain of eligible
+    ancestor headings the source wrote above it, and every heading of
+    that chain is emitted before it: as the file heading that absorbed
+    it, as a selected region of its own, or as a structural ancestor.
+    A chain member the group emits nowhere is an outline the candidate
+    reconstructs differently from the one its author wrote.
+
+    The converse is held here as well. A structural ancestor is the
+    only unselected source-derived content a group emits, so each of
+    them places a part that follows it; one placing nothing is content
+    the group emitted for no outline.
+    """
+    chains = above(tokens)
+    emitted_at = absorbing(record, tokens)
+    needed: set[int] = set()
+    for one in record.parts:
+        at = one.lines[0] + 1 if isinstance(one, Range) else one.origin.line
+        chain = chains.get(at or 0, ())
+        needed.update(chain)
+        for line in chain:
+            if line not in emitted_at:
+                raise Invalid(
+                    OUTLINE_PRESERVATION,
+                    f"the part at line {at} of {record.path!r} is emitted below "
+                    f"none of the heading its source wrote at line {line}",
+                )
+        if at is not None:
+            emitted_at.add(at)
+    for one in record.ancestors():
+        if one.origin.line not in needed:
+            raise Invalid(
+                NO_EXPANSION,
+                f"the structural ancestor {one.text!r} of {record.path!r} places "
+                f"no part the group emits",
+            )
+
+
+def structural(
+    record: Record, one: Ancestor, span: Token, tokens: Sequence[Token]
+) -> None:
+    """Hold one structural ancestor's emitted part to carrying nothing live.
+
+    The part is one region of the candidate, so a body, a sibling or a
+    descendant emitted with it would be a region of its own and the
+    structural pairing reports it, as it reports a part that is no
+    heading. What is left to read is the title: it carries no live link
+    and no live image, because the group emitted it as the literal text
+    its author typed.
+    """
+    found = [use for inline in inlines(tokens, [span]) for _, use in uses(inline)]
+    if found:
+        raise Invalid(
+            NO_NEW_LINKS,
+            f"the structural ancestor {one.text!r} of {record.path!r} publishes "
+            f"the use(s) {found!r}",
+        )
 
 
 def coverage(groups: Sequence[Group]) -> None:
@@ -536,11 +657,10 @@ def outline(tokens: Sequence[Token], groups: Sequence[Group]) -> None:
     caught by the provenance rather than by the parse that would read
     the result as text.
 
-    The chain a structural ancestor supplies where a selected heading's
-    source parent is unselected is not checked: this build emits no
-    structural ancestors, so there is nothing recorded to check it
-    against, and a check over an empty set of records would pass
-    whatever the outline did.
+    What this reads is the candidate against the record. The chain a
+    structural ancestor supplies is read from the source outline
+    instead, by `placement`, because the record alone cannot say which
+    ancestors a source gave a heading.
     """
     found = list(headings(tokens))
     expected = emitted(groups)
@@ -566,7 +686,12 @@ def outline(tokens: Sequence[Token], groups: Sequence[Group]) -> None:
 
 
 def levels(record: Record) -> None:
-    """Hold one group's carried headings to their source levels and source order.
+    """Hold one group's placed headings to their source levels and source order.
+
+    A structural ancestor is placed by the level its author wrote under
+    the group's shift, as a carried heading is, so both are held here:
+    an ancestor emitted at another level would reconstruct an outline
+    its source never wrote.
 
     The record is held to the levels and the order its sources wrote
     before the candidate is read, because a level beyond the sixth is
@@ -575,7 +700,7 @@ def levels(record: Record) -> None:
     report the missing heading rather than the depth that lost it.
     """
     at = 0
-    for one in record.carried():
+    for one in record.placed():
         if one.level != one.origin.level + record.shift:
             raise Invalid(
                 OUTLINE_PRESERVATION,
@@ -857,6 +982,7 @@ def validate(
     coverage(groups)
     for one in groups:
         levels(one.record)
+        placement(one.record, parsed[one.record.path])
     environment: dict[str, Any] = {}
     tokens = parse(bundled, budget, environment)
     physical = lines(bundled)
@@ -867,7 +993,11 @@ def validate(
     outline(tokens, groups)
     integrity(named(tokens, groups, assigned), targets)
     entry(spans, tokens, referrer, requested, targets)
-    for _, carried, span in paired:
+    for record, part, span in paired:
+        if isinstance(part, Ancestor):
+            structural(record, part, span, tokens)
+            continue
+        carried = part
         source = Side(
             parsed[carried.path],
             lines(read[carried.path].text),

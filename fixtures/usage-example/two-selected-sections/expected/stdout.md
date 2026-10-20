@@ -2,6 +2,8 @@ This bundle was built for [Record Epic Delivery](#record-epic-delivery) and [Del
 
 # artifacts/epic-issue-body
 
+### Operations
+
 #### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
@@ -11,6 +13,8 @@ One epic body with supplied delivery matches and completed rows recorded.
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+
+### Fields
 
 #### Work Breakdown
 
@@ -38,6 +42,8 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
 
+### Commands
+
 #### Sync Epic
 
 Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
@@ -59,6 +65,8 @@ work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue
 ```
 
 # artifacts/epic
+
+### Fields
 
 #### Delivery Findings
 

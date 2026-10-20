@@ -1,7 +1,5 @@
 description = "A marked link whose target is present only as a heading-only structural ancestor expands closure to that section's selected body, replacing the ancestor, while an ancestor no reference names keeps its heading and none of its body."
 
-awaiting = "I00:E09:W02"
-
 clauses = [
   "Heading-only structural ancestors — Targets",
   "Heading-only structural ancestors — Deduplication",

@@ -2,8 +2,9 @@
 
 The corpus declares what a run publishes. These are the cases beneath
 it: the heading one path generates, the escaping that keeps that heading
-literal, the regions a selection carries into a group, and the two
-decisions a group makes about its own headings.
+literal, the regions a selection carries into a group, the headings a
+partial selection needs above it, and the two decisions a group makes
+about its own headings.
 """
 
 import pytest
@@ -21,7 +22,8 @@ from prosiform.bundle import (
     openings,
 )
 from prosiform.profile import parse
-from prosiform.source import lines
+from prosiform.provenance import STRUCTURAL_ANCESTOR, Origin
+from prosiform.source import Selection, lines, regions, section
 
 
 def grouped(path: str, text: str) -> Group:
@@ -322,3 +324,100 @@ def test_the_parts_of_two_groups_open_in_bundle_order() -> None:
         "Opening prose.\n",
         "# note\n",
     ]
+
+
+def selecting(path: str, text: str, *named: str) -> Group:
+    """One file group holding the sections the fragments name and nothing else."""
+    tokens = parse(text)
+    wanted = [
+        token for fragment in named for token in (section(tokens, fragment) or ())
+    ]
+    chosen = tuple(
+        token for token in regions(tokens) if any(token is one for one in wanted)
+    )
+    return group(path, tokens, lines(text), None, Selection(chosen, ()), None)
+
+
+OUTLINED = """## Alpha
+
+Alpha body.
+
+### One
+
+One body.
+
+### Two
+
+Two body.
+
+## Beta
+
+Beta body.
+"""
+
+
+def test_an_unselected_ancestor_is_emitted_as_a_heading_alone() -> None:
+    carried = selecting("guide.md", OUTLINED, "one")
+    assert carried.text == "# guide\n\n### Alpha\n\n#### One\n\nOne body."
+
+
+def test_an_ancestor_two_selections_share_is_emitted_once() -> None:
+    carried = selecting("guide.md", OUTLINED, "one", "two")
+    assert carried.headings == ("guide", "Alpha", "One", "Two")
+
+
+def test_an_ancestor_stands_in_the_source_order_its_author_wrote() -> None:
+    text = "## Alpha\n\n### One\n\nOne body.\n\n## Beta\n\n### Two\n\nTwo body.\n"
+    carried = selecting("guide.md", text, "one", "two")
+    assert carried.headings == ("guide", "Alpha", "One", "Beta", "Two")
+
+
+def test_a_selected_ancestor_is_the_content_it_is_rather_than_a_heading() -> None:
+    carried = selecting("guide.md", OUTLINED, "alpha")
+    assert carried.text == (
+        "# guide\n\n### Alpha\n\nAlpha body.\n\n#### One\n\nOne body."
+        "\n\n#### Two\n\nTwo body."
+    )
+    assert carried.record.ancestors() == []
+
+
+def test_an_ancestor_title_is_emitted_as_literal_text() -> None:
+    text = "## A & [¬the note](note.md) <b>b</b>\n\n### One\n\nOne body.\n"
+    carried = selecting("guide.md", text, "one")
+    assert carried.parts[1] == "### A \\& the note b"
+    assert carried.record.ancestors()[0].text == "A & the note b"
+
+
+def test_an_ancestor_record_names_its_source_heading_and_original_level() -> None:
+    one = selecting("guide.md", OUTLINED, "one").record.ancestors()[0]
+    assert (one.text, one.level, one.kind) == ("Alpha", 3, STRUCTURAL_ANCESTOR)
+    assert one.origin == Origin("guide.md", 1, 2, "alpha")
+
+
+def test_an_ancestor_accounts_for_the_part_it_emits_and_carries_no_range() -> None:
+    carried = selecting("guide.md", OUTLINED, "one")
+    record = carried.record
+    assert len(record.parts) == len(carried.parts) - 1 == 3
+    assert record.parts[0] == record.ancestors()[0]
+    assert [one.lines for one in record.ranges] == [(4, 5), (6, 7)]
+
+
+def test_a_title_the_file_heading_names_is_no_ancestor() -> None:
+    text = "# Guide\n\n## Run\n\n### Detail\n\nDetail body.\n"
+    carried = selecting("guide.md", text, "detail")
+    assert carried.text == "# guide\n\n### Run\n\n#### Detail\n\nDetail body."
+
+
+def test_a_heading_a_container_carries_roots_no_ancestor_chain() -> None:
+    text = "## Alpha\n\n> ### Quoted\n\n### One\n\nOne body.\n"
+    carried = selecting("guide.md", text, "one")
+    assert carried.headings == ("guide", "Alpha", "One")
+
+
+def test_an_ancestor_at_the_sixth_level_overflows_on_what_it_places() -> None:
+    """An ancestor reaching H6 holds, and the heading beneath it is the overflow."""
+    text = "##### Five\n\nFive body.\n\n###### Six\n\nSix body.\n"
+    with pytest.raises(Overflow) as refused:
+        selecting("guide.md", text, "six")
+    assert refused.value.heading == "Six"
+    assert refused.value.level == MAX_LEVEL + 1

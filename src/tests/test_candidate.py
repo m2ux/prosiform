@@ -44,7 +44,7 @@ from prosiform.cli import (
 from prosiform.closure import Reference
 from prosiform.limits import BUDGETS, NESTING, Limits
 from prosiform.profile import REFERENCES, parse
-from prosiform.provenance import Carried, Generated, Origin, Range
+from prosiform.provenance import Ancestor, Carried, Generated, Origin, Range
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import Source, fragments, lines
 
@@ -78,12 +78,20 @@ class Built:
         )
 
 
-def built(documents: dict[str, str], references: Sequence[str]) -> Built:
+def built(
+    documents: dict[str, str], references: Sequence[str], whole: bool = True
+) -> Built:
     """One candidate compiled from the sources and entry references given.
 
     The parts are produced by the command's own assembly, so the pass
     under test is given what a compilation gives it rather than a second
     construction written for the test.
+
+    Every document is selected whole as well, which is what a run
+    bundling the tree produces. A candidate carrying structural
+    ancestors is the exception: an ancestor is a heading a selection
+    left unselected, so a whole document leaves none, and such a case
+    selects the references it names and nothing more.
     """
     read = {path: Source(text) for path, text in documents.items()}
     parsed: dict[str, list[Token]] = {}
@@ -96,8 +104,9 @@ def built(documents: dict[str, str], references: Sequence[str]) -> Built:
     selected: dict[str, list[Reference]] = {}
     for one in requested:
         selected.setdefault(one.path, []).append(one)
-    for path in documents:
-        selected.setdefault(path, []).append(Reference(path, path))
+    if whole:
+        for path in documents:
+            selected.setdefault(path, []).append(Reference(path, path))
     selected = dict(sorted(selected.items()))
     headed = assembled(read, parsed, defined, selected, requested, None)
     assigned = fragments([one for each in headed for one in each.headings])
@@ -304,7 +313,7 @@ def test_an_entry_line_naming_another_destination_fails() -> None:
 
 def test_a_filename_wrapper_does_not_stand_in_for_a_missing_region() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
-    emptied = replace(one.groups[0].record, ranges=())
+    emptied = replace(one.groups[0].record, parts=())
     one.groups = [replace(one.groups[0], record=emptied)]
     assert refused(one).invariant == NO_EXPANSION
 
@@ -346,7 +355,7 @@ def promoted(one: Group) -> Group:
 def doubled(one: Group) -> Group:
     """The group with one source range recorded twice."""
     first = one.record.ranges[0]
-    return replace(one, record=replace(one.record, ranges=(first, *one.record.ranges)))
+    return replace(one, record=replace(one.record, parts=(first, *one.record.parts)))
 
 
 def test_a_generated_record_carries_no_source_range() -> None:
@@ -462,3 +471,100 @@ def test_a_code_example_a_list_reads_as_markup_fails() -> None:
 
 def test_a_terminated_example_whose_entries_look_like_a_list_validates() -> None:
     built({"guide.md": TERMINATED}, ["guide.md"]).validate()
+
+
+OUTLINED = """## Alpha
+
+Alpha body.
+
+### One
+
+One body.
+"""
+
+
+def test_a_structural_ancestor_holds_as_the_heading_it_records() -> None:
+    built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False).validate()
+
+
+def test_an_ancestor_the_group_drops_fails() -> None:
+    one = built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False)
+    carried = one.groups[0]
+    kept = carried.record.ancestors()[0]
+    one.groups = [
+        replace(
+            carried,
+            parts=tuple(part for part in carried.parts if part != "### Alpha"),
+            record=replace(
+                carried.record,
+                headings=tuple(
+                    each for each in carried.record.headings if each is not kept
+                ),
+                parts=tuple(each for each in carried.record.parts if each is not kept),
+            ),
+        )
+    ]
+    one.bundled = one.bundled.replace("### Alpha\n\n", "", 1)
+    one.assigned = [name for name in one.assigned if name != "alpha"]
+    assert refused(one).invariant == OUTLINE_PRESERVATION
+
+
+def test_an_ancestor_placing_no_part_fails() -> None:
+    one = built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False)
+    carried = one.groups[0]
+    stray = Ancestor("Beta", 3, Origin("guide.md", 99, 2, "beta"))
+    one.groups = [
+        replace(
+            carried,
+            record=replace(carried.record, headings=(*carried.record.headings, stray)),
+        )
+    ]
+    assert refused(one).invariant == NO_EXPANSION
+
+
+def test_a_structural_ancestor_does_not_stand_in_for_a_missing_region() -> None:
+    one = built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False)
+    carried = one.groups[0]
+    body = carried.record.ranges[-1]
+    one.groups = [
+        replace(
+            carried,
+            record=replace(
+                carried.record,
+                parts=tuple(each for each in carried.record.parts if each is not body),
+            ),
+        )
+    ]
+    assert refused(one).invariant == NO_EXPANSION
+
+
+def test_an_ancestor_emitted_as_something_other_than_a_heading_fails() -> None:
+    one = built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False)
+    carried = one.groups[0]
+    one.groups = [
+        replace(
+            carried,
+            parts=tuple(
+                "Alpha" if part == "### Alpha" else part for part in carried.parts
+            ),
+        )
+    ]
+    one.bundled = one.bundled.replace("### Alpha", "Alpha", 1)
+    one.assigned = [name for name in one.assigned if name != "alpha"]
+    assert refused(one).invariant == NO_EXPANSION
+
+
+def test_an_ancestor_publishing_a_live_link_fails() -> None:
+    one = built({"guide.md": OUTLINED}, ["guide.md#one"], whole=False)
+    carried = one.groups[0]
+    linked = "### [Alpha](#one)"
+    one.groups = [
+        replace(
+            carried,
+            parts=tuple(
+                linked if part == "### Alpha" else part for part in carried.parts
+            ),
+        )
+    ]
+    one.bundled = one.bundled.replace("### Alpha", linked, 1)
+    assert refused(one).invariant == NO_NEW_LINKS

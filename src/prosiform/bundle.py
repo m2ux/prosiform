@@ -14,7 +14,18 @@ the command refuses as an ambiguous file group.
 A group is assembled from the maximal regions the run selected, in
 source order, each carried as the bytes its source wrote. A whole
 document selects every region it holds; a fragment selects the regions
-of the section it names. What lies between two
+of the section it names. A section whose eligible ancestors the run did
+not select is placed in the outline its author gave it by emitting each
+of those ancestors as a heading and nothing else: no body, no unselected
+sibling and no other descendant. The ancestor's title is emitted as
+literal text, so a link, an image or raw HTML inside it is the
+characters its author typed rather than a live construct, and the
+dependencies a run traverses are read from the regions it selected, so
+nothing is required by an ancestor heading. Each ancestor is emitted
+once however many selections stand beneath it, and an ancestor the
+closure goes on to select is a selected region like any other, which is
+the heading and the body that stand there in its place. What lies
+between two
 regions is not source content: a blank line above the first region, the
 blank line a removed reference definition was separated by, and the
 spacing between any two blocks are the bundle's own, and the bundle
@@ -86,10 +97,12 @@ from prosiform.closure import Reference, inside
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
+    Ancestor,
     Carried,
     Emitted,
     Generated,
     Origin,
+    Part,
     Range,
     Record,
 )
@@ -406,6 +419,61 @@ def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
     ]
 
 
+def ancestry(tokens: Sequence[Token]) -> dict[int, tuple[Token, ...]]:
+    """The chain of eligible ancestor headings above each region, by its identity.
+
+    Only a heading the document carries at its own level roots a
+    section, so the chain is read from the document-level regions
+    alone: each heading closes every open heading of its level or
+    deeper and then stands open itself, and what is open above a region
+    is the chain that placed it. A heading a container carries roots
+    nothing, and the region holding that container is where the
+    document puts its content.
+
+    The chain is the document's own structure rather than the run's, so
+    a region is placed the same way whether it was selected on its own
+    or inside a larger region that consolidated it.
+    """
+    chain: list[Token] = []
+    found: dict[int, tuple[Token, ...]] = {}
+    for token in regions(tokens):
+        if token.type != HEADING_OPEN:
+            found[id(token)] = tuple(chain)
+            continue
+        depth = level(token)
+        while chain and level(chain[-1]) >= depth:
+            chain.pop()
+        found[id(token)] = tuple(chain)
+        chain.append(token)
+    return found
+
+
+def required(tokens: Sequence[Token], emitting: Collection[int]) -> set[int]:
+    """Each ancestor heading the emitted regions need and the run did not select.
+
+    An ancestor the run selected is emitted as the content it is, so it
+    is no structural ancestor, and an ancestor several selections share
+    is one identity in a set and so is emitted once.
+    """
+    above = ancestry(tokens)
+    needed = {
+        id(one)
+        for token in regions(tokens)
+        if id(token) in emitting
+        for one in above[id(token)]
+    }
+    return needed - set(emitting)
+
+
+def single_line(text: str) -> str:
+    """One heading's title on the one line an ATX heading is.
+
+    A Setext heading carries its title on as many lines as its author
+    wrote, and each line break reads as the space it already read as.
+    """
+    return SPACE.join(part.strip() for part in text.split(LINE_FEED))
+
+
 def blank(line: str) -> bool:
     """Whether one line carries nothing but the markers the container opens it with."""
     return not bare(line)[len(opening_markers(line)) :].strip()
@@ -488,6 +556,10 @@ def group(
     absorption is the file heading standing in for a heading the group
     carries. A group that emits none therefore shifts, and a reference
     to an absorbed title resolves to the file heading's own destination.
+    The file heading names that title either way, so a selection
+    beneath an unemitted one is placed by the file heading and the
+    title is no structural ancestor: a second heading carrying the
+    document's own name is one a reader cannot tell from the first.
 
     A destination map rewrites each marked link the selected content
     carries. The map is built from the headings every group emits, so
@@ -496,6 +568,13 @@ def group(
     it carries the links pointing at them. The headings a group reports
     are the same either way, because the rewrite edits a destination
     and a mark and nothing a heading is slugged from.
+
+    An eligible ancestor of a selected region that the run did not
+    select is emitted above it as a heading alone, carrying the title
+    its author wrote as literal text and nothing else. The ancestors
+    and the selected regions are emitted in one walk of the document,
+    so both stand in the source order their author wrote, and an
+    ancestor shared by two selections is emitted once.
 
     The definition environment is this source's own, which is what its
     reference-style uses resolve against and which no other source
@@ -517,9 +596,8 @@ def group(
     naming: set[int] = (
         set() if selected is None else {id(token) for token in selected.named}
     )
-    absorbing = absorbed(tokens, title)
-    if absorbing is not None and id(absorbing) not in emitting:
-        absorbing = None
+    titled = absorbed(tokens, title)
+    absorbing = titled if titled is not None and id(titled) in emitting else None
     by = 0 if absorbing is not None else SHIFT
     emitted = [f"{ATX} {escaped(title)}"]
     text = shown_text(tokens)
@@ -531,15 +609,37 @@ def group(
         None if absorbing is None else named[id(absorbing)],
     )
     emitting_headings: list[Emitted] = [wrapper]
-    ranges: list[Range] = []
+    recorded: list[Part] = []
     entries = [0] if selected is None else []
     chosen = [token for token in regions(tokens) if id(token) in emitting]
+    needed = required(tokens, emitting) - (set() if titled is None else {id(titled)})
     written = (
         list(physical)
         if assigned is None
         else rewrite(physical, tokens, chosen, assigned, path, environment)
     )
-    for token in chosen:
+    for token in regions(tokens):
+        if id(token) in needed:
+            depth = level(token) + by
+            if depth > MAX_LEVEL:
+                raise Overflow(text[id(token)], depth)
+            shows = single_line(text[id(token)])
+            ancestor = Ancestor(
+                shows,
+                depth,
+                Origin(
+                    path,
+                    None if token.map is None else token.map[0] + 1,
+                    level(token),
+                    named[id(token)],
+                ),
+            )
+            emitting_headings.append(ancestor)
+            recorded.append(ancestor)
+            emitted.append(f"{ATX * depth} {escaped(shows)}")
+            continue
+        if id(token) not in emitting:
+            continue
         if token is absorbing:
             if id(token) in naming:
                 entries.append(0)
@@ -565,7 +665,7 @@ def group(
             for one in carried
         )
         start, end = token.map or (0, 0)
-        ranges.append(
+        recorded.append(
             Range(
                 path,
                 (start, end),
@@ -576,7 +676,7 @@ def group(
     return Group(
         tuple(emitted),
         tuple(entries),
-        Record(path, by, tuple(emitting_headings), tuple(ranges)),
+        Record(path, by, tuple(emitting_headings), tuple(recorded)),
     )
 
 
