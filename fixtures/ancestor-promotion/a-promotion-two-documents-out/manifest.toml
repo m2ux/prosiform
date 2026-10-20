@@ -1,0 +1,29 @@
+description = "The marked link that promotes a heading-only structural ancestor is reached two documents out, so the ancestor is replaced by its selected section only where the closure ran to its fixed point before ancestry was derived; the ancestor no reference names keeps its heading."
+
+clauses = [
+  "Heading-only structural ancestors — Targets",
+  "Heading-only structural ancestors — Deduplication",
+  "Compile before publishing — step 4, expand included source coverage to a fixed point",
+  "Compile before publishing — step 5, derive required heading-only ancestors",
+  "Adversarial acceptance fixtures — Partial outlines, ancestor promotion after dependency expansion",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#detail", "guide.md#gamma"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Detail"
+resolved = "detail"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Gamma"
+resolved = "gamma"

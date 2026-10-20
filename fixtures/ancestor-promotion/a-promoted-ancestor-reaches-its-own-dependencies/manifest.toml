@@ -1,0 +1,32 @@
+description = "A marked link promotes a heading-only structural ancestor to its selected section, and the marked link that section's body carries is traversed from there, so a document reaches the bundle only because the promotion happened while the closure was still expanding; the ancestor no reference names keeps its heading, and the marked link its unselected body carries requires nothing."
+
+clauses = [
+  "Heading-only structural ancestors — Targets",
+  "Heading-only structural ancestors — Deduplication",
+  "Compile before publishing — step 4, expand included source coverage to a fixed point",
+  "Compile before publishing — step 5, derive required heading-only ancestors",
+  "Compile before publishing — Expanding coverage",
+  "No accidental expansion",
+  "Validation scope",
+  "Adversarial acceptance fixtures — Partial outlines, ancestor promotion after dependency expansion",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#detail", "guide.md#gamma"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Detail"
+resolved = "detail"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Gamma"
+resolved = "gamma"
