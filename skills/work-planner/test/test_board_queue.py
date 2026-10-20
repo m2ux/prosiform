@@ -40,7 +40,8 @@ def epic(number: int, which: str, *tasks: tuple[str, str, str], repo: str = 'o/r
                  labels=(priority,) if priority else (), repo=repo)
 
 
-def queue(items: list[dict], prs: list[dict] | None = None, unplanned: tuple[str, ...] = ()) -> str:
+def queue_run(items: list[dict], prs: list[dict] | None = None, unplanned: tuple[str, ...] = ()):
+    """The complete queue run, for a test reading its exit status as well as its output."""
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         items_path, prs_path, fields = root / 'items.json', root / 'prs.json', root / 'fields.json'
@@ -48,12 +49,16 @@ def queue(items: list[dict], prs: list[dict] | None = None, unplanned: tuple[str
         prs_path.write_text(''.join(json.dumps(row) + '\n' for row in prs or []))
         fields.write_text(json.dumps(FIELDS))
         extra = [arg for spec in unplanned for arg in ('--unplanned', spec)]
-        done = run('board-queue.py', '--items', str(items_path), '--prs', str(prs_path),
+        return run('board-queue.py', '--items', str(items_path), '--prs', str(prs_path),
                    '--board', 'users/o/projectsV2/9', '--fields', str(fields),
                    '--out', str(root / 'out'), '--assignee', 'me', *extra)
-        if done.returncode != 0:
-            raise AssertionError(done.stderr or done.stdout)
-        return done.stdout
+
+
+def queue(items: list[dict], prs: list[dict] | None = None, unplanned: tuple[str, ...] = ()) -> str:
+    done = queue_run(items, prs, unplanned)
+    if done.returncode != 0:
+        raise AssertionError(done.stderr or done.stdout)
+    return done.stdout
 
 
 class Queue(unittest.TestCase):
@@ -348,6 +353,39 @@ class Queue(unittest.TestCase):
         self.assertIn('wait #1 [I01] Bare: Current:', out)
         self.assertNotIn('[I03] Low: Waiting: Ready →', out)
         self.assertIn('[I02] High: Next: Ready → In Progress', out)
+
+
+class UnresolvableGates(unittest.TestCase):
+    """A queue run meeting a Depends on entry it cannot resolve."""
+
+    def run_with(self, depends: str):
+        one = initiative(1, 'Theme: Work', (f"[E00]({url('issues', 3)})", ''),
+                         (f"[E01]({url('issues', 4)})", depends))
+        return queue_run(staged((one, 'In Progress'),
+                                (epic(3, '01:E00', ('W01', 'Go', '')), 'Backlog'),
+                                (epic(4, '01:E01', ('W01', 'Go', '')), 'Backlog')))
+
+    def test_the_run_names_the_row_and_the_entry_and_leaves_it_unplaced(self):
+        done = self.run_with('E09 (W04)')
+        self.assertIn('unresolved: #1 [I01] Theme: Work E01: cannot resolve E09 (W04): '
+                      'it names no row and links no issue', done.stdout)
+        self.assertNotIn('Epic 4', done.stdout.split('unresolved:')[0])
+        self.assertEqual(done.returncode, 1)
+
+    def test_a_prerequisite_that_has_not_landed_places_the_row(self):
+        done = self.run_with(f"[E00]({url('issues', 3)})")
+        self.assertNotIn('cannot resolve', done.stdout)
+        self.assertIn('[I01:E00] Epic 3: Work: Backlog → Ready', done.stdout)
+        self.assertEqual(done.returncode, 0)
+
+    def test_a_note_from_reading_delivery_leaves_the_exit_status_alone(self):
+        one = initiative(1, 'Theme: Work', (f"[E00]({url('issues', 3)})", ''))
+        done = queue_run(staged(
+            (one, 'In Progress'),
+            (epic(3, '01:E00', (f"[W01]({url('issues', 9)})", 'Go', '')), 'Backlog')))
+        self.assertIn('cannot resolve', done.stdout)
+        self.assertIn('[I01:E00] Epic 3: Work: Backlog → Ready', done.stdout)
+        self.assertEqual(done.returncode, 0)
 
 
 if __name__ == '__main__':

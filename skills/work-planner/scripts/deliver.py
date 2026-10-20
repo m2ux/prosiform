@@ -36,7 +36,7 @@ from collections import Counter
 from datetime import date as day
 from pathlib import Path
 
-from board import Board, rows
+from board import Board, Resolution, rows
 from statuses import key_of, label, pages, status_of
 from format import LINK, TICK, cell, done_mark, id_cell, join_sections, row, row_id, split_sections
 from sync import Unreadable, long_lived_names, plan_rows, pull_requests, table
@@ -155,9 +155,10 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
             state[task] = 'running'
         elif held:
             state[task] = 'held'
-        elif not prerequisites:
+        elif prerequisites is not Resolution.MET:
             state[task] = 'prerequisite'
-        elif not board.met(cell(header, r, 'Depends on'), key, epics, f'{label(key, board.home)} {task}'):
+        elif board.met(cell(header, r, 'Depends on'), key, epics,
+                       f'{label(key, board.home)} {task}') is not Resolution.MET:
             state[task] = 'blocked'
         else:
             state[task] = 'free'

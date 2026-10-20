@@ -2,7 +2,7 @@
 
 Usage:
   python3 deps.py [I=bodies/initiative.md] E00=bodies/epic-00.md E01=bodies/epic-01.md
-                  [E00:W01=records/e00/w01.md ...]
+                  [E00:W01=records/e00/w01.md ...] [R=records/joins.md ...]
 
 An argument naming a row is that row's work item, a file whose declaration line names the one
 component its implementation extends:
@@ -36,8 +36,10 @@ in the same cell already implies. A named epic still reaches the rows it stands 
 carrying the retired form is reported once rather than taking its initiative's gates down with it.
 Joins problems: a task joining one that does not join it back, and
 two joined tasks where one depends on the other, directly or through a task outside the pair.
-Also printed: each pair of tasks in an epic where neither depends on the other and the two do not
-name each other in Joins.
+Also printed: each pair of tasks in an epic where neither depends on the other, the two do not name
+each other in Joins, and no R= record accounts for the pair. An empty Joins cell rests on such an
+entry, so each line names both resolutions. A record accounts for a pair by naming both ids on one
+of its lines; an R= file that cannot be read is a problem.
 With I=, the initiative's Depends on cells are checked: each epic's cell names exactly the other
 epics required in full by every task or joined unit, less transitive epic dependencies, and names no task.
 Another initiative's epic (I05:E00) or an issue (#750) may also be named.
@@ -125,7 +127,7 @@ def parse(epics: dict[str, Path]) -> tuple[dict, list[str], dict[str, set[str]]]
             elif re.fullmatch(r'W\d\d', d):
                 dep_list.append(f'{epic}:{d}')
             else:
-                problems.append(f'{key}: unreadable dependency {d!r}')
+                problems.append(f'{key}: cannot resolve {d}: it names no row and links no issue')
         acc = []
         for a in (x.strip() for x in accompany.split(',') if x.strip()):
             acc.append(a if a.startswith('E') else f'{epic}:{a}')
@@ -172,8 +174,29 @@ def contention(components: dict[str, str]) -> list[tuple[str, str]]:
             if left.split(':')[0] != right.split(':')[0] and components[left] == components[right]]
 
 
-def eligible_unjoined(tasks: dict, ancestors) -> list[str]:
-    """Pairs in one epic that neither depends on the other and that do not name each other."""
+def recorded_pairs(paths: list[Path]) -> tuple[set[frozenset[str]], list[str]]:
+    """The pairs a planning record accounts for. One line naming exactly two task ids accounts for
+    that pair, which is the form a joins artifact takes. A line naming more is prose about several
+    rows, not an account of any one pair, so it accounts for none."""
+    found: set[frozenset[str]] = set()
+    problems = []
+    for path in paths:
+        try:
+            text = path.read_text(encoding='utf-8')
+        except (OSError, UnicodeDecodeError) as error:
+            problems.append(f'record {path} is unreadable ({error})')
+            continue
+        for line in text.splitlines():
+            ids = set(TASK.findall(line))
+            if len(ids) == 2:
+                found.add(frozenset(ids))
+    return found, problems
+
+
+def eligible_unjoined(tasks: dict, ancestors, recorded: set[frozenset[str]] = frozenset()) -> list[str]:
+    """Pairs in one epic that neither depends on the other, that do not name each other, and that
+    no record given accounts for. Each line states both resolutions, so the Joins cell is read as
+    the assertion it is rather than as the way to quiet the report."""
     keys = sorted(tasks)
     lines = []
     for i, left in enumerate(keys):
@@ -184,7 +207,10 @@ def eligible_unjoined(tasks: dict, ancestors) -> list[str]:
                 continue
             if right in tasks[left][2] and left in tasks[right][2]:
                 continue
-            lines.append(f'{left} and {right} can share a pull request and do not name each other')
+            if frozenset((left, right)) in recorded:
+                continue
+            lines.append(f'{left} and {right} can share a pull request: name each other in Joins, '
+                         'or account for the pair in the planning record')
     return lines
 
 
@@ -289,16 +315,20 @@ def check_initiative(path: Path, tasks: dict) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
-    epics, items, initiative = {}, {}, None
+    epics, items, records, initiative = {}, {}, [], None
     for arg in argv:
         name, _, path = arg.partition('=')
         if name == 'I':
             initiative = Path(path)
+        elif name == 'R':
+            records.append(Path(path))
         elif ':' in name:
             items[name] = Path(path)
         else:
             epics[name] = Path(path)
     tasks, problems, expanded = parse(epics)
+    recorded, unreadable = recorded_pairs(records)
+    problems += unreadable
     components, missing = read_components(items)
     problems += missing
     for key in sorted(components):
@@ -311,7 +341,7 @@ def main(argv: list[str]) -> int:
         epic, wid = key.split(':')
         for d in deps:
             if d not in tasks:
-                problems.append(f'{key}: unknown dependency {d}')
+                problems.append(f'{key}: cannot resolve {d}: no epic given carries that row')
                 continue
             de, dw = d.split(':')
             if de == epic and dw >= wid:
@@ -371,14 +401,14 @@ def main(argv: list[str]) -> int:
                 via = next((x for x in ancestors(key) if x != a and a in ancestors(x)), None)
                 if via:
                     problems.append(f'{key}: joins {a}, but needs {via}, which needs {a}')
-        joins = eligible_unjoined(tasks, ancestors)
+        joins = eligible_unjoined(tasks, ancestors, recorded)
         if initiative:
             problems += check_initiative(initiative, tasks)
     print('--- problems')
     print('\n'.join(problems) if problems else 'none')
     if cyclic:
         return 1
-    print('\n--- joins: eligible and not joined')
+    print('\n--- joins: eligible pairs named in neither Joins nor a record')
     print('\n'.join(joins) if joins else 'none')
 
     level: dict[str, int] = {}
