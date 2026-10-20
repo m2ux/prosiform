@@ -1,6 +1,8 @@
 """The bundle: one file group for each contributing source, under one entry line.
 
-A group is a source document, headed by one generated H1 whose visible
+A group is a source document unless a grouping rule names the directory
+it sits under, in which case it joins the merged group `grouping`
+assembles. A file group is headed by one generated H1 whose visible
 text is the document's normalized root-relative path with the Markdown
 extension removed. The path is escaped as literal heading text, so
 punctuation in a filename names a file rather than opening a link, an
@@ -105,6 +107,7 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
+    Target,
 )
 from prosiform.rewrite import Definition, destinations, rewritten, unmarked
 from prosiform.source import (
@@ -154,10 +157,11 @@ CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 class Overflow(Exception):
     """A heading the group's shift would place beyond the sixth level."""
 
-    def __init__(self, heading: str, level: int) -> None:
+    def __init__(self, heading: str, level: int, path: str) -> None:
         super().__init__(f"the heading {heading!r} would be emitted at level {level}")
         self.heading = heading
         self.level = level
+        self.path = path
 
 
 @dataclass(frozen=True)
@@ -181,6 +185,7 @@ class Group:
     parts: tuple[str, ...]
     entries: tuple[int, ...]
     record: Record
+    order: str
 
     @property
     def text(self) -> str:
@@ -193,18 +198,9 @@ class Group:
         return tuple(one.text for one in self.record.headings)
 
     @property
-    def sources(self) -> tuple[str | None, ...]:
-        """The source fragment each emitted heading answers to, in bundle order."""
-        return tuple(
-            one.origin.fragment if isinstance(one, Carried) else None
-            for one in self.record.headings
-        )
-
-    @property
-    def absorbed(self) -> str | None:
-        """The source fragment the file heading absorbed, where it absorbed one."""
-        first = self.record.headings[0]
-        return first.absorbed if isinstance(first, Generated) else None
+    def targets(self) -> tuple[tuple[Target, ...], ...]:
+        """The targets each emitted heading resolves, in bundle order."""
+        return tuple(one.answers for one in self.record.headings)
 
 
 def heading_text(path: str) -> str:
@@ -602,12 +598,10 @@ def group(
     emitted = [f"{ATX} {escaped(title)}"]
     text = shown_text(tokens)
     named = source_fragments(tokens)
-    wrapper = Generated(
-        title,
-        1,
-        FILENAME_WRAPPER,
-        None if absorbing is None else named[id(absorbing)],
-    )
+    resolving: list[Target] = [(path, None)]
+    if absorbing is not None:
+        resolving.append((path, named[id(absorbing)]))
+    wrapper = Generated(title, 1, FILENAME_WRAPPER, tuple(resolving))
     emitting_headings: list[Emitted] = [wrapper]
     recorded: list[Part] = []
     entries = [0] if selected is None else []
@@ -622,16 +616,19 @@ def group(
         if id(token) in needed:
             depth = level(token) + by
             if depth > MAX_LEVEL:
-                raise Overflow(text[id(token)], depth)
+                raise Overflow(text[id(token)], depth, path)
             shows = single_line(text[id(token)])
             ancestor = Ancestor(
                 shows,
                 depth,
-                Origin(
-                    path,
-                    None if token.map is None else token.map[0] + 1,
-                    level(token),
-                    named[id(token)],
+                (
+                    Origin(
+                        path,
+                        None if token.map is None else token.map[0] + 1,
+                        level(token),
+                        named[id(token)],
+                        by,
+                    ),
                 ),
             )
             emitting_headings.append(ancestor)
@@ -648,19 +645,23 @@ def group(
         for opening in carried:
             depth = level(opening) + by
             if depth > MAX_LEVEL:
-                raise Overflow(text[id(opening)], depth)
+                raise Overflow(text[id(opening)], depth, path)
         if token.type == HEADING_OPEN and id(token) in naming:
             entries.append(len(emitting_headings))
         emitting_headings.extend(
             Carried(
                 emitted_text(one, text[id(one)], by),
                 level(one) + by,
-                Origin(
-                    path,
-                    None if one.map is None else one.map[0] + 1,
-                    level(one),
-                    named[id(one)],
+                (
+                    Origin(
+                        path,
+                        None if one.map is None else one.map[0] + 1,
+                        level(one),
+                        named[id(one)],
+                        by,
+                    ),
                 ),
+                ((path, named[id(one)]),),
             )
             for one in carried
         )
@@ -676,7 +677,8 @@ def group(
     return Group(
         tuple(emitted),
         tuple(entries),
-        Record(path, by, tuple(emitting_headings), tuple(recorded)),
+        Record(path, None, tuple(emitting_headings), tuple(recorded)),
+        path,
     )
 
 

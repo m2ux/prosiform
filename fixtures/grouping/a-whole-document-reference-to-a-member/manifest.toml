@@ -1,0 +1,20 @@
+description = "A whole-document reference to a member carrying content above the grouping depth resolves to that member's overview subsection, which is named by the document's stem in title case. A member carrying nothing above that depth is given no subsection, and a whole-document reference to it resolves to its first contribution to the group."
+
+clauses = [
+  "Grouping — Document content above the grouping depth",
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "notes:2", "entry.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "entry"
+resolved = "entry"

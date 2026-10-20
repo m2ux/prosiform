@@ -1,0 +1,31 @@
+description = "The usage example that merges every document under a named directory arranges the closure into two merged groups: each is headed by its directory slug in title case, carries an Overview section holding each member's preamble under a subsection named by that document's stem, and emits one heading for each distinct source heading at the grouping depth. A whole-document reference to a member resolves to that member's overview subsection."
+
+clauses = [
+  "CLI contract — Usage examples",
+  "Grouping — Group membership",
+  "Grouping — Group structure",
+  "Grouping — Verbatim names",
+  "Grouping — Group naming",
+  "Grouping — Document content above the grouping depth",
+  "Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = [
+  "--group",
+  "artifacts:2",
+  "--group",
+  "modes:2",
+  "modes/plan-mode.md",
+]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Plan"
+resolved = "plan"

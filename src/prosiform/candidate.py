@@ -55,6 +55,7 @@ what disagreed. Nothing is published while a check fails.
 
 from collections.abc import Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import PurePosixPath
 from typing import Any
 
 from markdown_it.common.normalize_url import normalizeLink
@@ -75,7 +76,6 @@ from prosiform.bundle import (
 from prosiform.closure import Reference, marked
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
-    FILENAME_WRAPPER,
     Ancestor,
     Emitted,
     Generated,
@@ -375,11 +375,12 @@ def prose(tokens: Sequence[Token], span: Token) -> list[Token]:
 def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
     """What each emitted part of the bundle carries, in bundle order.
 
-    A group writes its file heading and then one part for each part the
+    A group writes its own heading and then one part for each part the
     provenance records, so a part after the first is named by that
     record: a selected range names the document and the lines it was
-    taken from, and a structural ancestor names the heading it emits.
-    A boundary then names two pieces of source rather than two offsets
+    taken from, a structural ancestor names the heading it emits, and a
+    generated heading names what the arrangement produced it as. A
+    boundary then names two pieces of source rather than two offsets
     into the output. A part the provenance records nothing for is named
     by its position, because the count is the structural pairing's to
     report and a boundary still has to say which part it concerns.
@@ -387,7 +388,7 @@ def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
     named: list[tuple[str, str]] = []
     for one in groups:
         path = one.record.path
-        named.append((f"the file heading for {path!r}", path))
+        named.append((f"the heading for {path!r}", path))
         for at in range(1, len(one.parts)):
             if at > len(one.record.parts):
                 named.append((f"the region at position {at} of {path!r}", path))
@@ -400,13 +401,13 @@ def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
                         part.path,
                     )
                 )
-            else:
+            elif isinstance(part, Ancestor):
+                held = part.origins[0].path
                 named.append(
-                    (
-                        f"the structural ancestor {part.text!r} of {path!r}",
-                        path,
-                    )
+                    (f"the structural ancestor {part.text!r} of {held!r}", held)
                 )
+            else:
+                named.append((f"the {part.kind} {part.text!r} of {path!r}", path))
     return named
 
 
@@ -498,17 +499,17 @@ def structure(
             raise Invalid(
                 GROUP_ISOLATION,
                 f"the group for {one.record.path!r} opens on a {opening.type!r} "
-                f"rather than on its filename heading",
+                f"rather than on its own heading",
             )
         at += 1
         for part in one.record.parts:
             span = spans[at]
-            if isinstance(part, Ancestor) and (
+            if isinstance(part, Ancestor | Generated) and (
                 span.type != HEADING_OPEN or level(span) != part.level
             ):
                 raise Invalid(
                     NO_EXPANSION,
-                    f"the structural ancestor {part.text!r} of {one.record.path!r} "
+                    f"the {part.kind} {part.text!r} of {one.record.path!r} "
                     f"is emitted as a {span.type!r} rather than as a heading at "
                     f"level {part.level}",
                 )
@@ -535,59 +536,93 @@ def above(tokens: Sequence[Token]) -> dict[int, tuple[int, ...]]:
     }
 
 
-def absorbing(record: Record, tokens: Sequence[Token]) -> set[int]:
-    """The source line of the heading the group's file heading names, if any.
+def absorbing(record: Record, path: str, tokens: Sequence[Token]) -> set[int]:
+    """The source line of the heading the group names in one source's place.
 
-    The file heading names the document's title whether the group
-    emitted that title's section or not, so a section beneath it is
-    placed by the file heading and the title is no structural
-    ancestor. The line is what the outline check reads it as emitted
-    at.
+    A file group's heading names the document's title, and a merged
+    group's overview subsection names its member's, whether the group
+    emitted that title's section or not: a section beneath it is placed
+    by that heading and the title is no structural ancestor. The line
+    is what the outline check reads it as emitted at.
     """
-    found = absorbed(tokens, heading_text(record.path))
+    named = heading_text(path) if record.merged is None else PurePosixPath(path).stem
+    found = absorbed(tokens, named)
     if found is None or found.map is None:
         return set()
     return {found.map[0] + 1}
 
 
-def placement(record: Record, tokens: Sequence[Token]) -> None:
+def sourced(one: Part) -> str | None:
+    """The source one emitted part carries content or structure from."""
+    if isinstance(one, Range):
+        return one.path
+    if isinstance(one, Ancestor):
+        return one.origins[0].path
+    return None
+
+
+def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
     """Hold one group's parts to the outline their source gave them.
 
     Each part the group emits is placed by the chain of eligible
     ancestor headings the source wrote above it, and every heading of
-    that chain is emitted before it: as the file heading that absorbed
-    it, as a selected region of its own, or as a structural ancestor.
-    A chain member the group emits nowhere is an outline the candidate
-    reconstructs differently from the one its author wrote.
+    that chain is emitted before it: as the heading that absorbed the
+    source's title, as a selected region of its own, or as a structural
+    ancestor. A chain member the group emits nowhere is an outline the
+    candidate reconstructs differently from the one its author wrote.
+
+    A merged group arranges its members by the grouping rules rather
+    than by any one source's order, and a heading several documents
+    contribute one text to is emitted once for all of them, so the
+    chain is read against every source line the group's headings
+    answer to rather than against the parts emitted before each one.
+    A file group emits its parts in its source's own order, so the
+    chain there is held to what stands above the part as well.
 
     The converse is held here as well. A structural ancestor is the
     only unselected source-derived content a group emits, so each of
     them places a part that follows it; one placing nothing is content
     the group emitted for no outline.
     """
-    chains = above(tokens)
-    emitted_at = absorbing(record, tokens)
-    needed: set[int] = set()
-    for one in record.parts:
-        at = one.lines[0] + 1 if isinstance(one, Range) else one.origin.line
-        chain = chains.get(at or 0, ())
-        needed.update(chain)
-        for line in chain:
-            if line not in emitted_at:
-                raise Invalid(
-                    OUTLINE_PRESERVATION,
-                    f"the part at line {at} of {record.path!r} is emitted below "
-                    f"none of the heading its source wrote at line {line}",
-                )
-        if at is not None:
+    answered: dict[str, set[int | None]] = {}
+    for each in record.placed():
+        for origin in each.origins:
+            answered.setdefault(origin.path, set()).add(origin.line)
+    needed: dict[str, set[int]] = {}
+    for path in record.paths():
+        tokens = parsed[path]
+        chains = above(tokens)
+        emitted_at: set[int | None] = set(absorbing(record, path, tokens))
+        if record.merged is not None:
+            emitted_at |= answered.get(path, set())
+        for one in record.parts:
+            if sourced(one) != path:
+                continue
+            at = (
+                one.lines[0] + 1
+                if isinstance(one, Range)
+                else one.origins[0].line
+                if isinstance(one, Ancestor)
+                else None
+            )
+            chain = chains.get(at or 0, ())
+            needed.setdefault(path, set()).update(chain)
+            for line in chain:
+                if line not in emitted_at:
+                    raise Invalid(
+                        OUTLINE_PRESERVATION,
+                        f"the part at line {at} of {path!r} is emitted below "
+                        f"none of the heading its source wrote at line {line}",
+                    )
             emitted_at.add(at)
     for one in record.ancestors():
-        if one.origin.line not in needed:
-            raise Invalid(
-                NO_EXPANSION,
-                f"the structural ancestor {one.text!r} of {record.path!r} places "
-                f"no part the group emits",
-            )
+        for origin in one.origins:
+            if origin.line not in needed.get(origin.path, set()):
+                raise Invalid(
+                    NO_EXPANSION,
+                    f"the structural ancestor {one.text!r} of {origin.path!r} "
+                    f"places no part the group emits",
+                )
 
 
 def structural(
@@ -606,8 +641,8 @@ def structural(
     if found:
         raise Invalid(
             NO_NEW_LINKS,
-            f"the structural ancestor {one.text!r} of {record.path!r} publishes "
-            f"the use(s) {found!r}",
+            f"the structural ancestor {one.text!r} of {one.origins[0].path!r} "
+            f"publishes the use(s) {found!r}",
         )
 
 
@@ -618,26 +653,30 @@ def coverage(groups: Sequence[Group]) -> None:
     which two regions carrying the same prose do not share, so repeated
     identical prose in different source regions is not duplication and
     counting occurrences of a string decides nothing here.
+
+    The ranges are read by source rather than by group, because a
+    grouping rule arranges one document's regions among another's and
+    two regions of one source overlap wherever they are emitted.
     """
-    seen: set[tuple[str, tuple[int, int]]] = set()
+    carried: dict[str, list[tuple[int, int]]] = {}
     for one in groups:
+        for each in one.record.ranges:
+            carried.setdefault(each.path, []).append(each.lines)
+    for path, held in carried.items():
         last = 0
-        for carried in one.record.ranges:
-            named = (carried.path, carried.lines)
-            if named in seen:
+        for span in sorted(held):
+            if held.count(span) > 1:
                 raise Invalid(
                     EXACTLY_ONCE,
-                    f"the region at lines {carried.lines} of {carried.path!r} is "
-                    f"carried more than once",
+                    f"the region at lines {span} of {path!r} is carried more than once",
                 )
-            if carried.lines[0] < last:
+            if span[0] < last:
                 raise Invalid(
                     EXACTLY_ONCE,
-                    f"the region at lines {carried.lines} of {carried.path!r} "
-                    f"overlaps the region before it",
+                    f"the region at lines {span} of {path!r} overlaps the "
+                    f"region before it",
                 )
-            seen.add(named)
-            last = carried.lines[1]
+            last = span[1]
 
 
 def emitted(groups: Sequence[Group]) -> list[tuple[Record, Emitted]]:
@@ -689,9 +728,14 @@ def levels(record: Record) -> None:
     """Hold one group's placed headings to their source levels and source order.
 
     A structural ancestor is placed by the level its author wrote under
-    the group's shift, as a carried heading is, so both are held here:
-    an ancestor emitted at another level would reconstruct an outline
-    its source never wrote.
+    the shift its arrangement gives it, as a carried heading is, so both
+    are held here: an ancestor emitted at another level would
+    reconstruct an outline its source never wrote.
+
+    A file group emits its headings in its source's order, so that
+    order is held here too. A merged group's order is the grouping
+    rules', which place one document's name beside another's, and the
+    outline each part keeps is held by `placement` instead.
 
     The record is held to the levels and the order its sources wrote
     before the candidate is read, because a level beyond the sixth is
@@ -701,14 +745,15 @@ def levels(record: Record) -> None:
     """
     at = 0
     for one in record.placed():
-        if one.level != one.origin.level + record.shift:
-            raise Invalid(
-                OUTLINE_PRESERVATION,
-                f"the heading {one.text!r} of {record.path!r} is emitted at level "
-                f"{one.level} where its source level {one.origin.level} under the "
-                f"group's shift of {record.shift} places it at "
-                f"{one.origin.level + record.shift}",
-            )
+        for origin in one.origins:
+            if one.level != origin.level + origin.shift:
+                raise Invalid(
+                    OUTLINE_PRESERVATION,
+                    f"the heading {one.text!r} of {origin.path!r} is emitted at "
+                    f"level {one.level} where its source level {origin.level} "
+                    f"under the shift of {origin.shift} it is arranged by places "
+                    f"it at {origin.level + origin.shift}",
+                )
         if one.level > MAX_LEVEL:
             raise Invalid(
                 DEPTH_SAFETY,
@@ -719,15 +764,18 @@ def levels(record: Record) -> None:
             raise Invalid(
                 GROUP_ISOLATION,
                 f"the heading {one.text!r} of {record.path!r} is emitted at the "
-                f"level its group's filename heading holds",
+                f"level its group's own heading holds",
             )
-        if one.origin.line is not None and one.origin.line < at:
+        if record.merged is not None:
+            continue
+        line = one.origins[0].line
+        if line is not None and line < at:
             raise Invalid(
                 OUTLINE_PRESERVATION,
                 f"the heading {one.text!r} of {record.path!r} is emitted before a "
                 f"heading its source wrote above it",
             )
-        at = at if one.origin.line is None else one.origin.line
+        at = at if line is None else line
 
 
 def named(
@@ -759,40 +807,25 @@ def integrity(
     A destination is a slug, and two unrelated headings can produce one,
     so agreement between a link and a heading's text is not target
     integrity. What is checked is the provenance of the heading the
-    destination reaches: a whole-document target reaches that
-    document's filename wrapper, and a fragment reaches the heading
-    whose author wrote that fragment, or the wrapper that absorbed it.
+    destination reaches: each emitted heading records the targets it is
+    where they resolve, and a destination reaching a heading that
+    records another target was assigned to something else.
     """
-    for (path, fragment), destination in targets.items():
+    for named_target, destination in targets.items():
         found = reached.get(destination)
         if found is None:
             raise Invalid(
                 TARGET_INTEGRITY,
-                f"the destination {destination!r} assigned to {path!r} reaches no "
-                f"heading of the candidate",
+                f"the destination {destination!r} assigned to {named_target[0]!r} "
+                f"reaches no heading of the candidate",
             )
         record, one = found
-        if record.path != path or not answers(one, fragment):
+        if named_target not in one.answers:
             raise Invalid(
                 TARGET_INTEGRITY,
                 f"the destination {destination!r} assigned to the target "
-                f"{(path, fragment)!r} reaches {one.text!r} of {record.path!r}",
+                f"{named_target!r} reaches {one.text!r} of {record.path!r}",
             )
-
-
-def answers(one: Emitted, fragment: str | None) -> bool:
-    """Whether one emitted heading is what a target's fragment named.
-
-    A target with no fragment names a whole document, which the filename
-    wrapper heads. A fragment names the source heading that produced it,
-    and a wrapper that absorbed that heading stands in its place,
-    because the heading itself is not emitted.
-    """
-    if isinstance(one, Generated):
-        return one.kind == FILENAME_WRAPPER and (
-            fragment is None or one.absorbed == fragment
-        )
-    return fragment is not None and one.origin.fragment == fragment
 
 
 def entry(
@@ -982,7 +1015,7 @@ def validate(
     coverage(groups)
     for one in groups:
         levels(one.record)
-        placement(one.record, parsed[one.record.path])
+        placement(one.record, parsed)
     environment: dict[str, Any] = {}
     tokens = parse(bundled, budget, environment)
     physical = lines(bundled)
@@ -996,6 +1029,8 @@ def validate(
     for record, part, span in paired:
         if isinstance(part, Ancestor):
             structural(record, part, span, tokens)
+            continue
+        if isinstance(part, Generated):
             continue
         carried = part
         source = Side(

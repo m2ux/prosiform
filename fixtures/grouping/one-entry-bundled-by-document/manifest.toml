@@ -1,0 +1,21 @@
+description = "One entry bundled with no grouping rule in force puts each contributing document in a file group of its own, headed by its root-relative path. It is the arrangement the same entry under a grouping rule is compared with: the content selected and the entry destination reported are the same, and where each section sits is not."
+
+clauses = [
+  "Grouping",
+  "Input and output contract — Groups",
+  "Agent delivery contract — Entry destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["modes/plan-mode.md#operations"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Operations"
+resolved = "operations"

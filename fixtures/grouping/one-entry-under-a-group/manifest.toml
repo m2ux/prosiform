@@ -1,0 +1,30 @@
+description = "Two documents merged at one heading level show every arrangement the grouping rules make in one bundle: a section both documents write body text above its first subheading in splits into a variant per document and the names inside it stay with the document that wrote them, a section carrying only named items does not split, a name one document carries is left bare, and a name both carry is emitted once with each document's content beneath a variant heading."
+
+clauses = [
+  "Grouping — Group structure",
+  "Grouping — Verbatim names",
+  "Grouping — Document-keyed sections",
+  "Grouping — Residual ambiguity",
+  "Grouping — Variants by document",
+  "Grouping — Document content above the grouping depth",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "modes:2", "modes/plan-mode.md", "modes/review-mode.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Plan"
+resolved = "plan"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Review"
+resolved = "review"

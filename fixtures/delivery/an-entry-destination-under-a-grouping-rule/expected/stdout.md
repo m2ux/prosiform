@@ -1,13 +1,15 @@
-This bundle was built for [docs/guide](#docsguide) and [docs/notes](#docsnotes); everything else is material it references.
+This bundle was built for [Guide](#guide) and [Notes](#notes); everything else is material it references.
 
-# docs/guide
+# Docs
+
+## Guide
 
 An opening paragraph, above the first eligible heading.
 
-## Run
+### Run
 
 Carry the procedure out.
 
-# docs/notes
+## Notes
 
 What was observed while running it.
