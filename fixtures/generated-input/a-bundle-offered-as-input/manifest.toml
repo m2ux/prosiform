@@ -1,0 +1,20 @@
+description = "A published bundle offered back as a source is refused: its first heading is the file heading of the document it was built from, which is another document under the allowed source root."
+
+clauses = [
+  "Generated input policy",
+  "Generated input policy — a document-level H1 naming a document other than the one being read",
+]
+
+[invocation]
+root = "source"
+arguments = ["bundle.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_GENERATED_INPUT"
+reference = "docs/guide"
+source = "bundle.md:3"

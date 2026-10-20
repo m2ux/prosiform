@@ -34,10 +34,12 @@ from prosiform.source import (
     content,
     decode,
     fragments,
+    hashed,
     index,
     lines,
     nesting,
     occurrences,
+    opening_heading,
     owner,
     regions,
     section,
@@ -551,3 +553,40 @@ def test_a_use_outside_the_given_regions_is_not_counted() -> None:
     chosen = section(tokens, "two")
     assert chosen is not None
     assert occurrences(tokens, chosen) == 1
+
+
+def test_a_document_opening_on_a_top_level_heading_names_it() -> None:
+    first = opening_heading(parse("# docs/guide\n\nBody.\n\n# Later\n"))
+    assert first is not None
+    assert first.text == "docs/guide"
+    assert first.line == 1
+
+
+def test_a_document_whose_first_heading_is_deeper_opens_on_none() -> None:
+    assert opening_heading(parse("## Guide\n\nBody.\n\n# Later\n")) is None
+
+
+def test_a_top_level_heading_a_container_carries_opens_no_document() -> None:
+    assert opening_heading(parse("> # Guide\n\nBody.\n")) is None
+
+
+def test_a_document_carrying_no_heading_opens_on_none() -> None:
+    assert opening_heading(parse("Body with no heading.\n")) is None
+
+
+def test_a_heading_the_document_reaches_after_prose_is_still_its_first() -> None:
+    first = opening_heading(parse("An entry line.\n\n# notes\n\nBody.\n"))
+    assert first is not None
+    assert first.text == "notes"
+    assert first.line == 3
+
+
+def test_a_heading_like_line_inside_code_is_no_heading() -> None:
+    assert opening_heading(parse("    # notes\n")) is None
+    assert opening_heading(parse("~~~text\n# notes\n~~~\n")) is None
+
+
+def test_a_content_hash_is_taken_over_the_bytes_the_file_held() -> None:
+    assert hashed(b"# Guide\n") == hashed(b"# Guide\n")
+    assert hashed(b"# Guide\n") != hashed(b"# Guide\r\n")
+    assert len(hashed(b"")) == 64

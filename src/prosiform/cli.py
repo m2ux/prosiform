@@ -96,6 +96,25 @@ a heading a container carries names no section and fails as an
 unsupported target; one naming no heading of its document names
 nothing, and fails as the reference to a missing target it is.
 
+A source opening on a document-level H1 whose text, with a supported
+Markdown suffix appended, names another document under the allowed
+source root is refused as output offered as input. The document being
+read is not that other document, so a title a document's own path
+spells points at itself and bundles, and a heading-like line inside
+code is no heading at all. Detection is read from the complete source,
+because what a document opens on is a fact about the file rather than
+about the regions a run selected.
+
+Every source is captured at discovery as the canonical path its read
+arrived at and a hash of the bytes it held, and the whole set is
+rechecked once the candidate is built and before anything publishes. A
+source that changed, disappeared or resolved elsewhere fails the run,
+which publishes nothing and asks for a retry. The recheck is change
+detection between the two reads: a source can be written again after
+it, and a hash taken over one file at a time supplies no atomicity
+across the set, so a run needing strict reproducibility bundles from a
+snapshot made immutable outside this tool.
+
 The bundle is published once the whole candidate is built. A
 validation-only run publishes nothing, to either stream or to a named
 file; a run naming an output file writes it atomically, through a
@@ -125,7 +144,14 @@ from typing import IO, Any, NoReturn
 from markdown_it.token import Token
 
 from prosiform import PROFILE
-from prosiform.access import Absent, Outside, Symlinked, read_source
+from prosiform.access import (
+    Absent,
+    Outside,
+    Symlinked,
+    Unreadable,
+    present,
+    read_source,
+)
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
     HEADING_DEPTH_OVERFLOW,
@@ -191,6 +217,7 @@ from prosiform.source import (
     SRC,
     UNTERMINATED_FRONTMATTER,
     Ambiguous,
+    Capture,
     Nested,
     Selection,
     Source,
@@ -198,9 +225,11 @@ from prosiform.source import (
     content,
     decode,
     fragments,
+    hashed,
     lines,
     nesting,
     occurrences,
+    opening_heading,
     owner,
     regions,
     section,
@@ -220,6 +249,7 @@ STANDARD_OUTPUT = "-"
 MIN_DEPTH = 1
 MAX_DEPTH = 6
 
+GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
 INVALID_USAGE = "E_INVALID_USAGE"
@@ -227,6 +257,7 @@ MARKED_RESOURCE = "E_MARKED_RESOURCE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 SELF_REFERENCE = "E_SELF_REFERENCE"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
+SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
 SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
@@ -532,15 +563,30 @@ def location(name: str, at: int | None) -> str:
 
 @dataclass(frozen=True)
 class Opened:
-    """One source as the run opened it: its content, and the bytes the file held.
+    """One source as the run opened it: its content, its size and what it was.
 
     A byte budget is declared over what the file holds, frontmatter and
     any byte-order mark included, so the figure is taken at the read
-    and not from the content the strip returned.
+    and not from the content the strip returned. The capture is taken
+    there too, over the same bytes and the path they came from, so the
+    recheck before publication compares a later read against the read
+    the bundle was built from.
     """
 
     source: Source
     size: int
+    capture: Capture
+
+
+def canonical(root: Path, path: str) -> str:
+    """Where one root-relative source path resolves on the filesystem.
+
+    The allowed source root is canonicalized once and the read follows
+    no link, so the path a discovery resolves is the file whose bytes
+    the run holds. A later resolution naming somewhere else says the
+    source now resolves elsewhere.
+    """
+    return os.path.realpath(root / path)
 
 
 def read_document(root: Path, found: Reference) -> Opened:
@@ -610,8 +656,9 @@ def read_document(root: Path, found: Reference) -> Opened:
             reference=reference,
             source=name,
         ) from undecodable
+    captured = Capture(canonical(root, name), hashed(data))
     try:
-        return Opened(content(text), len(data))
+        return Opened(content(text), len(data), captured)
     except Unterminated as unclosed:
         raise input_failure(
             f"{written} {reference!r} names a document whose frontmatter "
@@ -638,6 +685,100 @@ def refused(name: str, source: Source, refusal: Refusal) -> Failure:
         reference=refusal.reference,
         source=location(name, source.line(refusal.line)),
     )
+
+
+def named_document(root: Path, read: str, title: str) -> str | None:
+    """The document one file heading's text names, other than the one carrying it.
+
+    A file heading is a root-relative path with its Markdown suffix
+    removed, so its text names a document when a supported suffix
+    appended to it reaches one under the allowed source root. The
+    document being read is not that document: a title a document's own
+    path spells points at itself, which is the absorbed title's worked
+    example and names no other source.
+    """
+    for suffix in SUFFIXES:
+        named = f"{title}{suffix}"
+        if named != read and present(root, named):
+            return named
+    return None
+
+
+def generated(root: Path, path: str, source: Source, tokens: Sequence[Token]) -> None:
+    """Refuse one source that opens on another document's file heading.
+
+    A published bundle carries generated file headings and rewritten
+    links, so bundling it again would rewrite generated structure as if
+    an author had written it. The file heading is the signal, and the
+    whole of it: it is no proof of origin, rewriting it defeats the
+    detection, and a bundle whose every group is merged is headed by a
+    directory slug and carries no file heading to read. What the
+    heading does establish is that this document opens by naming
+    another document under the root, which is what output read back as
+    input does.
+
+    The reading is of the complete source, because what a document
+    opens on is a fact about the file rather than about the regions a
+    run selected.
+    """
+    first = opening_heading(tokens)
+    if first is None:
+        return
+    named = named_document(root, path, first.text)
+    if named is None:
+        return
+    raise input_failure(
+        f"{path!r} opens on the file heading {first.text!r}, which names the "
+        f"document {named!r} under the allowed source root, so it is output "
+        f"offered as input",
+        code=GENERATED_INPUT,
+        remedy="bundle the sources the document was built from",
+        reference=first.text,
+        source=location(path, source.line(first.line)),
+    )
+
+
+def changed(path: str, what: str) -> Failure:
+    """One source that is no longer the source the run read."""
+    return input_failure(
+        f"the source {path!r} {what}, so the bundle would carry bytes the run "
+        f"no longer reads",
+        code=SOURCE_CHANGED,
+        remedy="run the compilation again, over sources nothing is writing",
+        reference=path,
+        source=path,
+    )
+
+
+def recheck(root: Path, captured: dict[str, Capture]) -> None:
+    """Hold every source the run read to still being the source it read.
+
+    Each source is read again and compared against the canonical path
+    it resolved to and the hash of the bytes it held. A source that
+    changed, disappeared or resolved elsewhere fails the run, and the
+    remedy is to run it again.
+
+    This is change detection. It establishes that a source differs from
+    what discovery read, between that read and this one, and nothing
+    beyond: a source can be written again after the comparison, and a
+    hash taken over one file at a time states nothing about the set of
+    them together. A run needing strict reproducibility bundles from a
+    source snapshot made immutable outside this tool.
+    """
+    for path in sorted(captured):
+        was = captured[path]
+        try:
+            data = read_source(root, path)
+        except Unreadable as unreadable:
+            raise changed(
+                path,
+                f"is no longer a document the allowed source root yields: {unreadable}",
+            ) from unreadable
+        now = canonical(root, path)
+        if now != was.identity:
+            raise changed(path, f"resolves to {now!r} rather than {was.identity!r}")
+        if hashed(data) != was.digest:
+            raise changed(path, "holds content other than the bytes the run read")
 
 
 def directories(root: Path) -> set[str]:
@@ -886,6 +1027,7 @@ def traverse(
     dict[str, Source],
     dict[str, list[Token]],
     dict[str, dict[str, Definition]],
+    dict[str, Capture],
     list[Reference],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
@@ -917,6 +1059,7 @@ def traverse(
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
     defined: dict[str, dict[str, Definition]] = {}
+    captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
     limits.hold(TARGETS, len(seen))
@@ -940,7 +1083,9 @@ def traverse(
             refusal = next(refusals(tokens), None)
             if refusal is not None:
                 raise refused(one.path, source, refusal)
+            generated(root, one.path, source, tokens)
             read[one.path] = source
+            captured[one.path] = opened.capture
             parsed[one.path] = tokens
             defined[one.path] = definitions(
                 environment.get(REFERENCES, {}), lines(source.text)
@@ -963,7 +1108,7 @@ def traverse(
                 discovered.append(one)
         found.extend(discovered)
         frontier = discovered
-    return read, parsed, defined, found
+    return read, parsed, defined, captured, found
 
 
 def unambiguous(paths: Sequence[str]) -> None:
@@ -1240,7 +1385,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     limits = budgets(options)
     try:
-        read, parsed, defined, found = traverse(root, referring, requested, limits)
+        read, parsed, defined, captured, found = traverse(
+            root, referring, requested, limits
+        )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
     if options.output != STANDARD_OUTPUT:
@@ -1250,6 +1397,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 f"the output path {options.output!r} names an input source"
             )
     bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
+    recheck(root, captured)
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:

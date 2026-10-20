@@ -5,11 +5,19 @@ a fixture cannot reach: a response whose text belongs to this build rather
 than to the contract, a write the stream refuses, and the status a request
 this build cannot carry out returns. Each case names a run, its status,
 and what each of the two streams carried.
+
+A source changing while the run reads it is such a case. A fixture
+declares a static source tree and the runner drives one command, so the
+corpus can state what a run does about a tree, never what it does about
+a tree being written. The recheck is therefore held here on both terms:
+the comparison itself, over a tree written between the two reads, and a
+whole run whose source is written as the run reads it, which publishes
+nothing to either stream or to a named file.
 """
 
 import json
 import os
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
@@ -18,6 +26,7 @@ from typing import IO, Any
 import pytest
 
 from prosiform import PROFILE
+from prosiform.access import read_source
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
     HEADING_DEPTH_OVERFLOW,
@@ -36,6 +45,7 @@ from prosiform.cli import (
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
     SELF_REFERENCE,
+    SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
     SOURCE_SYMLINK,
     SUCCESS,
@@ -43,13 +53,21 @@ from prosiform.cli import (
     UNEXPECTED_INTERNAL_ERROR,
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
+    Failure,
+    canonical,
     main,
     read_document,
+    recheck,
 )
 from prosiform.closure import resolve
 from prosiform.limits import FILES, RESOURCE_LIMIT
 from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
-from prosiform.source import NESTED_SECTION_TARGET, UNTERMINATED_FRONTMATTER
+from prosiform.source import (
+    NESTED_SECTION_TARGET,
+    UNTERMINATED_FRONTMATTER,
+    Capture,
+    hashed,
+)
 
 
 @dataclass(frozen=True)
@@ -1064,3 +1082,104 @@ def test_a_candidate_disagreeing_with_its_provenance_publishes_nothing(
     assert not destination.exists()
     assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
     assert "no accidental omissions" in run.diagnostics()[0]["message"]
+
+
+def captured_for(root: Path, path: str) -> dict[str, Capture]:
+    """What one source was when it was read, as discovery captures it."""
+    return {path: Capture(canonical(root, path), hashed(read_source(root, path)))}
+
+
+def test_a_source_nothing_wrote_passes_the_recheck(root: Path) -> None:
+    recheck(root, captured_for(root, "guide.md"))
+
+
+def test_a_source_written_after_the_read_fails_the_recheck(root: Path) -> None:
+    captured = captured_for(root, "guide.md")
+    (root / "guide.md").write_text("# Guide\n\nA line the run never read.\n")
+    with pytest.raises(Failure) as raised:
+        recheck(root, captured)
+    assert raised.value.diagnostic.code == SOURCE_CHANGED
+    assert raised.value.status == INPUT_FAILURE
+
+
+def test_a_source_removed_after_the_read_fails_the_recheck(root: Path) -> None:
+    captured = captured_for(root, "guide.md")
+    (root / "guide.md").unlink()
+    with pytest.raises(Failure) as raised:
+        recheck(root, captured)
+    assert raised.value.diagnostic.code == SOURCE_CHANGED
+
+
+def test_a_source_resolving_elsewhere_fails_the_recheck(tmp_path: Path) -> None:
+    for name in ("one", "two"):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "guide.md").write_text("# Guide\n")
+    os.symlink(tmp_path / "one", tmp_path / "now")
+    root = tmp_path / "now"
+    captured = captured_for(root, "guide.md")
+    (tmp_path / "now").unlink()
+    os.symlink(tmp_path / "two", tmp_path / "now")
+    with pytest.raises(Failure) as raised:
+        recheck(root, captured)
+    assert raised.value.diagnostic.code == SOURCE_CHANGED
+    assert str(tmp_path / "two" / "guide.md") in raised.value.diagnostic.message
+
+
+def writing_once(root: Path, write: Callable[[Path], object]) -> Callable[..., bytes]:
+    """A read that writes the source tree once, as a run's first read returns."""
+    reads: list[str] = []
+
+    def reading(at: Path, path: str) -> bytes:
+        data = read_source(at, path)
+        reads.append(path)
+        if len(reads) == 1:
+            write(root / path)
+        return data
+
+    return reading
+
+
+def test_a_source_written_during_the_run_publishes_nothing(
+    root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "prosiform.cli.read_source",
+        writing_once(root, lambda path: path.write_text("# Guide\n\nRewritten.\n")),
+    )
+    output = tmp_path / "bundle.md"
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(output),
+        "guide.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
+    assert not output.exists()
+
+
+def test_a_source_removed_during_the_run_publishes_nothing(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "prosiform.cli.read_source",
+        writing_once(root, lambda path: path.unlink()),
+    )
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
+
+
+def test_a_title_the_allowed_source_root_cannot_contain_names_no_document(
+    root: Path,
+) -> None:
+    (root.parent / "outside.md").write_text("# Outside\n")
+    (root / "titled.md").write_text("# ../outside\n\nBody.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "titled.md")
+    assert run.status == SUCCESS
+    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
