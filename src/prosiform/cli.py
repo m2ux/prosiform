@@ -49,6 +49,29 @@ selected. Traversal repeats over what each round adds until no round
 adds anything, so a reference graph with a cycle reaches a fixed point
 carrying each reachable region once.
 
+A mark means bundle this, and the only thing the run bundles is a local
+Markdown document. A marked reference carrying a scheme or an authority,
+and one naming a file outside the profile's suffixes, therefore fail: a
+resource is emitted as the author wrote it and nothing rewrites it, so
+marking one asks for a bundle carrying authoring syntax the mark
+promises never reaches a reader.
+
+A marked reference is classified by the identity it resolves to rather
+than by the text it was written as. Each link belongs to the innermost
+eligible section containing it, and to the document itself where no
+section does. A marked link whose target is the very node that owns it
+is a direct self-reference and fails; one naming an including ancestor,
+or the whole document a section sits in, resolves to the destination
+already present and expands nothing; and one naming another section of
+the same document is neither. Ownership is read from the document's
+structure rather than from what a run selected, so consolidating a
+section into a larger region leaves every classification as it was.
+
+Each budget the profile declares is counted as the design states and
+fails the compilation at the first boundary it crosses, with nothing
+truncated and no bundle published. One code reports every crossing and
+the message names the budget and the figure that crossed it.
+
 A reference with no fragment, or with an empty one, selects the whole
 document. A reference carrying a nonempty fragment selects the section
 that fragment names, which runs to the next document-level heading of
@@ -81,7 +104,7 @@ import re
 import sys
 import tempfile
 from collections.abc import Collection, Iterator, Sequence
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from importlib.metadata import version
 from pathlib import Path
 from typing import IO, NoReturn
@@ -110,6 +133,20 @@ from prosiform.closure import (
     resolve,
 )
 from prosiform.diagnostics import ERROR, FORMATS, TEXT, Diagnostic, Reporter
+from prosiform.limits import (
+    BUDGETS,
+    EXPANSION_DEPTH,
+    FILE_BYTES,
+    FILES,
+    INPUT_BYTES,
+    LINKS,
+    NESTING,
+    OUTPUT_BYTES,
+    RESOURCE_LIMIT,
+    TARGETS,
+    Crossed,
+    Limits,
+)
 from prosiform.profile import SUFFIXES, Refusal, is_markdown, parse, refusals
 from prosiform.source import (
     CLOSERS,
@@ -125,6 +162,9 @@ from prosiform.source import (
     fragments,
     lines,
     links,
+    nesting,
+    occurrences,
+    owner,
     regions,
     section,
 )
@@ -145,7 +185,9 @@ MAX_DEPTH = 6
 INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
 INVALID_USAGE = "E_INVALID_USAGE"
+MARKED_RESOURCE = "E_MARKED_RESOURCE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
+SELF_REFERENCE = "E_SELF_REFERENCE"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
 SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
@@ -154,6 +196,7 @@ UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
+DECIMAL = re.compile(r"^[0-9]+$")
 DIAGNOSTICS_OPTION = "--diagnostics"
 
 EXIT_STATUSES = """exit statuses:
@@ -217,11 +260,41 @@ def input_failure(
     )
 
 
+def crossing(crossed: Crossed) -> Failure:
+    """One crossed budget, as the input failure the contract declares it.
+
+    Every budget takes one code, because whichever was crossed the
+    remedy is the same shape, and the message names the boundary and
+    the figure that crossed it so a caller knows which to act on.
+    """
+    return input_failure(str(crossed), code=RESOURCE_LIMIT, remedy=crossed.remedy)
+
+
 class Parser(argparse.ArgumentParser):
     """An argument parser whose grammar failures are the command's own."""
 
     def error(self, message: str) -> NoReturn:
         raise usage_failure(message)
+
+
+def override(value: str) -> int:
+    """One budget override, which is a positive decimal integer and nothing else.
+
+    Zero is refused rather than read as unlimited: a budget exists to
+    be crossed, and a caller wanting a larger one names the number. A
+    value written in any other notation is a command line the grammar
+    does not admit.
+    """
+    if DECIMAL.match(value) is None or int(value) < 1:
+        raise argparse.ArgumentTypeError(
+            f"{value!r} is no positive decimal integer; zero is not unlimited"
+        )
+    return int(value)
+
+
+def budgets(options: argparse.Namespace) -> Limits:
+    """Every budget in force, as the command line left it."""
+    return Limits({budget: getattr(options, budget.dest) for budget in BUDGETS})
 
 
 def parser() -> Parser:
@@ -278,6 +351,15 @@ def parser() -> Parser:
         default=TEXT,
         help=f"the diagnostic format on standard error; default {TEXT}",
     )
+    for budget in BUDGETS:
+        grammar.add_argument(
+            budget.option,
+            metavar="N",
+            type=override,
+            default=budget.default,
+            help=f"the budget of {budget.counted}; "
+            f"a positive decimal integer, default {budget.default}",
+        )
     grammar.add_argument(
         "--version",
         action="store_true",
@@ -407,7 +489,20 @@ def location(name: str, at: int | None) -> str:
     return name if at is None else f"{name}:{at}"
 
 
-def read_document(root: Path, found: Reference) -> Source:
+@dataclass(frozen=True)
+class Opened:
+    """One source as the run opened it: its content, and the bytes the file held.
+
+    A byte budget is declared over what the file holds, frontmatter and
+    any byte-order mark included, so the figure is taken at the read
+    and not from the content the strip returned.
+    """
+
+    source: Source
+    size: int
+
+
+def read_document(root: Path, found: Reference) -> Opened:
     """One document's content, read under the allowed source root.
 
     A refusal is worded for the reference that asked for the document
@@ -475,7 +570,7 @@ def read_document(root: Path, found: Reference) -> Source:
             source=name,
         ) from undecodable
     try:
-        return content(text)
+        return Opened(content(text), len(data))
     except Unterminated as unclosed:
         raise input_failure(
             f"{written} {reference!r} names a document whose frontmatter "
@@ -595,6 +690,39 @@ def selection(
     )
 
 
+def self_referent(
+    tokens: Sequence[Token], path: str, at: int | None, found: Reference
+) -> bool:
+    """Whether one marked reference names the very node that carries it.
+
+    Identity is compared after the path and the fragment have resolved,
+    so two spellings of one section are one node and two sections of one
+    file are two. A document node and its heading-section nodes are
+    distinct, which is why selecting a whole document does not make its
+    links into that document's sections self-references, and why a
+    section's link back to its whole document is an ancestor inclusion
+    rather than a link to itself.
+
+    The owner is read from the document's structure, so the answer is
+    the same whether the owning section was selected on its own or
+    inside a region that consolidated it. A fragment naming no section
+    of the document names nothing here either, and the run reports it
+    as the reference to a missing target it is.
+    """
+    if found.path != path or at is None:
+        return False
+    holder = owner(tokens, at - 1)
+    if found.fragment is None:
+        return holder is None
+    if holder is None:
+        return False
+    try:
+        named = section(tokens, found.fragment)
+    except Nested:
+        return False
+    return named is not None and named[0] is holder
+
+
 def required(
     path: str,
     source: Source,
@@ -605,11 +733,20 @@ def required(
 
     A link the author marked is a reference the bundle must carry, and
     every other link is text: a mention is not resolved, the document
-    it names is not opened, and nothing about its shape is examined. A
-    marked reference carrying a scheme or an authority names no local
-    document, and one naming a file outside the profile's suffixes
-    names a resource; both are text by the same rule, and marking
-    neither opens them nor refuses them.
+    it names is not opened, and nothing about its shape is examined.
+
+    What a mark asks for is a bundled document, so a marked reference
+    that names no local Markdown document names something the bundle
+    will not carry. One carrying a scheme or an authority and one
+    naming a file outside the profile's suffixes are both resources,
+    emitted as authored and rewritten by nothing, and marking one is
+    refused at the run rather than published with its mark intact.
+
+    A marked reference naming the node that owns it is a direct
+    self-reference and is refused. One naming an including ancestor, or
+    the whole document a section sits in, names a destination the
+    bundle already carries, and the traversal reaches it as it reaches
+    any identity it has seen.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for link in links(tokens, selected):
@@ -636,12 +773,33 @@ def required(
                 source=at,
             ) from malformed
         if found.external or not is_markdown(found.path):
-            continue
+            raise input_failure(
+                f"the marked reference {link.destination!r} names a resource "
+                f"rather than a local Markdown document, and a resource is "
+                f"carried as its author wrote it rather than bundled",
+                code=MARKED_RESOURCE,
+                remedy="cite it without the mark",
+                reference=link.destination,
+                source=at,
+            )
+        if self_referent(tokens, path, link.line, found):
+            carrier = "section" if found.fragment is not None else "document"
+            raise input_failure(
+                f"the marked reference {link.destination!r} names the {carrier} "
+                f"that carries it, which is a direct self-reference",
+                code=SELF_REFERENCE,
+                remedy="cite it without the mark, or name another document or section",
+                reference=link.destination,
+                source=at,
+            )
         yield replace(found, origin=at)
 
 
 def traverse(
-    root: Path, referrer: Reference | None, requested: Sequence[Reference]
+    root: Path,
+    referrer: Reference | None,
+    requested: Sequence[Reference],
+    limits: Limits,
 ) -> tuple[dict[str, Source], dict[str, list[Token]], list[Reference]]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -659,30 +817,57 @@ def traverse(
     traversal returns is what the bundle is composed from, so the
     bundle follows from the closure rather than from the order its
     documents were discovered in.
+
+    A round is one link hop: an entry reference stands at no hops, and
+    a reference a round discovers stands at that round's number. A
+    selection only grows, so the round a reference is first discovered
+    in is the shortest path from the nearest entry reference to it,
+    which is what the expansion-depth budget is declared over. The
+    budgets over what the run opens, counts and reaches are held here
+    as each figure is reached, so a run crosses a boundary at the point
+    it crosses it rather than after building what it could not keep.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
+    limits.hold(TARGETS, len(seen))
+    counted: dict[str, int] = {}
+    total = 0
+    hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
     while frontier:
+        hop += 1
         for one in frontier:
             if not one.path or one.path in read:
                 continue
-            source = read_document(root, one)
-            tokens = parse(source.text)
+            opened = read_document(root, one)
+            source = opened.source
+            limits.hold(FILE_BYTES, opened.size)
+            total += opened.size
+            limits.hold(INPUT_BYTES, total)
+            tokens = parse(source.text, limits.of(NESTING))
+            limits.hold(NESTING, nesting(tokens))
             refusal = next(refusals(tokens), None)
             if refusal is not None:
                 raise refused(one.path, source, refusal)
             read[one.path] = source
             parsed[one.path] = tokens
+            limits.hold(FILES, len(read))
         discovered: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
             chosen = selection(parsed[path], selecting, requested)
+            regions_read = (
+                tuple(regions(parsed[path])) if chosen is None else chosen.regions
+            )
+            counted[path] = occurrences(parsed[path], regions_read)
+            limits.hold(LINKS, sum(counted.values()))
             for one in required(path, read[path], parsed[path], chosen):
                 if (one.path, one.fragment) in seen:
                     continue
+                limits.hold(EXPANSION_DEPTH, hop)
                 seen.add((one.path, one.fragment))
+                limits.hold(TARGETS, len(seen))
                 discovered.append(one)
         found.extend(discovered)
         frontier = discovered
@@ -847,7 +1032,11 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
                 remedy="name a directory the source root carries",
             )
 
-    read, parsed, found = traverse(root, referring, requested)
+    limits = budgets(options)
+    try:
+        read, parsed, found = traverse(root, referring, requested, limits)
+    except Crossed as crossed:
+        raise crossing(crossed) from crossed
     if options.output != STANDARD_OUTPUT:
         destination = Path(options.output).resolve()
         if destination in sources(root, read):
@@ -855,6 +1044,10 @@ def execute(arguments: Sequence[str], stdout: IO[str]) -> int:
                 f"the output path {options.output!r} names an input source"
             )
     bundled = compose(read, parsed, referring, requested, found)
+    try:
+        limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
+    except Crossed as crossed:
+        raise crossing(crossed) from crossed
     if options.check:
         return SUCCESS
     if options.output == STANDARD_OUTPUT:
