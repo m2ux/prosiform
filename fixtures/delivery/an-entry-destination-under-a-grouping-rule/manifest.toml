@@ -1,0 +1,27 @@
+description = "A grouping rule naming a directory the sources sit under is accepted, and the run reports the entry references and destinations its bundle's entry line carries. The rule arranges nothing here: v1 as built parses and validates a rule and emits the same file-headed groups either way, so the expected bundle shows no merged group and the fixture states what is reported rather than how a group is arranged."
+
+clauses = [
+  "Agent delivery contract — Entry destinations",
+  "Grouping — a grouping rule naming a directory under the allowed source root is accepted",
+  "Post-compilation invariants — Entry line integrity",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "docs:1", "docs/notes.md", "docs/guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "docs/guide"
+destination = "docsguide"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "docs/notes"
+destination = "docsnotes"
