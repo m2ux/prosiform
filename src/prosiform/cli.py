@@ -171,6 +171,7 @@ from prosiform.closure import (
     Reference,
     components,
     external,
+    identity,
     inside,
     marked,
     resolve,
@@ -316,9 +317,17 @@ def input_failure(
     code: str,
     remedy: str = "",
     reference: str | None = None,
+    resolved: str | None = None,
     source: str | None = None,
+    chain: Sequence[str] = (),
 ) -> Failure:
-    """A command line that is well formed and names something the run refuses."""
+    """A command line that is well formed and names something the run refuses.
+
+    The evidence a failure carries is the evidence it has: a reference
+    the run resolved far enough to name a document carries that
+    identity, and one the traversal reached through other references
+    carries the chain of them.
+    """
     return Failure(
         INPUT_FAILURE,
         Diagnostic(
@@ -326,7 +335,9 @@ def input_failure(
             message,
             code=code,
             reference=reference,
+            resolved=resolved,
             source=source,
+            chain=tuple(chain) or None,
             remedy=remedy or None,
         ),
     )
@@ -541,6 +552,20 @@ def entry(text: str) -> Reference:
     return found
 
 
+def entered(
+    referrer: Reference | None, requested: Sequence[Reference]
+) -> list[Reference]:
+    """Each entry reference standing at the head of the chain it opens.
+
+    An entry reference is reached by nothing, so the chain a
+    diagnostic about it carries is the one identity it names. A
+    fragment alone names a section of the referring document, which is
+    the base its identity is written against.
+    """
+    base = referrer.path if referrer is not None else ""
+    return [replace(one, chain=(identity(one, base),)) for one in requested]
+
+
 def sources(root: Path, read: Collection[str]) -> set[Path]:
     """Where every source the run read sits, under the allowed source root.
 
@@ -608,6 +633,7 @@ def read_document(root: Path, found: Reference) -> Opened:
     """
     reference, name = found.original, found.path
     written = "the entry reference" if found.origin is None else "the reference"
+    chain = found.chain
     if not is_markdown(name):
         raise input_failure(
             f"the entry reference {reference!r} names a document whose suffix is "
@@ -615,6 +641,7 @@ def read_document(root: Path, found: Reference) -> Opened:
             code=UNSUPPORTED_ENTRY_SUFFIX,
             remedy=f"name a document ending {' or '.join(SUFFIXES)}",
             reference=reference,
+            chain=chain,
         )
     try:
         data = read_source(root, name)
@@ -626,6 +653,7 @@ def read_document(root: Path, found: Reference) -> Opened:
             remedy="name the document the link points at, under the source root",
             reference=reference,
             source=found.origin,
+            chain=chain,
         ) from linked
     except Outside as outside:
         raise input_failure(
@@ -635,6 +663,7 @@ def read_document(root: Path, found: Reference) -> Opened:
             remedy="name a document the source root carries",
             reference=reference,
             source=found.origin,
+            chain=chain,
         ) from outside
     except Absent as absent:
         raise input_failure(
@@ -643,6 +672,7 @@ def read_document(root: Path, found: Reference) -> Opened:
             remedy="name a document the source root carries",
             reference=reference,
             source=found.origin,
+            chain=chain,
         ) from absent
     try:
         text = decode(data)
@@ -655,6 +685,7 @@ def read_document(root: Path, found: Reference) -> Opened:
             remedy=f"save the document as {ENCODING.upper()}",
             reference=reference,
             source=name,
+            chain=chain,
         ) from undecodable
     captured = Capture(canonical(root, name), hashed(data))
     try:
@@ -668,15 +699,20 @@ def read_document(root: Path, found: Reference) -> Opened:
             remedy=f"close the block with a line of exactly {' or '.join(CLOSERS)}",
             reference=reference,
             source=location(name, unclosed.line),
+            chain=chain,
         ) from unclosed
 
 
-def refused(name: str, source: Source, refusal: Refusal) -> Failure:
+def refused(
+    name: str, source: Source, refusal: Refusal, chain: Sequence[str]
+) -> Failure:
     """One construct the profile refuses, reported against the source carrying it.
 
     The line the parser reports is a line of the content the strip
     returned, and the line the diagnostic carries is the line that content
-    occupies in the file.
+    occupies in the file. The chain is the one that reached the source,
+    because the construct is where the run arrived rather than something
+    a further reference named.
     """
     return input_failure(
         refusal.message,
@@ -684,6 +720,7 @@ def refused(name: str, source: Source, refusal: Refusal) -> Failure:
         remedy=refusal.remedy,
         reference=refusal.reference,
         source=location(name, source.line(refusal.line)),
+        chain=chain,
     )
 
 
@@ -704,7 +741,13 @@ def named_document(root: Path, read: str, title: str) -> str | None:
     return None
 
 
-def generated(root: Path, path: str, source: Source, tokens: Sequence[Token]) -> None:
+def generated(
+    root: Path,
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chain: Sequence[str],
+) -> None:
     """Refuse one source that opens on another document's file heading.
 
     A published bundle carries generated file headings and rewritten
@@ -735,10 +778,11 @@ def generated(root: Path, path: str, source: Source, tokens: Sequence[Token]) ->
         remedy="bundle the sources the document was built from",
         reference=first.text,
         source=location(path, source.line(first.line)),
+        chain=chain,
     )
 
 
-def changed(path: str, what: str) -> Failure:
+def changed(path: str, what: str, chain: Sequence[str]) -> Failure:
     """One source that is no longer the source the run read."""
     return input_failure(
         f"the source {path!r} {what}, so the bundle would carry bytes the run "
@@ -747,10 +791,11 @@ def changed(path: str, what: str) -> Failure:
         remedy="run the compilation again, over sources nothing is writing",
         reference=path,
         source=path,
+        chain=chain,
     )
 
 
-def unsafe(boundary: Unsafe) -> Failure:
+def unsafe(boundary: Unsafe, chain: Sequence[str]) -> Failure:
     """One bundle boundary that would place content inside an unintended container.
 
     The defect is in the documents the run was asked to bundle
@@ -766,10 +811,13 @@ def unsafe(boundary: Unsafe) -> Failure:
         remedy=boundary.remedy,
         reference=boundary.path,
         source=boundary.path,
+        chain=chain,
     )
 
 
-def recheck(root: Path, captured: dict[str, Capture]) -> None:
+def recheck(
+    root: Path, captured: dict[str, Capture], chains: dict[str, tuple[str, ...]]
+) -> None:
     """Hold every source the run read to still being the source it read.
 
     Each source is read again and compared against the canonical path
@@ -792,12 +840,21 @@ def recheck(root: Path, captured: dict[str, Capture]) -> None:
             raise changed(
                 path,
                 f"is no longer a document the allowed source root yields: {unreadable}",
+                chains.get(path, ()),
             ) from unreadable
         now = canonical(root, path)
         if now != was.identity:
-            raise changed(path, f"resolves to {now!r} rather than {was.identity!r}")
+            raise changed(
+                path,
+                f"resolves to {now!r} rather than {was.identity!r}",
+                chains.get(path, ()),
+            )
         if hashed(data) != was.digest:
-            raise changed(path, "holds content other than the bytes the run read")
+            raise changed(
+                path,
+                "holds content other than the bytes the run read",
+                chains.get(path, ()),
+            )
 
 
 def directories(root: Path) -> set[str]:
@@ -827,7 +884,22 @@ def contributing(
     return dict(sorted(selected.items()))
 
 
+def reaching(selected: dict[str, list[Reference]]) -> dict[str, tuple[str, ...]]:
+    """The inclusion chain that reached each document the bundle carries.
+
+    A document several references select is reached by each of them,
+    and the one the chain names is the first the traversal discovered,
+    which is the shortest route to it. A diagnostic about the document
+    rather than about one reference into it — a construct the profile
+    refuses, a boundary two regions make unsafe — names that route.
+    """
+    return {
+        path: selecting[0].chain for path, selecting in selected.items() if selecting
+    }
+
+
 def selection(
+    path: str,
     tokens: Sequence[Token],
     references: Sequence[Reference],
     entries: Collection[Reference],
@@ -848,6 +920,11 @@ def selection(
     and nothing else named is the selection `None`, whose entry is the
     file heading; a whole document only a dependency selected enters
     the entry line not at all.
+
+    A fragment the document does not yield is a reference that reached
+    a document and no section of it, so its diagnostic names that
+    document as the identity it resolved to and the chain that reached
+    the reference.
     """
     wanted: set[int] = set()
     named: list[Token] = []
@@ -868,7 +945,9 @@ def selection(
                 code=AMBIGUOUS_SOURCE_HEADING,
                 remedy="retitle one of the headings so each takes a slug of its own",
                 reference=one.original,
+                resolved=path,
                 source=one.origin,
+                chain=one.chain,
             ) from shared
         except Nested as nested:
             raise input_failure(
@@ -877,7 +956,9 @@ def selection(
                 code=NESTED_SECTION_TARGET,
                 remedy="name a heading the document carries at its own level",
                 reference=one.original,
+                resolved=path,
                 source=one.origin,
+                chain=one.chain,
             ) from nested
         if found is None:
             raise input_failure(
@@ -886,7 +967,9 @@ def selection(
                 code=TARGET_NOT_FOUND,
                 remedy="name a heading the document carries",
                 reference=one.original,
+                resolved=path,
                 source=one.origin,
+                chain=one.chain,
             )
         if one in entries:
             named.append(found[0])
@@ -936,7 +1019,9 @@ def self_referent(
     return named is not None and named[0] is holder
 
 
-def marked_resource(subject: str, reference: str, at: str) -> Failure:
+def marked_resource(
+    subject: str, reference: str, at: str, chain: Sequence[str]
+) -> Failure:
     """One marked reference naming a resource, as the refusal the contract declares.
 
     A mark asks for a bundled document and the bundle carries a
@@ -963,6 +1048,7 @@ def marked_resource(subject: str, reference: str, at: str) -> Failure:
         remedy="cite it without the mark",
         reference=reference,
         source=at,
+        chain=chain,
     )
 
 
@@ -971,6 +1057,7 @@ def required(
     source: Source,
     tokens: Sequence[Token],
     chosen: Selection | None,
+    chain: Sequence[str],
 ) -> Iterator[Reference]:
     """Every dependency the selected content of one source marks.
 
@@ -995,14 +1082,21 @@ def required(
     the whole document a section sits in, names a destination the
     bundle already carries, and the traversal reaches it as it reaches
     any identity it has seen.
+
+    The chain passed in is the one that reached this source, and
+    every reference the source marks stands one hop beyond it. A
+    reference refused here therefore reports the route the run followed
+    to the link, which is what an author needs to find the document
+    that wrote it.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         if not marked(use.opening):
             continue
         at = location(path, source.line(use.line))
+        route = (*chain, use.destination)
         if use.resource:
-            raise marked_resource("image", use.destination, at)
+            raise marked_resource("image", use.destination, at, route)
         try:
             found = inside(path, use.destination)
         except OutsideRoot as outside:
@@ -1013,6 +1107,7 @@ def required(
                 "without the mark",
                 reference=use.destination,
                 source=at,
+                chain=route,
             ) from outside
         except Malformed as malformed:
             raise input_failure(
@@ -1021,9 +1116,10 @@ def required(
                 remedy="write the dependency as a reference the profile resolves",
                 reference=use.destination,
                 source=at,
+                chain=route,
             ) from malformed
         if found.external or not is_markdown(found.path):
-            raise marked_resource("reference", use.destination, at)
+            raise marked_resource("reference", use.destination, at, route)
         if self_referent(tokens, path, use.line, found):
             carrier = "section" if found.fragment is not None else "document"
             raise input_failure(
@@ -1032,9 +1128,11 @@ def required(
                 code=SELF_REFERENCE,
                 remedy="cite it without the mark, or name another document or section",
                 reference=use.destination,
+                resolved=identity(found),
                 source=at,
+                chain=(*chain, identity(found)),
             )
-        yield replace(found, origin=at)
+        yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 
 def traverse(
@@ -1065,6 +1163,13 @@ def traverse(
     traversal returns is what the bundle is composed from, so the
     bundle follows from the closure rather than from the order its
     documents were discovered in.
+
+    Each reference carries the chain that reached it, which is the
+    chain of the first reference naming the document the link was
+    written in and the reference's own identity after it. That first
+    reference is the one the shortest route arrived by, because the
+    rounds discover a document at the hop its nearest entry reference
+    reaches it in.
 
     A round is one link hop: an entry reference stands at no hops, and
     a reference a round discovers stands at that round's number. A
@@ -1101,8 +1206,8 @@ def traverse(
             limits.hold(NESTING, nesting(tokens))
             refusal = next(refusals(tokens), None)
             if refusal is not None:
-                raise refused(one.path, source, refusal)
-            generated(root, one.path, source, tokens)
+                raise refused(one.path, source, refusal, one.chain)
+            generated(root, one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
@@ -1112,13 +1217,14 @@ def traverse(
             limits.hold(FILES, len(read))
         discovered: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
-            chosen = selection(parsed[path], selecting, requested)
+            chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
                 tuple(regions(parsed[path])) if chosen is None else chosen.regions
             )
             counted[path] = occurrences(parsed[path], regions_read)
             limits.hold(LINKS, sum(counted.values()))
-            for one in required(path, read[path], parsed[path], chosen):
+            reached = selecting[0].chain
+            for one in required(path, read[path], parsed[path], chosen, reached):
                 if (one.path, one.fragment) in seen:
                     continue
                 limits.hold(EXPANSION_DEPTH, hop)
@@ -1130,10 +1236,10 @@ def traverse(
     return read, parsed, defined, captured, found
 
 
-def unambiguous(paths: Sequence[str]) -> None:
+def unambiguous(selected: dict[str, list[Reference]]) -> None:
     """Hold each file heading to naming one source, as a reader must read it."""
     headed: dict[str, str] = {}
-    for path in paths:
+    for path, selecting in selected.items():
         title = heading_text(path)
         if title in headed:
             raise input_failure(
@@ -1142,6 +1248,7 @@ def unambiguous(paths: Sequence[str]) -> None:
                 code=AMBIGUOUS_FILE_GROUP,
                 remedy="bundle one of the two, or rename one of the documents",
                 reference=path,
+                chain=selecting[0].chain,
             )
         headed[title] = path
 
@@ -1166,7 +1273,7 @@ def assembled(
                     tokens,
                     lines(source.text),
                     defined[path],
-                    selection(tokens, selecting, entries),
+                    selection(path, tokens, selecting, entries),
                     assigned,
                 )
             )
@@ -1178,6 +1285,7 @@ def assembled(
                 remedy="raise the heading in the source, or select a section of it",
                 reference=path,
                 source=path,
+                chain=selecting[0].chain,
             ) from beyond
     return groups
 
@@ -1257,7 +1365,7 @@ def compose(
     as the input failure it is.
     """
     selected = contributing(referrer, found)
-    unambiguous(list(selected))
+    unambiguous(selected)
     headed = assembled(read, parsed, defined, selected, entries, None)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(list(selected), headed, assigned)
@@ -1277,7 +1385,8 @@ def compose(
             limits.of(NESTING),
         )
     except Unsafe as boundary:
-        raise unsafe(boundary) from boundary
+        reached = reaching(selected).get(boundary.path or "", ())
+        raise unsafe(boundary, reached) from boundary
     return bundled, named
 
 
@@ -1396,6 +1505,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     root = Path(options.root).resolve()
     referring = entry(options.referrer) if options.referrer else None
+    if referring is not None:
+        referring = replace(referring, chain=(identity(referring),))
+    requested = entered(referring, requested)
 
     if not root.is_dir():
         raise input_failure(
@@ -1427,7 +1539,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 f"the output path {options.output!r} names an input source"
             )
     bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
-    recheck(root, captured)
+    recheck(root, captured, reaching(contributing(referring, found)))
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:

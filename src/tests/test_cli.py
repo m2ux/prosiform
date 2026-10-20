@@ -386,6 +386,50 @@ def written(root: Path, name: str, text: str) -> None:
     path.write_text(text)
 
 
+def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac gone](missing.md).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#nowhere")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["chain"] == ["guide.md#nowhere"]
+
+
+def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
+    written(root, "entry.md", "# Entry\n\nSee [\u00ac notes](docs/notes.md#detail).\n")
+    written(
+        root,
+        "docs/notes.md",
+        "# Notes\n\n## Detail\n\nSee [\u00ac other](other.md#nowhere).\n",
+    )
+    written(root, "docs/other.md", "# Other\n\n## Here\n\nContent.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "entry.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
+    reported = run.diagnostics()[0]
+    assert reported["chain"] == [
+        "entry.md",
+        "docs/notes.md#detail",
+        "docs/other.md#nowhere",
+    ]
+    assert reported["reference"] == "other.md#nowhere"
+    assert reported["resolved"] == "docs/other.md"
+    assert reported["source"] == "docs/notes.md:5"
+
+
+def test_a_document_a_dependency_reached_reports_the_route_to_it(root: Path) -> None:
+    written(root, "entry.md", "# Entry\n\nSee [\u00ac notes](docs/notes.md).\n")
+    written(root, "docs/notes.md", "# Notes\n\n<div>raw</div>\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "entry.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [RAW_HTML]
+    assert run.diagnostics()[0]["chain"] == ["entry.md", "docs/notes.md"]
+
+
+def test_a_usage_failure_reaching_no_document_carries_no_chain(root: Path) -> None:
+    run = invoke("--root", str(root), "--diagnostics", "json", "--group", "x", "g.md")
+    assert run.status == USAGE_FAILURE
+    assert "chain" not in run.diagnostics()[0]
+
+
 @pytest.mark.parametrize(
     ("source", "code"),
     [
@@ -1091,14 +1135,14 @@ def captured_for(root: Path, path: str) -> dict[str, Capture]:
 
 
 def test_a_source_nothing_wrote_passes_the_recheck(root: Path) -> None:
-    recheck(root, captured_for(root, "guide.md"))
+    recheck(root, captured_for(root, "guide.md"), {})
 
 
 def test_a_source_written_after_the_read_fails_the_recheck(root: Path) -> None:
     captured = captured_for(root, "guide.md")
     (root / "guide.md").write_text("# Guide\n\nA line the run never read.\n")
     with pytest.raises(Failure) as raised:
-        recheck(root, captured)
+        recheck(root, captured, {"guide.md": ("guide.md",)})
     assert raised.value.diagnostic.code == SOURCE_CHANGED
     assert raised.value.status == INPUT_FAILURE
 
@@ -1107,7 +1151,7 @@ def test_a_source_removed_after_the_read_fails_the_recheck(root: Path) -> None:
     captured = captured_for(root, "guide.md")
     (root / "guide.md").unlink()
     with pytest.raises(Failure) as raised:
-        recheck(root, captured)
+        recheck(root, captured, {"guide.md": ("guide.md",)})
     assert raised.value.diagnostic.code == SOURCE_CHANGED
 
 
@@ -1121,7 +1165,7 @@ def test_a_source_resolving_elsewhere_fails_the_recheck(tmp_path: Path) -> None:
     (tmp_path / "now").unlink()
     os.symlink(tmp_path / "two", tmp_path / "now")
     with pytest.raises(Failure) as raised:
-        recheck(root, captured)
+        recheck(root, captured, {"guide.md": ("guide.md",)})
     assert raised.value.diagnostic.code == SOURCE_CHANGED
     assert str(tmp_path / "two" / "guide.md") in raised.value.diagnostic.message
 
