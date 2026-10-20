@@ -327,7 +327,8 @@ def main() -> int:
             continue
         changes.place(key, queue.line(key), issues[key], status.get(key), new, item_ids[key], home)
     asking = any(note.strip().startswith(('order', 'ask')) for note in queue.notes)
-    printed = changes.report(notes=queue.notes, unresolved=queue.board.unresolved, asking=asking)
+    printed = changes.report(notes=queue.notes, unresolved=queue.board.unresolved,
+                             asking=asking or bool(queue.unresolvable))
     return 1 if queue.unresolvable else printed
 
 

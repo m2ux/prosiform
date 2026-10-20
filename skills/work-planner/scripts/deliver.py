@@ -18,10 +18,11 @@ one epic start in the order that epic's own graph sets, whatever its siblings wa
 name each other in Joins are one unit, and a unit is one session's work.
 
 Printed: a unit line for each available unit, with the record folder, branch and worktree its ids and
-Description give it; a hold line for each reserved row; a blocked line for a free row whose
+Description give it; an unresolvable line for a row gated on a dependency entry nothing can resolve,
+naming the entry; a hold line for each reserved row; a blocked line for a free row whose
 dependencies are not delivered or whose joined task is unavailable; a merge line for an open pull
 request that targets the epic base when its test plan has passed; and an unresolved line for an
-issue not given.
+issue not given. A run that met an unresolvable entry exits 1.
 
 --reserve sets the record folder as each row's single link. The record README links its work item.
 --release frees the row by replacing that folder link with its work-item file link. Both write the
@@ -149,6 +150,7 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
         if not task:
             continue
         held = reservation(ident)
+        cause = ''
         if done_mark(cell(header, r, 'Done')) == TICK:
             state[task] = 'done'
         elif in_flight(ident):
@@ -157,11 +159,13 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
             state[task] = 'held'
         elif prerequisites is Resolution.UNRESOLVABLE:
             state[task] = 'unresolvable'
-        elif prerequisites is Resolution.UNMET:
-            state[task] = 'prerequisite'
+            cause = "its epic's prerequisite"
         elif (answer := board.met(cell(header, r, 'Depends on'), key, epics,
                                   f'{label(key, board.home)} {task}')) is Resolution.UNRESOLVABLE:
             state[task] = 'unresolvable'
+            cause = cell(header, r, 'Depends on')
+        elif prerequisites is Resolution.UNMET:
+            state[task] = 'prerequisite'
         elif answer is Resolution.UNMET:
             state[task] = 'blocked'
         else:
@@ -170,6 +174,7 @@ def epic_state(board: Board, key: tuple[str, int], epics: dict[str, tuple[str, i
         detail[task] = {'description': cell(header, r, 'Description').split(' →', 1)[0].strip(),
                         'coverage': cell(header, r, 'Coverage'), 'held': held,
                         'issue': int(found[1]) if found else None,
+                        'cause': cause,
                         'depends': cell(header, r, 'Depends on')}
     return header, body, state, detail
 
@@ -258,16 +263,18 @@ def survey(args: argparse.Namespace) -> int:
             ids = '+'.join(unit)
             if states <= {'done', 'running'}:
                 continue
+            if 'unresolvable' in states:
+                for task in unit:
+                    if state[task] == 'unresolvable':
+                        print(f'  unresolvable I{initiative}:E{epic}:{task}: '
+                              f'{detail[task]["cause"]} cannot resolve')
+                        unreadable += 1
+                continue
             if 'held' in states:
                 for task in unit:
                     if state[task] == 'held':
                         print(f'  hold I{initiative}:E{epic}:{task}: {detail[task]["held"]}')
                         held += 1
-                continue
-            if 'unresolvable' in states:
-                print(f'  unresolvable I{initiative}:E{epic}:{ids}: '
-                      f'depends on {detail[first]["depends"]}; the entry cannot resolve')
-                unreadable += 1
                 continue
             if states != {'free'}:
                 reason = ('prerequisite epic not completed' if 'prerequisite' in states

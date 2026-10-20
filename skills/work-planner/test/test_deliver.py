@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from fixtures import issue, item, pr, run, url
+from fixtures import initiative_body, issue, item, pr, run, url
 
 RECORDS = 'https://github.com/o/r/tree/engineering/artifacts/planning'
 TODAY = '2026-10-06'
@@ -164,9 +164,38 @@ class Survey(unittest.TestCase):
             done = run('deliver.py', '--items', str(items_path), '--prs', str(prs_path),
                        '--date', TODAY)
         self.assertIn('unit I07:E00:W01', done.stdout)
-        self.assertIn('unresolvable I07:E00:W02: depends on E05 (W04); the entry cannot resolve',
-                      done.stdout)
+        self.assertIn('unresolvable I07:E00:W02: E05 (W04) cannot resolve', done.stdout)
         self.assertIn('available: 1, held: 0, blocked: 0, unresolvable: 1', done.stdout)
+        self.assertEqual(done.returncode, 1)
+
+    def test_an_unresolvable_epic_prerequisite_names_itself(self):
+        initiative = issue(900, '[I07] Theme: Work', body=initiative_body(
+            (f"[E00]({url('issues', 943)})", 'E09 (W04)')))
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            items_path, prs_path = root / 'items.json', root / 'prs.json'
+            items_path.write_text(json.dumps(staged(
+                (initiative, 'In Progress'),
+                (epic(943, ('W01', 'Queue plan', '', '')), 'In Progress'))))
+            prs_path.write_text('')
+            done = run('deliver.py', '--items', str(items_path), '--prs', str(prs_path),
+                       '--date', TODAY)
+        self.assertIn("unresolvable I07:E00:W01: its epic's prerequisite cannot resolve", done.stdout)
+        self.assertEqual(done.returncode, 1)
+
+    def test_a_held_sibling_does_not_hide_an_unresolvable_row(self):
+        folder = f'{RECORDS}/2026-10-06-943-i07-e00-w01-queue-plan/'
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            items_path, prs_path = root / 'items.json', root / 'prs.json'
+            items_path.write_text(json.dumps(staged(
+                (epic(943, (f'[W01]({folder})', 'Queue plan', '', 'W02'),
+                      ('W02', 'Dispatch', 'E05 (W04)', 'W01')), 'In Progress'))))
+            prs_path.write_text('')
+            done = run('deliver.py', '--items', str(items_path), '--prs', str(prs_path),
+                       '--date', TODAY)
+        self.assertIn('unresolvable I07:E00:W02: E05 (W04) cannot resolve', done.stdout)
+        self.assertNotIn('hold I07:E00:W01', done.stdout)
         self.assertEqual(done.returncode, 1)
 
     def test_joined_tasks_are_one_unit(self):

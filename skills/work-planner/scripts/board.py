@@ -29,6 +29,7 @@ Status, first match wins:
                and a criterion unticked
   Ready        a task whose epic is Ready or In Progress, whose every dependency is delivered,
                and that has no Open Questions
+  (unchanged)  a task gated on a dependency entry that cannot resolve
   Backlog      a task otherwise
 An epic with an open pull request and a criterion unticked is In Progress. With no open pull
 request, Ready or Backlog already on the board is left as it stands. In Progress is left when a
@@ -47,10 +48,11 @@ statuses.py holds the field, the option body files and the fallback for an optio
 A dependency within an epic is delivered when its task row is, or its issue is closed as completed. A dependency on another epic's task also requires that epic closed as completed, which gates the row naming it and leaves its siblings free. An epic starts only after every prerequisite epic its initiative row names is completed. A task row is
 delivered when a linked pull request has merged, or its id links a commit. A row that links a task
 issue and no pull request is delivered when that issue is closed as completed. An open pull request
-does not deliver the task. A bare #750 names an issue in the repository of the issue whose row cites it. A dependency on an issue not
-given (another initiative's epic, #750) is reported unresolved and read as undelivered; give that
-issue with --others to resolve it. An issue outside the initiative's repository prints as
-owner/repo#number.
+does not deliver the task. A bare #750 names an issue in the repository of the issue whose row cites it. An entry naming no row and
+linking no issue, naming an issue not given (another initiative's epic, #750) or naming a row an
+epic does not carry cannot resolve: the entry is named, the task it gates keeps the Status it
+holds, and the run exits 1. Give the missing issue with --others to resolve it. An issue outside
+the initiative's repository prints as owner/repo#number.
 
 An issue from Ready on is assigned to the --assignee user, and one in Backlog has no assignee.
 
@@ -409,7 +411,7 @@ def main() -> int:
         item_id, held = on_board.get(key, (None, None))
         changes.place(key, f"{label(key, home)} {issues[key]['title']}", issues[key],
                       held, wanted, item_id, home)
-    printed = changes.report(unresolved=unresolved)
+    printed = changes.report(unresolved=unresolved, asking=bool(unplaceable))
     return 1 if unplaceable else printed
 
 
