@@ -33,6 +33,7 @@ from prosiform.bundle import (
     Group,
     assemble,
 )
+from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY
 from prosiform.cli import (
     ENTRY_DESTINATION,
     INPUT_FAILURE,
@@ -1183,3 +1184,38 @@ def test_a_title_the_allowed_source_root_cannot_contain_names_no_document(
     run = invoke("--root", str(root), "--diagnostics", "json", "titled.md")
     assert run.status == SUCCESS
     assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+
+
+def test_an_unsafe_boundary_is_an_input_failure(tmp_path: Path) -> None:
+    (tmp_path / "guide.md").write_text(
+        "# Guide\n\n- The first list.\n\n[notes]: notes.md\n\n- The second list.\n"
+    )
+    run = invoke("--root", str(tmp_path), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    one = run.diagnostics()[0]
+    assert one["code"] == UNSAFE_BUNDLE_BOUNDARY
+    assert one["reference"] == "guide.md"
+    assert one["source"] == "guide.md"
+    assert "is placed inside the list that" in one["message"]
+    assert one["remedy"]
+
+
+def test_an_unsafe_boundary_publishes_no_file(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "guide.md").write_text(
+        "# Guide\n\n- The first list.\n\n[notes]: notes.md\n\n- The second list.\n"
+    )
+    destination = tmp_path / "bundle.md"
+    run = invoke(
+        "--root",
+        str(source),
+        "--diagnostics",
+        "json",
+        "--output",
+        str(destination),
+        "guide.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert not destination.exists()

@@ -163,7 +163,7 @@ from prosiform.bundle import (
     group,
     heading_text,
 )
-from prosiform.candidate import validate
+from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY, Unsafe, validate
 from prosiform.closure import (
     DRIVE,
     Malformed,
@@ -750,6 +750,25 @@ def changed(path: str, what: str) -> Failure:
     )
 
 
+def unsafe(boundary: Unsafe) -> Failure:
+    """One bundle boundary that would place content inside an unintended container.
+
+    The defect is in the documents the run was asked to bundle
+    together rather than in the tool, so it is reported as the input
+    failure it is: the boundary names the source regions either side
+    of it and the container that absorbed one into the other, and the
+    reference is the source whose region opens that container, which
+    is the document to change.
+    """
+    return input_failure(
+        str(boundary),
+        code=UNSAFE_BUNDLE_BOUNDARY,
+        remedy=boundary.remedy,
+        reference=boundary.path,
+        source=boundary.path,
+    )
+
+
 def recheck(root: Path, captured: dict[str, Capture]) -> None:
     """Hold every source the run read to still being the source it read.
 
@@ -1228,6 +1247,14 @@ def compose(
     link is rewritten through. The second pass emits the same headings
     as the first, because a rewrite edits a link's destination and its
     mark and nothing a heading is slugged from.
+
+    Candidate validation closes the pass. Every invariant it holds is
+    a property of the construction, which an author cannot reach, so a
+    disagreement is a fault in the tool. The boundary between two
+    emitted regions is the exception: it follows from the documents the
+    run was asked to bundle together, and an author closing a code
+    example or selecting other content resolves it, so it is reported
+    as the input failure it is.
     """
     selected = contributing(referrer, found)
     unambiguous(list(selected))
@@ -1237,17 +1264,20 @@ def compose(
     groups = assembled(read, parsed, defined, selected, entries, targets)
     named = entries_named(groups, assigned)
     bundled = assemble(entry_line(named), groups)
-    validate(
-        bundled,
-        groups,
-        assigned,
-        targets,
-        referrer,
-        entries,
-        read,
-        parsed,
-        limits.of(NESTING),
-    )
+    try:
+        validate(
+            bundled,
+            groups,
+            assigned,
+            targets,
+            referrer,
+            entries,
+            read,
+            parsed,
+            limits.of(NESTING),
+        )
+    except Unsafe as boundary:
+        raise unsafe(boundary) from boundary
     return bundled, named
 
 

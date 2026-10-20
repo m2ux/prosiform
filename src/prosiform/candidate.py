@@ -152,8 +152,9 @@ class Unsafe(Exception):
     boundary is a defect of the documents being bundled together rather
     than of a position in the output, and the container is named as the
     construct a reader of the bundle would find the later part inside.
-    The source whose region opens the container is carried separately,
-    so the diagnostic can refer the caller to the document to change.
+    The path carried is the source whose region opens the container,
+    which is the document an author closes the construct in, rather
+    than the source of the content that landed inside it.
     """
 
     def __init__(
@@ -170,8 +171,8 @@ class Unsafe(Exception):
         self.at = at
         self.code = UNSAFE_BUNDLE_BOUNDARY
         self.remedy = (
-            f"close the {container} in the source, or select content that does "
-            f"not end inside one"
+            f"end the {container} in the source before the content that follows "
+            f"it, or select content that does not end inside one"
         )
 
 
@@ -438,13 +439,13 @@ def boundaries(
         if opens in started or opens >= len(physical):
             continue
         holding = container(spans, opens)
-        carried = named[at - 1][0] if at else ENTRY_LINE
+        carried, opening = named[at - 1] if at else (ENTRY_LINE, path)
         kind = (
             "container"
             if holding is None
             else CONTAINERS.get(holding.type, holding.type)
         )
-        raise Unsafe(carried, what, kind, path, opens + 1)
+        raise Unsafe(carried, what, kind, opening, opens + 1)
 
 
 def structure(
