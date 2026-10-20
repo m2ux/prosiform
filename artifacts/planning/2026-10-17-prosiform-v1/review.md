@@ -94,7 +94,7 @@ The dependency check reports task pairs within one epic where neither depends on
 | I00 E08 W01, W02, W03, W04, W05 | Delivered as five pull requests. W01 and W02 are disjoint in components — the bundle assembly and the candidate against the source read and the command — so neither gains from sharing a branch, and W05 corrects a defect of a closed epic that is unrelated to the rest. |
 | I00 E09 W01, W02, W03, W04, W05, W06 | The epic's rows are an example tree, structural ancestors, grouping, a depth-overflow refusal and a measured budget. They share no component and each produces evidence read on its own, so one pull request per row keeps a failing criterion attributable to the row that failed it. |
 | I00 E10 W03, W04, W05 | The independence check, the installation claims and the internal-error outcome are three separate observations of the delivered build. W04 and W05 share a pull request; W03 is a check of its own and takes one. |
-| I00 E11 W01–W14 | The deferred-debt epic's rows are unrelated defects collected from across the initiative, sharing no component and no criterion. The epic ships in waves ([D46](decisions.md)), and a wave is a set of rows dispatched together rather than a set sharing one pull request. |
+| I00 E11 W01–W15 | The deferred-debt epic's rows are unrelated defects collected from across the initiative, sharing no component and no criterion. The epic ships in waves ([D46](decisions.md)), and a wave is a set of rows dispatched together rather than a set sharing one pull request. |
 
 Every other pair in every epic is ordered by a dependency.
 
