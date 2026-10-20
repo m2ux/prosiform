@@ -13,6 +13,7 @@ It matters because a reference the parser silently declined to resolve is a depe
 | Artifact | What it holds |
 | --- | --- |
 | [w13.md](w13.md) | The task's plan: where suppression is observed, what the diagnostic carries and the two fixtures that separate exhaustion from omission |
+| [changes.md](changes.md) | The plan changes this delivery applied and held, and the readings it examined and left as they stand |
 | [validation.md](validation.md) | The signal the detection was chosen on, the boundary measured around the parser's ceiling, and the fixtures, unit cases and check suite the delivery was held to |
 
 ## Links
@@ -20,7 +21,8 @@ It matters because a reference the parser silently declined to resolve is a depe
 | Resource | Link |
 | --- | --- |
 | Epic issue | [#39 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/issues/39) |
-| Task issue | [#108 A Parser Resource Limit Suppressing a Reference Lookup Is Detected by Nothing](https://github.com/m2ux/prosiform/issues/108) |
+| Task issue | [#108 \[I00:E11:W13\] Parser Reference Limit: A Suppressed Lookup Detected and Reported](https://github.com/m2ux/prosiform/issues/108) |
+| Pull request | [#130 \[I00:E11\] A Reference Lookup the Parser Declines](https://github.com/m2ux/prosiform/pull/130) |
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
