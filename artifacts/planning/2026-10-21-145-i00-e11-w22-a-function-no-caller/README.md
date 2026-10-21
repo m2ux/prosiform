@@ -12,6 +12,7 @@ This row covers AC23 of the deferred-debt epic, which states what fixing the def
 
 | Artifact | What it holds |
 | --- | --- |
+| [w22.md](w22.md) | The task's plan: what decides a reference's destination once ownership is gone, and the one description the design, `candidate` and the fixtures carry |
 
 ## Links
 
