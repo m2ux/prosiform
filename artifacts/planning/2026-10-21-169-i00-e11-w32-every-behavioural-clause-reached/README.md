@@ -15,6 +15,7 @@ It matters because the uncovered figure is the measure of the corpus's reach, an
 | [W32](w32.md) | The work item: scope, component, breakdown and test requirements |
 | [Analysis](analysis.md) | The uncovered list grouped by what states each clause, and the disposition each group takes |
 | [Validation](validation.md) | The checks run, the revisions they ran against, and the figures each reported |
+| [Change List](change-list.md) | The plan changes this delivery applied, and the defect that prompted the one new row |
 
 ## Links
 
