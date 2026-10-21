@@ -172,7 +172,7 @@ Read these files first.
 - [Epic Issue Body](#epic-issue-body)
 - [Epic](#epic)
 
-The caller reached this mode through the routing document `SKILL.md`, which this procedure names rather than carries.
+The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 
 ## Procedure
 

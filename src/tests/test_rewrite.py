@@ -103,22 +103,22 @@ def test_a_definition_is_read_as_its_source_spelled_it(
 @pytest.mark.parametrize(
     ("text", "assigned", "expected"),
     [
-        ("[rules](rules.md)", ["rules"], "[rules](#rules)"),
-        ("[¬ rules](rules.md)", [None], "[¬ rules](rules.md)"),
+        ("[rules](rules.md)", ["#rules"], "[rules](#rules)"),
+        ("[¬ rules](../rules.md)", ["topic/rules.md"], "[¬ rules](topic/rules.md)"),
         ("[¬rules](rules.md#a)", [None], "[¬rules](rules.md#a)"),
         (
             '[rules](rules.md "A title")',
-            ["rules"],
+            ["#rules"],
             '[rules](#rules "A title")',
         ),
         (
             "A `[draft](draft.md)` example beside [rules](rules.md).",
-            ["rules"],
+            ["#rules"],
             "A `[draft](draft.md)` example beside [rules](#rules).",
         ),
         (
             "[a](a.md) and [b](b.md)",
-            ["a", "b"],
+            ["#a", "#b"],
             "[a](#a) and [b](#b)",
         ),
         ("[rules](../rules.md)", [None], "[rules](../rules.md)"),
@@ -224,12 +224,12 @@ def test_a_task_marker_a_definition_spells_is_no_use() -> None:
 def test_a_link_the_emission_cannot_edit_is_refused() -> None:
     text = "`[¬ rules](rules.md)`"
     with pytest.raises(Unrewritable):
-        rewritten(lines(text), inline_of(text), ["rules"], {})
+        rewritten(lines(text), inline_of(text), ["#rules"], {})
 
 
 def test_a_rewrite_reports_one_entry_for_each_line_it_was_given() -> None:
     text = "The procedure requires\n[the shared rules](rules.md) whole.\n"
-    written = rewritten(lines(text), inline_of(text), ["rules"], {})
+    written = rewritten(lines(text), inline_of(text), ["#rules"], {})
     assert written == [
         "The procedure requires\n",
         "[the shared rules](#rules) whole.\n",
@@ -249,7 +249,7 @@ def test_a_compiled_use_of_such_a_definition_takes_its_assigned_destination() ->
     body = "A [full][rules] use.\n"
     definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
     inline, defined = read(f"{body}\n{definition}")
-    assert rewritten(lines(body), inline, ["rules"], defined) == [
+    assert rewritten(lines(body), inline, ["#rules"], defined) == [
         'A [full](#rules "The Rules,\nwritten out") use.\n'
     ]
 

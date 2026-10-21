@@ -95,7 +95,7 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
-from prosiform.closure import bundled
+from prosiform.closure import bundled, deferring, rebased
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -317,19 +317,30 @@ def target(
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
 ) -> str | None:
-    """The destination the bundle gave one link, or nothing where it compiled none.
+    """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
     because the closure selected what the link named and the group
-    emitting it recorded the target it answers to. A link resolving
-    outside the allowed source root, naming no Markdown document, or
-    deferred by its author, is text the bundle carries and takes no
-    destination.
+    emitting it recorded the target it answers to.
+
+    A deferred link under the allowed source root takes its target's
+    path from that root, so the run that compiles it later needs
+    nothing but the root to follow it. It is never rewritten to a
+    bundle destination, even where another reference carried its target
+    into the bundle: what one author deferred cannot be changed by
+    another author's reference.
+
+    A link resolving outside the allowed source root, and one naming no
+    Markdown document, is text the bundle carries and takes no
+    destination, whether or not its author marked it.
     """
     found = bundled(path, destination, opening)
-    if found is None:
+    if found is not None:
+        return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
+    deferred = deferring(path, destination, opening)
+    if deferred is None:
         return None
-    return assigned[(found.path, found.fragment)]
+    return rebased(deferred, destination)
 
 
 def absorbed(tokens: Sequence[Token], title: str) -> Token | None:

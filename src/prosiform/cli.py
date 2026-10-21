@@ -184,6 +184,7 @@ from prosiform.closure import (
     OutsideRoot,
     Reference,
     components,
+    deferring,
     external,
     identity,
     inside,
@@ -242,6 +243,7 @@ from prosiform.source import (
     decode,
     fragments,
     hashed,
+    index,
     lines,
     nesting,
     occurrences,
@@ -505,9 +507,9 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     grammar then reports it as the usage failure it is.
     """
     selected = TEXT
-    for index, token in enumerate(arguments):
-        if token == DIAGNOSTICS_OPTION and index + 1 < len(arguments):
-            value = arguments[index + 1]
+    for at, token in enumerate(arguments):
+        if token == DIAGNOSTICS_OPTION and at + 1 < len(arguments):
+            value = arguments[at + 1]
         elif token.startswith(f"{DIAGNOSTICS_OPTION}="):
             value = token.partition("=")[2]
         else:
@@ -1037,9 +1039,11 @@ def required(
     where the target sits.
 
     A marked reference is deferred: the run yields no dependency for
-    it, so the document it names is not read, not parsed and not
-    bundled through that reference, and the link reaches the bundle
-    with its mark for an agent to compile in a run of its own.
+    it, so nothing it names is bundled through that reference, and the
+    link reaches the bundle with its mark for an agent to compile in a
+    run of its own. Its target is what `withheld` yields, because a
+    reference under the root is one the run stays responsible for
+    whether or not it carries what the reference names.
 
     A resource is no local Markdown document and an image is a
     resource whatever it points at, so neither is a dependency and both
@@ -1089,6 +1093,42 @@ def required(
             continue
         if marked(use.opening):
             continue
+        yield replace(found, origin=at, chain=(*chain, identity(found)))
+
+
+def withheld(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> Iterator[Reference]:
+    """Every target the selected content of one source defers.
+
+    A deferred reference under the allowed source root naming a
+    Markdown document is one this run does not carry and stays
+    responsible for, so its target is yielded here to be confirmed. A
+    mark on a reference leaving the root, or on one naming no Markdown
+    document, defers nothing that was going to happen, and those
+    references are text as they always were.
+
+    What is yielded is a target and not a dependency. It joins no
+    frontier, so the document is not bundled through this reference,
+    contributes no content and no destination of its own, and heads no
+    file group.
+
+    The chain is the one a compiled reference in the same place would
+    carry, because a refusal reports the route the run followed to the
+    link whichever half of the rule the link falls under.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource:
+            continue
+        found = deferring(path, use.destination, use.opening)
+        if found is None:
+            continue
+        at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 
@@ -1156,6 +1196,7 @@ def traverse(
     seen = {(one.path, one.fragment) for one in found}
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
+    deferred: dict[tuple[str, str | None], Reference] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1195,6 +1236,8 @@ def traverse(
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
+            for one in withheld(path, read[path], parsed[path], chosen, reached):
+                deferred.setdefault((one.path, one.fragment), one)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 if (one.path, one.fragment) in seen:
                     continue
@@ -1204,7 +1247,59 @@ def traverse(
                 discovered.append(one)
         found.extend(discovered)
         frontier = discovered
+    for one in deferred.values():
+        confirm(root, limits, parsed, one)
     return read, parsed, defined, captured, found
+
+
+def confirm(
+    root: Path,
+    limits: Limits,
+    parsed: Mapping[str, list[Token]],
+    one: Reference,
+) -> None:
+    """Hold one deferred reference to naming a document and a heading that exist.
+
+    A deferral says that the material is reached in a run of its own,
+    not that nobody is answerable for it, so the document is read and
+    the fragment is looked up. A reference the root does not carry is
+    refused by the read, and one naming no heading of the document it
+    resolves to is refused here, each with the code and the route a
+    compiled reference naming nothing reports.
+
+    The question is whether the document carries the heading, asked of
+    the index of every heading the profile recognizes. Which section a
+    fragment roots, and whether two headings make it ambiguous, is what
+    the run compiling the link decides; this run says only that the
+    target is there to be found.
+
+    A document the bundle already carries is confirmed from the tokens
+    that carried it, so a deferral naming it costs no second read. A
+    document nothing else named is read for this confirmation alone:
+    its content reaches no group, and the nesting budget holds over the
+    parse because a source this run cannot index is a source it cannot
+    answer for.
+    """
+    tokens = parsed.get(one.path)
+    if tokens is None:
+        opened = read_document(root, one)
+        try:
+            tokens = parse(opened.source.text, limits.of(NESTING), {})
+        except Crossed as crossed:
+            raise unindexable(crossed, one.path, one.chain) from crossed
+    if one.fragment is None:
+        return
+    if any(heading.fragment == one.fragment for heading in index(tokens)):
+        return
+    raise input_failure(
+        f"the reference {one.original!r} names no heading of the document it defers",
+        code=TARGET_NOT_FOUND,
+        remedy="name a heading the document carries",
+        reference=one.original,
+        resolved=one.path,
+        source=one.origin,
+        chain=one.chain,
+    )
 
 
 def membership(path: str, inforce: Mapping[str, int]) -> str | None:
