@@ -13,6 +13,8 @@ It matters because the bound that exists runs the wrong way, and no list can be 
 | Artifact | What it holds |
 | --- | --- |
 | [W34](w34.md) | The work item: scope, component, breakdown and test requirements |
+| [Analysis](analysis.md) | How the rule tells a word that names something from a word any sentence needs, what it does with inflection, hyphenation and proper nouns, and the verdict on every term it reported over the corpus |
+| [Validation](validation.md) | The checks, the procedure each was run by, what each observed, the retired inventory read term by term, and the revisions validation forced |
 
 ## Links
 
