@@ -40,9 +40,9 @@ no longer the document the author wrote.
 
 One invariant the contract names is not checked here, and is absent
 rather than weakened. **Ownership stability** is a property of the
-construction rather than of the candidate. Link ownership and
-direct-self-reference classification are read from a source's own token
-stream and a position in it, and consolidation changes neither, so a
+construction rather than of the candidate. Link ownership is read from a source's
+own token stream and a position in it, and consolidation changes
+neither, so a
 check comparing ownership before and after would compare one call of
 `source.owner` with another call of the same function on the same
 arguments. A check that cannot fail reports a guarantee nobody has.

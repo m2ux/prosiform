@@ -1,4 +1,4 @@
-The preamble requires [¬ the guide](guide.md) itself.
+The preamble requires [the guide](guide.md) itself.
 
 ## Alpha
 

@@ -41,11 +41,9 @@ from prosiform.cli import (
     INVALID_ENCODING,
     INVALID_GROUP_RULE,
     INVALID_USAGE,
-    MARKED_RESOURCE,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
-    SELF_REFERENCE,
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
     SOURCE_SYMLINK,
@@ -939,32 +937,31 @@ def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
 
 
-def test_marking_a_reference_outside_the_profile_s_suffixes_is_refused(
+def test_a_marked_resource_is_emitted_with_its_mark(
     root: Path,
 ) -> None:
     written(root, "guide.md", "# Guide\n\nSee [¬ the diagram](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
-    assert run.stdout == ""
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[¬ the diagram](plan.png)" in run.stdout
 
 
-def test_marking_an_image_is_refused(root: Path) -> None:
+def test_a_marked_image_is_emitted_with_its_mark(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee ![\u00ac the architecture](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
-    assert run.stdout == ""
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "![¬ the architecture](plan.png)" in run.stdout
 
 
-def test_marking_an_image_naming_a_markdown_file_is_refused(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee ![\u00ac the rules](rules.md).\n")
+def test_an_image_naming_a_markdown_document_carries_no_document(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nThe rules.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "![the rules](rules.md)" in run.stdout
+    assert "The rules." not in run.stdout
 
 
 def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
@@ -974,11 +971,13 @@ def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
     assert "![the architecture](plan.png)" in run.stdout
 
 
-def test_marking_a_reference_carrying_a_scheme_is_refused(root: Path) -> None:
+def test_a_marked_reference_carrying_a_scheme_is_emitted_as_authored(
+    root: Path,
+) -> None:
     written(root, "guide.md", "# Guide\n\nSee [¬ the spec](https://e.test/s.md).\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[¬ the spec](https://e.test/s.md)" in run.stdout
 
 
 def test_an_unmarked_resource_is_emitted_as_authored(root: Path) -> None:
@@ -1082,30 +1081,32 @@ def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
     assert run.stdout == ""
 
 
-def test_a_marked_link_to_the_section_carrying_it_is_a_self_reference(
+def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ A](guide.md#alpha).\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
-    assert run.stdout == ""
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [A](guide.md#alpha).\n")
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "See [A](#alpha)." in run.stdout
+    assert run.stdout.count("### Alpha") == 1
 
 
 def test_identity_is_compared_after_the_path_and_the_fragment_resolve(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ A](./%67uide.md#alpha).\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [A](./%67uide.md#alpha).\n")
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "See [A](#alpha)." in run.stdout
 
 
-def test_a_preamble_link_to_its_own_document_is_a_self_reference(root: Path) -> None:
-    written(root, "guide.md", "See [¬ the guide](guide.md).\n\n## Alpha\n\nBody.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+def test_a_preamble_link_to_its_own_document_resolves_to_that_document(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "See [the guide](guide.md).\n\n## Alpha\n\nBody.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [the guide](#guide)." in run.stdout
 
 
 def test_a_section_link_to_its_whole_document_is_an_ancestor_inclusion(
@@ -1141,17 +1142,17 @@ def test_classification_is_the_same_before_and_after_consolidation(
     assert child.stdout.partition("\n\n")[2] == consolidated.stdout.partition("\n\n")[2]
 
 
-def test_a_self_reference_survives_consolidation_into_the_whole_document(
+def test_a_self_reference_resolves_the_same_after_consolidation(
     root: Path,
 ) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Alpha\n\n### Detail\n\nSee [¬ D](guide.md#detail).\n",
+        "# Guide\n\n## Alpha\n\n### Detail\n\nSee [D](guide.md#detail).\n",
     )
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [D](#detail)." in run.stdout
 
 
 def chained(root: Path) -> None:

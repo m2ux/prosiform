@@ -1,0 +1,20 @@
+description = "An image naming a Markdown document under the allowed source root is emitted as authored and the document it names is never bundled, because image syntax embeds rather than links and a document named that way is no more bundleable than a picture."
+
+clauses = [
+  "Link classification and resource handling — Resources",
+  "Resources are text",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

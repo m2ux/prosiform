@@ -140,14 +140,12 @@ An error decides a failing run.
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_GROUP_RULE` | Grouping — a depth outside 1 through 6, an unknown slug, or a repeated slug. |
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
-| `E_MARKED_RESOURCE` | Link classification and resource handling — a marked reference naming a resource rather than a local Markdown document. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
 | `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write. |
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
 | `E_ROOT_NOT_FOUND` | CLI contract — an allowed source root naming no directory. |
-| `E_SELF_REFERENCE` | Self-reference and ancestor-reference behavior — a marked reference naming the very node that carries it. |
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the allowed root cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |
