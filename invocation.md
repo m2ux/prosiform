@@ -1,6 +1,10 @@
 # Invocation
 
-The command answers to every option the contract declares, and `prosiform --help` reports them with their defaults and the exit statuses. The tables in this section reproduce that output word for word, and `make invocation` holds each row to the help the build under test prints, so the invocation a caller reads here and the one the command offers cannot drift apart.
+Compile a document or section and its local Markdown dependencies into one validated bundle.
+
+## Options
+
+`prosiform --help` lists options, defaults, and exit statuses. The tables below match that output; `make invocation` verifies them.
 
 | Option | Effect |
 | --- | --- |
@@ -23,38 +27,84 @@ The command answers to every option the contract declares, and `prosiform --help
 | `--version` | report the tool version and the profile identifier |
 | `--help` | show this usage, the defaults, and the exit-status meanings |
 
-Each effect is that argument's own help text, so the default an option carries is stated where the option is. A budget is a positive decimal integer; zero is refused rather than read as unlimited.
+Resource budgets must be positive decimal integers. Zero is invalid.
 
-Bundling runs under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content carries — a link resolving to a Markdown document under the allowed source root — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. A link resolving outside that root is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a reference under the root naming no document or no heading in the document it resolves to each return `1` naming the defect and the line of the file it sits on. A compiled link reaches the bundle with its destination repointed at the heading the bundle emits for what it named.
+## Examples
 
-One mark says otherwise, and it defers a compilation rather than asking for one. A link whose text opens with `¬` is not compiled by this run: its target is confirmed to exist and carried nowhere, so the document it names is neither opened nor bundled through it. The bundle emits the link's text with its mark exactly as the author wrote it, the spaces following the character included, and gives the link its target's path from the allowed source root as its destination, so the agent reading the bundle needs that root and nothing else to compile it in a run of its own. A deferred reference naming no document, or no heading in the document it resolves to, fails like any other the root makes this run responsible for.
+Run these from the repository root. See [worked examples](example/README.md) for input and output excerpts.
+
+### Bundle a procedure
 
 ```bash
-# A procedure and everything it reaches. The routing document the caller read
-# to find it, SKILL.md, is not an entry reference and is not bundled.
 prosiform --root example/work-tracker modes/plan-mode.md
+```
 
-# Selected sections
+### Select a section
+
+```bash
 prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
+```
 
-# Every document under a named directory merged at a heading level
+### Merge directories
+
+```bash
 prosiform --root example/work-tracker \
   --group artifacts:2 --group modes:2 \
   modes/plan-mode.md
+```
 
-# Compile and validate without publishing
+### Validate without publishing
+
+```bash
 prosiform --root example/work-tracker --check modes/plan-mode.md
 ```
 
-Standard output carries exactly one thing per run: the bundle a compiling run publishes, the response an informational run returns, or nothing at all. Diagnostics go to standard error, as text for a reader or, under `--diagnostics json`, as one JSON object per line and nothing else. A bundle opens by naming what it was built for, so the caller reaches its procedure without searching:
+## Bundling rules
+
+### Source preparation
+
+Sources must be valid UTF-8. The build removes one leading byte-order mark and one leading frontmatter block, then parses the content under `skill-markdown-v1`.
+
+### Selection and dependencies
+
+- Each entry selects a whole document or a named section.
+- Links to local Markdown under `--root` resolve relative to the source document and are followed until no new dependencies remain.
+- Each contributing document forms a group headed by its root-relative path, unless `--group` merges it.
+- Compiled links point to headings in the bundle.
+- Links outside the root remain as authored and contribute no content.
+
+### Deferred links
+
+A link whose text starts with `¬` defers compilation of its target. The target must exist, including any named section, but contributes no content through that link.
+
+The emitted link preserves its text, marker, and following spaces. Its destination is relative to the allowed root, ready for a separate run.
+
+### Invalid input
+
+These failures return `1` with a diagnostic naming the defect and source location:
+
+- Invalid UTF-8 or unterminated frontmatter.
+- Raw HTML or unsupported dependency or section-naming constructs.
+- Document paths that differ only by Markdown extension.
+- Missing documents or sections referenced under the root, including deferred targets.
+
+## Output
+
+### Bundle and responses
+
+Standard output contains the bundle, an informational response, or nothing. A bundle opens with links to its entry points:
 
 ```markdown
 This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.
 ```
 
-## Exit statuses
+### Diagnostics
 
-A run returns the status naming the category of its outcome, and a caller reads the result from that status rather than from what reached standard output.
+Diagnostics go to standard error. The default is text; `--diagnostics json` emits one JSON object per line.
+
+### Exit statuses
+
+Use the exit status to determine the outcome.
 
 | Exit | Meaning |
 | --- | --- |
@@ -64,10 +114,12 @@ A run returns the status naming the category of its outcome, and a caller reads 
 | `3` | output publication or delivery failure, a broken pipe among them |
 | `4` | unexpected internal error |
 
-## A failed run stops the work
+### Failed runs
 
-A failed run publishes nothing. The caller halts and surfaces the diagnostic, and reading the sources itself is unsupported: there is no option, no status and no documented path by which a caller meeting a failure resolves the closure for itself. A fallback restores the behaviour bundling replaces, and restores it silently, so the failure teaches nothing and the next run fails the same way.
+A failed run publishes nothing. The caller halts and surfaces the diagnostic; reading the sources itself is unsupported.
 
 ## Supported environment
 
-The supported environment is POSIX: Linux and macOS. The confinement of a run to its allowed source root rests on rooted, no-follow source access, which descends a path one segment at a time through the `O_NOFOLLOW`, `O_DIRECTORY` and `O_CLOEXEC` open flags, so a source reached through a symbolic link below the root is refused by the open rather than by a string comparison ahead of it. A platform offering no such flags cannot enforce that policy, and the build refuses to start there rather than weakening the confinement to a check on the spelling of a path.
+The supported environment is POSIX: Linux and macOS.
+
+Root confinement rests on rooted, no-follow source access using `O_NOFOLLOW`, `O_DIRECTORY`, and `O_CLOEXEC`. Symbolic links below the root are refused. The build refuses to start when these flags are unavailable.
