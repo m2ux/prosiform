@@ -54,9 +54,9 @@ FAILED checks/tests/test_catalogue.py::test_a_catalogue_is_the_codes_the_design_
 
 **It fails on the base this row was cut from, before any change of this row.** The check derives the manifest schema's error catalogue from the design on the `engineering` branch, and [D59](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) withdrew both codes from the design when it landed on 2026-10-21. The schema still enumerates them because the build still raises them, which is the behaviour this row keeps: `E_MARKED_RESOURCE` is retired by `W04` with the rule that emits a resource wherever it resolves, and `E_SELF_REFERENCE` by `W05` with the rule that rewrites a self reference. The check turns green on the row that removes the code the design no longer declares.
 
-Reproduced on the base:
+Reproduced on the base: `make harness` at `9ffb716` with no change of this row applied reports `1 failed, 378 passed`.
 
-```bash
-git -C <worktree> stash --include-untracked   # or a fresh checkout of i00/e12/main
-make harness                                  # 1 failed, 378 passed
-```
+The published runs say the same thing. Commit `9ffb716` is the head of both `main` and `i00/e12/main`, and the workflow that runs `make check` over it
+[succeeded on `main` on 2026-10-20](https://github.com/m2ux/prosiform/actions?query=branch%3Amain) and
+[failed on `i00/e12/main` on 2026-10-21](https://github.com/m2ux/prosiform/actions?query=branch%3Ai00%2Fe12%2Fmain).
+Nothing in the tree differs between them: the design on `engineering`, which the check reads, is what changed. This branch's own run fails on that one case and nothing else.
