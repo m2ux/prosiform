@@ -13,6 +13,9 @@ It matters because the gap is invisible: a build carrying a code the design does
 | Artifact | What it holds |
 | --- | --- |
 | [W33](w33.md) | The work item: scope, component, breakdown and test requirements |
+| [Decision](decision.md) | Where a build states the codes it can emit, and what that reading costs |
+| [Validation](validation.md) | The checks run, their revisions, and the evidence each result links |
+| [Change list](change-list.md) | Each plan change this delivery applied and each it held |
 
 ## Links
 
