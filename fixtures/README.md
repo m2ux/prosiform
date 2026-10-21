@@ -199,7 +199,7 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-No fixture carries the marker.
+Two fixtures carry the marker: `source-consistency/a-source-that-changes-during-compilation` and `diagnostics/a-run-that-fails-in-itself`. Each declares a run whose fault is a fact about the run rather than about the documents it reads — a source rewritten after discovery, and a failure in the build itself — and a fixture declares a source tree, an invocation and a result, so neither run arises from the declaration alone. Both await `I00:E11:W24`, which gives the runner the fault a manifest names.
 
 ## The schema
 
@@ -250,7 +250,7 @@ The two catalogues stay distinct: an error diagnostic naming a warning code, and
 
 A test holds each catalogue to the design's own text: it collects every code the design carries under a prefix — `E_` for an error and `W_` for a warning — and requires the schema to enumerate exactly those, so neither catalogue can drift from the contract it is derived from.
 
-Each code the warning catalogue holds is declared by a fixture, which a further test requires. A warning accompanies a successful run, so the code states what such a run writes to standard error and a fixture is where that statement is made; a code the catalogue carries and no manifest names is a claim nothing exercises. A fixture awaiting later work counts, because a manifest declares its diagnostics whatever the build under test currently produces.
+Each code either catalogue holds is declared by a fixture, which a further test requires of each severity. A code states a run — an error the failing run it decides, a warning the successful one it accompanies — and a fixture is where that statement is made; a code the catalogue carries and no manifest names is a claim nothing exercises. A fixture awaiting later work counts, because a manifest declares its diagnostics whatever the build under test currently produces.
 
 ## Running a fixture
 
