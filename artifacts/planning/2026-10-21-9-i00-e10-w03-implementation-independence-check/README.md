@@ -13,6 +13,7 @@ This row covers AC4 of Corpus Conformance. It reads the corpus W01 completed and
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The work item: the component, the problem and what the row proposes. |
+| [validation.md](validation.md) | The checks run, what each established, the exclusions reviewed and what the validation found. |
 
 ## Links
 
