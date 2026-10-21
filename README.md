@@ -51,7 +51,7 @@ prosiform --root my-skill --output codex-bundle.md rules/codex.md
 prosiform --root my-skill --output claude-bundle.md rules/claude.md
 ```
 
-![Each agent compiles its deferred document: rules/codex contains instructions to keep patches focused and run relevant tests; rules/claude contains instructions to review the proposed change and report actionable findings. Both source sections are titled Rules.](docs/images/agent-rules.png)
+![Each agent compiles its deferred document: rules/codex contains instructions to keep patches focused and run relevant tests; rules/claude contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
 
 ## Installation
 
