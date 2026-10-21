@@ -1,8 +1,8 @@
-description = "A section's link to itself resolves to that section's own destination when the whole document is what the run selected, because ownership is stored apart from the region a run consolidated it into."
+description = "A section's link to itself resolves to that section's own destination when the whole document is what the run selected, because a destination is held against the target a reference names rather than against the region a run consolidated the link into."
 
 clauses = [
-  "Self-reference and ancestor-reference behavior — Link ownership",
-  "Post-compilation invariants — Ownership stability",
+  "Self-reference and ancestor-reference behavior — Link position",
+  "Post-compilation invariants — Destination stability",
 ]
 
 [invocation]

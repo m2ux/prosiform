@@ -7,6 +7,10 @@ source carries references a run is meant to refuse, and its expected bundle is
 output rather than a document a reader follows. Naming documents on the command
 line checks those instead, which is for reading one document while editing it.
 
+A link form written inside literal content — a code span, a fenced block or
+an indented block — is the spelling of a link rather than a link, so it is
+blanked out before the document is scanned and a link beside it is resolved.
+
 Four classes of reference, each resolved by what it names:
 
 - a fragment alone resolves against the document's own headings;
@@ -43,13 +47,16 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from documents import ROOT, documents, strip_code_fences
+from documents import ROOT, documents, strip_code_fences, strip_literal
 
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
 INLINE_LINK = re.compile(r"\]\(\s*<?([^()<>\s]+)>?\s*(?:\"[^\"]*\")?\s*\)")
 REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*<?(\S+)>?", re.MULTILINE)
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$", re.MULTILINE)
+CODE_SPAN = re.compile(r"`([^`]*)`")
+LINK_TEXT = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+UNDERSCORE_EMPHASIS = re.compile(r"(?<![_\w])_{1,2}([^_\n]+)_{1,2}(?![_\w])")
 SLUG_KEPT = frozenset("-_ ")
 
 USER_AGENT = "prosiform-link-check"
@@ -57,7 +64,7 @@ USER_AGENT = "prosiform-link-check"
 ATTEMPTS = 3
 DELAY = 2.0
 TIMEOUT = 20
-SAYS_NOTHING = re.compile(r"HTTP (?:5\d\d|403)")
+STATUS_LINE = re.compile(r"^HTTP/\d(?:\.\d)?\s+(\d{3})\b")
 
 
 @dataclass(frozen=True)
@@ -95,15 +102,20 @@ def retried(resolve: Callable[[], Outcome]) -> Outcome:
 def slug(heading: str) -> str:
     """The fragment GitHub generates for a heading.
 
-    A code span and a link reduce to their text. What survives is lowercased
+    A code span, a link and a run of emphasis reduce to their text, which is
+    what the rendering they mark leaves behind. What survives is lowercased
     and holds its letters, numbers and combining marks, its hyphens and its
     underscores; punctuation and symbols, an emoji among them, are dropped.
     Each remaining space becomes a hyphen, and nothing is trimmed, so a
     heading opening with an emoji yields a leading hyphen: `## ✅ Checks`
     generates `#-checks`.
+
+    An underscore inside a word is a character of that word rather than a
+    mark, so `Snake_case` keeps it while `_underlined_` does not.
     """
-    text = re.sub(r"`([^`]*)`", r"\1", heading)
-    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    text = CODE_SPAN.sub(r"\1", heading)
+    text = LINK_TEXT.sub(r"\1", text)
+    text = UNDERSCORE_EMPHASIS.sub(r"\1", text)
     kept = [
         character
         for character in text.lower()
@@ -124,7 +136,13 @@ def fragments_of(text: str) -> set[str]:
 
 
 def references(text: str) -> list[str]:
-    body = strip_code_fences(text)
+    """Each reference one document carries, read once and in the order written.
+
+    Literal content is blanked out first, so a link form written inside a
+    code span, a fenced block or an indented block is the spelling of a link
+    and is passed over, while a link beside it is resolved.
+    """
+    body = strip_literal(text)
     found = INLINE_LINK.findall(body) + REFERENCE_DEFINITION.findall(body)
     ordered, seen = [], set()
     for target in found:
@@ -216,16 +234,39 @@ GITHUB_USER_PROJECT = re.compile(
 )
 
 
+def reported_status(output: str) -> int | None:
+    """The status the response carried, read from its own status line.
+
+    `--include` writes the response's status line ahead of its headers, in
+    the form the HTTP specification fixes, so the number is the host's
+    rather than the wording of a message the command composed. A call that
+    never received a response wrote no such line and carries no status.
+    """
+    first = output.lstrip().splitlines()[:1]
+    match = STATUS_LINE.match(first[0]) if first else None
+    return int(match.group(1)) if match else None
+
+
 def gh_api(arguments: list[str]) -> Outcome:
     """Run an authenticated GitHub API call, or report why it did not answer.
 
-    A missing command is the caller's to fix and fails the check. A call
-    that timed out or came back carrying a server status or a refusal of
-    the caller is the host saying nothing, which is a verdict of its own.
+    A missing command is the caller's to fix and fails the check. The status
+    the response carried is read by `verdict`, which is the one function
+    deciding every remote read, so a tracker reference and a direct one take
+    the same verdict for the same status.
+
+    A failure carrying no status is a call that did not reach GitHub, which
+    says nothing about the target for a reason of its own. A failure whose
+    status states nothing against the call is reported as the command gave
+    it: a GraphQL error arrives under a 200, so the status that resolves
+    leaves the reason standing.
     """
     try:
         result = subprocess.run(
-            ["gh", "api", *arguments], capture_output=True, text=True, timeout=30
+            ["gh", "api", "--include", "--silent", *arguments],
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
     except FileNotFoundError:
         return (
@@ -233,12 +274,13 @@ def gh_api(arguments: list[str]) -> Outcome:
         )
     except subprocess.TimeoutExpired:
         return Unreachable("gh did not answer within 30s")
-    if result.returncode != 0:
-        reason = (
-            result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
-        )
-        return Unreachable(reason) if SAYS_NOTHING.search(reason) else reason
-    return None
+    if result.returncode == 0:
+        return None
+    reason = result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
+    status = reported_status(result.stdout)
+    if status is None:
+        return Unreachable(reason)
+    return verdict(status) or reason
 
 
 def resolve_github(target: str) -> Outcome:
@@ -253,7 +295,7 @@ def resolve_github(target: str) -> Outcome:
         owner, repository, kind, number = issue.groups()
         endpoint = "issues" if kind == "issues" else "pulls"
         path = f"repos/{owner}/{repository}/{endpoint}/{number}"
-        return retried(lambda: gh_api([path, "--silent"]))
+        return retried(lambda: gh_api([path]))
 
     project = GITHUB_USER_PROJECT.match(target)
     if project:
@@ -263,7 +305,7 @@ def resolve_github(target: str) -> Outcome:
             f'{{ {owner_field}(login: "{login}") '
             f"{{ projectV2(number: {number}) {{ id }} }} }}"
         )
-        return retried(lambda: gh_api(["graphql", "-f", f"query={query}", "--silent"]))
+        return retried(lambda: gh_api(["graphql", "-f", f"query={query}"]))
 
     return retried(lambda: reach(target))
 
@@ -278,6 +320,15 @@ def verdict(status: int) -> Outcome:
     another, and it states nothing about the target either. Any other
     client status is an answer about the target, and the check holds the
     document to it.
+
+    401 and 405 are answers a reader meets too. 405 names the methods the
+    address allows, and the method the reader uses is the one this check
+    falls back to, so a host refusing both is serving no reader. 401 names
+    an authorization scheme, and a reference a reader must hold credentials
+    to follow is one the document should say so about; it is also the status
+    `gh api` returns when this check's own credentials are missing, so
+    counting it as silence would let a run that read no tracker reference
+    pass.
     """
     if status < 400:
         return None
@@ -304,7 +355,10 @@ def reach(target: str) -> Outcome:
     A host answering 403 or 405 to HEAD may be answering about the method
     rather than the target, so the address is asked for again with GET
     before its status is read, and a host that serves the page to GET
-    resolves. A connection that failed, timed out or was
+    resolves. A host refusing GET as well is read by `verdict`, which
+    forbids the one and holds the document to the other. 401 turns on
+    credentials rather than on the method, so it is decided on the answer
+    to HEAD. A connection that failed, timed out or was
     dropped is the host saying nothing and takes the unreachable verdict;
     anything else the request raises is the reference's own fault and
     fails the check.

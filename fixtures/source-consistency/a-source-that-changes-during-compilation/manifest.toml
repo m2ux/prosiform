@@ -1,0 +1,21 @@
+description = "A dependency whose bytes change between discovery and the recheck before publication fails the run, so no bundle carries bytes the run no longer reads."
+
+clauses = [
+  "Source consistency",
+  "Compile before publishing — Discover the recursive dependency graph",
+]
+
+awaiting = "I00:E11:W24"
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_CHANGED"
+reference = "steps.md"

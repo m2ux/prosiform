@@ -36,7 +36,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **deferral** | An author's statement that a reference is compiled in a run of its own rather than this one, written as a `¬` opening the link's text. The target is required to exist and is carried nowhere; the bundle emits the link's text with its mark exactly as authored, and its destination is the target's path from the root. |
 | **closure** | The transitive closure of the reference relation over the entry references: every target reachable by following the references selected content carries under the root. |
 | **expansion depth** | Link hops from the nearest entry reference to a target, along its shortest path. |
-| **resource** | A reference target that is not a local Markdown document: an image, a remote address, any other non-Markdown link. It is emitted as authored and never opened, rebased or resolved. |
+| **resource** | A reference the bundle carries as text rather than opening: an image whatever file it names, a remote address, any other link naming no local Markdown document. It is emitted as authored and never opened, rebased or resolved. |
 
 ## Selection and arrangement
 

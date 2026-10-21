@@ -80,12 +80,11 @@ carries is therefore neither a root nor a boundary — it sits inside one
 region, so the region it sits in is what the document holds there — and
 a fragment naming one names a section the model does not have.
 
-A link belongs to the innermost such section containing it, and to the
-document itself where no section does: the content above a document's
-first eligible heading is the document's own. Ownership is read from the
-document's structure and from nothing a run selected, so the section a
-link belongs to is the same whether that section was selected on its own
-or inside a larger region that consolidated it.
+The content above a document's first eligible heading is the document's
+own, so a selection naming the whole document carries it. A link is read
+for the target it names and the position the source wrote it at, and the
+section it sits in enters neither: a reference names the same target
+wherever its author put it.
 
 The document also counts what a budget is declared over: the container
 blocks it nests at its deepest point, which is what a nesting budget
@@ -519,8 +518,7 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     """
     for token in inlines(tokens, selected):
         line = None if token.map is None else token.map[0] + 1
-        children = token.children or []
-        for at, child in enumerate(children):
+        for children, at, child in events(token.children or []):
             if child.type == LINK_OPEN:
                 destination = child.attrGet(HREF)
                 yield Use(
@@ -529,7 +527,7 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     line,
                     resource=False,
                 )
-            elif child.type == IMAGE:
+            else:
                 destination = child.attrGet(SRC)
                 yield Use(
                     "" if destination is None else str(destination),
@@ -539,6 +537,28 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                 )
 
 
+def events(
+    children: Sequence[Token],
+) -> Iterator[tuple[Sequence[Token], int, Token]]:
+    """Each reference use one run of inline events carries, in written order.
+
+    A use arrives with the run that carries it and its position in that
+    run, because what a use opens with is the event following it.
+
+    An image's alternative content is a run of its own, so the walk
+    descends into it where the image sits and a use written there is
+    read where a use written beside the image is. This is the one walk
+    over a run of inline events, so discovery, the budget, the
+    emission and the candidate comparison each read the same uses in
+    the same order.
+    """
+    for at, child in enumerate(children):
+        if child.type in REFERENCE_USES:
+            yield children, at, child
+        if child.type == IMAGE:
+            yield from events(child.children or [])
+
+
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     """How many link and image uses the given regions of one source carry.
 
@@ -546,13 +566,12 @@ def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     the count is of occurrences in the source rather than of the
     documents they reach: one document named five times is five
     occurrences, and an image is one of them because opening a resource
-    costs what opening a document costs.
+    costs what opening a document costs. A use written inside an
+    image's alternative content is one the author wrote, so it is
+    counted where it sits.
     """
     return sum(
-        1
-        for token in inlines(tokens, selected)
-        for child in token.children or []
-        if child.type in REFERENCE_USES
+        1 for token in inlines(tokens, selected) for _ in events(token.children or [])
     )
 
 
@@ -574,30 +593,6 @@ def nesting(tokens: Sequence[Token]) -> int:
         elif token.type in CONTAINER_CLOSE:
             depth -= 1
     return deepest
-
-
-def owner(tokens: Sequence[Token], at: int) -> Token | None:
-    """The eligible section one position belongs to, or nothing for the preamble.
-
-    The owner is the innermost eligible section containing the
-    position, which is the last section root the document opens at or
-    above it: a heading a container carries roots no section, so
-    content inside that container belongs to the section the container
-    sits in. A position above the document's first section root belongs
-    to the document itself, which is what nothing names here.
-
-    The position is read from the document's own structure, so a
-    selection does not enter the answer and consolidating a section
-    into a larger region leaves every owner it held unchanged.
-    """
-    found: Token | None = None
-    for token in regions(tokens):
-        start = 0 if token.map is None else token.map[0]
-        if start > at:
-            break
-        if token.type == HEADING_OPEN:
-            found = token
-    return found
 
 
 @dataclass(frozen=True)

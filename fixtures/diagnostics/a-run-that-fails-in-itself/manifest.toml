@@ -1,0 +1,20 @@
+description = "A run that fails in itself over a source carrying no defect returns the internal-error status and one diagnostic naming the run, so a caller is not sent to look at the documents the run read."
+
+clauses = [
+  "Exit status and JSON diagnostics — exit 4",
+  "Exit status and JSON diagnostics — an unexpected internal error names the run",
+]
+
+awaiting = "I00:E11:W24"
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 4
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNEXPECTED_INTERNAL_ERROR"

@@ -35,6 +35,7 @@ from prosiform.bundle import (
 )
 from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY
 from prosiform.cli import (
+    EMPTY_GROUP_RULE,
     ENTRY_DESTINATION,
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -43,6 +44,7 @@ from prosiform.cli import (
     INVALID_USAGE,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
+    RESOURCE_PORTABILITY,
     ROOT_NOT_FOUND,
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
@@ -60,7 +62,12 @@ from prosiform.cli import (
 )
 from prosiform.closure import resolve
 from prosiform.limits import FILES, RESOURCE_LIMIT
-from prosiform.profile import RAW_HTML, UNSUPPORTED_CONSTRUCT
+from prosiform.profile import (
+    HEADROOM,
+    PARSER_REFERENCE_LIMIT,
+    RAW_HTML,
+    UNSUPPORTED_CONSTRUCT,
+)
 from prosiform.source import (
     NESTED_SECTION_TARGET,
     UNTERMINATED_FRONTMATTER,
@@ -240,6 +247,94 @@ def test_a_grouping_slug_naming_no_directory_is_an_input_failure(root: Path) -> 
     )
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [INVALID_GROUP_RULE]
+
+
+def test_a_grouping_rule_the_closure_leaves_idle_is_reported_as_arranging_nothing(
+    root: Path,
+) -> None:
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--group", "docs:2", "guide.md"
+    )
+    assert run.status == SUCCESS
+    assert [one["code"] for one in run.diagnostics()] == [
+        EMPTY_GROUP_RULE,
+        ENTRY_DESTINATION,
+    ]
+    warned = run.diagnostics()[0]
+    assert warned["severity"] == "warning"
+    assert "'docs'" in warned["message"]
+
+
+def test_a_grouping_rule_the_closure_carries_a_document_under_arranges_it(
+    root: Path,
+) -> None:
+    written(root, "docs/note.md", "# Note\n\n## Run\n\nDo it.\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--group",
+        "docs:2",
+        "docs/note.md",
+    )
+    assert run.status == SUCCESS
+    assert EMPTY_GROUP_RULE not in [one["code"] for one in run.diagnostics()]
+
+
+def test_each_idle_grouping_rule_is_reported_and_an_arranging_one_is_not(
+    root: Path,
+) -> None:
+    written(root, "notes/kept.md", "# Kept\n\n## Run\n\nDo it.\n")
+    written(root, "other/unused.md", "# Unused\n")
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--group",
+        "docs:2",
+        "--group",
+        "notes:2",
+        "--group",
+        "other:2",
+        "notes/kept.md",
+    )
+    assert run.status == SUCCESS
+    warned = [
+        one["message"] for one in run.diagnostics() if one["code"] == EMPTY_GROUP_RULE
+    ]
+    assert len(warned) == 2
+    assert "'docs'" in warned[0]
+    assert "'other'" in warned[1]
+
+
+def test_an_entry_naming_a_member_the_group_emits_no_heading_for_opens_on_the_group(
+    root: Path,
+) -> None:
+    written(root, "notes/bare.md", "# Bare\n")
+    run = invoke("--root", str(root), "--group", "notes:2", "notes/bare.md")
+    assert run.status == SUCCESS
+    assert run.stdout.startswith("This bundle was built for [Notes](#notes);")
+
+
+def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_contribution(
+    root: Path,
+) -> None:
+    written(root, "notes/second.md", "# Second\n\n## Outcomes\n\nText.\n")
+    run = invoke("--root", str(root), "--group", "notes:2", "notes/second.md#second")
+    assert run.status == SUCCESS
+    assert run.stdout.startswith("This bundle was built for [Outcomes](#outcomes);")
+
+
+def test_a_reference_into_a_member_the_group_emits_no_heading_for_is_rewritten(
+    root: Path,
+) -> None:
+    written(root, "notes/bare.md", "# Bare\n")
+    written(root, "guide.md", "# Guide\n\nSee [Bare](notes/bare.md).\n")
+    run = invoke("--root", str(root), "--group", "notes:2", "guide.md")
+    assert run.status == SUCCESS
+    assert "See [Bare](#notes)." in run.stdout
 
 
 def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -> None:
@@ -962,6 +1057,24 @@ def test_an_image_naming_a_markdown_document_carries_no_document(root: Path) -> 
     assert "The rules." not in run.stdout
 
 
+def test_an_image_naming_a_markdown_document_warns_once_on_portability(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nThe rules.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    codes = [one["code"] for one in run.diagnostics()]
+    assert codes.count(RESOURCE_PORTABILITY) == 1
+
+
+def test_a_bundle_naming_no_resource_does_not_warn_on_portability(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the spec](https://e.test/s.pdf).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    assert RESOURCE_PORTABILITY not in [one["code"] for one in run.diagnostics()]
+
+
 def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee ![the architecture](plan.png).\n")
     run = invoke("--root", str(root), "guide.md")
@@ -1656,3 +1769,33 @@ def test_an_unsafe_boundary_publishes_no_file(tmp_path: Path) -> None:
     )
     assert run.status == INPUT_FAILURE
     assert not destination.exists()
+
+
+def surrounded(brackets: int) -> str:
+    """One source whose dependency sits under a run of open brackets."""
+    return f"# Guide\n\nThe guide cites {'[' * brackets}the plan](plan.md).\n"
+
+
+def test_a_lookup_the_parser_declines_fails_the_run(root: Path) -> None:
+    written(root, "guide.md", surrounded(1 + HEADROOM + 1))
+    written(root, "plan.md", "# Plan\n\nThe plan.\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-nesting", "1", "guide.md"
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    reported = run.diagnostics()[0]
+    assert reported["code"] == PARSER_REFERENCE_LIMIT
+    assert reported["source"] == "guide.md:3"
+    assert reported["chain"] == ["guide.md"]
+
+
+def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) -> None:
+    written(root, "guide.md", surrounded(1 + HEADROOM))
+    written(root, "plan.md", "# Plan\n\nThe plan.\n")
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--max-nesting", "1", "guide.md"
+    )
+    assert run.status == SUCCESS
+    assert "The plan." in run.stdout
+    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]

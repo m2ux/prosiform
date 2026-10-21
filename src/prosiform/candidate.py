@@ -39,13 +39,15 @@ the author's behalf, because a document the tool silently completed is
 no longer the document the author wrote.
 
 One invariant the contract names is not checked here, and is absent
-rather than weakened. **Ownership stability** is a property of the
-construction rather than of the candidate. Link ownership is read from a source's
-own token stream and a position in it, and consolidation changes
-neither, so a
-check comparing ownership before and after would compare one call of
-`source.owner` with another call of the same function on the same
-arguments. A check that cannot fail reports a guarantee nobody has.
+rather than weakened. **Destination stability** is a property of the
+construction rather than of the candidate. A reference is rewritten to
+the destination its target was given, read from the map `cli` builds
+over every group from the identity each emitted heading answers to, and
+neither the position a link sits in nor the region a run consolidated it
+into is part of that identity. A check comparing a link's destination
+before and after consolidation would therefore compare one lookup of a
+target with another lookup of the same target, and a check that cannot
+fail reports a guarantee nobody has.
 
 An unsafe boundary raises `Unsafe`, which names the source regions
 either side of it and the container that absorbed one into the other.
@@ -89,6 +91,7 @@ from prosiform.source import (
     SRC,
     Source,
     bare,
+    events,
     fragments,
     headings,
     inlines,
@@ -225,17 +228,42 @@ def label(children: Sequence[Token], at: int) -> str:
     return "".join(shown(child) for child in children[at + 1 : closing])
 
 
-def uses(inline: Token) -> Iterator[tuple[int, Use]]:
+def alternative(image: Token) -> str:
+    """The text one image's alternative content shows, its own uses aside.
+
+    The alternative content is a run of inline events, and a use
+    written there is compared as the use it is, so the text left to
+    compare here is what surrounds it. A link's visible text is
+    therefore read out of this run and read back on that link's own
+    comparison, which is where a mark the rewrite drops is accounted
+    for.
+    """
+    children = image.children or []
+    carried = []
+    inside = False
+    for child in children:
+        if child.type == LINK_OPEN:
+            inside = True
+        elif child.type == LINK_CLOSE:
+            inside = False
+        elif not inside:
+            carried.append(shown(child))
+    return "".join(carried)
+
+
+def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
     """Every link and image use one inline token carries, with its position.
 
-    An image's alternative content is a run of its own, so a link written
-    inside one is read where the parser puts it rather than beside the
-    image. Both sides of every comparison read the run the same way.
+    Each use arrives with the run that carries it and its position in
+    that run, which is where a mark is read from, so a use written
+    inside an image's alternative content is compared on the run it
+    was written in. Both sides of every comparison read the run the
+    same way.
     """
-    children = inline.children or []
-    for at, child in enumerate(children):
+    for children, at, child in events(inline.children or []):
         if child.type == LINK_OPEN:
             yield (
+                children,
                 at,
                 Use(
                     LINK,
@@ -244,12 +272,13 @@ def uses(inline: Token) -> Iterator[tuple[int, Use]]:
                     attribute(child, HREF),
                 ),
             )
-        elif child.type == IMAGE:
+        else:
             yield (
+                children,
                 at,
                 Use(
                     IMAGE,
-                    child.content,
+                    alternative(child),
                     attribute(child, TITLE),
                     attribute(child, SRC),
                 ),
@@ -260,7 +289,7 @@ def intended(
     path: str,
     one: Use,
     at: int,
-    inline: Token,
+    children: Sequence[Token],
     targets: Mapping[tuple[str, str | None], str],
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
@@ -281,10 +310,14 @@ def intended(
     link's content opens with, as discovery and emission read it, so a
     deferral the parser places inside a formatting event is the same
     deferral to all three.
+
+    The run passed in is the one that carries the use, which is an
+    image's alternative content where the use was written there, so
+    the opening is read from the event the author wrote it on.
     """
     if one.kind != LINK:
         return one
-    opening = opening_text(inline.children or [], at)
+    opening = opening_text(children, at)
     found = bundled(path, one.destination, opening)
     if found is None:
         deferred = deferring(path, one.destination, opening)
@@ -657,7 +690,7 @@ def structural(
     and no live image, because the group emitted it as the literal text
     its author typed.
     """
-    found = [use for inline in inlines(tokens, [span]) for _, use in uses(inline)]
+    found = [use for inline in inlines(tokens, [span]) for _, _at, use in uses(inline)]
     if found:
         raise Invalid(
             NO_NEW_LINKS,
@@ -877,7 +910,7 @@ def entry(
     carried = {
         use.destination
         for inline in inlines(tokens, [spans[0]])
-        for _, use in uses(inline)
+        for _, _at, use in uses(inline)
     }
     if carried != expected:
         raise Invalid(
@@ -941,14 +974,14 @@ def references(
     preserve.
     """
     expected = [
-        intended(path, one, at, inline, targets)
+        intended(path, one, at, children, targets)
         for inline in inlines(source.tokens, [source.span])
-        for at, one in uses(inline)
+        for children, at, one in uses(inline)
     ]
     found = [
         one
         for inline in inlines(published.tokens, [published.span])
-        for _, one in uses(inline)
+        for _, _at, one in uses(inline)
     ]
     if len(found) != len(expected):
         raise Invalid(

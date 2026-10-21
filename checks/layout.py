@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert the repository carries the trees this stage needs.
+"""Assert the repository carries the trees the build needs.
 
 A tree exists when git tracks at least one file under it. An untracked
 directory is invisible to a fresh checkout, so it does not count.

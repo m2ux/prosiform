@@ -1,16 +1,25 @@
 """Assert the schema describes a complete fixture declaration and nothing else.
 
-A fixture declares its source tree, its invocation, its expected standard
-output, its expected exit status and its expected diagnostics in one
-manifest. The schema requires all five, so a manifest leaving one out is
-rejected as malformed rather than running with an expectation nobody
-stated. A diagnostic's code comes from the catalogue its severity
+A fixture declares its invocation, its expected standard output, its
+expected exit status and its expected diagnostics in one manifest. The
+schema requires all four, so a manifest leaving one out is rejected as
+malformed rather than running with an expectation nobody stated. The
+source tree the run is confined to is declared beside the invocation's
+arguments, and a manifest naming none declares a run supplied no allowed
+source root. A diagnostic's code comes from the catalogue its severity
 selects, so a fixture cannot expect a failure the contract does not
 define, and cannot declare a warning where an error belongs.
 
+Standard output is declared one way or the other: as the bytes the run
+must reproduce, or, where the whole of the response is a build's own, as
+the text it must carry. A manifest declaring it both ways states its
+output twice, and one declaring it neither way states nothing about the
+stream, so each is rejected.
+
 A diagnostic about a reference declares the fields that reference
 carries, the inclusion chain among them, and a chain reaching nothing is
-no chain.
+no chain. A diagnostic under a code naming several faults declares the
+text its message carries, so the fixture states which fault it is.
 
 A run that must leave a path untouched declares it, because a comparison
 of the two streams says nothing about a file. The declaration carries
@@ -29,7 +38,6 @@ import pytest
 from manifests import catalogue, errors
 
 DECLARATIONS = {
-    "source tree": ("invocation", "root"),
     "invocation": ("invocation", "arguments"),
     "expected standard output": ("expected", "stdout"),
     "expected exit status": ("expected", "exit_status"),
@@ -88,6 +96,20 @@ def without(table: str, field: str) -> dict[str, Any]:
 
 def test_a_complete_manifest_validates() -> None:
     assert errors(complete()) == []
+
+
+def test_a_manifest_naming_no_source_tree_validates() -> None:
+    """A run supplied no allowed source root is a run a manifest declares."""
+    manifest = without("invocation", "root")
+    manifest["expected"]["exit_status"] = 2
+    manifest["expected"]["diagnostics"] = [
+        {
+            "severity": "error",
+            "code": "E_INVALID_USAGE",
+            "message_contains": ["--root"],
+        }
+    ]
+    assert errors(manifest) == []
 
 
 @pytest.mark.parametrize(("declaration", "field"), sorted(DECLARATIONS.items()))
@@ -197,6 +219,74 @@ def test_an_empty_inclusion_chain_fails() -> None:
     manifest = complete()
     manifest["expected"]["diagnostics"][0]["chain"] = []
     assert errors(manifest), "a chain reaching nothing passed validation"
+
+
+def carrying_text() -> dict[str, Any]:
+    """A manifest declaring the text an informational response carries."""
+    manifest = complete()
+    manifest["expected"]["exit_status"] = 0
+    manifest["expected"]["diagnostics"] = []
+    del manifest["expected"]["stdout"]
+    manifest["expected"]["stdout_contains"] = ["prosiform ", "(skill-markdown-v1)"]
+    return manifest
+
+
+def test_a_manifest_declaring_the_text_standard_output_carries_validates() -> None:
+    assert errors(carrying_text()) == []
+
+
+def test_a_manifest_declaring_standard_output_both_ways_fails() -> None:
+    manifest = carrying_text()
+    manifest["expected"]["stdout"] = "expected/stdout.md"
+    assert errors(manifest), "a manifest stating its output twice passed validation"
+
+
+def test_a_manifest_declaring_standard_output_neither_way_fails() -> None:
+    manifest = carrying_text()
+    del manifest["expected"]["stdout_contains"]
+    assert errors(manifest), "a manifest stating no output passed validation"
+
+
+def test_an_empty_text_declaration_fails() -> None:
+    manifest = carrying_text()
+    manifest["expected"]["stdout_contains"] = []
+    assert errors(manifest), "a declaration naming no text passed validation"
+
+
+def test_a_text_entry_declared_twice_fails() -> None:
+    manifest = carrying_text()
+    manifest["expected"]["stdout_contains"] = ["prosiform ", "prosiform "]
+    assert errors(manifest), "one entry declared twice passed validation"
+
+
+def test_a_text_declaration_as_a_bare_string_fails() -> None:
+    manifest = carrying_text()
+    manifest["expected"]["stdout_contains"] = "prosiform "
+    assert errors(manifest), "a bare string passed where the text is listed"
+
+
+def test_a_diagnostic_declaring_the_text_its_message_carries_validates() -> None:
+    manifest = complete()
+    manifest["expected"]["diagnostics"][0]["message_contains"] = ["../outside.md"]
+    assert errors(manifest) == []
+
+
+def test_a_diagnostic_declaring_no_message_text_validates() -> None:
+    assert "message_contains" not in complete()["expected"]["diagnostics"][0]
+    assert errors(complete()) == []
+
+
+def test_an_empty_message_text_declaration_fails() -> None:
+    manifest = complete()
+    manifest["expected"]["diagnostics"][0]["message_contains"] = []
+    assert errors(manifest), "a declaration naming no text passed validation"
+
+
+def test_a_whole_message_field_fails() -> None:
+    """The message itself is one build's wording, so no manifest declares it."""
+    manifest = complete()
+    manifest["expected"]["diagnostics"][0]["message"] = "a reference outside the root"
+    assert errors(manifest), "a whole message passed validation"
 
 
 def test_a_manifest_declaring_an_absent_path_validates() -> None:

@@ -15,8 +15,11 @@ from markdown_it.token import Token
 
 from prosiform.profile import REFERENCES, parse
 from prosiform.rewrite import (
+    LINK,
+    RESOURCE,
     Definition,
     Unrewritable,
+    carried,
     code_spans,
     definitions,
     destinations,
@@ -123,6 +126,16 @@ def test_a_definition_is_read_as_its_source_spelled_it(
         ),
         ("[rules](../rules.md)", [None], "[rules](../rules.md)"),
         ("[¬ rules](../rules.md)", [None], "[¬ rules](../rules.md)"),
+        (
+            "A picture ![of the [rules](rules.md) it names](plan.png).",
+            ["#rules"],
+            "A picture ![of the [rules](#rules) it names](plan.png).",
+        ),
+        (
+            "![[¬ one](one.md)](a.png) and [two](two.md)",
+            ["topic/one.md", "#two"],
+            "![[¬ one](topic/one.md)](a.png) and [two](#two)",
+        ),
         ("nothing to rewrite", [], "nothing to rewrite"),
     ],
 )
@@ -271,9 +284,57 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
         ("A fragment [alpha](#alpha) of its own.", [("#alpha", "alpha")]),
         ("An example `[draft](draft.md)` of one.", []),
         ("A picture ![of it](plan.png) names no link.", []),
+        (
+            "A picture ![of the [rules](rules.md) it names](plan.png).",
+            [("rules.md", "rules")],
+        ),
+        (
+            "![[¬ one](one.md)](a.png) and [two](two.md)",
+            [("one.md", "¬ one"), ("two.md", "two")],
+        ),
     ],
 )
 def test_the_parser_names_each_link_a_token_carries(
     text: str, expected: list[tuple[str, str]]
 ) -> None:
     assert destinations(inline_of(text)) == expected
+
+
+NESTINGS = [
+    "A [link](a.md) alone.",
+    "A picture ![of it](plan.png) alone.",
+    "A [picture ![of it](plan.png) link](a.md).",
+    "A picture ![of the [rules](a.md) it names](plan.png).",
+    "A [picture ![of the [rules](a.md) it names](plan.png) link](b.md).",
+    "A picture ![of ![another](inner.png) picture](plan.png).",
+    "A picture ![of a [picture ![inner](inner.png) link](a.md)](plan.png).",
+    "A [label [holding](a.md) a link](b.md).",
+    "A [label ![picture ![inner](i.png)](plan.png) deep](a.md).",
+]
+
+
+@pytest.mark.parametrize("text", NESTINGS)
+def test_the_emission_reads_the_uses_the_parser_reads(text: str) -> None:
+    inline = inline_of(text)
+    assert len(uses(text, {})) == carried(inline.children)
+
+
+def test_a_link_inside_a_nested_image_is_the_link_it_is() -> None:
+    text = "A [picture ![of the [rules](a.md) it names](plan.png) link](b.md)."
+    assert [one.kind for one in uses(text, {})] == [LINK, RESOURCE, LINK]
+
+
+def test_a_link_inside_a_nested_image_is_rewritten_with_the_link_that_carries_it() -> (
+    None
+):
+    text = "A [picture ![of the [rules](a.md) it names](plan.png) link](b.md).\n"
+    written = rewritten(lines(text), inline_of(text), ["#b", "#a"], {})
+    assert written == [
+        "A [picture ![of the [rules](#a) it names](plan.png) link](#b).\n"
+    ]
+
+
+def test_a_link_its_own_label_holds_leaves_that_label_the_text_it_is() -> None:
+    text = "A [label [holding](a.md) a link](b.md).\n"
+    written = rewritten(lines(text), inline_of(text), ["#a"], {})
+    assert written == ["A [label [holding](#a) a link](b.md).\n"]
