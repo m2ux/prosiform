@@ -13,6 +13,7 @@ This row covers AC2, AC3 and AC5 of Corpus Conformance, and it is the row the re
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The work item: the component, the problem and what the row proposes. |
+| [validation.md](validation.md) | The runs that observed each criterion, what the validation found, and what could not be ticked. |
 
 ## Links
 
