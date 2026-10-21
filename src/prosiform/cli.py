@@ -189,7 +189,6 @@ from prosiform.closure import (
     external,
     identity,
     inside,
-    marked,
     resolve,
 )
 from prosiform.diagnostics import (
@@ -248,7 +247,6 @@ from prosiform.source import (
     nesting,
     occurrences,
     opening_heading,
-    owner,
     regions,
     section,
     uses,
@@ -273,7 +271,6 @@ INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
-SELF_REFERENCE = "E_SELF_REFERENCE"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
@@ -1023,42 +1020,6 @@ def selection(
     )
 
 
-def self_referent(
-    tokens: Sequence[Token], path: str, at: int | None, found: Reference
-) -> bool:
-    """Whether one marked reference names the very node that carries it.
-
-    Identity is compared after the path and the fragment have resolved,
-    so two spellings of one section are one node and two sections of one
-    file are two. A document node and its heading-section nodes are
-    distinct, which is why selecting a whole document does not make its
-    links into that document's sections self-references, and why a
-    section's link back to its whole document is an ancestor inclusion
-    rather than a link to itself.
-
-    The owner is read from the document's structure, so the answer is
-    the same whether the owning section was selected on its own or
-    inside a region that consolidated it. A fragment naming no section
-    of the document names nothing here either, and the run reports it
-    as the reference to a missing target it is. A fragment the document
-    refuses — one two of its headings produce, or one naming a heading
-    a container carries — names no node to compare against, and the
-    refusal is reported where the reference is resolved.
-    """
-    if found.path != path or at is None:
-        return False
-    holder = owner(tokens, at - 1)
-    if found.fragment is None:
-        return holder is None
-    if holder is None:
-        return False
-    try:
-        named = section(tokens, found.fragment)
-    except (Ambiguous, Nested):
-        return False
-    return named is not None and named[0] is holder
-
-
 def required(
     path: str,
     source: Source,
@@ -1086,12 +1047,12 @@ def required(
     a Markdown document, is a defect rather than a mention: an author
     spelled a dependency the profile cannot resolve.
 
-    A marked reference naming the node that owns it is a direct
-    self-reference and is refused, which the row that rewrites a self
-    reference retires. One naming an including ancestor, or the whole
-    document a section sits in, names a destination the bundle already
-    carries, and the traversal reaches it as it reaches any identity it
-    has seen.
+    A reference naming the node that owns it, an including ancestor of
+    it, or the whole document a section sits in, names a destination the
+    bundle already carries, and the traversal reaches it as it reaches
+    any identity it has seen. Identity is what the frontier closes over,
+    so a reference pointing back adds nothing to it and expands nothing
+    twice.
 
     The chain passed in is the one that reached this source, and every
     reference the source carries stands one hop beyond it. A reference
@@ -1122,18 +1083,6 @@ def required(
             ) from malformed
         if found.external or not is_markdown(found.path):
             continue
-        if marked(use.opening) and self_referent(tokens, path, use.line, found):
-            carrier = "section" if found.fragment is not None else "document"
-            raise input_failure(
-                f"the marked reference {use.destination!r} names the {carrier} "
-                f"that carries it, which is a direct self-reference",
-                code=SELF_REFERENCE,
-                remedy="cite it without the mark, or name another document or section",
-                reference=use.destination,
-                resolved=identity(found),
-                source=at,
-                chain=(*chain, identity(found)),
-            )
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 

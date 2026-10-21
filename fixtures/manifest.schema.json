@@ -155,7 +155,6 @@
         "E_RAW_HTML",
         "E_RESOURCE_LIMIT",
         "E_ROOT_NOT_FOUND",
-        "E_SELF_REFERENCE",
         "E_SOURCE_CHANGED",
         "E_SOURCE_OUTSIDE_ROOT",
         "E_SOURCE_SYMLINK",

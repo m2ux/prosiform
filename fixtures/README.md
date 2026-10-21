@@ -146,7 +146,6 @@ An error decides a failing run.
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
 | `E_ROOT_NOT_FOUND` | CLI contract — an allowed source root naming no directory. |
-| `E_SELF_REFERENCE` | Self-reference and ancestor-reference behavior — a marked reference naming the very node that carries it. |
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the allowed root cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |

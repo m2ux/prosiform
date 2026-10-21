@@ -44,7 +44,6 @@ from prosiform.cli import (
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
-    SELF_REFERENCE,
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
     SOURCE_SYMLINK,
@@ -1082,30 +1081,32 @@ def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
     assert run.stdout == ""
 
 
-def test_a_marked_link_to_the_section_carrying_it_is_a_self_reference(
+def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ A](guide.md#alpha).\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
-    assert run.stdout == ""
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [A](guide.md#alpha).\n")
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "See [A](#alpha)." in run.stdout
+    assert run.stdout.count("### Alpha") == 1
 
 
 def test_identity_is_compared_after_the_path_and_the_fragment_resolve(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ A](./%67uide.md#alpha).\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [A](./%67uide.md#alpha).\n")
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "See [A](#alpha)." in run.stdout
 
 
-def test_a_preamble_link_to_its_own_document_is_a_self_reference(root: Path) -> None:
-    written(root, "guide.md", "See [¬ the guide](guide.md).\n\n## Alpha\n\nBody.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+def test_a_preamble_link_to_its_own_document_resolves_to_that_document(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "See [the guide](guide.md).\n\n## Alpha\n\nBody.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [the guide](#guide)." in run.stdout
 
 
 def test_a_section_link_to_its_whole_document_is_an_ancestor_inclusion(
@@ -1141,17 +1142,17 @@ def test_classification_is_the_same_before_and_after_consolidation(
     assert child.stdout.partition("\n\n")[2] == consolidated.stdout.partition("\n\n")[2]
 
 
-def test_a_self_reference_survives_consolidation_into_the_whole_document(
+def test_a_self_reference_resolves_the_same_after_consolidation(
     root: Path,
 ) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Alpha\n\n### Detail\n\nSee [¬ D](guide.md#detail).\n",
+        "# Guide\n\n## Alpha\n\n### Detail\n\nSee [D](guide.md#detail).\n",
     )
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == SELF_REFERENCE
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [D](#detail)." in run.stdout
 
 
 def chained(root: Path) -> None:
