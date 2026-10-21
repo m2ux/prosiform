@@ -10,5 +10,5 @@ The others keep their own pull requests.
 - **The rows are delivered in parallel.**
   They are free as soon as W01 lands, and separate branches let one session take each. A shared pull request would serialise work that has no order between its parts.
 
-- **W07 waits on W02 and is nobody's pair.**
-  Rebasing a deferred destination needs the deferral it rebases, so it is a level below the rest.
+- **W07 pairs with no row it does not follow.**
+  It waits on W02, and W03, W04, W05 and W06 merged before it was free, so a shared pull request with any of them was never available. Its own work — a deferred target confirmed and its destination named from the root — is one criterion pair read against the deferral fixtures, and its evidence is its own.
