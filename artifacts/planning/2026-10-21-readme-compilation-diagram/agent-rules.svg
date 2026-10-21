@@ -15,18 +15,18 @@
 <text x="60" y="420" font-size="22" fill="#b1c6df" font-weight="400">Codex selects this link.</text>
 <text x="60" y="650" font-size="26" fill="#e3b341" font-weight="400">¬ Claude</text><path d="M60 657 h124.8" stroke="#e3b341" stroke-width="1.5"/>
 <text x="60" y="700" font-size="22" fill="#b1c6df" font-weight="400">Claude selects this link.</text>
-<text x="640" y="158" font-size="32" fill="#e6edf3" font-weight="500">Codex rules</text>
+<text x="640" y="158" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="640" y="236" font-size="24" fill="#e6edf3" font-weight="400">• Keep patches focused.</text>
 <text x="640" y="292" font-size="24" fill="#e6edf3" font-weight="400">• Run relevant tests.</text>
-<text x="640" y="558" font-size="32" fill="#e6edf3" font-weight="500">Claude rules</text>
+<text x="640" y="558" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="640" y="636" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
 <text x="640" y="692" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
 <text x="1280" y="153" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="1280" y="213" font-size="26" fill="#e6edf3" font-weight="500">Codex rules</text>
+<text x="1280" y="213" font-size="26" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="1280" y="273" font-size="24" fill="#e6edf3" font-weight="400">• Keep patches focused.</text>
 <text x="1280" y="329" font-size="24" fill="#e6edf3" font-weight="400">• Run relevant tests.</text>
 <text x="1280" y="553" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="1280" y="613" font-size="26" fill="#e6edf3" font-weight="500">Claude rules</text>
+<text x="1280" y="613" font-size="26" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="1280" y="673" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
 <text x="1280" y="729" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
 <path d="M188 367 C465 367 545 231 600 231" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 224 L612 231 L600 238 Z" fill="#58a6ff"/>
