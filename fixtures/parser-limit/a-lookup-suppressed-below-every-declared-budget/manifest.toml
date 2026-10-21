@@ -1,0 +1,21 @@
+description = "A reference whose lookup the parser declines against a ceiling no invocation lowered fails under every budget at its default, naming the reference the lookup would have made, rather than publishing a bundle the suppressed lookup left a document out of."
+
+clauses = [
+  "Adversarial acceptance fixtures — Parser exhaustion",
+  "Mandatory parser viability gates — Observable reference-resolution suppression",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_PARSER_REFERENCE_LIMIT"
+reference = "plan.md"
+source = "guide.md:3"
+chain = ["guide.md"]
