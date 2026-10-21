@@ -38,9 +38,14 @@ corpus observes. An installation is not a thing a fixture can name: a
 fixture declares a source tree and the bytes a run must return for it, and
 the corpus reaches the build under test through configuration. Each claim
 is therefore declared here, beside the surface this report renders, with
-the reason the smoke run cannot reach it and what a run would have to do to
-observe it. A claim a run comes to observe leaves the listing by leaving
-this declaration.
+the reason the smoke run cannot reach it and the property of an installed
+command that would observe it.
+
+That property is written in the words the smoke run declares its own
+properties in, so the two are read from one vocabulary. A claim naming a
+property the run observes states a limit the corpus no longer has, so it
+fails the report rather than printing: the entry leaves the listing because
+the run came to observe it, and the closing count counts what is left.
 
 The design is read from the branch and path the README's Design link names,
 as the vocabulary check reads the same document, so no path into a dated
@@ -64,6 +69,7 @@ from manifests import (
     severities,
     statuses,
 )
+from smoke import OBSERVED
 from vocabulary import design_reference, git_ref, git_show
 
 FENCE = re.compile(r"^(?:```|~~~)")
@@ -109,11 +115,21 @@ class Entry:
 
 @dataclass(frozen=True)
 class Claim:
-    """One installation claim no run of the corpus observes."""
+    """One installation claim, and the property that would observe it."""
 
     name: str
     reason: str
-    observable: str
+    observes: str
+
+    @property
+    def observed(self) -> bool:
+        """Whether the smoke run observes the property this claim names."""
+        return self.observes in OBSERVED
+
+    @property
+    def observable(self) -> str:
+        """The property that would observe it, as the listing states it."""
+        return f"observable once the smoke run observes a command {self.observes}"
 
 
 CLAIMS = (
@@ -124,10 +140,7 @@ CLAIMS = (
             "runner, and a platform whose command wrapper and path resolution "
             "differ is a different mechanism"
         ),
-        observable=(
-            "observable once a run installs the build and invokes it by name "
-            "on that platform"
-        ),
+        observes="named on another platform's path",
     ),
     Claim(
         name="a machine that never held the repository",
@@ -136,10 +149,7 @@ CLAIMS = (
             "unreachable by path, working directory and environment, and "
             "removing it is not something a check inside it can do"
         ),
-        observable=(
-            "observable once a run installs the build on a machine the "
-            "repository was never copied to"
-        ),
+        observes="installed on a machine that never held this repository",
     ),
     Claim(
         name="the command line the documentation gives a reader",
@@ -147,12 +157,14 @@ CLAIMS = (
             "the run installs an artefact it builds rather than running the "
             "command line the documentation's installation section states"
         ),
-        observable=(
-            "observable once a run executes that documented command line and "
-            "invokes the command it installs"
-        ),
+        observes="installed by the command line the documentation gives a reader",
     ),
 )
+
+
+def listed() -> tuple[Claim, ...]:
+    """Each installation claim the smoke run does not observe."""
+    return tuple(claim for claim in CLAIMS if not claim.observed)
 
 
 @dataclass(frozen=True)
@@ -180,6 +192,13 @@ class Report:
                 "fixture, so the corpus states nothing about the run it names"
                 for entry in self.surface
                 if entry.undeclared
+            ]
+            + [
+                f"installation claim {claim.name} names a command "
+                f"{claim.observes}, which the smoke run observes, so the "
+                "listing states a limit the corpus no longer has"
+                for claim in CLAIMS
+                if claim.observed
             ]
         )
 
@@ -332,7 +351,7 @@ def render(found: Report) -> str:
         for work, where in entry.awaited.items():
             lines.extend(f"    {name} (awaiting {work})" for name in where)
         lines.extend(f"    {name}" for name in entry.reached)
-    for claim in CLAIMS:
+    for claim in listed():
         lines.append(f"installation claim {claim.name}: unfixturable, {claim.reason}")
         lines.append(f"    {claim.observable}")
     counted = Counter(
@@ -345,7 +364,7 @@ def render(found: Report) -> str:
         f"{len(found.unnamed)} declaration(s) naming no clause; "
         f"{counted['reached']} declared name(s) reached, "
         f"{counted['unfixturable']} unfixturable, "
-        f"{len(CLAIMS)} installation claim(s) no run observes",
+        f"{len(listed())} installation claim(s) no run observes",
     ]
     return "\n".join(lines) + "\n"
 

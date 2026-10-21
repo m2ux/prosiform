@@ -31,6 +31,12 @@ that fails and names it. The environment is created on the Python version
 `src/.python-version` names, so the version an installation is
 proved against is the version the build declares rather than a second
 declaration here.
+
+The three properties are named here, under the names the repository's
+installation section gives them, and the run's closing summary states them.
+A report listing what no run observes reads this declaration, so the
+properties an installation is held to and the properties one is said to
+lack are the same words in both places.
 """
 
 import shutil
@@ -45,6 +51,13 @@ PYTHON_VERSION = PROJECT / ".python-version"
 
 COMMAND = "prosiform"
 PROFILE = "skill-markdown-v1"
+
+OBSERVED = (
+    "named on the path",
+    "independent of the working directory",
+    "independent of this repository",
+)
+
 GLOSSARY = "prosiform/docs/glossary.md"
 SITE_PACKAGES = "lib/python*/site-packages"
 BIN = "bin"
@@ -247,10 +260,7 @@ def main() -> int:
         return 1
     finally:
         shutil.rmtree(workspace, ignore_errors=True)
-    print(
-        f"\nsmoke check: {COMMAND} installs into an environment and bundles a "
-        f"reference from a source root, resolved by name outside the repository"
-    )
+    print(f"\nsmoke check: the installed command is {', '.join(OBSERVED)}")
     return 0
 
 
