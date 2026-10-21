@@ -12,6 +12,7 @@ This row covers AC18 of the deferred-debt epic, which states what fixing the def
 
 | Artifact | What it holds |
 | --- | --- |
+| [w17.md](w17.md) | The task's plan: the unreached codes, the fixture that states each one and the check that holds both catalogues |
 
 ## Links
 
