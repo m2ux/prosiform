@@ -8,7 +8,8 @@ Every plan change this delivery session applied, and every one it held for the u
 
 | Kind | Subject | Option applied |
 | --- | --- | --- |
-| Re-prioritisation | [#174](https://github.com/m2ux/prosiform/issues/174), its epic [#39](https://github.com/m2ux/prosiform/issues/39) and the row W35 of that epic | Held for this session, delivered, and the row recorded against the pull request that delivers it on the [Bundling](https://github.com/users/m2ux/projects/18) board |
+| Re-prioritisation | [#174](https://github.com/m2ux/prosiform/issues/174) and the row W35 of epic [#39](https://github.com/m2ux/prosiform/issues/39) | The row links [#179](https://github.com/m2ux/prosiform/pull/179) and carries its Done tick, AC38 and AC39 are ticked, the issue is closed as completed, and the [Bundling](https://github.com/users/m2ux/projects/18) board holds it at Done |
+| Folded work | The epic base `i00/e11/main` | [#180](https://github.com/m2ux/prosiform/pull/180) opened as the base's review pull request, a draft carrying this merge's change; it stays a draft until the user marks it ready |
 
 ## Held
 

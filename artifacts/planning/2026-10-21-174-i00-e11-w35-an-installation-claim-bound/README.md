@@ -24,3 +24,5 @@ It matters because a stale entry reads as a current limit of the corpus, which i
 | Epic | [#39 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/issues/39) |
 | Origin record | [Installation claims](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-9-i00-e10-w04-installation-claims-no-fixture) |
 | Smoke run record | [I00:E07:W01 Installation and stable entry](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-19-19-i00-e07-w01-installation-and-stable-entry) |
+| Pull request | [#179](https://github.com/m2ux/prosiform/pull/179) — merged into `i00/e11/main` as `0ae0612` |
+| Epic review | [#180](https://github.com/m2ux/prosiform/pull/180) — the base's draft review for `main` |
