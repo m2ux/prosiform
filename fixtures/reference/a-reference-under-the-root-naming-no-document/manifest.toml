@@ -1,0 +1,21 @@
+description = "A local Markdown reference resolving under the allowed source root that names no document fails with E_TARGET_NOT_FOUND and publishes nothing, with no mark written to make the run responsible for it, and the sibling document the same source resolved is published nowhere."
+
+clauses = [
+  "Link classification and resource handling — A target that resolves to nothing",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "procedure.md"
+source = "guide.md:3"
+chain = ["guide.md", "procedure.md"]
