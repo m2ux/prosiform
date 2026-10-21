@@ -7,7 +7,7 @@ A deterministic compiler for instruction sets written as linked Markdown. Give i
 
 ---
 
-**[Installation](installation.md)** • **[Invocation](invocation.md)** • **[Checks](checks.md)** • **[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)**
+**[Installation](installation.md)** • **[Invocation](invocation.md)** • **[Checks](checks.md)** • **[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Source](src/README.md)** • **[Docs](docs/README.md)** • **[Check implementation](checks/README.md)** • **[Example](example/README.md)**
 
 ---
 
@@ -49,15 +49,3 @@ References → Closure → Consolidation → Grouping → Rewriting → Validati
 - **Profile** — `skill-markdown-v1`: CommonMark with pipe tables, strikethrough and preserved task markers; no typographic substitution
 
 Every term the contract uses is defined once, in the [glossary](docs/glossary.md), which ships with the tool.
-
-## 🗂️ Repository Layout
-
-| Tree | Holds |
-| --- | --- |
-| [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. The build runs it. |
-| [`src/`](src/README.md) | The Python build, which the corpus holds to the contract. |
-| [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
-| [`checks/`](checks/README.md) | The checks that hold the layout, every document's references, the documentation tables, and the glossary's coverage true. |
-| [`example/`](example/README.md) | The example skill tree the design's usage examples name, which the corpus bundles through each of them. |
-
-The fixture corpus is the contract: it declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing one. The design stays on the [engineering branch](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) and is reached by link, so there is one copy of it.
