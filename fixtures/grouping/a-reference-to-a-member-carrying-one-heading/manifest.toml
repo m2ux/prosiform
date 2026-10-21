@@ -1,4 +1,4 @@
-description = "A compiled reference naming a member whose merged group emits no heading for it is rewritten to the group's own heading, so every reference the run compiled into a merged group carries a destination the bundle has."
+description = "A compiled reference naming a member whose whole content is the one heading its overview subsection absorbs is rewritten to that subsection, so every reference the run compiled into a merged group carries a destination the bundle has."
 
 clauses = [
   "Grouping — Document content above the grouping depth",
