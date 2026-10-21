@@ -1139,6 +1139,67 @@ def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> 
     assert "Body." not in run.stdout
 
 
+def test_a_deferred_reference_naming_no_document_fails(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
+    assert run.stdout == ""
+
+
+def test_a_deferred_reference_naming_no_heading_fails(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md#absent).\n")
+    written(root, "rules.md", "# Rules\n\n## Here\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    reported = run.diagnostics()[0]
+    assert reported["code"] == TARGET_NOT_FOUND
+    assert reported["reference"] == "rules.md#absent"
+    assert reported["resolved"] == "rules.md"
+    assert reported["chain"] == ["guide.md", "rules.md#absent"]
+    assert run.stdout == ""
+
+
+def test_a_deferred_reference_leaving_the_root_is_not_confirmed(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](../outside.md).\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [\u00ac the rules](../outside.md)." in run.stdout
+
+
+def test_a_deferred_destination_is_the_target_path_from_the_root(root: Path) -> None:
+    written(
+        root,
+        "topic/guide.md",
+        "# Guide\n\nSee [\u00ac the rules](../shared/rules.md#here).\n",
+    )
+    written(root, "shared/rules.md", "# Rules\n\n## Here\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "topic/guide.md")
+    assert run.status == SUCCESS
+    assert "See [\u00ac the rules](shared/rules.md#here)." in run.stdout
+
+
+def test_a_document_only_a_deferral_names_contributes_nothing(root: Path) -> None:
+    written(
+        root,
+        "topic/guide.md",
+        "# Guide\n\nSee [\u00ac the rules](../shared/rules.md).\n",
+    )
+    written(root, "shared/rules.md", "# Rules\n\nEvery rule the guide defers.\n")
+    run = invoke("--root", str(root), "topic/guide.md")
+    assert run.status == SUCCESS
+    assert "# shared/rules" not in run.stdout
+    assert "Every rule the guide defers." not in run.stdout
+
+
+def test_a_heading_a_container_carries_confirms_a_deferral(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md#inner).\n")
+    written(root, "rules.md", "# Rules\n\n- item\n\n  ## Inner\n\n  Every rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [\u00ac the rules](rules.md#inner)." in run.stdout
+
+
 def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
     root: Path,
 ) -> None:
