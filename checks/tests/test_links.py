@@ -2,8 +2,10 @@
 
 What the check resolves is what it read, so the reading is held to a document
 it would be read wrongly: a fenced example carrying references of its own, a
-reference written twice, and a heading repeated, whose second occurrence takes
-a fragment of its own. The heading-slug rule the fragments rest on is held to
+link form written inside a code span and inside an indented block, a link
+beside each of those and one a nested bullet carries, a reference written
+twice, and a heading repeated, whose second occurrence takes a fragment of
+its own. The heading-slug rule the fragments rest on is held to
 GitHub's own anchors in `test_slug.py`.
 
 A silent host is told apart from a missing target.
@@ -464,3 +466,60 @@ def test_a_document_naming_a_missing_tracker_reference_fails(
     assert unanswered == []
     assert len(failures) == 1
     assert "HTTP 404" in failures[0]
+
+
+LITERAL = """\
+# Doc
+
+A [plain reference](docs/one.md) sits beside `[a span](docs/never-span.md)`, and
+`[span definition]: docs/never-span-either.md` is the spelling of a definition.
+
+An indented block holds the same forms:
+
+    [an indented reference](docs/never-indented.md)
+
+    [indented definition]: docs/never-indented-either.md
+
+- A bullet links [a listed target](docs/two.md).
+
+    - A nested bullet links [a deeper target](docs/three.md).
+
+[definition]: docs/four.md
+"""
+
+
+def test_a_reference_inside_a_code_span_is_an_example_rather_than_a_reference() -> None:
+    found = links.references(LITERAL)
+    assert "docs/never-span.md" not in found
+    assert "docs/never-span-either.md" not in found
+
+
+def test_a_reference_inside_an_indented_block_is_an_example() -> None:
+    found = links.references(LITERAL)
+    assert "docs/never-indented.md" not in found
+    assert "docs/never-indented-either.md" not in found
+
+
+def test_a_reference_beside_literal_content_is_read() -> None:
+    found = links.references(LITERAL)
+    assert "docs/one.md" in found
+    assert "docs/four.md" in found
+
+
+def test_a_reference_a_nested_bullet_carries_is_read() -> None:
+    found = links.references(LITERAL)
+    assert "docs/two.md" in found
+    assert "docs/three.md" in found
+
+
+def test_every_reference_the_literal_document_carries_is_read() -> None:
+    assert links.references(LITERAL) == [
+        "docs/one.md",
+        "docs/two.md",
+        "docs/three.md",
+        "docs/four.md",
+    ]
+
+
+def test_a_heading_naming_a_code_span_still_generates_its_fragment() -> None:
+    assert "the-link-form" in links.fragments_of("# Doc\n\n## The `link` Form\n")

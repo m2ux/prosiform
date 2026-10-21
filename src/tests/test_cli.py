@@ -44,6 +44,7 @@ from prosiform.cli import (
     INVALID_USAGE,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
+    RESOURCE_PORTABILITY,
     ROOT_NOT_FOUND,
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
@@ -1026,6 +1027,24 @@ def test_an_image_naming_a_markdown_document_carries_no_document(root: Path) -> 
     assert run.status == SUCCESS
     assert "![the rules](rules.md)" in run.stdout
     assert "The rules." not in run.stdout
+
+
+def test_an_image_naming_a_markdown_document_warns_once_on_portability(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nThe rules.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    codes = [one["code"] for one in run.diagnostics()]
+    assert codes.count(RESOURCE_PORTABILITY) == 1
+
+
+def test_a_bundle_naming_no_resource_does_not_warn_on_portability(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the spec](https://e.test/s.pdf).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    assert RESOURCE_PORTABILITY not in [one["code"] for one in run.diagnostics()]
 
 
 def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
