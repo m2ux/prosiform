@@ -14,6 +14,7 @@ It matters because it is the row every other row of the epic waits on: the defer
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: where classification is read, and what replaces the mark |
 | [validation.md](validation.md) | The checks the row ran, the revision they ran against, and what each observed |
+| [changes.md](changes.md) | The plan changes this session applied, and the ones it held for the user |
 
 ## Links
 
@@ -22,4 +23,5 @@ It matters because it is the row every other row of the epic waits on: the defer
 | Epic issue | [#136 \[I00:E12\] Positional Dependencies](https://github.com/m2ux/prosiform/issues/136) |
 | Epic plan | [2026-10-21-136-i00-e12-positional-dependencies](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-positional-dependencies) |
 | Design and decision | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
+| Pull request | [#138 \[I00:E12\] Classification by Where a Reference Resolves](https://github.com/m2ux/prosiform/pull/138) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
