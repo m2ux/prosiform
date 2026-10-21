@@ -28,3 +28,5 @@ This row covers AC17 of the deferred-debt epic, which states what fixing the def
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Base rebuild | [I00:E11 Base Rebuild](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-39-i00-e11-base-rebuild) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
+| Pull request | [#155 \[I00:E11\] One Verdict Boundary for Every Remote Read](https://github.com/m2ux/prosiform/pull/155) |
+| Raised by this row | [#162 \[I00:E11:W28\] The Tracker Route Exercised by the Repository's Own Run](https://github.com/m2ux/prosiform/issues/162) |
