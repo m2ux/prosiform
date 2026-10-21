@@ -13,6 +13,7 @@ It matters because it is the row every other row of the epic waits on: the defer
 | Artifact | What it holds |
 | --- | --- |
 | [w01.md](w01.md) | The task's plan: where classification is read, and what replaces the mark |
+| [validation.md](validation.md) | The checks the row ran, the revision they ran against, and what each observed |
 
 ## Links
 
