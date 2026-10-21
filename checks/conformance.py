@@ -42,6 +42,18 @@ the reason the smoke run cannot reach it and what a run would have to do to
 observe it. A claim a run comes to observe leaves the listing by leaving
 this declaration.
 
+The report records, beside that surface, the behavioural clauses no fixture
+can reach. A clause recorded there is one no source tree and one invocation
+can state: it binds how a build goes about its work, what a calling wrapper
+does with the output, or how sources are authored, and the outcome it
+serves is stated by other clauses carrying fixtures of their own. That is a
+different thing from a section of the design stating no behaviour at all. A
+section naming what the project has decided, what remains to be proven once
+implementation is authorized, or what an upstream contribution would say
+states no rule a corpus could cover, so it is declared here and leaves the
+inventory of clauses entirely, it and the rules beneath it: a heading that
+can carry no fixture is not a gap, and counting it as one measures nothing.
+
 The design is read from the branch and path the README's Design link names,
 as the vocabulary check reads the same document, so no path into a dated
 planning folder is written here.
@@ -108,16 +120,21 @@ class Entry:
 
 
 @dataclass(frozen=True)
-class Claim:
-    """One installation claim no run of the corpus observes."""
+class Declaration:
+    """One name this report accounts for rather than measures.
+
+    The reason says why no run of the corpus reaches it, and the
+    observable what a run would have to do to observe it, or what states
+    the rule in its place where no run would.
+    """
 
     name: str
     reason: str
-    observable: str
+    observable: str = ""
 
 
 CLAIMS = (
-    Claim(
+    Declaration(
         name="another platform",
         reason=(
             "the smoke run observes this host and the continuous-integration "
@@ -129,7 +146,7 @@ CLAIMS = (
             "on that platform"
         ),
     ),
-    Claim(
+    Declaration(
         name="a machine that never held the repository",
         reason=(
             "the repository is on disk throughout the run and merely "
@@ -141,7 +158,7 @@ CLAIMS = (
             "repository was never copied to"
         ),
     ),
-    Claim(
+    Declaration(
         name="the command line the documentation gives a reader",
         reason=(
             "the run installs an artefact it builds rather than running the "
@@ -151,6 +168,175 @@ CLAIMS = (
             "observable once a run executes that documented command line and "
             "invokes the command it installs"
         ),
+    ),
+)
+
+SECTIONS = (
+    Declaration(
+        name="Design status",
+        reason=(
+            "it states what the project has decided about its builds and the "
+            "obligations each carries, and no outcome a run produces"
+        ),
+    ),
+    Declaration(
+        name="Implementation verification and residual policy detail",
+        reason=(
+            "it states what remains to be proven once implementation is "
+            "authorized, and no outcome a run produces"
+        ),
+    ),
+    Declaration(
+        name="Upstream follow-up reference",
+        reason=(
+            "it states what an upstream contribution would say and what is to "
+            "be consulted before one is drafted, and no outcome a run produces"
+        ),
+    ),
+)
+
+RECORDED = (
+    Declaration(
+        name="Input and output contract",
+        reason="the heading opens straight onto the rules beneath it",
+        observable="each rule beneath it states its own outcome and carries its own clause",
+    ),
+    Declaration(
+        name="Resolution sequence",
+        reason="the heading opens straight onto the numbered steps beneath it",
+        observable="each step beneath it states its own outcome and carries its own clause",
+    ),
+    Declaration(
+        name="Parser and source-preserving edits",
+        reason=(
+            "its prose binds how a build identifies and edits the spans of a "
+            "source rather than what a run emits"
+        ),
+        observable=(
+            "the invariants state what those means must produce, each carrying "
+            "its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Parsing authority",
+        reason="it binds what the reading of a source is let identify",
+        observable=(
+            "the rules governing what a bundle carries state the outcome, each "
+            "carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Source positions",
+        reason="it binds how the spans of a source are built and retained",
+        observable=(
+            "the invariants a candidate is held to state what those spans must "
+            "produce, each carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Source model",
+        reason="it binds what a build derives from the stream it reads",
+        observable=(
+            "the selection, boundary and destination rules state the outcome "
+            "that derivation reaches, each carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Edits",
+        reason=(
+            "it binds how edits are applied and how overlapping ones are "
+            "resolved"
+        ),
+        observable=(
+            "the bytes a bundle carries state the outcome, under the rules "
+            "governing that content"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Validation",
+        reason=(
+            "it requires the candidate be read again and the declared "
+            "invariants checked"
+        ),
+        observable="each invariant states its own outcome and carries its own clause",
+    ),
+    Declaration(
+        name="Mandatory parser viability gates",
+        reason=(
+            "it states when its gates apply, before a production reading of "
+            "sources is selected or any bundle is published"
+        ),
+        observable=(
+            "the gates are met in choosing that reading rather than by any run "
+            "over a source tree"
+        ),
+    ),
+    Declaration(
+        name="Explicitly linked source structure",
+        reason="it states how sources are to be authored",
+        observable=(
+            "the rules beneath it state what a run does with sources so "
+            "authored, each carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Explicitly linked source structure — Reading versus execution",
+        reason=(
+            "it holds that inclusion makes material available without "
+            "authorizing its execution, which no bundle's bytes show"
+        ),
+        observable=(
+            "the authored instructions carry the execution verbs and the call "
+            "boundaries that state it"
+        ),
+    ),
+    Declaration(
+        name="Heading-only structural ancestors — Provenance",
+        reason=(
+            "it requires ancestry be recorded apart from selected content, "
+            "which a bundle states nothing of on its own"
+        ),
+        observable=(
+            "the depth and deduplication rules state its effects, each "
+            "carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Agent delivery contract",
+        reason=(
+            "it states what a successful compilation does and does not "
+            "establish about a transport"
+        ),
+        observable=(
+            "a run produces a bundle and an exit status, and neither states "
+            "what a transport delivered"
+        ),
+    ),
+    Declaration(
+        name="Agent delivery contract — Response limit",
+        reason=(
+            "it binds the calling wrapper's buffering and the response size it "
+            "enforces"
+        ),
+        observable=(
+            "observable once a consumer of the run's output is declared beside "
+            "the source tree"
+        ),
+    ),
+    Declaration(
+        name="Agent delivery contract — Broken pipes",
+        reason="it binds the wrapper's reporting of a transport failure",
+        observable=(
+            "a fixture declares a source tree and an invocation, and reaches "
+            "no consumer of the run's output"
+        ),
+    ),
+    Declaration(
+        name="Adversarial acceptance fixtures",
+        reason=(
+            "it instructs that a corpus be written before broad implementation"
+        ),
+        observable="the corpus this report reads is what states it",
     ),
 )
 
@@ -165,7 +351,13 @@ class Report:
 
     @property
     def uncovered(self) -> tuple[Clause, ...]:
-        return tuple(clause for clause, named in self.mapping if not named)
+        """Each clause no fixture names that a fixture could reach."""
+        recorded = {clause.name for clause in RECORDED}
+        return tuple(
+            clause
+            for clause, where in self.mapping
+            if not where and clause.name not in recorded
+        )
 
     @property
     def failures(self) -> tuple[str, ...]:
@@ -190,7 +382,12 @@ def text(markup: str) -> str:
 
 
 def clauses(design: str) -> list[Clause]:
-    """Every clause the design states, in the order it states them."""
+    """Every behavioural clause the design states, in the order it states them.
+
+    A section declared as stating no behaviour carries no clause, nor does
+    any rule beneath it.
+    """
+    silent = {section.name for section in SECTIONS}
     found: list[Clause] = []
     heading: str | None = None
     fenced = False
@@ -203,7 +400,8 @@ def clauses(design: str) -> list[Clause]:
             continue
         marked = HEADING.match(line)
         if marked:
-            heading = None if len(marked.group(1)) == 1 else text(marked.group(2))
+            title = None if len(marked.group(1)) == 1 else text(marked.group(2))
+            heading = None if title in silent else title
             delimited = False
             if heading is not None:
                 found.append(Clause(heading, None))
@@ -308,6 +506,16 @@ def report(design: str, corpus: Path) -> Report:
     )
 
 
+def listing(kind: str, verdict: str, declared: tuple[Declaration, ...]) -> list[str]:
+    """One group of declarations, each with its reason and what it rests on."""
+    lines = []
+    for entry in declared:
+        lines.append(f"{kind} {entry.name}: {verdict}, {entry.reason}")
+        if entry.observable:
+            lines.append(f"    {entry.observable}")
+    return lines
+
+
 def render(found: Report) -> str:
     """The report as the text one run prints, identical for identical inputs."""
     lines = ["# Clause mapping", ""]
@@ -332,9 +540,11 @@ def render(found: Report) -> str:
         for work, where in entry.awaited.items():
             lines.extend(f"    {name} (awaiting {work})" for name in where)
         lines.extend(f"    {name}" for name in entry.reached)
-    for claim in CLAIMS:
-        lines.append(f"installation claim {claim.name}: unfixturable, {claim.reason}")
-        lines.append(f"    {claim.observable}")
+    lines.extend(listing("installation claim", "unfixturable", CLAIMS))
+    lines += ["", "# Clauses no run states", ""]
+    lines.extend(listing("clause", "unfixturable", RECORDED))
+    lines += ["", "# Sections stating no behaviour", ""]
+    lines.extend(listing("section", "non-behavioural", SECTIONS))
     counted = Counter(
         "unfixturable" if entry.unfixturable else "reached" for entry in found.surface
     )
@@ -345,6 +555,8 @@ def render(found: Report) -> str:
         f"{len(found.unnamed)} declaration(s) naming no clause; "
         f"{counted['reached']} declared name(s) reached, "
         f"{counted['unfixturable']} unfixturable, "
+        f"{len(RECORDED)} clause(s) no run states, "
+        f"{len(SECTIONS)} section(s) stating no behaviour, "
         f"{len(CLAIMS)} installation claim(s) no run observes",
     ]
     return "\n".join(lines) + "\n"
