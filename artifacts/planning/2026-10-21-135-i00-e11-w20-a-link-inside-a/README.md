@@ -12,6 +12,9 @@ This row covers AC21 of the deferred-debt epic, which states what fixing the def
 
 | Artifact | What it holds |
 | --- | --- |
+| [w20.md](w20.md) | The task's plan: where the emission's scan discards an enclosing link, and the containment rule that keeps it |
+| [validation.md](validation.md) | What the build was measured to do and the checks the delivery was held to |
+| [changes.md](changes.md) | The plan changes this session applied, and the ones it holds |
 
 ## Links
 
