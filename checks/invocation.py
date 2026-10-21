@@ -34,9 +34,8 @@ Four things are compared:
   sentence that states it; the check keeps the statement from being
   dropped, and the review that lands it is what holds it true.
 
-A table is located by its header and the statements by the heading of
-the section carrying them, so the documentation moves within a README
-without this check being edited.
+Tables are located by their headers and required statements are checked
+throughout the invocation guide.
 
 Whitespace is the one difference a comparison forgives: the help output
 wraps its descriptions to a terminal width and a table cell is one line,
@@ -52,8 +51,7 @@ from dataclasses import dataclass
 from documents import ROOT, plain, rows
 from runner import BUILD, BuildNotConfigured, build_under_test
 
-README = ROOT / "README.md"
-SECTION = "Invocation"
+INVOCATION = ROOT / "invocation.md"
 WIDTH = "80"
 
 HELP = "--help"
@@ -72,7 +70,6 @@ ENTRY = re.compile(r"^ {2}(\S.*?)\s*$")
 CONTINUATION = re.compile(r"^ {4,}(\S.*?)\s*$")
 COLUMN = re.compile(r"\s{2,}")
 STATUS = re.compile(r"^ {2}([0-9]+)\s{2,}(\S.*?)\s*$")
-SECTION_HEADING = re.compile(r"^##\s+(.*)$")
 PROFILE = re.compile(r"\(([^()\s]+)\)\s*$")
 
 STATEMENTS = (
@@ -180,22 +177,6 @@ def profile(version: str) -> str:
     return found.group(1)
 
 
-def section(text: str, name: str) -> str:
-    """The body of the document section whose heading names it."""
-    lines = text.splitlines()
-    for index, line in enumerate(lines):
-        heading = SECTION_HEADING.match(line)
-        if heading is None or name not in heading.group(1):
-            continue
-        body: list[str] = []
-        for following in lines[index + 1 :]:
-            if SECTION_HEADING.match(following) is not None:
-                break
-            body.append(following)
-        return "\n".join(body)
-    raise Unreadable(f"README.md carries no '{name}' section to read")
-
-
 def compare(
     kind: str,
     offered: dict[str, str],
@@ -208,14 +189,14 @@ def compare(
     for name, meaning in stated:
         if name not in offered:
             failures.append(
-                f"README.md: {name} — a table names this {kind} and the command "
+                f"invocation.md: {name} — a table names this {kind} and the command "
                 f"offers no such {kind}"
             )
             continue
         named.add(name)
         if meaning != offered[name]:
             failures.append(
-                f"README.md: {name} — the table reads {meaning!r} and the "
+                f"invocation.md: {name} — the table reads {meaning!r} and the "
                 f"command's help reads {offered[name]!r}"
             )
             continue
@@ -230,8 +211,7 @@ def compare(
 
 def check() -> tuple[list[str], list[str]]:
     """Every comparison the documented invocation is held to."""
-    text = README.read_text()
-    body = section(text, SECTION)
+    text = INVOCATION.read_text()
 
     usage = reported(HELP)
     arguments = documented_arguments(usage)
@@ -261,20 +241,20 @@ def check() -> tuple[list[str], list[str]]:
     failures += status_failures
 
     identifier = profile(reported(VERSION))
-    if identifier in body:
+    if identifier in text:
         passed.append(f"ok   profile     {identifier}")
     else:
         failures.append(
-            f"README.md: the command reports the profile {identifier} and the "
-            f"{SECTION} section names it nowhere"
+            f"invocation.md: the command reports the profile {identifier} and the "
+            "invocation guide names it nowhere"
         )
 
     for states, sentence in STATEMENTS:
-        if sentence in body:
+        if sentence in text:
             passed.append(f"ok   statement   {states}")
         else:
             failures.append(
-                f"README.md: the {SECTION} section does not state {states}; it "
+                f"invocation.md: the guide does not state {states}; it "
                 f"is stated by the sentence reading {sentence!r}"
             )
     return passed, failures

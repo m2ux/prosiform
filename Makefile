@@ -35,7 +35,7 @@
 # for the same reason.
 #
 # Every target below is named by a command table in one of the repository's
-# READMEs, which `make tables` holds true in both directions.
+# documents, which `make tables` holds true in both directions.
 
 UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml

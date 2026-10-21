@@ -21,7 +21,6 @@ from documents import (
     ROOT,
     corpus,
     documents,
-    readmes,
     strip_code_spans,
     strip_indented_blocks,
     strip_literal,
@@ -69,15 +68,9 @@ def test_every_tracked_document_outside_a_fixture_is_found() -> None:
 
 
 def test_a_document_that_is_not_a_readme_is_found() -> None:
-    assert relative(FOUND) - relative(readmes()), (
+    assert any(path.name != "README.md" for path in FOUND), (
         "discovery found the READMEs alone, so the check reads no other document"
     )
-
-
-def test_the_readmes_are_the_documents_named_readme() -> None:
-    assert relative(readmes()) == {
-        name for name in relative(FOUND) if Path(name).name == "README.md"
-    }
 
 
 def test_a_code_span_is_blanked_and_its_line_keeps_its_length() -> None:

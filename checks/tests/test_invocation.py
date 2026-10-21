@@ -4,8 +4,8 @@ The check exists so documentation and command cannot drift apart, so the
 cases below drift them: a row the command does not offer, an argument the
 command offers that no row names, a row whose wording has moved away from
 the help text, an exit status meaning that no longer matches, a profile
-identifier the section stopped naming, and a statement the contract
-requires that the section stopped carrying. Each is one fault and is
+identifier the guide stopped naming, and a statement the contract
+requires that the guide stopped carrying. Each is one fault and is
 named as the fault it is.
 
 The build under test is a canned program each case configures, as in the
@@ -15,9 +15,9 @@ passing case is the agreement itself rather than a document written to
 agree. A configured build is the one thing the check cannot do without: a
 run with none fails rather than reporting documentation it never compared.
 
-The repository's own README is read too, for the one property a canned
+The repository's own invocation guide is read too, for the one property a canned
 document cannot show — that the tables the check looks for are the tables
-the README carries. What those tables say is held to the installed
+the invocation guide carries. What those tables say is held to the installed
 command by `make invocation`, which runs the whole check against the build
 the gate configures.
 """
@@ -29,8 +29,8 @@ import pytest
 from documents import tables
 from invocation import (
     EXIT,
+    INVOCATION,
     OPTION,
-    README,
     STATEMENTS,
     Unreadable,
     check,
@@ -86,11 +86,11 @@ def canned(directory: Path) -> str:
 
 
 def documentation() -> str:
-    """A README agreeing with the canned help output in every compared place."""
+    """An invocation guide agreeing with every compared part of the canned help."""
     lines = [
         "# tool",
         "",
-        "## Invocation",
+        "# Invocation",
         "",
         f"A run parses its sources under the `{PROFILE}` profile.",
         "",
@@ -111,17 +111,17 @@ def documentation() -> str:
 def documented(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """The canned build configured and its agreeing documentation in place."""
     monkeypatch.setenv(BUILD, canned(tmp_path))
-    readme = tmp_path / "README.md"
-    readme.write_text(documentation(), encoding="utf-8")
-    monkeypatch.setattr("invocation.README", readme)
-    return readme
+    usage = tmp_path / "invocation.md"
+    usage.write_text(documentation(), encoding="utf-8")
+    monkeypatch.setattr("invocation.INVOCATION", usage)
+    return usage
 
 
-def faults(readme: Path, find: str, replacement: str = "") -> list[str]:
+def faults(usage: Path, find: str, replacement: str = "") -> list[str]:
     """The faults the check reports once one place of the documentation moves."""
-    text = readme.read_text()
+    text = usage.read_text()
     assert find in text, f"the documentation carries no {find!r} to move"
-    readme.write_text(text.replace(find, replacement), encoding="utf-8")
+    usage.write_text(text.replace(find, replacement), encoding="utf-8")
     return check()[1]
 
 
@@ -184,13 +184,13 @@ def test_an_exit_status_meaning_that_no_longer_matches_fails(
     assert any("the command's help reads" in fault for fault in reported)
 
 
-def test_a_section_that_stopped_naming_the_profile_fails(documented: Path) -> None:
+def test_a_guide_that_stopped_naming_the_profile_fails(documented: Path) -> None:
     reported = faults(documented, f"the `{PROFILE}`", "the declared")
     assert any(PROFILE in fault and "names it nowhere" in fault for fault in reported)
 
 
 @pytest.mark.parametrize(("states", "sentence"), STATEMENTS)
-def test_a_statement_the_section_stopped_carrying_fails(
+def test_a_statement_the_guide_stopped_carrying_fails(
     documented: Path, states: str, sentence: str
 ) -> None:
     reported = faults(documented, sentence)
@@ -214,6 +214,6 @@ def test_a_build_whose_help_describes_no_argument_fails(
 
 
 def test_the_repository_carries_the_tables_the_check_compares() -> None:
-    carried = tables(README.read_text())
+    carried = tables(INVOCATION.read_text())
     assert [table for table in carried if OPTION in table.headers]
     assert [table for table in carried if EXIT in table.headers]
