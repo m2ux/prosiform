@@ -322,6 +322,8 @@ A refused reference says the root is too narrow at least as often as it says the
 
 ## D32 — The Mark Is Authoring Syntax and Does Not Reach the Bundle
 
+Withdrawn by [D59](#d59--position-states-a-dependency-and-the-tool-recognizes-no-authoring-syntax): the tool reads no marker in link text, so there is no mark to keep out of a bundle.
+
 A dependency's link text opens with `¬`. A rewritten link carries the text that followed the mark and not the mark itself.
 
 The alternative was to preserve it. Visible link text is preserved everywhere else, and the preservation invariant lists link text among the bytes a bundling does not change, so carrying the mark through would have been the consistent reading of that rule.
@@ -681,3 +683,21 @@ I00:E09:W04 found the depth check standing before it: `bundle.Overflow` is raise
 **One of the five sites could not be reached.** A file group shifts by one, or by nothing under an absorbed title, and a structural ancestor is strictly shallower than the selected heading beneath it, so an ancestor of a file group reaches H6 at most. Setting that branch's condition to a level nothing approaches reddened no test and no fixture; setting it to `depth > 1` reddened eleven, which shows the line executes and the condition is what never holds. The branch is removed and `candidate.levels()` covers the case, which is where the record's own depth rule already sits. The merged-group ancestor guard in `grouping.ancestor_part()` is a different line and is reachable: content under a grouping-depth anchor that splits into variants moves by two, and content above the grouping depth moves by three into the overview subsection.
 
 **AC2 asked the corpus for a distinction it cannot draw.** An overflowing ancestor always sits beneath an overflowing selection, because an ancestor is shallower than the heading it preserves and both take the same shift. The two cases differ only in which heading the diagnostic names, and a manifest declares an error code rather than a message — deliberately, since a code reads the same in every language. Disabling the merged-group ancestor guard leaves the corpus green and fails only the unit test. Under [D47](#d47--a-criterion-names-the-evidence-that-can-exist) the criterion now names both: the fixtures for the failure, and the build's own test for the heading. A `message` field was not added to the manifest schema, and no product hook was added to carry the heading into a field the corpus reads.
+
+## D59 — Position States a Dependency, and the Tool Recognizes No Authoring Syntax
+
+A reference is a dependency when it resolves to a Markdown file under the allowed source root, and text the bundle carries unchanged when it resolves outside it. The author states which by where the target sits, and the root is the only lever: material a skill must carry sits under its root, material it only names sits outside. The tool reads no marker in link text, and `¬` is ordinary content wherever an author writes it.
+
+**The root already carried the distinction the mark was making.** The mark's own rationale was that a document cites shared material outside the root without putting the bundling outside it. Position makes the same statement with nothing to maintain, and it removes the failure the mark could not prevent: a dependency an author forgot to mark was dropped in silence, while a dependency whose target sits under the root cannot be.
+
+**Five consequences follow, each settled rather than inferred.**
+
+- A reference under the root that resolves to nothing fails with `E_TARGET_NOT_FOUND`. Position says the bundle must carry it, so one that cannot be carried is a defect rather than text.
+- A resource is emitted as authored wherever it resolves, the root included, and `W_RESOURCE_PORTABILITY` still fires once where the bundle names one. Only Markdown documents are bundleable, so no reference can ask for a resource and `E_MARKED_RESOURCE` has nothing left to refuse.
+- A link naming the section it sits in, or an ancestor of it, resolves to that content's destination like any other reference the bundle carries. `E_SELF_REFERENCE` refused a request that can no longer be made.
+- Nothing excludes a document that sits under the root. An author who does not want one bundled puts it outside, and the closure budgets stay the guard on a run that reaches further than intended.
+- A reference resolving outside the root is text rather than a failure, so `E_SOURCE_OUTSIDE_ROOT` now refuses an entry reference alone. A caller naming an entry outside the root has named something the run cannot do; a document naming a path outside it has cited something.
+
+**`¬` keeps a meaning this tool does not read.** It persists outside this design as an instruction to an agent to bundle through prosiform, so a bundle carries the character wherever an author wrote it in selected content. Stripping it would be this tool defining a character it otherwise does not, and the bundle is what the author wrote.
+
+**This supersedes the mark throughout.** [D32](#d32--the-mark-is-authoring-syntax-and-does-not-reach-the-bundle) stands withdrawn, the goal clause promising that nothing beyond ordinary Markdown links and headings is needed to bundle a document is now literally true, and the delivered work that refused a marked resource, refused a marked self-reference and stripped the mark on rewrite has no subject left.

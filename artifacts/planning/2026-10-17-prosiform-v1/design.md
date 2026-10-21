@@ -143,7 +143,7 @@ Each example runs against `example/work-tracker`, a tree this repository carries
 Common rules, file-level prerequisites, and shared SKILL.md instructions will be refactored into addressable sections. Operations must link to the sections that govern them, so the tool can obtain the required context through explicit links.
 
 - **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; a heading-only *structural ancestor* supplies structure, not additional governing instructions.
-- **Explicit dependencies:** A section's author is responsible for marking any required shared rules or context, and a marked reference is part of the recursive dependency graph. Linking cites material; marking requires it. A document therefore cites shared material that sits outside the allowed root without putting the bundling outside that root, and a skill stays bundleable with its own directory as the root however widely its prose refers.
+- **Explicit dependencies:** A reference resolving under the allowed root is part of the recursive dependency graph, and one resolving outside it cites material the bundle does not carry. Position states the intent, and the root is what the author controls: material a skill must carry sits under its root, material it only names sits outside, and a skill stays bundleable with its own directory as the root however widely its prose refers.
 - **Reading versus execution:** Inclusion makes material available; it does not authorize executing every included procedure. Execution verbs and call boundaries remain part of the authored instructions.
 
 ## Section extraction and output hierarchy
@@ -244,7 +244,7 @@ Resolve fragments against the original complete source document before mapping t
 - **One document:** The bundle is one document, so a destination is scoped to the whole bundle rather than to a file group. A section whose slug is unique in the bundle needs no qualification, and a reference from one file group to another is spelled the same way as a reference within one.
 - **Ordinal assignment:** Walk the emitted headings in bundle order — file headings, structural ancestors, selected source headings and the headings a retained container carries alike, because a renderer indexes every heading the bundle emits and numbers the rest from a count that holds them all. The first heading to carry a slug takes that slug; each later one takes the slug and its ordinal, counting from one and passing over an ordinal something already carries, so a heading whose own text ends in one does not collide with it. This is the renderer's own rule, reproduced so the two agree.
 - **Document destinations:** A whole-document reference resolves to the destination of that file's heading. The presence of a file heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
-- **Internal links:** Rewrite each marked link to the destination of the target it resolved to, using the same map that produced it, whether the link names another file or a fragment of its own. A reference the run resolved is a reference the bundle carries, so every one of them has a destination; an unmarked local Markdown link resolved to nothing and is emitted as the author wrote it, under the link classification rules.
+- **Internal links:** Rewrite each resolved link to the destination of the target it resolved to, using the same map that produced it, whether the link names another file or a fragment of its own. A reference the run resolved is a reference the bundle carries, so every one of them has a destination; a reference resolving outside the root was never resolved and is emitted as the author wrote it, under the link classification rules.
 - **Visible headings:** Preserve selected source heading text while shifting levels by the group's shift. Nothing is inserted at a destination; the heading and its position in the outline are what the destination names.
 - **Uniqueness:** Each destination occurs once in the bundle and each rewritten link resolves to exactly one of them. The ordinal makes this true by construction and validation establishes it, rather than leaving it to the chance that no two headings coincide.
 
@@ -319,9 +319,9 @@ Keep parsed-file caching separate from included-region tracking. Reach a fixed p
 
 ## Self-reference and ancestor-reference behavior
 
-Direct self-reference is invalid, while a nested reference back to an ancestor resolves to the existing ancestor destination. This distinction is confirmed and is evaluated using source-section identity, not merely file identity or the scope of the entry argument.
+A reference back to content the bundle already carries resolves to that content's destination, whether it names an ancestor of the node it sits in or that node itself. Identity is evaluated using source-section identity, not merely file identity or the scope of the entry argument.
 
-- **Direct self-reference:** A marked link from section A to the same canonical section A fails with `E_SELF_REFERENCE`. A mark asks the bundle to carry the node the link is written in, which is the node already carrying it; an unmarked link naming its own section is a mention, and the bundle emits it as authored.
+- **Direct self-reference:** A link from section A to the same canonical section A resolves to A's own destination, like any other reference the bundle carries. The content is in the bundle either way, so the link names a place that exists and nothing is expanded twice.
 - **Ancestor reference:** During traversal A → B → A, B's reference to A becomes an internal link to the existing A destination. Do not expand or duplicate A.
 - **Shared dependency:** A → C and B → C include C once; both links resolve to its destination.
 - **Different section in the same file:** A link to a distinct section is not a direct self-reference solely because the file is the same.
@@ -351,16 +351,16 @@ Discard metadata without validating YAML values. Count it toward input-size limi
 
 ## Link classification and resource handling
 
-A reference is a dependency when its author marked it as one, it carries no scheme and no authority, and it resolves to a Markdown file under the allowed root. Everything else is text the bundle carries unchanged, an unmarked local Markdown link among it. The tool guarantees internal resolution for the first kind and claims nothing about the second.
+A reference is a dependency when it carries no scheme and no authority and resolves to a Markdown file under the allowed root. Everything else is text the bundle carries unchanged. Where a reference resolves is the whole of what decides, so the author states a dependency by keeping its target under the root and states a mention by keeping it outside.
 
-A mention is not a dependency. An author naming a document without marking the link has recorded that the document exists, not that the bundle must carry it, and only the author can tell those apart: no shape a reference takes distinguishes them, which is why the shape is not what decides.
+The tool guarantees internal resolution for a dependency and claims nothing about anything else. It recognizes no authoring syntax: a reference carries no marker asking to be bundled or asking not to be, and any character an author writes in link text is content the bundle carries as written.
 
-- **The mark:** A dependency's link text opens with `¬`, as in `[¬ Record Epic Delivery](epic-issue-body.md#record-epic-delivery)`. The character is ordinary text to the profile, so marking adds no construct the grammar must recognize and a renderer that knows nothing of this tool displays the link. The mark is authoring syntax rather than content: a rewritten link carries the text that followed the mark and not the mark itself, and the spaces or tabs separating the two go with it, so `[¬ the rules]` and `[¬the rules]` both carry `the rules`. A line break is content the author wrote rather than that separator, and survives where one follows the mark.
-- **Marked local Markdown document links:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
-- **Unmarked local Markdown links:** Emit as authored. The reference is not resolved, the document it names is not opened, and the link is not rewritten even where the bundle carries that document because another reference marked it. What one author marked cannot change what another author's reference says.
-- **Fragment-only links:** A marked fragment-only link resolves against the original source document's heading index, then follows the same bundling and rewriting rules. An unmarked one is emitted as authored.
-- **Everything else:** A reference carrying a scheme or an authority is not a local document reference. Emit it as authored and never open, fetch or interpret it. No scheme is permitted or refused, because which scheme it carries decides nothing: carrying one at all is what puts the reference outside the tool's interest. Images and other non-Markdown references are text by the same rule.
-- **A marked resource:** Marking a resource fails with `E_MARKED_RESOURCE`. A resource is a reference that is not a local Markdown document, and an image whatever it points at: image syntax embeds rather than links, so a document named that way is no more bundleable than a picture. A mark means bundle this and a resource is never bundled, so the request cannot be met. Emitting it as authored cannot meet it either: the mark is dropped by the rewrite and a resource is never rewritten, so the bundle would carry a mark, which the mark's own rule forbids.
+- **Local Markdown document links under the root:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
+- **Local Markdown links resolving outside the root:** Emit as authored. The reference is not resolved, the document it names is not opened, and the link is not rewritten. A reference leaving the root is the author's statement that the bundle cites this rather than carries it, so it is text and not a failure.
+- **Fragment-only links:** Resolve against the original source document's heading index, then follow the same bundling and rewriting rules. A fragment names content in the document it is written in, which is under the root whenever that document is.
+- **A target that resolves to nothing:** A reference under the root naming no document, or a fragment naming no heading in the document it resolves to, fails with `E_TARGET_NOT_FOUND`. Position states that the bundle must carry it, so a reference that cannot be carried is a defect rather than text.
+- **Everything else:** A reference carrying a scheme or an authority is not a local document reference. Emit it as authored and never open, fetch or interpret it. No scheme is permitted or refused, because which scheme it carries decides nothing: carrying one at all is what puts the reference outside the tool's interest.
+- **Resources:** A resource is a reference that is not a local Markdown document, and an image whatever it points at: image syntax embeds rather than links, so a document named that way is no more bundleable than a picture. Emit every resource as authored wherever it resolves, under the root included, and warn once that the bundle names one.
 - **Unsupported local-document syntax:** Fail with an actionable diagnostic rather than silently excluding a local Markdown dependency. In v1, raw HTML links to local Markdown are rejected unless explicitly supported by the parser and resolver.
 - **Examples:** Do not follow apparent links inside code spans, fenced code blocks, or other literal example content.
 
@@ -380,7 +380,7 @@ A fragment-only command-line reference requires `--from DOC`; otherwise it fails
 4. Reject any query component on local Markdown document references, including an explicitly empty query.
 5. Strictly validate percent escapes and decode path and fragment exactly once as UTF-8. Look up the decoded source fragment exactly; do not lowercase or re-slug it.
 6. Reject NULs, control characters, decoded path separators originating from escapes, and remaining backslash separators. Local paths use forward slashes in v1.
-7. Normalize `.` and `..` relative to the proper reference base. Permit normalized internal `..`, but reject paths outside the allowed root.
+7. Normalize `.` and `..` relative to the proper reference base. Permit normalized internal `..`. A normalized path outside the allowed root leaves the reference a mention, which an entry reference cannot be and a reference inside a source is.
 8. Enforce no-symlink source access and require a supported regular Markdown file.
 9. Treat absent and empty fragments as whole-document references; otherwise resolve to the canonical eligible section identity.
 
@@ -395,9 +395,9 @@ Do not apply additional Unicode normalization to filesystem names beyond what th
 | `notes%23draft.md#run` | Section `run` in literal filename `notes#draft.md`. |
 | `notes%2523draft.md#run` | Section `run` in literal filename `notes%23draft.md`; no second decoding. |
 | `sub/../guide.md#run` | Normalize to `guide.md#run` when confined to the root. |
-| A normalized path outside the root | Fail with `E_SOURCE_OUTSIDE_ROOT`. |
+| A normalized path outside the root | An entry reference fails with `E_SOURCE_OUTSIDE_ROOT`; a reference inside a source is emitted as authored. |
 
-A schemeless reference that is not a relative path confined to the root fails explicitly: a root-relative path beginning with `/`, a filesystem absolute path, and a platform-specific drive path each name a local document the root cannot contain, and refusing them keeps an intended dependency from being dropped in silence. This restriction applies to document references, not to the configuration path naming the allowed source root.
+A schemeless reference that is not a relative path names a local document positionally rather than from its own document: a root-relative path beginning with `/`, a filesystem absolute path, and a platform-specific drive path each do so. An entry reference of that shape fails explicitly, so a caller's intended entry is not dropped in silence; one inside a source resolves no dependency and is emitted as authored, like any other reference that does not resolve under the root. This restriction applies to document references, not to the configuration path naming the allowed source root.
 
 ### No-symlink source policy
 
