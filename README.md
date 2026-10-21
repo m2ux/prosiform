@@ -32,20 +32,3 @@ Leaving retrieval to the agent costs:
 4. **Arrange** — regions are emitted into groups, source headings shifting one level beneath the heading that names their group
 5. **Rewrite** — every compiled reference is repointed at the fragment a renderer generates for the heading it now names, and a deferred one at its target's path from the root
 6. **Validate** — the candidate is reparsed and checked against what was selected; nothing reaches stdout until it passes
-
-### Architecture
-
-```
-References → Closure → Consolidation → Grouping → Rewriting → Validation → Bundle
-```
-
-- **Reference** — a document, or a document and a section fragment
-- **Section** — a document-level heading and its subsections; the smallest unit a reference can select
-- **Closure** — every local Markdown document reachable by link from the selection
-- **Deferral** — a reference whose link text opens with `¬`: this run confirms its target and compiles it nowhere, and the bundle carries the mark as written
-- **Group** — a top-level division of the bundle: one source document by default, or one merged directory
-- **Destination** — the fragment a renderer generates for an emitted heading, which is what every rewritten reference names
-- **Bundle** — the single validated Markdown document one run produces
-- **Profile** — `skill-markdown-v1`: CommonMark with pipe tables, strikethrough and preserved task markers; no typographic substitution
-
-Every term the contract uses is defined once, in the [glossary](docs/glossary.md), which ships with the tool.
