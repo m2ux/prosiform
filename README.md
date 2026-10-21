@@ -45,13 +45,13 @@ The bundled `rules/agents.md` instructions direct the agent to compile the defer
 
 ```bash
 # Codex
-prosiform --root my-skill --group rules:1 --output codex-bundle.md rules/codex.md
+prosiform --root my-skill --output codex-bundle.md rules/codex.md
 
 # Claude
-prosiform --root my-skill --group rules:1 --output claude-bundle.md rules/claude.md
+prosiform --root my-skill --output claude-bundle.md rules/claude.md
 ```
 
-![Each agent compiles its deferred document into Rules / Overview: Codex contains instructions to keep patches focused and run relevant tests; Claude contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
+![Each agent compiles its deferred document: rules/codex contains instructions to keep patches focused and run relevant tests; rules/claude contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
 
 ## Installation
 
