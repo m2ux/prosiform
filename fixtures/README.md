@@ -85,6 +85,7 @@ chain = ["guide.md", "../outside.md"]
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
+| `fault` | Optional. The fault the run performs on itself, `source-changed` or `internal`, which the runner asks for as `--fault NAME`. A fixture declaring none declares a run that meets no fault. |
 
 The runner supplies the allowed source root the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
@@ -221,7 +222,36 @@ A fixture carrying `awaiting` and failing is reported as awaiting that work, and
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Two fixtures carry the marker: `source-consistency/a-source-that-changes-during-compilation` and `diagnostics/a-run-that-fails-in-itself`. Each declares a run whose fault is a fact about the run rather than about the documents it reads — a source rewritten after discovery, and a failure in the build itself — and a fixture declares a source tree, an invocation and a result, so neither run arises from the declaration alone. Both await `I00:E11:W24`, which gives the runner the fault a manifest names.
+## A fault the run performs on itself
+
+Two of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, and a run that fails in itself. A fixture declares a source tree, an invocation and a result, so neither arises from that declaration, and the contract declares `--fault NAME` for a conformance run to reach them. A manifest names the fault its run meets:
+
+```toml
+fault = "source-changed"
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_CHANGED"
+```
+
+| Fault | The run |
+| --- | --- |
+| `source-changed` | Other bytes are written to each source the run read, once discovery has read them and before the recheck before publication, so the recheck meets a source that is no longer the source the run read. |
+| `internal` | The run fails in itself once the candidate is built and before anything publishes. |
+
+The detection and the reporting are the run's own either way, which is what each outcome is about: the fault supplies the condition, and what the fixture compares is what the build did with it. A build that performs neither fault publishes a bundle and exits 0, so both fixtures fail it.
+
+A fault writes to the tree it runs over, so a fixture declaring one runs in a copy of itself and the corpus leaves the fixture as it found it.
+
+Two fixtures declare a fault: [`source-consistency/a-source-that-changes-during-compilation`](source-consistency/a-source-that-changes-during-compilation/manifest.toml) and [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml).
 
 ## The schema
 
@@ -284,7 +314,7 @@ export PROSIFORM_BUILD=prosiform
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner appends `--root`, the fixture's source tree resolved to an absolute path, and `--diagnostics json` to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner appends `--root`, the fixture's source tree resolved to an absolute path, `--diagnostics json`, and `--fault` where the manifest names one, to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

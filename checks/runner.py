@@ -31,6 +31,15 @@ missing, extra or out of order is reported as what it is. A path declared
 absent is checked after the run, and a file found there is reported and
 removed, so a run leaves the fixture directory as the manifest declares it.
 
+Two of the contract's outcomes are facts about the run rather than about
+any document it reads, so no source tree states them. A manifest names
+the fault its run meets and the runner asks the run for it, which the
+contract's command line spells `--fault NAME`: the fault is the run's
+own, so what a fixture observes is the build's own detection rather than
+a report the corpus asked for. A fault writes to the tree it runs over,
+so a fixture declaring one runs in a copy of itself and the corpus
+leaves the fixture as it found it.
+
 Where the whole of an outcome is a build's own, the manifest declares the
 text it must carry instead: `expected.stdout_contains` for a response such
 as the one reporting a version, and a diagnostic's `message_contains` where
@@ -43,8 +52,11 @@ nothing.
 import json
 import os
 import shlex
+import shutil
 import subprocess
-from collections.abc import Sequence
+import tempfile
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -63,6 +75,7 @@ BUILD_TIMEOUT = "PROSIFORM_BUILD_TIMEOUT"
 DEFAULT_TIMEOUT = 60.0
 
 MANIFEST = "manifest"
+FAULT = "fault"
 INVOCATION = "invocation"
 EXIT_STATUS = "expected.exit_status"
 STDOUT = "expected.stdout"
@@ -396,6 +409,23 @@ def compare_diagnostics(
     return differences
 
 
+@contextmanager
+def worked(fixture: Path, fault: str | None) -> Iterator[Path]:
+    """The directory the run happens in, which a fault makes a copy.
+
+    A fault writes to the tree it runs over, so a fixture declaring one
+    is copied and the copy is what the build is pointed at. The fixture
+    itself is read and left as it was, and the copy goes with the run.
+    """
+    if fault is None:
+        yield fixture
+        return
+    with tempfile.TemporaryDirectory() as scratch:
+        copy = Path(scratch) / fixture.name
+        shutil.copytree(fixture, copy, symlinks=True)
+        yield copy
+
+
 def run_fixture(fixture: Path) -> Result:
     """One fixture run against the configured build and compared with its manifest."""
     name = identity(fixture)
@@ -415,46 +445,52 @@ def run_fixture(fixture: Path) -> Result:
 
     invocation = manifest["invocation"]
     expected = manifest["expected"]
-    named = invocation.get("root")
-    allowed_root = (
-        ["--root", str((fixture / named).resolve())] if named is not None else []
-    )
-    argv = [
-        *build_under_test(),
-        *allowed_root,
-        "--diagnostics",
-        "json",
-        *invocation["arguments"],
-    ]
+    declared = manifest.get(FAULT)
+    requested = ["--fault", declared] if declared is not None else []
     allowed = build_timeout()
-    try:
-        completed = subprocess.run(
-            argv,
-            cwd=fixture,
-            stdin=subprocess.DEVNULL,
-            capture_output=True,
-            timeout=allowed,
-            check=False,
+    with worked(fixture, declared) as working:
+        named = invocation.get("root")
+        allowed_root = (
+            ["--root", str((working / named).resolve())] if named is not None else []
         )
-    except subprocess.TimeoutExpired:
-        difference = Difference(
-            INVOCATION,
-            f"the run did not complete within {allowed} seconds",
-            (f"command {shlex.join(argv)}",),
-        )
-        return Result(name, (difference,), None, b"", b"")
+        argv = [
+            *build_under_test(),
+            *allowed_root,
+            "--diagnostics",
+            "json",
+            *requested,
+            *invocation["arguments"],
+        ]
+        try:
+            completed = subprocess.run(
+                argv,
+                cwd=working,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                timeout=allowed,
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            difference = Difference(
+                INVOCATION,
+                f"the run did not complete within {allowed} seconds",
+                (f"command {shlex.join(argv)}",),
+            )
+            return Result(name, (difference,), None, b"", b"")
 
-    stdout = (
-        compare_stdout((fixture / expected["stdout"]).read_bytes(), completed.stdout)
-        if "stdout" in expected
-        else compare_stdout_text(expected["stdout_contains"], completed.stdout)
-    )
-    differences = [
-        *compare_exit_status(expected["exit_status"], completed.returncode),
-        *stdout,
-        *compare_diagnostics(expected["diagnostics"], completed.stderr),
-        *compare_absent(fixture, expected.get("absent", [])),
-    ]
+        stdout = (
+            compare_stdout(
+                (fixture / expected["stdout"]).read_bytes(), completed.stdout
+            )
+            if "stdout" in expected
+            else compare_stdout_text(expected["stdout_contains"], completed.stdout)
+        )
+        differences = [
+            *compare_exit_status(expected["exit_status"], completed.returncode),
+            *stdout,
+            *compare_diagnostics(expected["diagnostics"], completed.stderr),
+            *compare_absent(working, expected.get("absent", [])),
+        ]
     return Result(
         name,
         tuple(differences),

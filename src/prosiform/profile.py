@@ -19,7 +19,10 @@ reaches it is abandoned at the end of the paragraph rather than resolved:
 the reference that label opens is read as literal text and its lookup
 never happens. The profile watches that scan, so a lookup the ceiling
 declined is reported rather than published as a bundle missing whatever
-the reference named.
+the reference named. The watch keeps the span the scan stopped in, which
+runs from inside the label the parser had opened to the end of that
+inline content, and reading it names the reference the lookup would have
+made.
 
 A construct the profile does not support is not simply left unparsed. One
 that names a dependency or a section fails the run, because publishing it
@@ -71,6 +74,9 @@ LINK_CLOSE = "link_close"
 HTML_BLOCK = "html_block"
 HTML_INLINE = "html_inline"
 
+HREF = "href"
+LABEL_OPEN = "["
+
 REFERENCES = "references"
 
 TASK_MARKERS = ("[x]", "[X]")
@@ -115,16 +121,20 @@ class Suppressed(Exception):
     The lookup never happened, so what the reference named is unknown
     and no bundle can be published from the parse that abandoned it.
     The line is the source line of the content the scan was reading,
-    where the parser records one.
+    where the parser records one, and the reference is the destination
+    the abandoned construct spells, where the span the scan stopped in
+    completes one.
     """
 
-    def __init__(self, line: int | None) -> None:
+    def __init__(self, line: int | None, reference: str | None = None) -> None:
+        named = f"the lookup of {reference!r}" if reference else "a reference lookup"
         super().__init__(
-            "the parser reached its own nesting ceiling and abandoned a "
-            "reference lookup, so a reference this source carries is read "
-            "as literal text and names a document the run cannot reach"
+            f"the parser reached its own nesting ceiling and abandoned {named}, "
+            f"so a reference this source carries is read as literal text and "
+            f"names a document the run cannot reach"
         )
         self.line = line
+        self.reference = reference
 
     @property
     def remedy(self) -> str:
@@ -145,13 +155,16 @@ class Watched(ParserInline):
 
     The watch records the outermost content being parsed, which is the
     inline token the declined lookup sits in, so the parse the caller
-    reads locates it by that content.
+    reads locates it by that content. It records the span the scan
+    stopped in beside it, which is what names the reference the lookup
+    would have made.
     """
 
     def __init__(self) -> None:
         super().__init__()
         self.reading: list[str] = []
         self.declined: str | None = None
+        self.abandoned: str | None = None
 
     def parse(
         self, src: str, md: MarkdownIt, env: EnvType, tokens: list[Token]
@@ -168,6 +181,7 @@ class Watched(ParserInline):
         ceiling = state.level >= state.md.options[NESTING_CEILING]
         if ceiling and state.pos not in state.cache and self.declined is None:
             self.declined = self.reading[0]
+            self.abandoned = state.src[state.pos : state.posMax]
         super().skipToken(state)
 
 
@@ -198,6 +212,37 @@ def parser(budget: int) -> MarkdownIt:
     return configured.enable(list(ENABLED))
 
 
+@cache
+def reader() -> MarkdownIt:
+    """The profile's parser with no watch over it, which reads one abandoned span.
+
+    A span is read after the parse that abandoned it has finished, and
+    the watch belongs to that parse, so the span is read with a parser
+    of its own: a second run through the watched one would answer for
+    the span rather than for the source.
+    """
+    return MarkdownIt(PRESET).enable(list(ENABLED))
+
+
+def referenced(span: str, env: dict[str, Any]) -> str | None:
+    """The destination the construct holding one abandoned span names.
+
+    The scan stops inside a label the parser had opened, so the span is
+    a construct again once that bracket is restored, and the definition
+    environment the source filled is what a reference-style spelling
+    resolves against. A span whose construct does not complete names no
+    destination, and the lookup is reported against its source alone.
+    """
+    for token in reader().parse(LABEL_OPEN + span, dict(env)):
+        opening = next(iter(token.children or []), None)
+        if opening is None:
+            continue
+        if opening.type != LINK_OPEN:
+            return None
+        return str(opening.attrGet(HREF) or "") or None
+    return None
+
+
 def parse(
     text: str,
     budget: int = NESTING.default,
@@ -212,13 +257,20 @@ def parse(
 
     A parse whose nesting ceiling declined a reference lookup raises
     rather than returning tokens, so every caller reads a token stream
-    the parser resolved in full.
+    the parser resolved in full. The raise carries the reference that
+    lookup would have made, where the span the scan abandoned spells
+    one.
     """
     watched = watch(budget)
     watched.declined = None
-    tokens = parser(budget).parse(text, {} if env is None else env)
+    watched.abandoned = None
+    environment: dict[str, Any] = {} if env is None else env
+    tokens = parser(budget).parse(text, environment)
     if watched.declined is not None:
-        raise Suppressed(declined_line(tokens, watched.declined))
+        raise Suppressed(
+            declined_line(tokens, watched.declined),
+            referenced(watched.abandoned or "", environment),
+        )
     for inline in item_openings(tokens):
         if linked_marker(inline):
             unlink_marker(inline)

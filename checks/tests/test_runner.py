@@ -97,6 +97,7 @@ def write_fixture(
     complete: bool = True,
     source: bool = True,
     root: str | None = "source",
+    fault: str | None = None,
 ) -> Path:
     """A fixture directory declaring the result its run must produce.
 
@@ -119,8 +120,10 @@ def write_fixture(
         '  "Validation and failure contract",',
         "]",
         "",
-        "[invocation]",
     ]
+    if fault is not None:
+        lines.extend([f"fault = {json.dumps(fault)}", ""])
+    lines.append("[invocation]")
     if root is not None:
         lines.append(f"root = {json.dumps(root)}")
     lines.extend(
@@ -808,3 +811,57 @@ def test_a_run_that_does_not_complete_is_reported(
     assert "the run did not complete within 0.2 seconds" in detail_of(
         result, INVOCATION
     )
+
+
+def test_the_run_receives_the_fault_the_manifest_names(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A declared fault reaches the run beside the root and the diagnostic format."""
+    fixture = write_fixture(tmp_path / "fixture", fault="source-changed")
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    written = record.read_text(encoding="utf-8").splitlines()
+    assert written[-5:] == [
+        "--diagnostics",
+        "json",
+        "--fault",
+        "source-changed",
+        "guide.md",
+    ]
+    assert written[0] == "--root"
+
+
+def test_a_run_meeting_no_fault_asks_for_none(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture")
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    assert "--fault" not in record.read_text(encoding="utf-8").splitlines()
+
+
+def test_a_fixture_declaring_a_fault_runs_in_a_copy_of_itself(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A fault writes to the tree it runs over, and the fixture is left as it was."""
+    fixture = write_fixture(tmp_path / "fixture", fault="source-changed")
+    configure(monkeypatch, publishing("source/guide.md", "other bytes"))
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+    assert (fixture / "source" / "guide.md").read_bytes() == b"# Guide\n"
+
+
+def test_a_fault_points_the_run_at_the_copy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The allowed source root the run is given is the copy's, not the fixture's."""
+    fixture = write_fixture(tmp_path / "fixture", fault="internal")
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    written = record.read_text(encoding="utf-8").splitlines()
+    given = Path(written[written.index("--root") + 1])
+    assert given.name == "source"
+    assert given != (fixture / "source").resolve()
