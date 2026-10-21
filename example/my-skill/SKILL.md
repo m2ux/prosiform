@@ -4,4 +4,4 @@ Compile these documents:
 
 [Procedure](procedure/procedure.md)
 
-[Rules](rules/rules.md)
+[Rules](rules/common.md)
