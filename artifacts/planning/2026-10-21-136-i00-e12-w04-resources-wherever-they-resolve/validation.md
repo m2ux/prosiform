@@ -4,7 +4,9 @@ The checks these two rows ran, the revision they ran against, and what each obse
 
 ## Revision
 
-`b1315eb` on `i00/e12/w04-resources-wherever-they-resolve`, rebased onto `i00/e12/main` at `04645e5`, which carries the W01 and W06 merges. Every result below was taken after that rebase, on the full `make check` sequence with `PROSIFORM_BUILD` naming this worktree's build.
+`3e2f6a8` on `i00/e12/w04-resources-wherever-they-resolve`, rebased onto `i00/e12/main` at `f8b67f0`, which carries the W01, W06 and W03 merges. Every result below was taken after that rebase, on the full `make check` sequence with `PROSIFORM_BUILD` naming this worktree's build.
+
+The epic base moved twice while this unit was in flight. The second rebase, onto W03's merge, conflicted in `src/tests/test_cli.py` where W03 added two `E_TARGET_NOT_FOUND` tests immediately above a test this unit renamed. Both sides were kept: W03's two tests stand, and the renamed test keeps its new name. The suites below were rerun in full after that resolution.
 
 The base was red before the work started: `checks/tests/test_catalogue.py` failed its `error` parameter, naming `E_SELF_REFERENCE` and `E_MARKED_RESOURCE` as codes the schema catalogue held and the design declared nowhere. That failure was the work these rows carried, not a defect of the base, and it is the first result recorded below.
 
@@ -12,7 +14,7 @@ The base was red before the work started: `checks/tests/test_catalogue.py` faile
 
 `make harness`, the whole of `checks/tests`, which holds each schema catalogue to the codes the design declares under its prefix.
 
-**374 passed, 0 failed.** `test_a_catalogue_is_the_codes_the_design_declares[error-E_]` passes, where on the base it failed with both retired codes listed as extra items in the schema's set. The warning catalogue was green throughout and stayed so: `W_RESOURCE_PORTABILITY` is unchanged by this work.
+**376 passed, 0 failed.** `test_a_catalogue_is_the_codes_the_design_declares[error-E_]` passes, where on the base it failed with both retired codes listed as extra items in the schema's set. The warning catalogue was green throughout and stayed so: `W_RESOURCE_PORTABILITY` is unchanged by this work.
 
 The check reads `design.md` from `origin/engineering` rather than from the worktree, so the result is the schema in this branch held against the published design — which is the pairing that was broken.
 
@@ -20,7 +22,7 @@ The check reads `design.md` from `origin/engineering` rather than from the workt
 
 `fixtures/resource` and `fixtures/traversal`, through `make corpus`, and the `cli` tests in `src/tests/test_cli.py`.
 
-**Corpus: 202 fixtures, 200 pass, 0 fail, 2 awaited, 0 unexpected pass.** The two awaited fixtures are `I00:E11:W10` and `I00:E11:W14`, neither touched here.
+**Corpus: 204 fixtures, 202 pass, 0 fail, 2 awaited, 0 unexpected pass.** The two awaited fixtures are `I00:E11:W10` and `I00:E11:W14`, neither touched here.
 
 Observed for AC6:
 
@@ -61,9 +63,9 @@ The unit tests observing the same rule are `test_a_link_to_the_section_carrying_
 **All targets passed.**
 
 - `lock-check`, `lint`, `format-check`, `typecheck` — clean. `ruff` reported `closure.marked` and `source.owner` as unused imports of `cli` once the two refusals went; both imports were removed.
-- `test` — 626 passed.
-- `harness` — 374 passed.
-- `corpus` — 202 fixtures, 200 pass, 2 awaited.
+- `test` — 628 passed.
+- `harness` — 376 passed.
+- `corpus` — 204 fixtures, 202 pass, 2 awaited.
 - `smoke` — the wheel installs into a throwaway environment and bundles from a source root.
 - `layout`, `tables`, `links --online`, `vocabulary`, `invocation` — each green. `vocabulary` confirms the glossary still defines every marked contract term, which is why the published prose is left to `W08`.
 
