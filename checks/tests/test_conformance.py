@@ -10,7 +10,9 @@ against a deliberately unfixtured clause shows.
 The declared surface is read from the same corpus. A code or an exit status
 a fixture reaches is listed with that fixture; one only a fixture awaiting
 later work declares is unfixturable, and the work it awaits is the reason;
-one no fixture declares at all fails the report.
+one no fixture declares at all fails the report. The installation claims no
+run observes are listed there too, each with the reason it is unreachable
+and what would make it observable, and the closing summary counts them.
 """
 
 import json
@@ -18,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from conformance import clauses, render, report
+from conformance import CLAIMS, clauses, render, report
 
 DESIGN = """# A design
 
@@ -205,6 +207,28 @@ def test_a_name_no_fixture_declares_fails_the_report(corpus: Path) -> None:
     undeclared = [entry.name for entry in found.surface if entry.undeclared]
     assert "E_RAW_HTML" in undeclared
     assert any("E_RAW_HTML" in failure for failure in found.failures)
+
+
+def test_an_installation_claim_is_listed_with_its_reason(corpus: Path) -> None:
+    printed = render(report(DESIGN, corpus)).splitlines()
+    claim = CLAIMS[0]
+    assert f"installation claim {claim.name}: unfixturable, {claim.reason}" in printed
+
+
+def test_an_installation_claim_states_what_would_observe_it(corpus: Path) -> None:
+    printed = render(report(DESIGN, corpus)).splitlines()
+    for claim in CLAIMS:
+        listed = printed.index(
+            f"installation claim {claim.name}: unfixturable, {claim.reason}"
+        )
+        assert printed[listed + 1] == f"    {claim.observable}"
+
+
+def test_the_summary_counts_the_installation_claims(corpus: Path) -> None:
+    printed = render(report(DESIGN, corpus)).splitlines()
+    assert printed[-1].endswith(
+        f", {len(CLAIMS)} installation claim(s) no run observes"
+    )
 
 
 def test_the_report_is_reproduced_on_a_second_run(corpus: Path) -> None:
