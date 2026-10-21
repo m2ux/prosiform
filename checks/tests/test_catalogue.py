@@ -10,11 +10,11 @@ prefix is held to the catalogue of the severity that carries it. A code
 the design adds fails this test until its catalogue carries it, and a code
 in a catalogue the design does not name fails it too.
 
-A warning accompanies a successful run, so a warning code is a statement
-about what such a run writes to standard error, and the corpus is where
-that statement is made. Every code the warning catalogue holds is
-therefore declared by a fixture: a warning the design declares and no
-manifest carries is a claim no run of the corpus exercises.
+A code is a statement about a run — an error decides a failing one, a
+warning accompanies a successful one — and the corpus is where such a
+statement is made. Every code either catalogue holds is therefore
+declared by a fixture: a code the design declares and no manifest
+carries is a claim no run of the corpus exercises.
 """
 
 import re
@@ -43,11 +43,14 @@ def test_a_catalogue_is_the_codes_the_design_declares(
     assert catalogue(severity) == codes(prefix, design())
 
 
-def test_every_warning_the_design_declares_is_declared_by_a_fixture() -> None:
-    unstated = catalogue("warning") - declared_codes("warning")
+@pytest.mark.parametrize("severity", sorted(PREFIXES))
+def test_every_code_the_design_declares_is_declared_by_a_fixture(
+    severity: str,
+) -> None:
+    unstated = catalogue(severity) - declared_codes(severity)
     assert not unstated, (
         f"no fixture declares {', '.join(sorted(unstated))}, so the corpus "
-        "states nothing about the run that warning accompanies"
+        f"states nothing about the run that {severity} names"
     )
 
 
