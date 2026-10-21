@@ -2,6 +2,6 @@
 
 Compile these documents:
 
-[Procedure](procedure/procedure.md)
+[Procedure](procedure.md)
 
 [Rules](rules/common.md)
