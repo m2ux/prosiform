@@ -4,8 +4,8 @@
 A fixture is a directory under `fixtures/` holding `manifest.toml`, the
 source tree that manifest names and the bytes it expects back. The manifest
 is the whole declaration, and `fixtures/manifest.schema.json` is the shape
-it must take: a JSON Schema document, so the schema is data both builds
-read rather than code one of them owns.
+it must take: a JSON Schema document, so the schema is data every reader
+of the corpus reads rather than code any one of them owns.
 
 TOML's value model is a subset of JSON's, so a parsed manifest validates
 directly. Reading needs the standard library and `jsonschema`, which the
