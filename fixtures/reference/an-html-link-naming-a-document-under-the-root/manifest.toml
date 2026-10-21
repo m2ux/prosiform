@@ -1,0 +1,20 @@
+description = "A raw HTML anchor naming a Markdown document under the allowed source root fails the run and names the source line carrying it, so a local dependency written in a syntax the profile does not support is refused rather than quietly left out of the bundle."
+
+clauses = [
+  "Link classification and resource handling — Unsupported local-document syntax",
+  "Markdown and source-heading profile — HTML, raw HTML in selected content fails",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RAW_HTML"
+source = "guide.md:3"
