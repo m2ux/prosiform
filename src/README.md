@@ -28,7 +28,7 @@ uv sync --frozen
 - `uv sync --check` detects environment drift from the lockfile.
 - `uv lock` updates the lockfile after dependency changes.
 - `uv lock --check` checks the lockfile against declared dependencies.
-- `make tables`, run from the repository root, checks README dependency and command tables against `pyproject.toml` and the [`Makefile`](../Makefile), including additions and removals.
+- `make tables`, run from the repository root, checks documentation dependency and command tables against `pyproject.toml` and the [`Makefile`](../Makefile), including additions and removals.
 
 ### Runtime dependencies
 

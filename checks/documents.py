@@ -28,7 +28,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-README = "README.md"
 MANIFEST = "manifest.toml"
 MARKDOWN = (".md", ".markdown")
 FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
@@ -68,11 +67,6 @@ def documents() -> list[Path]:
         if Path(path).suffix in MARKDOWN
         and not any(path.startswith(f"{fixture}/") for fixture in fixtures)
     )
-
-
-def readmes() -> list[Path]:
-    """Every README among those documents, which is where the project's tables sit."""
-    return [path for path in documents() if path.name == README]
 
 
 def strip_code_fences(text: str) -> str:

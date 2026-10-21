@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert the README tables name what the project declares and nothing else.
+"""Assert the documentation tables name what the project declares and nothing else.
 
 Two enumerations are written in one place and documented in another, so each
 is compared with its source in both directions. A declared item no table names
@@ -20,7 +20,7 @@ after something the project does not have.
   the table writes it.
 
 A table is located by its header and a document by git, so a table moved
-within a README, and the README a new tree brings with it, are both read
+within a document, and a document a new tree brings with it, are both read
 without this check being edited.
 
 A row that names a declared item under another version is one fault, not two:
@@ -31,7 +31,7 @@ import re
 import sys
 import tomllib
 
-from documents import ROOT, plain, readmes, tables
+from documents import ROOT, documents, plain, tables
 
 MAKEFILE = ROOT / "Makefile"
 PYPROJECT = ROOT / "src" / "pyproject.toml"
@@ -113,7 +113,7 @@ def main() -> int:
     named_targets: set[str] = set()
     named_items: set[str] = set()
 
-    for path in readmes():
+    for path in documents():
         document = path.relative_to(ROOT).as_posix()
         for table in tables(path.read_text()):
             if "Command" in table.headers:

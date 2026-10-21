@@ -1,7 +1,7 @@
 """Assert the table check reads a Makefile, a project definition and a table.
 
 What the check compares is three readings: the targets a `Makefile` declares,
-the declarations `src/pyproject.toml` carries, and the rows a README's tables
+the declarations `src/pyproject.toml` carries, and the rows a document's tables
 hold. Each is held here to input it would be read wrongly: a `Makefile` whose
 assignments, directives and recipe lines are not targets, a project definition
 whose requirements carry extras, markers and spacing, and a document whose
