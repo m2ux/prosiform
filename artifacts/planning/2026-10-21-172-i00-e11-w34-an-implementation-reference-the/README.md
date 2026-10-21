@@ -15,6 +15,7 @@ It matters because the bound that exists runs the wrong way, and no list can be 
 | [W34](w34.md) | The work item: scope, component, breakdown and test requirements |
 | [Analysis](analysis.md) | How the rule tells a word that names something from a word any sentence needs, what it does with inflection, hyphenation and proper nouns, and the verdict on every term it reported over the corpus |
 | [Validation](validation.md) | The checks, the procedure each was run by, what each observed, the retired inventory read term by term, and the revisions validation forced |
+| [Change list](change-list.md) | Every change this session made to the plan, and what each deferred item is |
 
 ## Links
 
@@ -22,4 +23,5 @@ It matters because the bound that exists runs the wrong way, and no list can be 
 | --- | --- |
 | Task issue | [#172 \[I00:E11:W34\] An Implementation Reference the Inventory Does Not Name](https://github.com/m2ux/prosiform/issues/172) |
 | Epic | [#39 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/issues/39) |
+| Pull request | [#184 \[I00:E11\] A Declaration Read Against the Contract Vocabulary](https://github.com/m2ux/prosiform/pull/184) |
 | Origin record | [Implementation independence](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-9-i00-e10-w03-implementation-independence-check) |
