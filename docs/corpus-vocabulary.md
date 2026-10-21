@@ -11,13 +11,16 @@ The words a sentence needs that the design has no occasion to write.
 | Word | What it does |
 | --- | --- |
 | **able** | capable of the thing named. |
+| **await** | to stand ready for a thing not yet done. |
 | **across** | spanning something, such as two lines. |
 | **alongside** | beside, of two things emitted together. |
 | **although** | concedes a fact the clause stands in spite of. |
 | **apiece** | one each, of a count shared out. |
 | **beside** | next to, of adjacent content. |
+| **choose** | to settle on one of several. |
 | **came** | the past tense of come. |
 | **classify** | to decide which kind a thing is. |
+| **consult** | to read a thing for what it states. |
 | **compose** | to form a whole from parts. |
 | **convert** | to turn one form into another. |
 | **decline** | to refuse a thing asked for. |
@@ -29,6 +32,7 @@ The words a sentence needs that the design has no occasion to write.
 | **draw** | to take a thing from a source. |
 | **excessive** | past the amount allowed. |
 | **fill** | to put content where there was none. |
+| **effect** | what an option does, as its table states it. |
 | **fit** | to be small enough for the room there is. |
 | **five** | the number. |
 | **four** | the number. |
@@ -47,6 +51,7 @@ The words a sentence needs that the design has no occasion to write.
 | **lower** | to move a thing down a scale. |
 | **made** | the past tense of make. |
 | **mid** | part way through the thing named. |
+| **met** | the past tense of meet. |
 | **middle** | the part between two others. |
 | **mistake** | a thing done wrongly. |
 | **none** | not any. |
@@ -61,6 +66,7 @@ The words a sentence needs that the design has no occasion to write.
 | **past** | beyond the point named. |
 | **plain** | with nothing added. |
 | **promote** | to raise a thing to a higher place. |
+| **quiet** | making no sound, of a run that reports nothing. |
 | **push** | to move a thing along or beyond. |
 | **ran** | the past tense of run. |
 | **requirement** | a thing that must hold. |
@@ -74,6 +80,7 @@ The words a sentence needs that the design has no occasion to write.
 | **sign** | a written character, such as a number sign. |
 | **six** | the number. |
 | **sixth** | the ordinal. |
+| **straight** | without an intervening step. |
 | **spell** | to write a thing one particular way. |
 | **spend** | to use up a budget. |
 | **spent** | the past tense of spend. |
@@ -82,6 +89,7 @@ The words a sentence needs that the design has no occasion to write.
 | **sum** | the total of several numbers. |
 | **symbolic** | standing for another thing, as a symbolic link does. |
 | **template** | a document other documents are formed from. |
+| **time** | when a thing happens. |
 | **third** | the ordinal. |
 | **though** | concedes a fact the clause stands in spite of. |
 | **three** | the number. |
@@ -117,6 +125,7 @@ The names the Markdown the contract binds carries, and the encodings and address
 | **underline** | the rule of characters a Setext heading is written under. |
 | **unencoded** | written with no percent escape where one was expected. |
 | **unescaped** | written with no escape where one was expected. |
+| **uri** | an address in its general form. |
 | **url** | an address, as a resource carries one. |
 | **utf** | the encoding family a source document is required to be valid in. |
 | **yaml** | the format a frontmatter block is commonly written in. |
@@ -149,6 +158,7 @@ The words a declaration and a report entry use to say what they are doing.
 | **conformance** | the mapping of each clause to the fixtures exercising it. |
 | **declaration** | what a manifest states about the contract. |
 | **determinism** | one input producing one output, whatever the order of the arguments. |
+| **derivation** | a form made from another word rather than inflected from it. |
 | **disk** | the storage an installed build is written to. |
 | **documentation** | the documents this repository owns. |
 | **host** | the machine a build is installed on. |

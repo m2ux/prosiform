@@ -4,6 +4,7 @@ clauses = [
   "Link classification and resource handling — Local Markdown links resolving outside the root",
   "Resolution sequence — step 7",
   "Resolution sequence — A normalized path outside the root",
+  "Compile before publishing — step 1, allowed source paths resolved against the root",
 ]
 
 [invocation]

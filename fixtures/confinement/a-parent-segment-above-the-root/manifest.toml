@@ -3,6 +3,7 @@ description = "An entry reference whose parent segments walk above the allowed s
 clauses = [
   "Resolution sequence — step 7",
   "Resolution sequence — A normalized path outside the root",
+  "Validation and failure contract — Safety, the allowed source root enforced",
 ]
 
 [invocation]

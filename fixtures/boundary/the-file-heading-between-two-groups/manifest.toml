@@ -3,6 +3,7 @@ description = "One group ending on a list and the next opening on one are separa
 clauses = [
   "Block boundaries",
   "File-scoped hierarchy",
+  "Post-compilation invariants — Block-syntax preservation",
 ]
 
 [invocation]

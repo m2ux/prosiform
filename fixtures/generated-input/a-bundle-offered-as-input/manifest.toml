@@ -4,6 +4,8 @@ clauses = [
   "Generated input policy",
   "Generated input policy, a document-level H1 naming a document other than the one being read",
   "Adversarial acceptance fixtures — Generated inputs",
+  "Source and candidate validation modes",
+  "Source and candidate validation modes — Reuse",
 ]
 
 [invocation]

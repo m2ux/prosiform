@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from conformance import CLAIMS, RECORDED, SECTIONS
 from independence import (
     claims,
     corpus_references,
@@ -74,9 +75,15 @@ directory disk do document documentation environment execute exit family fixture
 give hold host install installation integration invoke is it machine mapping
 mechanism merely my never no note observable observe on once one path platform
 rather reach reader at based inside of held remove report repository
-resolution run runner smoke code nowhere
+resolution run runner smoke code nowhere behaviour behavioural non
 something state status surface than that the them this throughout to two
 uncovered unfixturable unnamed unreachable was whose work wrapper""".split()
+
+ACCOUNTED = [
+    text
+    for declared in (*CLAIMS, *SECTIONS, *RECORDED)
+    for text in (declared.name, declared.reason, declared.observable)
+]
 
 REGISTER = "\n".join(
     [
@@ -87,7 +94,12 @@ REGISTER = "\n".join(
         "| Word | What it does |",
         "| --- | --- |",
     ]
-    + [f"| **{word}** | a word a claim of this corpus states. |" for word in ORDINARY]
+    + [
+        f"| **{word}** | a word a claim of this corpus states. |"
+        for word in dict.fromkeys(
+            ORDINARY + [word for text in ACCOUNTED for word in words(text)]
+        )
+    ]
 )
 
 

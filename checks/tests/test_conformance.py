@@ -21,6 +21,13 @@ case supplies them directly and runs no build. A declared code the build
 reports is listed as reported; a declared code it reports nowhere and a
 reported code the contract declares nowhere each fail the report and are
 listed; and an exit status, which is no code, states nothing either way.
+
+Two further kinds of name are accounted for rather than measured. A section
+the report declares as stating no behaviour carries no clause at all, it or
+the rules beneath it, and is listed with the reason. A behavioural clause no
+source tree and one invocation can state stays in the mapping, leaves the
+uncovered list, and is listed with the reason and what states it instead.
+The design below carries one of each so the report can be read against them.
 """
 
 import json
@@ -29,7 +36,7 @@ from typing import Any
 
 import conformance
 import pytest
-from conformance import CLAIMS, clauses, listed, render, report
+from conformance import CLAIMS, RECORDED, SECTIONS, clauses, listed, render, report
 from manifests import catalogue, severities
 
 DESIGN = """# A design
@@ -62,6 +69,22 @@ Insert blank-line separation between maximal emitted regions.
 ```text
 - **Fenced:** a bullet inside a fence is an example rather than a rule.
 ```
+
+## Design status
+
+This section states what the project has decided about its builds.
+
+- **Builds:** two of them carry the behaviour this contract states.
+
+## Input and output contract
+
+- **Entry references:** Accept one or more local document references.
+
+## Agent delivery contract
+
+Successful compilation establishes that the candidate passed validation.
+
+- **Broken pipes:** Report transport failure through a nonzero exit.
 """
 
 
@@ -167,6 +190,10 @@ def test_a_clause_is_a_heading_or_an_enumerated_rule_under_one() -> None:
         "Resource limits",
         "Resource limits — --max-files",
         "Resource limits — --max-links",
+        "Input and output contract",
+        "Input and output contract — Entry references",
+        "Agent delivery contract",
+        "Agent delivery contract — Broken pipes",
     ]
 
 
@@ -363,3 +390,43 @@ def test_the_report_is_reproduced_on_a_second_run(corpus: Path) -> None:
     assert render(report(DESIGN, corpus, REPORTED)) == render(
         report(DESIGN, corpus, REPORTED)
     )
+
+
+def test_a_section_stating_no_behaviour_carries_no_clause() -> None:
+    named = [clause.name for clause in clauses(DESIGN)]
+    assert "Design status" not in named
+    assert "Design status — Builds" not in named
+
+
+def test_a_section_stating_no_behaviour_is_listed_with_its_reason(
+    corpus: Path,
+) -> None:
+    printed = render(report(DESIGN, corpus, REPORTED)).splitlines()
+    for section in SECTIONS:
+        assert f"section {section.name}: non-behavioural, {section.reason}" in printed
+
+
+def test_a_clause_no_run_states_is_not_uncovered(corpus: Path) -> None:
+    found = report(DESIGN, corpus, REPORTED)
+    named = [clause.name for clause, _ in found.mapping]
+    uncovered = [clause.name for clause in found.uncovered]
+    assert "Agent delivery contract — Broken pipes" in named
+    assert "Agent delivery contract — Broken pipes" not in uncovered
+    assert "Input and output contract" not in uncovered
+    assert "Input and output contract — Entry references" in uncovered
+
+
+def test_a_clause_no_run_states_is_listed_with_what_states_it(corpus: Path) -> None:
+    printed = render(report(DESIGN, corpus, REPORTED)).splitlines()
+    for clause in RECORDED:
+        where = printed.index(f"clause {clause.name}: unfixturable, {clause.reason}")
+        assert printed[where + 1] == f"    {clause.observable}"
+
+
+def test_the_summary_counts_what_the_report_accounts_for(corpus: Path) -> None:
+    printed = render(report(DESIGN, corpus, REPORTED)).splitlines()
+    assert (
+        f", {len(RECORDED)} clause(s) no run states, "
+        f"{len(SECTIONS)} section(s) stating no behaviour, "
+        f"{len(listed())} installation claim(s) no run observes"
+    ) in printed[-1]

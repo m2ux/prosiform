@@ -6,6 +6,7 @@ clauses = [
   "Bundle destinations — Ordinal assignment",
   "Entry line",
   "Adversarial acceptance fixtures — Destinations",
+  "Markdown-only output",
 ]
 
 [invocation]
