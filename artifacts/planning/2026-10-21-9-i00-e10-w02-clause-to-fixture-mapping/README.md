@@ -14,6 +14,7 @@ This row covers AC2, AC3 and AC5 of Corpus Conformance, and it is the row the re
 | --- | --- |
 | [w02.md](w02.md) | The work item: the component, the problem and what the row proposes. |
 | [validation.md](validation.md) | The runs that observed each criterion, what the validation found, and what could not be ticked. |
+| [changes.md](changes.md) | What the row changed in the checks, the corpus and the tracker, the plan changes it applied, and what remains open. |
 
 ## Links
 
@@ -24,4 +25,5 @@ This row covers AC2, AC3 and AC5 of Corpus Conformance, and it is the row the re
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Planned work item | [i00-e10/w02.md](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i00-e10/w02.md) |
 | Preceding row | [2026-10-21-9-i00-e10-w01-adversarial-fixture-families-and](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-9-i00-e10-w01-adversarial-fixture-families-and) |
+| Pull request | [#167 \[I00:E10\] Clause-to-Fixture Mapping and the Conformance Report](https://github.com/m2ux/prosiform/pull/167) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
