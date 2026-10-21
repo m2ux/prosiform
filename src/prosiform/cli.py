@@ -163,7 +163,6 @@ from markdown_it.token import Token
 from prosiform import PROFILE
 from prosiform.access import (
     Absent,
-    Outside,
     Symlinked,
     Unreadable,
     present,
@@ -566,6 +565,12 @@ def entry(text: str) -> Reference:
     which is the one form the resolution sequence classifies rather than
     refuses: inside a source such a reference is text the bundle
     carries, and on the command line it names nothing to bundle.
+
+    This is the one place the root's confinement is a refusal. The root
+    binds what the caller asks the run to carry out, and a reference an
+    author wrote inside a source is that author citing material the
+    bundle does not carry, so discovery leaves it as text and nothing
+    downstream of here raises the code again.
     """
     try:
         found = resolve(text)
@@ -665,6 +670,13 @@ def read_document(root: Path, found: Reference) -> Opened:
     source through a symbolic link below the root fails rather than
     arriving at whatever that link points at.
 
+    What arrives here is a path a normalization produced, which the root
+    can hold: one that walks above its base raises before a path is
+    returned, and the entry reference carrying it is refused where
+    entries are read. The refusals below are therefore the faults a read
+    meets. A walk declining a segment of such a path is this tool's own
+    invariant breaking, which the declared internal-error status reports.
+
     The bytes are read without newline translation, so a CRLF source
     reaches the scan spelled as the file spells it, and they are decoded
     strictly, so a source that is not valid UTF-8 fails here as the source
@@ -694,16 +706,6 @@ def read_document(root: Path, found: Reference) -> Opened:
             source=found.origin,
             chain=chain,
         ) from linked
-    except Outside as outside:
-        raise input_failure(
-            f"{written} {reference!r} names {outside}, which the allowed "
-            f"source root cannot contain",
-            code=SOURCE_OUTSIDE_ROOT,
-            remedy="name a document the source root carries",
-            reference=reference,
-            source=found.origin,
-            chain=chain,
-        ) from outside
     except Absent as absent:
         raise input_failure(
             f"{written} {reference!r} names no document under the allowed source root",
