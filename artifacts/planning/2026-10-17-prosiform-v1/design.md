@@ -470,11 +470,11 @@ Successful compilation establishes that the complete candidate passed validation
 
 ## Validation scope
 
-Validate link resolution, self-reference, supported selected syntax, and resource rules within the selected dependency closure. Parsing a complete file for indexing does not make its unselected sibling sections dependencies; ancestor-only headings undergo structural, depth, and namespace checks but not dependency traversal.
+Validate link resolution, supported selected syntax, and resource rules within the selected dependency closure. Parsing a complete file for indexing does not make its unselected sibling sections dependencies; ancestor-only headings undergo structural, depth, and namespace checks but not dependency traversal.
 
 Whole-file checks are limited to facts needed for safe access or correct interpretation: source identity and encoding, raw-byte and required parsing-resource limits, frontmatter, source-change detection, original heading enumeration, definitions needed by selected uses, ambiguity of requested fragments, and generated-input detection.
 
-An unrelated broken link or self-link in an unselected sibling must not fail bundling. If closure expands to include that sibling, its links become subject to validation.
+An unrelated broken link in an unselected sibling must not fail bundling. If closure expands to include that sibling, its links become subject to validation.
 
 An opened file can nevertheless fail because an unselected construct exceeds a declared file-wide parsing-safety limit. Diagnose this as inability to safely index the containing source, not as an inferred dependency on that sibling.
 
