@@ -370,13 +370,13 @@ def test_each_idle_grouping_rule_is_reported_and_an_arranging_one_is_not(
     assert "'other'" in warned[1]
 
 
-def test_an_entry_naming_a_member_the_group_emits_no_heading_for_opens_on_the_group(
+def test_an_entry_naming_a_member_of_one_heading_opens_on_its_overview_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", "# Bare\n")
     run = invoke("--root", str(root), "--group", "notes:2", "notes/bare.md")
     assert run.status == SUCCESS
-    assert run.stdout.startswith("This bundle was built for [Notes](#notes);")
+    assert run.stdout.startswith("This bundle was built for [Bare](#bare);")
 
 
 def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_contribution(
@@ -388,14 +388,14 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_contributio
     assert run.stdout.startswith("This bundle was built for [Outcomes](#outcomes);")
 
 
-def test_a_reference_into_a_member_the_group_emits_no_heading_for_is_rewritten(
+def test_a_reference_into_a_member_of_one_heading_reaches_its_overview_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", "# Bare\n")
     written(root, "guide.md", "# Guide\n\nSee [Bare](notes/bare.md).\n")
     run = invoke("--root", str(root), "--group", "notes:2", "guide.md")
     assert run.status == SUCCESS
-    assert "See [Bare](#notes)." in run.stdout
+    assert "See [Bare](#bare)." in run.stdout
 
 
 def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -> None:

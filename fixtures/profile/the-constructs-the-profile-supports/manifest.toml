@@ -1,4 +1,4 @@
-description = "One document carrying every construct the profile supports bundles whole: its headings in both spellings, its paragraphs, lists, quote, code span and fenced example, its inline, reference-style and image references, its thematic break and its autolink each reaching the bundle under the rule that governs it."
+description = "One document carrying every construct the profile supports bundles whole: its headings in both spellings, its paragraphs, lists, quote, code span and fenced example, its inline, reference-style and image references, its thematic break and its autolinks in both spellings each reaching the bundle under the rule that governs it."
 
 clauses = [
   "Markdown and source-heading profile — Core syntax",
@@ -8,8 +8,6 @@ clauses = [
   "Resources are text",
   "Parser and source-preserving edits — Untouched content",
 ]
-
-awaiting = "I00:E11:W37"
 
 [invocation]
 root = "source"

@@ -30,6 +30,16 @@ link the link it is. That environment is this source's and no
 other's, so a literal `[runner]` here stays literal however another
 source defines the same label.
 
+An autolink is a use among them, written between angle brackets rather
+than brackets: the scan reads one where it sits, so the reading and the
+parser agree on how many uses a run carries and in what order. The
+parser reads it beside an enclosing link rather than within it, so a
+link whose label holds one is the link it is. Its
+destination is its own text and carries a scheme or an authority, so the
+bundle assigns it none and the emission edits no span of it — every byte
+between the angle brackets, and the brackets themselves, are the bytes
+the source wrote.
+
 A resolved reference-style use is published inline. The label keeps the
 bytes the author wrote, so the visible text, an image's alternative
 content and the escaping the author chose are preserved by carrying
@@ -49,6 +59,7 @@ author's text like any other label: every byte of it reaches the bundle,
 because an agent reading the bundle is what reads the mark next.
 """
 
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from itertools import accumulate, pairwise
@@ -84,6 +95,13 @@ TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
 LINK = "link"
 RESOURCE = "resource"
 
+AUTOLINK = re.compile(
+    r"<(?:[A-Za-z][A-Za-z0-9+.\-]{1,31}:[^\x00-\x20<>]*"
+    r"|[A-Za-z0-9.!#$%&'*+/=?^_`{|}~\-]+"
+    r"@[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?"
+    r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?)*)>"
+)
+
 MAP = "map"
 
 
@@ -116,7 +134,12 @@ class Use:
     where the author wrote one. The target is the span the destination
     is written at: for an inline use it is the authored destination, and
     for a reference-style use it is the `[label]` that follows the
-    label, which is empty where the use is written as a shortcut.
+    label, which is empty where the use is written as a shortcut. An
+    autolink's destination is the text between its angle brackets, so
+    its target is the empty span at its close and its emission edits
+    nothing. It is a link the parser reads beside an enclosing link
+    rather than within it, so the one that carries it stays the link it
+    is, and the flag is what the scan reads that from.
     """
 
     kind: str
@@ -125,6 +148,7 @@ class Use:
     target: tuple[int, int]
     end: int
     definition: Definition | None = None
+    autolink: bool = False
 
 
 def escaped(text: str, at: int) -> bool:
@@ -245,6 +269,24 @@ def inline_target(text: str, at: int) -> tuple[tuple[int, int], int] | None:
     return (opening, ending), scan + 1
 
 
+def autolink_end(text: str, at: int, spans: Sequence[tuple[int, int]]) -> int | None:
+    """Where the autolink at one position closes, or nothing where it opens none.
+
+    An autolink is an absolute URI — a scheme, a colon, and no further
+    whitespace or angle bracket — or an email address, each written
+    between angle brackets as CommonMark spells it. A bracketed run
+    spelling neither is the literal text the author wrote, so raw HTML
+    opens no use here. A code span is read before an autolink is, so a
+    run of backticks the brackets enclose leaves them the text they are.
+    """
+    found = AUTOLINK.match(text, at)
+    if found is None:
+        return None
+    if any(masked(spans, index) for index in range(at, found.end())):
+        return None
+    return found.end()
+
+
 def label_close(text: str, at: int, spans: Sequence[tuple[int, int]]) -> int | None:
     """Where the reference label opening at one position closes.
 
@@ -316,6 +358,15 @@ def uses(
 ) -> list[Use]:
     """Every link and image use one run of inline text carries, in written order.
 
+    An autolink is one of them. It opens at an unescaped angle bracket
+    outside a code span and closes at the next one, carrying an
+    absolute URI or an email address as CommonMark spells them, and a
+    bracketed run spelling neither is the text it is. The scan reads it
+    where it sits, among the bracketed uses in written order, and
+    passes over it whole. The parser reads it beside an enclosing link
+    rather than within it, so a link whose label holds one is the link
+    it is.
+
     The scan reads brackets as the parser reads them: a closing bracket
     pairs with the nearest bracket still open, a bracket an author
     escaped or wrote inside a code span is text, and a link whose own
@@ -338,6 +389,22 @@ def uses(
         if escaped(text, at) or masked(spans, at):
             at += 1
             continue
+        if text[at] == ANGLE_OPEN:
+            closing = autolink_end(text, at, spans)
+            if closing is not None:
+                label = (at + 1, closing - 1)
+                found.append(
+                    Use(
+                        LINK,
+                        at,
+                        label,
+                        (closing, closing),
+                        closing,
+                        autolink=True,
+                    )
+                )
+                at = closing
+                continue
         if text[at] == LABEL_OPEN:
             image = at > 0 and text[at - 1] == IMAGE and not escaped(text, at - 1)
             stack.append((at, image))
@@ -351,6 +418,7 @@ def uses(
                 continue
             if one.kind == LINK and any(
                 each.kind == LINK
+                and not each.autolink
                 and each.opening > opening
                 and not alternative(each, found)
                 for each in found

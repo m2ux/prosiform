@@ -2,14 +2,40 @@
 
 The corpus declares what a grouped run publishes. These are the cases
 beneath it: the slug a group is headed by, the name a member's overview
-subsection carries, the run of a path a variant heading is shortened to,
-and the rule that decides which group a document belongs to.
+subsection carries, the members the `Overview` section carries a
+subsection for, the run of a path a variant heading is shortened to, and
+the rule that decides which group a document belongs to.
 """
+
+from collections.abc import Mapping
 
 import pytest
 
+from prosiform.bundle import Group
 from prosiform.cli import membership
-from prosiform.grouping import member_heading, qualifiers, states, titled
+from prosiform.grouping import (
+    member_heading,
+    merged,
+    prepared,
+    qualifiers,
+    states,
+    titled,
+)
+from prosiform.profile import parse
+from prosiform.provenance import MEMBER_OVERVIEW, Generated
+from prosiform.source import lines
+
+
+def group_of(named: str, depth: int, documents: Mapping[str, str]) -> Group:
+    """One merged group, from the slug it is headed by and the sources it merges."""
+    return merged(
+        named,
+        depth,
+        [
+            prepared(path, parse(text), lines(text), {}, None, None, depth)
+            for path, text in sorted(documents.items())
+        ],
+    )
 
 
 @pytest.mark.parametrize(
@@ -98,3 +124,42 @@ def test_a_document_belongs_to_the_group_its_deepest_named_directory_heads(
 
 def test_the_deepest_named_directory_decides_between_two_rules() -> None:
     assert membership("artifacts/modes/one.md", {"artifacts": 2, "modes": 3}) == "modes"
+
+
+def test_a_member_the_group_emits_nothing_else_from_takes_an_overview_subsection() -> (
+    None
+):
+    one = group_of(
+        "notes",
+        2,
+        {
+            "notes/bare.md": "# Bare\n",
+            "notes/kept.md": "# Kept\n\n## Findings\n\nHeld.\n",
+        },
+    )
+    assert one.parts == (
+        "# Notes",
+        "## Overview",
+        "### Bare",
+        "## Findings\n",
+        "Held.\n",
+    )
+
+
+def test_such_a_subsection_answers_the_whole_document_and_the_title_it_absorbed() -> (
+    None
+):
+    one = group_of("notes", 2, {"notes/bare.md": "# Bare\n"})
+    answered = [
+        heading.answers
+        for heading in one.record.headings
+        if isinstance(heading, Generated) and heading.kind == MEMBER_OVERVIEW
+    ]
+    assert answered == [(("notes/bare.md", None), ("notes/bare.md", "bare"))]
+
+
+def test_a_member_whose_content_sits_at_the_grouping_depth_takes_no_subsection() -> (
+    None
+):
+    one = group_of("notes", 2, {"notes/bare.md": "# Bare\n\n## Findings\n\nHeld.\n"})
+    assert one.parts == ("# Notes", "## Findings\n", "Held.\n")

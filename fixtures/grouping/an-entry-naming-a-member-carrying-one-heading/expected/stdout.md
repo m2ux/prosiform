@@ -1,8 +1,10 @@
-This bundle was built for [Notes](#notes) and [Kept](#kept); everything else is material it references.
+This bundle was built for [Bare](#bare) and [Kept](#kept); everything else is material it references.
 
 # Notes
 
 ## Overview
+
+### Bare
 
 ### Kept
 
