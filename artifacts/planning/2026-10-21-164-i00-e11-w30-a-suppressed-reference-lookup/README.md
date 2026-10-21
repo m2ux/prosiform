@@ -14,6 +14,8 @@ It matters because a suppressed lookup is indistinguishable from an absent refer
 | --- | --- |
 | [Analysis](analysis.md) | The budget reachable below every public limit, the depths that bound it, and the clause spelling the family takes |
 | [W30](w30.md) | The work item: scope, component, breakdown and test requirements |
+| [Validation](validation.md) | The boundary measured, the reference the failure names, and the fixtures, unit cases and gate the delivery was held to |
+| [Changes](changes.md) | The plan changes this delivery applied and held, and the readings it left as they stand |
 
 ## Links
 
