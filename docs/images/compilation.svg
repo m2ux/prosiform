@@ -1,39 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1500" viewBox="0 0 1800 1500" role="img" aria-labelledby="title description"><title id="title">Compile shared context and harness routing</title><desc id="description">SKILL.md selects procedure.md and rules/rules.md. Procedure includes tips.md; Rules includes rules/agents.md. Agents instructs each harness to compile its deferred Codex or Claude rules. Both harness-specific documents remain deferred.</desc><rect width="1800" height="1500" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1500" viewBox="0 0 1800 1500" role="img" aria-labelledby="title description"><title id="title">Compile shared context and harness routing</title><desc id="description">SKILL.md selects procedure/procedure.md and rules/rules.md. Procedure includes tips/tips.md; Rules includes rules/agents.md. Agents instructs each harness to compile its deferred Codex or Claude rules. Both harness-specific documents remain deferred.</desc><rect width="1800" height="1500" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve">
 <rect x="32" y="32" width="510" height="570" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/>
 <text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">Source tree</text>
 <rect x="32" y="624" width="510" height="844" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 624 H530 Q542 624 542 636 V686 H32 V636 Q32 624 44 624" fill="#202a36"/>
 <text x="60" y="665" font-size="25" fill="#b1c6df" font-weight="400">SKILL.md</text>
 <rect x="612" y="32" width="510" height="348" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 32 H1110 Q1122 32 1122 44 V94 H612 V44 Q612 32 624 32" fill="#202a36"/>
-<text x="640" y="73" font-size="25" fill="#b1c6df" font-weight="400">procedure.md</text>
+<text x="640" y="73" font-size="25" fill="#b1c6df" font-weight="400">procedure/procedure.md</text>
 <rect x="612" y="402" width="510" height="300" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 402 H1110 Q1122 402 1122 414 V464 H612 V414 Q612 402 624 402" fill="#202a36"/>
 <text x="640" y="443" font-size="25" fill="#b1c6df" font-weight="400">rules/rules.md</text>
 <rect x="612" y="724" width="510" height="250" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 724 H1110 Q1122 724 1122 736 V786 H612 V736 Q612 724 624 724" fill="#202a36"/>
-<text x="640" y="765" font-size="25" fill="#b1c6df" font-weight="400">tips.md</text>
+<text x="640" y="765" font-size="25" fill="#b1c6df" font-weight="400">tips/tips.md</text>
 <rect x="612" y="996" width="510" height="472" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 996 H1110 Q1122 996 1122 1008 V1058 H612 V1008 Q612 996 624 996" fill="#202a36"/>
 <text x="640" y="1037" font-size="25" fill="#b1c6df" font-weight="400">rules/agents.md</text>
 <rect x="1252" y="32" width="510" height="1436" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/>
 <text x="1280" y="73" font-size="25" fill="#b1c6df" font-weight="400">bundle.md</text>
 <text x="60" y="143" font-size="29" fill="#e6edf3" font-weight="400">my-skill/</text>
-<text x="60" y="198" font-size="24" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
-<rect x="401" y="169" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
-<text x="413" y="196" font-size="20" fill="#58a6ff" font-weight="400">routing</text>
-<text x="60" y="245" font-size="24" fill="#e6edf3" font-weight="400">├─ procedure.md</text>
-<rect x="401" y="216" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
-<text x="413" y="243" font-size="20" fill="#58a6ff" font-weight="400">selected</text>
-<text x="60" y="292" font-size="24" fill="#e6edf3">├─ tips.md</text>
-<rect x="401" y="263" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="290" font-size="20" fill="#58a6ff">included</text>
-<text x="60" y="339" font-size="24" fill="#e6edf3">└─ rules/</text>
-<text x="60" y="386" font-size="24" fill="#e6edf3">   ├─ rules.md</text>
-<rect x="401" y="357" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="384" font-size="20" fill="#58a6ff">selected</text>
-<text x="60" y="433" font-size="24" fill="#e6edf3" font-weight="400">   ├─ agents.md</text>
-<rect x="401" y="404" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
-<text x="413" y="431" font-size="20" fill="#58a6ff" font-weight="400">included</text>
-<text x="60" y="480" font-size="24" fill="#e6edf3" font-weight="400">   ├─ codex.md</text>
-<rect x="401" y="451" width="116" height="38" rx="19" fill="#102333" stroke="#e3b341"/>
-<text x="413" y="478" font-size="20" fill="#e3b341" font-weight="400">deferred</text>
-<text x="60" y="527" font-size="24" fill="#e6edf3" font-weight="400">   └─ claude.md</text>
-<rect x="401" y="498" width="116" height="38" rx="19" fill="#102333" stroke="#e3b341"/>
-<text x="413" y="525" font-size="20" fill="#e3b341" font-weight="400">deferred</text>
+<text x="60" y="190" font-size="24" fill="#e6edf3">├─ SKILL.md</text>
+<rect x="401" y="163" width="116" height="34" rx="17" fill="#102333" stroke="#58a6ff"/><text x="413" y="188" font-size="20" fill="#58a6ff">routing</text>
+<text x="60" y="228" font-size="24" fill="#e6edf3">├─ procedure/</text>
+<text x="60" y="266" font-size="24" fill="#e6edf3">│  └─ procedure.md</text>
+<rect x="401" y="239" width="116" height="34" rx="17" fill="#102333" stroke="#58a6ff"/><text x="413" y="264" font-size="20" fill="#58a6ff">selected</text>
+<text x="60" y="304" font-size="24" fill="#e6edf3">├─ tips/</text>
+<text x="60" y="342" font-size="24" fill="#e6edf3">│  └─ tips.md</text>
+<rect x="401" y="315" width="116" height="34" rx="17" fill="#102333" stroke="#58a6ff"/><text x="413" y="340" font-size="20" fill="#58a6ff">included</text>
+<text x="60" y="380" font-size="24" fill="#e6edf3">└─ rules/</text>
+<text x="60" y="418" font-size="24" fill="#e6edf3">   ├─ rules.md</text>
+<rect x="401" y="391" width="116" height="34" rx="17" fill="#102333" stroke="#58a6ff"/><text x="413" y="416" font-size="20" fill="#58a6ff">selected</text>
+<text x="60" y="456" font-size="24" fill="#e6edf3">   ├─ agents.md</text>
+<rect x="401" y="429" width="116" height="34" rx="17" fill="#102333" stroke="#58a6ff"/><text x="413" y="454" font-size="20" fill="#58a6ff">included</text>
+<text x="60" y="494" font-size="24" fill="#e6edf3">   ├─ codex.md</text>
+<rect x="401" y="467" width="116" height="34" rx="17" fill="#102333" stroke="#e3b341"/><text x="413" y="492" font-size="20" fill="#e3b341">deferred</text>
+<text x="60" y="532" font-size="24" fill="#e6edf3">   └─ claude.md</text>
+<rect x="401" y="505" width="116" height="34" rx="17" fill="#102333" stroke="#e3b341"/><text x="413" y="530" font-size="20" fill="#e3b341">deferred</text>
 <text x="60" y="748" font-size="30" fill="#e6edf3" font-weight="500">Publish a page</text>
 <text x="60" y="810" font-size="23" fill="#e6edf3" font-weight="400">Compile these documents:</text>
 <text x="60" y="878" font-size="24" fill="#58a6ff" font-weight="400">Procedure</text>
@@ -62,12 +59,13 @@
 <text x="640" y="1323" font-size="23" fill="#e6edf3" font-weight="400">If you are Claude, compile</text>
 <text x="640" y="1361" font-size="24" fill="#e3b341" font-weight="400">¬ Claude</text>
 <path d="M640 1368 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="160" font-size="34" fill="#e6edf3" font-weight="500">procedure</text>
-<text x="1280" y="222" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
-<text x="1356" y="222" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
-<path d="M1356 229 h57.6" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="1280" y="284" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
-<text x="1280" y="336" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
+<text x="1280" y="145" font-size="34" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1280" y="197" font-size="27" fill="#e6edf3">Procedure</text>
+<text x="1280" y="250" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
+<text x="1356" y="250" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
+<path d="M1356 257 h57.6" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="1280" y="302" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
+<text x="1280" y="354" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
 <path d="M1280 380 H1734" stroke="#303b49" stroke-width="2"/>
 <text x="1280" y="442" font-size="34" fill="#e6edf3">Rules</text>
 <text x="1280" y="504" font-size="27" fill="#e6edf3">Agents</text>
@@ -84,8 +82,9 @@
 <text x="1280" y="1020" font-size="24" fill="#e6edf3">Follow</text>
 <text x="1384" y="1020" font-size="24" fill="#58a6ff">Agents</text><path d="M1384 1027 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
 <path d="M1280 1080 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="1142" font-size="34" fill="#e6edf3" font-weight="500">tips</text>
-<text x="1280" y="1212" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
+<text x="1280" y="1142" font-size="34" fill="#e6edf3" font-weight="500">Tips</text>
+<text x="1280" y="1198" font-size="27" fill="#e6edf3">Tips</text>
+<text x="1280" y="1258" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
 <path d="M219 875 H560 V260 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 253 L612 260 L600 267 Z" fill="#58a6ff"/>
 <path d="M156 949 H578 V568 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 561 L612 568 L600 575 Z" fill="#58a6ff"/>
 <path d="M784 211 H1090 Q1138 211 1138 265 V906 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 899 L1122 906 L1134 913 Z" fill="#58a6ff"/>
