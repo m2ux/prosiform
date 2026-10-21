@@ -13,6 +13,12 @@ later work declares is unfixturable, and the work it awaits is the reason;
 one no fixture declares at all fails the report. The installation claims no
 run observes are listed there too, each with the reason it is unreachable
 and what would make it observable, and the closing summary counts them.
+
+The codes a build reports for itself are the surface's other side, so each
+case supplies them directly and runs no build. A declared code the build
+reports is listed as reported; a declared code it reports nowhere and a
+reported code the contract declares nowhere each fail the report and are
+listed; and an exit status, which is no code, states nothing either way.
 """
 
 import json
@@ -21,6 +27,7 @@ from typing import Any
 
 import pytest
 from conformance import CLAIMS, clauses, render, report
+from manifests import catalogue, severities
 
 DESIGN = """# A design
 
@@ -53,6 +60,16 @@ Insert blank-line separation between maximal emitted regions.
 - **Fenced:** a bullet inside a fence is an example rather than a rule.
 ```
 """
+
+
+def declared_codes() -> tuple[str, ...]:
+    """Every code the contract declares, as a build reporting all of them lists."""
+    return tuple(
+        sorted(code for severity in severities() for code in catalogue(severity))
+    )
+
+
+REPORTED = declared_codes()
 
 
 def fixture(
@@ -152,7 +169,8 @@ def test_a_clause_is_a_heading_or_an_enumerated_rule_under_one() -> None:
 
 def test_a_clause_a_fixture_names_carries_that_fixture(corpus: Path) -> None:
     mapped = dict(
-        (clause.name, where) for clause, where in report(DESIGN, corpus).mapping
+        (clause.name, where)
+        for clause, where in report(DESIGN, corpus, REPORTED).mapping
     )
     entry = "family/an-entry-line-naming-one-entry"
     assert mapped["Entry line — Link text"] == (entry,)
@@ -163,13 +181,14 @@ def test_a_clause_the_case_follows_carries_the_fixture_naming_it(
     corpus: Path,
 ) -> None:
     mapped = dict(
-        (clause.name, where) for clause, where in report(DESIGN, corpus).mapping
+        (clause.name, where)
+        for clause, where in report(DESIGN, corpus, REPORTED).mapping
     )
     assert mapped["Block boundaries"] == ("family/an-entry-line-naming-one-entry",)
 
 
 def test_a_clause_no_fixture_names_is_uncovered(corpus: Path) -> None:
-    uncovered = [clause.name for clause in report(DESIGN, corpus).uncovered]
+    uncovered = [clause.name for clause in report(DESIGN, corpus, REPORTED).uncovered]
     assert "Resource limits — --max-links" in uncovered
     assert "Entry line — Order" in uncovered
     assert "Entry line — Link text" not in uncovered
@@ -178,7 +197,7 @@ def test_a_clause_no_fixture_names_is_uncovered(corpus: Path) -> None:
 def test_a_declaration_naming_no_clause_fails_the_report(tmp_path: Path) -> None:
     directory = tmp_path / "fixtures"
     fixture(directory, "a-fixture-naming-nothing", ["Entry line — Invented"])
-    found = report(DESIGN, directory)
+    found = report(DESIGN, directory, REPORTED)
     assert found.unnamed == (
         ("Entry line — Invented", ("family/a-fixture-naming-nothing",)),
     )
@@ -186,7 +205,7 @@ def test_a_declaration_naming_no_clause_fails_the_report(tmp_path: Path) -> None
 
 
 def test_a_name_a_fixture_reaches_carries_that_fixture(corpus: Path) -> None:
-    surface = {entry.name: entry for entry in report(DESIGN, corpus).surface}
+    surface = {entry.name: entry for entry in report(DESIGN, corpus, REPORTED).surface}
     assert surface["E_RESOURCE_LIMIT"].reached == ("family/a-limit-crossed",)
     assert surface["1"].reached == ("family/a-limit-crossed",)
 
@@ -194,7 +213,7 @@ def test_a_name_a_fixture_reaches_carries_that_fixture(corpus: Path) -> None:
 def test_a_name_only_an_awaiting_fixture_declares_is_unfixturable(
     corpus: Path,
 ) -> None:
-    surface = {entry.name: entry for entry in report(DESIGN, corpus).surface}
+    surface = {entry.name: entry for entry in report(DESIGN, corpus, REPORTED).surface}
     assert surface["E_SOURCE_CHANGED"].unfixturable
     assert surface["E_SOURCE_CHANGED"].awaited == {
         "I00:E11:W24": ("family/a-source-changing-under-the-run",)
@@ -203,20 +222,20 @@ def test_a_name_only_an_awaiting_fixture_declares_is_unfixturable(
 
 
 def test_a_name_no_fixture_declares_fails_the_report(corpus: Path) -> None:
-    found = report(DESIGN, corpus)
+    found = report(DESIGN, corpus, REPORTED)
     undeclared = [entry.name for entry in found.surface if entry.undeclared]
     assert "E_RAW_HTML" in undeclared
     assert any("E_RAW_HTML" in failure for failure in found.failures)
 
 
 def test_an_installation_claim_is_listed_with_its_reason(corpus: Path) -> None:
-    printed = render(report(DESIGN, corpus)).splitlines()
+    printed = render(report(DESIGN, corpus, REPORTED)).splitlines()
     claim = CLAIMS[0]
     assert f"installation claim {claim.name}: unfixturable, {claim.reason}" in printed
 
 
 def test_an_installation_claim_states_what_would_observe_it(corpus: Path) -> None:
-    printed = render(report(DESIGN, corpus)).splitlines()
+    printed = render(report(DESIGN, corpus, REPORTED)).splitlines()
     for claim in CLAIMS:
         listed = printed.index(
             f"installation claim {claim.name}: unfixturable, {claim.reason}"
@@ -225,11 +244,77 @@ def test_an_installation_claim_states_what_would_observe_it(corpus: Path) -> Non
 
 
 def test_the_summary_counts_the_installation_claims(corpus: Path) -> None:
-    printed = render(report(DESIGN, corpus)).splitlines()
+    printed = render(report(DESIGN, corpus, REPORTED)).splitlines()
     assert printed[-1].endswith(
         f", {len(CLAIMS)} installation claim(s) no run observes"
     )
 
 
+def test_a_declared_code_the_build_reports_is_listed_as_reported(
+    corpus: Path,
+) -> None:
+    found = report(DESIGN, corpus, REPORTED)
+    entry = {entry.name: entry for entry in found.surface}["E_RESOURCE_LIMIT"]
+    assert entry.reported is True
+    assert (
+        "error E_RESOURCE_LIMIT: 1 fixture(s), the build reports it"
+        in render(found).splitlines()
+    )
+    assert not any("E_RESOURCE_LIMIT" in failure for failure in found.failures)
+
+
+def test_a_declared_code_the_build_reports_nowhere_fails_the_report(
+    corpus: Path,
+) -> None:
+    reported = tuple(code for code in REPORTED if code != "E_RESOURCE_LIMIT")
+    found = report(DESIGN, corpus, reported)
+    assert [entry.name for entry in found.unreported] == ["E_RESOURCE_LIMIT"]
+    assert (
+        "error E_RESOURCE_LIMIT is declared by the contract and the build "
+        "reports it nowhere" in found.failures
+    )
+    assert (
+        "error E_RESOURCE_LIMIT: 1 fixture(s), the build reports it nowhere"
+        in render(found).splitlines()
+    )
+
+
+def test_a_reported_code_the_contract_declares_nowhere_fails_the_report(
+    corpus: Path,
+) -> None:
+    found = report(DESIGN, corpus, REPORTED + ("E_INVENTED",))
+    assert found.surplus == ("E_INVENTED",)
+    assert (
+        "E_INVENTED is reported by the build and the contract declares it nowhere"
+        in found.failures
+    )
+    assert (
+        "reported code E_INVENTED: the contract declares it nowhere"
+        in render(found).splitlines()
+    )
+
+
+def test_an_exit_status_states_nothing_about_what_the_build_reports(
+    corpus: Path,
+) -> None:
+    found = report(DESIGN, corpus, ())
+    statuses = [entry for entry in found.surface if entry.kind == "exit status"]
+    assert statuses
+    assert all(entry.reported is None for entry in statuses)
+    assert "exit status 1: 1 fixture(s)" in render(found).splitlines()
+    assert not any(failure.startswith("exit status 1") for failure in found.failures)
+
+
+def test_the_summary_counts_both_directions_of_the_comparison(corpus: Path) -> None:
+    found = report(DESIGN, corpus, ("E_RESOURCE_LIMIT", "E_INVENTED"))
+    assert (
+        f", {len(found.unreported)} declared code(s) the build reports nowhere, "
+        f"1 reported code(s) the contract declares nowhere, "
+        in render(found).splitlines()[-1]
+    )
+
+
 def test_the_report_is_reproduced_on_a_second_run(corpus: Path) -> None:
-    assert render(report(DESIGN, corpus)) == render(report(DESIGN, corpus))
+    assert render(report(DESIGN, corpus, REPORTED)) == render(
+        report(DESIGN, corpus, REPORTED)
+    )

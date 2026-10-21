@@ -4,7 +4,9 @@ The check's input is a corpus of fixtures, a design and the documented
 invocation, so each case here supplies its own rather than the
 repository's: a manifest carrying an implementation module name, a design
 whose clause names one, and the interface terms the contract declares,
-which must pass.
+which must pass. The codes a build reports are supplied directly, so no
+case runs a build, and a code the build reports that the contract declares
+nowhere is scanned like every other entry of the report.
 
 The contract's declared names are held apart from the inventory rather
 than subtracted from the scan, so the last cases read that inventory
@@ -138,7 +140,7 @@ def test_a_fixture_identity_naming_an_implementation_fails(tmp_path: Path) -> No
 
 def test_a_report_entry_naming_an_implementation_fails(clean: Path) -> None:
     design = DESIGN.replace("Block boundaries", "Block boundaries in the Rust build")
-    found = report_references(design, clean)
+    found = report_references(design, clean, ())
     assert {reference.found for reference in found} == {"Rust"}
     assert all(
         reference.where.startswith("the conformance report, line ")
@@ -147,7 +149,15 @@ def test_a_report_entry_naming_an_implementation_fails(clean: Path) -> None:
 
 
 def test_a_report_of_a_corpus_stating_behaviour_alone_passes(clean: Path) -> None:
-    assert report_references(DESIGN, clean) == []
+    assert report_references(DESIGN, clean, ()) == []
+
+
+def test_a_reported_code_the_contract_declares_nowhere_is_scanned(
+    clean: Path,
+) -> None:
+    found = report_references(DESIGN, clean, ("RUST",))
+    assert [reference.found for reference in found] == ["RUST"]
+    assert found[0].where.startswith("the conformance report, line ")
 
 
 def test_the_contract_declares_its_interface_terms() -> None:
