@@ -109,12 +109,9 @@ from prosiform.provenance import (
     Record,
     Target,
 )
-from prosiform.rewrite import Definition, destinations, rewritten, unmarked
+from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
-    HREF,
     LINE_FEED,
-    LINK_OPEN,
-    TEXT,
     Selection,
     bare,
     headings,
@@ -123,7 +120,6 @@ from prosiform.source import (
     lines,
     opening_markers,
     regions,
-    shown,
     slug,
     visible,
 )
@@ -258,46 +254,23 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
-def compiled(path: str, children: Sequence[Token], at: int) -> bool:
-    """Whether the token before one position opens a link the bundle compiles."""
-    if at == 0 or children[at - 1].type != LINK_OPEN:
-        return False
-    return bundled(path, str(children[at - 1].attrGet(HREF) or "")) is not None
+def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
+    """The visible text of each heading token, keyed by the token's identity.
 
-
-def emitted_visible(path: str, inline: Token) -> str:
-    """The text one inline token shows once the bundle has rewritten its links.
-
-    A heading can carry a link, and the rewrite drops the mark from the
-    text a compiled link shows. The heading the bundle emits is
-    therefore the heading the renderer slugs, so the destination it
-    takes names the heading a reader finds. A link the bundle does not
-    compile shows the text its author wrote, the mark included.
+    A rewrite edits the destination a link opens and nothing a heading
+    shows, so the text the bundle emits for a heading is the text its
+    author wrote.
     """
-    children = inline.children or []
-    return "".join(
-        unmarked(child.content)
-        if child.type == TEXT and compiled(path, children, at)
-        else shown(child)
-        for at, child in enumerate(children)
-    )
-
-
-def shown_text(path: str, tokens: Sequence[Token]) -> dict[int, str]:
-    """The visible text of each heading token, keyed by the token's identity."""
-    return {
-        id(opening): emitted_visible(path, inline)
-        for opening, inline in headings(tokens)
-    }
+    return {id(opening): visible(inline) for opening, inline in headings(tokens)}
 
 
 def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
     """The source fragment each heading token answers to, keyed by its identity.
 
     A source fragment is the slug of the text the author wrote, which
-    is what a reference into that document resolved against, and the
-    text the bundle emits for the same heading can differ from it where
-    the heading carries a mark the rewrite drops.
+    is what a reference into that document resolved against and what a
+    reader of the bundle finds, because the heading reaches the bundle
+    as it was written.
     """
     return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
 
@@ -333,23 +306,27 @@ def rewrite(
         if inline.map is None or (not found and not defined):
             continue
         start, end = inline.map
-        targets = [target(path, one, assigned) for one in found]
+        targets = [target(path, one, opening, assigned) for one, opening in found]
         written[start:end] = rewritten(written[start:end], inline, targets, defined)
     return written
 
 
 def target(
-    path: str, destination: str, assigned: Mapping[tuple[str, str | None], str]
+    path: str,
+    destination: str,
+    opening: str,
+    assigned: Mapping[tuple[str, str | None], str],
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it compiled none.
 
     A link the bundle compiled resolves to an identity the map holds,
     because the closure selected what the link named and the group
     emitting it recorded the target it answers to. A link resolving
-    outside the allowed source root, or naming no Markdown document, is
-    text the bundle carries and takes no destination.
+    outside the allowed source root, naming no Markdown document, or
+    deferred by its author, is text the bundle carries and takes no
+    destination.
     """
-    found = bundled(path, destination)
+    found = bundled(path, destination, opening)
     if found is None:
         return None
     return assigned[(found.path, found.fragment)]
@@ -618,7 +595,7 @@ def group(
     absorbing = titled if titled is not None and id(titled) in emitting else None
     by = 0 if absorbing is not None else SHIFT
     emitted = [f"{ATX} {escaped(title)}"]
-    text = shown_text(path, tokens)
+    text = shown_text(tokens)
     named = source_fragments(tokens)
     resolving: list[Target] = [(path, None)]
     if absorbing is not None:

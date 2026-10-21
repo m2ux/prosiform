@@ -187,6 +187,7 @@ from prosiform.closure import (
     external,
     identity,
     inside,
+    marked,
     resolve,
 )
 from prosiform.diagnostics import (
@@ -1035,6 +1036,11 @@ def required(
     the question, so an author states what the bundle must carry by
     where the target sits.
 
+    A marked reference is deferred: the run yields no dependency for
+    it, so the document it names is not read, not parsed and not
+    bundled through that reference, and the link reaches the bundle
+    with its mark for an agent to compile in a run of its own.
+
     A resource is no local Markdown document and an image is a
     resource whatever it points at, so neither is a dependency and both
     reach the bundle as their author wrote them, wherever they resolve.
@@ -1080,6 +1086,8 @@ def required(
                 chain=route,
             ) from malformed
         if found.external or not is_markdown(found.path):
+            continue
+        if marked(use.opening):
             continue
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 

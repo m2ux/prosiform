@@ -41,13 +41,10 @@ carries are counted against the uses the parser read from the same
 token, and a count that disagrees is content the run resolved and
 cannot edit, which is an internal fault rather than a bundle.
 
-A mark goes with the rewrite. A rewritten link carries the text that
-followed the mark, and the space an author separated the two by goes
-with it, so `[¬ the rules]` and `[¬the rules]` both carry `the rules`.
-A line break is not that separator: it is content the author wrote, and
-dropping it would join two lines the source kept apart. A link the
-bundle does not compile is published with every byte its author wrote,
-the mark included, because nothing rewrote the destination it opens.
+A mark survives the rewrite. The mark defers a compilation, so a link
+carrying one is a link the bundle compiles none of, and its label is the
+author's text like any other label: every byte of it reaches the bundle,
+because an agent reading the bundle is what reads the mark next.
 """
 
 from collections.abc import Mapping, Sequence
@@ -58,12 +55,12 @@ from typing import Any
 from markdown_it.common.utils import normalizeReference
 from markdown_it.token import Token
 
-from prosiform.closure import MARK
 from prosiform.profile import MARKER, MARKER_LABELS
 from prosiform.source import (
     HREF,
     LINK_OPEN,
     opening_markers,
+    opening_text,
 )
 from prosiform.source import (
     IMAGE as IMAGE_TOKEN,
@@ -81,7 +78,6 @@ ANGLE_OPEN = "<"
 ANGLE_CLOSE = ">"
 COLON = ":"
 
-SEPARATOR = " \t"
 SPACE = " "
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
@@ -353,18 +349,18 @@ def uses(
     return found
 
 
-def unmarked(label: str) -> str:
-    """One marked link's text, the mark and the space separating it gone."""
-    if not label.startswith(MARK):
-        return label
-    return label[len(MARK) :].lstrip(SEPARATOR)
+def destinations(inline: Token) -> list[tuple[str, str]]:
+    """Each link one inline token carries, as its destination and its opening.
 
-
-def destinations(inline: Token) -> list[str]:
-    """The destination of each link one inline token carries, in order."""
+    The opening is the literal text the link's content begins with,
+    which is what a deferral is written in, so a caller classifying the
+    link reads both halves of the question from one pass over the
+    token.
+    """
+    children = inline.children or []
     return [
-        str(child.attrGet(HREF) or "")
-        for child in inline.children or []
+        (str(child.attrGet(HREF) or ""), opening_text(children, at))
+        for at, child in enumerate(children)
         if child.type == LINK_OPEN
     ]
 
@@ -440,32 +436,13 @@ def published(held: Definition, destination: str | None) -> str:
     return f"{TARGET_OPEN}{target}{title}{TARGET_CLOSE}"
 
 
-def mark_span(text: str, label: tuple[int, int]) -> tuple[int, int] | None:
-    """The extent of the mark one label opens with, where it opens with one.
-
-    The mark takes the spaces and tabs separating it from the text with
-    it, and only those: a line break following the mark is content the
-    author wrote.
-    """
-    start, end = label
-    if not text[start:end].startswith(MARK):
-        return None
-    at = start + len(MARK)
-    while at < end and text[at] in SEPARATOR:
-        at += 1
-    return start, at
-
-
-def edits(text: str, one: Use, destination: str | None) -> list[tuple[int, int, str]]:
+def edits(one: Use, destination: str | None) -> list[tuple[int, int, str]]:
     """The spans one use's emission replaces, and what it writes at each.
 
-    A nested use sits inside the label of the use holding it, so the
-    label's own edit is the mark alone rather than the label, and no
-    two spans one text produces overlap.
-
-    The mark goes with the destination it was written beside, so a use
-    the bundle assigned no destination is published with the bytes its
-    author wrote.
+    A use's label is the author's and stays as written, so the span a
+    use edits is its destination alone and no two spans one text
+    produces overlap. A use the bundle assigned no destination is
+    published with the bytes its author wrote.
     """
     found: list[tuple[int, int, str]] = []
     target = None if destination is None else f"{ANCHOR}{destination}"
@@ -473,9 +450,6 @@ def edits(text: str, one: Use, destination: str | None) -> list[tuple[int, int, 
         found.append((*one.target, published(one.definition, target)))
     elif target is not None:
         found.append((*one.target, target))
-    span = mark_span(text, one.label)
-    if span is not None and target is not None:
-        found.append((*span, ""))
     return found
 
 
@@ -532,7 +506,7 @@ def rewritten(
     targets = dict(zip((id(one) for one in links), assigned, strict=True))
     written = text
     bounds = list(accumulate(len(line) for line in physical))
-    applied = [edit for one in found for edit in edits(text, one, targets.get(id(one)))]
+    applied = [edit for one in found for edit in edits(one, targets.get(id(one)))]
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
         bounds = [moved(at, start, end, len(replacement)) for at in bounds]

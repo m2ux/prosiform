@@ -40,9 +40,12 @@ A reference is a dependency when it resolves to a Markdown file under
 the allowed source root, and text the bundle carries unchanged when it
 resolves outside it. Where the target sits is what decides, and the root
 is the lever the author holds: material a document must carry sits under
-it, material it only names sits outside. The module says what a
-reference names and whether the bundle compiles what it names; it is the
-command that opens a dependency and leaves a mention alone.
+it, material it only names sits outside. One mark overrides that in a
+single direction: a link whose text opens with it is deferred, so this
+run does not compile what position would have carried, and the bundle
+holds the link for a run that will. The module says what a reference
+names and whether the bundle compiles what it names; it is the command
+that opens a dependency and leaves a mention alone.
 
 A link inside a source is written relative to the document carrying
 it, and a fragment alone names a section of that same document. Both
@@ -265,13 +268,15 @@ def normalized(base: str, segments: Sequence[str]) -> str:
 
 
 def marked(opening: str) -> bool:
-    """Whether a link's author opened its text with the mark.
+    """Whether a link's author deferred it, by opening its text with the mark.
 
     The mark opens the link text, so text the mark sits inside names a
     document the way any prose does. It is ordinary text to the
     profile, which is why it adds no construct the grammar has to
     recognize and a renderer knowing nothing of this tool shows the
-    link.
+    link. It is content as well as instruction: the bundle publishes it
+    where the author wrote it, because an agent reading the bundle is
+    what reads it next.
     """
     return opening.startswith(MARK)
 
@@ -333,15 +338,22 @@ def inside(document: str, text: str) -> Reference:
     return replace(found, path=document)
 
 
-def bundled(document: str, text: str) -> Reference | None:
+def bundled(document: str, text: str, opening: str) -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
     A dependency carries no scheme and no authority, normalizes under
-    the allowed source root, and names a file the profile reads as
-    Markdown. Everything else is text the bundle carries as its author
-    wrote it: a reference leaving the root cites material rather than
-    requiring it, and a reference naming no Markdown document names
-    nothing the bundle can carry.
+    the allowed source root, names a file the profile reads as Markdown,
+    and is not deferred. Everything else is text the bundle carries as
+    its author wrote it: a reference leaving the root cites material
+    rather than requiring it, and a reference naming no Markdown
+    document names nothing the bundle can carry.
+
+    The opening is the literal text the link's content begins with,
+    which is where a deferral is written. A marked link is no
+    dependency: this run does not compile it, and the bundle carries it
+    for a run that will. Deferral is read from the link rather than
+    from its target, so a document another source carried into the
+    bundle leaves a link deferring it alone.
 
     Discovery, emission and candidate validation each ask this
     question, and each asks it of the document the link was written in,
@@ -351,6 +363,8 @@ def bundled(document: str, text: str) -> Reference | None:
     a reference again where it names a Markdown document, and reports
     the refusal it is.
     """
+    if marked(opening):
+        return None
     try:
         found = inside(document, text)
     except Unresolvable:

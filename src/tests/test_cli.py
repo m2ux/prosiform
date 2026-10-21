@@ -289,9 +289,7 @@ def test_an_output_path_naming_the_referring_document_is_invalid_usage(
 def test_an_output_path_naming_a_dependency_source_is_invalid_usage(
     root: Path,
 ) -> None:
-    (root / "guide.md").write_text(
-        "# Guide\n\nIt needs [\u00acthe note](docs/note.md).\n"
-    )
+    (root / "guide.md").write_text("# Guide\n\nIt needs [the note](docs/note.md).\n")
     note = root / "docs" / "note.md"
     run = invoke("--root", str(root), "--output", str(note), "guide.md")
     assert run.status == USAGE_FAILURE
@@ -392,11 +390,11 @@ def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> N
 
 
 def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
-    written(root, "entry.md", "# Entry\n\nSee [\u00ac notes](docs/notes.md#detail).\n")
+    written(root, "entry.md", "# Entry\n\nSee [notes](docs/notes.md#detail).\n")
     written(
         root,
         "docs/notes.md",
-        "# Notes\n\n## Detail\n\nSee [\u00ac other](other.md#nowhere).\n",
+        "# Notes\n\n## Detail\n\nSee [other](other.md#nowhere).\n",
     )
     written(root, "docs/other.md", "# Other\n\n## Here\n\nContent.\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "entry.md")
@@ -414,7 +412,7 @@ def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
 
 
 def test_a_document_a_dependency_reached_reports_the_route_to_it(root: Path) -> None:
-    written(root, "entry.md", "# Entry\n\nSee [\u00ac notes](docs/notes.md).\n")
+    written(root, "entry.md", "# Entry\n\nSee [notes](docs/notes.md).\n")
     written(root, "docs/notes.md", "# Notes\n\n<div>raw</div>\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "entry.md")
     assert run.status == INPUT_FAILURE
@@ -1081,6 +1079,66 @@ def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
     assert run.stdout == ""
 
 
+def test_a_marked_reference_under_the_root_is_not_compiled(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule the procedure requires.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "# rules" not in run.stdout
+    assert "Every rule the procedure requires." not in run.stdout
+
+
+def test_a_deferred_link_carries_the_mark_its_author_wrote(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "See [\u00ac the rules](rules.md)." in run.stdout
+
+
+@pytest.mark.parametrize(
+    "written_as",
+    ["[\u00acthe rules](rules.md)", "[\u00ac\tthe rules](rules.md)"],
+)
+def test_the_bytes_between_the_mark_and_the_text_are_carried(
+    root: Path, written_as: str
+) -> None:
+    written(root, "guide.md", f"# Guide\n\nSee {written_as}.\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert written_as in run.stdout
+
+
+def test_a_deferral_stands_where_another_reference_carried_its_target(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\nSee [\u00ac the rules](rules.md) and [the house](house.md).\n",
+    )
+    written(root, "house.md", "# House\n\nIt requires [the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "# rules" in run.stdout
+    assert "See [\u00ac the rules](rules.md)" in run.stdout
+    assert "It requires [the rules](#rules)" in run.stdout
+
+
+def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n## Alpha\n\nSee [\u00ac B](#beta).\n\n## Beta\n\nBody.\n",
+    )
+    run = invoke("--root", str(root), "guide.md#alpha")
+    assert run.status == SUCCESS
+    assert "See [\u00ac B](#beta)." in run.stdout
+    assert "Beta" not in run.stdout
+
+
 def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
     root: Path,
 ) -> None:
@@ -1112,7 +1170,7 @@ def test_a_preamble_link_to_its_own_document_resolves_to_that_document(
 def test_a_section_link_to_its_whole_document_is_an_ancestor_inclusion(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [¬ it](guide.md).\n")
+    written(root, "guide.md", "# Guide\n\n## Alpha\n\nSee [it](guide.md).\n")
     assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
 
 
@@ -1122,7 +1180,7 @@ def test_a_link_to_another_section_of_one_file_is_no_self_reference(
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Alpha\n\nSee [¬ B](guide.md#beta).\n\n## Beta\n\nBody.\n",
+        "# Guide\n\n## Alpha\n\nSee [B](guide.md#beta).\n\n## Beta\n\nBody.\n",
     )
     assert invoke("--root", str(root), "guide.md#alpha").status == SUCCESS
 
@@ -1133,7 +1191,7 @@ def test_classification_is_the_same_before_and_after_consolidation(
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Alpha\n\nBody.\n\n### Detail\n\nSee [¬ A](guide.md#alpha).\n",
+        "# Guide\n\n## Alpha\n\nBody.\n\n### Detail\n\nSee [A](guide.md#alpha).\n",
     )
     child = invoke("--root", str(root), "guide.md#detail")
     consolidated = invoke("--root", str(root), "guide.md#alpha")
@@ -1157,8 +1215,8 @@ def test_a_self_reference_resolves_the_same_after_consolidation(
 
 def chained(root: Path) -> None:
     """A root holding a three-document chain of marked dependencies."""
-    written(root, "alpha.md", "# Alpha\n\nSee [¬ b](beta.md).\n")
-    written(root, "beta.md", "# Beta\n\nSee [¬ g](gamma.md).\n")
+    written(root, "alpha.md", "# Alpha\n\nSee [b](beta.md).\n")
+    written(root, "beta.md", "# Beta\n\nSee [g](gamma.md).\n")
     written(root, "gamma.md", "# Gamma\n\nThe end.\n")
 
 
@@ -1260,7 +1318,7 @@ def scoped(root: Path) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Alpha\n\nSee [¬ gamma](other.md#gamma).\n\n"
+        "# Guide\n\n## Alpha\n\nSee [gamma](other.md#gamma).\n\n"
         "## Beta\n\nSee [¬ gone](missing.md) and [¬ here](guide.md#beta).\n\n"
         "<div>raw</div>\n",
     )
@@ -1291,8 +1349,8 @@ def test_the_same_sibling_fails_once_the_closure_includes_it(root: Path) -> None
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Alpha\n\nSee [¬ beta](guide.md#beta).\n\n"
-        "## Beta\n\nSee [¬ gone](missing.md).\n",
+        "# Guide\n\n## Alpha\n\nSee [beta](guide.md#beta).\n\n"
+        "## Beta\n\nSee [gone](missing.md).\n",
     )
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md#alpha")
     assert run.status == INPUT_FAILURE
@@ -1330,7 +1388,7 @@ def test_a_profile_refusal_the_run_selected_still_fails(root: Path) -> None:
 def test_a_refusal_in_a_reached_document_the_closure_selected_fails(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [¬ other](other.md).\n")
+    written(root, "guide.md", "# Guide\n\nSee [other](other.md).\n")
     written(root, "other.md", "# Other\n\n<div>raw</div>\n")
     run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
     assert run.status == INPUT_FAILURE
