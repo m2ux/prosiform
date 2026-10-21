@@ -52,8 +52,6 @@ Every term the contract uses is defined once, in the [glossary](docs/glossary.md
 
 ## 🗂️ Repository Layout
 
-Each tree holds one kind of thing.
-
 | Tree | Holds |
 | --- | --- |
 | [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. The build runs it. |
