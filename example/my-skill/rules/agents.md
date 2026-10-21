@@ -1,5 +1,3 @@
-# Agents
-
 Select rules for your harness:
 
 - If you are Codex, compile [¬ Codex](codex.md).

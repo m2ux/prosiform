@@ -1,5 +1,3 @@
-# Rules
-
 - Check every link.
 - Use clear headings.
 

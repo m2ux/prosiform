@@ -35,28 +35,24 @@
 <path d="M60 885 h129.6" stroke="#58a6ff" stroke-width="1.5"/>
 <text x="60" y="952" font-size="24" fill="#58a6ff" font-weight="400">Rules</text>
 <path d="M60 959 h72.0" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="640" y="151" font-size="32" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="640" y="214" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
-<text x="716" y="214" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
-<path d="M716 221 h57.6" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="640" y="278" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
-<text x="640" y="330" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
-<g transform="translate(0,272)"><text x="640" y="521" font-size="32" fill="#e6edf3" font-weight="500">Rules</text></g>
-<g transform="translate(0,272)"><text x="640" y="572" font-size="25" fill="#e6edf3" font-weight="400">• Check every link.</text></g>
-<g transform="translate(0,272)"><text x="640" y="618" font-size="25" fill="#e6edf3" font-weight="400">• Use clear headings.</text></g>
-<g transform="translate(0,272)"><text x="640" y="668" font-size="24" fill="#e6edf3" font-weight="400">Follow</text></g>
-<g transform="translate(0,272)"><text x="744" y="668" font-size="24" fill="#58a6ff" font-weight="400">Agents</text></g>
-<g transform="translate(0,272)"><path d="M744 675 h86.4" stroke="#58a6ff" stroke-width="1.5"/></g>
-<g transform="translate(0,-322)"><text x="640" y="843" font-size="32" fill="#e6edf3" font-weight="500">Tips</text></g>
-<g transform="translate(0,-322)"><text x="640" y="913" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text></g>
-<text x="640" y="1115" font-size="32" fill="#e6edf3" font-weight="500">Agents</text>
-<text x="640" y="1169" font-size="23" fill="#e6edf3" font-weight="400">Select rules for your harness:</text>
-<text x="640" y="1227" font-size="23" fill="#e6edf3" font-weight="400">If you are Codex, compile</text>
-<text x="640" y="1265" font-size="24" fill="#e3b341" font-weight="400">¬ Codex</text>
-<path d="M640 1272 h100.8" stroke="#e3b341" stroke-width="1.5"/>
-<text x="640" y="1323" font-size="23" fill="#e6edf3" font-weight="400">If you are Claude, compile</text>
-<text x="640" y="1361" font-size="24" fill="#e3b341" font-weight="400">¬ Claude</text>
-<path d="M640 1368 h115.2" stroke="#e3b341" stroke-width="1.5"/>
+<text x="640" y="154" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
+<text x="716" y="154" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
+<path d="M716 161 h57.6" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="640" y="218" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
+<text x="640" y="270" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
+<g transform="translate(0,272)"><text x="640" y="512" font-size="25" fill="#e6edf3" font-weight="400">• Check every link.</text></g>
+<g transform="translate(0,272)"><text x="640" y="558" font-size="25" fill="#e6edf3" font-weight="400">• Use clear headings.</text></g>
+<g transform="translate(0,272)"><text x="640" y="608" font-size="24" fill="#e6edf3" font-weight="400">Follow</text></g>
+<g transform="translate(0,272)"><text x="744" y="608" font-size="24" fill="#58a6ff" font-weight="400">Agents</text></g>
+<g transform="translate(0,272)"><path d="M744 615 h86.4" stroke="#58a6ff" stroke-width="1.5"/></g>
+<g transform="translate(0,-322)"><text x="640" y="853" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text></g>
+<text x="640" y="1109" font-size="23" fill="#e6edf3" font-weight="400">Select rules for your harness:</text>
+<text x="640" y="1167" font-size="23" fill="#e6edf3" font-weight="400">If you are Codex, compile</text>
+<text x="640" y="1205" font-size="24" fill="#e3b341" font-weight="400">¬ Codex</text>
+<path d="M640 1212 h100.8" stroke="#e3b341" stroke-width="1.5"/>
+<text x="640" y="1263" font-size="23" fill="#e6edf3" font-weight="400">If you are Claude, compile</text>
+<text x="640" y="1301" font-size="24" fill="#e3b341" font-weight="400">¬ Claude</text>
+<path d="M640 1308 h115.2" stroke="#e3b341" stroke-width="1.5"/>
 <text x="1280" y="160" font-size="34" fill="#e6edf3" font-weight="500">procedure</text>
 <text x="1280" y="222" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
 <text x="1356" y="222" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
@@ -65,17 +61,18 @@
 <text x="1280" y="336" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
 <path d="M1280 380 H1734" stroke="#303b49" stroke-width="2"/>
 <text x="1280" y="442" font-size="34" fill="#e6edf3">Rules</text>
-<text x="1280" y="504" font-size="27" fill="#e6edf3">Agents</text>
-<text x="1280" y="558" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
-<text x="1280" y="616" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
-<text x="1280" y="654" font-size="24" fill="#e3b341">¬ Codex</text>
-<path d="M1280 661 h100.8" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="712" font-size="23" fill="#e6edf3">If you are Claude, compile</text>
-<text x="1280" y="750" font-size="24" fill="#e3b341">¬ Claude</text>
-<path d="M1280 757 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="850" font-size="27" fill="#e6edf3">Rules</text>
-<text x="1280" y="910" font-size="25" fill="#e6edf3">• Check every link.</text>
-<text x="1280" y="962" font-size="25" fill="#e6edf3">• Use clear headings.</text>
+<text x="1280" y="494" font-size="28" fill="#e6edf3">Overview</text>
+<text x="1280" y="546" font-size="25" fill="#e6edf3">Agents</text>
+<text x="1280" y="600" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
+<text x="1280" y="658" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
+<text x="1280" y="696" font-size="24" fill="#e3b341">¬ Codex</text>
+<path d="M1280 703 h100.8" stroke="#e3b341" stroke-width="1.5"/>
+<text x="1280" y="754" font-size="23" fill="#e6edf3">If you are Claude, compile</text>
+<text x="1280" y="792" font-size="24" fill="#e3b341">¬ Claude</text>
+<path d="M1280 799 h115.2" stroke="#e3b341" stroke-width="1.5"/>
+<text x="1280" y="870" font-size="25" fill="#e6edf3">Common</text>
+<text x="1280" y="922" font-size="25" fill="#e6edf3">• Check every link.</text>
+<text x="1280" y="970" font-size="25" fill="#e6edf3">• Use clear headings.</text>
 <text x="1280" y="1020" font-size="24" fill="#e6edf3">Follow</text>
 <text x="1384" y="1020" font-size="24" fill="#58a6ff">Agents</text><path d="M1384 1027 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
 <path d="M1280 1080 H1734" stroke="#303b49" stroke-width="2"/>
@@ -83,8 +80,8 @@
 <text x="1280" y="1212" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
 <path d="M219 875 H560 V260 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 253 L612 260 L600 267 Z" fill="#58a6ff"/>
 <path d="M156 949 H578 V840 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 833 L612 840 L600 847 Z" fill="#58a6ff"/>
-<path d="M784 211 H1090 Q1138 211 1138 265 V584 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 577 L1122 584 L1134 591 Z" fill="#58a6ff"/>
-<path d="M836 937 H1070 Q1128 937 1128 987 V1084 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 1077 L1122 1084 L1134 1091 Z" fill="#58a6ff"/>
+<path d="M784 151 H1090 Q1138 151 1138 205 V524 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 517 L1122 524 L1134 531 Z" fill="#58a6ff"/>
+<path d="M836 877 H1070 Q1128 877 1128 927 V1084 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 1077 L1122 1084 L1134 1091 Z" fill="#58a6ff"/>
 <path d="M1160 709 H1201 V693 L1239 731 L1201 769 V753 H1160Z" fill="#329def"/>
 <text x="1158" y="805" font-size="20" fill="#e6edf3" font-weight="400">compile</text>
 </g></svg>
