@@ -38,7 +38,7 @@ Validation follows the selection rather than the file. A whole document is
 parsed to index it, because heading enumeration, the definitions selected
 uses resolve against, the ambiguity of a requested fragment and what a
 document opens on are facts about the file; but link resolution,
-self-reference, the profile's refusals and the authored-occurrence budget
+the profile's refusals and the authored-occurrence budget
 are held over the regions the run selected, so a defect in a section
 nobody asked for decides no outcome. A section closure later reaches is
 selected content like any other, and its defects are then its run's.
@@ -64,22 +64,20 @@ no round adds anything, so a reference graph with a cycle reaches a
 fixed point carrying each reachable region once.
 
 The only thing the run bundles is a local Markdown document, so a
-resource is carried as the author wrote it wherever it resolves. An
-image names a resource whatever file it points at. A mark on a resource
-is refused, which the row that emits a resource wherever it resolves
-retires.
+resource is carried as the author wrote it wherever it resolves, the
+allowed source root included. An image names a resource whatever file
+it points at.
 
 A reference is classified by the identity it resolves to rather than by
 the text it was written as. Each link belongs to the innermost eligible
 section containing it, and to the document itself where no section
-does. A marked link whose target is the very node that owns it is a
-direct self-reference and fails, which the row that rewrites a self
-reference retires; one naming an including ancestor, or the whole
-document a section sits in, resolves to the destination already present
-and expands nothing; and one naming another section of the same
-document is neither. Ownership is read from the document's structure
-rather than from what a run selected, so consolidating a section into a
-larger region leaves every classification as it was.
+does. A link whose target is the very node that owns it, an including
+ancestor of it, or the whole document a section sits in, resolves to
+the destination already present and expands nothing; one naming another
+section of the same document names a second identity and carries it.
+Ownership is read from the document's structure rather than from what a
+run selected, so consolidating a section into a larger region leaves
+every classification as it was.
 
 Each reference the run compiled is rewritten to the destination the
 bundle gave the target it resolved to, and a mark goes with the
