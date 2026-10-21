@@ -1,4 +1,4 @@
-description = "A marked link whose target is present only as a heading-only structural ancestor expands closure to that section's selected body, replacing the ancestor, while an ancestor no reference names keeps its heading and none of its body."
+description = "A link whose target is present only as a heading-only structural ancestor expands closure to that section's selected body, replacing the ancestor, while an ancestor no reference names keeps its heading and none of its body."
 
 clauses = [
   "Heading-only structural ancestors — Targets",

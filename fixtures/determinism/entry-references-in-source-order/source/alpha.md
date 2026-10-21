@@ -1,3 +1,3 @@
 # Alpha
 
-Alpha body, which needs [¬zeta](zeta.md).
+Alpha body, which needs [zeta](zeta.md).

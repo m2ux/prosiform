@@ -36,12 +36,20 @@ of its correctness.
   reference**, and a fragment that is present is looked up as the exact
   text it decoded to.
 
-A reference is a dependency when its author marked it: the link text
-opens with `¬`. Marking is what requires a document, and linking cites
-one, so the shape a reference takes decides nothing about whether the
-bundle carries it. The module says whether a link carries the mark and
-what the reference names; it is the command that resolves a marked one
-and leaves an unmarked one alone.
+A reference is a dependency when it resolves to a Markdown file under
+the allowed source root, and text the bundle carries unchanged when it
+resolves outside it. Where the target sits is what decides, and the root
+is the lever the author holds: material a document must carry sits under
+it, material it only names sits outside. One mark overrides that in a
+single direction: a link whose text opens with it is deferred, so this
+run does not compile what position would have carried, and the bundle
+holds the link for a run that will. The run stays responsible for a
+reference under the root either way: a deferred one names a target that
+must exist, and the destination the bundle publishes for it names that
+target from the root, so the later run needs nothing else. The module
+says what a reference names, whether the bundle compiles what it names
+and what a deferred link is published with; it is the command that
+opens a dependency and leaves a mention alone.
 
 A link inside a source is written relative to the document carrying
 it, and a fragment alone names a section of that same document. Both
@@ -62,7 +70,9 @@ and which exit status that refusal returns.
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
+from urllib.parse import quote
 
+from prosiform.profile import is_markdown
 from prosiform.source import ENCODING
 
 MARK = "¬"
@@ -263,13 +273,15 @@ def normalized(base: str, segments: Sequence[str]) -> str:
 
 
 def marked(opening: str) -> bool:
-    """Whether a link's author marked it as a reference the bundle must carry.
+    """Whether a link's author deferred it, by opening its text with the mark.
 
     The mark opens the link text, so text the mark sits inside names a
     document the way any prose does. It is ordinary text to the
-    profile, which is why marking adds no construct the grammar has to
+    profile, which is why it adds no construct the grammar has to
     recognize and a renderer knowing nothing of this tool shows the
-    link.
+    link. It is content as well as instruction: the bundle publishes it
+    where the author wrote it, because an agent reading the bundle is
+    what reads it next.
     """
     return opening.startswith(MARK)
 
@@ -329,3 +341,108 @@ def inside(document: str, text: str) -> Reference:
     if components(text).path:
         return found
     return replace(found, path=document)
+
+
+def bundled(document: str, text: str, opening: str) -> Reference | None:
+    """The reference one link in a document names where the bundle compiles it.
+
+    A dependency carries no scheme and no authority, normalizes under
+    the allowed source root, names a file the profile reads as Markdown,
+    and is not deferred. Everything else is text the bundle carries as
+    its author wrote it: a reference leaving the root cites material
+    rather than requiring it, and a reference naming no Markdown
+    document names nothing the bundle can carry.
+
+    The opening is the literal text the link's content begins with,
+    which is where a deferral is written. A marked link is no
+    dependency: this run does not compile it, and the bundle carries it
+    for a run that will. Deferral is read from the link rather than
+    from its target, so a document another source carried into the
+    bundle leaves a link deferring it alone.
+
+    Discovery, emission and candidate validation each ask this
+    question, and each asks it of the document the link was written in,
+    so the answer is a property of the reference rather than of the
+    stage that read it. A reference whose form the grammar does not
+    admit is answered here as no dependency; the command resolves such
+    a reference again where it names a Markdown document, and reports
+    the refusal it is.
+    """
+    if marked(opening):
+        return None
+    return resolvable(document, text)
+
+
+def deferring(document: str, text: str, opening: str) -> Reference | None:
+    """The target one deferred link names, where the run is responsible for it.
+
+    A deferral withholds a compilation position would have granted, so
+    what it withholds is a reference under the allowed source root
+    naming a Markdown document, and that is the reference answered
+    here. The run stays responsible for it: the target is required to
+    exist, and the destination the bundle publishes names it from the
+    root.
+
+    A mark on anything else changes nothing that was going to happen to
+    it. A reference leaving the root, one naming no Markdown document
+    and one whose form the grammar does not admit are text whether
+    their author marked them or not, so each is answered here as no
+    deferred target.
+
+    This and `bundled` are the two halves of one rule, read from one
+    resolution: a reference under the root naming a Markdown document
+    is compiled by this run or deferred to a later one, and the mark is
+    the whole of the difference.
+    """
+    if not marked(opening):
+        return None
+    return resolvable(document, text)
+
+
+def resolvable(document: str, text: str) -> Reference | None:
+    """The target one link names, where it resolves under the root to a document.
+
+    Such a reference carries no scheme and no authority, normalizes
+    under the allowed source root, and names a file the profile reads
+    as Markdown. Everything else is text the bundle carries as its
+    author wrote it: a reference leaving the root cites material rather
+    than requiring it, and a reference naming no Markdown document
+    names nothing the bundle can carry.
+
+    What a reference names is a property of the reference, so this
+    answers that question alone and leaves which run compiles it to the
+    caller reading the mark.
+    """
+    try:
+        found = inside(document, text)
+    except Unresolvable:
+        return None
+    if found.external or not is_markdown(found.path):
+        return None
+    return found
+
+
+def rebased(found: Reference, text: str) -> str:
+    """One deferred link's destination: its target's path from the allowed source root.
+
+    The path is the one the reference normalized to, which is the
+    spelling the bundle's file headings carry, so a run holding nothing
+    but the root follows the link the bundle hands it. The authored
+    spelling cannot serve: it is written relative to the source
+    document carrying the link, and the bundle records no such
+    directory for a reference it did not compile.
+
+    Each segment is escaped as it is written, so a path the resolution
+    sequence decodes once is the path the filesystem carries. A name
+    holding a number sign reaches the later run as that name rather
+    than as a document and a section of one.
+
+    The fragment is the author's own, carried after the path as they
+    spelled it, because the run that compiles the link looks it up in
+    the target document's index and this run changes no lookup.
+    """
+    path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
+    fragment = components(text).fragment
+    if fragment is None:
+        return path
+    return f"{path}{FRAGMENT}{fragment}"

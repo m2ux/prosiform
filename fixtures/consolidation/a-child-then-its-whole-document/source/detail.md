@@ -1,3 +1,3 @@
 # Detail
 
-Detail body, which needs [¬the whole guide](guide.md).
+Detail body, which needs [the whole guide](guide.md).

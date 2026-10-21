@@ -1,0 +1,21 @@
+description = "A link whose text opens with the mark is not compiled: the document it names is not opened and contributes nothing, and the bundle carries the link's text with the mark exactly as its author wrote it."
+
+clauses = [
+  "Link classification and resource handling — The deferral mark",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Section extraction and output hierarchy — Internal links",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

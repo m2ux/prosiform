@@ -18,9 +18,12 @@ import pytest
 from prosiform.closure import (
     Malformed,
     OutsideRoot,
+    bundled,
+    deferring,
     identity,
     inside,
     marked,
+    rebased,
     resolve,
 )
 
@@ -133,15 +136,15 @@ def test_a_backslash_separator_is_refused() -> None:
         resolve("sub\\guide.md")
 
 
-def test_a_link_text_opening_with_the_mark_is_a_dependency() -> None:
+def test_a_link_text_opening_with_the_mark_is_deferred() -> None:
     assert marked("¬ Record Epic Delivery")
 
 
-def test_a_link_text_carrying_the_mark_elsewhere_is_a_mention() -> None:
+def test_a_link_text_carrying_the_mark_elsewhere_is_not_deferred() -> None:
     assert not marked("the ¬ operator")
 
 
-def test_a_link_text_with_no_mark_is_a_mention() -> None:
+def test_a_link_text_with_no_mark_is_not_deferred() -> None:
     assert not marked("Record Epic Delivery")
 
 
@@ -183,3 +186,93 @@ def test_two_spellings_of_one_section_share_an_identity() -> None:
     assert identity(resolve("./%67uide.md#alpha")) == identity(
         resolve("guide.md#alpha")
     )
+
+
+def test_a_reference_resolving_under_the_root_is_a_dependency() -> None:
+    found = bundled("docs/guide.md", "rules.md#alpha", "the rules")
+    assert found is not None
+    assert (found.path, found.fragment) == ("docs/rules.md", "alpha")
+
+
+def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
+    found = bundled("docs/guide.md", "#alpha", "alpha")
+    assert found is not None
+    assert (found.path, found.fragment) == ("docs/guide.md", "alpha")
+
+
+def test_a_marked_reference_under_the_root_is_no_dependency() -> None:
+    assert bundled("guide.md", "rules.md", "¬ the rules") is None
+
+
+def test_the_same_reference_unmarked_is_a_dependency() -> None:
+    found = bundled("guide.md", "rules.md", "the rules")
+    assert found is not None
+    assert found.path == "rules.md"
+
+
+def test_a_mark_written_inside_a_link_text_defers_nothing() -> None:
+    assert bundled("guide.md", "rules.md", "the ¬ operator") is not None
+
+
+@pytest.mark.parametrize(
+    "destination",
+    [
+        "../rules.md",
+        "/rules.md",
+        "C:/rules.md",
+        "https://example.com/rules.md",
+        "//example.com/rules.md",
+        "plan.png",
+        "rules.md?view=raw",
+    ],
+)
+def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
+    destination: str,
+) -> None:
+    assert bundled("guide.md", destination, "the rules") is None
+
+
+def test_a_marked_reference_under_the_root_is_a_deferred_target() -> None:
+    found = deferring("docs/guide.md", "../rules.md", "¬ the rules")
+    assert found is not None
+    assert found.path == "rules.md"
+
+
+def test_an_unmarked_reference_defers_nothing() -> None:
+    assert deferring("guide.md", "rules.md", "the rules") is None
+
+
+@pytest.mark.parametrize(
+    "destination",
+    [
+        "../rules.md",
+        "/rules.md",
+        "C:/rules.md",
+        "https://example.com/rules.md",
+        "//example.com/rules.md",
+        "plan.png",
+        "rules.md?view=raw",
+    ],
+)
+def test_a_mark_on_a_reference_the_run_carries_none_of_defers_nothing(
+    destination: str,
+) -> None:
+    assert deferring("guide.md", destination, "¬ the rules") is None
+
+
+@pytest.mark.parametrize(
+    ("document", "destination", "expected"),
+    [
+        ("topic/guide.md", "../shared/rules.md", "shared/rules.md"),
+        ("topic/guide.md", "../shared/rules.md#here", "shared/rules.md#here"),
+        ("guide.md", "#beta", "guide.md#beta"),
+        ("guide.md", "rules.md#", "rules.md#"),
+        ("guide.md", "notes%23draft.md#run", "notes%23draft.md#run"),
+    ],
+)
+def test_a_deferred_destination_names_its_target_from_the_root(
+    document: str, destination: str, expected: str
+) -> None:
+    found = deferring(document, destination, "¬ the rules")
+    assert found is not None
+    assert rebased(found, destination) == expected

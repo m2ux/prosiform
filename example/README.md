@@ -6,10 +6,11 @@ The example tree the [design](https://github.com/m2ux/prosiform/blob/engineering
 
 ## What it shows
 
-Its references carry both halves of the marking rule, so a reader sees the difference in one place:
+Its references carry every answer position gives, so a reader sees the differences in one place:
 
-- **Marked where the material is required.** A link whose text opens with `¬` is a dependency: `modes/plan-mode.md` marks the two artifact documents its procedure reads, and `artifacts/epic-issue-body.md` marks the section of `artifacts/epic.md` whose findings it returns. Each is bundled.
-- **Unmarked where it is cited.** `modes/plan-mode.md` cites the routing document it was reached through, and `artifacts/epic-issue-body.md` cites, in its opening prose, the same document it requires further down. A citation carries nothing into the bundle and is emitted as its author wrote it.
+- **Linked where the material is required.** A link resolving to a document under the root is a dependency: `modes/plan-mode.md` links the two artifact documents its procedure reads, and `artifacts/epic-issue-body.md` links the section of `artifacts/epic.md` whose findings it returns. Each is bundled.
+- **Marked where it is reached later.** `modes/plan-mode.md` links the routing document it was reached through and opens that link's text with `¬`, which defers it. The document is confirmed to exist and carried nowhere, and the bundle publishes the link with its mark and with `SKILL.md`, the target's path from the root, so an agent holding the bundle compiles it in a run of its own.
+- **Named where it is only cited.** A document outside the root is text wherever a source names it, and this tree's own `README.md` cites the design that way. Material a bundling only names therefore stays out of the bundle.
 
 ## What runs against it
 

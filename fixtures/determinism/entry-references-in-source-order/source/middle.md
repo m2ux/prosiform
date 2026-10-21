@@ -2,7 +2,7 @@
 
 ## One
 
-One body, which needs [¬beta](beta.md).
+One body, which needs [beta](beta.md).
 
 ## Two
 

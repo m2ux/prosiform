@@ -1,4 +1,4 @@
-description = "Two bundled headings carrying one slug take a destination apiece, and the two marked references naming them are rewritten to one each, so every destination in the published bundle resolves to exactly one heading in it."
+description = "Two bundled headings carrying one slug take a destination apiece, and the two references naming them are rewritten to one each, so every destination in the published bundle resolves to exactly one heading in it."
 
 clauses = [
   "Bundle destinations — Ordinal assignment",

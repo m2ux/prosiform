@@ -2,4 +2,4 @@
 
 ## Alpha
 
-Alpha requires [¬ Alpha](guide.md#alpha), which is this very section.
+Alpha requires [Alpha](guide.md#alpha), which is this very section.

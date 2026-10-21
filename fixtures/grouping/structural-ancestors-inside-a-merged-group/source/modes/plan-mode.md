@@ -12,4 +12,4 @@ Each step is named here.
 
 #### Detail
 
-Name the goal, then the work that meets it, reading [¬ Review Mode](review-mode.md) as you go.
+Name the goal, then the work that meets it, reading [Review Mode](review-mode.md) as you go.

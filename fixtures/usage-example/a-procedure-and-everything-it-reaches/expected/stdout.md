@@ -4,7 +4,7 @@ This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
-The delivery lines this body records are defined in [Epic](epic.md), which this document cites here and requires where it reads them.
+The delivery lines this body records are defined in [Epic](#artifactsepic).
 
 ## Operations
 
@@ -170,7 +170,7 @@ Read these files first.
 - [Epic Issue Body](#artifactsepic-issue-body)
 - [Epic](#artifactsepic)
 
-The caller reached this mode through [the routing document](../SKILL.md), which this procedure cites rather than requires.
+The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 
 ## Procedure
 

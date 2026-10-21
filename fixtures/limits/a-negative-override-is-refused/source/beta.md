@@ -1,3 +1,3 @@
 # Beta
 
-Beta requires [¬ gamma](gamma.md).
+Beta requires [gamma](gamma.md).

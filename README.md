@@ -28,10 +28,10 @@ Leaving retrieval to the agent costs:
 ### How It Works
 
 1. **Resolve** — entry references normalize to source identities confined to an allowed root
-2. **Discover** — supported local Markdown links are followed to a fixed point
+2. **Discover** — supported local Markdown links under the allowed root are followed to a fixed point; one its author defers is confirmed and left to a run of its own
 3. **Consolidate** — overlapping selections merge, so each region appears exactly once
 4. **Arrange** — regions are emitted into groups, source headings shifting one level beneath the heading that names their group
-5. **Rewrite** — every reference is repointed at the fragment a renderer generates for the heading it now names
+5. **Rewrite** — every compiled reference is repointed at the fragment a renderer generates for the heading it now names, and a deferred one at its target's path from the root
 6. **Validate** — the candidate is reparsed and checked against what was selected; nothing reaches stdout until it passes
 
 ### Architecture
@@ -43,6 +43,7 @@ References → Closure → Consolidation → Grouping → Rewriting → Validati
 - **Reference** — a document, or a document and a section fragment
 - **Section** — a document-level heading and its subsections; the smallest unit a reference can select
 - **Closure** — every local Markdown document reachable by link from the selection
+- **Deferral** — a reference whose link text opens with `¬`: this run confirms its target and compiles it nowhere, and the bundle carries the mark as written
 - **Group** — a top-level division of the bundle: one source document by default, or one merged directory
 - **Destination** — the fragment a renderer generates for an emitted heading, which is what every rewritten reference names
 - **Bundle** — the single validated Markdown document one run produces
@@ -148,7 +149,9 @@ The command answers to every option the contract declares, and `prosiform --help
 
 Each effect is that argument's own help text, so the default an option carries is stated where the option is. A budget is a positive decimal integer; zero is refused rather than read as unlimited.
 
-Bundling runs under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content marks — a link whose text opens with `¬` — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. An unmarked link is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a marked reference the allowed source root cannot contain each return `1` naming the defect and the line of the file it sits on. A marked link reaches the bundle with its mark removed and its destination repointed at the heading the bundle emits for what it named.
+Bundling runs under it: a run reads every source its entry references name, requires it to be valid UTF-8, removes the one leading byte-order mark and the one leading frontmatter block it may carry ahead of its content, parses what is left under the `skill-markdown-v1` profile, selects the whole document or the section each reference names, and publishes each contributing document as one file group headed by that document's root-relative path. It then follows the dependencies its selected content carries — a link resolving to a Markdown document under the allowed source root — resolving each against the document carrying it and bundling what it reaches, until a round of the traversal reaches nothing new. A link resolving outside that root is a citation: it is emitted as its author wrote it and carries no document into the bundle. A source that is not valid UTF-8, one whose frontmatter opener no later line closes, one carrying raw HTML or an unsupported dependency or section-naming construct, two documents whose paths differ only by Markdown extension, and a reference under the root naming no document or no heading in the document it resolves to each return `1` naming the defect and the line of the file it sits on. A compiled link reaches the bundle with its destination repointed at the heading the bundle emits for what it named.
+
+One mark says otherwise, and it defers a compilation rather than asking for one. A link whose text opens with `¬` is not compiled by this run: its target is confirmed to exist and carried nowhere, so the document it names is neither opened nor bundled through it. The bundle emits the link's text with its mark exactly as the author wrote it, the spaces following the character included, and gives the link its target's path from the allowed source root as its destination, so the agent reading the bundle needs that root and nothing else to compile it in a run of its own. A deferred reference naming no document, or no heading in the document it resolves to, fails like any other the root makes this run responsible for.
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller read
@@ -219,4 +222,4 @@ The fixture corpus is the contract: it declares each case as a source tree, an i
 
 ## 📐 Scope
 
-prosiform bundles explicitly marked local Markdown. It does **not** execute or authorize the procedures it bundles, infer dependencies the source did not mark, fetch remote documents, bundle non-Markdown resources, or accept its own output as input.
+prosiform bundles the local Markdown its sources link under one allowed source root. It does **not** execute or authorize the procedures it bundles, follow a reference resolving outside that root, fetch remote documents, bundle non-Markdown resources, or accept its own output as input.

@@ -1,4 +1,4 @@
-description = "A marked link from the content above a document's first eligible heading to that whole document fails as a direct self-reference, because a preamble belongs to the document node the reference names."
+description = "A link from the content above a document's first eligible heading to that whole document resolves to the document's own destination, because a preamble belongs to the document node the reference names and that node is in the bundle."
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Preamble ownership",
@@ -9,13 +9,11 @@ root = "source"
 arguments = ["guide.md"]
 
 [expected]
-exit_status = 1
+exit_status = 0
 stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
-severity = "error"
-code = "E_SELF_REFERENCE"
-reference = "guide.md"
-resolved = "guide.md"
-source = "guide.md:1"
-chain = ["guide.md", "guide.md"]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

@@ -1,4 +1,4 @@
-description = "An image, a web URL and another non-Markdown reference in selected content are emitted as authored and are neither opened, fetched nor traversed, while the marked local Markdown link beside them is bundled."
+description = "An image, a web URL and another non-Markdown reference in selected content are emitted as authored and are neither opened, fetched nor traversed, while the local Markdown link beside them, resolving under the root, is bundled."
 
 clauses = [
   "Link classification and resource handling — Everything else",

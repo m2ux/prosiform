@@ -32,20 +32,19 @@ A resolved reference-style use is published inline. The label keeps the
 bytes the author wrote, so the visible text, an image's alternative
 content and the escaping the author chose are preserved by carrying
 them rather than by re-rendering them, and the destination and title
-come from the definition as it was authored. A marked link takes the
-destination the bundle assigned its target in place of the authored
-one; every other destination is emitted as authored.
+come from the definition as it was authored. A link the bundle assigned
+a destination is published with that destination in place of the
+authored one; every other destination is emitted as authored.
 
 The scan is cross-checked against the parser. The uses one inline token
 carries are counted against the uses the parser read from the same
 token, and a count that disagrees is content the run resolved and
 cannot edit, which is an internal fault rather than a bundle.
 
-The mark is authoring syntax. A rewritten link carries the text that
-followed the mark, and the space an author separated the two by goes
-with it, so `[¬ the rules]` and `[¬the rules]` both carry `the rules`.
-A line break is not that separator: it is content the author wrote, and
-dropping it would join two lines the source kept apart.
+A mark survives the rewrite. The mark defers a compilation, so a link
+carrying one is a link the bundle compiles none of, and its label is the
+author's text like any other label: every byte of it reaches the bundle,
+because an agent reading the bundle is what reads the mark next.
 """
 
 from collections.abc import Mapping, Sequence
@@ -56,18 +55,17 @@ from typing import Any
 from markdown_it.common.utils import normalizeReference
 from markdown_it.token import Token
 
-from prosiform.closure import MARK, marked
 from prosiform.profile import MARKER, MARKER_LABELS
 from prosiform.source import (
-    IMAGE as IMAGE_TOKEN,
-)
-from prosiform.source import (
+    HREF,
     LINK_OPEN,
     opening_markers,
     opening_text,
 )
+from prosiform.source import (
+    IMAGE as IMAGE_TOKEN,
+)
 
-ANCHOR = "#"
 BACKTICK = "`"
 ESCAPE = "\\"
 IMAGE = "!"
@@ -79,7 +77,6 @@ ANGLE_OPEN = "<"
 ANGLE_CLOSE = ">"
 COLON = ":"
 
-SEPARATOR = " \t"
 SPACE = " "
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
@@ -351,20 +348,19 @@ def uses(
     return found
 
 
-def unmarked(label: str) -> str:
-    """One marked link's text, the mark and the space separating it gone."""
-    if not label.startswith(MARK):
-        return label
-    return label[len(MARK) :].lstrip(SEPARATOR)
+def destinations(inline: Token) -> list[tuple[str, str]]:
+    """Each link one inline token carries, as its destination and its opening.
 
-
-def destinations(inline: Token) -> list[str]:
-    """The destination of each marked link one inline token carries, in order."""
+    The opening is the literal text the link's content begins with,
+    which is what a deferral is written in, so a caller classifying the
+    link reads both halves of the question from one pass over the
+    token.
+    """
     children = inline.children or []
     return [
-        str(child.attrGet("href") or "")
+        (str(child.attrGet(HREF) or ""), opening_text(children, at))
         for at, child in enumerate(children)
-        if child.type == LINK_OPEN and marked(opening_text(children, at))
+        if child.type == LINK_OPEN
     ]
 
 
@@ -428,8 +424,8 @@ def published(held: Definition, destination: str | None) -> str:
     """The inline target a reference-style use is published with.
 
     The destination is the one the bundle assigned the use's target
-    where the use is marked, and the one its definition was authored
-    with where it is not. The title is the definition's own, carried as
+    where the bundle compiled that use, and the one its definition was
+    authored with where it did not. The title is the definition's own, carried as
     the author spelled it, so a title the author broke across two lines
     reaches the bundle broken in the same place: the title is the
     author's text and the conversion moves it rather than reflowing it.
@@ -439,38 +435,23 @@ def published(held: Definition, destination: str | None) -> str:
     return f"{TARGET_OPEN}{target}{title}{TARGET_CLOSE}"
 
 
-def mark_span(text: str, label: tuple[int, int]) -> tuple[int, int] | None:
-    """The extent of the mark one label opens with, where it opens with one.
-
-    The mark takes the spaces and tabs separating it from the text with
-    it, and only those: a line break following the mark is content the
-    author wrote.
-    """
-    start, end = label
-    if not text[start:end].startswith(MARK):
-        return None
-    at = start + len(MARK)
-    while at < end and text[at] in SEPARATOR:
-        at += 1
-    return start, at
-
-
-def edits(text: str, one: Use, destination: str | None) -> list[tuple[int, int, str]]:
+def edits(one: Use, destination: str | None) -> list[tuple[int, int, str]]:
     """The spans one use's emission replaces, and what it writes at each.
 
-    A nested use sits inside the label of the use holding it, so the
-    label's own edit is the mark alone rather than the label, and no
-    two spans one text produces overlap.
+    A use's label is the author's and stays as written, so the span a
+    use edits is its destination alone and no two spans one text
+    produces overlap. A use the bundle assigned no destination is
+    published with the bytes its author wrote.
+
+    The destination arrives whole. Where a link points is the bundle's
+    question, and this writes the answer, so a fragment of the bundle
+    and a path from the allowed source root are published the same way.
     """
     found: list[tuple[int, int, str]] = []
-    target = None if destination is None else f"{ANCHOR}{destination}"
     if one.definition is not None:
-        found.append((*one.target, published(one.definition, target)))
-    elif target is not None:
-        found.append((*one.target, target))
-    span = mark_span(text, one.label)
-    if span is not None:
-        found.append((*span, ""))
+        found.append((*one.target, published(one.definition, destination)))
+    elif destination is not None:
+        found.append((*one.target, destination))
     return found
 
 
@@ -492,15 +473,17 @@ def moved(at: int, start: int, end: int, width: int) -> int:
 def rewritten(
     physical: Sequence[str],
     inline: Token,
-    assigned: Sequence[str],
+    assigned: Sequence[str | None],
     defined: Mapping[str, Definition],
 ) -> list[str]:
     """The lines one run of inline text occupies, as the bundle publishes them.
 
     Each resolved reference-style use is published inline, and each
-    marked link points at the destination the bundle assigned its
-    target. The spans are edited last to first, so an earlier edit does
-    not move the span the next one names.
+    link the bundle compiled points at the destination it assigned that
+    link's target. One destination is supplied for each link the token
+    carries, in written order, and a link the bundle did not compile is
+    supplied none. The spans are edited last to first, so an earlier
+    edit does not move the span the next one names.
 
     The result holds one entry for each line given, so the published
     text of a source line is found where that line was. A replacement
@@ -516,20 +499,16 @@ def rewritten(
             f"the parser read {carried(inline.children)} use(s) against the "
             f"{len(found)} the emission can edit in place"
         )
-    marks = [
-        one
-        for one in found
-        if one.kind == LINK and text[one.label[0] : one.label[1]].startswith(MARK)
-    ]
-    if len(marks) != len(assigned):
+    links = [one for one in found if one.kind == LINK]
+    if len(links) != len(assigned):
         raise Unrewritable(
-            f"{len(assigned)} marked link(s) resolved against {len(marks)} the "
+            f"the run resolved {len(assigned)} link(s) against {len(links)} the "
             f"emission can edit in place"
         )
-    targets = dict(zip((id(one) for one in marks), assigned, strict=True))
+    targets = dict(zip((id(one) for one in links), assigned, strict=True))
     written = text
     bounds = list(accumulate(len(line) for line in physical))
-    applied = [edit for one in found for edit in edits(text, one, targets.get(id(one)))]
+    applied = [edit for one in found for edit in edits(one, targets.get(id(one)))]
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
         bounds = [moved(at, start, end, len(replacement)) for at in bounds]

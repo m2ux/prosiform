@@ -1,4 +1,4 @@
-description = "A marked link promotes a heading-only structural ancestor to its selected section, and the marked link that section's body carries is traversed from there, so a document reaches the bundle only because the promotion happened while the closure was still expanding; the ancestor no reference names keeps its heading, and the marked link its unselected body carries requires nothing."
+description = "A link promotes a heading-only structural ancestor to its selected section, and the link that section's body carries is traversed from there, so a document reaches the bundle only because the promotion happened while the closure was still expanding; the ancestor no reference names keeps its heading, and the link its unselected body carries reaches nothing."
 
 clauses = [
   "Heading-only structural ancestors — Targets",

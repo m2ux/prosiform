@@ -1,0 +1,20 @@
+description = "A fragment-only link carrying the mark is deferred like any other reference: the section it names is not carried into the bundle, and the link is published as its author wrote it."
+
+clauses = [
+  "Link classification and resource handling — Fragment-only links",
+  "Link classification and resource handling — The deferral mark",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#alpha"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Alpha"
+resolved = "alpha"

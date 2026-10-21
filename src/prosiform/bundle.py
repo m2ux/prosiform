@@ -68,15 +68,15 @@ line an ATX heading is, each line break reading as the space it already
 read as. A group that shifts by nothing has no level to write, so the
 heading stays the Setext heading its source wrote.
 
-Each marked link in selected content is rewritten to the destination of
-the target it resolved to, through the map the bundle's own headings
-produce. A whole-document reference takes the destination of that
-file's heading, a fragment takes the destination of the heading it
-named, and a fragment-only link resolves inside its own source first
-and then takes that heading's destination. A destination is scoped to
-the whole bundle, so a reference from one group to another is spelled
-as one inside a group is. The mark goes with the rewrite, because a
-reader of the bundle has no use for authoring syntax.
+Each link in selected content that the bundle compiled is rewritten to
+the destination of the target it resolved to, through the map the
+bundle's own headings produce. A whole-document reference takes the
+destination of that file's heading, a fragment takes the destination of
+the heading it named, and a fragment-only link resolves inside its own
+source first and then takes that heading's destination. A destination
+is scoped to the whole bundle, so a reference from one group to another
+is spelled as one inside a group is. A mark goes with the rewrite,
+because a reader of the bundle has no use for authoring syntax.
 
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
@@ -95,7 +95,7 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
-from prosiform.closure import Reference, inside
+from prosiform.closure import bundled, deferring, rebased
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -109,11 +109,9 @@ from prosiform.provenance import (
     Record,
     Target,
 )
-from prosiform.rewrite import Definition, destinations, rewritten, unmarked
+from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
     LINE_FEED,
-    LINK_OPEN,
-    TEXT,
     Selection,
     bare,
     headings,
@@ -122,7 +120,6 @@ from prosiform.source import (
     lines,
     opening_markers,
     regions,
-    shown,
     slug,
     visible,
 )
@@ -257,37 +254,23 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
-def emitted_visible(inline: Token) -> str:
-    """The text one inline token shows once the bundle has rewritten its marks.
-
-    A heading can carry a marked link, and the rewrite drops the mark
-    from the text that link shows. The heading the bundle emits is
-    therefore the heading the renderer slugs, so the destination it
-    takes names the heading a reader finds.
-    """
-    children = inline.children or []
-    return "".join(
-        unmarked(child.content)
-        if child.type == TEXT and at and children[at - 1].type == LINK_OPEN
-        else shown(child)
-        for at, child in enumerate(children)
-    )
-
-
 def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
-    """The visible text of each heading token, keyed by the token's identity."""
-    return {
-        id(opening): emitted_visible(inline) for opening, inline in headings(tokens)
-    }
+    """The visible text of each heading token, keyed by the token's identity.
+
+    A rewrite edits the destination a link opens and nothing a heading
+    shows, so the text the bundle emits for a heading is the text its
+    author wrote.
+    """
+    return {id(opening): visible(inline) for opening, inline in headings(tokens)}
 
 
 def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
     """The source fragment each heading token answers to, keyed by its identity.
 
     A source fragment is the slug of the text the author wrote, which
-    is what a reference into that document resolved against, and the
-    text the bundle emits for the same heading can differ from it where
-    the heading carries a mark the rewrite drops.
+    is what a reference into that document resolved against and what a
+    reader of the bundle finds, because the heading reaches the bundle
+    as it was written.
     """
     return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
 
@@ -315,23 +298,49 @@ def rewrite(
     names is removed with the rest rather than published around it.
 
     A source declaring no definition carries no reference-style use, so
-    a token holding no marked link is the text its source wrote.
+    a token holding no link is the text its source wrote.
     """
     written = list(physical)
     for inline in inlines(tokens, selected):
-        marks = destinations(inline)
-        if inline.map is None or (not marks and not defined):
+        found = destinations(inline)
+        if inline.map is None or (not found and not defined):
             continue
         start, end = inline.map
-        targets = [assigned[key(path, one)] for one in marks]
+        targets = [target(path, one, opening, assigned) for one, opening in found]
         written[start:end] = rewritten(written[start:end], inline, targets, defined)
     return written
 
 
-def key(path: str, destination: str) -> tuple[str, str | None]:
-    """The identity one link's destination names, as the map holding it spells it."""
-    found: Reference = inside(path, destination)
-    return found.path, found.fragment
+def target(
+    path: str,
+    destination: str,
+    opening: str,
+    assigned: Mapping[tuple[str, str | None], str],
+) -> str | None:
+    """The destination the bundle gave one link, or nothing where it gave none.
+
+    A link the bundle compiled resolves to an identity the map holds,
+    because the closure selected what the link named and the group
+    emitting it recorded the target it answers to.
+
+    A deferred link under the allowed source root takes its target's
+    path from that root, so the run that compiles it later needs
+    nothing but the root to follow it. It is never rewritten to a
+    bundle destination, even where another reference carried its target
+    into the bundle: what one author deferred cannot be changed by
+    another author's reference.
+
+    A link resolving outside the allowed source root, and one naming no
+    Markdown document, is text the bundle carries and takes no
+    destination, whether or not its author marked it.
+    """
+    found = bundled(path, destination, opening)
+    if found is not None:
+        return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
+    deferred = deferring(path, destination, opening)
+    if deferred is None:
+        return None
+    return rebased(deferred, destination)
 
 
 def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
@@ -557,13 +566,14 @@ def group(
     title is no structural ancestor: a second heading carrying the
     document's own name is one a reader cannot tell from the first.
 
-    A destination map rewrites each marked link the selected content
-    carries. The map is built from the headings every group emits, so
-    it is known only once every group exists: a group built without one
-    reports the headings that produce it, and the same group built with
-    it carries the links pointing at them. The headings a group reports
-    are the same either way, because the rewrite edits a destination
-    and a mark and nothing a heading is slugged from.
+    A destination map rewrites each link the selected content carries
+    that the bundle compiled. The map is built from the headings every
+    group emits, so it is known only once every group exists: a group
+    built without one reports the headings that produce it, and the
+    same group built with it carries the links pointing at them. The
+    headings a group reports are the same either way, because the
+    rewrite edits a destination and a mark and nothing a heading is
+    slugged from.
 
     An eligible ancestor of a selected region that the run did not
     select is emitted above it as a heading alone, carrying the title

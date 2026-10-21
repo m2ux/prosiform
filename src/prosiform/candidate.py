@@ -40,9 +40,9 @@ no longer the document the author wrote.
 
 One invariant the contract names is not checked here, and is absent
 rather than weakened. **Ownership stability** is a property of the
-construction rather than of the candidate. Link ownership and
-direct-self-reference classification are read from a source's own token
-stream and a position in it, and consolidation changes neither, so a
+construction rather than of the candidate. Link ownership is read from a source's
+own token stream and a position in it, and consolidation changes
+neither, so a
 check comparing ownership before and after would compare one call of
 `source.owner` with another call of the same function on the same
 arguments. A check that cannot fail reports a guarantee nobody has.
@@ -68,12 +68,10 @@ from prosiform.bundle import (
     ancestry,
     blank,
     carried_headings,
-    emitted_visible,
     heading_text,
-    key,
     openings,
 )
-from prosiform.closure import Reference, marked
+from prosiform.closure import Reference, bundled, deferring, rebased
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     Ancestor,
@@ -83,7 +81,6 @@ from prosiform.provenance import (
     Range,
     Record,
 )
-from prosiform.rewrite import unmarked
 from prosiform.source import (
     HEADING_OPEN,
     HREF,
@@ -268,24 +265,47 @@ def intended(
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
-    A marked link carries the destination the bundle assigned the target
-    it resolved to, and its text loses the mark with the rewrite. Every
-    other use is published as its author wrote it, a reference-style use
-    at the inline form the definition it names gives it.
+    A link the bundle compiled carries the destination it assigned the
+    target that link resolved to, and shows the text its author wrote.
+    Every other use is published as its author wrote it, a
+    reference-style use at the inline form the definition it names
+    gives it.
+
+    A deferred link under the allowed source root carries its target's
+    path from that root, so what it shows is its author's text and
+    where it points is the destination the bundle rebased. A deferral
+    resolving nowhere the bundle is responsible for is published as
+    authored like any other mention.
+
+    Whether the bundle compiled the link is read from the text the
+    link's content opens with, as discovery and emission read it, so a
+    deferral the parser places inside a formatting event is the same
+    deferral to all three.
     """
-    children = inline.children or []
-    if one.kind != LINK or not marked(opening_text(children, at)):
+    if one.kind != LINK:
         return one
-    assigned = targets.get(key(path, one.destination))
+    opening = opening_text(inline.children or [], at)
+    found = bundled(path, one.destination, opening)
+    if found is None:
+        deferred = deferring(path, one.destination, opening)
+        if deferred is None:
+            return one
+        return Use(
+            one.kind,
+            one.text,
+            one.title,
+            normalizeLink(rebased(deferred, one.destination)),
+        )
+    assigned = targets.get((found.path, found.fragment))
     if assigned is None:
         raise Invalid(
             TARGET_INTEGRITY,
-            f"the marked link {one.destination!r} in {path!r} was assigned no "
+            f"the reference {one.destination!r} in {path!r} was assigned no "
             f"destination",
         )
     return Use(
         one.kind,
-        unmarked(one.text),
+        one.text,
         one.title,
         normalizeLink(f"{ANCHOR}{assigned}"),
     )
@@ -953,8 +973,9 @@ def preserved(
     The lines the bundle does not edit are compared as the bytes they
     are, the code examples as the parser read them, and the text each
     inline token shows as a reader reads it, the mark a rewrite drops
-    taken off the source side. Together they are the content of the
-    region: nothing in it is reformatted or repaired.
+    taken off the source side where the link carrying it is one the
+    bundle compiled. Together they are the content of the region:
+    nothing in it is reformatted or repaired.
     """
     wrote = body(source.physical, source.tokens, source.span, removed)
     carries = body(published.physical, published.tokens, published.span)
@@ -983,11 +1004,11 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if emitted_visible(one) != visible(each):
+        if visible(one) != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{emitted_visible(one)!r} and the candidate shows "
+                f"{visible(one)!r} and the candidate shows "
                 f"{visible(each)!r}",
             )
 

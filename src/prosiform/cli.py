@@ -38,7 +38,7 @@ Validation follows the selection rather than the file. A whole document is
 parsed to index it, because heading enumeration, the definitions selected
 uses resolve against, the ambiguity of a requested fragment and what a
 document opens on are facts about the file; but link resolution,
-self-reference, the profile's refusals and the authored-occurrence budget
+the profile's refusals and the authored-occurrence budget
 are held over the regions the run selected, so a defect in a section
 nobody asked for decides no outcome. A section closure later reaches is
 selected content like any other, and its defects are then its run's.
@@ -49,44 +49,40 @@ however narrow the requested section is. Crossing one is reported as an
 inability to index that source rather than as a dependency on whatever
 construct crossed it, since the run reached for no such dependency.
 
-A dependency is a reference its author marked, by opening the link text
-with `¬`, and the run resolves one against the document carrying it,
-reads it and bundles it. Every other reference is text the bundle
-carries as its author wrote it: an unmarked local Markdown link is not
-resolved, the document it names is not opened, and it stays as authored
-even where the bundle carries that document because another reference
-marked it. A reference carrying a scheme or an authority and one naming
-a file outside the profile's suffixes are text by the same rule, whether
-marked or not, and an apparent link inside a code span or a code block
-is an example rather than a reference. Marking is therefore what the run
-follows, and the content a run reads for marks is the content it
-selected. Traversal repeats over what each round adds until no round
-adds anything, so a reference graph with a cycle reaches a fixed point
-carrying each reachable region once.
+A dependency is a reference that resolves to a Markdown document under
+the allowed source root, and the run resolves one against the document
+carrying it, reads it and bundles it. Every other reference is text the
+bundle carries as its author wrote it: a local Markdown link resolving
+outside the root is not resolved further, the document it names is not
+opened, and it stays as authored. A reference carrying a scheme or an
+authority and one naming a file outside the profile's suffixes are text
+by the same rule, and an apparent link inside a code span or a code
+block is an example rather than a reference. Position is therefore what
+the run follows, and the content a run reads for references is the
+content it selected. Traversal repeats over what each round adds until
+no round adds anything, so a reference graph with a cycle reaches a
+fixed point carrying each reachable region once.
 
-A mark means bundle this, and the only thing the run bundles is a local
-Markdown document. A marked image, a marked reference carrying a scheme
-or an authority, and a marked reference naming a file outside the
-profile's suffixes therefore fail: a resource is emitted as the author
-wrote it and nothing rewrites it, so marking one asks for a bundle
-carrying authoring syntax the mark promises never reaches a reader. An
-image names a resource whatever file it points at, so the mark its
-alternative content opens with is refused on the use rather than on the
-destination.
+The only thing the run bundles is a local Markdown document, so a
+resource is carried as the author wrote it wherever it resolves, the
+allowed source root included. An image names a resource whatever file
+it points at.
 
-A marked reference is classified by the identity it resolves to rather
-than by the text it was written as. Each link belongs to the innermost
-eligible section containing it, and to the document itself where no
-section does. A marked link whose target is the very node that owns it
-is a direct self-reference and fails; one naming an including ancestor,
-or the whole document a section sits in, resolves to the destination
-already present and expands nothing; and one naming another section of
-the same document is neither. Ownership is read from the document's
-structure rather than from what a run selected, so consolidating a
-section into a larger region leaves every classification as it was.
+A reference is classified by the identity it resolves to rather than by
+the text it was written as. Each link belongs to the innermost eligible
+section containing it, and to the document itself where no section
+does. A link whose target is the very node that owns it, an including
+ancestor of it, or the whole document a section sits in, resolves to
+the destination already present and expands nothing; one naming another
+section of the same document names a second identity and carries it.
+Ownership is read from the document's structure rather than from what a
+run selected, so consolidating a section into a larger region leaves
+every classification as it was.
 
-Each marked reference is rewritten to the destination the bundle gave
-the target it resolved to, and the mark goes with the rewrite. A
+Each reference the run compiled is rewritten to the destination the
+bundle gave the target it resolved to, and a mark goes with the
+rewrite; a reference the run did not compile keeps every byte its
+author wrote, a mark included. A
 destination belongs to the bundle rather than to a group, so the map
 holding one is known only once every group exists: the groups are
 built to learn the headings the bundle emits, and built again through
@@ -165,7 +161,6 @@ from markdown_it.token import Token
 from prosiform import PROFILE
 from prosiform.access import (
     Absent,
-    Outside,
     Symlinked,
     Unreadable,
     present,
@@ -189,6 +184,7 @@ from prosiform.closure import (
     OutsideRoot,
     Reference,
     components,
+    deferring,
     external,
     identity,
     inside,
@@ -247,11 +243,11 @@ from prosiform.source import (
     decode,
     fragments,
     hashed,
+    index,
     lines,
     nesting,
     occurrences,
     opening_heading,
-    owner,
     regions,
     section,
     uses,
@@ -275,9 +271,7 @@ GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
 INVALID_USAGE = "E_INVALID_USAGE"
-MARKED_RESOURCE = "E_MARKED_RESOURCE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
-SELF_REFERENCE = "E_SELF_REFERENCE"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
@@ -513,9 +507,9 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     grammar then reports it as the usage failure it is.
     """
     selected = TEXT
-    for index, token in enumerate(arguments):
-        if token == DIAGNOSTICS_OPTION and index + 1 < len(arguments):
-            value = arguments[index + 1]
+    for at, token in enumerate(arguments):
+        if token == DIAGNOSTICS_OPTION and at + 1 < len(arguments):
+            value = arguments[at + 1]
         elif token.startswith(f"{DIAGNOSTICS_OPTION}="):
             value = token.partition("=")[2]
         else:
@@ -568,6 +562,12 @@ def entry(text: str) -> Reference:
     which is the one form the resolution sequence classifies rather than
     refuses: inside a source such a reference is text the bundle
     carries, and on the command line it names nothing to bundle.
+
+    This is the one place the root's confinement is a refusal. The root
+    binds what the caller asks the run to carry out, and a reference an
+    author wrote inside a source is that author citing material the
+    bundle does not carry, so discovery leaves it as text and nothing
+    downstream of here raises the code again.
     """
     try:
         found = resolve(text)
@@ -667,6 +667,13 @@ def read_document(root: Path, found: Reference) -> Opened:
     source through a symbolic link below the root fails rather than
     arriving at whatever that link points at.
 
+    What arrives here is a path a normalization produced, which the root
+    can hold: one that walks above its base raises before a path is
+    returned, and the entry reference carrying it is refused where
+    entries are read. The refusals below are therefore the faults a read
+    meets. A walk declining a segment of such a path is this tool's own
+    invariant breaking, which the declared internal-error status reports.
+
     The bytes are read without newline translation, so a CRLF source
     reaches the scan spelled as the file spells it, and they are decoded
     strictly, so a source that is not valid UTF-8 fails here as the source
@@ -696,16 +703,6 @@ def read_document(root: Path, found: Reference) -> Opened:
             source=found.origin,
             chain=chain,
         ) from linked
-    except Outside as outside:
-        raise input_failure(
-            f"{written} {reference!r} names {outside}, which the allowed "
-            f"source root cannot contain",
-            code=SOURCE_OUTSIDE_ROOT,
-            remedy="name a document the source root carries",
-            reference=reference,
-            source=found.origin,
-            chain=chain,
-        ) from outside
     except Absent as absent:
         raise input_failure(
             f"{written} {reference!r} names no document under the allowed source root",
@@ -1024,75 +1021,6 @@ def selection(
     )
 
 
-def self_referent(
-    tokens: Sequence[Token], path: str, at: int | None, found: Reference
-) -> bool:
-    """Whether one marked reference names the very node that carries it.
-
-    Identity is compared after the path and the fragment have resolved,
-    so two spellings of one section are one node and two sections of one
-    file are two. A document node and its heading-section nodes are
-    distinct, which is why selecting a whole document does not make its
-    links into that document's sections self-references, and why a
-    section's link back to its whole document is an ancestor inclusion
-    rather than a link to itself.
-
-    The owner is read from the document's structure, so the answer is
-    the same whether the owning section was selected on its own or
-    inside a region that consolidated it. A fragment naming no section
-    of the document names nothing here either, and the run reports it
-    as the reference to a missing target it is. A fragment the document
-    refuses — one two of its headings produce, or one naming a heading
-    a container carries — names no node to compare against, and the
-    refusal is reported where the reference is resolved.
-    """
-    if found.path != path or at is None:
-        return False
-    holder = owner(tokens, at - 1)
-    if found.fragment is None:
-        return holder is None
-    if holder is None:
-        return False
-    try:
-        named = section(tokens, found.fragment)
-    except (Ambiguous, Nested):
-        return False
-    return named is not None and named[0] is holder
-
-
-def marked_resource(
-    subject: str, reference: str, at: str, chain: Sequence[str]
-) -> Failure:
-    """One marked reference naming a resource, as the refusal the contract declares.
-
-    A mark asks for a bundled document and the bundle carries a
-    resource as the text its author wrote, so the request cannot be
-    met: emitting the reference as authored would publish the mark,
-    which nothing rewrites away.
-
-    Each subject says why it is a resource in its own terms. An image
-    is one whatever it names, because image syntax embeds rather than
-    links; any other reference is one when it names no local Markdown
-    document. Saying it the second way for an image tells an author
-    who marked a Markdown file that the file is not a Markdown file.
-    """
-    why = (
-        "image syntax embeds rather than links, so it names no document "
-        "the bundle can carry"
-        if subject == "image"
-        else "it names no local Markdown document"
-    )
-    return input_failure(
-        f"the marked {subject} {reference!r} is a resource: {why}, and a "
-        f"resource is carried as its author wrote it rather than bundled",
-        code=MARKED_RESOURCE,
-        remedy="cite it without the mark",
-        reference=reference,
-        source=at,
-        chain=chain,
-    )
-
-
 def required(
     path: str,
     source: Source,
@@ -1100,57 +1028,59 @@ def required(
     chosen: Selection | None,
     chain: Sequence[str],
 ) -> Iterator[Reference]:
-    """Every dependency the selected content of one source marks.
+    """Every dependency the selected content of one source carries.
 
-    A reference use the author marked is a reference the bundle must
-    carry, and every other use is text: a mention is not resolved, the
-    document it names is not opened, and nothing about its shape is
-    examined.
+    A use resolving to a Markdown document under the allowed source
+    root is a reference the bundle carries, and every other use is
+    text: a mention leaving the root is not resolved further, the
+    document it names is not opened, and the link reaches the bundle as
+    its author wrote it. Where the reference resolves is the whole of
+    the question, so an author states what the bundle must carry by
+    where the target sits.
 
-    What a mark asks for is a bundled document, so a marked reference
-    that names no local Markdown document names something the bundle
-    will not carry. An image names a resource whatever it points at,
-    and so do a reference carrying a scheme or an authority and one
-    naming a file outside the profile's suffixes; each is emitted as
-    authored and rewritten by nothing, and marking one is refused at
-    the run rather than published with its mark intact. An image is
-    refused on the use it is, before anything asks what its
-    destination resolves to, because no destination makes a picture a
-    document.
+    A marked reference is deferred: the run yields no dependency for
+    it, so nothing it names is bundled through that reference, and the
+    link reaches the bundle with its mark for an agent to compile in a
+    run of its own. Its target is what `withheld` yields, because a
+    reference under the root is one the run stays responsible for
+    whether or not it carries what the reference names.
 
-    A marked reference naming the node that owns it is a direct
-    self-reference and is refused. One naming an including ancestor, or
-    the whole document a section sits in, names a destination the
+    A resource is no local Markdown document and an image is a
+    resource whatever it points at, so neither is a dependency and both
+    reach the bundle as their author wrote them, wherever they resolve.
+    Only a Markdown document is bundleable, so nothing a resource
+    reference carries asks for one.
+
+    A reference whose form the grammar does not admit, and which names
+    a Markdown document, is a defect rather than a mention: an author
+    spelled a dependency the profile cannot resolve.
+
+    A reference naming the node that owns it, an including ancestor of
+    it, or the whole document a section sits in, names a destination the
     bundle already carries, and the traversal reaches it as it reaches
-    any identity it has seen.
+    any identity it has seen. Identity is what the frontier closes over,
+    so a reference pointing back adds nothing to it and expands nothing
+    twice.
 
-    The chain passed in is the one that reached this source, and
-    every reference the source marks stands one hop beyond it. A
-    reference refused here therefore reports the route the run followed
-    to the link, which is what an author needs to find the document
-    that wrote it.
+    The chain passed in is the one that reached this source, and every
+    reference the source carries stands one hop beyond it. A reference
+    refused here therefore reports the route the run followed to the
+    link, which is what an author needs to find the document that wrote
+    it.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if not marked(use.opening):
-            continue
         at = location(path, source.line(use.line))
         route = (*chain, use.destination)
         if use.resource:
-            raise marked_resource("image", use.destination, at, route)
+            continue
         try:
             found = inside(path, use.destination)
-        except OutsideRoot as outside:
-            raise input_failure(
-                f"the reference {use.destination!r} {outside}",
-                code=SOURCE_OUTSIDE_ROOT,
-                remedy="name a document the source root carries, or cite it "
-                "without the mark",
-                reference=use.destination,
-                source=at,
-                chain=route,
-            ) from outside
+        except OutsideRoot:
+            continue
         except Malformed as malformed:
+            if not is_markdown(components(use.destination).path):
+                continue
             raise input_failure(
                 f"the reference {use.destination!r} {malformed}",
                 code=TARGET_NOT_FOUND,
@@ -1160,19 +1090,45 @@ def required(
                 chain=route,
             ) from malformed
         if found.external or not is_markdown(found.path):
-            raise marked_resource("reference", use.destination, at, route)
-        if self_referent(tokens, path, use.line, found):
-            carrier = "section" if found.fragment is not None else "document"
-            raise input_failure(
-                f"the marked reference {use.destination!r} names the {carrier} "
-                f"that carries it, which is a direct self-reference",
-                code=SELF_REFERENCE,
-                remedy="cite it without the mark, or name another document or section",
-                reference=use.destination,
-                resolved=identity(found),
-                source=at,
-                chain=(*chain, identity(found)),
-            )
+            continue
+        if marked(use.opening):
+            continue
+        yield replace(found, origin=at, chain=(*chain, identity(found)))
+
+
+def withheld(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> Iterator[Reference]:
+    """Every target the selected content of one source defers.
+
+    A deferred reference under the allowed source root naming a
+    Markdown document is one this run does not carry and stays
+    responsible for, so its target is yielded here to be confirmed. A
+    mark on a reference leaving the root, or on one naming no Markdown
+    document, defers nothing that was going to happen, and those
+    references are text as they always were.
+
+    What is yielded is a target and not a dependency. It joins no
+    frontier, so the document is not bundled through this reference,
+    contributes no content and no destination of its own, and heads no
+    file group.
+
+    The chain is the one a compiled reference in the same place would
+    carry, because a refusal reports the route the run followed to the
+    link whichever half of the rule the link falls under.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource:
+            continue
+        found = deferring(path, use.destination, use.opening)
+        if found is None:
+            continue
+        at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 
@@ -1240,6 +1196,7 @@ def traverse(
     seen = {(one.path, one.fragment) for one in found}
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
+    deferred: dict[tuple[str, str | None], Reference] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1279,6 +1236,8 @@ def traverse(
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
+            for one in withheld(path, read[path], parsed[path], chosen, reached):
+                deferred.setdefault((one.path, one.fragment), one)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 if (one.path, one.fragment) in seen:
                     continue
@@ -1288,7 +1247,59 @@ def traverse(
                 discovered.append(one)
         found.extend(discovered)
         frontier = discovered
+    for one in deferred.values():
+        confirm(root, limits, parsed, one)
     return read, parsed, defined, captured, found
+
+
+def confirm(
+    root: Path,
+    limits: Limits,
+    parsed: Mapping[str, list[Token]],
+    one: Reference,
+) -> None:
+    """Hold one deferred reference to naming a document and a heading that exist.
+
+    A deferral says that the material is reached in a run of its own,
+    not that nobody is answerable for it, so the document is read and
+    the fragment is looked up. A reference the root does not carry is
+    refused by the read, and one naming no heading of the document it
+    resolves to is refused here, each with the code and the route a
+    compiled reference naming nothing reports.
+
+    The question is whether the document carries the heading, asked of
+    the index of every heading the profile recognizes. Which section a
+    fragment roots, and whether two headings make it ambiguous, is what
+    the run compiling the link decides; this run says only that the
+    target is there to be found.
+
+    A document the bundle already carries is confirmed from the tokens
+    that carried it, so a deferral naming it costs no second read. A
+    document nothing else named is read for this confirmation alone:
+    its content reaches no group, and the nesting budget holds over the
+    parse because a source this run cannot index is a source it cannot
+    answer for.
+    """
+    tokens = parsed.get(one.path)
+    if tokens is None:
+        opened = read_document(root, one)
+        try:
+            tokens = parse(opened.source.text, limits.of(NESTING), {})
+        except Crossed as crossed:
+            raise unindexable(crossed, one.path, one.chain) from crossed
+    if one.fragment is None:
+        return
+    if any(heading.fragment == one.fragment for heading in index(tokens)):
+        return
+    raise input_failure(
+        f"the reference {one.original!r} names no heading of the document it defers",
+        code=TARGET_NOT_FOUND,
+        remedy="name a heading the document carries",
+        reference=one.original,
+        resolved=one.path,
+        source=one.origin,
+        chain=one.chain,
+    )
 
 
 def membership(path: str, inforce: Mapping[str, int]) -> str | None:
@@ -1476,8 +1487,8 @@ def compose(
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
-    more with the map those headings produce, which is what each marked
-    link is rewritten through. The second pass emits the same headings
+    more with the map those headings produce, which is what each
+    compiled link is rewritten through. The second pass emits the same headings
     as the first, because a rewrite edits a link's destination and its
     mark and nothing a heading is slugged from.
 

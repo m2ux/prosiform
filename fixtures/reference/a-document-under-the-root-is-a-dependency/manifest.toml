@@ -1,0 +1,21 @@
+description = "A local Markdown reference resolving to a document under the allowed source root is compiled into the bundle and rewritten to that document's destination, whether it names the document whole or a section of it, and no mark is written to say so."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Compile before publishing — Discover the recursive dependency graph",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

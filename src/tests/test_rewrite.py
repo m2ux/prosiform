@@ -3,7 +3,7 @@
 The corpus declares what a run publishes. These are the cases beneath
 it: the extents a code span masks, the definition environment a source
 declares, the uses that environment resolves, the inline form a
-reference-style use is published as, the text the mark leaves behind,
+reference-style use is published as, the bytes a deferred link keeps,
 the line each published entry answers to, and the refusal content the
 emission cannot edit raises.
 """
@@ -21,7 +21,6 @@ from prosiform.rewrite import (
     definitions,
     destinations,
     rewritten,
-    unmarked,
     uses,
 )
 from prosiform.source import INLINE, lines
@@ -102,44 +101,33 @@ def test_a_definition_is_read_as_its_source_spelled_it(
 
 
 @pytest.mark.parametrize(
-    ("label", "expected"),
-    [
-        ("¬ the rules", "the rules"),
-        ("¬the rules", "the rules"),
-        ("¬\tthe rules", "the rules"),
-        ("the rules", "the rules"),
-        ("¬", ""),
-    ],
-)
-def test_the_mark_leaves_the_text_that_followed_it(label: str, expected: str) -> None:
-    assert unmarked(label) == expected
-
-
-@pytest.mark.parametrize(
     ("text", "assigned", "expected"),
     [
-        ("[¬ rules](rules.md)", ["rules"], "[rules](#rules)"),
-        ("[¬rules](rules.md#a)", ["a"], "[rules](#a)"),
+        ("[rules](rules.md)", ["#rules"], "[rules](#rules)"),
+        ("[¬ rules](../rules.md)", ["topic/rules.md"], "[¬ rules](topic/rules.md)"),
+        ("[¬rules](rules.md#a)", [None], "[¬rules](rules.md#a)"),
         (
-            '[¬ rules](rules.md "A title")',
-            ["rules"],
+            '[rules](rules.md "A title")',
+            ["#rules"],
             '[rules](#rules "A title")',
         ),
         (
-            "A `[¬ draft](draft.md)` example beside [¬ rules](rules.md).",
-            ["rules"],
-            "A `[¬ draft](draft.md)` example beside [rules](#rules).",
+            "A `[draft](draft.md)` example beside [rules](rules.md).",
+            ["#rules"],
+            "A `[draft](draft.md)` example beside [rules](#rules).",
         ),
         (
-            "[¬ a](a.md) and [¬ b](b.md)",
-            ["a", "b"],
+            "[a](a.md) and [b](b.md)",
+            ["#a", "#b"],
             "[a](#a) and [b](#b)",
         ),
+        ("[rules](../rules.md)", [None], "[rules](../rules.md)"),
+        ("[¬ rules](../rules.md)", [None], "[¬ rules](../rules.md)"),
         ("nothing to rewrite", [], "nothing to rewrite"),
     ],
 )
-def test_a_marked_link_is_written_to_its_destination(
-    text: str, assigned: list[str], expected: str
+def test_a_compiled_link_is_written_to_its_destination(
+    text: str, assigned: list[str | None], expected: str
 ) -> None:
     assert "".join(rewritten(lines(text), inline_of(text), assigned, {})) == expected
 
@@ -147,20 +135,30 @@ def test_a_marked_link_is_written_to_its_destination(
 @pytest.mark.parametrize(
     ("body", "definition", "assigned", "expected"),
     [
-        ("A [full][rules] use.", "[rules]: rules.md\n", [], "A [full](rules.md) use."),
-        ("A [rules][] use.", "[rules]: rules.md\n", [], "A [rules](rules.md) use."),
-        ("A [rules] use.", "[rules]: rules.md\n", [], "A [rules](rules.md) use."),
+        (
+            "A [full][rules] use.",
+            "[rules]: rules.md\n",
+            [None],
+            "A [full](rules.md) use.",
+        ),
+        (
+            "A [rules][] use.",
+            "[rules]: rules.md\n",
+            [None],
+            "A [rules](rules.md) use.",
+        ),
+        ("A [rules] use.", "[rules]: rules.md\n", [None], "A [rules](rules.md) use."),
         (
             "A [full][rules] use.",
             '[rules]: rules.md "The Rules"\n',
-            [],
+            [None],
             'A [full](rules.md "The Rules") use.',
         ),
         (
             "A [¬ full][rules] use.",
             '[rules]: rules.md "The Rules"\n',
-            ["rules"],
-            'A [full](#rules "The Rules") use.',
+            [None],
+            'A [¬ full](rules.md "The Rules") use.',
         ),
         (
             "A ![diagram][plan] use.",
@@ -171,7 +169,7 @@ def test_a_marked_link_is_written_to_its_destination(
         (
             "A [RULES][] use spelled another way.",
             "[rules]: rules.md\n",
-            [],
+            [None],
             "A [RULES](rules.md) use spelled another way.",
         ),
         (
@@ -195,13 +193,13 @@ def test_a_marked_link_is_written_to_its_destination(
         (
             "A [link ![diagram][plan] inside][rules] use.",
             "[rules]: rules.md\n[plan]: pics/plan.png\n",
-            [],
+            [None],
             "A [link ![diagram](pics/plan.png) inside](rules.md) use.",
         ),
     ],
 )
 def test_a_resolved_reference_style_use_is_published_inline(
-    body: str, definition: str, assigned: list[str], expected: str
+    body: str, definition: str, assigned: list[str | None], expected: str
 ) -> None:
     inline, defined = read(f"{body}\n\n{definition}")
     assert "".join(rewritten(lines(body), inline, assigned, defined)) == expected
@@ -226,12 +224,12 @@ def test_a_task_marker_a_definition_spells_is_no_use() -> None:
 def test_a_link_the_emission_cannot_edit_is_refused() -> None:
     text = "`[¬ rules](rules.md)`"
     with pytest.raises(Unrewritable):
-        rewritten(lines(text), inline_of(text), ["rules"], {})
+        rewritten(lines(text), inline_of(text), ["#rules"], {})
 
 
 def test_a_rewrite_reports_one_entry_for_each_line_it_was_given() -> None:
-    text = "The procedure requires\n[¬ the shared rules](rules.md) whole.\n"
-    written = rewritten(lines(text), inline_of(text), ["rules"], {})
+    text = "The procedure requires\n[the shared rules](rules.md) whole.\n"
+    written = rewritten(lines(text), inline_of(text), ["#rules"], {})
     assert written == [
         "The procedure requires\n",
         "[the shared rules](#rules) whole.\n",
@@ -242,16 +240,16 @@ def test_a_definition_spelled_across_two_lines_is_published_as_authored() -> Non
     body = "A [full][rules] use.\n"
     definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
     inline, defined = read(f"{body}\n{definition}")
-    assert rewritten(lines(body), inline, [], defined) == [
+    assert rewritten(lines(body), inline, [None], defined) == [
         'A [full](rules.md "The Rules,\nwritten out") use.\n'
     ]
 
 
-def test_a_marked_use_of_such_a_definition_takes_its_assigned_destination() -> None:
-    body = "A [¬ full][rules] use.\n"
+def test_a_compiled_use_of_such_a_definition_takes_its_assigned_destination() -> None:
+    body = "A [full][rules] use.\n"
     definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
     inline, defined = read(f"{body}\n{definition}")
-    assert rewritten(lines(body), inline, ["rules"], defined) == [
+    assert rewritten(lines(body), inline, ["#rules"], defined) == [
         'A [full](#rules "The Rules,\nwritten out") use.\n'
     ]
 
@@ -260,7 +258,7 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
     body = "A [full][\nrules] use.\n"
     definition = "[rules]: rules.md\n"
     inline, defined = read(f"{body}\n{definition}")
-    written = rewritten(lines(body), inline, [], defined)
+    written = rewritten(lines(body), inline, [None], defined)
     assert len(written) == 2
     assert "".join(written) == "A [full](rules.md) use.\n"
 
@@ -268,13 +266,14 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
-        ("The procedure requires [¬ rules](rules.md).", ["rules.md"]),
-        ("The procedure cites [rules](rules.md).", []),
-        ("A fragment [¬ alpha](#alpha) of its own.", ["#alpha"]),
-        ("An example `[¬ draft](draft.md)` of one.", []),
+        ("The procedure requires [rules](rules.md).", [("rules.md", "rules")]),
+        ("The procedure defers [¬ rules](rules.md).", [("rules.md", "¬ rules")]),
+        ("A fragment [alpha](#alpha) of its own.", [("#alpha", "alpha")]),
+        ("An example `[draft](draft.md)` of one.", []),
+        ("A picture ![of it](plan.png) names no link.", []),
     ],
 )
-def test_the_parser_names_each_marked_link_a_token_carries(
-    text: str, expected: list[str]
+def test_the_parser_names_each_link_a_token_carries(
+    text: str, expected: list[tuple[str, str]]
 ) -> None:
     assert destinations(inline_of(text)) == expected

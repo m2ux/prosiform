@@ -10,8 +10,8 @@ The delivery findings for one epic from supplied evidence.
 
 **Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
 
-1. Run [¬ Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
-2. Return the [¬ Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
+1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
+2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
 ## Fields
 
@@ -42,7 +42,7 @@ Reports an epic's delivery state against the pull requests that name it.
 
 **Inputs:** Epic JSON, pull request records and complete issue-link snapshot.
 
-- Results follow [¬ Delivery Findings](#delivery-findings).
+- Results follow [Delivery Findings](#delivery-findings).
 
 ```bash
 work-tracker match '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
