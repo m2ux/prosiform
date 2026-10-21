@@ -5,6 +5,7 @@ clauses = [
   "Compile before publishing — step 5, consolidate selections",
   "Input and output contract — Groups, emit each selected region once",
   "Adversarial acceptance fixtures — Wrapper identity",
+  "Input and output contract — Entry identity",
 ]
 
 [invocation]

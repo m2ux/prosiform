@@ -2,6 +2,7 @@ description = "A complete bundle larger than the output budget fails the run rat
 
 clauses = [
   "Resource limits — --max-output-bytes",
+  "Agent delivery contract — No silent fallback",
 ]
 
 [invocation]

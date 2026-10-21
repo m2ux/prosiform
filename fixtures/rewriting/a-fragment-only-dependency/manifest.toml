@@ -4,6 +4,7 @@ clauses = [
   "Bundle destinations — Internal links",
   "Link classification and resource handling — Fragment-only links",
   "Source-local reference interpretation — step 3",
+  "Resolution sequence — #run within guide.md",
 ]
 
 [invocation]

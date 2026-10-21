@@ -4,6 +4,7 @@ clauses = [
   "Source-local reference interpretation — step 1",
   "Source-local reference interpretation — step 3",
   "Source-local reference interpretation — step 4",
+  "Compile before publishing — step 6",
 ]
 
 [invocation]

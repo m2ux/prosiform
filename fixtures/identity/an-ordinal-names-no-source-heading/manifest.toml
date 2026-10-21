@@ -4,6 +4,7 @@ clauses = [
   "Source-heading resolution, two headings in one source producing the same slug",
   "Resolution sequence — step 5",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+  "Source and candidate validation modes — Source mode, a source fragment carries no ordinal",
 ]
 
 [invocation]
