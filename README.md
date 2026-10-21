@@ -31,7 +31,7 @@ Leaving retrieval to the agent costs:
 prosiform --root my-skill --output bundle.md procedure.md rules.md
 ```
 
-![SKILL.md links to procedure.md and rules.md in the source tree. The two linked documents are selected for compilation and combined into one bundle; SKILL.md is not included.](docs/images/compilation.png)
+![SKILL.md links to the selected procedure.md and rules.md. Procedure links to tips.md, which is included recursively. Rules links to archive.md with the ¬ marker; that link remains, but archive content is excluded. The bundle contains procedure, rules, and tips, without SKILL.md.](docs/images/compilation.png)
 
 ## Installation
 
