@@ -48,7 +48,7 @@ References → Closure → Consolidation → Grouping → Rewriting → Validati
 - **Bundle** — the single validated Markdown document one run produces
 - **Profile** — `skill-markdown-v1`: CommonMark with pipe tables, strikethrough and preserved task markers; no typographic substitution
 
-Every term the contract uses is defined once, in the [glossary](docs/glossary.md), which ships with the tool.
+Every term the contract uses is defined once, in the [glossary](docs/glossary.md), which ships with the tool. The words the corpus's own declarations add to it — the English a sentence is written in, the names Markdown and its encodings carry — are registered in the [corpus vocabulary](docs/corpus-vocabulary.md), and the independence check reports a declaration stating a word neither source holds.
 
 ## 🗂️ Repository Layout
 
@@ -88,7 +88,7 @@ make check
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing besides, each reproducing that build's own help output. |
 | `make conformance` | Each behavioural clause of the design carries the fixtures exercising it, each clause no fixture reaches is listed as uncovered, each clause no source tree and invocation can state is recorded as unfixturable with the reason and what states it instead, each section of the design that states no behaviour is declared as such and carries no clause, and each error code, warning code and exit status the contract declares is listed with the fixtures reaching it, one only an awaiting fixture declares named unfixturable with the work it awaits, each installation claim no run of the corpus observes listed as unfixturable with the reason it is unreachable and the smoke-run property that would observe it, and the codes the build under test reports for itself are exactly the codes the contract declares. It fails without a build configured. |
-| `make independence` | No declaration a fixture carries, no entry the conformance report prints and no name the contract declares as its interface names an implementation language, the machinery of modules and packaging, a source file of an implementation or the wording a build gives its own fault. It renders that report, so it fails without a build configured. |
+| `make independence` | Every word a fixture declaration states and every word the conformance report prints is one the contract's vocabulary holds: the design's own words and clause names, the terms the [glossary](docs/glossary.md) defines, the names the contract declares as its interface, and the [corpus vocabulary](docs/corpus-vocabulary.md). It renders the conformance report, so it fails without a build configured. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
 The tools the first seven call are pinned by [`src/uv.lock`](src/README.md), and `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too; `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.

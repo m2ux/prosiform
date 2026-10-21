@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert the corpus and its report bind behaviour rather than an implementation.
+"""Assert the corpus and its report state the contract's vocabulary and no other.
 
 The corpus is what a second implementation of the contract is held to, so a
 fixture naming a module, a language or the wording one build gives a fault
@@ -7,38 +7,43 @@ states a requirement that can only be met by copying the first build. The
 manifest schema states that nothing in a manifest names an implementation
 and the runner reaches its build through configuration so that it names
 none, but both are facts about the shape of a declaration. A description, a
-clause, a carried substring and a clause name the design states are free
-text, and free text is where such a term arrives.
+clause, a carried substring and a fixture's own identity are free text, and
+free text is where such a term arrives.
 
-What is scanned is the claims, not the documents under test. A manifest
-states what its fixture establishes about the contract, so every string it
-declares is held to this rule, as is the fixture's own identity. A
-fixture's source tree and the bytes it expects back are the input the run
-consumes and the output it must reproduce: the corpus deliberately bundles
-real documents that name real source files, and holding those to the rule
-would refuse the corpus its realism without saying anything about what the
-corpus binds. The conformance report is scanned whole, which brings the
-design's own clause names and the declared surface under the same rule.
-That surface states the codes the build under test reports for itself, so
-this check reaches the build the conformance report reads — named by
+The bound is the vocabulary a declaration is entitled to use. The design
+states the contract's words, `docs/glossary.md` defines each term the
+design marks, the manifest schema and the documented invocation declare the
+contract's interface by name, and `docs/corpus-vocabulary.md` registers the
+words the corpus's own declarations and this report's entries add. A word
+outside all four is a term the contract does not state, and is reported
+wherever a claim carries it. Nothing is refused by name, so a term is not
+reached by spelling it differently: a word the vocabulary does not hold is
+reported whatever it names.
+
+What is scanned is the claims, not the documents under test. A fixture's
+source tree and the bytes it expects back are the input the run consumes
+and the output it must reproduce: the corpus deliberately bundles real
+documents that name real source files, and holding those to the rule would
+refuse the corpus its realism without saying anything about what the corpus
+binds. The paths, reference texts and arguments a manifest declares name
+that same tree, and the harness check holds each of them to the files the
+fixture carries, so they are read as the tree they name rather than as
+words. The conformance report is scanned whole, which brings the design's
+own clause names and the declared surface under the same rule. That
+surface states the codes the build under test reports for itself, so this
+check reaches the build the conformance report reads — named by
 configuration, as the corpus names it — and fails without one. A code the
 build reports that the contract declares nowhere is rendered into the
-report and so is held to this rule like every other entry.
+report and so is read against the vocabulary like every other entry.
 
-The inventory is three kinds of term: an implementation language or
-runtime, the machinery of modules and packaging with the source-file paths
-and reserved identifiers that go with it, and the wording a build's fault
-reporting uses in place of the contract's codes. Each term says what it
-names, so a hit reads as the reason it is refused.
-
-The contract's own declared names are interface terms: the error codes, the
-warning codes and the exit statuses the schema declares, and the options
-the documented invocation names. They are held apart from the inventory
-rather than subtracted from each scanned text — the check scans those
-declared names themselves, and one matching the inventory is a reported
-failure. The two sets are then disjoint by the check's own verdict, the
-scan needs no exclusion of its own, and a contract that came to declare an
-implementation term is reported rather than quietly admitted.
+A word is read as the contract states it rather than as a sentence inflects
+it: plurals, the past tense, the present participle and the adverb resolve
+to the word they are formed from, and a hyphenated compound is its parts.
+Case is folded on the reading side, so `Python` is the word `python`. It is
+not folded on the stating side: a word the design writes only capitalised
+names a product, a language or a build rather than stating a term of the
+contract, so the design's prose contributes the words it writes in lower
+case, and the names the design gives its own clauses whatever their case.
 """
 
 import re
@@ -49,7 +54,7 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
-from conformance import render, report, reported_codes
+from conformance import clauses, render, report, reported_codes
 from documents import ROOT, plain, rows
 from manifests import (
     CORPUS,
@@ -62,244 +67,218 @@ from manifests import (
     statuses,
 )
 from runner import BuildNotConfigured
-from vocabulary import design_reference, git_ref, git_show
+from vocabulary import SHIPPED_GLOSSARY, design_reference, git_ref, git_show
 
 README = ROOT / "README.md"
+REGISTER = ROOT / "docs" / "corpus-vocabulary.md"
 OPTION = "Option"
 REPORT = "the conformance report"
 
-LANGUAGES = (
-    "an implementation language or runtime",
-    (
-        "python",
-        "cpython",
-        "pypy",
-        "rust",
-        "golang",
-        "java",
-        "jvm",
-        "kotlin",
-        "scala",
-        "clojure",
-        "javascript",
-        "typescript",
-        "nodejs",
-        "node.js",
-        "deno",
-        "ruby",
-        "perl",
-        "php",
-        "haskell",
-        "erlang",
-        "elixir",
-        "swift",
-        "dotnet",
-        "csharp",
-        "ocaml",
-    ),
-)
+WORD = re.compile(r"(?<![A-Za-z])[A-Za-z](?:\+\+|#)|[A-Za-z][A-Za-z']*")
+LOWER = re.compile(r"(?<![A-Za-z])[a-z][a-z']*(?![A-Za-z])")
+CODE_SPAN = re.compile(r"`[^`\n]*`")
+LINK_DESTINATION = re.compile(r"\]\([^)\n]*\)")
+TABLE_TERM = re.compile(r"^\|\s*\*\*([^*]+)\*\*", re.MULTILINE)
+DOUBLED = re.compile(r"([bdfglmnprt])\1$")
 
-MACHINERY = (
-    "the machinery of modules and packaging",
-    # A word the contract itself uses in its own sense is not here, however
-    # much a language also uses it: the design imports content into a bundle
-    # and checks a heading's namespace, so neither word names a build.
-    (
-        "module",
-        "submodule",
-        "package",
-        "classpath",
-        "venv",
-        "virtualenv",
-        "pip",
-        "pypi",
-        "setuptools",
-        "pyproject",
-        "sdist",
-        "wheel",
-        "npm",
-        "cargo",
-        "crate",
-        "maven",
-        "gradle",
-        "gemspec",
-        "stdlib",
-        "dunder",
-    ),
-)
-
-WORDING = (
-    "the wording a build gives its own fault",
-    (
-        "traceback",
-        "stacktrace",
-        "stack trace",
-        "panic",
-        "unwrap",
-        "errno",
-        "segfault",
-        "segmentation fault",
-        "core dump",
-        "assertion failed",
-    ),
-)
-
-SOURCE_SUFFIXES = (
-    "py",
-    "pyi",
-    "pyc",
-    "rs",
-    "go",
-    "ts",
-    "tsx",
-    "js",
-    "mjs",
-    "cjs",
-    "rb",
-    "java",
-    "jar",
-    "kt",
-    "swift",
-    "cs",
-    "cpp",
-    "cc",
-    "hpp",
-    "php",
-    "pl",
-    "whl",
-)
-
-SHAPES = (
-    (
-        re.compile(
-            r"(?<![\w/.-])[\w./-]*\.(?:" + "|".join(SOURCE_SUFFIXES) + r")(?![\w-])"
-        ),
-        "a source file of an implementation",
-    ),
-    (re.compile(r"\b__\w+__\b"), "an identifier a language reserves"),
-    (
-        re.compile(r"\b[A-Z][A-Za-z]*(?:Error|Exception)\b"),
-        "a fault class of an implementation",
-    ),
-    (
-        re.compile(r"(?<![\w+])c\+\+(?![\w+])", re.IGNORECASE),
-        "an implementation language",
-    ),
-    (re.compile(r"(?<![\w#])c#(?![\w#])", re.IGNORECASE), "an implementation language"),
-)
+CARRIED = "message_contains"
+DESCRIPTION = "description"
+DIAGNOSTICS = "diagnostics"
+EXPECTED = "expected"
+STDOUT_CARRIED = "stdout_contains"
 
 
 @dataclass(frozen=True)
 class Reference:
-    """One implementation term found in text the contract's claims are made in."""
+    """One word a claim states that the contract's vocabulary does not."""
 
     where: str
     found: str
-    names: str
 
 
-@cache
-def inventory() -> tuple[tuple[re.Pattern[str], str], ...]:
-    """Every form of implementation reference, each with what it names.
+def forms(word: str) -> set[str]:
+    """The word as written and as the word it is formed from.
 
-    The named terms come before the shapes, so a span both describe is
-    read as the term it is rather than as the shape it fits.
+    One spelling of a word stands for the contract's term however a
+    sentence inflects it, so a claim writing `documents` states the word
+    the design writes as `document`.
     """
-    named = [
-        (re.compile(rf"(?<!\w){re.escape(term)}(?!\w)", re.IGNORECASE), names)
-        for names, terms in (LANGUAGES, MACHINERY, WORDING)
-        for term in terms
-    ]
-    return tuple(named) + SHAPES
-
-
-def scan(text: str, where: str) -> list[Reference]:
-    """Every implementation term one piece of text names, each named once.
-
-    A term one piece of text names repeatedly is one reference: the text
-    is a single claim, and naming it once locates the claim to fix.
-    """
-    found: dict[str, Reference] = {}
-    for pattern, names in inventory():
-        for match in pattern.finditer(text):
-            found.setdefault(
-                match.group(0).lower(), Reference(where, match.group(0), names)
-            )
-    return sorted(found.values(), key=lambda reference: reference.found.lower())
-
-
-def strings(value: Any) -> list[str]:
-    """Every string a parsed manifest declares, at whatever depth it declares it."""
-    if isinstance(value, str):
-        return [value]
-    if isinstance(value, dict):
-        return [found for item in value.values() for found in strings(item)]
-    if isinstance(value, list):
-        return [found for item in value for found in strings(item)]
-    return []
-
-
-def corpus_references(corpus: Path) -> list[Reference]:
-    """Every implementation term the corpus's declarations name."""
-    found = []
-    for fixture in fixtures(corpus):
-        where = identity(fixture, corpus)
-        declared = [where] + strings(read(fixture / MANIFEST_NAME))
-        found += scan("\n".join(declared), where)
+    spelling = word.lower().replace("'", "")
+    found = {spelling}
+    if spelling.endswith("ied") and len(spelling) > 4:
+        found.add(spelling[:-3] + "y")
+    if spelling.endswith("ies") and len(spelling) > 4:
+        found.add(spelling[:-3] + "y")
+    if re.search(r"(?:s|x|z|ch|sh)es$", spelling):
+        found.add(spelling[:-2])
+    if spelling.endswith("s") and not spelling.endswith("ss") and len(spelling) > 3:
+        found.add(spelling[:-1])
+    if spelling.endswith("ing") and len(spelling) > 5:
+        found.add(spelling[:-3])
+        found.add(DOUBLED.sub(r"\1", spelling[:-3]))
+        found.add(spelling[:-3] + "e")
+    elif spelling.endswith("ed") and len(spelling) > 4:
+        found.add(spelling[:-2])
+        found.add(DOUBLED.sub(r"\1", spelling[:-2]))
+        found.add(spelling[:-1])
+    if spelling.endswith("ly") and len(spelling) > 4:
+        found.add(spelling[:-2])
     return found
 
 
-def report_references(
-    design: str, corpus: Path, reported: Collection[str]
-) -> list[Reference]:
-    """Every implementation term the conformance report's entries name."""
-    rendered = render(report(design, corpus, reported)).splitlines()
-    return [
-        reference
-        for number, line in enumerate(rendered, start=1)
-        for reference in scan(line, f"{REPORT}, line {number}")
-    ]
+def words(text: str) -> list[str]:
+    """Every word one piece of text states, a hyphenated compound as its parts.
+
+    A single letter names nothing on its own, and the one a language is
+    named by carries its sign with it, so `c++` is a word and the `a` of a
+    sentence is not.
+    """
+    return [found for found in WORD.findall(text.replace("-", " ")) if len(found) > 1]
+
+
+def prose(text: str) -> str:
+    """One document as the words it states, its code and its addresses apart.
+
+    A code span and a link destination name something rather than stating
+    it, so neither contributes to the vocabulary nor is read as a claim.
+    """
+    return LINK_DESTINATION.sub("]", CODE_SPAN.sub(" ", text))
+
+
+def registered(text: str) -> list[str]:
+    """Every word a register of vocabulary admits, as its tables name them."""
+    return [plain(term).strip() for term in TABLE_TERM.findall(text)]
 
 
 def declared_names(text: str) -> list[str]:
     """Every name the contract declares as its interface.
 
-    The codes and the exit statuses come from the manifest schema, which is
-    where the corpus reads them, and the options from the tables the
-    documented invocation enumerates them in.
+    The codes, the severities and the exit statuses come from the manifest
+    schema, which is where the corpus reads them, and the options from the
+    tables the documented invocation enumerates them in.
     """
     return (
         [str(status) for status in statuses()]
+        + list(severities())
         + [code for severity in severities() for code in sorted(catalogue(severity))]
         + [plain(record.get(OPTION, "")) for record in rows(text, OPTION)]
     )
 
 
-def declared_references(text: str) -> list[Reference]:
-    """Every interface term the contract declares that the inventory would refuse."""
+def vocabulary(
+    design: str, glossary: str, documentation: str, register: str
+) -> set[str]:
+    """Every word a claim is entitled to state.
+
+    The design's prose states the contract's own words, the glossary's
+    terms and the design's clause names state what it calls things, the
+    documented invocation and the schema declare its interface, and the
+    register admits the words the corpus's declarations add.
+    """
+    stated: set[str] = set()
+    for word in LOWER.findall(prose(design)):
+        if len(word) > 1:
+            stated |= forms(word)
+    for clause in clauses(design):
+        for word in words(clause.name):
+            stated |= forms(word)
+    for source in (registered(glossary), registered(register)):
+        for term in source:
+            for word in words(term):
+                stated |= forms(word)
+    for name in declared_names(documentation):
+        for word in words(name):
+            stated |= forms(word)
+    return stated
+
+
+def claims(manifest: dict[str, Any], where: str) -> list[str]:
+    """Every claim one fixture's declaration makes, its own identity among them.
+
+    A fixture states what it establishes, the clauses it encodes and the
+    text an output must carry. Its paths, its reference texts and its
+    arguments name the tree it carries, which the run consumes rather than
+    the contract binds.
+    """
+    expected = manifest.get(EXPECTED, {})
+    carried = [
+        text
+        for diagnostic in expected.get(DIAGNOSTICS, [])
+        for text in diagnostic.get(CARRIED, [])
+    ]
+    return (
+        [where, manifest.get(DESCRIPTION, "")]
+        + list(manifest.get("clauses", []))
+        + list(expected.get(STDOUT_CARRIED, []))
+        + carried
+    )
+
+
+def scan(text: str, where: str, stated: set[str]) -> list[Reference]:
+    """Every word one claim states that the vocabulary does not hold.
+
+    A word a claim repeats is one reference: the claim is a single
+    statement, and naming the word once locates the claim to fix.
+    """
+    found: dict[str, Reference] = {}
+    for word in words(prose(text)):
+        if forms(word) & stated:
+            continue
+        found.setdefault(word.lower(), Reference(where, word))
+    return sorted(found.values(), key=lambda reference: reference.found.lower())
+
+
+def corpus_references(corpus: Path, stated: set[str]) -> list[Reference]:
+    """Every word the corpus's declarations state that the vocabulary does not."""
+    found = []
+    for fixture in fixtures(corpus):
+        where = identity(fixture, corpus)
+        declared = claims(read(fixture / MANIFEST_NAME), where)
+        found += scan("\n".join(declared), where, stated)
+    return found
+
+
+def report_references(
+    design: str, corpus: Path, stated: set[str], reported: Collection[str]
+) -> list[Reference]:
+    """Every word the report's entries state that the vocabulary does not."""
+    rendered = render(report(design, corpus, reported)).splitlines()
     return [
         reference
-        for name in declared_names(text)
-        for reference in scan(name, f"the contract's declared name {name}")
+        for number, line in enumerate(rendered, start=1)
+        for reference in scan(line, f"{REPORT}, line {number}", stated)
     ]
+
+
+@cache
+def sources() -> tuple[str, str]:
+    """The design the contract is stated on, and the path it is read from."""
+    branch, path = design_reference()
+    return git_show(git_ref(branch), path), path
 
 
 def check() -> tuple[list[str], list[Reference]]:
-    """The corpus, the report and the contract's declared names, each scanned."""
-    branch, path = design_reference()
-    design = git_show(git_ref(branch), path)
+    """The corpus's declarations and the report, each read against the vocabulary."""
+    design, path = sources()
     documentation = README.read_text()
+    stated = vocabulary(
+        design,
+        SHIPPED_GLOSSARY.read_text(),
+        documentation,
+        REGISTER.read_text(),
+    )
 
-    corpus = corpus_references(CORPUS)
-    emitted = report_references(design, CORPUS, reported_codes())
-    declared = declared_references(documentation)
+    corpus = corpus_references(CORPUS, stated)
+    emitted = report_references(design, CORPUS, stated, reported_codes())
 
     counted = [
+        f"ok   vocabulary  {len(stated)} word(s) from {path}, docs/glossary.md, "
+        f"{len(declared_names(documentation))} declared name(s) and "
+        "docs/corpus-vocabulary.md",
         f"ok   corpus      {len(fixtures(CORPUS))} fixture(s) and their identities",
         f"ok   report      {REPORT} as it renders",
-        f"ok   interface   {len(declared_names(documentation))} declared name(s)",
     ]
-    return counted, corpus + emitted + declared
+    return counted, corpus + emitted
 
 
 def main() -> int:
@@ -312,18 +291,20 @@ def main() -> int:
         print(line)
     for reference in failures:
         print(
-            f"FAIL {reference.where}: {reference.found!r} names {reference.names}",
+            f"FAIL {reference.where}: {reference.found!r} is a word the contract's "
+            "vocabulary does not state",
             file=sys.stderr,
         )
     if failures:
         print(
-            f"\nindependence check: {len(failures)} implementation reference(s)",
+            f"\nindependence check: {len(failures)} term(s) the contract "
+            "does not state",
             file=sys.stderr,
         )
         return 1
     print(
-        f"\nindependence check: {len(inventory())} term(s), named by no fixture "
-        f"declaration, no report entry and no name the contract declares"
+        "\nindependence check: every word of every fixture declaration and every "
+        "report entry is one the contract states"
     )
     return 0
 
