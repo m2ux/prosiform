@@ -80,12 +80,11 @@ carries is therefore neither a root nor a boundary — it sits inside one
 region, so the region it sits in is what the document holds there — and
 a fragment naming one names a section the model does not have.
 
-A link belongs to the innermost such section containing it, and to the
-document itself where no section does: the content above a document's
-first eligible heading is the document's own. Ownership is read from the
-document's structure and from nothing a run selected, so the section a
-link belongs to is the same whether that section was selected on its own
-or inside a larger region that consolidated it.
+The content above a document's first eligible heading is the document's
+own, so a selection naming the whole document carries it. A link is read
+for the target it names and the position the source wrote it at, and the
+section it sits in enters neither: a reference names the same target
+wherever its author put it.
 
 The document also counts what a budget is declared over: the container
 blocks it nests at its deepest point, which is what a nesting budget
@@ -594,30 +593,6 @@ def nesting(tokens: Sequence[Token]) -> int:
         elif token.type in CONTAINER_CLOSE:
             depth -= 1
     return deepest
-
-
-def owner(tokens: Sequence[Token], at: int) -> Token | None:
-    """The eligible section one position belongs to, or nothing for the preamble.
-
-    The owner is the innermost eligible section containing the
-    position, which is the last section root the document opens at or
-    above it: a heading a container carries roots no section, so
-    content inside that container belongs to the section the container
-    sits in. A position above the document's first section root belongs
-    to the document itself, which is what nothing names here.
-
-    The position is read from the document's own structure, so a
-    selection does not enter the answer and consolidating a section
-    into a larger region leaves every owner it held unchanged.
-    """
-    found: Token | None = None
-    for token in regions(tokens):
-        start = 0 if token.map is None else token.map[0]
-        if start > at:
-            break
-        if token.type == HEADING_OPEN:
-            found = token
-    return found
 
 
 @dataclass(frozen=True)

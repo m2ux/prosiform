@@ -114,8 +114,3 @@ class Limits:
     def of(self, budget: Budget) -> int:
         """The number one budget stands at for this run."""
         return self.declared[budget]
-
-
-def defaults() -> Limits:
-    """Every budget at the number the profile declares."""
-    return Limits({budget: budget.default for budget in BUDGETS})
