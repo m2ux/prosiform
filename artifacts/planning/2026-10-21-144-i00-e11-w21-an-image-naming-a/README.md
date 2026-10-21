@@ -25,4 +25,5 @@ This row covers AC22 of the deferred-debt epic, which states what fixing the def
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Base rebuild | [I00:E11 Base Rebuild](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-39-i00-e11-base-rebuild) |
+| Pull request | [#151 \[I00:E11\] An Image Naming a Document Warns Like Any Resource](https://github.com/m2ux/prosiform/pull/151) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
