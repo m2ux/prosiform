@@ -3,7 +3,7 @@
 - [Shared context](compilation.svg): root-level procedure and tips documents, and Agents and Common under Rules / Overview with deferred Codex and Claude rules under `rules/`.
 - [Agent-specific rules](agent-rules.svg): each agent selects and compiles its applicable rules under its source path.
 
-These editable SVGs record the approved designs from `main` commit `192296b`. Published SVGs and PNGs reside in `docs/images/` on `main`.
+These editable SVGs record the approved designs from `main` commit `9e8e011`. Published SVGs and PNGs reside in `docs/images/` on `main`.
 
 Render with IBM Plex Mono installed:
 
