@@ -12,15 +12,18 @@ a fixture reaches is listed with that fixture; one only a fixture awaiting
 later work declares is unfixturable, and the work it awaits is the reason;
 one no fixture declares at all fails the report. The installation claims no
 run observes are listed there too, each with the reason it is unreachable
-and what would make it observable, and the closing summary counts them.
+and the smoke-run property that would observe it, and the closing summary
+counts them. A case supplies a run observing a claimed property, which is
+the condition under which a claim fails the report rather than printing.
 """
 
 import json
 from pathlib import Path
 from typing import Any
 
+import conformance
 import pytest
-from conformance import CLAIMS, clauses, render, report
+from conformance import CLAIMS, clauses, listed, render, report
 
 DESIGN = """# A design
 
@@ -215,19 +218,61 @@ def test_an_installation_claim_is_listed_with_its_reason(corpus: Path) -> None:
     assert f"installation claim {claim.name}: unfixturable, {claim.reason}" in printed
 
 
-def test_an_installation_claim_states_what_would_observe_it(corpus: Path) -> None:
+def test_an_installation_claim_names_the_property_that_would_observe_it(
+    corpus: Path,
+) -> None:
     printed = render(report(DESIGN, corpus)).splitlines()
     for claim in CLAIMS:
-        listed = printed.index(
+        where = printed.index(
             f"installation claim {claim.name}: unfixturable, {claim.reason}"
         )
-        assert printed[listed + 1] == f"    {claim.observable}"
+        assert printed[where + 1] == (
+            f"    observable once the smoke run observes a command {claim.observes}"
+        )
+
+
+def test_a_claim_names_a_property_no_run_observes(corpus: Path) -> None:
+    assert [claim.name for claim in listed()] == [claim.name for claim in CLAIMS]
+    assert not [
+        failure
+        for failure in report(DESIGN, corpus).failures
+        if failure.startswith("installation claim")
+    ]
+
+
+def test_a_claim_the_run_observes_fails_the_report(
+    corpus: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    claim = CLAIMS[0]
+    monkeypatch.setattr(conformance, "OBSERVED", (claim.observes,))
+    found = report(DESIGN, corpus)
+    assert any(
+        failure
+        == (
+            f"installation claim {claim.name} names a command {claim.observes}, "
+            "which the smoke run observes, so the listing states a limit the "
+            "corpus no longer has"
+        )
+        for failure in found.failures
+    )
+
+
+def test_a_claim_the_run_observes_leaves_the_listing(
+    corpus: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    claim = CLAIMS[0]
+    monkeypatch.setattr(conformance, "OBSERVED", (claim.observes,))
+    printed = render(report(DESIGN, corpus))
+    assert f"installation claim {claim.name}:" not in printed
+    assert printed.splitlines()[-1].endswith(
+        f", {len(CLAIMS) - 1} installation claim(s) no run observes"
+    )
 
 
 def test_the_summary_counts_the_installation_claims(corpus: Path) -> None:
     printed = render(report(DESIGN, corpus)).splitlines()
     assert printed[-1].endswith(
-        f", {len(CLAIMS)} installation claim(s) no run observes"
+        f", {len(listed())} installation claim(s) no run observes"
     )
 
 
