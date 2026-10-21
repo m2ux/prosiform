@@ -135,6 +135,7 @@ The command answers to every option the contract declares, and `prosiform --help
 | `--group SLUG:DEPTH` | merge every document under a directory named SLUG at source heading level DEPTH, 1 through 6; repeatable, once per slug |
 | `--check` | discover, bundle and validate without emitting or publishing the bundle; accepted with --output |
 | `--diagnostics {text,json}` | the diagnostic format on standard error; default text |
+| `--fault {source-changed,internal}` | perform a fault on the run itself, so a conformance run reaches an outcome no source tree states; none by default |
 | `--max-files N` | the budget of distinct source documents opened; a positive decimal integer, default 256 |
 | `--max-file-bytes N` | the budget of raw bytes in one source; a positive decimal integer, default 1048576 |
 | `--max-input-bytes N` | the budget of raw source bytes, counted once per source; a positive decimal integer, default 16777216 |

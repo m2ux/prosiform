@@ -128,6 +128,17 @@ it, and a hash taken over one file at a time supplies no atomicity
 across the set, so a run needing strict reproducibility bundles from a
 snapshot made immutable outside this tool.
 
+Two of the outcomes the contract declares are facts about the run rather
+than about any document it reads, so a source tree and an invocation
+state neither: a source that changes during compilation, and a run that
+fails in itself. `--fault NAME` is how a conformance run reaches them.
+`source-changed` writes other bytes to each source the run read, between
+discovery and the recheck, so the recheck meets a source that is no
+longer the source the run read; `internal` fails the run in itself once
+the candidate is built and before anything publishes. The detection and
+the reporting are the run's own either way, which is what the outcome
+is about. A run asking for no fault performs none.
+
 The bundle is published once the whole candidate is built. A
 validation-only run publishes nothing, to either stream or to a named
 file; a run naming an output file writes it atomically, through a
@@ -280,6 +291,10 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 EMPTY_GROUP_RULE = "W_EMPTY_GROUP_RULE"
 ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
+
+SOURCE_CHANGED_FAULT = "source-changed"
+INTERNAL_FAULT = "internal"
+FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT)
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DECIMAL = re.compile(r"^[0-9]+$")
@@ -488,6 +503,12 @@ def parser() -> Parser:
         choices=FORMATS,
         default=TEXT,
         help=f"the diagnostic format on standard error; default {TEXT}",
+    )
+    grammar.add_argument(
+        "--fault",
+        choices=FAULTS,
+        help="perform a fault on the run itself, so a conformance run reaches "
+        "an outcome no source tree states; none by default",
     )
     for budget in BUDGETS:
         grammar.add_argument(
@@ -913,6 +934,25 @@ def recheck(
                 "holds content other than the bytes the run read",
                 chains.get(path, ()),
             )
+
+
+class Faulted(Exception):
+    """A fault the run was asked to perform on itself, and performed."""
+
+
+def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
+    """Write other bytes to each source the run read.
+
+    A source that changes during compilation is a fact about the run
+    rather than about any document it reads, so a source tree and an
+    invocation state nothing about it and a run asked for the fault is
+    what reaches it. The write happens where a concurrent writer's
+    would: after discovery captured the bytes and before the recheck
+    reads them again.
+    """
+    for path in sorted(captured):
+        with (root / path).open("ab") as handle:
+            handle.write(b"\n")
 
 
 def directories(root: Path) -> set[str]:
@@ -1717,7 +1757,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     bundled, named = compose(
         read, parsed, defined, referring, requested, found, limits, inforce
     )
+    if options.fault == SOURCE_CHANGED_FAULT:
+        rewrite_sources(root, captured)
     recheck(root, captured, reaching(contributing(referring, found)))
+    if options.fault == INTERNAL_FAULT:
+        raise Faulted("the run was asked to fail in itself")
     try:
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:

@@ -6,13 +6,14 @@ than to the contract, a write the stream refuses, and the status a request
 this build cannot carry out returns. Each case names a run, its status,
 and what each of the two streams carried.
 
-A source changing while the run reads it is such a case. A fixture
-declares a static source tree and the runner drives one command, so the
-corpus can state what a run does about a tree, never what it does about
-a tree being written. The recheck is therefore held here on both terms:
+A source changing while the run reads it is reached from both sides. The
+corpus states the outcome, over a run asked for the `source-changed`
+fault, and the recheck is held here on the terms a fixture cannot name:
 the comparison itself, over a tree written between the two reads, and a
 whole run whose source is written as the run reads it, which publishes
-nothing to either stream or to a named file.
+nothing to either stream or to a named file. The faults the contract
+declares are held here too, each on the status and the diagnostic it
+returns.
 """
 
 import json
@@ -1799,3 +1800,49 @@ def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) ->
     assert run.status == SUCCESS
     assert "The plan." in run.stdout
     assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+
+
+def test_the_source_changed_fault_fails_the_run_and_publishes_nothing(
+    root: Path, tmp_path: Path
+) -> None:
+    """The fault writes to the tree, and the run's own recheck is what fails it."""
+    output = tmp_path / "bundle.md"
+    run = invoke(
+        "--root",
+        str(root),
+        "--diagnostics",
+        "json",
+        "--fault",
+        "source-changed",
+        "--output",
+        str(output),
+        "guide.md",
+    )
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
+    assert not output.exists()
+    assert (root / "guide.md").read_bytes() != b"# Guide\n"
+
+
+def test_the_internal_fault_names_the_run_and_publishes_nothing(root: Path) -> None:
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--fault", "internal", "guide.md"
+    )
+    assert run.status == INTERNAL_ERROR
+    assert run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
+
+
+def test_a_run_asking_for_no_fault_meets_none(root: Path) -> None:
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    assert (root / "guide.md").read_bytes() == b"# Guide\n"
+
+
+def test_a_fault_the_contract_does_not_declare_is_a_usage_failure(root: Path) -> None:
+    run = invoke(
+        "--root", str(root), "--diagnostics", "json", "--fault", "other", "guide.md"
+    )
+    assert run.status == USAGE_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
