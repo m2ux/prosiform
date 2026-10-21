@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-The conformance report reads 253 clauses from the design and reports 64 reached by no fixture. Nine of those are the design's own non-behavioural sections, which state no behaviour a run can produce and will never carry a fixture; the rest are gaps in the corpus, including whole sequences such as eight of the nine steps of *Compile before publishing* and five bullets of *Source and candidate validation modes*. A build that skipped any of them passes the corpus as it stands.
+The conformance report reads 253 clauses from the design and reports 64 reached by no fixture. Eleven of those are the design's own non-behavioural sections, which state no behaviour a run can produce and will never carry a fixture; the rest are gaps in the corpus, including whole sequences such as eight of the nine steps of *Compile before publishing* and five bullets of *Source and candidate validation modes*. A build that skipped any of them passes the corpus as it stands.
 
 It matters because the uncovered figure is the measure of the corpus's reach, and it only reads as that measure once a section the design never meant a run to produce is told apart from a clause the corpus has yet to state. Each remaining clause gains a fixture naming it, or a recorded reason no source tree and one invocation can state it.
 
@@ -13,6 +13,8 @@ It matters because the uncovered figure is the measure of the corpus's reach, an
 | Artifact | What it holds |
 | --- | --- |
 | [W32](w32.md) | The work item: scope, component, breakdown and test requirements |
+| [Analysis](analysis.md) | The uncovered list grouped by what states each clause, and the disposition each group takes |
+| [Validation](validation.md) | The checks run, the revisions they ran against, and the figures each reported |
 
 ## Links
 
