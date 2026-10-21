@@ -30,6 +30,8 @@ from dataclasses import dataclass
 
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 
+CODES = (RESOURCE_LIMIT,)
+
 
 @dataclass(frozen=True)
 class Budget:

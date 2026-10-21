@@ -4,7 +4,10 @@ The check's input is a corpus of fixtures, a design, a glossary, the
 documented invocation and the register of the corpus's own words, so each
 case here supplies its own rather than the repository's: a manifest
 carrying a word no source states, a design clause naming one, and the
-interface terms the contract declares, which must pass.
+interface terms the contract declares, which must pass. The codes a build
+reports are supplied directly, so no case runs a build, and a code the
+build reports that the contract declares nowhere is read against the
+vocabulary like every other entry of the report.
 
 The rule is positive, so the cases that matter are the two directions of
 it. A word none of the four sources states is reported whatever it names,
@@ -71,7 +74,7 @@ directory disk do document documentation environment execute exit family fixture
 give hold host install installation integration invoke is it machine mapping
 mechanism merely my never no note observable observe on once one path platform
 rather reach reader at based inside of held remove report repository
-resolution run runner smoke
+resolution run runner smoke code nowhere
 something state status surface than that the them this throughout to two
 uncovered unfixturable unnamed unreachable was whose work wrapper""".split()
 
@@ -179,7 +182,7 @@ def test_a_report_entry_naming_an_implementation_is_reported(
     clean: Path, stated: set[str]
 ) -> None:
     design = DESIGN.replace("## Block boundaries", "## Block boundaries, npm")
-    found = report_references(design, clean, stated)
+    found = report_references(design, clean, stated, ())
     assert {reference.found for reference in found} == {"npm"}
     assert all(
         reference.where.startswith("the conformance report, line ")
@@ -190,7 +193,15 @@ def test_a_report_entry_naming_an_implementation_is_reported(
 def test_a_report_of_a_corpus_stating_the_contract_s_words_passes(
     clean: Path, stated: set[str]
 ) -> None:
-    assert report_references(DESIGN, clean, stated) == []
+    assert report_references(DESIGN, clean, stated, ()) == []
+
+
+def test_a_reported_code_the_contract_declares_nowhere_is_read(
+    clean: Path, stated: set[str]
+) -> None:
+    found = report_references(DESIGN, clean, stated, ("RUST",))
+    assert [reference.found for reference in found] == ["RUST"]
+    assert found[0].where.startswith("the conformance report, line ")
 
 
 def test_the_contract_declares_its_interface_terms() -> None:

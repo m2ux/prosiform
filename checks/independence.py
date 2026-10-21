@@ -29,7 +29,12 @@ binds. The paths, reference texts and arguments a manifest declares name
 that same tree, and the harness check holds each of them to the files the
 fixture carries, so they are read as the tree they name rather than as
 words. The conformance report is scanned whole, which brings the design's
-own clause names and the declared surface under the same rule.
+own clause names and the declared surface under the same rule. That
+surface states the codes the build under test reports for itself, so this
+check reaches the build the conformance report reads — named by
+configuration, as the corpus names it — and fails without one. A code the
+build reports that the contract declares nowhere is rendered into the
+report and so is read against the vocabulary like every other entry.
 
 A word is read as the contract states it rather than as a sentence inflects
 it: plurals, the past tense, the present participle and the adverb resolve
@@ -43,12 +48,13 @@ case, and the names the design gives its own clauses whatever their case.
 
 import re
 import sys
+from collections.abc import Collection
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
 from typing import Any
 
-from conformance import clauses, render, report
+from conformance import clauses, render, report, reported_codes
 from documents import ROOT, plain, rows
 from manifests import (
     CORPUS,
@@ -60,6 +66,7 @@ from manifests import (
     severities,
     statuses,
 )
+from runner import BuildNotConfigured
 from vocabulary import SHIPPED_GLOSSARY, design_reference, git_ref, git_show
 
 README = ROOT / "README.md"
@@ -231,9 +238,11 @@ def corpus_references(corpus: Path, stated: set[str]) -> list[Reference]:
     return found
 
 
-def report_references(design: str, corpus: Path, stated: set[str]) -> list[Reference]:
+def report_references(
+    design: str, corpus: Path, stated: set[str], reported: Collection[str]
+) -> list[Reference]:
     """Every word the report's entries state that the vocabulary does not."""
-    rendered = render(report(design, corpus)).splitlines()
+    rendered = render(report(design, corpus, reported)).splitlines()
     return [
         reference
         for number, line in enumerate(rendered, start=1)
@@ -260,7 +269,7 @@ def check() -> tuple[list[str], list[Reference]]:
     )
 
     corpus = corpus_references(CORPUS, stated)
-    emitted = report_references(design, CORPUS, stated)
+    emitted = report_references(design, CORPUS, stated, reported_codes())
 
     counted = [
         f"ok   vocabulary  {len(stated)} word(s) from {path}, docs/glossary.md, "
@@ -273,7 +282,11 @@ def check() -> tuple[list[str], list[Reference]]:
 
 
 def main() -> int:
-    passed, failures = check()
+    try:
+        passed, failures = check()
+    except BuildNotConfigured as absent:
+        print(f"independence check: {absent}", file=sys.stderr)
+        return 1
     for line in passed:
         print(line)
     for reference in failures:

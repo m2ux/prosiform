@@ -6,9 +6,9 @@
 #
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `src/uv.lock` records and resolves
-# nothing. The corpus and invocation checks reach the build under test
-# through the corpus runner, and the conformance and independence checks read
-# the corpus through the same manifest reader, which reads `jsonschema` from
+# nothing. The corpus, invocation, conformance and independence checks reach
+# the build under test through the corpus runner, and the last two read the
+# corpus through the manifest reader beside it, which reads `jsonschema` from
 # that same group, so the four run through it; the smoke, layout, table, link and
 # vocabulary checks depend on the standard library alone and run under
 # `python3` directly.
@@ -18,18 +18,21 @@
 # invokes the command by name from a directory of its own, which is how a
 # caller reaches an installed entry point.
 #
-# `make conformance` reads the design and the corpus and needs no build: it
-# reports which clause of the contract each fixture exercises, which clauses
-# no fixture reaches, and which declared code and exit status the corpus
-# reaches. `make independence` reads the same two and that report, and fails
-# on a declaration or an entry stating a word the contract's vocabulary does
-# not hold.
+# `make conformance` reads the design, the corpus and the build under test:
+# it reports which clause of the contract each fixture exercises, which
+# clauses no fixture reaches, which declared code and exit status the corpus
+# reaches, and whether the codes the build reports for itself are the codes
+# the contract declares. `make independence` reads the same three and that
+# report, and fails on a declaration or an entry stating a word the
+# contract's vocabulary does not hold.
 #
 # `make corpus` runs the corpus against a build named by configuration:
 # `PROSIFORM_BUILD` holds that build's command line, and the target fails
 # without one, so a fixture is never reported as holding against a build that
 # never ran. `make invocation` reads the documented invocation against that
-# same build's own help output, and fails without one for the same reason.
+# same build's own help output, `make conformance` reads the codes it reports
+# and `make independence` reads that report, and each fails without a build
+# for the same reason.
 #
 # Every target below is named by a command table in one of the repository's
 # READMEs, which `make tables` holds true in both directions.
