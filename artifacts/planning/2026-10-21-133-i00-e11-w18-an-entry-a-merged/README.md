@@ -13,6 +13,7 @@ This row covers AC19 of the deferred-debt epic, which states what fixing the def
 | Artifact | What it holds |
 | --- | --- |
 | [w18.md](w18.md) | The task's plan: the member a merged group emits no heading for, the destination it is answered by and the fixtures that state it |
+| [validation.md](validation.md) | The fault measured on the base, the checks that observe the outcome, and what each run reported |
 
 ## Links
 
