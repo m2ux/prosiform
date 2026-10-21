@@ -1,0 +1,21 @@
+description = "A reference carrying an empty fragment names the whole document, so the document it resolves to is bundled entire and the link is rewritten to that document's own destination rather than to a heading inside it."
+
+clauses = [
+  "Reference normalization and path identity — Resolution sequence, step 9",
+  "Input and output contract — Whole documents",
+  "Adversarial acceptance fixtures — Normalization, empty fragments",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"
