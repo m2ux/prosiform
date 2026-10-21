@@ -1,0 +1,27 @@
+description = "An entry reference naming a member whose merged group emits no heading for it resolves to the group's own heading, which the bundle carries, and the run succeeds. The member carries one H1 its overview subsection heading would absorb and nothing above or at the grouping depth, so the arrangement emits nothing of its own from it."
+
+clauses = [
+  "Grouping — Document content above the grouping depth",
+  "Bundle destinations — Document destinations",
+  "Bundle destinations — Entry line",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "notes:2", "notes/bare.md", "notes/kept.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Notes"
+resolved = "notes"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Kept"
+resolved = "kept"
