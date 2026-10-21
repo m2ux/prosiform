@@ -57,14 +57,14 @@ A path *written into a description* is prose like any other, and its words are r
 
 ## The run over the corpus
 
-The rule was run over the corpus as it stands — 233 fixtures and the conformance report as it renders — and every word it reported was given a verdict. No word was reported for a term the contract states, and no fixture declaration was changed.
+The rule was run over the corpus as it stands — 237 fixtures and the conformance report as it renders — and every word it reported was given a verdict. No word was reported for a term the contract states, and no fixture declaration was changed.
 
 | Words reported | Verdict | Disposition |
 | --- | --- | --- |
-| 77 ordinary English words (`beside`, `kept`, `although`, `three`, `told`, …) | A word any sentence needs that the design has no occasion to write. | Registered under Ordinary English. |
-| 23 names of markup, encodings and address forms (`ascii`, `atx`, `setext`, `crlf`, `toml`, `yaml`, `url`, `backtick`, `brace`, …) | A name the Markdown the contract binds carries, which the design writes only capitalised or not at all. | Registered under Markup, encodings and formats. |
+| 88 ordinary English words (`beside`, `kept`, `although`, `three`, `told`, …) | A word any sentence needs that the design has no occasion to write. | Registered under Ordinary English. |
+| 24 names of markup, encodings and address forms (`ascii`, `atx`, `setext`, `crlf`, `toml`, `yaml`, `url`, `backtick`, `brace`, …) | A name the Markdown the contract binds carries, which the design writes only capitalised or not at all. | Registered under Markup, encodings and formats. |
 | 6 names of documents the corpus's examples carry (`alpha`, `beta`, `checklist`, `diagram`, `workspace`, `column`) | A proper noun of the corpus's own source trees, written into a description. | Registered under the documents the corpus's examples carry. |
-| 27 words a declaration or a report entry uses about itself (`clause`, `conformance`, `unfixturable`, `installation`, `runner`, `uncovered`, …) | The corpus and the report saying what they are doing. | Registered under what the corpus and the report state about themselves. |
+| 28 words a declaration or a report entry uses about itself (`clause`, `conformance`, `unfixturable`, `installation`, `runner`, `uncovered`, …) | The corpus and the report saying what they are doing. | Registered under what the corpus and the report state about themselves. |
 | 0 | A word naming a build, a language, a library or the machinery of packaging. | None found. |
 
 `make independence` is clean over the corpus with the register in place, which is the observation AC37 asks for.
