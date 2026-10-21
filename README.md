@@ -47,7 +47,7 @@ prosiform --root my-skill --group rules:1 --output codex-bundle.md rules/codex.m
 prosiform --root my-skill --group rules:1 --output claude-bundle.md rules/claude.md
 ```
 
-![Each agent follows its deferred link and compiles a Rules group: Codex rules contains instructions to keep patches focused and run relevant tests; Claude rules contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
+![Each agent follows its deferred link and compiles a Rules group: Codex’s Rules section contains instructions to keep patches focused and run relevant tests; Claude’s Rules section contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
 
 ## Installation
 
