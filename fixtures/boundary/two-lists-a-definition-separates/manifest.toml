@@ -2,6 +2,7 @@ description = "Two lists a link-reference definition separates in the source are
 
 clauses = [
   "Block boundaries",
+  "Adversarial acceptance fixtures — Boundaries",
 ]
 
 [invocation]

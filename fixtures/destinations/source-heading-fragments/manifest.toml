@@ -5,6 +5,7 @@ clauses = [
   "Source-heading resolution — GitHub-compatible slugs and duplicate tracking",
   "Bundle destinations — Ordinal assignment",
   "Entry line",
+  "Adversarial acceptance fixtures — Destinations",
 ]
 
 [invocation]

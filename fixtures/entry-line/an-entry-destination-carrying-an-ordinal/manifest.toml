@@ -4,6 +4,7 @@ clauses = [
   "Entry line — Link text",
   "Entry line — Generated structure",
   "Post-compilation invariants — Entry line integrity",
+  "Adversarial acceptance fixtures — Entry line",
 ]
 
 [invocation]

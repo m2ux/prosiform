@@ -4,6 +4,7 @@ clauses = [
   "Link classification and resource handling — The deferral mark",
   "Explicitly linked source structure — Explicit dependencies",
   "Section extraction and output hierarchy — Internal links",
+  "Adversarial acceptance fixtures — Deferral",
 ]
 
 [invocation]

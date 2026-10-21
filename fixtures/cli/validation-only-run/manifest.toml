@@ -5,6 +5,7 @@ clauses = [
   "Compile before publishing — no success output is published until the complete candidate has been constructed and validated",
   "Agent delivery contract — Entry destinations",
   "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Adversarial acceptance fixtures — CLI",
 ]
 
 [invocation]

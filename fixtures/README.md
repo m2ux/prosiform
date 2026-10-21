@@ -87,6 +87,21 @@ chain = ["guide.md", "../outside.md"]
 
 The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
+## The adversarial families
+
+The [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) lists the families of hard cases a build meets, and a family is a clause like any other, so a fixture encoding one names it among its `clauses`:
+
+```toml
+clauses = [
+  "Heading-only structural ancestors — Depth",
+  "Adversarial acceptance fixtures — Partial outlines, original skipped heading levels",
+]
+```
+
+The family is the text up to the comma and the case follows it, so one reading of the corpus answers which families are represented and by what. The declaration sits in the manifest beside the expectation it qualifies, for the reason the deferral marker does: a listing of families held anywhere else drifts from the fixtures it names in both directions.
+
+Two families are named by no fixture, each because the condition it turns on is one a source tree and one invocation cannot declare. Consistency is a source changing, disappearing or resolving elsewhere while the run reads it, and its fixture arrives with [I00:E11:W24](https://github.com/m2ux/prosiform/issues/150). Parser exhaustion is a parser resource limit suppressing a reference lookup, which `E_PARSER_REFERENCE_LIMIT` reports and no build here emits, and its fixture arrives with [I00:E11:W30](https://github.com/m2ux/prosiform/issues/164).
+
 Expected output is a file rather than text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
 
 A run's working directory is the fixture's own, so a path an invocation writes lands among the fixture's files. A comparison of the two streams says nothing about such a file, which is why a run that must leave one unwritten declares the path:
