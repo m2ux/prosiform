@@ -5,6 +5,8 @@
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
 
+![The source tree contains guide.md and rules.md. The guide links to Rules; prosiform includes both documents in one compiled bundle and rewrites that link to the included rules section.](docs/images/compilation.png)
+
 ---
 **[Invocation](invocation.md)** • **[Checks](checks.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Source](src/README.md)** • **[Docs](docs/README.md)** • **[Check implementation](checks/README.md)** • **[Example](example/README.md)**
 
