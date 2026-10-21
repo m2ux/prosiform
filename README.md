@@ -37,17 +37,17 @@ prosiform --root my-skill --output bundle.md procedure.md rules.md
 
 #### Compile agent-specific rules
 
-The agent encounters the deferred links in the shared bundle and compiles the one that applies to it. These example rules are authored for each agent; the caller chooses which to load.
+The agent compiles its deferred rules with `--group rules:1`, merging headings at level 1 under a `Rules` group. The caller chooses which agent's rules to load.
 
 ```bash
 # Codex
-prosiform --root my-skill --output codex-rules.md rules/codex.md
+prosiform --root my-skill --group rules:1 --output codex-rules.md rules/codex.md
 
 # Claude
-prosiform --root my-skill --output claude-rules.md rules/claude.md
+prosiform --root my-skill --group rules:1 --output claude-rules.md rules/claude.md
 ```
 
-![Codex follows the deferred Codex link and receives instructions to keep patches focused and run relevant tests. Claude follows the deferred Claude link and receives instructions to review the proposed change and report actionable findings. Each separate compilation contains only the selected agent's rules.](docs/images/agent-rules.png)
+![Each agent follows its deferred link and compiles a Rules group: Codex rules contains instructions to keep patches focused and run relevant tests; Claude rules contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
 
 ## Installation
 
