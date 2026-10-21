@@ -322,7 +322,7 @@ A refused reference says the root is too narrow at least as often as it says the
 
 ## D32 — The Mark Is Authoring Syntax and Does Not Reach the Bundle
 
-Withdrawn by [D59](#d59--position-states-a-dependency-and-the-tool-recognizes-no-authoring-syntax): the tool reads no marker in link text, so there is no mark to keep out of a bundle.
+Withdrawn by [D59](#d59--position-states-a-dependency-and-the-mark-defers-one): the mark defers a compilation and the bundle carries it, so there is no mark to keep out of one.
 
 A dependency's link text opens with `¬`. A rewritten link carries the text that followed the mark and not the mark itself.
 
@@ -684,20 +684,24 @@ I00:E09:W04 found the depth check standing before it: `bundle.Overflow` is raise
 
 **AC2 asked the corpus for a distinction it cannot draw.** An overflowing ancestor always sits beneath an overflowing selection, because an ancestor is shallower than the heading it preserves and both take the same shift. The two cases differ only in which heading the diagnostic names, and a manifest declares an error code rather than a message — deliberately, since a code reads the same in every language. Disabling the merged-group ancestor guard leaves the corpus green and fails only the unit test. Under [D47](#d47--a-criterion-names-the-evidence-that-can-exist) the criterion now names both: the fixtures for the failure, and the build's own test for the heading. A `message` field was not added to the manifest schema, and no product hook was added to carry the heading into a field the corpus reads.
 
-## D59 — Position States a Dependency, and the Tool Recognizes No Authoring Syntax
+## D59 — Position States a Dependency, and the Mark Defers One
 
-A reference is a dependency when it resolves to a Markdown file under the allowed source root, and text the bundle carries unchanged when it resolves outside it. The author states which by where the target sits, and the root is the only lever: material a skill must carry sits under its root, material it only names sits outside. The tool reads no marker in link text, and `¬` is ordinary content wherever an author writes it.
+A reference is a dependency when it resolves to a Markdown file under the allowed source root, and text the bundle carries unchanged when it resolves outside it. The author states which by where the target sits, and the root is the lever. One mark overrides that: a link whose text opens with `¬` is not compiled by this run, and the bundle carries it so that an agent reading the bundle compiles it in a run of its own.
 
-**The root already carried the distinction the mark was making.** The mark's own rationale was that a document cites shared material outside the root without putting the bundling outside it. Position makes the same statement with nothing to maintain, and it removes the failure the mark could not prevent: a dependency an author forgot to mark was dropped in silence, while a dependency whose target sits under the root cannot be.
+**The root already carried the distinction the old mark was making.** Marking what to bundle meant a dependency an author forgot to mark was dropped in silence, while a dependency whose target sits under the root cannot be. The mark's own rationale — that a document cites shared material outside the root without putting the bundling outside it — is what position now states with nothing to maintain.
 
-**Five consequences follow, each settled rather than inferred.**
+**The mark is inverted, not retired, and it means deferral.** It no longer asks for bundling; it withholds it, and what it withholds is reachable later. A bundle carrying marked links is a bundle an agent can compile further, so a skill can state its immediate context now and its deeper context on demand, which neither bundling everything nor bundling nothing gives it.
 
-- A reference under the root that resolves to nothing fails with `E_TARGET_NOT_FOUND`. Position says the bundle must carry it, so one that cannot be carried is a defect rather than text.
+**Seven consequences follow, each settled rather than inferred.**
+
+- A reference under the root that resolves to nothing fails with `E_TARGET_NOT_FOUND`, deferred or not. Position says the run is responsible for it, so a reference that cannot be followed is a defect rather than text.
+- A deferred link's destination is rebased to the target's path from the allowed source root, the spelling the file headings use, so the run that compiles it needs only that root. Emitting it as authored would leave a path relative to a source document the bundle does not record per link.
+- A deferred link's mark is carried into the bundle exactly as written. Stripping it would destroy the instruction the mark exists to give, and the bundle is what the author wrote.
+- A deferred link is never rewritten to a bundle destination, even where another reference carried its target. What one author deferred is not changed by another author's reference.
 - A resource is emitted as authored wherever it resolves, the root included, and `W_RESOURCE_PORTABILITY` still fires once where the bundle names one. Only Markdown documents are bundleable, so no reference can ask for a resource and `E_MARKED_RESOURCE` has nothing left to refuse.
 - A link naming the section it sits in, or an ancestor of it, resolves to that content's destination like any other reference the bundle carries. `E_SELF_REFERENCE` refused a request that can no longer be made.
-- Nothing excludes a document that sits under the root. An author who does not want one bundled puts it outside, and the closure budgets stay the guard on a run that reaches further than intended.
-- A reference resolving outside the root is text rather than a failure, so `E_SOURCE_OUTSIDE_ROOT` now refuses an entry reference alone. A caller naming an entry outside the root has named something the run cannot do; a document naming a path outside it has cited something.
+- Nothing excludes a document that sits under the root except a deferral, and the closure budgets stay the guard on a run that reaches further than intended. A reference resolving outside the root is text rather than a failure, so `E_SOURCE_OUTSIDE_ROOT` refuses an entry reference alone.
 
-**`¬` keeps a meaning this tool does not read.** It persists outside this design as an instruction to an agent to bundle through prosiform, so a bundle carries the character wherever an author wrote it in selected content. Stripping it would be this tool defining a character it otherwise does not, and the bundle is what the author wrote.
+**This supersedes the old mark throughout.** [D32](#d32--the-mark-is-authoring-syntax-and-does-not-reach-the-bundle) stands withdrawn: the mark is content the bundle carries, not syntax the rewrite drops. The delivered work that refused a marked resource, refused a marked self-reference and stripped the mark on rewrite has no subject left, and the goal clause promising that nothing beyond ordinary Markdown links and headings is needed to bundle a document holds literally, since a document with no marks bundles whole.
 
-**This supersedes the mark throughout.** [D32](#d32--the-mark-is-authoring-syntax-and-does-not-reach-the-bundle) stands withdrawn, the goal clause promising that nothing beyond ordinary Markdown links and headings is needed to bundle a document is now literally true, and the delivered work that refused a marked resource, refused a marked self-reference and stripped the mark on rewrite has no subject left.
+**E12 follows the deferred-debt epic in number.** An initiative's deferred-debt epic is planned to be its last, and this design change was raised after it. Renumbering is barred, because pull requests name the delivered epic, so the new epic takes the next number and the clear-up keeps its own.
