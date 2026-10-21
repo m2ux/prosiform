@@ -77,7 +77,7 @@ chain = ["guide.md", "../outside.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, so every clause maps to the fixtures that cover it. |
-| `invocation.root` | The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture names a directory it does. |
+| `invocation.root` | Optional. The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture naming one names a directory it does. A fixture naming none declares a run supplied no allowed source root. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
@@ -86,7 +86,7 @@ chain = ["guide.md", "../outside.md"]
 | `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
 
-The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
+The runner supplies the allowed source root the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
 A published bundle is expected as a file rather than as text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
 
@@ -126,6 +126,26 @@ code = "E_ROOT_NOT_FOUND"
 
 The declared diagnostic is the whole of the declaration, so nothing beside `invocation.root` repeats it. A fixture declaring that code is held to a root it does not hold, and one declaring any other outcome to a root that is a directory it does: either contradiction is malformed and is refused before the build is invoked, as a path declared absent is.
 
+## A run with no allowed source root
+
+The contract requires `--root`, so a command line naming none is refused for its own form: `E_INVALID_USAGE` and exit status 2. The runner supplies the root a manifest names, so a manifest naming none declares that invocation:
+
+```toml
+[invocation]
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["--root"]
+```
+
+The invocation a manifest declares is the whole invocation, so a fixture states a run supplied nothing as readily as it states one supplied a tree. Such a fixture carries no source tree, because the run reaches no tree to read.
+
 ## Text an output carries
 
 Some of what a run writes is the build's own. A version string is the clearest case, and a diagnostic's wording is the same case in a smaller place. A fixture declaring either of them whole would bind the corpus to one implementation, so it declares the text the output must carry instead: a list whose entries are substrings the output contains.
@@ -153,6 +173,19 @@ message_contains = ["#a-section", "--from"]
 ```
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the path that named an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
+
+The contract gathers six faults under the code, and each is a fixture, so what the corpus covers under one code is read from the corpus rather than assumed from the code:
+
+| Fault | Fixture |
+| --- | --- |
+| A missing `--root` | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
+| No entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
+| An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
+| An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
+| A fragment-only reference with no `--from` | [`cli/fragment-only-reference-without-from`](cli/fragment-only-reference-without-from/manifest.toml) |
+| An output path naming an input source | [`cli/output-naming-an-input-source`](cli/output-naming-an-input-source/manifest.toml) |
+
+An entry reference whose own spelling the grammar does not admit — a query, an encoded separator, an over-long escape, an escape decoding to no UTF-8 — carries the same code, and the `normalization/` family states it where the clause under test is the resolution sequence rather than the command line's shape.
 
 ## A fixture awaiting its work
 
