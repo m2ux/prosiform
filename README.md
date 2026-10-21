@@ -32,10 +32,10 @@ Leaving retrieval to the agent costs:
 Run these diagram examples from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
-prosiform --root my-skill --output bundle.md procedure.md rules.md
+prosiform --root my-skill --group rules:1 --output bundle.md procedure.md rules/rules.md
 ```
 
-![SKILL.md selects procedure.md and rules.md. Procedure includes tips.md; Rules includes rules/agents.md. The bundle contains Agents instructions directing each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
+![SKILL.md selects procedure.md and rules/rules.md. Procedure includes tips.md; Rules includes rules/agents.md. The Rules group contains an Agents subsection with instructions directing each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
 #### Compile agent-specific rules
 

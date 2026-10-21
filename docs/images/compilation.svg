@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1500" viewBox="0 0 1800 1500" role="img" aria-labelledby="title description"><title id="title">Compile shared context and harness routing</title><desc id="description">SKILL.md selects procedure.md and rules.md. Procedure includes tips.md; Rules includes rules/agents.md. Agents instructs each harness to compile its deferred Codex or Claude rules. Both harness-specific documents remain deferred.</desc><rect width="1800" height="1500" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1500" viewBox="0 0 1800 1500" role="img" aria-labelledby="title description"><title id="title">Compile shared context and harness routing</title><desc id="description">SKILL.md selects procedure.md and rules/rules.md. Procedure includes tips.md; Rules includes rules/agents.md. Agents instructs each harness to compile its deferred Codex or Claude rules. Both harness-specific documents remain deferred.</desc><rect width="1800" height="1500" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve">
 <rect x="32" y="32" width="510" height="570" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/>
 <text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">Source tree</text>
 <rect x="32" y="624" width="510" height="844" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 624 H530 Q542 624 542 636 V686 H32 V636 Q32 624 44 624" fill="#202a36"/>
@@ -6,7 +6,7 @@
 <rect x="612" y="32" width="510" height="348" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 32 H1110 Q1122 32 1122 44 V94 H612 V44 Q612 32 624 32" fill="#202a36"/>
 <text x="640" y="73" font-size="25" fill="#b1c6df" font-weight="400">procedure.md</text>
 <rect x="612" y="402" width="510" height="300" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 402 H1110 Q1122 402 1122 414 V464 H612 V414 Q612 402 624 402" fill="#202a36"/>
-<text x="640" y="443" font-size="25" fill="#b1c6df" font-weight="400">rules.md</text>
+<text x="640" y="443" font-size="25" fill="#b1c6df" font-weight="400">rules/rules.md</text>
 <rect x="612" y="724" width="510" height="250" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 724 H1110 Q1122 724 1122 736 V786 H612 V736 Q612 724 624 724" fill="#202a36"/>
 <text x="640" y="765" font-size="25" fill="#b1c6df" font-weight="400">tips.md</text>
 <rect x="612" y="996" width="510" height="472" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 996 H1110 Q1122 996 1122 1008 V1058 H612 V1008 Q612 996 624 996" fill="#202a36"/>
@@ -20,13 +20,11 @@
 <text x="60" y="245" font-size="24" fill="#e6edf3" font-weight="400">├─ procedure.md</text>
 <rect x="401" y="216" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
 <text x="413" y="243" font-size="20" fill="#58a6ff" font-weight="400">selected</text>
-<text x="60" y="292" font-size="24" fill="#e6edf3" font-weight="400">├─ rules.md</text>
-<rect x="401" y="263" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
-<text x="413" y="290" font-size="20" fill="#58a6ff" font-weight="400">selected</text>
-<text x="60" y="339" font-size="24" fill="#e6edf3" font-weight="400">├─ tips.md</text>
-<rect x="401" y="310" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
-<text x="413" y="337" font-size="20" fill="#58a6ff" font-weight="400">included</text>
-<text x="60" y="386" font-size="24" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="60" y="292" font-size="24" fill="#e6edf3">├─ tips.md</text>
+<rect x="401" y="263" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="290" font-size="20" fill="#58a6ff">included</text>
+<text x="60" y="339" font-size="24" fill="#e6edf3">└─ rules/</text>
+<text x="60" y="386" font-size="24" fill="#e6edf3">   ├─ rules.md</text>
+<rect x="401" y="357" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="384" font-size="20" fill="#58a6ff">selected</text>
 <text x="60" y="433" font-size="24" fill="#e6edf3" font-weight="400">   ├─ agents.md</text>
 <rect x="401" y="404" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/>
 <text x="413" y="431" font-size="20" fill="#58a6ff" font-weight="400">included</text>
@@ -64,7 +62,6 @@
 <text x="640" y="1323" font-size="23" fill="#e6edf3" font-weight="400">If you are Claude, compile</text>
 <text x="640" y="1361" font-size="24" fill="#e3b341" font-weight="400">¬ Claude</text>
 <path d="M640 1368 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<text x="640" y="1425" font-size="23" fill="#e6edf3" font-weight="400">Apply the resulting rules.</text>
 <text x="1280" y="160" font-size="34" fill="#e6edf3" font-weight="500">procedure</text>
 <text x="1280" y="222" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
 <text x="1356" y="222" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
@@ -72,22 +69,20 @@
 <text x="1280" y="284" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
 <text x="1280" y="336" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
 <path d="M1280 380 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="442" font-size="34" fill="#e6edf3" font-weight="500">rules</text>
-<text x="1280" y="504" font-size="25" fill="#e6edf3" font-weight="400">• Check every link.</text>
-<text x="1280" y="556" font-size="25" fill="#e6edf3" font-weight="400">• Use clear headings.</text>
-<text x="1280" y="608" font-size="24" fill="#e6edf3" font-weight="400">Follow</text>
-<text x="1384" y="608" font-size="24" fill="#58a6ff" font-weight="400">Agents</text>
-<path d="M1384 615 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
-<path d="M1280 652 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="714" font-size="32" fill="#e6edf3" font-weight="500">rules/agents</text>
-<text x="1280" y="768" font-size="23" fill="#e6edf3" font-weight="400">Select rules for your harness:</text>
-<text x="1280" y="826" font-size="23" fill="#e6edf3" font-weight="400">If you are Codex, compile</text>
-<text x="1280" y="864" font-size="24" fill="#e3b341" font-weight="400">¬ Codex</text>
-<path d="M1280 871 h100.8" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="922" font-size="23" fill="#e6edf3" font-weight="400">If you are Claude, compile</text>
-<text x="1280" y="960" font-size="24" fill="#e3b341" font-weight="400">¬ Claude</text>
-<path d="M1280 967 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="1024" font-size="23" fill="#e6edf3" font-weight="400">Apply the resulting rules.</text>
+<text x="1280" y="442" font-size="34" fill="#e6edf3">Rules</text>
+<text x="1280" y="504" font-size="27" fill="#e6edf3">Agents</text>
+<text x="1280" y="558" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
+<text x="1280" y="616" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
+<text x="1280" y="654" font-size="24" fill="#e3b341">¬ Codex</text>
+<path d="M1280 661 h100.8" stroke="#e3b341" stroke-width="1.5"/>
+<text x="1280" y="712" font-size="23" fill="#e6edf3">If you are Claude, compile</text>
+<text x="1280" y="750" font-size="24" fill="#e3b341">¬ Claude</text>
+<path d="M1280 757 h115.2" stroke="#e3b341" stroke-width="1.5"/>
+<text x="1280" y="850" font-size="27" fill="#e6edf3">Rules</text>
+<text x="1280" y="910" font-size="25" fill="#e6edf3">• Check every link.</text>
+<text x="1280" y="962" font-size="25" fill="#e6edf3">• Use clear headings.</text>
+<text x="1280" y="1020" font-size="24" fill="#e6edf3">Follow</text>
+<text x="1384" y="1020" font-size="24" fill="#58a6ff">Agents</text><path d="M1384 1027 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
 <path d="M1280 1080 H1734" stroke="#303b49" stroke-width="2"/>
 <text x="1280" y="1142" font-size="34" fill="#e6edf3" font-weight="500">tips</text>
 <text x="1280" y="1212" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
