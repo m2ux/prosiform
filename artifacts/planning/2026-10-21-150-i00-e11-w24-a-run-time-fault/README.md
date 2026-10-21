@@ -14,6 +14,7 @@ It matters because the corpus is what the contract is proven against. While thos
 | --- | --- |
 | [W24](w24.md) | The work item: scope, component, breakdown and test requirements |
 | [Validation](validation.md) | The checks, the revision they ran at, the instruments weighed, and what the runs observed |
+| [Changes](changes.md) | The plan changes this delivery made, and the delivery record behind them |
 
 ## Links
 
