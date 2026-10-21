@@ -14,6 +14,8 @@ This row covers AC1 and AC6 of Corpus Conformance, and it is the row the rest of
 | --- | --- |
 | [w01.md](w01.md) | The work item: the component, the problem and what the row proposes. |
 | [analysis.md](analysis.md) | The families the design names against the fixtures the corpus holds, and the gap each new fixture closes. |
+| [validation.md](validation.md) | The runs that observed each criterion, what the validation found, and what could not be ticked. |
+| [family-listing.py](family-listing.py) | The listing that reads the design's family bullets and every manifest's clauses, used until the conformance report exists. |
 
 ## Links
 

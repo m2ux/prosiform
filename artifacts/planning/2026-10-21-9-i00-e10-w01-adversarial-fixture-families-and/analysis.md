@@ -1,6 +1,6 @@
 # Analysis — The Families the Design Names Against the Fixtures the Corpus Holds
 
-> Written against `i00/e10/w01-adversarial-fixture-families-and` at the epic base `68944e8`, over the 204 fixtures the corpus holds there.
+> Written against `i00/e10/w01-adversarial-fixture-families-and` at the epic base `68944e8`, over the 210 fixtures the corpus holds there.
 
 ## How a family is read
 
