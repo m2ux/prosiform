@@ -41,10 +41,10 @@ The agent compiles its deferred rules with `--group rules:1`, merging headings a
 
 ```bash
 # Codex
-prosiform --root my-skill --group rules:1 --output codex-rules.md rules/codex.md
+prosiform --root my-skill --group rules:1 --output codex-bundle.md rules/codex.md
 
 # Claude
-prosiform --root my-skill --group rules:1 --output claude-rules.md rules/claude.md
+prosiform --root my-skill --group rules:1 --output claude-bundle.md rules/claude.md
 ```
 
 ![Each agent follows its deferred link and compiles a Rules group: Codex rules contains instructions to keep patches focused and run relevant tests; Claude rules contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
