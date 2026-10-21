@@ -44,13 +44,13 @@ prosiform --version
 
 Run these from the repository root. Each command writes a validated Markdown bundle to standard output.
 
-### Bundle a procedure and its dependencies
+### Bundle a Source and its Dependencies
 
 ```bash
 prosiform --root example/work-tracker modes/plan-mode.md
 ```
 
-### Compile a selected section
+### Compile a Selected Section
 
 ```bash
 prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
