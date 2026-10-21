@@ -27,9 +27,18 @@ The branch's own report closes:
 ```text
 conformance report: 242 clause(s) the design states, 0 covered by no fixture,
 0 declaration(s) naming no clause; 30 declared name(s) reached, 0 unfixturable,
+0 declared code(s) the build reports nowhere,
+0 reported code(s) the contract declares nowhere,
 16 clause(s) no run states, 3 section(s) stating no behaviour,
 3 installation claim(s) no run observes
 ```
+
+The epic base carried two further merges while this work ran, W35 and W33, each
+of which states part of the same report. Both are merged into this branch and
+the figures above are read after them: the declared surface now carries the
+codes the build reports for itself, the installation claims name the smoke-run
+property that would observe them, and the two groups this unit adds are counted
+beside them.
 
 The clause total falls by eleven because a section stating no behaviour carries no clause, it or the rules beneath it. The uncovered list empties: sixteen clauses are recorded with the reason no source tree and one invocation can state them, thirty-three gain the declaration of the fixture that already established them, and four gain a fixture.
 
@@ -51,7 +60,7 @@ The base result is therefore attributable: every figure below that differs from 
 
 ## Branch Conformance
 
-`make check` on the branch at `67928f4` exits 0. The conformance target prints the second summary above, and its uncovered list is empty:
+`make check` on the branch at `680e4a4` exits 0. The conformance target prints the second summary above, and its uncovered list is empty:
 
 ```text
 # Uncovered clauses
@@ -88,23 +97,23 @@ Unchanged from the base: nothing this branch writes introduces a contract term.
 ## Harness
 
 ```text
-581 passed
+587 passed
 ```
 
 Five cases join `checks/tests/test_conformance.py`, over a design carrying one section that states no behaviour and one clause no run states: the inventory omits the silent heading and the rule beneath it, each section is listed with its reason, a recorded clause stays in the mapping and leaves the uncovered list, each recorded clause is listed with the reason and what states it in its place, and the closing line counts both groups beside the installation claims. The sixth change extends the existing inventory case with the four clauses the design gains.
 
 ## Check
 
-`make check` runs lock-check, lint, format-check, typecheck, test, harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence, stopping at the first failure. On the branch at `67928f4` it exits 0.
+`make check` runs lock-check, lint, format-check, typecheck, test, harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence, stopping at the first failure. On the branch at `680e4a4` it exits 0.
 
 ```text
 All checks passed!
 Success: no issues found in 53 source files
-694 passed
-581 passed
+696 passed
+587 passed
 corpus check: 237 fixture(s), 236 pass, 0 fail, 1 awaited, 0 unexpected pass
 smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
 table check: 16 command(s) and 7 declaration(s), each declared by the project and named by a table
-link check: every reference in 12 document(s) resolved
-invocation check: 28 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
+link check: every reference in 16 document(s) resolved
+invocation check: 29 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
 ```
