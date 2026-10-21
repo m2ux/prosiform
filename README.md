@@ -11,17 +11,6 @@ A deterministic compiler for instruction sets written as linked Markdown. Give i
 
 ---
 
-## Installation
-
-Requires Python 3.13+ on Linux or macOS. From the repository root:
-
-```bash
-pip install ./src
-prosiform --version
-```
-
-This installs the `prosiform` command and its glossary. For a development environment, run `cd src && uv sync --frozen`; see [source setup](src/README.md#environment).
-
 ## 🎯 Overview
 
 Agent skills are authored as collections of linked documents: an entry point links to procedures, and procedures link to the sections that govern them. Reaching the complete context for one operation means resolving that graph at read time. prosiform moves that work into a compilation step, so retrieval stops being part of the reasoning task.
@@ -43,3 +32,14 @@ Leaving retrieval to the agent costs:
 4. **Arrange** — regions are emitted into groups, source headings shifting one level beneath the heading that names their group
 5. **Rewrite** — every compiled reference is repointed at the fragment a renderer generates for the heading it now names, and a deferred one at its target's path from the root
 6. **Validate** — the candidate is reparsed and checked against what was selected; nothing reaches stdout until it passes
+
+## Installation
+
+Requires Python 3.13+ on Linux or macOS. From the repository root:
+
+```bash
+pip install ./src
+prosiform --version
+```
+
+This installs the `prosiform` command and its glossary. For a development environment, run `cd src && uv sync --frozen`; see [source setup](src/README.md#environment).
