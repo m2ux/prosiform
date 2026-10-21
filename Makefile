@@ -22,7 +22,8 @@
 # reports which clause of the contract each fixture exercises, which clauses
 # no fixture reaches, and which declared code and exit status the corpus
 # reaches. `make independence` reads the same two and that report, and fails
-# on a declaration or an entry naming an implementation.
+# on a declaration or an entry stating a word the contract's vocabulary does
+# not hold.
 #
 # `make corpus` runs the corpus against a build named by configuration:
 # `PROSIFORM_BUILD` holds that build's command line, and the target fails
