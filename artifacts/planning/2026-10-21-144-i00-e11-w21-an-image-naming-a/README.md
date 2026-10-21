@@ -12,6 +12,7 @@ This row covers AC22 of the deferred-debt epic, which states what fixing the def
 
 | Artifact | What it holds |
 | --- | --- |
+| [w21.md](w21.md) | The row's plan: where the portability question is asked, and what the use contributes to it |
 
 ## Links
 
