@@ -503,11 +503,14 @@ def test_an_entry_naming_no_document_is_an_input_failure(root: Path) -> None:
     assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
 
 
-def test_an_entry_normalizing_outside_the_root_is_an_input_failure(
-    root: Path,
+@pytest.mark.parametrize(
+    "reference", ["../outside.md", "/guide.md", "C:/guide.md", "//host/guide.md"]
+)
+def test_an_entry_the_root_cannot_contain_is_an_input_failure(
+    root: Path, reference: str
 ) -> None:
     written(root.parent, "outside.md", "# Outside\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "../outside.md")
+    run = invoke("--root", str(root), "--diagnostics", "json", reference)
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [SOURCE_OUTSIDE_ROOT]
 
@@ -1015,6 +1018,26 @@ def test_a_reference_outside_the_root_is_emitted_as_authored(tmp_path: Path) -> 
     assert run.status == SUCCESS
     assert "[the rules](../rules.md)" in run.stdout
     assert "raw" not in run.stdout
+
+
+def test_a_root_relative_reference_inside_a_source_is_emitted_as_authored(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the rules](/rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[the rules](/rules.md)" in run.stdout
+    assert "Every rule." not in run.stdout
+
+
+def test_a_drive_path_inside_a_source_is_emitted_as_authored(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the rules](C:/rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[the rules](C:/rules.md)" in run.stdout
+    assert "Every rule." not in run.stdout
 
 
 def test_a_mark_on_a_reference_outside_the_root_changes_nothing(
