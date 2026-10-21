@@ -24,4 +24,6 @@ It matters because a suppressed lookup is indistinguishable from an absent refer
 | Task issue | [#164 \[I00:E11:W30\] Parser Exhaustion: A Suppressed Reference Lookup Reported by Nothing](https://github.com/m2ux/prosiform/issues/164) |
 | Epic | [#39 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/issues/39) |
 | Initiative | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
+| Pull request | [#175 \[I00:E11\] Parser Exhaustion Below Every Declared Budget](https://github.com/m2ux/prosiform/pull/175) |
+| Review pull request | [#176 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/pull/176) |
 | Preceding row's record | [W13 Parser reference limit](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-20-108-i00-e11-w13-a-parser-resource-limit) |
