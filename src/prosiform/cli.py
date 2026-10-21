@@ -49,44 +49,42 @@ however narrow the requested section is. Crossing one is reported as an
 inability to index that source rather than as a dependency on whatever
 construct crossed it, since the run reached for no such dependency.
 
-A dependency is a reference its author marked, by opening the link text
-with `¬`, and the run resolves one against the document carrying it,
-reads it and bundles it. Every other reference is text the bundle
-carries as its author wrote it: an unmarked local Markdown link is not
-resolved, the document it names is not opened, and it stays as authored
-even where the bundle carries that document because another reference
-marked it. A reference carrying a scheme or an authority and one naming
-a file outside the profile's suffixes are text by the same rule, whether
-marked or not, and an apparent link inside a code span or a code block
-is an example rather than a reference. Marking is therefore what the run
-follows, and the content a run reads for marks is the content it
-selected. Traversal repeats over what each round adds until no round
-adds anything, so a reference graph with a cycle reaches a fixed point
-carrying each reachable region once.
+A dependency is a reference that resolves to a Markdown document under
+the allowed source root, and the run resolves one against the document
+carrying it, reads it and bundles it. Every other reference is text the
+bundle carries as its author wrote it: a local Markdown link resolving
+outside the root is not resolved further, the document it names is not
+opened, and it stays as authored. A reference carrying a scheme or an
+authority and one naming a file outside the profile's suffixes are text
+by the same rule, and an apparent link inside a code span or a code
+block is an example rather than a reference. Position is therefore what
+the run follows, and the content a run reads for references is the
+content it selected. Traversal repeats over what each round adds until
+no round adds anything, so a reference graph with a cycle reaches a
+fixed point carrying each reachable region once.
 
-A mark means bundle this, and the only thing the run bundles is a local
-Markdown document. A marked image, a marked reference carrying a scheme
-or an authority, and a marked reference naming a file outside the
-profile's suffixes therefore fail: a resource is emitted as the author
-wrote it and nothing rewrites it, so marking one asks for a bundle
-carrying authoring syntax the mark promises never reaches a reader. An
-image names a resource whatever file it points at, so the mark its
-alternative content opens with is refused on the use rather than on the
-destination.
+The only thing the run bundles is a local Markdown document, so a
+resource is carried as the author wrote it wherever it resolves. An
+image names a resource whatever file it points at. A mark on a resource
+is refused, which the row that emits a resource wherever it resolves
+retires.
 
-A marked reference is classified by the identity it resolves to rather
-than by the text it was written as. Each link belongs to the innermost
-eligible section containing it, and to the document itself where no
-section does. A marked link whose target is the very node that owns it
-is a direct self-reference and fails; one naming an including ancestor,
-or the whole document a section sits in, resolves to the destination
-already present and expands nothing; and one naming another section of
-the same document is neither. Ownership is read from the document's
-structure rather than from what a run selected, so consolidating a
-section into a larger region leaves every classification as it was.
+A reference is classified by the identity it resolves to rather than by
+the text it was written as. Each link belongs to the innermost eligible
+section containing it, and to the document itself where no section
+does. A marked link whose target is the very node that owns it is a
+direct self-reference and fails, which the row that rewrites a self
+reference retires; one naming an including ancestor, or the whole
+document a section sits in, resolves to the destination already present
+and expands nothing; and one naming another section of the same
+document is neither. Ownership is read from the document's structure
+rather than from what a run selected, so consolidating a section into a
+larger region leaves every classification as it was.
 
-Each marked reference is rewritten to the destination the bundle gave
-the target it resolved to, and the mark goes with the rewrite. A
+Each reference the run compiled is rewritten to the destination the
+bundle gave the target it resolved to, and a mark goes with the
+rewrite; a reference the run did not compile keeps every byte its
+author wrote, a mark included. A
 destination belongs to the bundle rather than to a group, so the map
 holding one is known only once every group exists: the groups are
 built to learn the headings the bundle emits, and built again through
@@ -1100,57 +1098,53 @@ def required(
     chosen: Selection | None,
     chain: Sequence[str],
 ) -> Iterator[Reference]:
-    """Every dependency the selected content of one source marks.
+    """Every dependency the selected content of one source carries.
 
-    A reference use the author marked is a reference the bundle must
-    carry, and every other use is text: a mention is not resolved, the
-    document it names is not opened, and nothing about its shape is
-    examined.
+    A use resolving to a Markdown document under the allowed source
+    root is a reference the bundle carries, and every other use is
+    text: a mention leaving the root is not resolved further, the
+    document it names is not opened, and the link reaches the bundle as
+    its author wrote it. Where the reference resolves is the whole of
+    the question, so an author states what the bundle must carry by
+    where the target sits.
 
-    What a mark asks for is a bundled document, so a marked reference
-    that names no local Markdown document names something the bundle
-    will not carry. An image names a resource whatever it points at,
-    and so do a reference carrying a scheme or an authority and one
-    naming a file outside the profile's suffixes; each is emitted as
-    authored and rewritten by nothing, and marking one is refused at
-    the run rather than published with its mark intact. An image is
-    refused on the use it is, before anything asks what its
-    destination resolves to, because no destination makes a picture a
-    document.
+    A resource is no local Markdown document and an image is a
+    resource whatever it points at, so neither is a dependency and both
+    are carried as text. A mark on one is refused, which the row that
+    emits a resource wherever it resolves retires.
+
+    A reference whose form the grammar does not admit, and which names
+    a Markdown document, is a defect rather than a mention: an author
+    spelled a dependency the profile cannot resolve.
 
     A marked reference naming the node that owns it is a direct
-    self-reference and is refused. One naming an including ancestor, or
-    the whole document a section sits in, names a destination the
-    bundle already carries, and the traversal reaches it as it reaches
-    any identity it has seen.
+    self-reference and is refused, which the row that rewrites a self
+    reference retires. One naming an including ancestor, or the whole
+    document a section sits in, names a destination the bundle already
+    carries, and the traversal reaches it as it reaches any identity it
+    has seen.
 
-    The chain passed in is the one that reached this source, and
-    every reference the source marks stands one hop beyond it. A
-    reference refused here therefore reports the route the run followed
-    to the link, which is what an author needs to find the document
-    that wrote it.
+    The chain passed in is the one that reached this source, and every
+    reference the source carries stands one hop beyond it. A reference
+    refused here therefore reports the route the run followed to the
+    link, which is what an author needs to find the document that wrote
+    it.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if not marked(use.opening):
-            continue
         at = location(path, source.line(use.line))
         route = (*chain, use.destination)
         if use.resource:
-            raise marked_resource("image", use.destination, at, route)
+            if marked(use.opening):
+                raise marked_resource("image", use.destination, at, route)
+            continue
         try:
             found = inside(path, use.destination)
-        except OutsideRoot as outside:
-            raise input_failure(
-                f"the reference {use.destination!r} {outside}",
-                code=SOURCE_OUTSIDE_ROOT,
-                remedy="name a document the source root carries, or cite it "
-                "without the mark",
-                reference=use.destination,
-                source=at,
-                chain=route,
-            ) from outside
+        except OutsideRoot:
+            continue
         except Malformed as malformed:
+            if not is_markdown(components(use.destination).path):
+                continue
             raise input_failure(
                 f"the reference {use.destination!r} {malformed}",
                 code=TARGET_NOT_FOUND,
@@ -1160,8 +1154,10 @@ def required(
                 chain=route,
             ) from malformed
         if found.external or not is_markdown(found.path):
-            raise marked_resource("reference", use.destination, at, route)
-        if self_referent(tokens, path, use.line, found):
+            if marked(use.opening):
+                raise marked_resource("reference", use.destination, at, route)
+            continue
+        if marked(use.opening) and self_referent(tokens, path, use.line, found):
             carrier = "section" if found.fragment is not None else "document"
             raise input_failure(
                 f"the marked reference {use.destination!r} names the {carrier} "
@@ -1476,8 +1472,8 @@ def compose(
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
-    more with the map those headings produce, which is what each marked
-    link is rewritten through. The second pass emits the same headings
+    more with the map those headings produce, which is what each
+    compiled link is rewritten through. The second pass emits the same headings
     as the first, because a rewrite edits a link's destination and its
     mark and nothing a heading is slugged from.
 

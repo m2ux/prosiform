@@ -234,7 +234,7 @@ def prepared(
         if selected is None
         else {id(token) for token in selected.regions}
     )
-    text = shown_text(tokens)
+    text = shown_text(path, tokens)
     named = source_fragments(tokens)
     titled_token = absorbed(tokens, PurePosixPath(path).stem)
     absorbing = (

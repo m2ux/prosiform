@@ -144,7 +144,7 @@ Each rule is a rule.
 
 LINKED = """# Guide
 
-The guide names [¬the note](note.md) and [a site](https://example.com).
+The guide names [the note](note.md) and [a site](https://example.com).
 
 ## Rules
 
@@ -154,6 +154,11 @@ A literal [runner] stays literal.
 NOTE = """# Note
 
 The note says so.
+"""
+
+RULES = """# Rules
+
+Each rule the quoted procedure names.
 """
 
 DEFINED = """# Guide
@@ -181,12 +186,12 @@ def test_a_candidate_agreeing_with_its_provenance_validates() -> None:
     built({"guide.md": GUIDE}, ["guide.md"]).validate()
 
 
-def test_a_candidate_carrying_marked_and_literal_references_validates() -> None:
+def test_a_candidate_carrying_compiled_and_literal_references_validates() -> None:
     built({"guide.md": LINKED, "note.md": NOTE}, ["guide.md"]).validate()
 
 
 def test_a_candidate_whose_definition_was_removed_validates() -> None:
-    built({"guide.md": DEFINED}, ["guide.md"]).validate()
+    built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"]).validate()
 
 
 def test_repeated_identical_prose_in_two_regions_is_not_duplication() -> None:
@@ -232,7 +237,7 @@ def test_an_emitted_heading_the_provenance_does_not_record_fails() -> None:
 
 
 def test_a_surviving_definition_fails() -> None:
-    one = built({"guide.md": DEFINED}, ["guide.md"])
+    one = built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"])
     one.bundled = f"{one.bundled}\n[rules]: rules.md\n"
     assert refused(one).invariant == NO_DEFINITION_LEAKAGE
 
@@ -378,12 +383,12 @@ def test_a_carried_record_names_the_source_heading_it_answers_to() -> None:
 
 
 def test_a_range_names_the_lines_of_its_source_it_occupies() -> None:
-    one = built({"guide.md": DEFINED}, ["guide.md"])
+    one = built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"])
     assert one.groups[0].record.ranges[0] == Range("guide.md", (2, 5), (4,))
 
 
 def test_a_definition_line_is_recorded_as_removed_rather_than_absent() -> None:
-    one = built({"guide.md": DEFINED}, ["guide.md"])
+    one = built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"])
     assert one.groups[0].record.ranges[0].kept() == [2, 3]
 
 

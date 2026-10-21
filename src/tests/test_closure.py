@@ -18,6 +18,7 @@ import pytest
 from prosiform.closure import (
     Malformed,
     OutsideRoot,
+    bundled,
     identity,
     inside,
     marked,
@@ -183,3 +184,37 @@ def test_two_spellings_of_one_section_share_an_identity() -> None:
     assert identity(resolve("./%67uide.md#alpha")) == identity(
         resolve("guide.md#alpha")
     )
+
+
+def test_a_reference_resolving_under_the_root_is_a_dependency() -> None:
+    found = bundled("docs/guide.md", "rules.md#alpha")
+    assert found is not None
+    assert (found.path, found.fragment) == ("docs/rules.md", "alpha")
+
+
+def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
+    found = bundled("docs/guide.md", "#alpha")
+    assert found is not None
+    assert (found.path, found.fragment) == ("docs/guide.md", "alpha")
+
+
+def test_a_mark_decides_nothing_about_what_a_reference_names() -> None:
+    assert bundled("guide.md", "rules.md") == bundled("guide.md", "rules.md")
+
+
+@pytest.mark.parametrize(
+    "destination",
+    [
+        "../rules.md",
+        "/rules.md",
+        "C:/rules.md",
+        "https://example.com/rules.md",
+        "//example.com/rules.md",
+        "plan.png",
+        "rules.md?view=raw",
+    ],
+)
+def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
+    destination: str,
+) -> None:
+    assert bundled("guide.md", destination) is None
