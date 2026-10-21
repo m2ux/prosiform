@@ -64,7 +64,7 @@ USER_AGENT = "prosiform-link-check"
 ATTEMPTS = 3
 DELAY = 2.0
 TIMEOUT = 20
-SAYS_NOTHING = re.compile(r"HTTP (?:5\d\d|403)")
+STATUS_LINE = re.compile(r"^HTTP/\d(?:\.\d)?\s+(\d{3})\b")
 
 
 @dataclass(frozen=True)
@@ -234,16 +234,39 @@ GITHUB_USER_PROJECT = re.compile(
 )
 
 
+def reported_status(output: str) -> int | None:
+    """The status the response carried, read from its own status line.
+
+    `--include` writes the response's status line ahead of its headers, in
+    the form the HTTP specification fixes, so the number is the host's
+    rather than the wording of a message the command composed. A call that
+    never received a response wrote no such line and carries no status.
+    """
+    first = output.lstrip().splitlines()[:1]
+    match = STATUS_LINE.match(first[0]) if first else None
+    return int(match.group(1)) if match else None
+
+
 def gh_api(arguments: list[str]) -> Outcome:
     """Run an authenticated GitHub API call, or report why it did not answer.
 
-    A missing command is the caller's to fix and fails the check. A call
-    that timed out or came back carrying a server status or a refusal of
-    the caller is the host saying nothing, which is a verdict of its own.
+    A missing command is the caller's to fix and fails the check. The status
+    the response carried is read by `verdict`, which is the one function
+    deciding every remote read, so a tracker reference and a direct one take
+    the same verdict for the same status.
+
+    A failure carrying no status is a call that did not reach GitHub, which
+    says nothing about the target for a reason of its own. A failure whose
+    status states nothing against the call is reported as the command gave
+    it: a GraphQL error arrives under a 200, so the status that resolves
+    leaves the reason standing.
     """
     try:
         result = subprocess.run(
-            ["gh", "api", *arguments], capture_output=True, text=True, timeout=30
+            ["gh", "api", "--include", "--silent", *arguments],
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
     except FileNotFoundError:
         return (
@@ -251,12 +274,13 @@ def gh_api(arguments: list[str]) -> Outcome:
         )
     except subprocess.TimeoutExpired:
         return Unreachable("gh did not answer within 30s")
-    if result.returncode != 0:
-        reason = (
-            result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
-        )
-        return Unreachable(reason) if SAYS_NOTHING.search(reason) else reason
-    return None
+    if result.returncode == 0:
+        return None
+    reason = result.stderr.strip().splitlines()[-1] if result.stderr else "gh failed"
+    status = reported_status(result.stdout)
+    if status is None:
+        return Unreachable(reason)
+    return verdict(status) or reason
 
 
 def resolve_github(target: str) -> Outcome:
@@ -271,7 +295,7 @@ def resolve_github(target: str) -> Outcome:
         owner, repository, kind, number = issue.groups()
         endpoint = "issues" if kind == "issues" else "pulls"
         path = f"repos/{owner}/{repository}/{endpoint}/{number}"
-        return retried(lambda: gh_api([path, "--silent"]))
+        return retried(lambda: gh_api([path]))
 
     project = GITHUB_USER_PROJECT.match(target)
     if project:
@@ -281,7 +305,7 @@ def resolve_github(target: str) -> Outcome:
             f'{{ {owner_field}(login: "{login}") '
             f"{{ projectV2(number: {number}) {{ id }} }} }}"
         )
-        return retried(lambda: gh_api(["graphql", "-f", f"query={query}", "--silent"]))
+        return retried(lambda: gh_api(["graphql", "-f", f"query={query}"]))
 
     return retried(lambda: reach(target))
 

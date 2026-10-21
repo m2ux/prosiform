@@ -19,8 +19,14 @@ document is held to that answer. These are
 measured against a server this test runs on the loopback interface, which
 answers the statuses each case needs and counts the requests it received,
 so the retry and the GET re-ask are observed rather than assumed.
+
+A tracker reference takes the verdict its status takes anywhere else. The
+status a tracker call produced is measured against a stand-in for `gh api`
+answering the status line and the message each case names, so the one
+function deciding both routes is observed on each side of the boundary.
 """
 
+import subprocess
 import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -340,6 +346,126 @@ def test_a_blob_or_tree_address_into_this_repository_is_resolved_by_git() -> Non
     assert links.is_repository_tree_url(f"{prefix}tree/engineering/artifacts")
     assert not links.is_repository_tree_url(f"{prefix}issues/39")
     assert not links.is_repository_tree_url("https://example.com/blob/main/README.md")
+
+
+class Called:
+    """One `gh api` invocation recorded, answering what the case names."""
+
+    def __init__(self, returncode: int, stdout: str, stderr: str) -> None:
+        self.returncode = returncode
+        self.stdout = stdout
+        self.stderr = stderr
+        self.arguments: list[str] = []
+
+    def run(self, arguments: list[str], **_: object) -> "Called":
+        self.arguments = arguments
+        return self
+
+
+def answering(
+    monkeypatch: pytest.MonkeyPatch,
+    status: int | None,
+    message: str,
+    returncode: int = 1,
+) -> Called:
+    """`gh api` answering with the status line and message the case names."""
+    headers = "" if status is None else f"HTTP/2.0 {status} Reported\r\nServer: t\r\n"
+    called = Called(returncode, headers, message)
+    monkeypatch.setattr(subprocess, "run", called.run)
+    return called
+
+
+def test_a_tracker_call_reports_the_status_the_response_carried(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, 404, "gh: Not Found (HTTP 404)")
+    assert links.reported_status("HTTP/2.0 404 Not Found\r\nServer: t\r\n") == 404
+
+
+def test_a_tracker_call_is_read_with_the_response_included(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    called = answering(monkeypatch, 200, "", returncode=0)
+    links.resolve_github("https://github.com/m2ux/prosiform/issues/39")
+    assert called.arguments[:4] == ["gh", "api", "--include", "--silent"]
+
+
+@pytest.mark.parametrize("status", [503, 403, 404, 401, 405])
+def test_a_tracker_read_and_a_direct_read_take_one_verdict(
+    monkeypatch: pytest.MonkeyPatch, status: int
+) -> None:
+    answering(monkeypatch, status, f"gh: Reported (HTTP {status})")
+    assert links.gh_api(["repos/m2ux/prosiform/issues/39"]) == links.verdict(status)
+
+
+def test_a_tracker_call_reporting_a_server_status_is_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, 503, "gh: Service Unavailable (HTTP 503)")
+    outcome = links.gh_api(["repos/m2ux/prosiform/issues/39"])
+    assert isinstance(outcome, links.Unreachable)
+    assert outcome.reason == "HTTP 503"
+
+
+def test_a_tracker_call_the_host_forbade_is_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, 403, "gh: Forbidden (HTTP 403)")
+    outcome = links.gh_api(["repos/m2ux/prosiform/issues/39"])
+    assert isinstance(outcome, links.Unreachable)
+    assert outcome.reason == "HTTP 403"
+
+
+def test_a_tracker_call_naming_a_missing_target_is_unresolved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, 404, "gh: Not Found (HTTP 404)")
+    assert links.gh_api(["repos/m2ux/prosiform/issues/39"]) == "HTTP 404"
+
+
+def test_a_tracker_call_carrying_no_status_is_unreachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, None, "error connecting to api.github.com")
+    outcome = links.gh_api(["repos/m2ux/prosiform/issues/39"])
+    assert isinstance(outcome, links.Unreachable)
+    assert outcome.reason == "error connecting to api.github.com"
+
+
+def test_a_graphql_error_under_a_resolving_status_is_unresolved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, 200, "gh: Could not resolve to a ProjectV2")
+    assert links.gh_api(["graphql"]) == "gh: Could not resolve to a ProjectV2"
+
+
+def test_a_tracker_call_the_host_answered_resolves(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    answering(monkeypatch, 200, "", returncode=0)
+    assert links.gh_api(["repos/m2ux/prosiform/issues/39"]) is None
+
+
+def test_a_document_naming_a_forbidden_tracker_reference_passes(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    answering(monkeypatch, 403, "gh: Forbidden (HTTP 403)")
+    address = "https://github.com/m2ux/prosiform/issues/39"
+    failures, unanswered = links.check(document(tmp_path, address), online=True)
+    assert failures == []
+    assert len(unanswered) == 1
+    assert "HTTP 403" in unanswered[0]
+
+
+def test_a_document_naming_a_missing_tracker_reference_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    answering(monkeypatch, 404, "gh: Not Found (HTTP 404)")
+    address = "https://github.com/m2ux/prosiform/issues/39"
+    failures, unanswered = links.check(document(tmp_path, address), online=True)
+    assert unanswered == []
+    assert len(failures) == 1
+    assert "HTTP 404" in failures[0]
 
 
 LITERAL = """\
