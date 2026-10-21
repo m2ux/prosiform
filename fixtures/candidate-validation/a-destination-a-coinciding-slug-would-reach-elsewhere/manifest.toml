@@ -1,4 +1,4 @@
-description = "A marked link whose target's heading text is carried by another group as well reaches the heading its source named rather than the one whose slug coincides."
+description = "A link whose target's heading text is carried by another group as well reaches the heading its source named rather than the one whose slug coincides."
 
 clauses = [
   "Source and candidate validation modes — Candidate mode",

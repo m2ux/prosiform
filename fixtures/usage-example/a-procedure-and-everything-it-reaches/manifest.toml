@@ -1,10 +1,9 @@
-description = "The usage example that names a procedure bundles that procedure and the two documents its marked prerequisites reach, leaving the routing document it cites out of the bundle and its reference to it as authored."
+description = "The usage example that names a procedure bundles that procedure and the two documents its prerequisites reach, leaving out the routing document it names in prose rather than links."
 
 clauses = [
   "CLI contract — Usage examples",
   "Input and output contract — Whole documents",
-  "Link classification and resource handling — Marked local Markdown document links",
-  "Link classification and resource handling — Unmarked local Markdown links",
+  "Link classification and resource handling — Local Markdown document links under the root",
   "Compile before publishing — Discover the recursive dependency graph",
   "Entry line",
 ]

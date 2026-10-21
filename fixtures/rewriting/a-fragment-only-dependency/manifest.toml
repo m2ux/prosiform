@@ -1,4 +1,4 @@
-description = "A marked fragment-only link resolves against its own source's heading index and is rewritten to the bundle destination that heading took, so a reference inside one document reaches the place that document now occupies."
+description = "A fragment-only link resolves against its own source's heading index and is rewritten to the bundle destination that heading took, so a reference inside one document reaches the place that document now occupies."
 
 clauses = [
   "Bundle destinations — Internal links",

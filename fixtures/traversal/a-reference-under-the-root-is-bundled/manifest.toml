@@ -1,0 +1,21 @@
+description = "A local Markdown link resolving under the allowed source root is resolved against the document carrying it, bundled and present: one naming a document carries the whole of it, one naming a section carries that section, and one resolving above the root carries nothing."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Compile before publishing — Discover the recursive dependency graph",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

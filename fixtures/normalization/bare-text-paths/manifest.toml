@@ -2,7 +2,7 @@ description = "A filesystem path written as ordinary prose is left as text and r
 
 clauses = [
   "Markdown and source-heading profile — Bare text",
-  "Link classification and resource handling — The mark",
+  "Link classification and resource handling — Local Markdown document links under the root",
   "Post-compilation invariants — Reference preservation",
 ]
 

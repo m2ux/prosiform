@@ -1,4 +1,4 @@
-description = "The usage example that names two sections selects each from the document that carries it, and the marked reference inside the first carries the second document's section it names."
+description = "The usage example that names two sections selects each from the document that carries it, and the reference inside the first carries the second document's section it names."
 
 clauses = [
   "CLI contract — Usage examples",

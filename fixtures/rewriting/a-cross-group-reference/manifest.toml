@@ -1,4 +1,4 @@
-description = "A destination is scoped to the whole bundle, so a marked reference from one file group to a section of another is rewritten to the same spelling a reference inside one group takes, in both directions."
+description = "A destination is scoped to the whole bundle, so a reference from one file group to a section of another is rewritten to the same spelling a reference inside one group takes, in both directions."
 
 clauses = [
   "Bundle destinations — One document",

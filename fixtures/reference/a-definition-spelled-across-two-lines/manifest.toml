@@ -1,4 +1,4 @@
-description = "A definition whose destination and title the author spelled across two lines is published inline carrying both as authored, in a marked use as in an unmarked one, and the definition is not emitted."
+description = "A definition whose destination and title the author spelled across two lines is published inline carrying both as authored where its destination sits above the root, takes the bundle destination where its destination sits under it, and is not emitted either way."
 
 clauses = [
   "Source-local reference interpretation — step 1",

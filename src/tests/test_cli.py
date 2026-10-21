@@ -985,6 +985,52 @@ def test_an_unmarked_resource_is_emitted_as_authored(root: Path) -> None:
     assert "[the spec](https://e.test/s.md)" in run.stdout
 
 
+def test_a_reference_under_the_root_is_bundled_and_rewritten(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[the rules](#rules)" in run.stdout
+    assert "Every rule." in run.stdout
+
+
+def test_a_reference_to_a_section_under_the_root_carries_that_section(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [the step](process.md#step).\n")
+    written(root, "process.md", "# Process\n\n## Draft\n\nNo.\n\n## Step\n\nYes.\n")
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[the step](#step)" in run.stdout
+    assert "Yes." in run.stdout
+    assert "No." not in run.stdout
+
+
+def test_a_reference_outside_the_root_is_emitted_as_authored(tmp_path: Path) -> None:
+    allowed = tmp_path / "source"
+    allowed.mkdir()
+    (tmp_path / "rules.md").write_text("# Rules\n\n<div>raw</div>\n")
+    (allowed / "guide.md").write_text("# Guide\n\nSee [the rules](../rules.md).\n")
+    run = invoke("--root", str(allowed), "guide.md")
+    assert run.status == SUCCESS
+    assert "[the rules](../rules.md)" in run.stdout
+    assert "raw" not in run.stdout
+
+
+def test_a_mark_on_a_reference_outside_the_root_changes_nothing(
+    tmp_path: Path,
+) -> None:
+    allowed = tmp_path / "source"
+    allowed.mkdir()
+    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule.\n")
+    (allowed / "guide.md").write_text(
+        "# Guide\n\nSee [\u00ac the rules](../rules.md).\n"
+    )
+    run = invoke("--root", str(allowed), "guide.md")
+    assert run.status == SUCCESS
+    assert "[\u00ac the rules](../rules.md)" in run.stdout
+
+
 def test_a_marked_link_to_the_section_carrying_it_is_a_self_reference(
     root: Path,
 ) -> None:

@@ -2,7 +2,7 @@ This bundle was built for [guide](#guide); everything else is material it refere
 
 # guide
 
-The guide names [the shared rules](rules.md "The Rules,
+The guide names [the shared rules](../rules.md "The Rules,
 written out").
 
 The guide carries [the house rules](#house "House Rules,

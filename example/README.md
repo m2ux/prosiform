@@ -6,10 +6,10 @@ The example tree the [design](https://github.com/m2ux/prosiform/blob/engineering
 
 ## What it shows
 
-Its references carry both halves of the marking rule, so a reader sees the difference in one place:
+Its references carry both halves of the classification rule, so a reader sees the difference in one place:
 
-- **Marked where the material is required.** A link whose text opens with `¬` is a dependency: `modes/plan-mode.md` marks the two artifact documents its procedure reads, and `artifacts/epic-issue-body.md` marks the section of `artifacts/epic.md` whose findings it returns. Each is bundled.
-- **Unmarked where it is cited.** `modes/plan-mode.md` cites the routing document it was reached through, and `artifacts/epic-issue-body.md` cites, in its opening prose, the same document it requires further down. A citation carries nothing into the bundle and is emitted as its author wrote it.
+- **Linked where the material is required.** A link resolving to a document under the root is a dependency: `modes/plan-mode.md` links the two artifact documents its procedure reads, and `artifacts/epic-issue-body.md` links the section of `artifacts/epic.md` whose findings it returns. Each is bundled.
+- **Named where it is only cited.** `modes/plan-mode.md` names the routing document it was reached through in prose rather than linking it, because a link to it would carry it. Material a document only names therefore stays out of the bundle.
 
 ## What runs against it
 

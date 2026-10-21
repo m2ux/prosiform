@@ -1,4 +1,4 @@
-description = "A region carrying a rewritten marked link keeps every byte the rewrite does not reach: an indented thematic break keeps its indent and a line break keeps the two spaces that wrote it."
+description = "A region carrying a rewritten link keeps every byte the rewrite does not reach: an indented thematic break keeps its indent and a line break keeps the two spaces that wrote it."
 
 clauses = [
   "Preservation — Untouched non-heading bytes and code examples are not reformatted or repaired",

@@ -70,10 +70,9 @@ from prosiform.bundle import (
     carried_headings,
     emitted_visible,
     heading_text,
-    key,
     openings,
 )
-from prosiform.closure import Reference, marked
+from prosiform.closure import Reference, bundled
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     Ancestor,
@@ -97,7 +96,6 @@ from prosiform.source import (
     inlines,
     level,
     lines,
-    opening_text,
     regions,
     shown,
     visible,
@@ -268,19 +266,22 @@ def intended(
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
-    A marked link carries the destination the bundle assigned the target
-    it resolved to, and its text loses the mark with the rewrite. Every
-    other use is published as its author wrote it, a reference-style use
-    at the inline form the definition it names gives it.
+    A link the bundle compiled carries the destination it assigned the
+    target that link resolved to, and its text loses the mark with the
+    rewrite. Every other use is published as its author wrote it, a
+    reference-style use at the inline form the definition it names
+    gives it.
     """
-    children = inline.children or []
-    if one.kind != LINK or not marked(opening_text(children, at)):
+    if one.kind != LINK:
         return one
-    assigned = targets.get(key(path, one.destination))
+    found = bundled(path, one.destination)
+    if found is None:
+        return one
+    assigned = targets.get((found.path, found.fragment))
     if assigned is None:
         raise Invalid(
             TARGET_INTEGRITY,
-            f"the marked link {one.destination!r} in {path!r} was assigned no "
+            f"the reference {one.destination!r} in {path!r} was assigned no "
             f"destination",
         )
     return Use(
@@ -953,8 +954,9 @@ def preserved(
     The lines the bundle does not edit are compared as the bytes they
     are, the code examples as the parser read them, and the text each
     inline token shows as a reader reads it, the mark a rewrite drops
-    taken off the source side. Together they are the content of the
-    region: nothing in it is reformatted or repaired.
+    taken off the source side where the link carrying it is one the
+    bundle compiled. Together they are the content of the region:
+    nothing in it is reformatted or repaired.
     """
     wrote = body(source.physical, source.tokens, source.span, removed)
     carries = body(published.physical, published.tokens, published.span)
@@ -983,11 +985,11 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if emitted_visible(one) != visible(each):
+        if emitted_visible(path, one) != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{emitted_visible(one)!r} and the candidate shows "
+                f"{emitted_visible(path, one)!r} and the candidate shows "
                 f"{visible(each)!r}",
             )
 

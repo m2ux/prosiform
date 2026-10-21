@@ -1,4 +1,4 @@
-description = "A marked link from a nested section back to the ancestor already selected resolves to that ancestor's existing destination, expanding nothing and duplicating nothing."
+description = "A link from a nested section back to the ancestor already selected resolves to that ancestor's existing destination, expanding nothing and duplicating nothing."
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Ancestor reference",
