@@ -2,10 +2,14 @@ This bundle was built for [guide](#guide); everything else is material it refere
 
 # guide
 
-The guide names [the shared rules](rules.md).
+The guide names [the shared rules](#rules).
 
 A definition is written like this:
 
 ```text
 [rules]: rules.md
 ```
+
+# rules
+
+Every rule the guide names.

@@ -1,0 +1,21 @@
+description = "A document whose reference names material above the allowed source root bundles successfully: the citation is emitted as authored, the document it names is not opened, and the closure stays inside the root."
+
+clauses = [
+  "Explicitly linked source structure — Explicit dependencies",
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Reference normalization and path identity — The root is the caller's confinement boundary",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

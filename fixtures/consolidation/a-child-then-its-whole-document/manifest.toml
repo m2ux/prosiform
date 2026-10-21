@@ -1,4 +1,4 @@
-description = "A section selected first and its whole document included later by a dependency is one region: the document's group carries the larger region alone, and a reference marked in the part the entry did not select is resolved."
+description = "A section selected first and its whole document included later by a dependency is one region: the document's group carries the larger region alone, and a reference in the part the entry did not select is resolved."
 
 clauses = [
   "Compile before publishing — Expanding coverage",

@@ -1,4 +1,4 @@
-description = "A bundle whose every link is marked carries no link naming a source path: a whole-document reference, a section reference and a fragment-only reference are each rewritten to the destination of the target they resolved to."
+description = "A bundle whose every link resolves under the allowed source root carries no link naming a source path: a whole-document reference, a section reference and a fragment-only reference are each rewritten to the destination of the target they resolved to."
 
 clauses = [
   "Bundle destinations — Internal links",

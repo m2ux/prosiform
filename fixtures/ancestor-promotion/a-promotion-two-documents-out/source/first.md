@@ -1,3 +1,3 @@
 # First
 
-First body, which needs [¬the second note](second.md).
+First body, which needs [the second note](second.md).

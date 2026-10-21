@@ -1,0 +1,21 @@
+description = "A marked reference naming material above the allowed source root is emitted exactly as authored, the mark included, because a reference leaving the root is text and a mark changes nothing that was going to happen to it."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Reference normalization and path identity — a normalized path outside the root",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

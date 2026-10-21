@@ -1,3 +1,3 @@
 # Alpha
 
-Alpha requires [¬ beta](beta.md).
+Alpha requires [beta](beta.md).

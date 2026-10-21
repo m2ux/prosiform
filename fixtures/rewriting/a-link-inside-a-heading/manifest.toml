@@ -1,0 +1,21 @@
+description = "A heading carrying a link is emitted with that link rewritten to its target's destination, and the destination the heading takes is the fragment a renderer generates for the heading a reader finds."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Bundle destinations — Visible headings",
+  "Post-compilation invariants — One intended destination",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

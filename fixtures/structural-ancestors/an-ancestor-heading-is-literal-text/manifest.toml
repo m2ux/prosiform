@@ -1,4 +1,4 @@
-description = "A structural ancestor's title is emitted as the literal text its author wrote, so the link, the image and the raw HTML inside it reach the bundle as characters rather than as live constructs, and the marked link among them requires nothing: the document it names is bundled nowhere."
+description = "A structural ancestor's title is emitted as the literal text its author wrote, so the link, the image and the raw HTML inside it reach the bundle as characters rather than as live constructs, and the link among them reaches nothing: the document it names is bundled nowhere."
 
 clauses = [
   "Heading-only structural ancestors — Heading text",

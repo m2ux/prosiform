@@ -6,7 +6,7 @@ Alpha opens the section.
 
 ### Detail
 
-Detail requires [¬ Alpha](guide.md#alpha), its including ancestor.
+Detail requires [Alpha](guide.md#alpha), its including ancestor.
 
 ## Beta
 

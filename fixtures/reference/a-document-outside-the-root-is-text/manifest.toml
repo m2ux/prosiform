@@ -1,0 +1,21 @@
+description = "A local Markdown reference resolving outside the allowed source root is emitted as authored and its target is never opened: the document above the root carries a construct the profile refuses in selected content, and the run succeeds carrying neither it nor a rewritten link."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Reference normalization and path identity — a normalized path outside the root",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

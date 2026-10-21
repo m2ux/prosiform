@@ -1,0 +1,21 @@
+description = "Two references naming one document carry it once and are rewritten to the one destination it took, while a reference above the root beside them names a document the bundle does not carry."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Post-compilation invariants — Reference preservation",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

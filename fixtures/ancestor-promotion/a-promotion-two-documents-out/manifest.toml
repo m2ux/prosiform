@@ -1,4 +1,4 @@
-description = "The marked link that promotes a heading-only structural ancestor is reached two documents out, so the ancestor is replaced by its selected section only where the closure ran to its fixed point before ancestry was derived; the ancestor no reference names keeps its heading."
+description = "The link that promotes a heading-only structural ancestor is reached two documents out, so the ancestor is replaced by its selected section only where the closure ran to its fixed point before ancestry was derived; the ancestor no reference names keeps its heading."
 
 clauses = [
   "Heading-only structural ancestors — Targets",

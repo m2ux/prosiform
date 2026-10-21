@@ -1,0 +1,26 @@
+description = "A link written inside an image's alternative content resolves under the allowed source root like any other, so it is bundled and rewritten to its target's destination and no published bundle names a source path."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Bundle destinations",
+]
+
+awaiting = "I00:E11:W10"
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

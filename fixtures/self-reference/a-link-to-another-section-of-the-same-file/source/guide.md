@@ -2,7 +2,7 @@
 
 ## Alpha
 
-Alpha requires [¬ Beta](guide.md#beta), a different section.
+Alpha requires [Beta](guide.md#beta), a different section.
 
 ## Beta
 

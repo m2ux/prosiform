@@ -2,10 +2,14 @@ This bundle was built for [guide](#guide); everything else is material it refere
 
 # guide
 
-The guide names [the runner](run.md) and shows `[runner]` as an example.
+The guide names [the runner](#run) and shows `[runner]` as an example.
 
 ```markdown
 A [runner] use and its definition:
 
 [runner]: run.md
 ```
+
+# run
+
+How the runner runs.

@@ -6,5 +6,5 @@
 the three is a local Markdown document, so none is opened, fetched or
 traversed.
 
-The procedure requires [¬ the shared rules](rules.md), which the bundle
+The procedure requires [the shared rules](rules.md), which the bundle
 carries.

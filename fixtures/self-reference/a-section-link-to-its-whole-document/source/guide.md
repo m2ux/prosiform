@@ -2,7 +2,7 @@
 
 ## Alpha
 
-Alpha requires [¬ the guide](guide.md), the document that holds it.
+Alpha requires [the guide](guide.md), the document that holds it.
 
 ## Beta
 

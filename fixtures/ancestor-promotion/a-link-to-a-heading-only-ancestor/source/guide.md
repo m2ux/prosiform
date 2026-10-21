@@ -4,7 +4,7 @@ Alpha body.
 
 ### Detail
 
-Detail body, which needs [¬the note](note.md).
+Detail body, which needs [the note](note.md).
 
 ## Beta
 

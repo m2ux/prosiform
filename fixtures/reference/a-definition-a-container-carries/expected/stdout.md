@@ -2,6 +2,10 @@ This bundle was built for [guide](#guide); everything else is material it refere
 
 # guide
 
-> The quoted procedure names [the shared rules](rules.md).
+> The quoted procedure names [the shared rules](#rules).
 
 The guide carries nothing else.
+
+# rules
+
+Every rule the quoted procedure names.

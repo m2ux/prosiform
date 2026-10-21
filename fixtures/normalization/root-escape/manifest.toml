@@ -1,10 +1,9 @@
-description = "A marked reference inside a source normalizing to a path outside the allowed source root fails, naming the resolved path rather than dropping the dependency."
+description = "A reference inside a source normalizing to a path outside the allowed source root is emitted as authored, and the document above the root is not opened."
 
 clauses = [
-  "Link classification and resource handling — Marked local Markdown document links",
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
   "Reference normalization and path identity — Resolution sequence, step 7",
   "Reference normalization and path identity — a normalized path outside the root",
-  "Validation and failure contract — Publication",
 ]
 
 [invocation]
@@ -12,12 +11,11 @@ root = "source"
 arguments = ["guide.md"]
 
 [expected]
-exit_status = 1
+exit_status = 0
 stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
-severity = "error"
-code = "E_SOURCE_OUTSIDE_ROOT"
-reference = "../outside.md"
-source = "guide.md:3"
-chain = ["guide.md", "../outside.md"]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

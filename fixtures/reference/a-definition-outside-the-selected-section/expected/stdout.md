@@ -4,5 +4,9 @@ This bundle was built for [Procedure](#procedure); everything else is material i
 
 ### Procedure
 
-The procedure requires [the shared rules](rules.md), written as a
+The procedure requires [the shared rules](#rules), written as a
 reference rather than inline.
+
+# rules
+
+Every rule the procedure requires.

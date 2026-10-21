@@ -8,7 +8,7 @@ This bundle was built for [Plan](#plan); everything else is material it referenc
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
-The delivery lines this body records are defined in [Epic](epic.md), which this document cites here and requires where it reads them.
+The delivery lines this body records are defined in [Epic](#epic).
 
 ### Epic
 
@@ -172,7 +172,7 @@ Read these files first.
 - [Epic Issue Body](#epic-issue-body)
 - [Epic](#epic)
 
-The caller reached this mode through [the routing document](../SKILL.md), which this procedure cites rather than requires.
+The caller reached this mode through the routing document `SKILL.md`, which this procedure names rather than carries.
 
 ## Procedure
 
