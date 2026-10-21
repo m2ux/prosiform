@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1800" height="840" viewBox="0 0 1800 840" role="img" aria-labelledby="title description">
 <title id="title">Compile the deferred rules for the current agent</title>
-<desc id="description">The shared bundle includes an Agents subsection under Rules, which instructs the agent to compile the deferred Codex or Claude link matching its harness identity. Each compiles its selected document with --group rules:1 into a Rules group containing its agent-specific rules section.</desc>
+<desc id="description">The shared bundle includes an Agents subsection under Rules, which instructs the agent to compile the deferred Codex or Claude link matching its harness identity. Each compiles its selected document into a bundle headed by its source path, containing its Rules section.</desc>
 <rect width="1800" height="840" fill="#0d1117"/>
 <g font-family="IBM Plex Mono">
 <rect x="32" y="32" width="510" height="776" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/><text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">bundle.md</text>
@@ -21,11 +21,11 @@
 <text x="640" y="558" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="640" y="636" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
 <text x="640" y="692" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
-<text x="1280" y="153" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1280" y="153" font-size="32" fill="#e6edf3" font-weight="500">rules/codex</text>
 <text x="1280" y="213" font-size="26" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="1280" y="273" font-size="24" fill="#e6edf3" font-weight="400">• Keep patches focused.</text>
 <text x="1280" y="329" font-size="24" fill="#e6edf3" font-weight="400">• Run relevant tests.</text>
-<text x="1280" y="553" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1280" y="553" font-size="32" fill="#e6edf3" font-weight="500">rules/claude</text>
 <text x="1280" y="613" font-size="26" fill="#e6edf3" font-weight="500">Rules</text>
 <text x="1280" y="673" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
 <text x="1280" y="729" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
