@@ -33,6 +33,15 @@ it is listed as unfixturable and the work those fixtures await is the reason.
 An entry no fixture declares at all has no reason to state and fails the
 report.
 
+The declared surface also lists the installation claims no run of the
+corpus observes. An installation is not a thing a fixture can name: a
+fixture declares a source tree and the bytes a run must return for it, and
+the corpus reaches the build under test through configuration. Each claim
+is therefore declared here, beside the surface this report renders, with
+the reason the smoke run cannot reach it and what a run would have to do to
+observe it. A claim a run comes to observe leaves the listing by leaving
+this declaration.
+
 The design is read from the branch and path the README's Design link names,
 as the vocabulary check reads the same document, so no path into a dated
 planning folder is written here.
@@ -96,6 +105,54 @@ class Entry:
     @property
     def undeclared(self) -> bool:
         return not self.reached and not self.awaited
+
+
+@dataclass(frozen=True)
+class Claim:
+    """One installation claim no run of the corpus observes."""
+
+    name: str
+    reason: str
+    observable: str
+
+
+CLAIMS = (
+    Claim(
+        name="another platform",
+        reason=(
+            "the smoke run observes this host and the continuous-integration "
+            "runner, and a platform whose command wrapper and path resolution "
+            "differ is a different mechanism"
+        ),
+        observable=(
+            "observable once a run installs the build and invokes it by name "
+            "on that platform"
+        ),
+    ),
+    Claim(
+        name="a machine that never held the repository",
+        reason=(
+            "the repository is on disk throughout the run and merely "
+            "unreachable by path, working directory and environment, and "
+            "removing it is not something a check inside it can do"
+        ),
+        observable=(
+            "observable once a run installs the build on a machine the "
+            "repository was never copied to"
+        ),
+    ),
+    Claim(
+        name="the command line the documentation gives a reader",
+        reason=(
+            "the run installs an artefact it builds rather than running the "
+            "command line the documentation's installation section states"
+        ),
+        observable=(
+            "observable once a run executes that documented command line and "
+            "invokes the command it installs"
+        ),
+    ),
+)
 
 
 @dataclass(frozen=True)
@@ -275,6 +332,9 @@ def render(found: Report) -> str:
         for work, where in entry.awaited.items():
             lines.extend(f"    {name} (awaiting {work})" for name in where)
         lines.extend(f"    {name}" for name in entry.reached)
+    for claim in CLAIMS:
+        lines.append(f"installation claim {claim.name}: unfixturable, {claim.reason}")
+        lines.append(f"    {claim.observable}")
     counted = Counter(
         "unfixturable" if entry.unfixturable else "reached" for entry in found.surface
     )
@@ -284,7 +344,8 @@ def render(found: Report) -> str:
         f"{len(found.uncovered)} covered by no fixture, "
         f"{len(found.unnamed)} declaration(s) naming no clause; "
         f"{counted['reached']} declared name(s) reached, "
-        f"{counted['unfixturable']} unfixturable",
+        f"{counted['unfixturable']} unfixturable, "
+        f"{len(CLAIMS)} installation claim(s) no run observes",
     ]
     return "\n".join(lines) + "\n"
 

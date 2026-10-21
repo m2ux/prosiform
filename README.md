@@ -87,7 +87,7 @@ make check
 | `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing besides, each reproducing that build's own help output. |
-| `make conformance` | Each behavioural clause of the design carries the fixtures exercising it, each clause no fixture reaches is listed as uncovered, and each error code, warning code and exit status the contract declares is listed with the fixtures reaching it, one only an awaiting fixture declares named unfixturable with the work it awaits. |
+| `make conformance` | Each behavioural clause of the design carries the fixtures exercising it, each clause no fixture reaches is listed as uncovered, and each error code, warning code and exit status the contract declares is listed with the fixtures reaching it, one only an awaiting fixture declares named unfixturable with the work it awaits, and each installation claim no run of the corpus observes listed as unfixturable with the reason it is unreachable and what would make it observable. |
 | `make independence` | No declaration a fixture carries, no entry the conformance report prints and no name the contract declares as its interface names an implementation language, the machinery of modules and packaging, a source file of an implementation or the wording a build gives its own fault. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
