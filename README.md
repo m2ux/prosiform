@@ -5,8 +5,6 @@
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
 
-![SKILL.md links to procedure.md and rules.md in the source tree. The two linked documents are selected for compilation and combined into one bundle; SKILL.md is not included.](docs/images/compilation.png)
-
 ---
 **[Invocation](invocation.md)** • **[Checks](checks.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Source](src/README.md)** • **[Docs](docs/README.md)** • **[Check implementation](checks/README.md)** • **[Example](example/README.md)**
 
@@ -27,12 +25,7 @@ Leaving retrieval to the agent costs:
 
 ### How It Works
 
-1. **Resolve** — entry references normalize to source identities confined to an allowed root
-2. **Discover** — supported local Markdown links under the allowed root are followed to a fixed point; one its author defers is confirmed and left to a run of its own
-3. **Consolidate** — overlapping selections merge, so each region appears exactly once
-4. **Arrange** — regions are emitted into groups, source headings shifting one level beneath the heading that names their group
-5. **Rewrite** — every compiled reference is repointed at the fragment a renderer generates for the heading it now names, and a deferred one at its target's path from the root
-6. **Validate** — the candidate is reparsed and checked against what was selected; nothing reaches stdout until it passes
+![SKILL.md links to procedure.md and rules.md in the source tree. The two linked documents are selected for compilation and combined into one bundle; SKILL.md is not included.](docs/images/compilation.png)
 
 ## Installation
 
