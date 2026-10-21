@@ -1,74 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1600" viewBox="0 0 1800 1600" role="img" aria-labelledby="title description"><title id="title">Compile harness instructions and linked checks</title><desc id="description">The shared bundle defers harness selection. Codex links Tests and Claude links Review without deferral. Each second-stage compilation includes those dependencies under a Checks group, followed by its harness instructions.</desc><rect width="1800" height="1600" fill="#0d1117"/><g font-family="IBM Plex Mono">
-<rect x="32" y="32" width="510" height="1536" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/>
-<text x="60" y="73" font-size="25" fill="#b1c6df">bundle.md</text>
-<text x="60" y="155" font-size="34" fill="#e6edf3">Rules</text>
-<text x="60" y="207" font-size="28" fill="#e6edf3">Overview</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="840" viewBox="0 0 1800 840" role="img" aria-labelledby="title description">
+<title id="title">Compile the deferred rules for the current agent</title>
+<desc id="description">The shared bundle includes Agents under Rules / Overview, which instructs the agent to compile the deferred Codex or Claude link matching its harness identity. Each compiles its selected document into a bundle headed by its source path, containing its instruction list.</desc>
+<rect width="1800" height="840" fill="#0d1117"/>
+<g font-family="IBM Plex Mono">
+<rect x="32" y="32" width="510" height="776" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/><text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">bundle.md</text>
+<rect x="612" y="32" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 32 H1110 Q1122 32 1122 44 V94 H612 V44 Q612 32 624 32" fill="#202a36"/><text x="640" y="73" font-size="25" fill="#b1c6df" font-weight="400">rules/codex.md</text>
+<rect x="612" y="432" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 432 H1110 Q1122 432 1122 444 V494 H612 V444 Q612 432 624 432" fill="#202a36"/><text x="640" y="473" font-size="25" fill="#b1c6df" font-weight="400">rules/claude.md</text>
+<rect x="1252" y="32" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/><text x="1280" y="73" font-size="25" fill="#b1c6df" font-weight="400">codex-bundle.md</text>
+<rect x="1252" y="432" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 432 H1750 Q1762 432 1762 444 V494 H1252 V444 Q1252 432 1264 432" fill="#202a36"/><text x="1280" y="473" font-size="25" fill="#b1c6df" font-weight="400">claude-bundle.md</text>
+<text x="60" y="161" font-size="34" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="60" y="211" font-size="28" fill="#e6edf3">Overview</text>
 <text x="60" y="258" font-size="25" fill="#e6edf3">Agents</text>
-<text x="60" y="310" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
-<text x="60" y="380" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
-<text x="60" y="432" font-size="24" fill="#e3b341">¬ Codex</text>
-<path d="M60 439 h100.8" stroke="#e3b341" stroke-width="1.5"/>
-<text x="60" y="1160" font-size="23" fill="#e6edf3">If you are Claude, compile</text>
-<text x="60" y="1212" font-size="24" fill="#e3b341">¬ Claude</text>
-<path d="M60 1219 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<rect x="612" y="32" width="510" height="344" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 32 H1110 Q1122 32 1122 44 V94 H612 V44 Q612 32 624 32" fill="#202a36"/>
-<text x="640" y="73" font-size="25" fill="#b1c6df">rules/codex.md</text>
-<text x="640" y="162" font-size="23" fill="#e6edf3">• Keep patches focused.</text>
-<text x="640" y="214" font-size="23" fill="#e6edf3">• Run relevant tests.</text>
-<text x="640" y="278" font-size="23" fill="#e6edf3">Before finishing, follow</text>
-<text x="640" y="326" font-size="24" fill="#58a6ff">Tests</text>
-<path d="M640 333 h72.0" stroke="#58a6ff" stroke-width="1.5"/>
-<rect x="612" y="398" width="510" height="390" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 398 H1110 Q1122 398 1122 410 V460 H612 V410 Q612 398 624 398" fill="#202a36"/>
-<text x="640" y="439" font-size="25" fill="#b1c6df">checks/tests.md</text>
-<text x="640" y="512" font-size="32" fill="#e6edf3">Tests</text>
-<text x="640" y="574" font-size="23" fill="#e6edf3">• Run relevant tests.</text>
-<text x="640" y="622" font-size="23" fill="#e6edf3">• Report failures.</text>
-<path d="M720.0 323 H1080 Q1138 323 1138 381 V564 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 557 L1122 564 L1134 571 Z" fill="#58a6ff"/>
-<rect x="1252" y="32" width="510" height="756" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/>
-<text x="1280" y="73" font-size="25" fill="#b1c6df">codex-bundle.md</text>
-<text x="1280" y="156" font-size="34" fill="#e6edf3">Checks</text>
-<text x="1280" y="212" font-size="27" fill="#e6edf3">Tests</text>
-<text x="1280" y="270" font-size="23" fill="#e6edf3">• Run relevant tests.</text>
-<text x="1280" y="318" font-size="23" fill="#e6edf3">• Report failures.</text>
-<path d="M1280 402 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="460" font-size="32" fill="#e6edf3">rules/codex</text>
-<text x="1280" y="520" font-size="23" fill="#e6edf3">• Keep patches focused.</text>
-<text x="1280" y="572" font-size="23" fill="#e6edf3">• Run relevant tests.</text>
-<text x="1280" y="642" font-size="23" fill="#e6edf3">Before finishing, follow</text>
-<text x="1280" y="690" font-size="24" fill="#58a6ff">Tests</text>
-<path d="M1280 697 h72.0" stroke="#58a6ff" stroke-width="1.5"/>
-<path d="M1160 362 H1201 V346 L1239 384 L1201 422 V406 H1160Z" fill="#329def"/>
-<text x="1158" y="458" font-size="20" fill="#e6edf3">compile</text>
-<rect x="612" y="812" width="510" height="344" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 812 H1110 Q1122 812 1122 824 V874 H612 V824 Q612 812 624 812" fill="#202a36"/>
-<text x="640" y="853" font-size="25" fill="#b1c6df">rules/claude.md</text>
-<text x="640" y="942" font-size="23" fill="#e6edf3">• Review the proposed change.</text>
-<text x="640" y="994" font-size="23" fill="#e6edf3">• Report actionable findings.</text>
-<text x="640" y="1058" font-size="23" fill="#e6edf3">Before reporting, follow</text>
-<text x="640" y="1106" font-size="24" fill="#58a6ff">Review</text>
-<path d="M640 1113 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
-<rect x="612" y="1178" width="510" height="390" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 1178 H1110 Q1122 1178 1122 1190 V1240 H612 V1190 Q612 1178 624 1178" fill="#202a36"/>
-<text x="640" y="1219" font-size="25" fill="#b1c6df">checks/review.md</text>
-<text x="640" y="1292" font-size="32" fill="#e6edf3">Review</text>
-<text x="640" y="1354" font-size="23" fill="#e6edf3">• Check correctness and</text>
-<text x="640" y="1402" font-size="23" fill="#e6edf3">  missing coverage.</text>
-<text x="640" y="1450" font-size="23" fill="#e6edf3">• Cite actionable findings.</text>
-<path d="M734.4 1103 H1080 Q1138 1103 1138 1161 V1344 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 1337 L1122 1344 L1134 1351 Z" fill="#58a6ff"/>
-<rect x="1252" y="812" width="510" height="756" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 812 H1750 Q1762 812 1762 824 V874 H1252 V824 Q1252 812 1264 812" fill="#202a36"/>
-<text x="1280" y="853" font-size="25" fill="#b1c6df">claude-bundle.md</text>
-<text x="1280" y="936" font-size="34" fill="#e6edf3">Checks</text>
-<text x="1280" y="992" font-size="27" fill="#e6edf3">Review</text>
-<text x="1280" y="1050" font-size="23" fill="#e6edf3">• Check correctness and</text>
-<text x="1280" y="1098" font-size="23" fill="#e6edf3">  missing coverage.</text>
-<text x="1280" y="1146" font-size="23" fill="#e6edf3">• Cite actionable findings.</text>
-<path d="M1280 1182 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="1240" font-size="32" fill="#e6edf3">rules/claude</text>
-<text x="1280" y="1300" font-size="23" fill="#e6edf3">• Review the proposed change.</text>
-<text x="1280" y="1352" font-size="23" fill="#e6edf3">• Report actionable findings.</text>
-<text x="1280" y="1422" font-size="23" fill="#e6edf3">Before reporting, follow</text>
-<text x="1280" y="1470" font-size="24" fill="#58a6ff">Review</text>
-<path d="M1280 1477 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
-<path d="M1160 1142 H1201 V1126 L1239 1164 L1201 1202 V1186 H1160Z" fill="#329def"/>
-<text x="1158" y="1238" font-size="20" fill="#e6edf3">compile</text>
-<path d="M180 429 H564 V214 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 207 L612 214 L600 221 Z" fill="#58a6ff"/>
-<path d="M194 1209 H578 V994 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 987 L612 994 L600 1001 Z" fill="#58a6ff"/>
+<text x="60" y="307" font-size="25" fill="#e6edf3" font-weight="400">Select rules for your harness:</text>
+<text x="60" y="357" font-size="25" fill="#e6edf3" font-weight="400">If you are Codex, compile</text>
+<text x="60" y="417" font-size="26" fill="#e3b341" font-weight="400">¬ Codex</text><path d="M60 424 h109.2" stroke="#e3b341" stroke-width="1.5"/>
+<text x="60" y="552" font-size="25" fill="#e6edf3">If you are Claude, compile</text>
+<text x="60" y="650" font-size="26" fill="#e3b341" font-weight="400">¬ Claude</text><path d="M60 657 h124.8" stroke="#e3b341" stroke-width="1.5"/>
+<text x="640" y="176" font-size="24" fill="#e6edf3" font-weight="400">• Keep patches focused.</text>
+<text x="640" y="232" font-size="24" fill="#e6edf3" font-weight="400">• Run relevant tests.</text>
+<text x="640" y="576" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
+<text x="640" y="632" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
+<text x="1280" y="153" font-size="32" fill="#e6edf3" font-weight="500">rules/codex</text>
+<text x="1280" y="213" font-size="24" fill="#e6edf3" font-weight="400">• Keep patches focused.</text>
+<text x="1280" y="269" font-size="24" fill="#e6edf3" font-weight="400">• Run relevant tests.</text>
+<text x="1280" y="553" font-size="32" fill="#e6edf3" font-weight="500">rules/claude</text>
+<text x="1280" y="613" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
+<text x="1280" y="669" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
+<path d="M188 414 H564 V231 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 224 L612 231 L600 238 Z" fill="#58a6ff"/>
+<path d="M204 647 C460 647 550 631 600 631" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 624 L612 631 L600 638 Z" fill="#58a6ff"/>
+<path d="M1140 203 H1195 V187 L1233 225 L1195 263 V247 H1140Z" fill="#329def"/><text x="1138" y="299" font-size="23" fill="#e6edf3" font-weight="400">compile</text>
+<path d="M1140 603 H1195 V587 L1233 625 L1195 663 V647 H1140Z" fill="#329def"/><text x="1138" y="699" font-size="23" fill="#e6edf3" font-weight="400">compile</text>
 </g></svg>
