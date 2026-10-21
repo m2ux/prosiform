@@ -19,6 +19,7 @@
       "items": { "type": "string", "minLength": 1 }
     },
     "awaiting": { "$ref": "#/$defs/awaiting" },
+    "fault": { "$ref": "#/$defs/fault" },
     "invocation": { "$ref": "#/$defs/invocation" },
     "expected": { "$ref": "#/$defs/expected" }
   },
@@ -27,6 +28,10 @@
       "description": "The work that delivers the behaviour this fixture declares, named as an initiative and an epic and optionally the task within it, such as I00:E03 or I00:E03:W02. A fixture carrying it declares behaviour the build does not yet meet: its failure leaves the corpus run green, and a run in which it meets its manifest fails instead, so the marker is lifted on the change that makes it untrue. A fixture the build is expected to satisfy carries no awaiting.",
       "type": "string",
       "pattern": "^I[0-9]{2}:E[0-9]{2}(:W[0-9]{2})?$"
+    },
+    "fault": {
+      "description": "The fault the run performs on itself, which the runner asks for as the contract's `--fault NAME`. Two of the outcomes the contract declares are facts about the run rather than about any document it reads, so no source tree states them: `source-changed` writes other bytes to each source the run read, once discovery has read them and before the recheck before publication, and `internal` fails the run in itself once the candidate is built and before anything publishes. The fault changes the tree the fixture holds, so a fixture declaring one runs in a copy of itself. A fixture declaring none declares a run that meets no fault.",
+      "enum": ["source-changed", "internal"]
     },
     "invocation": {
       "description": "The run to perform. The runner supplies the build under test from its own configuration, resolves the source tree named here to an absolute path and passes it as the allowed source root, and asks for diagnostics as data so a code can be compared rather than prose.",
