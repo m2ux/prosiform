@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1800" height="840" viewBox="0 0 1800 840" role="img" aria-labelledby="title description">
 <title id="title">Compile the deferred rules for the current agent</title>
-<desc id="description">The shared bundle includes an Agents subsection under Rules, which instructs the agent to compile the deferred Codex or Claude link matching its harness identity. Each compiles its selected document into a bundle headed by its source path, containing its instruction list.</desc>
+<desc id="description">The shared bundle includes rules/agents, which instructs the agent to compile the deferred Codex or Claude link matching its harness identity. Each compiles its selected document into a bundle headed by its source path, containing its instruction list.</desc>
 <rect width="1800" height="840" fill="#0d1117"/>
 <g font-family="IBM Plex Mono">
 <rect x="32" y="32" width="510" height="776" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/><text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">bundle.md</text>
@@ -8,8 +8,7 @@
 <rect x="612" y="432" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 432 H1110 Q1122 432 1122 444 V494 H612 V444 Q612 432 624 432" fill="#202a36"/><text x="640" y="473" font-size="25" fill="#b1c6df" font-weight="400">rules/claude.md</text>
 <rect x="1252" y="32" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/><text x="1280" y="73" font-size="25" fill="#b1c6df" font-weight="400">codex-bundle.md</text>
 <rect x="1252" y="432" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 432 H1750 Q1762 432 1762 444 V494 H1252 V444 Q1252 432 1264 432" fill="#202a36"/><text x="1280" y="473" font-size="25" fill="#b1c6df" font-weight="400">claude-bundle.md</text>
-<text x="60" y="161" font-size="34" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="60" y="211" font-size="27" fill="#e6edf3">Agents</text>
+<text x="60" y="161" font-size="34" fill="#e6edf3" font-weight="500">rules/agents</text>
 <text x="60" y="260" font-size="25" fill="#e6edf3" font-weight="400">Select rules for your harness:</text>
 <text x="60" y="310" font-size="25" fill="#e6edf3" font-weight="400">If you are Codex, compile</text>
 <text x="60" y="370" font-size="26" fill="#e3b341" font-weight="400">¬ Codex</text><path d="M60 377 h109.2" stroke="#e3b341" stroke-width="1.5"/>
@@ -25,7 +24,7 @@
 <text x="1280" y="553" font-size="32" fill="#e6edf3" font-weight="500">rules/claude</text>
 <text x="1280" y="613" font-size="24" fill="#e6edf3" font-weight="400">• Review the proposed change.</text>
 <text x="1280" y="669" font-size="24" fill="#e6edf3" font-weight="400">• Report actionable findings.</text>
-<path d="M188 367 C465 367 545 231 600 231" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 224 L612 231 L600 238 Z" fill="#58a6ff"/>
+<path d="M188 367 H564 V231 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 224 L612 231 L600 238 Z" fill="#58a6ff"/>
 <path d="M204 647 C460 647 550 631 600 631" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 624 L612 631 L600 638 Z" fill="#58a6ff"/>
 <path d="M1140 203 H1195 V187 L1233 225 L1195 263 V247 H1140Z" fill="#329def"/><text x="1138" y="299" font-size="23" fill="#e6edf3" font-weight="400">compile</text>
 <path d="M1140 603 H1195 V587 L1233 625 L1195 663 V647 H1140Z" fill="#329def"/><text x="1138" y="699" font-size="23" fill="#e6edf3" font-weight="400">compile</text>
