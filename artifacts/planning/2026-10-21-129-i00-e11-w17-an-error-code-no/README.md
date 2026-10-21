@@ -14,6 +14,7 @@ This row covers AC18 of the deferred-debt epic, which states what fixing the def
 | --- | --- |
 | [w17.md](w17.md) | The task's plan: the unreached codes, the fixture that states each one and the check that holds both catalogues |
 | [validation.md](validation.md) | The coverage measured, the reachability of each unreached run, and the checks the delivery was held to |
+| [changes.md](changes.md) | The plan changes this session applied and those it held |
 
 ## Links
 
@@ -25,3 +26,5 @@ This row covers AC18 of the deferred-debt epic, which states what fixing the def
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Base rebuild | [I00:E11 Base Rebuild](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-39-i00-e11-base-rebuild) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
+| Pull request | [#159 \[I00:E11\] Every Declared Error Stated by a Fixture](https://github.com/m2ux/prosiform/pull/159) |
+| Raised by this row | [#150 \[I00:E11:W24\] Corpus Instrument for a Run-Time Fault No Source Tree States](https://github.com/m2ux/prosiform/issues/150) |
