@@ -38,7 +38,12 @@ validation reads back to prove that no part landed inside the one above
 it. Inside a
 region nothing is touched but the lines a link-reference definition
 occupies, so an indented thematic break keeps its indent, a delimiter
-keeps its trailing spaces and a code example keeps its bytes.
+keeps its trailing spaces and a code example keeps its bytes. A
+terminator belongs to the line it terminates and is content as the rest
+of the line is, so a region ends with the newline its source spelled on
+the line that ends it, and the parts the bundle generates — the entry
+line and every generated heading — end with the newline the bundle
+generates.
 
 Each resolved reference-style use in selected content is published
 inline, and every original definition node is removed, the definitions
@@ -132,8 +137,10 @@ HEADING_DEPTH_OVERFLOW = "E_HEADING_DEPTH_OVERFLOW"
 
 CODES = (AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW)
 
-SEPARATOR = "\n\n"
 TERMINATOR = "\n"
+SEPARATOR = TERMINATOR
+CARRIAGE_RETURN = "\r"
+ENDINGS = (f"{CARRIAGE_RETURN}{TERMINATOR}", TERMINATOR, CARRIAGE_RETURN)
 
 ATX = "#"
 SPACE = " "
@@ -163,6 +170,38 @@ class Overflow(Exception):
         self.path = path
 
 
+def ending(run: str) -> str:
+    """The line ending one run of newline characters opens with.
+
+    A run empty of them ends no line, so the newline the bundle
+    generates stands in its place.
+    """
+    for spelling in ENDINGS:
+        if run.startswith(spelling):
+            return spelling
+    return TERMINATOR
+
+
+def terminated(part: str) -> str:
+    """One emitted part with the newline that ends it.
+
+    A region carries the spelling its source wrote on the line that ends
+    it, and a part the bundle generates ends with the newline the bundle
+    generates.
+    """
+    return part if part.endswith(ENDINGS) else part + TERMINATOR
+
+
+def joined(parts: Sequence[str]) -> str:
+    """Several emitted parts, one blank line apart, each ending its own line.
+
+    The blank line between two parts is the bundle's own and is spelled
+    with the newline the bundle generates, which is why one terminated
+    part followed by that newline opens the next part two lines below.
+    """
+    return SEPARATOR.join(terminated(part) for part in parts)
+
+
 @dataclass(frozen=True)
 class Group:
     """One file group: the Markdown it emits, and the record of where it came from.
@@ -189,7 +228,7 @@ class Group:
     @property
     def text(self) -> str:
         """The Markdown the group publishes: its parts, one blank line apart."""
-        return SEPARATOR.join(self.parts)
+        return joined(self.parts)
 
     @property
     def headings(self) -> tuple[str, ...]:
@@ -508,6 +547,12 @@ def region(
     bundle's own wherever it joins what remains. A line marked for
     removal is held as the absence it is rather than as an index, so a
     heading rewritten above it moves it without losing it.
+
+    The region ends at the last line that remains and carries the
+    newline that line was terminated with, because a terminator belongs
+    to the line it terminates and is content like the rest of it. A last
+    line carrying none is ended with the newline the bundle generates,
+    there being no spelling to carry.
     """
     start, end = token.map or (0, 0)
     carried: list[str | None] = [
@@ -529,7 +574,9 @@ def region(
     kept = [line for line in carried if line is not None]
     while dropped and kept and blank(kept[-1]):
         kept.pop()
-    return "".join(kept).rstrip("\r\n")
+    written = "".join(kept)
+    content = written.rstrip(f"{CARRIAGE_RETURN}{TERMINATOR}")
+    return content + ending(written[len(content) :])
 
 
 def emitted_text(token: Token, text: str, by: int) -> str:
@@ -697,12 +744,11 @@ def assemble(line: str, groups: Sequence[Group]) -> str:
 
     One blank line between two maximal emitted regions is the separation
     the contract requires, and it is written here and nowhere else, so
-    the geometry `openings` reads back is the geometry this writes.
+    the geometry `openings` reads back is the geometry this writes. Each
+    part ends with the newline that ends its own last line, so the
+    bundle closes with the one its final part carries.
     """
-    return (
-        SEPARATOR.join([line, *(part for one in groups for part in one.parts)])
-        + TERMINATOR
-    )
+    return joined([line, *(part for one in groups for part in one.parts)])
 
 
 def openings(groups: Sequence[Group], after: int) -> list[int]:
