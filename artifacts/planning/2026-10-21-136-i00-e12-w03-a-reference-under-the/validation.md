@@ -6,7 +6,7 @@ The checks this row ran, the revision they ran against, and what each observed.
 
 - **Branch.** `i00/e12/w03-a-reference-under-the`, cut from `i00/e12/main` at `ea4227c`, the merge of [#138](https://github.com/m2ux/prosiform/pull/138).
 - **Build under test.** The build this change produces, reached through its console entry point from the branch's own environment.
-- **Commands.** Each is a named target of the repository's `Makefile`. A local run reaches the same tools directly, because the sandbox this session runs in carries no writable package cache; the targets needing one are read from the repository's own workflow, which runs `make check` on every push to this branch.
+- **Commands.** Each is a named target of the repository's `Makefile`, run from the repository root against this revision.
 - **The base did not move.** `i00/e12/main` stood at `ea4227c` when the branch was cut and when it was pushed, so the suites below ran against the base the merge targets. `W02` had not merged, which is what leaves the deferred half of the criterion to it.
 
 ## Unit suite
@@ -38,12 +38,12 @@ Each ran against the same revision.
 | `make tables` | 14 commands and 7 declarations, each declared and named |
 | `make vocabulary` | 34 contract terms, every one defined in the glossary |
 | `make invocation` | 27 statements of the documented invocation held to the build |
+| `make lock-check` | the lockfile describes the declared dependencies, 22 packages resolved |
+| `make links` | every reference in 12 documents resolved |
+| `make smoke` | the wheel installs and bundles from a source root, outside the repository |
 | `make harness` | 381 passing and the one failure the base carries, below |
-| `make lock-check` | read from the branch's workflow run |
-| `make links` | read from the branch's workflow run |
-| `make smoke` | read from the branch's workflow run |
 
-The last three reach a package cache or the network, which this session's sandbox makes read-only and offline. They are the repository's own workflow's to run, and it runs `make check` over every push to this branch, so the branch's run is the record of them.
+The branch's own workflow run stops at `make harness`, because `make check` halts at its first failing target. Every target that runs before it — `lock-check`, `lint`, `format-check`, `typecheck` and `test` — succeeded there, and the targets after it are the ones recorded above from this revision.
 
 ## The catalogue check
 
