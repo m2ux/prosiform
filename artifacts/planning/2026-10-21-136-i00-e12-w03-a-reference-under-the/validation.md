@@ -4,14 +4,15 @@ The checks this row ran, the revision they ran against, and what each observed.
 
 ## Revision
 
-- **Branch.** `i00/e12/w03-a-reference-under-the`, cut from `i00/e12/main` at `ea4227c`, the merge of [#138](https://github.com/m2ux/prosiform/pull/138).
+- **Branch.** `i00/e12/w03-a-reference-under-the`, rebased onto `i00/e12/main` at `04645e5`, the merge of [#140](https://github.com/m2ux/prosiform/pull/140), which `W06` delivered while this row ran.
 - **Build under test.** The build this change produces, reached through its console entry point from the branch's own environment.
 - **Commands.** Each is a named target of the repository's `Makefile`, run from the repository root against this revision.
-- **The base did not move.** `i00/e12/main` stood at `ea4227c` when the branch was cut and when it was pushed, so the suites below ran against the base the merge targets. `W02` had not merged, which is what leaves the deferred half of the criterion to it.
+- **Every figure below is from the rebased revision.** The branch was first cut from `ea4227c` and the suites ran there; `W06` merged before this row did, so the branch was rebased and every suite re-run. The rebase took both commits with no conflict, and the catalogue row this row rewrites and the one `W06` rewrote are different rows of the same table.
+- **`W02` had not merged.** That is what leaves the deferred half of the criterion to it.
 
 ## Unit suite
 
-`make test` — 623 tests, all passing. 621 of them stood before this row; the 2 added observe the criterion through the command.
+`make test` — 628 tests, all passing. 626 of them stood before this row; the 2 added observe the criterion through the command.
 
 - **AC5, a reference naming no document.** `test_a_reference_under_the_root_naming_no_document_publishes_nothing` writes a source citing two documents under the root, one of which the root does not carry. The run returns the input-failure status, its first diagnostic is `E_TARGET_NOT_FOUND` naming the reference that resolved nowhere, and standard output is empty. The sibling reference resolves and is read, so the empty bundle is observed against material the run had already taken in rather than against a run that read nothing.
 - **AC5, a reference naming no heading.** `test_a_reference_under_the_root_naming_no_heading_publishes_nothing` writes a source citing a document the root carries, naming a heading that document does not. The run returns the input-failure status, the diagnostic is `E_TARGET_NOT_FOUND` with the document it resolved to, and standard output is empty.
@@ -19,7 +20,7 @@ The checks this row ran, the revision they ran against, and what each observed.
 
 ## Corpus
 
-`make corpus` — 206 fixtures, 204 passing, 0 failing, 2 awaiting later work, 0 passing while awaiting it. The two awaiting fixtures are the ones the corpus already carried: `reference/a-link-inside-image-alternative-content` awaits `I00:E11:W10` and `grouping/a-rule-matching-no-document-in-the-closure` awaits `I00:E11:W14`. The base carried 204 fixtures and 202 passing; this row adds two, both passing.
+`make corpus` — 208 fixtures, 206 passing, 0 failing, 2 awaiting later work, 0 passing while awaiting it. The two awaiting fixtures are the ones the corpus already carried: `reference/a-link-inside-image-alternative-content` awaits `I00:E11:W10` and `grouping/a-rule-matching-no-document-in-the-closure` awaits `I00:E11:W14`. The base carried 206 fixtures and 204 passing; this row adds two, both passing.
 
 - **AC5, a reference naming no document.** `reference/a-reference-under-the-root-naming-no-document` declares a source citing `rules.md`, which the root carries, and `procedure.md`, which it does not. The declared result is exit status 1, an empty bundle, and one error diagnostic: `E_TARGET_NOT_FOUND`, the reference `procedure.md`, the location `guide.md:3`, and the chain `guide.md → procedure.md`. The run against the build produced exactly that.
 - **AC5, a reference naming no heading.** `reference/a-reference-under-the-root-naming-no-heading` declares a source citing `procedure.md#review` against a document carrying `Steps` and `Record` and no `Review`. The declared result is exit status 1, an empty bundle, and one error diagnostic: `E_TARGET_NOT_FOUND`, the reference `procedure.md#review`, the resolved document `procedure.md`, the location `guide.md:3`, and the chain `guide.md → procedure.md#review`. The run against the build produced exactly that.
@@ -41,13 +42,13 @@ Each ran against the same revision.
 | `make lock-check` | the lockfile describes the declared dependencies, 22 packages resolved |
 | `make links` | every reference in 12 documents resolved |
 | `make smoke` | the wheel installs and bundles from a source root, outside the repository |
-| `make harness` | 381 passing and the one failure the base carries, below |
+| `make harness` | 383 passing and the one failure the base carries, below |
 
 The branch's own workflow run stops at `make harness`, because `make check` halts at its first failing target. Every target that runs before it — `lock-check`, `lint`, `format-check`, `typecheck` and `test` — succeeded there, and the targets after it are the ones recorded above from this revision.
 
 ## The catalogue check
 
-`make harness` reports 381 passing and one failing:
+`make harness` reports 383 passing and one failing:
 
 ```text
 FAILED checks/tests/test_catalogue.py::test_a_catalogue_is_the_codes_the_design_declares[error-E_]
