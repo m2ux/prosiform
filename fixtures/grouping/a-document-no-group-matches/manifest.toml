@@ -4,6 +4,7 @@ clauses = [
   "Grouping — Group membership",
   "Input and output contract — Dependency order",
   "Grouping — Group naming",
+  "Post-compilation invariants — Group isolation",
 ]
 
 [invocation]

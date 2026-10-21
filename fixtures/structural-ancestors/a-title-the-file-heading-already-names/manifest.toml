@@ -1,0 +1,20 @@
+description = "The section an entry reference selects sits beneath a title the file heading already names, so the outline above it is the file heading alone and the title is not emitted a second time as a heading-only ancestor a reader could not tell from it."
+
+clauses = [
+  "Heading-only structural ancestors — Named titles",
+  "File-scoped hierarchy — Group shift",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md#procedure"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Procedure"
+resolved = "procedure"

@@ -5,6 +5,7 @@ clauses = [
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Group shift",
   "Entry line",
+  "Resolution sequence — guide.md",
 ]
 
 [invocation]

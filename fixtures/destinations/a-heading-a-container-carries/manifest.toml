@@ -6,6 +6,7 @@ clauses = [
   "Resolvable where the bundle is read",
   "Source-heading resolution, enumerate headings in source order, container-nested included",
   "Entry line",
+  "Compile before publishing — step 3, source headings indexed, container-nested included",
 ]
 
 [invocation]

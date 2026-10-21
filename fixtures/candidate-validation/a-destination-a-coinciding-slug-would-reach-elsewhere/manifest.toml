@@ -5,6 +5,7 @@ clauses = [
   "Validation and failure contract — Target integrity",
   "Post-compilation invariants — One intended destination",
   "Adversarial acceptance fixtures — Validation modes",
+  "Compile before publishing — step 7",
 ]
 
 [invocation]

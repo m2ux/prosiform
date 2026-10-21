@@ -4,6 +4,7 @@ clauses = [
   "Link classification and resource handling — Local Markdown document links under the root",
   "Link classification and resource handling — Local Markdown links resolving outside the root",
   "Post-compilation invariants — Reference preservation",
+  "Compile before publishing — step 2, each distinct source read once however many references reach it",
 ]
 
 [invocation]

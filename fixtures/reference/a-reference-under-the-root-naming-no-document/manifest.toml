@@ -3,6 +3,7 @@ description = "A local Markdown reference resolving under the allowed source roo
 clauses = [
   "Link classification and resource handling — A target that resolves to nothing",
   "Validation and failure contract — Publication",
+  "Validation and failure contract — Completeness, a failed dependency is not silently omitted",
 ]
 
 [invocation]

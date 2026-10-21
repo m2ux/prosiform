@@ -4,6 +4,7 @@ clauses = [
   "Bundle destinations — Ordinal assignment",
   "Bundle destinations — Uniqueness",
   "Post-compilation invariants — One intended destination",
+  "Validation and failure contract — Uniqueness",
 ]
 
 [invocation]

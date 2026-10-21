@@ -4,6 +4,7 @@ clauses = [
   "Resolution sequence — step 9",
   "Input and output contract — Whole documents",
   "Adversarial acceptance fixtures — Normalization, empty fragments",
+  "Resolution sequence — guide.md#",
 ]
 
 [invocation]

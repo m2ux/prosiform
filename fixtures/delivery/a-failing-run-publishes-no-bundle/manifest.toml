@@ -3,6 +3,7 @@ description = "A run that fails returns a nonzero status and leaves standard out
 clauses = [
   "Agent delivery contract — Exit status",
   "Validation and failure contract — Publication",
+  "Compile before publishing — step 9, a failing run fails with diagnostics and publishes nothing",
 ]
 
 [invocation]
