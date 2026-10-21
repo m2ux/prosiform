@@ -7,9 +7,9 @@
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `src/uv.lock` records and resolves
 # nothing. The corpus and invocation checks reach the build under test
-# through the corpus runner, and the conformance report reads the corpus
-# through the same manifest reader, which reads `jsonschema` from that same
-# group, so the three run through it; the smoke, layout, table, link and
+# through the corpus runner, and the conformance and independence checks read
+# the corpus through the same manifest reader, which reads `jsonschema` from
+# that same group, so the four run through it; the smoke, layout, table, link and
 # vocabulary checks depend on the standard library alone and run under
 # `python3` directly.
 #
@@ -21,7 +21,8 @@
 # `make conformance` reads the design and the corpus and needs no build: it
 # reports which clause of the contract each fixture exercises, which clauses
 # no fixture reaches, and which declared code and exit status the corpus
-# reaches.
+# reaches. `make independence` reads the same two and that report, and fails
+# on a declaration or an entry naming an implementation.
 #
 # `make corpus` runs the corpus against a build named by configuration:
 # `PROSIFORM_BUILD` holds that build's command line, and the target fails
@@ -36,9 +37,9 @@ UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence
 
-check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
 test:
 	cd src && uv run --frozen pytest
@@ -81,3 +82,6 @@ invocation:
 
 conformance:
 	$(UV_RUN) python checks/conformance.py
+
+independence:
+	$(UV_RUN) python checks/independence.py
