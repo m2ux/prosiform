@@ -1,4 +1,4 @@
-description = "A reference whose lookup the parser declines against its own nesting ceiling fails, naming the first source span the parser was reading, rather than publishing a bundle the suppressed lookup left a document out of."
+description = "A reference whose lookup the parser declines against its own nesting ceiling fails, naming the reference the lookup would have made and the first source span the parser was reading, rather than publishing a bundle the suppressed lookup left a document out of."
 
 clauses = [
   "Mandatory parser viability gates — Observable reference-resolution suppression",
@@ -15,6 +15,6 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_PARSER_REFERENCE_LIMIT"
-reference = "guide.md"
+reference = "plan.md"
 source = "guide.md:3"
 chain = ["guide.md"]
