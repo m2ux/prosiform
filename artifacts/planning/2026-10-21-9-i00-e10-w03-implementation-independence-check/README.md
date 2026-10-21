@@ -14,6 +14,7 @@ This row covers AC4 of Corpus Conformance. It reads the corpus W01 completed and
 | --- | --- |
 | [w03.md](w03.md) | The work item: the component, the problem and what the row proposes. |
 | [validation.md](validation.md) | The checks run, what each established, the exclusions reviewed and what the validation found. |
+| [changes.md](changes.md) | The change list: what the delivery changed, where, and each plan change it applied. |
 
 ## Links
 
@@ -24,4 +25,5 @@ This row covers AC4 of Corpus Conformance. It reads the corpus W01 completed and
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Planned work item | [i00-e10/w03.md](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i00-e10/w03.md) |
 | Preceding row | [2026-10-21-9-i00-e10-w02-clause-to-fixture-mapping](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-9-i00-e10-w02-clause-to-fixture-mapping) |
+| Pull request | [#171 \[I00:E10\] Implementation Independence of the Corpus and Its Report](https://github.com/m2ux/prosiform/pull/171) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
