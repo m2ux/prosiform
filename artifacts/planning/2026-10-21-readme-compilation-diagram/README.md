@@ -1,9 +1,9 @@
 # README compilation diagrams
 
-- [Shared context](compilation.svg): selected documents, a recursive dependency, and included Agents instructions with deferred Codex and Claude rules under `rules/`.
+- [Shared context](compilation.svg): selected documents, a recursive dependency, and Agents instructions grouped beneath Rules with deferred Codex and Claude rules under `rules/`.
 - [Agent-specific rules](agent-rules.svg): each agent selects and compiles its applicable rules under a Rules group.
 
-These editable SVGs record the approved designs from `main` commit `3b7704b`. Published SVGs and PNGs reside in `docs/images/` on `main`.
+These editable SVGs record the approved designs from `main` commit `2568adb`. Published SVGs and PNGs reside in `docs/images/` on `main`.
 
 Render with IBM Plex Mono installed:
 
