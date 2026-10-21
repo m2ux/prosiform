@@ -4,7 +4,7 @@ The checks this row was held to, the revision they ran at, and what they observe
 
 ## Revision
 
-The branch `i00/e11/w24-a-run-time-fault`, cut from `i00/e11/main` at `232a528`. Every run below invoked the Makefile target a developer and continuous integration both call, from the repository root of the task worktree, with `PROSIFORM_BUILD` naming the locked build's console entry point.
+The branch `i00/e11/w24-a-run-time-fault`, cut from `i00/e11/main` at `232a528` and merged with that base at `a966b24` before the runs below. Every run below invoked the Makefile target a developer and continuous integration both call, from the repository root of the task worktree, with `PROSIFORM_BUILD` naming the locked build's console entry point.
 
 ## Why the Fault Is the Run's
 
@@ -24,7 +24,7 @@ The contract therefore declares `--fault NAME`, and the runner asks for it as it
 `make harness`, the corpus's own checks, which carry the runner's and the schema's cases.
 
 ```text
-538 passed in 9.41s
+540 passed in 8.41s
 ```
 
 Eleven are new: the schema's cases for a manifest naming each fault, naming none, naming one outside the declared set and naming a bare flag; and the runner's cases for the request reaching the run in order, for a run meeting no fault asking for none, for a fixture declaring a fault being left as it was by a build that writes to its source tree, and for the allowed source root the run is given being the copy's rather than the fixture's.
@@ -34,7 +34,7 @@ Eleven are new: the schema's cases for a manifest naming each fault, naming none
 `make test`, the build's own tests.
 
 ```text
-686 passed in 0.75s
+692 passed in 0.79s
 ```
 
 Four are new, each over a whole run: the `source-changed` fault failing the run on its own recheck with `E_SOURCE_CHANGED` and publishing nothing to either stream or to a named file; the `internal` fault returning status 4 with `E_UNEXPECTED_INTERNAL_ERROR`; a run asking for no fault leaving its sources as it found them; and a fault the contract does not declare being refused as the usage failure it is.
@@ -44,7 +44,7 @@ Four are new, each over a whole run: the `source-changed` fault failing the run 
 `make corpus`, the whole corpus against the build under test.
 
 ```text
-corpus check: 226 fixture(s), 226 pass, 0 fail, 0 awaited, 0 unexpected pass
+corpus check: 228 fixture(s), 228 pass, 0 fail, 0 awaited, 0 unexpected pass
 ```
 
 Both fixtures run unmarked and hold:
@@ -54,7 +54,7 @@ diagnostics/a-run-that-fails-in-itself: pass
 source-consistency/a-source-that-changes-during-compilation: pass
 ```
 
-The same run on the base reported `226 fixture(s), 224 pass, 0 fail, 2 awaited, 0 unexpected pass`, those two being the awaited ones. No fixture awaits work now.
+The same run on the base at `232a528`, before this branch's first commit, reported `226 fixture(s), 224 pass, 0 fail, 2 awaited, 0 unexpected pass`, those two being the awaited ones. No fixture in the corpus awaits work now.
 
 ## A Build That Reports Neither Outcome
 
@@ -79,7 +79,7 @@ def kept(arguments: list[str]) -> list[str]:
 The corpus run against it fails exactly the two fixtures and nothing else:
 
 ```text
-corpus check: 226 fixture(s), 224 pass, 2 fail, 0 awaited, 0 unexpected pass
+corpus check: 228 fixture(s), 226 pass, 2 fail, 0 awaited, 0 unexpected pass
 ```
 
 ```text
@@ -99,11 +99,11 @@ source-consistency/a-source-that-changes-during-compilation: fail
     position 1: error E_SOURCE_CHANGED expected, warning W_ENTRY_DESTINATION produced
 ```
 
-A build that performs neither fault publishes a bundle and exits 0, so each fixture fails on all three of status, standard output and diagnostics. The 224 fixtures either side of them are unaffected, which is what says the wrapper changed the one thing it was meant to.
+A build that performs neither fault publishes a bundle and exits 0, so each fixture fails on all three of status, standard output and diagnostics. The 226 fixtures either side of them are unaffected, which is what says the wrapper changed the one thing it was meant to.
 
 ## The Fixture Is Left As It Was
 
-A `source-changed` fault writes to the tree it runs over, so a fixture declaring one runs in a copy of itself. After every run above, `git status --porcelain` named the eleven files this branch edits and no fixture source among them.
+A `source-changed` fault writes to the tree it runs over, so a fixture declaring one runs in a copy of itself. After every run above, `git status --porcelain` named the files this branch edits and no fixture source among them.
 
 ## The Consistency Family
 
@@ -128,9 +128,9 @@ The listing's other families read UNHELD here because this branch is cut from `i
 `make check`, every target the repository runs, exit status 0.
 
 ```text
-686 passed in 0.75s
-538 passed in 9.41s
-corpus check: 226 fixture(s), 226 pass, 0 fail, 0 awaited, 0 unexpected pass
+692 passed in 0.79s
+540 passed in 8.41s
+corpus check: 228 fixture(s), 228 pass, 0 fail, 0 awaited, 0 unexpected pass
 invocation check: 28 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
 ```
 
