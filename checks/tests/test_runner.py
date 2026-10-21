@@ -96,11 +96,14 @@ def write_fixture(
     absent: tuple[str, ...] = (),
     complete: bool = True,
     source: bool = True,
+    root: str | None = "source",
 ) -> Path:
     """A fixture directory declaring the result its run must produce.
 
     A fixture declaring that the run cannot find its allowed source root
-    carries no source tree, which is what `source` leaves out.
+    carries no source tree, which is what `source` leaves out. A fixture
+    declaring a run supplied no allowed source root names none, which is
+    what `root` leaves out.
     """
     if source:
         (directory / "source").mkdir(parents=True, exist_ok=True)
@@ -117,11 +120,16 @@ def write_fixture(
         "]",
         "",
         "[invocation]",
-        'root = "source"',
-        f"arguments = [{declared}]",
-        "",
-        "[expected]",
     ]
+    if root is not None:
+        lines.append(f"root = {json.dumps(root)}")
+    lines.extend(
+        [
+            f"arguments = [{declared}]",
+            "",
+            "[expected]",
+        ]
+    )
     if stdout_contains:
         declared_text = ", ".join(json.dumps(entry) for entry in stdout_contains)
         lines.append(f"stdout_contains = [{declared_text}]")
@@ -418,6 +426,27 @@ def test_a_fixture_naming_a_root_it_does_not_hold_is_refused(
     assert not result.passed
     assert "source is not a directory" in detail_of(result, MANIFEST)
     assert not record.exists()
+
+
+def test_a_fixture_naming_no_root_is_run_with_none(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A manifest naming no root declares a run supplied no allowed source root."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        root=None,
+        source=False,
+        exit_status=2,
+        diagnostics=(INVALID_USAGE,),
+    )
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    assert record.read_text(encoding="utf-8").splitlines() == [
+        "--diagnostics",
+        "json",
+        "guide.md",
+    ]
 
 
 def test_the_runner_names_no_implementation_or_language() -> None:

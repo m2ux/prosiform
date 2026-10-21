@@ -14,10 +14,12 @@ implementation of the contract. There is no default build and no
 fallback: an absent configuration raises `BuildNotConfigured`, so a
 fixture is never reported as holding against a build that never ran.
 
-The runner supplies the allowed source root and asks for diagnostics as
-data, which the contract's command line spells `--root DIR` and
-`--diagnostics json`. A manifest writes neither, so a diagnostic's code is
-compared as a value rather than as prose.
+The runner supplies the allowed source root the manifest names and asks
+for diagnostics as data, which the contract's command line spells
+`--root DIR` and `--diagnostics json`. A manifest writes neither, so a
+diagnostic's code is compared as a value rather than as prose. A manifest
+naming no root declares a run supplied none, which is how the command line
+the contract refuses for naming no allowed source root is stated.
 
 A difference names the expectation it belongs to and locates itself within
 it. Standard output declared as bytes is compared as bytes and located by
@@ -413,11 +415,13 @@ def run_fixture(fixture: Path) -> Result:
 
     invocation = manifest["invocation"]
     expected = manifest["expected"]
-    root = (fixture / invocation["root"]).resolve()
+    named = invocation.get("root")
+    allowed_root = (
+        ["--root", str((fixture / named).resolve())] if named is not None else []
+    )
     argv = [
         *build_under_test(),
-        "--root",
-        str(root),
+        *allowed_root,
         "--diagnostics",
         "json",
         *invocation["arguments"],
