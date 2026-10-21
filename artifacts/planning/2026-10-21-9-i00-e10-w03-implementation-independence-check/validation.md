@@ -35,8 +35,6 @@ This row adds a check and the documentation naming it, and changes no fixture, s
 - **A span two patterns describe is read as the term it is.** `Node.js` is both the named term and the shape of a source file, and it returns the named term, because the inventory states its named terms before its shapes.
 - **The interface terms pass.** The error codes, the warning codes, the exit statuses and the documented options return no reference, and a documented option spelled `--python-path DIR` returns one, so the disjointness is a verdict the check reaches rather than a claim made beside it.
 
-<a id="the-check-over-this-repository"></a>
-
 ## The check over this repository
 
 `make independence` returns 0:
@@ -52,8 +50,6 @@ entry and no name the contract declares
 
 This is the Test row's second half: the check passes on the corpus as it stands. The 47 declared names are the 5 exit statuses, the 22 error codes and the 3 warning codes the manifest schema enumerates, and the 17 options the documented invocation's table names.
 
-<a id="the-exclusions-reviewed"></a>
-
 ## The exclusions reviewed
 
 The Review part of the work item is the confirmation that the exclusions admit no implementation term, and the check performs it: `declared_references` scans the contract's own declared names against the inventory and returns nothing, so the inventory and the contract's interface are disjoint. A contract that came to declare one — the case the suite shows with `--python-path DIR` — fails the run rather than being admitted.
@@ -64,8 +60,6 @@ Reviewing the inventory the other way, against the text the report draws its ent
 - **`namespace`.** The design's validation scope reads `ancestor-only headings undergo structural, depth, and namespace checks`. A heading's namespace is a design concept, not a language's.
 
 Neither sits in a clause name today, so neither was a current failure; both were removed because a clause name that used them would be refused for using the contract's vocabulary.
-
-<a id="what-the-validation-found"></a>
 
 ## What the validation found
 
