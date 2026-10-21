@@ -29,15 +29,17 @@ Leaving retrieval to the agent costs:
 
 #### Compile shared context
 
+Run these diagram examples from `example/`, using [my-skill](example/my-skill/SKILL.md).
+
 ```bash
 prosiform --root my-skill --output bundle.md procedure.md rules.md
 ```
 
-![SKILL.md links to the selected procedure.md and rules.md. Procedure includes tips.md recursively. Rules retains its rule bullets and deferred links to rules/codex.md and rules/claude.md. Both links remain without their contents. SKILL.md is excluded.](docs/images/compilation.png)
+![SKILL.md selects procedure.md and rules.md. Procedure includes tips.md; Rules includes rules/agents.md. The bundle contains Agents instructions directing each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
 #### Compile agent-specific rules
 
-The agent compiles its deferred rules with `--group rules:1`, merging headings at level 1 under a `Rules` group. The caller chooses which agent's rules to load.
+The bundled `rules/agents.md` instructions direct the agent to the deferred link matching its harness identity. It compiles those rules with `--group rules:1`, merging headings at level 1 under a `Rules` group. The caller chooses which agent's rules to load.
 
 ```bash
 # Codex

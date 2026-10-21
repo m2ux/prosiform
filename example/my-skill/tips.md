@@ -1,0 +1,3 @@
+# Tips
+
+Keep paragraphs short.
