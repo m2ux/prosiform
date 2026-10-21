@@ -40,12 +40,10 @@ from prosiform.source import (
     nesting,
     occurrences,
     opening_heading,
-    owner,
     regions,
     section,
     slug,
     uses,
-    visible,
     within,
 )
 
@@ -516,39 +514,6 @@ def test_a_link_outside_the_given_regions_is_not_reported() -> None:
     chosen = section(tokens, "two")
     assert chosen is not None
     assert [one.destination for one in uses(tokens, chosen)] == ["b.md"]
-
-
-def test_a_position_above_the_first_section_root_belongs_to_the_document() -> None:
-    tokens = parse("A preamble line.\n\n# Guide\n\nGuide body.\n")
-    assert owner(tokens, 0) is None
-
-
-def test_a_position_inside_a_section_belongs_to_that_section() -> None:
-    tokens = parse("# Guide\n\n## Alpha\n\nAlpha body.\n")
-    holder = owner(tokens, 4)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
-
-
-def test_a_position_belongs_to_the_innermost_section_containing_it() -> None:
-    tokens = parse("# Guide\n\n## Alpha\n\n### Detail\n\nDetail body.\n")
-    holder = owner(tokens, 6)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Detail"
-
-
-def test_a_position_inside_a_container_belongs_to_the_section_holding_it() -> None:
-    tokens = parse("# Guide\n\n## Alpha\n\n> - Quoted body.\n")
-    holder = owner(tokens, 4)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
-
-
-def test_a_heading_a_container_carries_roots_no_section_to_own_by() -> None:
-    tokens = parse("# Guide\n\n> ## Quoted\n>\n> Quoted body.\n")
-    holder = owner(tokens, 4)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Guide"
 
 
 def test_a_document_nesting_no_container_nests_nothing() -> None:

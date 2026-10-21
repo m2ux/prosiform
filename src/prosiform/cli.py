@@ -69,15 +69,14 @@ allowed source root included. An image names a resource whatever file
 it points at.
 
 A reference is classified by the identity it resolves to rather than by
-the text it was written as. Each link belongs to the innermost eligible
-section containing it, and to the document itself where no section
-does. A link whose target is the very node that owns it, an including
-ancestor of it, or the whole document a section sits in, resolves to
-the destination already present and expands nothing; one naming another
-section of the same document names a second identity and carries it.
-Ownership is read from the document's structure rather than from what a
-run selected, so consolidating a section into a larger region leaves
-every classification as it was.
+the text it was written as, and that identity is read from the target
+alone. A link naming the section it sits in, an including ancestor of
+it, or the whole document that section sits in, resolves to the
+destination already present and expands nothing; one naming another
+section of the same document names a second identity and carries it. A
+destination is held against the identity a reference resolves to, so
+where the link was written, and the region a run consolidated it into,
+leave it as it was.
 
 Each reference the run compiled is rewritten to the destination the
 bundle gave the target it resolved to, and a mark goes with the

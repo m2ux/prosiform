@@ -39,13 +39,15 @@ the author's behalf, because a document the tool silently completed is
 no longer the document the author wrote.
 
 One invariant the contract names is not checked here, and is absent
-rather than weakened. **Ownership stability** is a property of the
-construction rather than of the candidate. Link ownership is read from a source's
-own token stream and a position in it, and consolidation changes
-neither, so a
-check comparing ownership before and after would compare one call of
-`source.owner` with another call of the same function on the same
-arguments. A check that cannot fail reports a guarantee nobody has.
+rather than weakened. **Destination stability** is a property of the
+construction rather than of the candidate. A reference is rewritten to
+the destination its target was given, read from the map `cli` builds
+over every group from the identity each emitted heading answers to, and
+neither the position a link sits in nor the region a run consolidated it
+into is part of that identity. A check comparing a link's destination
+before and after consolidation would therefore compare one lookup of a
+target with another lookup of the same target, and a check that cannot
+fail reports a guarantee nobody has.
 
 An unsafe boundary raises `Unsafe`, which names the source regions
 either side of it and the container that absorbed one into the other.
