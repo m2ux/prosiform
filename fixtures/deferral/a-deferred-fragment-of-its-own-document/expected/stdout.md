@@ -4,4 +4,4 @@ This bundle was built for [Alpha](#alpha); everything else is material it refere
 
 ### Alpha
 
-The step defers [¬ the detail](#beta) to a run of its own.
+The step defers [¬ the detail](guide.md#beta) to a run of its own.
