@@ -29,13 +29,13 @@
       "pattern": "^I[0-9]{2}:E[0-9]{2}(:W[0-9]{2})?$"
     },
     "invocation": {
-      "description": "The run to perform. The runner supplies the build under test from its own configuration, resolves the source tree to an absolute path and passes it as the allowed source root, and asks for diagnostics as data so a code can be compared rather than prose.",
+      "description": "The run to perform. The runner supplies the build under test from its own configuration, resolves the source tree named here to an absolute path and passes it as the allowed source root, and asks for diagnostics as data so a code can be compared rather than prose.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["root", "arguments"],
+      "required": ["arguments"],
       "properties": {
         "root": {
-          "description": "The fixture-relative directory holding the source tree. It is the allowed source root the run is confined to. A fixture whose expected diagnostics name E_ROOT_NOT_FOUND declares a run that cannot find this root, so there the path is one the fixture must not hold; every other fixture holds it as a directory.",
+          "description": "The fixture-relative directory holding the source tree. It is the allowed source root the run is confined to. A fixture whose expected diagnostics name E_ROOT_NOT_FOUND declares a run that cannot find this root, so there the path is one the fixture must not hold; every other fixture naming one holds it as a directory. Omitted, it declares a run supplied no allowed source root at all, which is the command line the contract refuses for naming none.",
           "$ref": "#/$defs/fixturePath"
         },
         "arguments": {

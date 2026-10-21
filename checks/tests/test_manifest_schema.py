@@ -1,10 +1,12 @@
 """Assert the schema describes a complete fixture declaration and nothing else.
 
-A fixture declares its source tree, its invocation, its expected standard
-output, its expected exit status and its expected diagnostics in one
-manifest. The schema requires all five, so a manifest leaving one out is
-rejected as malformed rather than running with an expectation nobody
-stated. A diagnostic's code comes from the catalogue its severity
+A fixture declares its invocation, its expected standard output, its
+expected exit status and its expected diagnostics in one manifest. The
+schema requires all four, so a manifest leaving one out is rejected as
+malformed rather than running with an expectation nobody stated. The
+source tree the run is confined to is declared beside the invocation's
+arguments, and a manifest naming none declares a run supplied no allowed
+source root. A diagnostic's code comes from the catalogue its severity
 selects, so a fixture cannot expect a failure the contract does not
 define, and cannot declare a warning where an error belongs.
 
@@ -36,7 +38,6 @@ import pytest
 from manifests import catalogue, errors
 
 DECLARATIONS = {
-    "source tree": ("invocation", "root"),
     "invocation": ("invocation", "arguments"),
     "expected standard output": ("expected", "stdout"),
     "expected exit status": ("expected", "exit_status"),
@@ -95,6 +96,20 @@ def without(table: str, field: str) -> dict[str, Any]:
 
 def test_a_complete_manifest_validates() -> None:
     assert errors(complete()) == []
+
+
+def test_a_manifest_naming_no_source_tree_validates() -> None:
+    """A run supplied no allowed source root is a run a manifest declares."""
+    manifest = without("invocation", "root")
+    manifest["expected"]["exit_status"] = 2
+    manifest["expected"]["diagnostics"] = [
+        {
+            "severity": "error",
+            "code": "E_INVALID_USAGE",
+            "message_contains": ["--root"],
+        }
+    ]
+    assert errors(manifest) == []
 
 
 @pytest.mark.parametrize(("declaration", "field"), sorted(DECLARATIONS.items()))
