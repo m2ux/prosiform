@@ -13,6 +13,7 @@ This row covers AC24 of the deferred-debt epic, which states what fixing the def
 | Artifact | What it holds |
 | --- | --- |
 | [w23.md](w23.md) | The task's plan: where literal content is masked and which reading reads it |
+| [validation.md](validation.md) | The checks the row ran, the revision they ran against, and what each observed |
 
 ## Links
 
