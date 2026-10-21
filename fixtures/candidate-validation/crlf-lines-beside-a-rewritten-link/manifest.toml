@@ -1,0 +1,21 @@
+description = "A code example the source terminated with CRLF keeps those terminators in the bundle, while the link in the paragraph above it is rewritten, so untouched bytes keep their newline spelling and the generated boundary below the example is written with the newline the bundle generates."
+
+clauses = [
+  "Parser and source-preserving edits — Coordinate mapping",
+  "Parser and source-preserving edits — Untouched content",
+  "Adversarial acceptance fixtures — Parser fidelity, CRLF",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

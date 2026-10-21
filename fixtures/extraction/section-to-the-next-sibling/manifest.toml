@@ -4,6 +4,7 @@ clauses = [
   "Section extraction and output hierarchy — Boundary",
   "Input and output contract — Sections",
   "Entry line — Link text",
+  "Adversarial acceptance fixtures — Extraction",
 ]
 
 [invocation]

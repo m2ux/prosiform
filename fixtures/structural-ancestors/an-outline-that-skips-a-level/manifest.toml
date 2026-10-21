@@ -1,0 +1,21 @@
+description = "A selection whose source outline skips a level keeps the gap: the structural ancestors above it are emitted at the levels the source gave them, shifted by the group's shift, and the level the source never wrote is not filled in."
+
+clauses = [
+  "Heading-only structural ancestors — Depth",
+  "Post-compilation invariants — Outline preservation",
+  "Adversarial acceptance fixtures — Partial outlines, original skipped heading levels",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes.md#detail"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Detail"
+resolved = "detail"

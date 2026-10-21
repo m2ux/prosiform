@@ -4,6 +4,7 @@ clauses = [
   "Compile before publishing — Expanding coverage",
   "Compile before publishing — step 5, consolidate selections",
   "Groups — emit each selected region once",
+  "Adversarial acceptance fixtures — Wrapper identity",
 ]
 
 [invocation]

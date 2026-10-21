@@ -4,6 +4,7 @@ clauses = [
   "Source and candidate validation modes — Candidate mode",
   "Post-compilation invariants — Target integrity",
   "Post-compilation invariants — One intended destination",
+  "Adversarial acceptance fixtures — Validation modes",
 ]
 
 [invocation]

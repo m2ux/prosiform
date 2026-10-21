@@ -2,6 +2,7 @@ description = "A run discovering more distinct document and section targets than
 
 clauses = [
   "Resource limits — --max-targets",
+  "Adversarial acceptance fixtures — Limits",
 ]
 
 [invocation]

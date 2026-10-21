@@ -1,0 +1,21 @@
+description = "A tab inside a paragraph and the tabs indenting a code example reach the bundle as the bytes the source wrote, while the link beside them is rewritten, so a rewrite maps back to original bytes rather than to a view that expanded them."
+
+clauses = [
+  "Parser and source-preserving edits — Coordinate mapping",
+  "Parser and source-preserving edits — Untouched content",
+  "Adversarial acceptance fixtures — Parser fidelity, tabs",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

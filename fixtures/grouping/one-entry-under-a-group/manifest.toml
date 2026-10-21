@@ -7,6 +7,7 @@ clauses = [
   "Grouping — Residual ambiguity",
   "Grouping — Variants by document",
   "Grouping — Document content above the grouping depth",
+  "Adversarial acceptance fixtures — Grouping",
 ]
 
 [invocation]
