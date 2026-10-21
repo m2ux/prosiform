@@ -32,9 +32,9 @@ A resolved reference-style use is published inline. The label keeps the
 bytes the author wrote, so the visible text, an image's alternative
 content and the escaping the author chose are preserved by carrying
 them rather than by re-rendering them, and the destination and title
-come from the definition as it was authored. A compiled link takes the
-destination the bundle assigned its target in place of the authored
-one; every other destination is emitted as authored.
+come from the definition as it was authored. A link the bundle assigned
+a destination is published with that destination in place of the
+authored one; every other destination is emitted as authored.
 
 The scan is cross-checked against the parser. The uses one inline token
 carries are counted against the uses the parser read from the same
@@ -66,7 +66,6 @@ from prosiform.source import (
     IMAGE as IMAGE_TOKEN,
 )
 
-ANCHOR = "#"
 BACKTICK = "`"
 ESCAPE = "\\"
 IMAGE = "!"
@@ -443,13 +442,16 @@ def edits(one: Use, destination: str | None) -> list[tuple[int, int, str]]:
     use edits is its destination alone and no two spans one text
     produces overlap. A use the bundle assigned no destination is
     published with the bytes its author wrote.
+
+    The destination arrives whole. Where a link points is the bundle's
+    question, and this writes the answer, so a fragment of the bundle
+    and a path from the allowed source root are published the same way.
     """
     found: list[tuple[int, int, str]] = []
-    target = None if destination is None else f"{ANCHOR}{destination}"
     if one.definition is not None:
-        found.append((*one.target, published(one.definition, target)))
-    elif target is not None:
-        found.append((*one.target, target))
+        found.append((*one.target, published(one.definition, destination)))
+    elif destination is not None:
+        found.append((*one.target, destination))
     return found
 
 

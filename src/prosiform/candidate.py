@@ -71,7 +71,7 @@ from prosiform.bundle import (
     heading_text,
     openings,
 )
-from prosiform.closure import Reference, bundled
+from prosiform.closure import Reference, bundled, deferring, rebased
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     Ancestor,
@@ -271,6 +271,12 @@ def intended(
     reference-style use at the inline form the definition it names
     gives it.
 
+    A deferred link under the allowed source root carries its target's
+    path from that root, so what it shows is its author's text and
+    where it points is the destination the bundle rebased. A deferral
+    resolving nowhere the bundle is responsible for is published as
+    authored like any other mention.
+
     Whether the bundle compiled the link is read from the text the
     link's content opens with, as discovery and emission read it, so a
     deferral the parser places inside a formatting event is the same
@@ -278,9 +284,18 @@ def intended(
     """
     if one.kind != LINK:
         return one
-    found = bundled(path, one.destination, opening_text(inline.children or [], at))
+    opening = opening_text(inline.children or [], at)
+    found = bundled(path, one.destination, opening)
     if found is None:
-        return one
+        deferred = deferring(path, one.destination, opening)
+        if deferred is None:
+            return one
+        return Use(
+            one.kind,
+            one.text,
+            one.title,
+            normalizeLink(rebased(deferred, one.destination)),
+        )
     assigned = targets.get((found.path, found.fragment))
     if assigned is None:
         raise Invalid(

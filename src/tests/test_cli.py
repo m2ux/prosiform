@@ -1135,8 +1135,8 @@ def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> 
     )
     run = invoke("--root", str(root), "guide.md#alpha")
     assert run.status == SUCCESS
-    assert "See [\u00ac B](#beta)." in run.stdout
-    assert "Beta" not in run.stdout
+    assert "See [\u00ac B](guide.md#beta)." in run.stdout
+    assert "Body." not in run.stdout
 
 
 def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
