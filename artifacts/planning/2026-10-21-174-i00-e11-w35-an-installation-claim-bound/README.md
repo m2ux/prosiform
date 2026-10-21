@@ -13,6 +13,8 @@ It matters because a stale entry reads as a current limit of the corpus, which i
 | Artifact | What it holds |
 | --- | --- |
 | [W35](w35.md) | The work item: scope, component, breakdown and test requirements |
+| [Validation](validation.md) | The checks observing each criterion, the restatement each claim carries, and the results |
+| [Changes](changes.md) | The plan changes this delivery applied and held |
 
 ## Links
 
