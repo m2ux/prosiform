@@ -24,4 +24,6 @@ It matters because the mark is the only way an author states that material belon
 | Epic plan | [2026-10-21-136-i00-e12-positional-dependencies](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-positional-dependencies) |
 | Design and decision | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Preceding row | [2026-10-21-136-i00-e12-w01-classification-by-where-a](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-w01-classification-by-where-a) |
+| Pull request | [#143 \[I00:E12\] A Deferred Link Carried with Its Mark](https://github.com/m2ux/prosiform/pull/143) |
+| Arising issue | [#146 Deferred Targets](https://github.com/m2ux/prosiform/issues/146) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
