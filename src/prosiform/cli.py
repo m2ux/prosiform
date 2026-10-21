@@ -229,11 +229,7 @@ from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
     ENCODING,
-    HREF,
-    INLINE,
     NESTED_SECTION_TARGET,
-    REFERENCE_USES,
-    SRC,
     UNTERMINATED_FRONTMATTER,
     Ambiguous,
     Capture,
@@ -1569,19 +1565,21 @@ def compose(
     return bundled, named
 
 
-def resource(destination: str) -> bool:
-    """Whether one destination names a resource rather than a document or a section.
+def resource(destination: str, embedded: bool) -> bool:
+    """Whether one reference use names a resource rather than a document or a section.
 
-    A resource is what the bundle carries as text: a reference naming
-    no Markdown document under the allowed root. A fragment names a
-    place in the bundle itself, and a reference carrying a scheme, an
-    authority or a drive letter names something no directory the bundle
-    is read from decides, so neither is one.
+    A resource is what the bundle carries as text, which the use states
+    along with where it points. An image embeds rather than links, so it
+    names a resource whatever its destination spells, and a link names
+    one when its destination names no Markdown document. A fragment
+    names a place in the bundle itself, and a reference carrying a
+    scheme, an authority or a drive letter names something no directory
+    the bundle is read from decides, so neither is one under either use.
     """
     written = components(destination).path
     if not written or external(written) or DRIVE.match(written) is not None:
         return False
-    return not is_markdown(written)
+    return embedded or not is_markdown(written)
 
 
 def resourced(bundled: str, budget: int) -> bool:
@@ -1589,15 +1587,15 @@ def resourced(bundled: str, budget: int) -> bool:
 
     The bundle is read as a renderer reads it, so a resource a source
     wrote as a reference-style use is counted at the inline form the
-    bundle publishes it as. A bundle whose text names none carries
-    nothing to warn about.
+    bundle publishes it as. The uses are the ones discovery reads, so an
+    image's alternative content is descended into where it sits and the
+    warning classifies a reference as emission classifies it. A bundle
+    whose text names none carries nothing to warn about.
     """
+    tokens = parse(bundled, budget)
     return any(
-        resource(str(child.attrGet(HREF) or child.attrGet(SRC) or ""))
-        for token in parse(bundled, budget)
-        if token.type == INLINE
-        for child in token.children or []
-        if child.type in REFERENCE_USES
+        resource(use.destination, use.resource)
+        for use in uses(tokens, tuple(regions(tokens)))
     )
 
 
