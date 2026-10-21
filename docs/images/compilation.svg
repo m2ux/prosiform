@@ -60,17 +60,16 @@
 <text x="1280" y="284" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
 <text x="1280" y="336" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
 <path d="M1280 380 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="442" font-size="34" fill="#e6edf3">Rules</text>
-<text x="1280" y="494" font-size="28" fill="#e6edf3">Overview</text>
-<text x="1280" y="546" font-size="25" fill="#e6edf3">Agents</text>
-<text x="1280" y="600" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
-<text x="1280" y="658" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
-<text x="1280" y="696" font-size="24" fill="#e3b341">¬ Codex</text>
-<path d="M1280 703 h100.8" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="754" font-size="23" fill="#e6edf3">If you are Claude, compile</text>
-<text x="1280" y="792" font-size="24" fill="#e3b341">¬ Claude</text>
-<path d="M1280 799 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="870" font-size="25" fill="#e6edf3">Common</text>
+<text x="1280" y="442" font-size="34" fill="#e6edf3">rules/agents</text>
+<text x="1280" y="496" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
+<text x="1280" y="554" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
+<text x="1280" y="592" font-size="24" fill="#e3b341">¬ Codex</text>
+<path d="M1280 599 h100.8" stroke="#e3b341" stroke-width="1.5"/>
+<text x="1280" y="650" font-size="23" fill="#e6edf3">If you are Claude, compile</text>
+<text x="1280" y="688" font-size="24" fill="#e3b341">¬ Claude</text>
+<path d="M1280 695 h115.2" stroke="#e3b341" stroke-width="1.5"/>
+<path d="M1280 810 H1734" stroke="#303b49" stroke-width="2"/>
+<text x="1280" y="870" font-size="34" fill="#e6edf3">rules/common</text>
 <text x="1280" y="922" font-size="25" fill="#e6edf3">• Check every link.</text>
 <text x="1280" y="970" font-size="25" fill="#e6edf3">• Use clear headings.</text>
 <text x="1280" y="1020" font-size="24" fill="#e6edf3">Follow</text>
