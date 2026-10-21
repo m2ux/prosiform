@@ -1,6 +1,5 @@
 # 🧩 prosiform
 
-[![Status: building](https://img.shields.io/badge/status-building-orange.svg)](https://github.com/users/m2ux/projects/18)
 [![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
@@ -8,7 +7,7 @@ A deterministic compiler for instruction sets written as linked Markdown. Give i
 
 ---
 
-**[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)** • **[Plan](https://github.com/users/m2ux/projects/18)** • **[Proposal](https://github.com/m2ux/prosiform/issues/1)** • **[Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1)**
+**[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)**
 
 ---
 
@@ -52,17 +51,17 @@ Every term the contract uses is defined once, in the [glossary](docs/glossary.md
 
 ## 🗂️ Repository Layout
 
-Each tree is created by the stage that writes into it.
+Each tree holds one kind of thing.
 
 | Tree | Holds |
 | --- | --- |
-| [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. Both builds run it. |
-| [`src/`](src/README.md) | The Python build: the contract's first implementation, retained as a differential oracle. |
+| [`fixtures/`](fixtures/README.md) | The language-neutral corpus and the contract it encodes. The build runs it. |
+| [`src/`](src/README.md) | The Python build, which the corpus holds to the contract. |
 | [`docs/`](docs/README.md) | The documentation this repository owns, the [glossary](docs/glossary.md) among it. |
 | [`checks/`](checks/README.md) | The checks that hold the layout, every document's references, the README tables, and the glossary's coverage true. |
 | [`example/`](example/README.md) | The example skill tree the design's usage examples name, which the corpus bundles through each of them. |
 
-The production build's tree is created by the initiative that writes that build. The design and the planning record stay on the [engineering branch](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) and are reached by link, so there is one copy of each.
+The fixture corpus is the contract: it declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing one. The design stays on the [engineering branch](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) and is reached by link, so there is one copy of it.
 
 ## ✅ Checks
 
@@ -204,18 +203,6 @@ One procedure of this workspace's `work-planner` skill, bundled under the v1 rul
 | References resolved by the reader | 421 | 0 |
 
 Rendered by GitHub, all 775 fragment links on the page resolve against the 353 anchors it generates, none broken. The same closure merged into three groups is 306 headings and 186,907 bytes, and rewrites the same 421 references.
-
-## 🗺️ Status
-
-Three stages, in order. Progress is on the **[Bundling board](https://github.com/users/m2ux/projects/18)**.
-
-| Stage | Delivers | State |
-| --- | --- | --- |
-| **[I00 Prototype](https://github.com/m2ux/prosiform/issues/2)** | A Python build, a language-neutral fixture corpus, and the tool installed for agents to invoke | In Progress |
-| **[I01 Field Refinement](https://github.com/m2ux/prosiform/issues/20)** | The specification settled by real use, frozen at a tagged revision | Ready |
-| **[I02 Production](https://github.com/m2ux/prosiform/issues/10)** | A Rust build implementing that revision, with the Python build retained as its differential oracle | Planned |
-
-The fixture corpus is the contract: it declares each case as a source tree, an invocation and an expected result, so it binds any implementation rather than describing one.
 
 ## 📐 Scope
 

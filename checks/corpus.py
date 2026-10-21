@@ -6,9 +6,8 @@ fixture through that runner in path order and decides the corpus's own
 verdict from the results, so the figure the corpus reports comes from a
 command rather than from a driver written for one run.
 
-The corpus is knowingly incomplete while the initiative's later epics
-land, so a manifest may declare the work that delivers the behaviour it
-expects:
+The corpus declares the contract in full, so a manifest may name the work
+that delivers behaviour the build does not yet meet:
 
     awaiting = "I00:E03"
 

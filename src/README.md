@@ -2,7 +2,7 @@
 
 The Python build of prosiform.
 
-It establishes the behavioural contract, runs the [fixture corpus](../fixtures/README.md), and stays in use as a differential oracle once the production build exists.
+It implements the behavioural contract and is held to it by the [fixture corpus](../fixtures/README.md).
 
 Installing it puts the `prosiform` command on the path, declared by `[project.scripts]` and entered at `prosiform.cli:main`. The command carries the option set the contract declares, writes its response or its bundle to standard output and its diagnostics to standard error, and returns the exit status its outcome names.
 
