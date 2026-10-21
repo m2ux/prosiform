@@ -1,5 +1,3 @@
-# Source
-
 The Python implementation of prosiform, checked against the behavioural contract by the [fixture corpus](../fixtures/README.md).
 
 ## Entry points
