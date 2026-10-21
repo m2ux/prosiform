@@ -20,6 +20,7 @@ import json
 import os
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from importlib.metadata import version
 from io import StringIO
 from pathlib import Path
 from typing import IO, Any
@@ -141,7 +142,7 @@ def root(tmp_path: Path) -> Path:
 def test_the_version_response_names_the_version_and_the_profile() -> None:
     run = invoke("--version")
     assert run.status == SUCCESS
-    assert run.stdout == f"prosiform 0.1.0 ({PROFILE})\n"
+    assert run.stdout == f"prosiform {version('prosiform')} ({PROFILE})\n"
     assert run.stderr == ""
 
 
