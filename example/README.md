@@ -2,7 +2,7 @@
 
 These examples use [work-tracker](work-tracker/SKILL.md), a skill with a routing document, a planning procedure, and linked artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
 
-Run the commands from the repository root after [installation](../installation.md). Markdown blocks below are exact excerpts; links beside them open the complete files.
+Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files.
 
 ## Bundle a procedure and its dependencies
 

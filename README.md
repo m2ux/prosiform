@@ -7,9 +7,20 @@ A deterministic compiler for instruction sets written as linked Markdown. Give i
 
 ---
 
-**[Installation](installation.md)** • **[Invocation](invocation.md)** • **[Checks](checks.md)** • **[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Source](src/README.md)** • **[Docs](docs/README.md)** • **[Check implementation](checks/README.md)** • **[Example](example/README.md)**
+**[Installation](#installation)** • **[Invocation](invocation.md)** • **[Checks](checks.md)** • **[Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Source](src/README.md)** • **[Docs](docs/README.md)** • **[Check implementation](checks/README.md)** • **[Example](example/README.md)**
 
 ---
+
+## Installation
+
+Requires Python 3.13+ on Linux or macOS. From the repository root:
+
+```bash
+pip install ./src
+prosiform --version
+```
+
+This installs the `prosiform` command and its glossary. For a development environment, run `cd src && uv sync --frozen`; see [source setup](src/README.md#environment).
 
 ## 🎯 Overview
 
