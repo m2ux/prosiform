@@ -42,3 +42,21 @@ prosiform --version
 ```
 
 This installs the `prosiform` command and its glossary. For a development environment, run `cd src && uv sync --frozen`; see [source setup](src/README.md#environment).
+
+## Run examples
+
+Run these from the repository root. Each command writes a validated Markdown bundle to standard output.
+
+### Bundle a procedure and its dependencies
+
+```bash
+prosiform --root example/work-tracker modes/plan-mode.md
+```
+
+### Compile a selected section
+
+```bash
+prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
+```
+
+See [worked input and output examples](example/README.md) and the [full option reference](invocation.md).
