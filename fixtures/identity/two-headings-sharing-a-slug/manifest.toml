@@ -1,7 +1,7 @@
 description = "Two headings in one source producing the same slug are not numbered apart, so a fragment requiring one of them names both and the run refuses it rather than selecting whichever came first."
 
 clauses = [
-  "Source-heading resolution — two headings in one source producing the same slug",
+  "Source-heading resolution, two headings in one source producing the same slug",
   "Validation and failure contract — Publication",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]

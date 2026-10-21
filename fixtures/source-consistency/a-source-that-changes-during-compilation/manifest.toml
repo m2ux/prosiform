@@ -2,7 +2,7 @@ description = "A source whose bytes change between discovery and the recheck bef
 
 clauses = [
   "Source consistency",
-  "Compile before publishing — Discover the recursive dependency graph",
+  "Compile before publishing — step 4",
   "Adversarial acceptance fixtures — Consistency, source modification during compilation",
 ]
 

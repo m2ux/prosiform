@@ -5,8 +5,8 @@ clauses = [
   "Heading-only structural ancestors — Deduplication",
   "Compile before publishing — step 4, expand included source coverage to a fixed point",
   "Compile before publishing — step 5, derive required heading-only ancestors",
-  "Compile before publishing — Expanding coverage",
-  "No accidental expansion",
+  "Compile before publishing, expanding coverage",
+  "Post-compilation invariants — No accidental expansion",
   "Validation scope",
   "Adversarial acceptance fixtures — Partial outlines, ancestor promotion after dependency expansion",
 ]

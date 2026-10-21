@@ -1,7 +1,7 @@
 description = "A path whose punctuation spells a Markdown link is escaped as literal heading text, so the heading naming the file creates no link and the bundle gains no dependency the source never wrote."
 
 clauses = [
-  "File-scoped hierarchy — escape the path as literal heading text",
+  "File-scoped hierarchy, escape the path as literal heading text",
   "Bundle destinations — Document destinations",
   "Entry line",
 ]

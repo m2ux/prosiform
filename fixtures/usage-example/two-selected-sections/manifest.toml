@@ -1,10 +1,10 @@
 description = "The usage example that names two sections selects each from the document that carries it, and the reference inside the first carries the second document's section it names."
 
 clauses = [
-  "CLI contract — Usage examples",
-  "Input and output contract — Selected sections",
+  "Usage examples",
+  "Input and output contract — Sections",
   "Section extraction and output hierarchy — Boundary",
-  "Compile before publishing — Discover the recursive dependency graph",
+  "Compile before publishing — step 4",
   "Entry line",
 ]
 

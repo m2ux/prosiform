@@ -2,8 +2,8 @@ description = "A structural ancestor supplies its heading and nothing else: its 
 
 clauses = [
   "Heading-only structural ancestors",
-  "Generic bundling",
-  "No accidental expansion",
+  "Explicitly linked source structure — Generic bundling",
+  "Post-compilation invariants — No accidental expansion",
   "Adversarial acceptance fixtures — Partial outlines, no ancestor-body leakage",
 ]
 

@@ -2,7 +2,7 @@ description = "A source opening on a file heading is refused although the run se
 
 clauses = [
   "Generated input policy",
-  "Validation scope — whole-file checks, generated-input detection",
+  "Validation scope, whole-file checks, generated-input detection",
 ]
 
 [invocation]

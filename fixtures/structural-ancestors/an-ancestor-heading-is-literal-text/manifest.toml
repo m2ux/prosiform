@@ -2,8 +2,8 @@ description = "A structural ancestor's title is emitted as the literal text its 
 
 clauses = [
   "Heading-only structural ancestors — Heading text",
-  "Generic bundling",
-  "Reference preservation",
+  "Explicitly linked source structure — Generic bundling",
+  "Post-compilation invariants — Reference preservation",
   "Validation scope",
   "Adversarial acceptance fixtures — Partial outlines, no structural ancestor-link dependency leakage",
 ]

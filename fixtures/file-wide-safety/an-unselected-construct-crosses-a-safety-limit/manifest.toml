@@ -1,7 +1,7 @@
 description = "A construct in a section no reference selected, nesting containers deeper than the parsing-safety budget allows, fails the run as an inability to index the source that carries it rather than as a dependency on that section."
 
 clauses = [
-  "Validation scope — an opened file can fail because an unselected construct exceeds a declared file-wide parsing-safety limit",
+  "Validation scope, an opened file can fail because an unselected construct exceeds a declared file-wide parsing-safety limit",
   "Resource limits — --max-nesting",
   "Adversarial acceptance fixtures — File-wide safety, excessive parsing depth in an unselected sibling",
 ]

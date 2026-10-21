@@ -1,7 +1,7 @@
 description = "Heading-like text inside a code example is no heading, so it ends no section and reaches the bundle as the bytes the example holds."
 
 clauses = [
-  "Section extraction and output hierarchy — eligible roots, heading-like text in code",
+  "Section extraction and output hierarchy, eligible roots, heading-like text in code",
   "File-scoped hierarchy — Containers",
   "Section extraction and output hierarchy — Boundary",
 ]

@@ -1,8 +1,8 @@
 description = "A double-encoded escape is decoded exactly once, so the reference names the literal filename carrying a percent escape rather than the one carrying a number sign."
 
 clauses = [
-  "Reference normalization and path identity — notes%2523draft.md#run",
-  "Reference normalization and path identity — Resolution sequence, step 5",
+  "Resolution sequence — notes%2523draft.md#run",
+  "Resolution sequence — step 5",
 ]
 
 [invocation]

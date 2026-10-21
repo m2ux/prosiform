@@ -3,7 +3,7 @@ description = "An entry reference naming a member whose merged group emits no he
 clauses = [
   "Grouping — Document content above the grouping depth",
   "Bundle destinations — Document destinations",
-  "Bundle destinations — Entry line",
+  "Entry line — Link text",
 ]
 
 [invocation]

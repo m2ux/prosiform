@@ -1,8 +1,8 @@
 description = "A chain of dependencies discovered in the reverse of root-relative path order bundles in path order, so discovery order decides no part of the arrangement."
 
 clauses = [
-  "Groups — a group is one top-level division of the bundle, headed by its normalized root-relative path",
-  "Compile before publishing — Expanding coverage",
+  "Input and output contract — Groups, headed by its normalized root-relative path",
+  "Compile before publishing, expanding coverage",
 ]
 
 [invocation]

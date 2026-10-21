@@ -1,7 +1,7 @@
 description = "A heading carrying an image takes the fragment the words beside the image produce, because a renderer reads no text from a picture and the space the image stood in is a space like any other."
 
 clauses = [
-  "Source-heading resolution — derive visible heading text from parser events",
+  "Source-heading resolution, derive visible heading text from parser events",
   "Bundle destinations — Ordinal assignment",
   "Entry line",
   "Resources are text",

@@ -3,7 +3,7 @@ description = "Two selected regions carrying identical prose are two regions, so
 clauses = [
   "Source and candidate validation modes — Candidate mode",
   "Post-compilation invariants — Exactly-once coverage",
-  "Post-compilation invariants — repeated identical prose in different source regions is not duplication by itself",
+  "Post-compilation invariants, repeated identical prose in different source regions is not duplication by itself",
 ]
 
 [invocation]

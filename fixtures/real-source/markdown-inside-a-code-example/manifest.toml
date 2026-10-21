@@ -2,10 +2,10 @@ description = "A workspace skill document carrying a template inside a four-back
 
 clauses = [
   "Input and output contract — Whole documents",
-  "Section extraction and output hierarchy — heading-like text in code is not eligible",
+  "Section extraction and output hierarchy, heading-like text in code is not eligible",
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Containers",
-  "Frontmatter policy — do not strip YAML examples in code blocks or non-leading thematic breaks",
+  "Frontmatter policy, do not strip YAML examples in code blocks or non-leading thematic breaks",
   "Bundle destinations — Internal links",
   "Parser and source-preserving edits — Untouched content",
   "Entry line",

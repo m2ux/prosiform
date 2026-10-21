@@ -213,3 +213,18 @@ def tables(text: str) -> list[Table]:
             index += 1
         found.append(Table(headers, tuple(rows)))
     return found
+
+
+def rows(text: str, header: str) -> list[dict[str, str]]:
+    """Every row of the tables a header cell marks as enumerating one surface.
+
+    A table is located by what its header names rather than by the document
+    or the section it sits in, so an enumeration moves within a document
+    without the check reading it being edited.
+    """
+    return [
+        record
+        for table in tables(text)
+        if header in table.headers
+        for record in table.records()
+    ]
