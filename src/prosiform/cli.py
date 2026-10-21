@@ -272,7 +272,6 @@ GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
 INVALID_USAGE = "E_INVALID_USAGE"
-MARKED_RESOURCE = "E_MARKED_RESOURCE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 SELF_REFERENCE = "E_SELF_REFERENCE"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
@@ -1060,39 +1059,6 @@ def self_referent(
     return named is not None and named[0] is holder
 
 
-def marked_resource(
-    subject: str, reference: str, at: str, chain: Sequence[str]
-) -> Failure:
-    """One marked reference naming a resource, as the refusal the contract declares.
-
-    A mark asks for a bundled document and the bundle carries a
-    resource as the text its author wrote, so the request cannot be
-    met: emitting the reference as authored would publish the mark,
-    which nothing rewrites away.
-
-    Each subject says why it is a resource in its own terms. An image
-    is one whatever it names, because image syntax embeds rather than
-    links; any other reference is one when it names no local Markdown
-    document. Saying it the second way for an image tells an author
-    who marked a Markdown file that the file is not a Markdown file.
-    """
-    why = (
-        "image syntax embeds rather than links, so it names no document "
-        "the bundle can carry"
-        if subject == "image"
-        else "it names no local Markdown document"
-    )
-    return input_failure(
-        f"the marked {subject} {reference!r} is a resource: {why}, and a "
-        f"resource is carried as its author wrote it rather than bundled",
-        code=MARKED_RESOURCE,
-        remedy="cite it without the mark",
-        reference=reference,
-        source=at,
-        chain=chain,
-    )
-
-
 def required(
     path: str,
     source: Source,
@@ -1112,8 +1078,9 @@ def required(
 
     A resource is no local Markdown document and an image is a
     resource whatever it points at, so neither is a dependency and both
-    are carried as text. A mark on one is refused, which the row that
-    emits a resource wherever it resolves retires.
+    reach the bundle as their author wrote them, wherever they resolve.
+    Only a Markdown document is bundleable, so nothing a resource
+    reference carries asks for one.
 
     A reference whose form the grammar does not admit, and which names
     a Markdown document, is a defect rather than a mention: an author
@@ -1137,8 +1104,6 @@ def required(
         at = location(path, source.line(use.line))
         route = (*chain, use.destination)
         if use.resource:
-            if marked(use.opening):
-                raise marked_resource("image", use.destination, at, route)
             continue
         try:
             found = inside(path, use.destination)
@@ -1156,8 +1121,6 @@ def required(
                 chain=route,
             ) from malformed
         if found.external or not is_markdown(found.path):
-            if marked(use.opening):
-                raise marked_resource("reference", use.destination, at, route)
             continue
         if marked(use.opening) and self_referent(tokens, path, use.line, found):
             carrier = "section" if found.fragment is not None else "document"

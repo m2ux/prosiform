@@ -41,7 +41,6 @@ from prosiform.cli import (
     INVALID_ENCODING,
     INVALID_GROUP_RULE,
     INVALID_USAGE,
-    MARKED_RESOURCE,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     ROOT_NOT_FOUND,
@@ -939,32 +938,31 @@ def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
 
 
-def test_marking_a_reference_outside_the_profile_s_suffixes_is_refused(
+def test_a_marked_resource_is_emitted_with_its_mark(
     root: Path,
 ) -> None:
     written(root, "guide.md", "# Guide\n\nSee [¬ the diagram](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
-    assert run.stdout == ""
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[¬ the diagram](plan.png)" in run.stdout
 
 
-def test_marking_an_image_is_refused(root: Path) -> None:
+def test_a_marked_image_is_emitted_with_its_mark(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee ![\u00ac the architecture](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
-    assert run.stdout == ""
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "![¬ the architecture](plan.png)" in run.stdout
 
 
-def test_marking_an_image_naming_a_markdown_file_is_refused(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee ![\u00ac the rules](rules.md).\n")
+def test_an_image_naming_a_markdown_document_carries_no_document(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee ![the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nThe rules.\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "![the rules](rules.md)" in run.stdout
+    assert "The rules." not in run.stdout
 
 
 def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
@@ -974,11 +972,13 @@ def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
     assert "![the architecture](plan.png)" in run.stdout
 
 
-def test_marking_a_reference_carrying_a_scheme_is_refused(root: Path) -> None:
+def test_a_marked_reference_carrying_a_scheme_is_emitted_as_authored(
+    root: Path,
+) -> None:
     written(root, "guide.md", "# Guide\n\nSee [¬ the spec](https://e.test/s.md).\n")
-    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == MARKED_RESOURCE
+    run = invoke("--root", str(root), "guide.md")
+    assert run.status == SUCCESS
+    assert "[¬ the spec](https://e.test/s.md)" in run.stdout
 
 
 def test_an_unmarked_resource_is_emitted_as_authored(root: Path) -> None:
