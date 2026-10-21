@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-This record holds the rebuild of the [I00:E11] Delivery Clear-Up base on `main` at `68944e8`, which carries the whole of [I00:E12] Positional Dependencies. The rebuilt branch is local, named `i00/e11/main-rebuilt`, and its head is `18ccc83`. It delivers no acceptance criterion of its own: it places E11's sixteen delivered commits on the design D60 states they must hold, and re-expresses I00:E11:W10 against the functions E12 left rather than merging into them.
+This record holds the rebuild of the [I00:E11] Delivery Clear-Up base on `main` at `68944e8`, which carries the whole of [I00:E12] Positional Dependencies. The epic base `i00/e11/main` is this branch, and its head is `ce4483c`. It delivers no acceptance criterion of its own: it places E11's sixteen delivered commits on the design D60 states they must hold, and re-expresses I00:E11:W10 against the functions E12 left rather than merging into them.
 
 The sixteen commits are replayed in the order they were authored, one per delivered row where a row carried one commit, so the branch records how it was built. Three of them carry a reconciliation the replay put in the row whose criterion states it.
 
@@ -46,7 +46,7 @@ Three of E11's artefacts said "marked" where the old mark meant "bundle this". U
 
 ## What Was Verified
 
-`make check` passes whole on `18ccc83`, all thirteen targets, exit status 0, with `PROSIFORM_BUILD` naming the worktree's build:
+`make check` passes whole on this tree, all thirteen targets, exit status 0, with `PROSIFORM_BUILD` naming the worktree's build:
 
 ```
 PROSIFORM_BUILD="uv run --project <worktree>/src --frozen prosiform" make check
@@ -94,11 +94,11 @@ None. D59 and D60 both hold as written against what the rebuild found. Two detai
 | `ce17c86` | W03 | State the version response by what it reports |
 | `cf2a7cd` | W03 | Tell the usage faults sharing one code apart |
 | `fc66b50` | W10 | read an image's alternative content as the run of events it is |
-| `79e81c0` | W13 | report the reference lookups the parser's nesting ceiling declines |
-| `e7384fc` | W13 | separate a declined lookup from a ceiling the last reference consumed |
-| `2d11dfc` | W01 | Hold the heading-slug rule to the anchors GitHub generates |
-| `6aac9cf` | W01 | Hold each standalone check's reading to input it would read wrongly |
-| `18ccc83` | E11 | State the system as it is in every shipped document |
+| `0e99269` | W13 | report the reference lookups the parser's nesting ceiling declines |
+| `c6d4f7d` | W13 | separate a declined lookup from a ceiling the last reference consumed |
+| `1e641a5` | W01 | Hold the heading-slug rule to the anchors GitHub generates |
+| `a462ff5` | W01 | Hold each standalone check's reading to input it would read wrongly |
+| `ce4483c` | E11 | State the system as it is in every shipped document |
 
 W07, W11 and W15 landed before the merge base and are carried by `main` already, so the replay adds nothing for them.
 
