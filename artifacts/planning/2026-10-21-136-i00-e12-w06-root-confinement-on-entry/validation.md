@@ -50,3 +50,9 @@ The vocabulary check reads the design from `origin/engineering` and reported 34 
 381 passed, 1 failed. The failure is `checks/tests/test_catalogue.py::test_a_catalogue_is_the_codes_the_design_declares[error-E_]`, which holds the manifest schema's error catalogue to the codes the design declares. The schema enumerates `E_MARKED_RESOURCE` and `E_SELF_REFERENCE`, which [D59](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) withdrew from the design.
 
 This failure is the epic base's, not this row's. It was observed on `ea4227c` before any change here, it is unchanged by every change here, and the row retiring those two codes is W04 and W05 of this epic, which the brief for this row names as work to leave alone. The harness's remaining 381 tests, which include every test over the manifest schema, the runner and the corpus run that this row's fixtures pass through, hold.
+
+## Continuous Integration
+
+The `Checks` workflow on this row's head `0735852` concluded failure on `make harness`, reporting `1 failed, 381 passed` and naming the same catalogue test. The workflow runs `make check`, which stops at the first failing target, so the corpus, smoke, layout, table, link, vocabulary and invocation targets did not run there; each ran from the unit's worktree and is recorded above.
+
+The epic base's head `ea4227c` concludes failure on the same workflow, so this row leaves continuous integration where it found it.
