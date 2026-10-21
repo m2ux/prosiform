@@ -34,10 +34,20 @@ from prosiform.bundle import (
     Group,
     assemble,
 )
-from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY
+from prosiform.bundle import (
+    CODES as BUNDLE_CODES,
+)
+from prosiform.candidate import (
+    CODES as CANDIDATE_CODES,
+)
+from prosiform.candidate import (
+    UNSAFE_BUNDLE_BOUNDARY,
+)
 from prosiform.cli import (
+    CODES,
     EMPTY_GROUP_RULE,
     ENTRY_DESTINATION,
+    GENERATED_INPUT,
     INPUT_FAILURE,
     INTERNAL_ERROR,
     INVALID_ENCODING,
@@ -62,12 +72,25 @@ from prosiform.cli import (
     recheck,
 )
 from prosiform.closure import resolve
-from prosiform.limits import FILES, NESTING, RESOURCE_LIMIT
+from prosiform.limits import (
+    CODES as LIMITS_CODES,
+)
+from prosiform.limits import (
+    FILES,
+    NESTING,
+    RESOURCE_LIMIT,
+)
+from prosiform.profile import (
+    CODES as PROFILE_CODES,
+)
 from prosiform.profile import (
     HEADROOM,
     PARSER_REFERENCE_LIMIT,
     RAW_HTML,
     UNSUPPORTED_CONSTRUCT,
+)
+from prosiform.source import (
+    CODES as SOURCE_CODES,
 )
 from prosiform.source import (
     NESTED_SECTION_TARGET,
@@ -133,9 +156,46 @@ def test_the_help_response_shows_usage_defaults_and_exit_statuses() -> None:
     assert run.stderr == ""
 
 
+def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
+    run = invoke("--codes")
+    assert run.status == SUCCESS
+    assert run.stdout == "".join(f"{code}\n" for code in sorted(CODES))
+    assert run.stderr == ""
+
+
+def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
+    declared = {
+        GENERATED_INPUT,
+        INVALID_ENCODING,
+        INVALID_GROUP_RULE,
+        INVALID_USAGE,
+        PUBLICATION_FAILED,
+        ROOT_NOT_FOUND,
+        SOURCE_CHANGED,
+        SOURCE_OUTSIDE_ROOT,
+        SOURCE_SYMLINK,
+        TARGET_NOT_FOUND,
+        UNEXPECTED_INTERNAL_ERROR,
+        UNSUPPORTED_ENTRY_SUFFIX,
+        EMPTY_GROUP_RULE,
+        ENTRY_DESTINATION,
+        RESOURCE_PORTABILITY,
+    }
+    for published in (
+        BUNDLE_CODES,
+        CANDIDATE_CODES,
+        LIMITS_CODES,
+        PROFILE_CODES,
+        SOURCE_CODES,
+    ):
+        declared.update(published)
+    assert CODES == tuple(sorted(declared))
+
+
 def test_an_informational_response_needs_no_source_root() -> None:
     assert invoke("--version").status == SUCCESS
     assert invoke("--help").status == SUCCESS
+    assert invoke("--codes").status == SUCCESS
 
 
 def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:

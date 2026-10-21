@@ -19,6 +19,11 @@ real documents that name real source files, and holding those to the rule
 would refuse the corpus its realism without saying anything about what the
 corpus binds. The conformance report is scanned whole, which brings the
 design's own clause names and the declared surface under the same rule.
+That surface states the codes the build under test reports for itself, so
+this check reaches the build the conformance report reads — named by
+configuration, as the corpus names it — and fails without one. A code the
+build reports that the contract declares nowhere is rendered into the
+report and so is held to this rule like every other entry.
 
 The inventory is three kinds of term: an implementation language or
 runtime, the machinery of modules and packaging with the source-file paths
@@ -38,12 +43,13 @@ implementation term is reported rather than quietly admitted.
 
 import re
 import sys
+from collections.abc import Collection
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
 from typing import Any
 
-from conformance import render, report
+from conformance import render, report, reported_codes
 from documents import ROOT, plain, rows
 from manifests import (
     CORPUS,
@@ -55,6 +61,7 @@ from manifests import (
     severities,
     statuses,
 )
+from runner import BuildNotConfigured
 from vocabulary import design_reference, git_ref, git_show
 
 README = ROOT / "README.md"
@@ -242,9 +249,11 @@ def corpus_references(corpus: Path) -> list[Reference]:
     return found
 
 
-def report_references(design: str, corpus: Path) -> list[Reference]:
+def report_references(
+    design: str, corpus: Path, reported: Collection[str]
+) -> list[Reference]:
     """Every implementation term the conformance report's entries name."""
-    rendered = render(report(design, corpus)).splitlines()
+    rendered = render(report(design, corpus, reported)).splitlines()
     return [
         reference
         for number, line in enumerate(rendered, start=1)
@@ -282,7 +291,7 @@ def check() -> tuple[list[str], list[Reference]]:
     documentation = README.read_text()
 
     corpus = corpus_references(CORPUS)
-    emitted = report_references(design, CORPUS)
+    emitted = report_references(design, CORPUS, reported_codes())
     declared = declared_references(documentation)
 
     counted = [
@@ -294,7 +303,11 @@ def check() -> tuple[list[str], list[Reference]]:
 
 
 def main() -> int:
-    passed, failures = check()
+    try:
+        passed, failures = check()
+    except BuildNotConfigured as absent:
+        print(f"independence check: {absent}", file=sys.stderr)
+        return 1
     for line in passed:
         print(line)
     for reference in failures:
