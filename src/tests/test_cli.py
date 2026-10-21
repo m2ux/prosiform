@@ -1054,6 +1054,34 @@ def test_a_mark_on_a_reference_outside_the_root_changes_nothing(
     assert "[\u00ac the rules](../rules.md)" in run.stdout
 
 
+def test_a_reference_under_the_root_naming_no_document_publishes_nothing(
+    root: Path,
+) -> None:
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\nSee [the rules](rules.md) and [the steps](procedure.md).\n",
+    )
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == TARGET_NOT_FOUND
+    assert run.diagnostics()[0]["reference"] == "procedure.md"
+    assert run.stdout == ""
+
+
+def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
+    root: Path,
+) -> None:
+    written(root, "procedure.md", "# Procedure\n\n## Steps\n\nCarry each out.\n")
+    written(root, "guide.md", "# Guide\n\nSee [the review](procedure.md#review).\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == TARGET_NOT_FOUND
+    assert run.diagnostics()[0]["resolved"] == "procedure.md"
+    assert run.stdout == ""
+
+
 def test_a_marked_link_to_the_section_carrying_it_is_a_self_reference(
     root: Path,
 ) -> None:
