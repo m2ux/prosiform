@@ -1,0 +1,20 @@
+description = "A compiled reference naming a member whose merged group emits no heading for it is rewritten to the group's own heading, so every reference the run compiled into a merged group carries a destination the bundle has."
+
+clauses = [
+  "Grouping — Document content above the grouping depth",
+  "Bundle destinations — Internal links",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "notes:2", "entry.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "entry"
+resolved = "entry"

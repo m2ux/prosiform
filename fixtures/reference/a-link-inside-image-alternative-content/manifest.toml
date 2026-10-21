@@ -5,8 +5,6 @@ clauses = [
   "Bundle destinations",
 ]
 
-awaiting = "I00:E11:W10"
-
 [invocation]
 root = "source"
 arguments = ["guide.md"]

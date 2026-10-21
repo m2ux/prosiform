@@ -1,4 +1,4 @@
-"""Assert each catalogue is the set of codes the design declares for it.
+"""Assert each catalogue is the design's codes, and that fixtures state them.
 
 The schema's catalogues are derived from the contract, not authored beside
 it, so the check is the contract's own text: every code the design carries
@@ -9,12 +9,18 @@ prefixes an error code `E_` where it prefixes a warning code `W_`, so each
 prefix is held to the catalogue of the severity that carries it. A code
 the design adds fails this test until its catalogue carries it, and a code
 in a catalogue the design does not name fails it too.
+
+A code is a statement about a run — an error decides a failing one, a
+warning accompanies a successful one — and the corpus is where such a
+statement is made. Every code either catalogue holds is therefore
+declared by a fixture: a code the design declares and no manifest
+carries is a claim no run of the corpus exercises.
 """
 
 import re
 
 import pytest
-from manifests import CATALOGUES, catalogue, severities
+from manifests import CATALOGUES, catalogue, declared_codes, severities
 from vocabulary import design_reference, git_ref, git_show
 
 PREFIXES = {"error": "E_", "warning": "W_"}
@@ -35,6 +41,17 @@ def test_a_catalogue_is_the_codes_the_design_declares(
     severity: str, prefix: str
 ) -> None:
     assert catalogue(severity) == codes(prefix, design())
+
+
+@pytest.mark.parametrize("severity", sorted(PREFIXES))
+def test_every_code_the_design_declares_is_declared_by_a_fixture(
+    severity: str,
+) -> None:
+    unstated = catalogue(severity) - declared_codes(severity)
+    assert not unstated, (
+        f"no fixture declares {', '.join(sorted(unstated))}, so the corpus "
+        f"states nothing about the run that {severity} names"
+    )
 
 
 def test_every_severity_a_diagnostic_may_carry_has_a_catalogue() -> None:

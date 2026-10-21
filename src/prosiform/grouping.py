@@ -37,8 +37,9 @@ less a trailing word the group's own heading already states. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
 to the member resolves. A member with nothing above the grouping depth
-gets no subsection, and a whole-document reference to it resolves to its
-first contribution instead.
+gets no subsection, and a reference to it resolves to its first
+contribution instead; a member contributing nothing resolves to the
+group's own heading, which carries it as it carries every member.
 
 Grouping is decided before ancestry. The rules fix each document's
 membership, its grouping depth and the shift each of its contributions
@@ -92,6 +93,7 @@ from prosiform.rewrite import Definition
 from prosiform.source import HEADING_OPEN, Selection, level, regions, slug
 
 OVERVIEW = "Overview"
+GROUP_AT = 0
 GROUP_LEVEL = 1
 SECTION_LEVEL = 2
 MEMBER_LEVEL = 3
@@ -445,14 +447,23 @@ def merged(
 
 
 def contributed(into: "Assembly", member: Member) -> None:
-    """Where a whole-document reference to one member resolves, having no overview.
+    """Where a reference to one member resolves, the overview naming it nowhere.
 
     A member carrying nothing above the grouping depth is given no
-    overview subsection, so the heading that answers to the document
-    itself is the first one the group emits from it.
+    overview subsection, so the destinations that subsection holds —
+    the document itself, and the title its own heading carries — are
+    answered by the first heading the group emits from it. A member the
+    arrangement emits no heading of its own for is answered by the
+    group's own heading, which carries every member. Each of the two
+    destinations is therefore one the bundle has, whatever the member
+    contributes, so a reference the closure resolved into a merged group
+    is rewritten rather than left for the entry line to read as one it
+    never assigned.
     """
-    if any((member.path, None) in one.answers for one in into.headings):
-        return
+    answered = {target for one in into.headings for target in one.answers}
+    wanted: list[Target] = [(member.path, None)]
+    if member.absorbing is not None:
+        wanted.append((member.path, member.named[id(member.absorbing)]))
     found = next(
         (
             at
@@ -460,11 +471,11 @@ def contributed(into: "Assembly", member: Member) -> None:
             if isinstance(one, Carried)
             and any(origin.path == member.path for origin in one.origins)
         ),
-        None,
+        GROUP_AT,
     )
-    if found is None:
-        return
-    into.answer(found, (member.path, None))
+    for target in wanted:
+        if target not in answered:
+            into.answer(found, target)
 
 
 def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) -> None:

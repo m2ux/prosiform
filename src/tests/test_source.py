@@ -40,12 +40,10 @@ from prosiform.source import (
     nesting,
     occurrences,
     opening_heading,
-    owner,
     regions,
     section,
     slug,
     uses,
-    visible,
     within,
 )
 
@@ -468,7 +466,29 @@ def test_an_image_opens_with_its_alternative_content_s_first_text() -> None:
 
 def test_an_image_opening_on_a_link_opens_with_nothing() -> None:
     found = selected("![[¬ the rules](rules.md) shown](plan.png)\n")
-    assert [(one.destination, one.opening) for one in found] == [("plan.png", "")]
+    assert found[0].destination == "plan.png"
+    assert found[0].opening == ""
+
+
+def test_a_link_inside_image_alternative_content_is_a_use_of_its_own() -> None:
+    found = selected("A picture ![of the [¬ rules](rules.md) it names](plan.png).\n")
+    assert [(one.destination, one.opening, one.resource) for one in found] == [
+        ("plan.png", "of the ", True),
+        ("rules.md", "¬ rules", False),
+    ]
+
+
+def test_an_image_inside_image_alternative_content_is_a_use_of_its_own() -> None:
+    found = selected("![a ![inner](inner.png) outer](plan.png)\n")
+    assert [(one.destination, one.resource) for one in found] == [
+        ("plan.png", True),
+        ("inner.png", True),
+    ]
+
+
+def test_a_link_inside_image_alternative_content_is_located_at_its_block() -> None:
+    text = "# Guide\n\nA picture ![of the [¬ rules](rules.md) it names](plan.png).\n"
+    assert selected(text)[1].line == 3
 
 
 def test_an_apparent_image_inside_a_code_span_is_no_use() -> None:
@@ -496,39 +516,6 @@ def test_a_link_outside_the_given_regions_is_not_reported() -> None:
     assert [one.destination for one in uses(tokens, chosen)] == ["b.md"]
 
 
-def test_a_position_above_the_first_section_root_belongs_to_the_document() -> None:
-    tokens = parse("A preamble line.\n\n# Guide\n\nGuide body.\n")
-    assert owner(tokens, 0) is None
-
-
-def test_a_position_inside_a_section_belongs_to_that_section() -> None:
-    tokens = parse("# Guide\n\n## Alpha\n\nAlpha body.\n")
-    holder = owner(tokens, 4)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
-
-
-def test_a_position_belongs_to_the_innermost_section_containing_it() -> None:
-    tokens = parse("# Guide\n\n## Alpha\n\n### Detail\n\nDetail body.\n")
-    holder = owner(tokens, 6)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Detail"
-
-
-def test_a_position_inside_a_container_belongs_to_the_section_holding_it() -> None:
-    tokens = parse("# Guide\n\n## Alpha\n\n> - Quoted body.\n")
-    holder = owner(tokens, 4)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Alpha"
-
-
-def test_a_heading_a_container_carries_roots_no_section_to_own_by() -> None:
-    tokens = parse("# Guide\n\n> ## Quoted\n>\n> Quoted body.\n")
-    holder = owner(tokens, 4)
-    assert holder is not None
-    assert visible(tokens[tokens.index(holder) + 1]) == "Guide"
-
-
 def test_a_document_nesting_no_container_nests_nothing() -> None:
     assert nesting(parse("# Guide\n\nGuide body.\n")) == 0
 
@@ -546,6 +533,11 @@ def test_container_nesting_is_the_deepest_run_rather_than_the_last() -> None:
 def test_link_and_image_uses_are_counted_once_per_occurrence() -> None:
     tokens = parse("# Guide\n\n[a](a.md) and [a](a.md) and ![p](p.png).\n")
     assert occurrences(tokens, tuple(regions(tokens))) == 3
+
+
+def test_a_use_inside_image_alternative_content_is_counted() -> None:
+    text = "# Guide\n\nA picture ![of the [¬ rules](rules.md) it names](plan.png).\n"
+    assert occurrences(parse(text), tuple(regions(parse(text)))) == 2
 
 
 def test_a_use_outside_the_given_regions_is_not_counted() -> None:

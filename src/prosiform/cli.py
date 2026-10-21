@@ -69,15 +69,14 @@ allowed source root included. An image names a resource whatever file
 it points at.
 
 A reference is classified by the identity it resolves to rather than by
-the text it was written as. Each link belongs to the innermost eligible
-section containing it, and to the document itself where no section
-does. A link whose target is the very node that owns it, an including
-ancestor of it, or the whole document a section sits in, resolves to
-the destination already present and expands nothing; one naming another
-section of the same document names a second identity and carries it.
-Ownership is read from the document's structure rather than from what a
-run selected, so consolidating a section into a larger region leaves
-every classification as it was.
+the text it was written as, and that identity is read from the target
+alone. A link naming the section it sits in, an including ancestor of
+it, or the whole document that section sits in, resolves to the
+destination already present and expands nothing; one naming another
+section of the same document names a second identity and carries it. A
+destination is held against the identity a reference resolves to, so
+where the link was written, and the region a run consolidated it into,
+leave it as it was.
 
 Each reference the run compiled is rewritten to the destination the
 bundle gave the target it resolved to, and a mark goes with the
@@ -215,9 +214,11 @@ from prosiform.limits import (
     Limits,
 )
 from prosiform.profile import (
+    PARSER_REFERENCE_LIMIT,
     REFERENCES,
     SUFFIXES,
     Refusal,
+    Suppressed,
     is_markdown,
     parse,
     refusals,
@@ -227,11 +228,7 @@ from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
     ENCODING,
-    HREF,
-    INLINE,
     NESTED_SECTION_TARGET,
-    REFERENCE_USES,
-    SRC,
     UNTERMINATED_FRONTMATTER,
     Ambiguous,
     Capture,
@@ -280,6 +277,7 @@ TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
+EMPTY_GROUP_RULE = "W_EMPTY_GROUP_RULE"
 ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
@@ -384,6 +382,28 @@ def unindexable(crossed: Crossed, path: str, chain: Sequence[str]) -> Failure:
         remedy=crossed.remedy,
         reference=path,
         source=path,
+        chain=chain,
+    )
+
+
+def declined(
+    suppressed: Suppressed, path: str, source: Source, chain: Sequence[str]
+) -> Failure:
+    """One reference lookup the parser declined, as the failure to index its source.
+
+    The lookup never ran, so the reference it would have resolved is
+    named by nothing the run holds: the diagnostic names the source and
+    the first span the parser was reading when it declined, which is
+    where an author finds the nesting to write the reference out of. A
+    span the parser records no line for is reported against the source
+    alone.
+    """
+    return input_failure(
+        f"the source {path!r} cannot be safely indexed: {suppressed}",
+        code=PARSER_REFERENCE_LIMIT,
+        remedy=suppressed.remedy,
+        reference=path,
+        source=location(path, source.line(suppressed.line)),
         chain=chain,
     )
 
@@ -1214,6 +1234,8 @@ def traverse(
                 limits.hold(NESTING, nesting(tokens))
             except Crossed as crossed:
                 raise unindexable(crossed, one.path, one.chain) from crossed
+            except Suppressed as suppressed:
+                raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
             limits.hold(INPUT_BYTES, total)
             generated(root, one.path, source, tokens, one.chain)
@@ -1318,6 +1340,22 @@ def membership(path: str, inforce: Mapping[str, int]) -> str | None:
         ),
         None,
     )
+
+
+def idle(
+    inforce: Mapping[str, int], selected: Mapping[str, Sequence[Reference]]
+) -> list[str]:
+    """Each grouping rule in force that arranges no document, in declaration order.
+
+    A rule is read against the closure rather than against the source
+    tree: a directory holding documents the traversal never reached
+    arranges as little as an empty one. Membership is the arrangement's
+    own rule, so a rule an inner one out-ranks on every document it
+    could have taken is idle, because the group it names carries none
+    of them.
+    """
+    arranging = {membership(path, inforce) for path in selected}
+    return [slug for slug in inforce if slug not in arranging]
 
 
 def unambiguous(
@@ -1526,19 +1564,21 @@ def compose(
     return bundled, named
 
 
-def resource(destination: str) -> bool:
-    """Whether one destination names a resource rather than a document or a section.
+def resource(destination: str, embedded: bool) -> bool:
+    """Whether one reference use names a resource rather than a document or a section.
 
-    A resource is what the bundle carries as text: a reference naming
-    no Markdown document under the allowed root. A fragment names a
-    place in the bundle itself, and a reference carrying a scheme, an
-    authority or a drive letter names something no directory the bundle
-    is read from decides, so neither is one.
+    A resource is what the bundle carries as text, which the use states
+    along with where it points. An image embeds rather than links, so it
+    names a resource whatever its destination spells, and a link names
+    one when its destination names no Markdown document. A fragment
+    names a place in the bundle itself, and a reference carrying a
+    scheme, an authority or a drive letter names something no directory
+    the bundle is read from decides, so neither is one under either use.
     """
     written = components(destination).path
     if not written or external(written) or DRIVE.match(written) is not None:
         return False
-    return not is_markdown(written)
+    return embedded or not is_markdown(written)
 
 
 def resourced(bundled: str, budget: int) -> bool:
@@ -1546,15 +1586,15 @@ def resourced(bundled: str, budget: int) -> bool:
 
     The bundle is read as a renderer reads it, so a resource a source
     wrote as a reference-style use is counted at the inline form the
-    bundle publishes it as. A bundle whose text names none carries
-    nothing to warn about.
+    bundle publishes it as. The uses are the ones discovery reads, so an
+    image's alternative content is descended into where it sits and the
+    warning classifies a reference as emission classifies it. A bundle
+    whose text names none carries nothing to warn about.
     """
+    tokens = parse(bundled, budget)
     return any(
-        resource(str(child.attrGet(HREF) or child.attrGet(SRC) or ""))
-        for token in parse(bundled, budget)
-        if token.type == INLINE
-        for child in token.children or []
-        if child.type in REFERENCE_USES
+        resource(use.destination, use.resource)
+        for use in uses(tokens, tuple(regions(tokens)))
     )
 
 
@@ -1697,6 +1737,15 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             publish(bundled, stdout)
         else:
             publish_file(bundled, Path(options.output).resolve())
+    for slug in idle(inforce, contributing(referring, found)):
+        reporter.emit(
+            Diagnostic(
+                WARNING,
+                f"the grouping rule for {slug!r} arranges nothing, because the "
+                f"closure carries no document under a directory of that slug",
+                code=EMPTY_GROUP_RULE,
+            )
+        )
     for reference, target in named:
         reporter.emit(
             Diagnostic(

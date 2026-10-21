@@ -1,7 +1,7 @@
 description = "A link from the content above a document's first eligible heading to that whole document resolves to the document's own destination, because a preamble belongs to the document node the reference names and that node is in the bundle."
 
 clauses = [
-  "Self-reference and ancestor-reference behavior — Preamble ownership",
+  "Self-reference and ancestor-reference behavior — Preamble content",
 ]
 
 [invocation]

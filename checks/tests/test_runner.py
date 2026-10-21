@@ -15,6 +15,7 @@ only a real build can produce.
 
 import json
 import shlex
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,7 @@ from runner import (
     INVOCATION,
     MANIFEST,
     STDOUT,
+    STDOUT_TEXT,
     BuildNotConfigured,
     Result,
     run_fixture,
@@ -67,11 +69,19 @@ NESTED_TARGET = {
     "code": "E_NESTED_SECTION_TARGET",
     "reference": "guide.md#nested",
 }
+INVALID_USAGE = {
+    "severity": "error",
+    "code": "E_INVALID_USAGE",
+}
 ENTRY_DESTINATION = {
     "severity": "warning",
     "code": "W_ENTRY_DESTINATION",
     "reference": "guide",
     "resolved": "guide",
+}
+ROOT_NOT_FOUND = {
+    "severity": "error",
+    "code": "E_ROOT_NOT_FOUND",
 }
 
 
@@ -81,13 +91,23 @@ def write_fixture(
     arguments: tuple[str, ...] = ("guide.md",),
     exit_status: int = 0,
     stdout: bytes = b"",
+    stdout_contains: tuple[str, ...] = (),
     diagnostics: tuple[dict[str, Any], ...] = (),
     absent: tuple[str, ...] = (),
     complete: bool = True,
+    source: bool = True,
+    root: str | None = "source",
 ) -> Path:
-    """A fixture directory declaring the result its run must produce."""
-    (directory / "source").mkdir(parents=True, exist_ok=True)
-    (directory / "source" / "guide.md").write_bytes(b"# Guide\n")
+    """A fixture directory declaring the result its run must produce.
+
+    A fixture declaring that the run cannot find its allowed source root
+    carries no source tree, which is what `source` leaves out. A fixture
+    declaring a run supplied no allowed source root names none, which is
+    what `root` leaves out.
+    """
+    if source:
+        (directory / "source").mkdir(parents=True, exist_ok=True)
+        (directory / "source" / "guide.md").write_bytes(b"# Guide\n")
     (directory / "expected").mkdir(parents=True, exist_ok=True)
     (directory / "expected" / "stdout.md").write_bytes(stdout)
 
@@ -100,12 +120,21 @@ def write_fixture(
         "]",
         "",
         "[invocation]",
-        'root = "source"',
-        f"arguments = [{declared}]",
-        "",
-        "[expected]",
-        'stdout = "expected/stdout.md"',
     ]
+    if root is not None:
+        lines.append(f"root = {json.dumps(root)}")
+    lines.extend(
+        [
+            f"arguments = [{declared}]",
+            "",
+            "[expected]",
+        ]
+    )
+    if stdout_contains:
+        declared_text = ", ".join(json.dumps(entry) for entry in stdout_contains)
+        lines.append(f"stdout_contains = [{declared_text}]")
+    else:
+        lines.append('stdout = "expected/stdout.md"')
     if complete:
         lines.append(f"exit_status = {exit_status}")
     if absent:
@@ -348,6 +377,78 @@ def test_a_fixture_already_holding_a_declared_absent_path_is_refused(
     assert (fixture / "bundle.md").exists()
 
 
+def test_a_fixture_declaring_an_absent_root_is_decided_from_its_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The one fixture whose allowed source root is a path it does not hold."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=1,
+        diagnostics=(ROOT_NOT_FOUND,),
+        source=False,
+    )
+    configure(
+        monkeypatch, replaying(tmp_path, b"", diagnostic_lines(ROOT_NOT_FOUND), 1)
+    )
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+    assert not (fixture / "source").exists()
+
+
+def test_a_fixture_declaring_an_absent_root_it_holds_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A root the fixture carries contradicts the outcome the manifest declares."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=1,
+        diagnostics=(ROOT_NOT_FOUND,),
+        source=False,
+    )
+    (fixture / "source").mkdir()
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    result = run_fixture(fixture)
+    assert not result.passed
+    assert "source is a path the fixture holds" in detail_of(result, MANIFEST)
+    assert not record.exists()
+
+
+def test_a_fixture_naming_a_root_it_does_not_hold_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Every other fixture names a root that is a directory it carries."""
+    fixture = write_fixture(tmp_path / "fixture")
+    shutil.rmtree(fixture / "source")
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    result = run_fixture(fixture)
+    assert not result.passed
+    assert "source is not a directory" in detail_of(result, MANIFEST)
+    assert not record.exists()
+
+
+def test_a_fixture_naming_no_root_is_run_with_none(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A manifest naming no root declares a run supplied no allowed source root."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        root=None,
+        source=False,
+        exit_status=2,
+        diagnostics=(INVALID_USAGE,),
+    )
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    assert record.read_text(encoding="utf-8").splitlines() == [
+        "--diagnostics",
+        "json",
+        "guide.md",
+    ]
+
+
 def test_the_runner_names_no_implementation_or_language() -> None:
     """A mechanical guard on AC2: the runner carries no build's name.
 
@@ -414,6 +515,125 @@ def test_stdout_carrying_more_than_expected_is_located(
     configure(monkeypatch, replaying(tmp_path, b"# Guide\ntrailing\n", b"", 0))
     detail = detail_of(run_fixture(fixture), STDOUT)
     assert "the run's output carries 9 bytes beyond the end" in detail
+
+
+def test_an_output_carrying_the_declared_text_passes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A response whose whole is the build's own is stated by what it carries."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--version",),
+        stdout_contains=("prosiform ", "(skill-markdown-v1)"),
+    )
+    configure(
+        monkeypatch,
+        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v1)\n", b"", 0),
+    )
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+
+
+def test_an_output_missing_the_declared_text_names_what_is_absent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The same declaration refuses a response that states another profile."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--version",),
+        stdout_contains=("prosiform ", "(skill-markdown-v1)"),
+    )
+    configure(
+        monkeypatch,
+        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v2)\n", b"", 0),
+    )
+    detail = detail_of(run_fixture(fixture), STDOUT_TEXT)
+    assert "the output does not carry 1 declared text" in detail
+    assert "'(skill-markdown-v1)' is absent" in detail
+    assert "skill-markdown-v2" in detail
+
+
+def test_an_output_declared_as_text_is_not_held_to_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Two builds whose responses differ in every other byte both hold."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        arguments=("--version",),
+        stdout_contains=("prosiform ",),
+    )
+    configure(monkeypatch, replaying(tmp_path, b"prosiform 0.1.0\n", b"", 0))
+    assert run_fixture(fixture).passed
+    configure(
+        monkeypatch, replaying(tmp_path, b"prosiform 17.0.3-rc4 (a build)\n", b"", 0)
+    )
+    assert run_fixture(fixture).passed
+
+
+def test_a_message_carrying_the_declared_text_passes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=2,
+        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "--from"]},),
+    )
+    emitted = dict(INVALID_USAGE)
+    emitted["message"] = (
+        "the fragment-only reference '#a-section' needs --from "
+        "to name the document it resolves against"
+    )
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+
+
+def test_a_message_declaration_tells_two_faults_under_one_code_apart(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One code names several faults, so the fixture states which one it is."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=2,
+        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "--from"]},),
+    )
+    emitted = dict(INVALID_USAGE)
+    emitted["message"] = "the command line names no entry reference"
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1's message does not carry 2 declared texts" in detail
+    assert "'#a-section' is absent" in detail
+    assert "'--from' is absent" in detail
+    assert "names no entry reference" in detail
+
+
+def test_a_diagnostic_carrying_no_message_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=2,
+        diagnostics=({**INVALID_USAGE, "message_contains": ["--from"]},),
+    )
+    configure(
+        monkeypatch, replaying(tmp_path, b"", diagnostic_lines(dict(INVALID_USAGE)), 2)
+    )
+    detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
+    assert "diagnostic 1 carries no message" in detail
+    assert "expected text '--from'" in detail
+
+
+def test_a_diagnostic_declaring_no_message_text_reads_no_message(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Absence compares nothing, so a fixture stating only a code still holds."""
+    fixture = write_fixture(
+        tmp_path / "fixture", exit_status=2, diagnostics=(INVALID_USAGE,)
+    )
+    emitted = dict(INVALID_USAGE)
+    emitted["message"] = "any wording this build chooses"
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
+    assert run_fixture(fixture).passed
 
 
 def test_a_missing_diagnostic_is_reported(

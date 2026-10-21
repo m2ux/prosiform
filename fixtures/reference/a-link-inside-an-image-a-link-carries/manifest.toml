@@ -1,0 +1,24 @@
+description = "A link written inside an image an enclosing link carries resolves under the allowed source root like any other, so both links are bundled and rewritten to their targets' destinations and the run ends in no internal error."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Bundle destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

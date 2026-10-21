@@ -14,20 +14,30 @@ implementation of the contract. There is no default build and no
 fallback: an absent configuration raises `BuildNotConfigured`, so a
 fixture is never reported as holding against a build that never ran.
 
-The runner supplies the allowed source root and asks for diagnostics as
-data, which the contract's command line spells `--root DIR` and
-`--diagnostics json`. A manifest writes neither, so a diagnostic's code is
-compared as a value rather than as prose.
+The runner supplies the allowed source root the manifest names and asks
+for diagnostics as data, which the contract's command line spells
+`--root DIR` and `--diagnostics json`. A manifest writes neither, so a
+diagnostic's code is compared as a value rather than as prose. A manifest
+naming no root declares a run supplied none, which is how the command line
+the contract refuses for naming no allowed source root is stated.
 
 A difference names the expectation it belongs to and locates itself within
-it. Standard output is compared as bytes and located by byte offset, since
-the preservation invariant turns on newline spelling and the trailing
-newline; each rendered window spells its control bytes, so a CRLF against
-an LF is visible rather than invisible. Diagnostics are compared in order
-on the fields the manifest declares, so one that is missing, extra or out
-of order is reported as what it is. A path declared absent is checked
-after the run, and a file found there is reported and removed, so a run
-leaves the fixture directory as the manifest declares it.
+it. Standard output declared as bytes is compared as bytes and located by
+byte offset, since the preservation invariant turns on newline spelling and
+the trailing newline; each rendered window spells its control bytes, so a
+CRLF against an LF is visible rather than invisible. Diagnostics are
+compared in order on the fields the manifest declares, so one that is
+missing, extra or out of order is reported as what it is. A path declared
+absent is checked after the run, and a file found there is reported and
+removed, so a run leaves the fixture directory as the manifest declares it.
+
+Where the whole of an outcome is a build's own, the manifest declares the
+text it must carry instead: `expected.stdout_contains` for a response such
+as the one reporting a version, and a diagnostic's `message_contains` where
+one error code names several distinct faults. Each entry is a substring the
+output must contain, so what identifies the outcome is compared and the
+wording around it is left to the build. A declaration absent compares
+nothing.
 """
 
 import json
@@ -56,10 +66,14 @@ MANIFEST = "manifest"
 INVOCATION = "invocation"
 EXIT_STATUS = "expected.exit_status"
 STDOUT = "expected.stdout"
+STDOUT_TEXT = "expected.stdout_contains"
 DIAGNOSTICS = "expected.diagnostics"
 ABSENT = "expected.absent"
 
 DECLARED_FIELDS = ("reference", "resolved", "source", "chain")
+MESSAGE_TEXT = "message_contains"
+MESSAGE = "message"
+EXCERPT = 96
 WINDOW = 24
 
 
@@ -174,6 +188,29 @@ def compare_stdout(expected: bytes, produced: bytes) -> list[Difference]:
     return [Difference(STDOUT, "the bytes differ", tuple(detail))]
 
 
+def excerpt(data: bytes) -> str:
+    """A run of bytes for a report, shortened to a readable head."""
+    if len(data) <= EXCERPT:
+        return render(data)
+    return f"{render(data[:EXCERPT])} and {count(len(data) - EXCERPT, 'byte')} more"
+
+
+def absent_text(text: str, declared: Sequence[str]) -> list[str]:
+    """Each declared entry the text does not carry."""
+    return [entry for entry in declared if entry not in text]
+
+
+def compare_stdout_text(declared: Sequence[str], produced: bytes) -> list[Difference]:
+    """Standard output against the text the manifest declares it carries."""
+    missing = absent_text(produced.decode("utf-8", errors="replace"), declared)
+    if not missing:
+        return []
+    detail = [f"{entry!r} is absent" for entry in missing]
+    detail.append(f"produced {excerpt(produced)}")
+    summary = f"the output does not carry {count(len(missing), 'declared text')}"
+    return [Difference(STDOUT_TEXT, summary, tuple(detail))]
+
+
 def compare_absent(fixture: Path, declared: Sequence[str]) -> list[Difference]:
     """Each path the manifest declares the run must leave absent.
 
@@ -251,11 +288,39 @@ def misplacements(expected: list[str], produced: list[str]) -> list[str]:
     return lines
 
 
+def compare_message(
+    index: int, declared: Sequence[str], produced: dict[str, Any]
+) -> list[Difference]:
+    """One diagnostic's message against the text the manifest declares it carries."""
+    if MESSAGE not in produced:
+        return [
+            Difference(
+                DIAGNOSTICS,
+                f"diagnostic {index} carries no message",
+                tuple(f"expected text {entry!r}" for entry in declared),
+            )
+        ]
+    message = str(produced[MESSAGE])
+    missing = absent_text(message, declared)
+    if not missing:
+        return []
+    detail = [f"{entry!r} is absent" for entry in missing]
+    detail.append(f"produced {message!r}")
+    summary = (
+        f"diagnostic {index}'s message does not carry "
+        f"{count(len(missing), 'declared text')}"
+    )
+    return [Difference(DIAGNOSTICS, summary, tuple(detail))]
+
+
 def compare_fields(
     index: int, expected: dict[str, Any], produced: dict[str, Any]
 ) -> list[Difference]:
     """One diagnostic's further fields, on the fields the manifest declares."""
     differences = []
+    declared_text = expected.get(MESSAGE_TEXT)
+    if declared_text:
+        differences.extend(compare_message(index, declared_text, produced))
     for name in DECLARED_FIELDS:
         if name not in expected:
             continue
@@ -350,11 +415,13 @@ def run_fixture(fixture: Path) -> Result:
 
     invocation = manifest["invocation"]
     expected = manifest["expected"]
-    root = (fixture / invocation["root"]).resolve()
+    named = invocation.get("root")
+    allowed_root = (
+        ["--root", str((fixture / named).resolve())] if named is not None else []
+    )
     argv = [
         *build_under_test(),
-        "--root",
-        str(root),
+        *allowed_root,
         "--diagnostics",
         "json",
         *invocation["arguments"],
@@ -377,9 +444,14 @@ def run_fixture(fixture: Path) -> Result:
         )
         return Result(name, (difference,), None, b"", b"")
 
+    stdout = (
+        compare_stdout((fixture / expected["stdout"]).read_bytes(), completed.stdout)
+        if "stdout" in expected
+        else compare_stdout_text(expected["stdout_contains"], completed.stdout)
+    )
     differences = [
         *compare_exit_status(expected["exit_status"], completed.returncode),
-        *compare_stdout((fixture / expected["stdout"]).read_bytes(), completed.stdout),
+        *stdout,
         *compare_diagnostics(expected["diagnostics"], completed.stderr),
         *compare_absent(fixture, expected.get("absent", [])),
     ]

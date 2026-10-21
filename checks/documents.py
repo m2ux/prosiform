@@ -12,8 +12,13 @@ output rather than a document a reader follows. The corpus is discovered the
 same way the documents are, so a fixture added anywhere is excepted and a
 document added anywhere else is read.
 
-A fenced block holds examples rather than content, so it is blanked out before
-a document is read for references or for tables.
+Literal content holds examples rather than content, so it is blanked out
+before a document is read. A fenced block goes before a document is read for
+references or for tables; a reference scan blanks indented blocks and code
+spans beside it, because a link form written in either is the spelling of a
+link rather than a link, which is the rule the product applies to the same
+bytes. A heading's slug and a table's cell reduce a code span to its code
+instead, since that is what the rendering leaves behind.
 """
 
 import re
@@ -27,6 +32,9 @@ README = "README.md"
 MANIFEST = "manifest.toml"
 MARKDOWN = (".md", ".markdown")
 FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
+INDENTED = re.compile(r"^(?: {4}|\t)")
+LIST_ITEM = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:\s|$)")
+BACKTICK_RUN = re.compile(r"`+")
 CELL_SEPARATOR = re.compile(r"(?<!\\)\|")
 DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
 
@@ -77,6 +85,75 @@ def strip_code_fences(text: str) -> str:
             continue
         out.append("" if fenced else line)
     return "\n".join(out)
+
+
+def strip_indented_blocks(text: str) -> str:
+    """Blank out indented blocks, whose contents are examples rather than content.
+
+    A block opens at a four-space or tab indent on a line following a blank
+    one, and closes at the first line indented less than that. A line below a
+    list marker is that list's own content however far it is indented, so a
+    nested bullet carrying a link is read as the link it is.
+    """
+    out: list[str] = []
+    indented_block = False
+    listed = False
+    after_blank = True
+    for line in text.splitlines():
+        if not line.strip():
+            out.append("")
+            after_blank = True
+            continue
+        indented = bool(INDENTED.match(line))
+        if indented_block and not indented:
+            indented_block = False
+        if not indented_block:
+            if LIST_ITEM.match(line):
+                listed = True
+            elif not indented:
+                listed = False
+            indented_block = indented and after_blank and not listed
+        out.append("" if indented_block else line)
+        after_blank = False
+    return "\n".join(out)
+
+
+def strip_code_spans(text: str) -> str:
+    """Blank out code spans, whose contents are code rather than content.
+
+    A span opens at a backtick run and closes at the next run of the same
+    length, which is the rule the product's own scan applies. An opener that
+    never closes is the literal backticks it is written as, and the scan
+    carries on past it. Each blanked character becomes a space and every
+    newline survives, so a line-anchored pattern reads the lines the document
+    has.
+    """
+    out = list(text)
+    runs = [run.span() for run in BACKTICK_RUN.finditer(text)]
+    index = 0
+    while index < len(runs):
+        opening, after = runs[index]
+        width = after - opening
+        for later, (closing, closed) in enumerate(runs[index + 1 :], index + 1):
+            if closed - closing != width:
+                continue
+            for at in range(opening, closed):
+                if out[at] != "\n":
+                    out[at] = " "
+            index = later + 1
+            break
+        else:
+            index += 1
+    return "".join(out)
+
+
+def strip_literal(text: str) -> str:
+    """Blank out every literal form: a fenced block, an indented block, a code span.
+
+    What survives is what a renderer turns into content, so a link form
+    written to show the syntax is passed over and a link beside it is read.
+    """
+    return strip_code_spans(strip_indented_blocks(strip_code_fences(text)))
 
 
 MARKDOWN_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")

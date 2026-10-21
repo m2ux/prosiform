@@ -2,9 +2,9 @@
 
 The language-neutral corpus and the contract it encodes.
 
-A fixture declares a source tree, an invocation and an expected result, so it binds any implementation of prosiform rather than describing one. Nothing here is written in the language of a build: the Python build and the production build run the same corpus.
+A fixture declares a source tree, an invocation and an expected result, so it binds any implementation of prosiform rather than describing one. Nothing here is written in the language of a build: a fixture names no language, no package and no module, so the corpus binds the build that runs it rather than describing how it is written.
 
-The harness that declares and runs a fixture is the first epic of the first initiative; the families it runs are listed in the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md).
+The families the corpus runs are listed in the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md).
 
 ## A fixture
 
@@ -77,17 +77,18 @@ chain = ["guide.md", "../outside.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, so every clause maps to the fixtures that cover it. |
-| `invocation.root` | The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. |
+| `invocation.root` | Optional. The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture naming one names a directory it does. A fixture naming none declares a run supplied no allowed source root. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
-| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `reference`, `resolved`, `source` and `chain` a diagnostic about a reference carries. A run emitting none declares an empty list. |
+| `expected.stdout_contains` | The text standard output must carry, declared in place of `stdout` where the whole of the response is a build's own. A manifest declares one of the two and never both. |
+| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
-| `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it is one the corpus declares ahead of the build. |
+| `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
 
-The runner supplies the allowed source root and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
+The runner supplies the allowed source root the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
-Expected output is a file rather than text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
+A published bundle is expected as a file rather than as text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
 
 A run's working directory is the fixture's own, so a path an invocation writes lands among the fixture's files. A comparison of the two streams says nothing about such a file, which is why a run that must leave one unwritten declares the path:
 
@@ -105,25 +106,106 @@ absent = ["bundle.md"]
 
 A fixture that already holds a path it declares absent is malformed and is refused before the build is invoked, because a declaration the directory contradicts before the run states nothing about the run.
 
-## A fixture ahead of the build
+## A root the run cannot find
 
-The corpus states the contract, and the contract is delivered epic by epic, so a fixture may declare behaviour no build produces yet. Such a fixture names the work that delivers it:
+The contract declares an outcome for an allowed source root naming no directory: the command line is well formed and the root is not there, so the run fails with `E_ROOT_NOT_FOUND` and exit status 1. A fixture states it by declaring that diagnostic and carrying no source tree:
+
+```toml
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ROOT_NOT_FOUND"
+```
+
+The declared diagnostic is the whole of the declaration, so nothing beside `invocation.root` repeats it. A fixture declaring that code is held to a root it does not hold, and one declaring any other outcome to a root that is a directory it does: either contradiction is malformed and is refused before the build is invoked, as a path declared absent is.
+
+## A run with no allowed source root
+
+The contract requires `--root`, so a command line naming none is refused for its own form: `E_INVALID_USAGE` and exit status 2. The runner supplies the root a manifest names, so a manifest naming none declares that invocation:
+
+```toml
+[invocation]
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["--root"]
+```
+
+The invocation a manifest declares is the whole invocation, so a fixture states a run supplied nothing as readily as it states one supplied a tree. Such a fixture carries no source tree, because the run reaches no tree to read.
+
+## Text an output carries
+
+Some of what a run writes is the build's own. A version string is the clearest case, and a diagnostic's wording is the same case in a smaller place. A fixture declaring either of them whole would bind the corpus to one implementation, so it declares the text the output must carry instead: a list whose entries are substrings the output contains.
+
+```toml
+[invocation]
+root = "source"
+arguments = ["--version"]
+
+[expected]
+exit_status = 0
+stdout_contains = ["prosiform ", "(skill-markdown-v1)"]
+diagnostics = []
+```
+
+The response reports the tool and the profile identifier, and the version between them belongs to the build. `stdout_contains` is declared in place of `stdout`: every fixture declares its standard output one way or the other, so no run goes uncompared and no fixture states its output twice.
+
+A diagnostic declares the same thing about its message, which is how two faults sharing one error code are told apart:
+
+```toml
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["#a-section", "--from"]
+```
+
+`E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the path that named an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
+
+The contract gathers six faults under the code, and each is a fixture, so what the corpus covers under one code is read from the corpus rather than assumed from the code:
+
+| Fault | Fixture |
+| --- | --- |
+| A missing `--root` | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
+| No entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
+| An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
+| An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
+| A fragment-only reference with no `--from` | [`cli/fragment-only-reference-without-from`](cli/fragment-only-reference-without-from/manifest.toml) |
+| An output path naming an input source | [`cli/output-naming-an-input-source`](cli/output-naming-an-input-source/manifest.toml) |
+
+An entry reference whose own spelling the grammar does not admit — a query, an encoded separator, an over-long escape, an escape decoding to no UTF-8 — carries the same code, and the `normalization/` family states it where the clause under test is the resolution sequence rather than the command line's shape.
+
+## A fixture awaiting its work
+
+The corpus states the contract in full, so a fixture may declare behaviour the build does not yet produce. Such a fixture names the work that delivers it:
 
 ```toml
 awaiting = "I00:E03"
 ```
 
-A fixture carrying `awaiting` and failing is reported as awaiting that work, and the corpus run stays green: an expectation the contract makes and the build has not met yet is a statement about the schedule rather than a defect. A fixture carrying it and meeting its manifest fails the run, naming the manifest to lift the marker from, so the marker is temporary by construction — the change that delivers the work is the change that fails until the marker goes.
+A fixture carrying `awaiting` and failing is reported as awaiting that work, and the corpus run stays green: an expectation the contract makes and the build does not meet is a declared gap rather than a defect. A fixture carrying it and meeting its manifest fails the run, naming the manifest to lift the marker from, so the marker is temporary by construction — the change that delivers the work is the change that fails until the marker goes.
 
 The marker lives in the manifest because the expectation is the fixture's own. A list of excepted fixtures held in a command or a job definition drifts from the corpus in both directions: a fixture renamed or deleted leaves a line behind, and a reader of the fixture sees nothing. Naming the work rather than setting a flag tells the session delivering that work which fixtures to revisit.
 
-Two fixtures carry the marker. `reference/a-link-inside-image-alternative-content` awaits `I00:E11:W10`, which reads a link written inside an image's alternative content as the reference it is, because dependency discovery reads the link events at the top level of an inline token and an image holds its alternative content in a run of its own. `grouping/a-rule-matching-no-document-in-the-closure` awaits `I00:E11:W14`, which reports a rule contributing no document on standard error rather than refusing the run.
+Two fixtures carry the marker: `source-consistency/a-source-that-changes-during-compilation` and `diagnostics/a-run-that-fails-in-itself`. Each declares a run whose fault is a fact about the run rather than about the documents it reads — a source rewritten after discovery, and a failure in the build itself — and a fixture declares a source tree, an invocation and a result, so neither run arises from the declaration alone. Both await `I00:E11:W24`, which gives the runner the fault a manifest names.
 
 ## The schema
 
-[`manifest.schema.json`](manifest.schema.json) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) document, and it is the shape every manifest takes. A manifest is parsed as TOML and validated against it: TOML's value model is a subset of JSON's, so the parsed document validates with no intermediate form. Python reads it with `tomllib` and `jsonschema`; Rust reads it with the `toml` and `jsonschema` crates.
+[`manifest.schema.json`](manifest.schema.json) is a [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) document, and it is the shape every manifest takes. A manifest is parsed as TOML and validated against it: TOML's value model is a subset of JSON's, so the parsed document validates with no intermediate form. The build reads it with `tomllib` and `jsonschema`.
 
-A manifest that leaves out one of the five declarations, carries a field the schema does not describe, or names a code outside the catalogue its diagnostic's severity selects fails validation, so a malformed fixture fails as a fixture rather than as a bundling.
+A manifest that leaves out one of the five declarations, declares its standard output both ways or neither, carries a field the schema does not describe, or names a code outside the catalogue its diagnostic's severity selects fails validation, so a malformed fixture fails as a fixture rather than as a bundling.
 
 ## The catalogues
 
@@ -168,6 +250,8 @@ The two catalogues stay distinct: an error diagnostic naming a warning code, and
 
 A test holds each catalogue to the design's own text: it collects every code the design carries under a prefix — `E_` for an error and `W_` for a warning — and requires the schema to enumerate exactly those, so neither catalogue can drift from the contract it is derived from.
 
+Each code either catalogue holds is declared by a fixture, which a further test requires of each severity. A code states a run — an error the failing run it decides, a warning the successful one it accompanies — and a fixture is where that statement is made; a code the catalogue carries and no manifest names is a claim nothing exercises. A fixture awaiting later work counts, because a manifest declares its diagnostics whatever the build under test currently produces.
+
 ## Running a fixture
 
 The runner takes one fixture, invokes the build under test against its source tree, and decides pass or fail by comparing the run with the manifest. The build is named by configuration rather than written in the corpus, so one fixture binds every implementation:
@@ -183,8 +267,9 @@ The runner appends `--root`, the fixture's source tree resolved to an absolute p
 | Expectation | Compared | Located by |
 | --- | --- | --- |
 | `expected.stdout` | Byte for byte against the file the manifest names. | The offset of the first differing byte, the line and byte column it falls on, and a window of each side whose control bytes are spelled out, so a CRLF against an LF is visible. |
+| `expected.stdout_contains` | For each declared entry, that standard output carries it. | Each entry the output is missing, and the output it produced. |
 | `expected.exit_status` | As the integer the contract's categories declare. | The status expected and the status the run returned. |
-| `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a message or a remedy the manifest does not name still matches. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; and the field, with both values, when one differs. |
+| `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a remedy the manifest does not name still matches. A declared `message_contains` holds the message to the text it names, and a diagnostic declaring none is matched without reading its message. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; the field, with both values, when one differs; and each text a message is missing, with the message it carried. |
 | `expected.absent` | Each declared path, after the run. | The path the run created and the bytes it wrote. The file is removed once it is reported, so the directory a fixture leaves behind is the one its manifest declares. |
 
 A standard error line that is not a JSON object is reported as one, because the declared format carries diagnostics and nothing else.
@@ -196,6 +281,14 @@ make corpus
 ```
 
 Every fixture in this tree runs against the build `PROSIFORM_BUILD` names, in path order, and each one's verdict is printed under its identity — its path under `fixtures/`. A fixture that differs from its manifest fails the run and its differences are printed under its name; one awaiting later work is reported as awaiting it; one awaiting work it already meets fails the run. The run ends on a count of the fixtures against each verdict, and returns a nonzero status when any fixture failed it or when no build is configured.
+
+## Reading what a piece of work unblocks
+
+```bash
+uv run --project src --frozen python checks/corpus.py --awaiting I00:E11:W14
+```
+
+The fixtures declaring they await the named work are printed by identity, with a count beneath them, so a session starting that work reads which fixtures it turns green before it changes anything. The request reads the manifests and runs nothing, so it needs no build and returns zero whatever it finds. The name is compared as a manifest declares it: `I00:E11` and `I00:E11:W14` are separate requests, and a fixture is found by the identity its marker carries.
 
 ## Running the checks
 

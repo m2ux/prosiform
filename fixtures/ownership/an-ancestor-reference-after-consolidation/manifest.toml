@@ -1,8 +1,8 @@
-description = "The same link, with its section consolidated into the ancestor it names, is owned by the same section and classified as the same ancestor reference, so the bundle carries the same regions and consolidation changes no classification."
+description = "The same link, with its section consolidated into the ancestor it names, resolves to the same destination, so the bundle carries the same regions and consolidation changes nothing a reference reads."
 
 clauses = [
-  "Self-reference and ancestor-reference behavior — Link ownership",
-  "Post-compilation invariants — Ownership stability",
+  "Self-reference and ancestor-reference behavior — Link position",
+  "Post-compilation invariants — Destination stability",
 ]
 
 [invocation]

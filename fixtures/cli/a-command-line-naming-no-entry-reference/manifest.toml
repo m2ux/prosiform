@@ -1,0 +1,21 @@
+description = "A command line naming no entry reference is refused as invalid usage, since a run with nothing to bundle names no outcome the contract defines."
+
+clauses = [
+  "CLI contract — no entry reference",
+  "CLI contract — a command line the grammar does not admit",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+  "CLI contract — one code for the form of the command line, and the message says which fault it was",
+]
+
+[invocation]
+root = "source"
+arguments = ["--check"]
+
+[expected]
+exit_status = 2
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["entry reference"]
