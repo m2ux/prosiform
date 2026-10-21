@@ -25,4 +25,6 @@ The two rows share a pull request because they retire the same pair of refusals 
 | Epic plan | [2026-10-21-136-i00-e12-positional-dependencies](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-positional-dependencies) |
 | Design and decision | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Preceding row | [2026-10-21-136-i00-e12-w01-classification-by-where-a](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-w01-classification-by-where-a) |
+| Pull request | [#142 \[I00:E12\] Resources as Authored and Self-References Resolved](https://github.com/m2ux/prosiform/pull/142) |
+| Deferred debt | [#144](https://github.com/m2ux/prosiform/issues/144) and [#145](https://github.com/m2ux/prosiform/issues/145), placed as `I00:E11:W21` and `W22` |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
