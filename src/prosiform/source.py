@@ -519,8 +519,7 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     """
     for token in inlines(tokens, selected):
         line = None if token.map is None else token.map[0] + 1
-        children = token.children or []
-        for at, child in enumerate(children):
+        for children, at, child in events(token.children or []):
             if child.type == LINK_OPEN:
                 destination = child.attrGet(HREF)
                 yield Use(
@@ -529,7 +528,7 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     line,
                     resource=False,
                 )
-            elif child.type == IMAGE:
+            else:
                 destination = child.attrGet(SRC)
                 yield Use(
                     "" if destination is None else str(destination),
@@ -539,6 +538,28 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                 )
 
 
+def events(
+    children: Sequence[Token],
+) -> Iterator[tuple[Sequence[Token], int, Token]]:
+    """Each reference use one run of inline events carries, in written order.
+
+    A use arrives with the run that carries it and its position in that
+    run, because what a use opens with is the event following it.
+
+    An image's alternative content is a run of its own, so the walk
+    descends into it where the image sits and a use written there is
+    read where a use written beside the image is. This is the one walk
+    over a run of inline events, so discovery, the budget, the
+    emission and the candidate comparison each read the same uses in
+    the same order.
+    """
+    for at, child in enumerate(children):
+        if child.type in REFERENCE_USES:
+            yield children, at, child
+        if child.type == IMAGE:
+            yield from events(child.children or [])
+
+
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     """How many link and image uses the given regions of one source carry.
 
@@ -546,13 +567,12 @@ def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     the count is of occurrences in the source rather than of the
     documents they reach: one document named five times is five
     occurrences, and an image is one of them because opening a resource
-    costs what opening a document costs.
+    costs what opening a document costs. A use written inside an
+    image's alternative content is one the author wrote, so it is
+    counted where it sits.
     """
     return sum(
-        1
-        for token in inlines(tokens, selected)
-        for child in token.children or []
-        if child.type in REFERENCE_USES
+        1 for token in inlines(tokens, selected) for _ in events(token.children or [])
     )
 
 

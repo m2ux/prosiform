@@ -59,11 +59,9 @@ from prosiform.profile import MARKER, MARKER_LABELS
 from prosiform.source import (
     HREF,
     LINK_OPEN,
+    events,
     opening_markers,
     opening_text,
-)
-from prosiform.source import (
-    IMAGE as IMAGE_TOKEN,
 )
 
 BACKTICK = "`"
@@ -355,28 +353,23 @@ def destinations(inline: Token) -> list[tuple[str, str]]:
     which is what a deferral is written in, so a caller classifying the
     link reads both halves of the question from one pass over the
     token.
+
+    The order is written order, which is the order the emission reads
+    its spans in, and an image's alternative content is a run of its
+    own, so a link written inside one takes the destination assigned
+    to the span that spells it and carries the opening of the run it
+    was written in.
     """
-    children = inline.children or []
     return [
         (str(child.attrGet(HREF) or ""), opening_text(children, at))
-        for at, child in enumerate(children)
+        for children, at, child in events(inline.children or [])
         if child.type == LINK_OPEN
     ]
 
 
 def carried(children: Sequence[Token] | None) -> int:
-    """How many link and image uses one run of inline events carries.
-
-    An image's alternative content is a run of its own, and a link
-    written inside one is a use the emission edits where it sits.
-    """
-    total = 0
-    for child in children or []:
-        if child.type == LINK_OPEN:
-            total += 1
-        elif child.type == IMAGE_TOKEN:
-            total += 1 + carried(child.children)
-    return total
+    """How many link and image uses one run of inline events carries."""
+    return sum(1 for _ in events(children or []))
 
 
 def authored(written: str) -> tuple[str, str]:

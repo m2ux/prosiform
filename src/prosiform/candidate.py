@@ -89,6 +89,7 @@ from prosiform.source import (
     SRC,
     Source,
     bare,
+    events,
     fragments,
     headings,
     inlines,
@@ -225,17 +226,42 @@ def label(children: Sequence[Token], at: int) -> str:
     return "".join(shown(child) for child in children[at + 1 : closing])
 
 
-def uses(inline: Token) -> Iterator[tuple[int, Use]]:
+def alternative(image: Token) -> str:
+    """The text one image's alternative content shows, its own uses aside.
+
+    The alternative content is a run of inline events, and a use
+    written there is compared as the use it is, so the text left to
+    compare here is what surrounds it. A link's visible text is
+    therefore read out of this run and read back on that link's own
+    comparison, which is where a mark the rewrite drops is accounted
+    for.
+    """
+    children = image.children or []
+    carried = []
+    inside = False
+    for child in children:
+        if child.type == LINK_OPEN:
+            inside = True
+        elif child.type == LINK_CLOSE:
+            inside = False
+        elif not inside:
+            carried.append(shown(child))
+    return "".join(carried)
+
+
+def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
     """Every link and image use one inline token carries, with its position.
 
-    An image's alternative content is a run of its own, so a link written
-    inside one is read where the parser puts it rather than beside the
-    image. Both sides of every comparison read the run the same way.
+    Each use arrives with the run that carries it and its position in
+    that run, which is where a mark is read from, so a use written
+    inside an image's alternative content is compared on the run it
+    was written in. Both sides of every comparison read the run the
+    same way.
     """
-    children = inline.children or []
-    for at, child in enumerate(children):
+    for children, at, child in events(inline.children or []):
         if child.type == LINK_OPEN:
             yield (
+                children,
                 at,
                 Use(
                     LINK,
@@ -244,12 +270,13 @@ def uses(inline: Token) -> Iterator[tuple[int, Use]]:
                     attribute(child, HREF),
                 ),
             )
-        elif child.type == IMAGE:
+        else:
             yield (
+                children,
                 at,
                 Use(
                     IMAGE,
-                    child.content,
+                    alternative(child),
                     attribute(child, TITLE),
                     attribute(child, SRC),
                 ),
@@ -260,7 +287,7 @@ def intended(
     path: str,
     one: Use,
     at: int,
-    inline: Token,
+    children: Sequence[Token],
     targets: Mapping[tuple[str, str | None], str],
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
@@ -281,10 +308,14 @@ def intended(
     link's content opens with, as discovery and emission read it, so a
     deferral the parser places inside a formatting event is the same
     deferral to all three.
+
+    The run passed in is the one that carries the use, which is an
+    image's alternative content where the use was written there, so
+    the opening is read from the event the author wrote it on.
     """
     if one.kind != LINK:
         return one
-    opening = opening_text(inline.children or [], at)
+    opening = opening_text(children, at)
     found = bundled(path, one.destination, opening)
     if found is None:
         deferred = deferring(path, one.destination, opening)
@@ -657,7 +688,7 @@ def structural(
     and no live image, because the group emitted it as the literal text
     its author typed.
     """
-    found = [use for inline in inlines(tokens, [span]) for _, use in uses(inline)]
+    found = [use for inline in inlines(tokens, [span]) for _, _at, use in uses(inline)]
     if found:
         raise Invalid(
             NO_NEW_LINKS,
@@ -877,7 +908,7 @@ def entry(
     carried = {
         use.destination
         for inline in inlines(tokens, [spans[0]])
-        for _, use in uses(inline)
+        for _, _at, use in uses(inline)
     }
     if carried != expected:
         raise Invalid(
@@ -941,14 +972,14 @@ def references(
     preserve.
     """
     expected = [
-        intended(path, one, at, inline, targets)
+        intended(path, one, at, children, targets)
         for inline in inlines(source.tokens, [source.span])
-        for at, one in uses(inline)
+        for children, at, one in uses(inline)
     ]
     found = [
         one
         for inline in inlines(published.tokens, [published.span])
-        for _, one in uses(inline)
+        for _, _at, one in uses(inline)
     ]
     if len(found) != len(expected):
         raise Invalid(

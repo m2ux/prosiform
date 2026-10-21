@@ -123,6 +123,16 @@ def test_a_definition_is_read_as_its_source_spelled_it(
         ),
         ("[rules](../rules.md)", [None], "[rules](../rules.md)"),
         ("[¬ rules](../rules.md)", [None], "[¬ rules](../rules.md)"),
+        (
+            "A picture ![of the [rules](rules.md) it names](plan.png).",
+            ["#rules"],
+            "A picture ![of the [rules](#rules) it names](plan.png).",
+        ),
+        (
+            "![[¬ one](one.md)](a.png) and [two](two.md)",
+            ["topic/one.md", "#two"],
+            "![[¬ one](topic/one.md)](a.png) and [two](#two)",
+        ),
         ("nothing to rewrite", [], "nothing to rewrite"),
     ],
 )
@@ -271,6 +281,14 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
         ("A fragment [alpha](#alpha) of its own.", [("#alpha", "alpha")]),
         ("An example `[draft](draft.md)` of one.", []),
         ("A picture ![of it](plan.png) names no link.", []),
+        (
+            "A picture ![of the [rules](rules.md) it names](plan.png).",
+            [("rules.md", "rules")],
+        ),
+        (
+            "![[¬ one](one.md)](a.png) and [two](two.md)",
+            [("one.md", "¬ one"), ("two.md", "two")],
+        ),
     ],
 )
 def test_the_parser_names_each_link_a_token_carries(
