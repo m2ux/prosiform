@@ -12,6 +12,7 @@ It matters because a suppressed lookup is indistinguishable from an absent refer
 
 | Artifact | What it holds |
 | --- | --- |
+| [Analysis](analysis.md) | The budget reachable below every public limit, the depths that bound it, and the clause spelling the family takes |
 | [W30](w30.md) | The work item: scope, component, breakdown and test requirements |
 
 ## Links
