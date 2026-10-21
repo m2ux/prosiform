@@ -68,7 +68,6 @@ from prosiform.bundle import (
     ancestry,
     blank,
     carried_headings,
-    emitted_visible,
     heading_text,
     openings,
 )
@@ -82,7 +81,6 @@ from prosiform.provenance import (
     Range,
     Record,
 )
-from prosiform.rewrite import unmarked
 from prosiform.source import (
     HEADING_OPEN,
     HREF,
@@ -96,6 +94,7 @@ from prosiform.source import (
     inlines,
     level,
     lines,
+    opening_text,
     regions,
     shown,
     visible,
@@ -267,14 +266,19 @@ def intended(
     """The use the bundle must publish for one use its source wrote.
 
     A link the bundle compiled carries the destination it assigned the
-    target that link resolved to, and its text loses the mark with the
-    rewrite. Every other use is published as its author wrote it, a
+    target that link resolved to, and shows the text its author wrote.
+    Every other use is published as its author wrote it, a
     reference-style use at the inline form the definition it names
     gives it.
+
+    Whether the bundle compiled the link is read from the text the
+    link's content opens with, as discovery and emission read it, so a
+    deferral the parser places inside a formatting event is the same
+    deferral to all three.
     """
     if one.kind != LINK:
         return one
-    found = bundled(path, one.destination)
+    found = bundled(path, one.destination, opening_text(inline.children or [], at))
     if found is None:
         return one
     assigned = targets.get((found.path, found.fragment))
@@ -286,7 +290,7 @@ def intended(
         )
     return Use(
         one.kind,
-        unmarked(one.text),
+        one.text,
         one.title,
         normalizeLink(f"{ANCHOR}{assigned}"),
     )
@@ -985,11 +989,11 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if emitted_visible(path, one) != visible(each):
+        if visible(one) != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{emitted_visible(path, one)!r} and the candidate shows "
+                f"{visible(one)!r} and the candidate shows "
                 f"{visible(each)!r}",
             )
 

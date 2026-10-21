@@ -3,7 +3,7 @@
 The corpus declares what a run publishes. These are the cases beneath
 it: the extents a code span masks, the definition environment a source
 declares, the uses that environment resolves, the inline form a
-reference-style use is published as, the text the mark leaves behind,
+reference-style use is published as, the bytes a deferred link keeps,
 the line each published entry answers to, and the refusal content the
 emission cannot edit raises.
 """
@@ -21,7 +21,6 @@ from prosiform.rewrite import (
     definitions,
     destinations,
     rewritten,
-    unmarked,
     uses,
 )
 from prosiform.source import INLINE, lines
@@ -102,25 +101,11 @@ def test_a_definition_is_read_as_its_source_spelled_it(
 
 
 @pytest.mark.parametrize(
-    ("label", "expected"),
-    [
-        ("¬ the rules", "the rules"),
-        ("¬the rules", "the rules"),
-        ("¬\tthe rules", "the rules"),
-        ("the rules", "the rules"),
-        ("¬", ""),
-    ],
-)
-def test_the_mark_leaves_the_text_that_followed_it(label: str, expected: str) -> None:
-    assert unmarked(label) == expected
-
-
-@pytest.mark.parametrize(
     ("text", "assigned", "expected"),
     [
         ("[rules](rules.md)", ["rules"], "[rules](#rules)"),
-        ("[¬ rules](rules.md)", ["rules"], "[rules](#rules)"),
-        ("[¬rules](rules.md#a)", ["a"], "[rules](#a)"),
+        ("[¬ rules](rules.md)", [None], "[¬ rules](rules.md)"),
+        ("[¬rules](rules.md#a)", [None], "[¬rules](rules.md#a)"),
         (
             '[rules](rules.md "A title")',
             ["rules"],
@@ -172,8 +157,8 @@ def test_a_compiled_link_is_written_to_its_destination(
         (
             "A [¬ full][rules] use.",
             '[rules]: rules.md "The Rules"\n',
-            ["rules"],
-            'A [full](#rules "The Rules") use.',
+            [None],
+            'A [¬ full](rules.md "The Rules") use.',
         ),
         (
             "A ![diagram][plan] use.",
@@ -243,7 +228,7 @@ def test_a_link_the_emission_cannot_edit_is_refused() -> None:
 
 
 def test_a_rewrite_reports_one_entry_for_each_line_it_was_given() -> None:
-    text = "The procedure requires\n[¬ the shared rules](rules.md) whole.\n"
+    text = "The procedure requires\n[the shared rules](rules.md) whole.\n"
     written = rewritten(lines(text), inline_of(text), ["rules"], {})
     assert written == [
         "The procedure requires\n",
@@ -261,7 +246,7 @@ def test_a_definition_spelled_across_two_lines_is_published_as_authored() -> Non
 
 
 def test_a_compiled_use_of_such_a_definition_takes_its_assigned_destination() -> None:
-    body = "A [¬ full][rules] use.\n"
+    body = "A [full][rules] use.\n"
     definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
     inline, defined = read(f"{body}\n{definition}")
     assert rewritten(lines(body), inline, ["rules"], defined) == [
@@ -281,14 +266,14 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
-        ("The procedure requires [rules](rules.md).", ["rules.md"]),
-        ("The procedure cites [¬ rules](rules.md).", ["rules.md"]),
-        ("A fragment [alpha](#alpha) of its own.", ["#alpha"]),
+        ("The procedure requires [rules](rules.md).", [("rules.md", "rules")]),
+        ("The procedure defers [¬ rules](rules.md).", [("rules.md", "¬ rules")]),
+        ("A fragment [alpha](#alpha) of its own.", [("#alpha", "alpha")]),
         ("An example `[draft](draft.md)` of one.", []),
         ("A picture ![of it](plan.png) names no link.", []),
     ],
 )
 def test_the_parser_names_each_link_a_token_carries(
-    text: str, expected: list[str]
+    text: str, expected: list[tuple[str, str]]
 ) -> None:
     assert destinations(inline_of(text)) == expected

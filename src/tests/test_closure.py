@@ -134,15 +134,15 @@ def test_a_backslash_separator_is_refused() -> None:
         resolve("sub\\guide.md")
 
 
-def test_a_link_text_opening_with_the_mark_is_a_dependency() -> None:
+def test_a_link_text_opening_with_the_mark_is_deferred() -> None:
     assert marked("¬ Record Epic Delivery")
 
 
-def test_a_link_text_carrying_the_mark_elsewhere_is_a_mention() -> None:
+def test_a_link_text_carrying_the_mark_elsewhere_is_not_deferred() -> None:
     assert not marked("the ¬ operator")
 
 
-def test_a_link_text_with_no_mark_is_a_mention() -> None:
+def test_a_link_text_with_no_mark_is_not_deferred() -> None:
     assert not marked("Record Epic Delivery")
 
 
@@ -187,19 +187,29 @@ def test_two_spellings_of_one_section_share_an_identity() -> None:
 
 
 def test_a_reference_resolving_under_the_root_is_a_dependency() -> None:
-    found = bundled("docs/guide.md", "rules.md#alpha")
+    found = bundled("docs/guide.md", "rules.md#alpha", "the rules")
     assert found is not None
     assert (found.path, found.fragment) == ("docs/rules.md", "alpha")
 
 
 def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
-    found = bundled("docs/guide.md", "#alpha")
+    found = bundled("docs/guide.md", "#alpha", "alpha")
     assert found is not None
     assert (found.path, found.fragment) == ("docs/guide.md", "alpha")
 
 
-def test_a_mark_decides_nothing_about_what_a_reference_names() -> None:
-    assert bundled("guide.md", "rules.md") == bundled("guide.md", "rules.md")
+def test_a_marked_reference_under_the_root_is_no_dependency() -> None:
+    assert bundled("guide.md", "rules.md", "¬ the rules") is None
+
+
+def test_the_same_reference_unmarked_is_a_dependency() -> None:
+    found = bundled("guide.md", "rules.md", "the rules")
+    assert found is not None
+    assert found.path == "rules.md"
+
+
+def test_a_mark_written_inside_a_link_text_defers_nothing() -> None:
+    assert bundled("guide.md", "rules.md", "the ¬ operator") is not None
 
 
 @pytest.mark.parametrize(
@@ -217,4 +227,4 @@ def test_a_mark_decides_nothing_about_what_a_reference_names() -> None:
 def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
     destination: str,
 ) -> None:
-    assert bundled("guide.md", destination) is None
+    assert bundled("guide.md", destination, "the rules") is None
