@@ -40,9 +40,6 @@ Requires Python 3.13+ on Linux or macOS. From the repository root:
 pip install ./src
 prosiform --version
 ```
-
-This installs the `prosiform` command and its glossary. For a development environment, run `cd src && uv sync --frozen`; see [source setup](src/README.md#environment).
-
 ## Usage
 
 Run these from the repository root. Each command writes a validated Markdown bundle to standard output.
