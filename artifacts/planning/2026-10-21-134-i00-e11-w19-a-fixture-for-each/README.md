@@ -13,6 +13,7 @@ This row covers AC20 of the deferred-debt epic, which states what fixing the def
 | Artifact | What it holds |
 | --- | --- |
 | [w19.md](w19.md) | The task's plan: the manifest's optional root, and a fixture for each fault the code names |
+| [validation.md](validation.md) | What the corpus was measured to state and the checks the delivery was held to |
 
 ## Links
 
