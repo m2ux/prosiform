@@ -27,11 +27,27 @@ Leaving retrieval to the agent costs:
 
 ### How It Works
 
+#### Compile shared context
+
 ```bash
 prosiform --root my-skill --output bundle.md procedure.md rules.md
 ```
 
-![SKILL.md links to the selected procedure.md and rules.md. Procedure includes tips.md recursively. Rules retains its rule bullets and links to ¬ Set 1 at rules/1.md and ¬ Set 2 at rules/2.md. Both sets are deferred: their links remain without their contents. SKILL.md is excluded.](docs/images/compilation.png)
+![SKILL.md links to the selected procedure.md and rules.md. Procedure includes tips.md recursively. Rules retains its rule bullets and deferred links to rules/codex.md and rules/claude.md. Both links remain without their contents. SKILL.md is excluded.](docs/images/compilation.png)
+
+#### Compile agent-specific rules
+
+The agent encounters the deferred links in the shared bundle and compiles the one that applies to it. These example rules are authored for each agent; the caller chooses which to load.
+
+```bash
+# Codex
+prosiform --root my-skill --output codex-rules.md rules/codex.md
+
+# Claude
+prosiform --root my-skill --output claude-rules.md rules/claude.md
+```
+
+![Codex follows the deferred Codex link and receives instructions to keep patches focused and run relevant tests. Claude follows the deferred Claude link and receives instructions to review the proposed change and report actionable findings. Each separate compilation contains only the selected agent's rules.](docs/images/agent-rules.png)
 
 ## Installation
 
