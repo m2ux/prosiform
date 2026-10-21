@@ -24,4 +24,5 @@ It matters because position now decides what the bundle carries, so a broken ref
 | Epic plan | [2026-10-21-136-i00-e12-positional-dependencies](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-positional-dependencies) |
 | Design and decision | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
 | Preceding row | [2026-10-21-136-i00-e12-w01-classification-by-where-a](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-136-i00-e12-w01-classification-by-where-a) |
+| Pull request | [#141 \[I00:E12\] A Reference Under the Root That Resolves Nowhere](https://github.com/m2ux/prosiform/pull/141) |
 | Theme board | [Bundling](https://github.com/users/m2ux/projects/18) |
