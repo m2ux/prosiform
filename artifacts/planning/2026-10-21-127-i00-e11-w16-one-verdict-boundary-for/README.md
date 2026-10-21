@@ -12,6 +12,7 @@ This row covers AC17 of the deferred-debt epic, which states what fixing the def
 
 | Artifact | What it holds |
 | --- | --- |
+| [w16.md](w16.md) | The task's plan: the two spellings of the verdict boundary and the one function that replaces them |
 
 ## Links
 
