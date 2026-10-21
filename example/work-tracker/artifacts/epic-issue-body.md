@@ -2,7 +2,7 @@
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
-The delivery lines this body records are defined in [Epic](epic.md), which this document cites here and requires where it reads them.
+The delivery lines this body records are defined in [Epic](epic.md).
 
 ## Operations
 
@@ -12,10 +12,10 @@ One epic body and its local validation findings.
 
 **Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records and output path.
 
-1. Populate the body from the [¬ Template](#template) at the supplied output path.
+1. Populate the body from the [Template](#template) at the supplied output path.
 2. Fill the epic-specific cells.
-   - Each row must meet [¬ Work Breakdown](#work-breakdown).
-3. Pass the draft, initiative context and output file to [¬ Validate Epic Body](#validate-epic-body).
+   - Each row must meet [Work Breakdown](#work-breakdown).
+3. Pass the draft, initiative context and output file to [Validate Epic Body](#validate-epic-body).
 4. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
 ### *Record* Epic Delivery
@@ -24,9 +24,9 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches and output body file.
 
-1. Run [¬ Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
-   - Row changes must meet [¬ Task Delivery](#task-delivery) and [¬ Work Breakdown](#work-breakdown).
-2. Return the updated body and [¬ Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
+   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
+2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 ### *Validate* Epic Body
 
@@ -34,7 +34,7 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records and output file.
 
-1. Check the current body against the local [¬ Fields](#fields), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
+1. Check the current body against the local [Fields](#fields), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
 2. Include any epic criterion no task row delivers in the findings.
 3. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
