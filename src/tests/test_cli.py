@@ -1077,6 +1077,8 @@ def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
     assert run.diagnostics()[0]["code"] == TARGET_NOT_FOUND
     assert run.diagnostics()[0]["resolved"] == "procedure.md"
     assert run.stdout == ""
+
+
 def test_a_marked_reference_under_the_root_is_not_compiled(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule the procedure requires.\n")
