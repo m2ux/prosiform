@@ -69,7 +69,7 @@ from manifests import (
 from runner import BuildNotConfigured
 from vocabulary import SHIPPED_GLOSSARY, design_reference, git_ref, git_show
 
-README = ROOT / "README.md"
+INVOCATION = ROOT / "invocation.md"
 REGISTER = ROOT / "docs" / "corpus-vocabulary.md"
 OPTION = "Option"
 REPORT = "the conformance report"
@@ -260,7 +260,7 @@ def sources() -> tuple[str, str]:
 def check() -> tuple[list[str], list[Reference]]:
     """The corpus's declarations and the report, each read against the vocabulary."""
     design, path = sources()
-    documentation = README.read_text()
+    documentation = INVOCATION.read_text()
     stated = vocabulary(
         design,
         SHIPPED_GLOSSARY.read_text(),
