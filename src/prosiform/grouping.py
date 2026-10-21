@@ -36,10 +36,12 @@ depth under a subsection named by that document's stem in title case,
 less a trailing word the group's own heading already states. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
-to the member resolves. A member with nothing above the grouping depth
-gets no subsection, and a reference to it resolves to its first
-contribution instead; a member contributing nothing resolves to the
-group's own heading, which carries it as it carries every member.
+to the member resolves. The section also carries a subsection for each
+member the arrangement emits nothing else from, so that the group names
+every member it merges; such a subsection is the heading alone, the
+member's own H1 absorbed into it. A member whose content all sits at the
+grouping depth is named by the merged sections it contributes to, and a
+reference to it resolves to its first contribution.
 
 Grouping is decided before ancestry. The rules fix each document's
 membership, its grouping depth and the shift each of its contributions
@@ -449,16 +451,15 @@ def merged(
 def contributed(into: "Assembly", member: Member) -> None:
     """Where a reference to one member resolves, the overview naming it nowhere.
 
-    A member carrying nothing above the grouping depth is given no
+    A member whose content all sits at the grouping depth is given no
     overview subsection, so the destinations that subsection holds —
     the document itself, and the title its own heading carries — are
-    answered by the first heading the group emits from it. A member the
-    arrangement emits no heading of its own for is answered by the
-    group's own heading, which carries every member. Each of the two
-    destinations is therefore one the bundle has, whatever the member
-    contributes, so a reference the closure resolved into a merged group
-    is rewritten rather than left for the entry line to read as one it
-    never assigned.
+    answered by the first heading the group emits from it, and by the
+    group's own heading where it emits none carrying the member. Each of
+    the two destinations is therefore one the bundle has, whatever the
+    member contributes, so a reference the closure resolved into a
+    merged group is rewritten rather than left for the entry line to
+    read as one it never assigned.
     """
     answered = {target for one in into.headings for target in one.answers}
     wanted: list[Target] = [(member.path, None)]
@@ -479,7 +480,15 @@ def contributed(into: "Assembly", member: Member) -> None:
 
 
 def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) -> None:
-    """The group's `Overview` section: what each member carries above the depth."""
+    """The group's `Overview` section, and the subsection each member takes in it.
+
+    A member takes a subsection where it carries selected content above
+    the grouping depth, and where the arrangement emits nothing else
+    from it at all. Every item of a member is either above the grouping
+    depth or anchored at it, so the second case is the member with no
+    items: its whole content is the H1 the subsection heading absorbs,
+    and the heading is the group's naming of it.
+    """
     above = {
         member.path: [
             one
@@ -489,12 +498,15 @@ def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) 
         ]
         for member in members
     }
-    if not any(above.values()):
+    named_here = {
+        member.path: bool(above[member.path]) or not member.items for member in members
+    }
+    if not any(named_here.values()):
         return
     text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
     into.part(text, recorded, [recorded])
     for member in members:
-        if not above[member.path]:
+        if not named_here[member.path]:
             continue
         answers: list[Target] = [(member.path, None)]
         if member.absorbing is not None:

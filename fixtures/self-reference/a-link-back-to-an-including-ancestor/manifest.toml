@@ -2,6 +2,7 @@ description = "A link from a nested section back to the ancestor already selecte
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Ancestor reference",
+  "Self-reference and ancestor-reference behavior",
 ]
 
 [invocation]

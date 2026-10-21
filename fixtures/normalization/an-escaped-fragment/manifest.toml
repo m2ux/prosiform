@@ -4,6 +4,7 @@ clauses = [
   "Resolution sequence — step 5",
   "Resolution sequence — step 9",
   "Section extraction and output hierarchy",
+  "Resolution sequence — step 1, a CLI reference argument entering as a URI-reference string",
 ]
 
 [invocation]

@@ -6,6 +6,8 @@ clauses = [
   "Entry line",
   "Post-compilation invariants — Entry line integrity",
   "Adversarial acceptance fixtures — Delivery",
+  "Input and output contract — Entry line",
+  "Entry line — Order",
 ]
 
 [invocation]

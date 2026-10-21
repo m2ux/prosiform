@@ -33,14 +33,42 @@ it is listed as unfixturable and the work those fixtures await is the reason.
 An entry no fixture declares at all has no reason to state and fails the
 report.
 
+The build under test states the same surface from the other side: invoked
+with `--codes` it writes every code it can report, and each code entry
+records whether that listing carries it. The two statements are held to
+each other in both directions — a code the contract declares that the
+build reports nowhere, and a code the build reports that the contract
+declares nowhere, each fail the report — so the set of codes a build
+reports for itself is exactly the set the design declares. The build is
+named by configuration, `PROSIFORM_BUILD` holding its command line as it
+does for the corpus, so this report reaches an implementation as a command
+line alone and fails without one.
+
 The declared surface also lists the installation claims no run of the
 corpus observes. An installation is not a thing a fixture can name: a
 fixture declares a source tree and the bytes a run must return for it, and
 the corpus reaches the build under test through configuration. Each claim
 is therefore declared here, beside the surface this report renders, with
-the reason the smoke run cannot reach it and what a run would have to do to
-observe it. A claim a run comes to observe leaves the listing by leaving
-this declaration.
+the reason the smoke run cannot reach it and the property of an installed
+command that would observe it.
+
+That property is written in the words the smoke run declares its own
+properties in, so the two are read from one vocabulary. A claim naming a
+property the run observes states a limit the corpus no longer has, so it
+fails the report rather than printing: the entry leaves the listing because
+the run came to observe it, and the closing count counts what is left.
+
+The report records, beside that surface, the behavioural clauses no fixture
+can reach. A clause recorded there is one no source tree and one invocation
+can state: it binds how a build goes about its work, what a calling wrapper
+does with the output, or how sources are authored, and the outcome it
+serves is stated by other clauses carrying fixtures of their own. That is a
+different thing from a section of the design stating no behaviour at all. A
+section naming what the project has decided, what remains to be proven once
+implementation is authorized, or what an upstream contribution would say
+states no rule a corpus could cover, so it is declared here and leaves the
+inventory of clauses entirely, it and the rules beneath it: a heading that
+can carry no fixture is not a gap, and counting it as one measures nothing.
 
 The design is read from the branch and path the README's Design link names,
 as the vocabulary check reads the same document, so no path into a dated
@@ -48,12 +76,14 @@ planning folder is written here.
 """
 
 import re
+import subprocess
 import sys
 from collections import Counter
+from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
 
-from documents import cells, is_delimiter, plain
+from documents import ROOT, cells, is_delimiter, plain
 from manifests import (
     CORPUS,
     MANIFEST_NAME,
@@ -64,6 +94,8 @@ from manifests import (
     severities,
     statuses,
 )
+from runner import BUILD, BuildNotConfigured, build_under_test
+from smoke import OBSERVED
 from vocabulary import design_reference, git_ref, git_show
 
 FENCE = re.compile(r"^(?:```|~~~)")
@@ -72,6 +104,33 @@ BULLET = re.compile(r"^- \*\*(.+?)[:.]?\*\*")
 STEP = re.compile(r"^(\d+)\.\s+\S")
 SEPARATOR = " — "
 AWAITING = "awaiting"
+CODES = "--codes"
+STATUS_KIND = "exit status"
+REPORTED_KIND = "reported code"
+
+
+class Unreadable(Exception):
+    """Something the report needs that the run could not read."""
+
+
+def reported_codes() -> tuple[str, ...]:
+    """Every code the build under test reports, in the order it writes them."""
+    command = build_under_test() + [CODES]
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        check=False,
+        cwd=ROOT,
+    )
+    if result.returncode != 0:
+        raise Unreadable(
+            f"the build {BUILD} names exited {result.returncode} for {CODES}\n"
+            f"{result.stderr.strip()}"
+        )
+    return tuple(
+        stripped for line in result.stdout.splitlines() if (stripped := line.strip())
+    )
 
 
 @dataclass(frozen=True)
@@ -96,6 +155,8 @@ class Entry:
     name: str
     reached: tuple[str, ...]
     awaited: dict[str, tuple[str, ...]]
+    reported: bool | None
+    """Whether the build reports this name, and nothing for an exit status."""
 
     @property
     def unfixturable(self) -> bool:
@@ -108,12 +169,36 @@ class Entry:
 
 
 @dataclass(frozen=True)
-class Claim:
-    """One installation claim no run of the corpus observes."""
+class Declaration:
+    """One name this report accounts for rather than measures.
+
+    The reason says why no run of the corpus reaches it, and the
+    observable what a run would have to do to observe it, or what states
+    the rule in its place where no run would.
+    """
 
     name: str
     reason: str
-    observable: str
+    observable: str = ""
+
+
+@dataclass(frozen=True)
+class Claim:
+    """One installation claim, and the property that would observe it."""
+
+    name: str
+    reason: str
+    observes: str
+
+    @property
+    def observed(self) -> bool:
+        """Whether the smoke run observes the property this claim names."""
+        return self.observes in OBSERVED
+
+    @property
+    def observable(self) -> str:
+        """The property that would observe it, as the listing states it."""
+        return f"observable once the smoke run observes a command {self.observes}"
 
 
 CLAIMS = (
@@ -124,10 +209,7 @@ CLAIMS = (
             "runner, and a platform whose command wrapper and path resolution "
             "differ is a different mechanism"
         ),
-        observable=(
-            "observable once a run installs the build and invokes it by name "
-            "on that platform"
-        ),
+        observes="named on another platform's path",
     ),
     Claim(
         name="a machine that never held the repository",
@@ -136,10 +218,7 @@ CLAIMS = (
             "unreachable by path, working directory and environment, and "
             "removing it is not something a check inside it can do"
         ),
-        observable=(
-            "observable once a run installs the build on a machine the "
-            "repository was never copied to"
-        ),
+        observes="installed on a machine that never held this repository",
     ),
     Claim(
         name="the command line the documentation gives a reader",
@@ -147,12 +226,181 @@ CLAIMS = (
             "the run installs an artefact it builds rather than running the "
             "command line the documentation's installation section states"
         ),
-        observable=(
-            "observable once a run executes that documented command line and "
-            "invokes the command it installs"
+        observes="installed by the command line the documentation gives a reader",
+    ),
+)
+
+SECTIONS = (
+    Declaration(
+        name="Design status",
+        reason=(
+            "it states what the project has decided about its builds and the "
+            "obligations each carries, and no outcome a run produces"
+        ),
+    ),
+    Declaration(
+        name="Implementation verification and residual policy detail",
+        reason=(
+            "it states what remains to be proven once implementation is "
+            "authorized, and no outcome a run produces"
+        ),
+    ),
+    Declaration(
+        name="Upstream follow-up reference",
+        reason=(
+            "it states what an upstream contribution would say and what is to "
+            "be consulted before one is drafted, and no outcome a run produces"
         ),
     ),
 )
+
+RECORDED = (
+    Declaration(
+        name="Input and output contract",
+        reason="the heading opens straight onto the rules beneath it",
+        observable=(
+            "each rule beneath it states its own outcome and carries its own clause"
+        ),
+    ),
+    Declaration(
+        name="Resolution sequence",
+        reason="the heading opens straight onto the numbered steps beneath it",
+        observable=(
+            "each step beneath it states its own outcome and carries its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits",
+        reason=(
+            "its prose binds how a build identifies and edits the spans of a "
+            "source rather than what a run emits"
+        ),
+        observable=(
+            "the invariants state what those means must produce, each carrying "
+            "its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Parsing authority",
+        reason="it binds what the reading of a source is let identify",
+        observable=(
+            "the rules governing what a bundle carries state the outcome, each "
+            "carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Source positions",
+        reason="it binds how the spans of a source are built and retained",
+        observable=(
+            "the invariants a candidate is held to state what those spans must "
+            "produce, each carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Source model",
+        reason="it binds what a build derives from the stream it reads",
+        observable=(
+            "the selection, boundary and destination rules state the outcome "
+            "that derivation reaches, each carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Edits",
+        reason=("it binds how edits are applied and how overlapping ones are resolved"),
+        observable=(
+            "the bytes a bundle carries state the outcome, under the rules "
+            "governing that content"
+        ),
+    ),
+    Declaration(
+        name="Parser and source-preserving edits — Validation",
+        reason=(
+            "it requires the candidate be read again and the declared "
+            "invariants checked"
+        ),
+        observable=("each invariant states its own outcome and carries its own clause"),
+    ),
+    Declaration(
+        name="Mandatory parser viability gates",
+        reason=(
+            "it states when its gates apply, before a production reading of "
+            "sources is selected or any bundle is published"
+        ),
+        observable=(
+            "the gates are met in choosing that reading rather than by any run "
+            "over a source tree"
+        ),
+    ),
+    Declaration(
+        name="Explicitly linked source structure",
+        reason="it states how sources are to be authored",
+        observable=(
+            "the rules beneath it state what a run does with sources so "
+            "authored, each carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Explicitly linked source structure — Reading versus execution",
+        reason=(
+            "it holds that inclusion makes material available without "
+            "authorizing its execution, which no bundle's bytes show"
+        ),
+        observable=(
+            "the authored instructions carry the execution verbs and the call "
+            "boundaries that state it"
+        ),
+    ),
+    Declaration(
+        name="Heading-only structural ancestors — Provenance",
+        reason=(
+            "it requires ancestry be recorded apart from selected content, "
+            "which a bundle states nothing of on its own"
+        ),
+        observable=(
+            "the depth and deduplication rules state its effects, each "
+            "carrying its own clause"
+        ),
+    ),
+    Declaration(
+        name="Agent delivery contract",
+        reason=(
+            "it states what a successful compilation does and does not "
+            "establish about a transport"
+        ),
+        observable=(
+            "a run produces a bundle and an exit status, and neither states "
+            "what a transport delivered"
+        ),
+    ),
+    Declaration(
+        name="Agent delivery contract — Response limit",
+        reason=(
+            "it binds the calling wrapper's buffering and the response size it enforces"
+        ),
+        observable=(
+            "observable once a consumer of the run's output is declared beside "
+            "the source tree"
+        ),
+    ),
+    Declaration(
+        name="Agent delivery contract — Broken pipes",
+        reason="it binds the wrapper's reporting of a transport failure",
+        observable=(
+            "a fixture declares a source tree and an invocation, and reaches "
+            "no consumer of the run's output"
+        ),
+    ),
+    Declaration(
+        name="Adversarial acceptance fixtures",
+        reason=("it instructs that a corpus be written before broad implementation"),
+        observable="the corpus this report reads is what states it",
+    ),
+)
+
+
+def listed() -> tuple[Claim, ...]:
+    """Each installation claim the smoke run does not observe."""
+    return tuple(claim for claim in CLAIMS if not claim.observed)
 
 
 @dataclass(frozen=True)
@@ -162,10 +410,23 @@ class Report:
     mapping: tuple[tuple[Clause, tuple[str, ...]], ...]
     unnamed: tuple[tuple[str, tuple[str, ...]], ...]
     surface: tuple[Entry, ...]
+    surplus: tuple[str, ...]
+    """The codes the build reports that the contract declares nowhere."""
 
     @property
     def uncovered(self) -> tuple[Clause, ...]:
-        return tuple(clause for clause, named in self.mapping if not named)
+        """Each clause no fixture names that a fixture could reach."""
+        recorded = {clause.name for clause in RECORDED}
+        return tuple(
+            clause
+            for clause, where in self.mapping
+            if not where and clause.name not in recorded
+        )
+
+    @property
+    def unreported(self) -> tuple[Entry, ...]:
+        """Each code the contract declares that the build reports nowhere."""
+        return tuple(entry for entry in self.surface if entry.reported is False)
 
     @property
     def failures(self) -> tuple[str, ...]:
@@ -181,6 +442,22 @@ class Report:
                 for entry in self.surface
                 if entry.undeclared
             ]
+            + [
+                f"{entry.kind} {entry.name} is declared by the contract and the "
+                "build reports it nowhere"
+                for entry in self.unreported
+            ]
+            + [
+                f"{name} is reported by the build and the contract declares it nowhere"
+                for name in self.surplus
+            ]
+            + [
+                f"installation claim {claim.name} names a command "
+                f"{claim.observes}, which the smoke run observes, so the "
+                "listing states a limit the corpus no longer has"
+                for claim in CLAIMS
+                if claim.observed
+            ]
         )
 
 
@@ -190,7 +467,12 @@ def text(markup: str) -> str:
 
 
 def clauses(design: str) -> list[Clause]:
-    """Every clause the design states, in the order it states them."""
+    """Every behavioural clause the design states, in the order it states them.
+
+    A section declared as stating no behaviour carries no clause, nor does
+    any rule beneath it.
+    """
+    silent = {section.name for section in SECTIONS}
     found: list[Clause] = []
     heading: str | None = None
     fenced = False
@@ -203,7 +485,8 @@ def clauses(design: str) -> list[Clause]:
             continue
         marked = HEADING.match(line)
         if marked:
-            heading = None if len(marked.group(1)) == 1 else text(marked.group(2))
+            title = None if len(marked.group(1)) == 1 else text(marked.group(2))
+            heading = None if title in silent else title
             delimited = False
             if heading is not None:
                 found.append(Clause(heading, None))
@@ -247,7 +530,7 @@ def named(declaration: str, inventory: set[str]) -> str | None:
     return None
 
 
-def surface(corpus: Path) -> list[Entry]:
+def surface(corpus: Path, reported: Collection[str]) -> list[Entry]:
     """Each code and exit status the contract declares, and what declares it."""
     declared: dict[tuple[str, str], list[tuple[str, str | None]]] = {}
     for fixture in fixtures(corpus):
@@ -255,13 +538,13 @@ def surface(corpus: Path) -> list[Entry]:
         where = identity(fixture, corpus)
         awaiting = manifest.get(AWAITING)
         expected = manifest["expected"]
-        names = [("exit status", str(expected["exit_status"]))] + [
+        names = [(STATUS_KIND, str(expected["exit_status"]))] + [
             (diagnostic["severity"], diagnostic["code"])
             for diagnostic in expected["diagnostics"]
         ]
         for name in set(names):
             declared.setdefault(name, []).append((where, awaiting))
-    inventory = [("exit status", str(status)) for status in statuses()] + [
+    inventory = [(STATUS_KIND, str(status)) for status in statuses()] + [
         (severity, code)
         for severity in severities()
         for code in sorted(catalogue(severity))
@@ -279,12 +562,13 @@ def surface(corpus: Path) -> list[Entry]:
                 name=name,
                 reached=tuple(where for where, awaiting in found if awaiting is None),
                 awaited={work: tuple(where) for work, where in sorted(awaited.items())},
+                reported=None if kind == STATUS_KIND else name in reported,
             )
         )
     return entries
 
 
-def report(design: str, corpus: Path) -> Report:
+def report(design: str, corpus: Path, reported: Collection[str]) -> Report:
     """The mapping between one design and one corpus, with its gaps."""
     inventory = clauses(design)
     names = {clause.name for clause in inventory}
@@ -296,6 +580,8 @@ def report(design: str, corpus: Path) -> Report:
             unnamed.setdefault(declaration, []).append(where)
         elif where not in covering.setdefault(clause, []):
             covering[clause].append(where)
+    entries = surface(corpus, reported)
+    declared = {entry.name for entry in entries if entry.kind != STATUS_KIND}
     return Report(
         mapping=tuple(
             (clause, tuple(covering.get(clause.name, []))) for clause in inventory
@@ -304,8 +590,21 @@ def report(design: str, corpus: Path) -> Report:
             (declaration, tuple(where))
             for declaration, where in sorted(unnamed.items())
         ),
-        surface=tuple(surface(corpus)),
+        surface=tuple(entries),
+        surplus=tuple(sorted(set(reported) - declared)),
     )
+
+
+def listing(
+    kind: str, verdict: str, declared: tuple[Declaration, ...] | tuple[Claim, ...]
+) -> list[str]:
+    """One group of declarations, each with its reason and what it rests on."""
+    lines = []
+    for entry in declared:
+        lines.append(f"{kind} {entry.name}: {verdict}, {entry.reason}")
+        if entry.observable:
+            lines.append(f"    {entry.observable}")
+    return lines
 
 
 def render(found: Report) -> str:
@@ -322,19 +621,33 @@ def render(found: Report) -> str:
         lines.extend(f"    {name}" for name in where)
     lines += ["", "# Declared surface", ""]
     for entry in found.surface:
+        if entry.reported is None:
+            states = ""
+        elif entry.reported:
+            states = ", the build reports it"
+        else:
+            states = ", the build reports it nowhere"
         if entry.reached:
-            lines.append(f"{entry.kind} {entry.name}: {len(entry.reached)} fixture(s)")
+            lines.append(
+                f"{entry.kind} {entry.name}: {len(entry.reached)} fixture(s){states}"
+            )
         elif entry.unfixturable:
             works = ", ".join(entry.awaited)
-            lines.append(f"{entry.kind} {entry.name}: unfixturable, awaiting {works}")
+            lines.append(
+                f"{entry.kind} {entry.name}: unfixturable, awaiting {works}{states}"
+            )
         else:
-            lines.append(f"{entry.kind} {entry.name}: declared by no fixture")
+            lines.append(f"{entry.kind} {entry.name}: declared by no fixture{states}")
         for work, where in entry.awaited.items():
             lines.extend(f"    {name} (awaiting {work})" for name in where)
         lines.extend(f"    {name}" for name in entry.reached)
-    for claim in CLAIMS:
-        lines.append(f"installation claim {claim.name}: unfixturable, {claim.reason}")
-        lines.append(f"    {claim.observable}")
+    for name in found.surplus:
+        lines.append(f"{REPORTED_KIND} {name}: the contract declares it nowhere")
+    lines.extend(listing("installation claim", "unfixturable", listed()))
+    lines += ["", "# Clauses no run states", ""]
+    lines.extend(listing("clause", "unfixturable", RECORDED))
+    lines += ["", "# Sections stating no behaviour", ""]
+    lines.extend(listing("section", "non-behavioural", SECTIONS))
     counted = Counter(
         "unfixturable" if entry.unfixturable else "reached" for entry in found.surface
     )
@@ -345,14 +658,27 @@ def render(found: Report) -> str:
         f"{len(found.unnamed)} declaration(s) naming no clause; "
         f"{counted['reached']} declared name(s) reached, "
         f"{counted['unfixturable']} unfixturable, "
-        f"{len(CLAIMS)} installation claim(s) no run observes",
+        f"{len(found.unreported)} declared code(s) the build reports nowhere, "
+        f"{len(found.surplus)} reported code(s) the contract declares nowhere, "
+        f"{len(RECORDED)} clause(s) no run states, "
+        f"{len(SECTIONS)} section(s) stating no behaviour, "
+        f"{len(listed())} installation claim(s) no run observes",
     ]
     return "\n".join(lines) + "\n"
 
 
 def main() -> int:
+    try:
+        reported = reported_codes()
+    except BuildNotConfigured as absent:
+        print(f"conformance report: {absent}", file=sys.stderr)
+        return 1
+    except Unreadable as unreadable:
+        print(f"conformance report: {unreadable}", file=sys.stderr)
+        return 1
+
     branch, path = design_reference()
-    found = report(git_show(git_ref(branch), path), CORPUS)
+    found = report(git_show(git_ref(branch), path), CORPUS, reported)
     print(render(found), end="")
     for failure in found.failures:
         print(f"FAIL {failure}", file=sys.stderr)

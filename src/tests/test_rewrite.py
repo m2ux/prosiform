@@ -309,6 +309,11 @@ NESTINGS = [
     "A picture ![of ![another](inner.png) picture](plan.png).",
     "A picture ![of a [picture ![inner](inner.png) link](a.md)](plan.png).",
     "A [label [holding](a.md) a link](b.md).",
+    "A link <https://example.com> alone.",
+    "A mail <someone@example.com> alone.",
+    "A [label holding <https://example.com> a link](b.md).",
+    "A picture ![of <https://example.com> it names](plan.png).",
+    "A [link](a.md) beside <https://example.com> alone.",
     "A [label ![picture ![inner](i.png)](plan.png) deep](a.md).",
 ]
 
@@ -338,3 +343,61 @@ def test_a_link_its_own_label_holds_leaves_that_label_the_text_it_is() -> None:
     text = "A [label [holding](a.md) a link](b.md).\n"
     written = rewritten(lines(text), inline_of(text), ["#a"], {})
     assert written == ["A [label [holding](#a) a link](b.md).\n"]
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("A link <https://example.com/profile> alone.", [(8, 35)]),
+        ("A link <someone@example.com> alone.", [(8, 27)]),
+        ("A link <mailto:someone@example.com> alone.", [(8, 34)]),
+        (
+            "A [link](a.md) and <https://example.com> and [b](b.md).",
+            [(3, 7), (20, 39), (46, 47)],
+        ),
+    ],
+)
+def test_an_autolink_is_a_use_the_scan_reads(
+    text: str, expected: list[tuple[int, int]]
+) -> None:
+    found = uses(text, {})
+    assert [one.label for one in found] == expected
+    assert all(one.kind == LINK for one in found)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "A tag <div> alone.",
+        "A tag </span> alone.",
+        "A run <not an autolink> alone.",
+        "A comparison a < b and c > d alone.",
+        r"An escaped \<https://example.com> alone.",
+        "A span `<https://example.com>` alone.",
+        "A run <https://example.com with a space> alone.",
+    ],
+)
+def test_a_bracketed_run_that_is_no_autolink_stays_the_text_it_is(text: str) -> None:
+    assert uses(text, {}) == []
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "A link <https://example.com/profile> alone.\n",
+        "A link <someone@example.com> alone.\n",
+        "Two links <https://example.com> and <someone@example.com> alone.\n",
+        "A [link](a.md) beside <https://example.com> alone.\n",
+    ],
+)
+def test_an_autolink_reaches_the_bundle_as_the_source_wrote_it(text: str) -> None:
+    inline = inline_of(text)
+    assert len(uses(text, {})) == carried(inline.children)
+    assigned: list[str | None] = [None for _ in destinations(inline)]
+    assert rewritten(lines(text), inline, assigned, {}) == [text]
+
+
+def test_a_link_whose_label_holds_an_autolink_is_the_link_it_is() -> None:
+    text = "A [label holding <https://example.com> a link](b.md).\n"
+    written = rewritten(lines(text), inline_of(text), ["#b", None], {})
+    assert written == ["A [label holding <https://example.com> a link](#b).\n"]

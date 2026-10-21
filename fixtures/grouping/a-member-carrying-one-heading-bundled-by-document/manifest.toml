@@ -1,0 +1,27 @@
+description = "A document whose whole content is one heading, bundled with no grouping rule in force, is a file group of its own headed by its root-relative path, with that heading absorbed into it. It is the arrangement the same document under a grouping rule is compared with: the content carried is the same, and where it sits is not."
+
+clauses = [
+  "Grouping",
+  "Input and output contract — Groups",
+  "Agent delivery contract — Entry destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["notes/bare.md", "notes/kept.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes/bare"
+resolved = "notesbare"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "notes/kept"
+resolved = "noteskept"

@@ -3,6 +3,7 @@ description = "An indented code example below a list is indented no further than
 clauses = [
   "Block boundaries",
   "Source markup policy",
+  "Validation and failure contract — Boundaries",
 ]
 
 [invocation]

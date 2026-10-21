@@ -1,4 +1,4 @@
-description = "An entry reference naming a member whose merged group emits no heading for it resolves to the group's own heading, which the bundle carries, and the run succeeds. The member carries one H1 its overview subsection heading would absorb and nothing above or at the grouping depth, so the arrangement emits nothing of its own from it."
+description = "An entry reference naming a member whose whole content is the one heading its overview subsection absorbs resolves to that subsection, and the run succeeds. The member carries nothing above or at the grouping depth beside that heading, so the subsection is the whole of what the group emits from it."
 
 clauses = [
   "Grouping — Document content above the grouping depth",
@@ -17,8 +17,8 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Notes"
-resolved = "notes"
+reference = "Bare"
+resolved = "bare"
 
 [[expected.diagnostics]]
 severity = "warning"

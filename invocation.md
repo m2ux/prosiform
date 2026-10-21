@@ -24,6 +24,7 @@ Compile a document or section and its local Markdown dependencies into one valid
 | `--max-links N` | the budget of authored link and image occurrences in selected content; a positive decimal integer, default 32768 |
 | `--max-nesting N` | the budget of levels of container nesting in one source; a positive decimal integer, default 64 |
 | `--max-expansion-depth N` | the budget of link hops from the nearest entry reference; a positive decimal integer, default 8 |
+| `--codes` | report the error and warning codes this build can emit |
 | `--version` | report the tool version and the profile identifier |
 | `--help` | show this usage, the defaults, and the exit-status meanings |
 

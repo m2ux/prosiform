@@ -34,10 +34,20 @@ from prosiform.bundle import (
     Group,
     assemble,
 )
-from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY
+from prosiform.bundle import (
+    CODES as BUNDLE_CODES,
+)
+from prosiform.candidate import (
+    CODES as CANDIDATE_CODES,
+)
+from prosiform.candidate import (
+    UNSAFE_BUNDLE_BOUNDARY,
+)
 from prosiform.cli import (
+    CODES,
     EMPTY_GROUP_RULE,
     ENTRY_DESTINATION,
+    GENERATED_INPUT,
     INPUT_FAILURE,
     INTERNAL_ERROR,
     INVALID_ENCODING,
@@ -62,12 +72,25 @@ from prosiform.cli import (
     recheck,
 )
 from prosiform.closure import resolve
-from prosiform.limits import FILES, NESTING, RESOURCE_LIMIT
+from prosiform.limits import (
+    CODES as LIMITS_CODES,
+)
+from prosiform.limits import (
+    FILES,
+    NESTING,
+    RESOURCE_LIMIT,
+)
+from prosiform.profile import (
+    CODES as PROFILE_CODES,
+)
 from prosiform.profile import (
     HEADROOM,
     PARSER_REFERENCE_LIMIT,
     RAW_HTML,
     UNSUPPORTED_CONSTRUCT,
+)
+from prosiform.source import (
+    CODES as SOURCE_CODES,
 )
 from prosiform.source import (
     NESTED_SECTION_TARGET,
@@ -133,9 +156,46 @@ def test_the_help_response_shows_usage_defaults_and_exit_statuses() -> None:
     assert run.stderr == ""
 
 
+def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
+    run = invoke("--codes")
+    assert run.status == SUCCESS
+    assert run.stdout == "".join(f"{code}\n" for code in sorted(CODES))
+    assert run.stderr == ""
+
+
+def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
+    declared = {
+        GENERATED_INPUT,
+        INVALID_ENCODING,
+        INVALID_GROUP_RULE,
+        INVALID_USAGE,
+        PUBLICATION_FAILED,
+        ROOT_NOT_FOUND,
+        SOURCE_CHANGED,
+        SOURCE_OUTSIDE_ROOT,
+        SOURCE_SYMLINK,
+        TARGET_NOT_FOUND,
+        UNEXPECTED_INTERNAL_ERROR,
+        UNSUPPORTED_ENTRY_SUFFIX,
+        EMPTY_GROUP_RULE,
+        ENTRY_DESTINATION,
+        RESOURCE_PORTABILITY,
+    }
+    for published in (
+        BUNDLE_CODES,
+        CANDIDATE_CODES,
+        LIMITS_CODES,
+        PROFILE_CODES,
+        SOURCE_CODES,
+    ):
+        declared.update(published)
+    assert CODES == tuple(sorted(declared))
+
+
 def test_an_informational_response_needs_no_source_root() -> None:
     assert invoke("--version").status == SUCCESS
     assert invoke("--help").status == SUCCESS
+    assert invoke("--codes").status == SUCCESS
 
 
 def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:
@@ -310,13 +370,13 @@ def test_each_idle_grouping_rule_is_reported_and_an_arranging_one_is_not(
     assert "'other'" in warned[1]
 
 
-def test_an_entry_naming_a_member_the_group_emits_no_heading_for_opens_on_the_group(
+def test_an_entry_naming_a_member_of_one_heading_opens_on_its_overview_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", "# Bare\n")
     run = invoke("--root", str(root), "--group", "notes:2", "notes/bare.md")
     assert run.status == SUCCESS
-    assert run.stdout.startswith("This bundle was built for [Notes](#notes);")
+    assert run.stdout.startswith("This bundle was built for [Bare](#bare);")
 
 
 def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_contribution(
@@ -328,14 +388,14 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_contributio
     assert run.stdout.startswith("This bundle was built for [Outcomes](#outcomes);")
 
 
-def test_a_reference_into_a_member_the_group_emits_no_heading_for_is_rewritten(
+def test_a_reference_into_a_member_of_one_heading_reaches_its_overview_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", "# Bare\n")
     written(root, "guide.md", "# Guide\n\nSee [Bare](notes/bare.md).\n")
     run = invoke("--root", str(root), "--group", "notes:2", "guide.md")
     assert run.status == SUCCESS
-    assert "See [Bare](#notes)." in run.stdout
+    assert "See [Bare](#bare)." in run.stdout
 
 
 def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -> None:

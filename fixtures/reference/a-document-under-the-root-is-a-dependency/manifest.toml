@@ -4,6 +4,7 @@ clauses = [
   "Link classification and resource handling — Local Markdown document links under the root",
   "Explicitly linked source structure — Explicit dependencies",
   "Compile before publishing — step 4",
+  "Link classification and resource handling",
 ]
 
 [invocation]

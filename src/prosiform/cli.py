@@ -6,7 +6,11 @@ Standard output carries exactly one thing per run: the bundle a compiling
 run publishes, or the response an informational run returns, or nothing at
 all. Diagnostics go to standard error in the format the run asked for, so
 a caller reads a result from the status and an explanation from a stream
-that never carries the bundle.
+that never carries the bundle. An informational run names no source root
+and returns one of three responses: the usage `--help` shows, the version
+and profile `--version` names, and the error and warning codes `--codes`
+reports, which are the codes each part of this build declares rather than
+a list written out a second time.
 
 The command checks the form of every option before it looks for anything
 an option names, so an invalid command line is reported as invalid usage
@@ -187,7 +191,17 @@ from prosiform.bundle import (
     group,
     heading_text,
 )
-from prosiform.candidate import UNSAFE_BUNDLE_BOUNDARY, Unsafe, validate
+from prosiform.bundle import (
+    CODES as BUNDLE_CODES,
+)
+from prosiform.candidate import (
+    CODES as CANDIDATE_CODES,
+)
+from prosiform.candidate import (
+    UNSAFE_BUNDLE_BOUNDARY,
+    Unsafe,
+    validate,
+)
 from prosiform.closure import (
     DRIVE,
     Malformed,
@@ -223,6 +237,12 @@ from prosiform.limits import (
     TARGETS,
     Crossed,
     Limits,
+)
+from prosiform.limits import (
+    CODES as LIMITS_CODES,
+)
+from prosiform.profile import (
+    CODES as PROFILE_CODES,
 )
 from prosiform.profile import (
     PARSER_REFERENCE_LIMIT,
@@ -261,6 +281,9 @@ from prosiform.source import (
     uses,
     within,
 )
+from prosiform.source import (
+    CODES as SOURCE_CODES,
+)
 
 NAME = "prosiform"
 
@@ -291,6 +314,33 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 EMPTY_GROUP_RULE = "W_EMPTY_GROUP_RULE"
 ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
+
+CODES = tuple(
+    sorted(
+        {
+            GENERATED_INPUT,
+            INVALID_ENCODING,
+            INVALID_GROUP_RULE,
+            INVALID_USAGE,
+            PUBLICATION_FAILED,
+            ROOT_NOT_FOUND,
+            SOURCE_CHANGED,
+            SOURCE_OUTSIDE_ROOT,
+            SOURCE_SYMLINK,
+            TARGET_NOT_FOUND,
+            UNEXPECTED_INTERNAL_ERROR,
+            UNSUPPORTED_ENTRY_SUFFIX,
+            EMPTY_GROUP_RULE,
+            ENTRY_DESTINATION,
+            RESOURCE_PORTABILITY,
+            *BUNDLE_CODES,
+            *CANDIDATE_CODES,
+            *LIMITS_CODES,
+            *PROFILE_CODES,
+            *SOURCE_CODES,
+        }
+    )
+)
 
 SOURCE_CHANGED_FAULT = "source-changed"
 INTERNAL_FAULT = "internal"
@@ -520,6 +570,11 @@ def parser() -> Parser:
             help=f"the budget of {budget.counted}; "
             f"a positive decimal integer, default {budget.default}",
         )
+    grammar.add_argument(
+        "--codes",
+        action="store_true",
+        help="report the error and warning codes this build can emit",
+    )
     grammar.add_argument(
         "--version",
         action="store_true",
@@ -1704,6 +1759,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         return SUCCESS
     if options.version:
         publish(f"{NAME} {version(NAME)} ({PROFILE})\n", stdout)
+        return SUCCESS
+    if options.codes:
+        publish("".join(f"{code}\n" for code in CODES), stdout)
         return SUCCESS
 
     if options.root is None:
