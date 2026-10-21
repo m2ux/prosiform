@@ -15,6 +15,7 @@ These two rows join because both finish the declared surface W02's report opened
 | [w04.md](w04.md) | The work item for the installation claims: the component, the problem and what the row proposes. |
 | [w05.md](w05.md) | The work item for the unexpected-internal-error outcome: the component, the problem and what the row proposes. |
 | [validation.md](validation.md) | The checks run, the listing and the cases they observe, what the validation found, and which criteria it ticked. |
+| [changes.md](changes.md) | What the delivery changed and where, the plan changes it applied, and what remains open after it. |
 
 ## Links
 
