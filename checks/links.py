@@ -7,6 +7,10 @@ source carries references a run is meant to refuse, and its expected bundle is
 output rather than a document a reader follows. Naming documents on the command
 line checks those instead, which is for reading one document while editing it.
 
+A link form written inside literal content — a code span, a fenced block or
+an indented block — is the spelling of a link rather than a link, so it is
+blanked out before the document is scanned and a link beside it is resolved.
+
 Four classes of reference, each resolved by what it names:
 
 - a fragment alone resolves against the document's own headings;
@@ -43,7 +47,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from documents import ROOT, documents, strip_code_fences
+from documents import ROOT, documents, strip_code_fences, strip_literal
 
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
@@ -132,7 +136,13 @@ def fragments_of(text: str) -> set[str]:
 
 
 def references(text: str) -> list[str]:
-    body = strip_code_fences(text)
+    """Each reference one document carries, read once and in the order written.
+
+    Literal content is blanked out first, so a link form written inside a
+    code span, a fenced block or an indented block is the spelling of a link
+    and is passed over, while a link beside it is resolved.
+    """
+    body = strip_literal(text)
     found = INLINE_LINK.findall(body) + REFERENCE_DEFINITION.findall(body)
     ordered, seen = [], set()
     for target in found:
