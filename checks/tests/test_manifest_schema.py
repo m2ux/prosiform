@@ -349,3 +349,28 @@ def test_awaiting_as_a_flag_fails() -> None:
     manifest = complete()
     manifest["awaiting"] = True
     assert errors(manifest), "a bare flag passed where the work is named"
+
+
+def test_a_manifest_naming_a_fault_validates() -> None:
+    for named in ("source-changed", "internal"):
+        manifest = complete()
+        manifest["fault"] = named
+        assert errors(manifest) == [], f"{named!r} refused as a fault a run performs"
+
+
+def test_a_manifest_naming_no_fault_validates() -> None:
+    assert "fault" not in complete()
+    assert errors(complete()) == []
+
+
+@pytest.mark.parametrize("named", ["", "source_changed", "SOURCE-CHANGED", "other"])
+def test_a_fault_outside_the_declared_set_fails(named: str) -> None:
+    manifest = complete()
+    manifest["fault"] = named
+    assert errors(manifest), f"{named!r} passed as a fault the contract declares"
+
+
+def test_a_fault_as_a_flag_fails() -> None:
+    manifest = complete()
+    manifest["fault"] = True
+    assert errors(manifest), "a bare flag passed where the fault is named"

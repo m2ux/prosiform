@@ -1,11 +1,12 @@
-description = "A dependency whose bytes change between discovery and the recheck before publication fails the run, so no bundle carries bytes the run no longer reads."
+description = "A source whose bytes change between discovery and the recheck before publication fails the run, so no bundle carries bytes the run no longer reads."
 
 clauses = [
   "Source consistency",
   "Compile before publishing — Discover the recursive dependency graph",
+  "Adversarial acceptance fixtures — Consistency, source modification during compilation",
 ]
 
-awaiting = "I00:E11:W24"
+fault = "source-changed"
 
 [invocation]
 root = "source"
@@ -18,4 +19,3 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_SOURCE_CHANGED"
-reference = "steps.md"

@@ -5,7 +5,7 @@ clauses = [
   "Exit status and JSON diagnostics — an unexpected internal error names the run",
 ]
 
-awaiting = "I00:E11:W24"
+fault = "internal"
 
 [invocation]
 root = "source"
