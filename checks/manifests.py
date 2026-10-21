@@ -58,6 +58,19 @@ def catalogue(severity: str) -> set[str]:
     return set(codes)
 
 
+def statuses() -> list[int]:
+    """The exit statuses a run may produce, in the order the schema lists them.
+
+    The categories are the contract's, so a reader of the corpus takes them
+    from the schema as it takes the code catalogues, rather than carrying a
+    copy of its own.
+    """
+    declared: list[int] = schema()["$defs"]["expected"]["properties"]["exit_status"][
+        "enum"
+    ]
+    return declared
+
+
 def read(manifest_path: Path) -> dict[str, Any]:
     """One manifest, parsed."""
     with manifest_path.open("rb") as handle:

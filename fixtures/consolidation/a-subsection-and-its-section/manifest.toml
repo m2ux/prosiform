@@ -2,8 +2,8 @@ description = "A subsection named alongside the section containing it is represe
 
 clauses = [
   "Compile before publishing — step 5, consolidate selections",
-  "Groups — emit each selected region once",
-  "Section extraction and output hierarchy — Source order",
+  "Input and output contract — Groups, emit each selected region once",
+  "File-scoped hierarchy — Source order",
 ]
 
 [invocation]

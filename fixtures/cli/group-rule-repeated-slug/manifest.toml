@@ -1,8 +1,8 @@
 description = "A slug named by two grouping rules is refused as an invalid option combination, since a rule is repeatable once per slug."
 
 clauses = [
-  "Grouping — a grouping rule refused for its repetition",
-  "CLI contract — a grouping rule is repeatable, once per slug",
+  "Grouping, a grouping rule refused for its repetition",
+  "CLI contract — --group SLUG:DEPTH, repeatable, once per slug",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
 ]
 

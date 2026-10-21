@@ -1,8 +1,8 @@
 description = "A schemeless root-relative reference written inside a source names a local document positionally, so it resolves no dependency and is emitted as authored: the document the root holds under that name joins no group, and the refusal the same spelling draws as an entry reference does not reach the author's prose."
 
 clauses = [
-  "Reference normalization and path identity — The root is the caller's confinement boundary",
-  "Reference normalization and path identity — a root-relative path beginning with a slash",
+  "Reference normalization and path identity, the root is the caller's confinement boundary",
+  "Reference normalization and path identity, a root-relative path beginning with a slash",
   "Link classification and resource handling — Local Markdown links resolving outside the root",
 ]
 

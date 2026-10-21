@@ -1,7 +1,7 @@
 description = "A fragment naming text only a code example carries names no heading of the document, so it resolves to nothing."
 
 clauses = [
-  "Section extraction and output hierarchy — eligible roots, heading-like text in code",
+  "Section extraction and output hierarchy, eligible roots, heading-like text in code",
   "Validation and failure contract — Publication",
 ]
 

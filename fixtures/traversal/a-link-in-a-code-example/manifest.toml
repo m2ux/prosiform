@@ -2,7 +2,7 @@ description = "A link written inside a code span or a fenced code block is an ex
 
 clauses = [
   "Link classification and resource handling — Examples",
-  "Source-local reference interpretation — Leave examples inside code spans and code blocks unchanged",
+  "Source-local reference interpretation — step 6",
 ]
 
 [invocation]

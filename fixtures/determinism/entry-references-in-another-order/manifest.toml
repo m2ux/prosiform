@@ -1,8 +1,8 @@
 description = "The same selection written in another entry argument order bundles to the same bytes, so the arrangement follows the sources rather than the command line."
 
 clauses = [
-  "Groups — a group is one top-level division of the bundle, headed by its normalized root-relative path",
-  "Section extraction and output hierarchy — Source order",
+  "Input and output contract — Groups, headed by its normalized root-relative path",
+  "File-scoped hierarchy — Source order",
   "Adversarial acceptance fixtures — Coverage, different entry argument orders",
 ]
 

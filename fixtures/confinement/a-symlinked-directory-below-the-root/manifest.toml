@@ -2,7 +2,7 @@ description = "A path reaching its source through a symbolic directory link belo
 
 clauses = [
   "No-symlink source policy",
-  "Reference normalization and path identity — Resolution sequence, step 8",
+  "Resolution sequence — step 8",
 ]
 
 [invocation]

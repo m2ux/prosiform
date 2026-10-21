@@ -1,8 +1,8 @@
 description = "Two definitions of one label spelled in different case are one label: the use resolves against the first of them, both occurrences are removed from the bundle, and the document only the later one names is no dependency."
 
 clauses = [
-  "Parser and source-preserving edits — Complete definition occurrences",
-  "Reference-style uses and definitions — Definition removal",
+  "Mandatory parser viability gates — Complete definition occurrences",
+  "Source-local reference interpretation — step 4",
   "Adversarial acceptance fixtures — Definition inventory, case-fold-equivalent labels",
 ]
 

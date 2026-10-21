@@ -1,10 +1,10 @@
 description = "An output path naming a document the run reads is refused as invalid usage, so a run never publishes over its own source."
 
 clauses = [
-  "CLI contract — --output, a path naming an input source is refused",
-  "CLI contract — a command line the grammar does not admit",
+  "CLI contract — -o, --output FILE, a path naming an input source is refused",
+  "CLI contract, a command line the grammar does not admit",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
-  "CLI contract — one code for the form of the command line, and the message says which fault it was",
+  "CLI contract, one code for the form of the command line, and the message says which fault it was",
 ]
 
 [invocation]

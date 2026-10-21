@@ -2,7 +2,7 @@ description = "A deferred link is published as its author wrote it although anot
 
 clauses = [
   "Link classification and resource handling — A deferred link's destination",
-  "Section extraction and output hierarchy — Internal links",
+  "Bundle destinations — Internal links",
 ]
 
 [invocation]

@@ -2,7 +2,7 @@ description = "The version response reports the tool and the profile identifier,
 
 clauses = [
   "CLI contract — --version, report tool version and profile identifier",
-  "Markdown and source-heading profile — skill-markdown-v1",
+  "Markdown and source-heading profile, skill-markdown-v1",
   "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
 ]
 

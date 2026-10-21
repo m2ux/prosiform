@@ -1,7 +1,7 @@
 description = "A grouping rule whose slug names no directory under the allowed source root fails as an input failure, since the command line is well formed and the tree it names is not what it says."
 
 clauses = [
-  "Grouping — a grouping rule refused for its unknown slug",
+  "Grouping, a grouping rule refused for its unknown slug",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
 

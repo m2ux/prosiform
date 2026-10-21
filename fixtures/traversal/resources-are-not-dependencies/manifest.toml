@@ -3,7 +3,7 @@ description = "An image, a web URL and another non-Markdown reference in selecte
 clauses = [
   "Link classification and resource handling — Everything else",
   "Resources are text",
-  "No-symlink source policy — Non-Markdown resource links",
+  "No-symlink source policy, non-Markdown resource links",
 ]
 
 [invocation]

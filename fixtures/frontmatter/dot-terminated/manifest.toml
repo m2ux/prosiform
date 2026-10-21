@@ -1,7 +1,11 @@
 description = "A frontmatter block closed by three dots is removed with its closing line, which the scan reads as a closer rather than as content."
 
 clauses = [
-  "Frontmatter policy — steps 1 through 5",
+  "Frontmatter policy — step 1",
+  "Frontmatter policy — step 2",
+  "Frontmatter policy — step 3",
+  "Frontmatter policy — step 4",
+  "Frontmatter policy — step 5",
   "Markdown and source-heading profile — Encoding",
   "Validation and failure contract — Preservation",
   "File-scoped hierarchy — Absorbed title",

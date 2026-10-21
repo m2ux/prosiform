@@ -87,11 +87,12 @@ make check
 | `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
 | `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing besides, each reproducing that build's own help output. |
+| `make conformance` | Each behavioural clause of the design carries the fixtures exercising it, each clause no fixture reaches is listed as uncovered, and each error code, warning code and exit status the contract declares is listed with the fixtures reaching it, one only an awaiting fixture declares named unfixturable with the work it awaits. |
 | `make check` | All of the above, in the order listed, stopping at the first failure. |
 
-The tools the first seven call are pinned by [`src/uv.lock`](src/README.md); `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+The tools the first seven call are pinned by [`src/uv.lock`](src/README.md), and `make conformance` reads the corpus through the same manifest reader, so it runs from that environment too; `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
 
-`make corpus` and `make invocation` run a build named by configuration rather than one they choose, so one corpus and one documented invocation bind every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a corpus run resolves it from the fixture's own directory:
+`make conformance` reads the design and the corpus and runs no build at all, so it reports coverage of the contract wherever the contract is read. `make corpus` and `make invocation` run a build named by configuration rather than one they choose, so one corpus and one documented invocation bind every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a corpus run resolves it from the fixture's own directory:
 
 ```bash
 export PROSIFORM_BUILD="uv run --project $PWD/src --frozen prosiform"

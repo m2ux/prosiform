@@ -3,7 +3,7 @@ description = "A local Markdown link resolving under the allowed source root is 
 clauses = [
   "Link classification and resource handling — Local Markdown document links under the root",
   "Link classification and resource handling — Local Markdown links resolving outside the root",
-  "Compile before publishing — Discover the recursive dependency graph",
+  "Compile before publishing — step 4",
 ]
 
 [invocation]

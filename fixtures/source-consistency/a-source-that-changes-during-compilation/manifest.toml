@@ -2,7 +2,7 @@ description = "A dependency whose bytes change between discovery and the recheck
 
 clauses = [
   "Source consistency",
-  "Compile before publishing — Discover the recursive dependency graph",
+  "Compile before publishing — step 4",
 ]
 
 awaiting = "I00:E11:W24"

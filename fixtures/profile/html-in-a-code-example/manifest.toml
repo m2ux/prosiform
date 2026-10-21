@@ -2,7 +2,7 @@ description = "An HTML example inside a code block is content rather than markup
 
 clauses = [
   "Markdown and source-heading profile — HTML",
-  "Source markup policy — raw HTML in selected content",
+  "Source markup policy, raw HTML in selected content",
   "Parser and source-preserving edits — Untouched content",
   "Adversarial acceptance fixtures — Profile",
 ]

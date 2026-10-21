@@ -1,8 +1,8 @@
 description = "A document titled with the path that names it points at itself, so the title names no document other than the one being read and the document bundles."
 
 clauses = [
-  "Generated input policy — a document titled with its own name is not detected",
-  "File-scoped hierarchy — File heading",
+  "Generated input policy, a document titled with its own name is not detected",
+  "File-scoped hierarchy, the file heading",
 ]
 
 [invocation]
