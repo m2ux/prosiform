@@ -1,7 +1,7 @@
 description = "A schemeless reference written as a root-relative URL path names a local document the allowed source root cannot contain, and is refused rather than opened."
 
 clauses = [
-  "Reference normalization and path identity — a root-relative path beginning with a slash",
+  "Reference normalization and path identity, a root-relative path beginning with a slash",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
 

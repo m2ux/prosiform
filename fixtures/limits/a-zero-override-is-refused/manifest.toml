@@ -1,7 +1,7 @@
 description = "A budget override of zero is refused as a command line the grammar does not admit, because zero does not mean unlimited."
 
 clauses = [
-  "Resource limits — positive decimal integer overrides",
+  "Resource limits, positive decimal integer overrides",
 ]
 
 [invocation]

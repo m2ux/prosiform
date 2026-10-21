@@ -1,7 +1,11 @@
 description = "A leading byte-order mark and a frontmatter block closed by three hyphens are both absent from the bundle, and the body below them is carried unchanged."
 
 clauses = [
-  "Frontmatter policy — steps 1 through 5",
+  "Frontmatter policy — step 1",
+  "Frontmatter policy — step 2",
+  "Frontmatter policy — step 3",
+  "Frontmatter policy — step 4",
+  "Frontmatter policy — step 5",
   "Markdown and source-heading profile — Encoding",
   "Validation and failure contract — Preservation",
   "File-scoped hierarchy — Absorbed title",

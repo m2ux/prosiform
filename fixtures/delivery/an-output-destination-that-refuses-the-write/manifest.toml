@@ -2,7 +2,7 @@ description = "A run told to publish into a directory the fixture does not hold 
 
 clauses = [
   "Validation and failure contract — Publication",
-  "Exit status and JSON diagnostics — exit 3",
+  "Exit status and JSON diagnostics — 3",
 ]
 
 [invocation]

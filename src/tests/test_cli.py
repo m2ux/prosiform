@@ -1635,6 +1635,36 @@ def test_a_candidate_disagreeing_with_its_provenance_publishes_nothing(
     assert "no accidental omissions" in run.diagnostics()[0]["message"]
 
 
+def unnamed(*arguments: object) -> tuple[str, list[tuple[str, str]]]:
+    """Composition raising an error the contract names no outcome for."""
+    raise RuntimeError("the composition reached a state the contract never names")
+
+
+def test_an_error_the_contract_does_not_name_is_an_internal_error_as_data(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("prosiform.cli.compose", unnamed)
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INTERNAL_ERROR
+    assert run.stdout == ""
+    assert [(one["severity"], one["code"]) for one in run.diagnostics()] == [
+        ("error", UNEXPECTED_INTERNAL_ERROR)
+    ]
+
+
+def test_an_error_the_contract_does_not_name_is_an_internal_error_as_text(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("prosiform.cli.compose", unnamed)
+    run = invoke("--root", str(root), "--diagnostics", "text", "guide.md")
+    assert run.status == INTERNAL_ERROR
+    assert run.stdout == ""
+    assert run.stderr.splitlines() == [
+        f"{UNEXPECTED_INTERNAL_ERROR}: unexpected internal error: "
+        "RuntimeError('the composition reached a state the contract never names')"
+    ]
+
+
 def captured_for(root: Path, path: str) -> dict[str, Capture]:
     """What one source was when it was read, as discovery captures it."""
     return {path: Capture(canonical(root, path), hashed(read_source(root, path)))}

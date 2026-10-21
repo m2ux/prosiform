@@ -1,8 +1,8 @@
 description = "One selection bundles to groups in root-relative path order, each group carrying its content in source order, whichever order the entry references were written in."
 
 clauses = [
-  "Groups — a group is one top-level division of the bundle, headed by its normalized root-relative path",
-  "Section extraction and output hierarchy — Source order",
+  "Input and output contract — Groups, headed by its normalized root-relative path",
+  "File-scoped hierarchy — Source order",
   "Compile before publishing — step 5, assign each emitted heading its destination in bundle order",
 ]
 

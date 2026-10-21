@@ -1,7 +1,7 @@
 description = "A TOML fence is not v1 frontmatter, so the block it delimits is bundled as the content it is rather than removed as metadata."
 
 clauses = [
-  "Frontmatter policy — an indented delimiter, a trailing space, a TOML fence and a leading blank line are not v1 frontmatter",
+  "Frontmatter policy, an indented delimiter, a trailing space, a TOML fence and a leading blank line are not v1 frontmatter",
   "Parser and source-preserving edits — Untouched content",
   "File-scoped hierarchy — Preamble",
   "Adversarial acceptance fixtures — Frontmatter, malformed delimiters",

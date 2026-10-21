@@ -1,8 +1,8 @@
 description = "A fragment written with a percent escape is decoded before it is looked up, so it resolves to the heading whose text the escape spells rather than to no heading at all."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 5",
-  "Reference normalization and path identity — Resolution sequence, step 9",
+  "Resolution sequence — step 5",
+  "Resolution sequence — step 9",
   "Section extraction and output hierarchy",
 ]
 

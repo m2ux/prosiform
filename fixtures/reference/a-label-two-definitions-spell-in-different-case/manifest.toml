@@ -1,0 +1,21 @@
+description = "Two definitions of one label spelled in different case are one label: the use resolves against the first of them, both occurrences are removed from the bundle, and the document only the later one names is no dependency."
+
+clauses = [
+  "Mandatory parser viability gates — Complete definition occurrences",
+  "Source-local reference interpretation — step 4",
+  "Adversarial acceptance fixtures — Definition inventory, case-fold-equivalent labels",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

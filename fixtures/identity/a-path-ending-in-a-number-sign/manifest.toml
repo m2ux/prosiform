@@ -1,8 +1,8 @@
 description = "A path ending in a space and a number sign is escaped as literal heading text, so the heading naming the file keeps that character where an ATX closing sequence would take it off."
 
 clauses = [
-  "File-scoped hierarchy — escape the path as literal heading text",
-  "Reference normalization and path identity — Resolution sequence, step 2",
+  "File-scoped hierarchy, escape the path as literal heading text",
+  "Resolution sequence — step 2",
   "Entry line",
 ]
 

@@ -3,7 +3,7 @@ description = "A document whose reference names material above the allowed sourc
 clauses = [
   "Explicitly linked source structure — Explicit dependencies",
   "Link classification and resource handling — Local Markdown links resolving outside the root",
-  "Reference normalization and path identity — The root is the caller's confinement boundary",
+  "Reference normalization and path identity, the root is the caller's confinement boundary",
 ]
 
 [invocation]

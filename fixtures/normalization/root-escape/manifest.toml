@@ -2,8 +2,8 @@ description = "A reference inside a source normalizing to a path outside the all
 
 clauses = [
   "Link classification and resource handling — Local Markdown links resolving outside the root",
-  "Reference normalization and path identity — Resolution sequence, step 7",
-  "Reference normalization and path identity — a normalized path outside the root",
+  "Resolution sequence — step 7",
+  "Resolution sequence — A normalized path outside the root",
 ]
 
 [invocation]

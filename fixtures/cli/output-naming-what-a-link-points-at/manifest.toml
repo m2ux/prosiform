@@ -2,7 +2,7 @@ description = "A source the run would reach through a symbolic link is refused b
 
 clauses = [
   "No-symlink source policy",
-  "CLI contract — --output, a path naming an input source is refused",
+  "CLI contract — -o, --output FILE, a path naming an input source is refused",
 ]
 
 [invocation]

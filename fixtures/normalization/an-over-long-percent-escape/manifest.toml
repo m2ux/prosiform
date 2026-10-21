@@ -1,8 +1,8 @@
 description = "An over-long encoding of a path separator is not valid UTF-8 and is refused, rather than being decoded to the separator the shortest form would spell."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 5",
-  "Reference normalization and path identity — Resolution sequence, step 6",
+  "Resolution sequence — step 5",
+  "Resolution sequence — step 6",
 ]
 
 [invocation]

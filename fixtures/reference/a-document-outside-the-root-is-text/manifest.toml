@@ -3,7 +3,7 @@ description = "A local Markdown reference resolving outside the allowed source r
 clauses = [
   "Link classification and resource handling — Local Markdown links resolving outside the root",
   "Explicitly linked source structure — Explicit dependencies",
-  "Reference normalization and path identity — a normalized path outside the root",
+  "Resolution sequence — A normalized path outside the root",
 ]
 
 [invocation]

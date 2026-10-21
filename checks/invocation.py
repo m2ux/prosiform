@@ -49,7 +49,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 
-from documents import ROOT, plain, tables
+from documents import ROOT, plain, rows
 from runner import BUILD, BuildNotConfigured, build_under_test
 
 README = ROOT / "README.md"
@@ -194,16 +194,6 @@ def section(text: str, name: str) -> str:
             body.append(following)
         return "\n".join(body)
     raise Unreadable(f"README.md carries no '{name}' section to read")
-
-
-def rows(text: str, header: str) -> list[dict[str, str]]:
-    """Every row of the tables a header cell marks as enumerating one surface."""
-    return [
-        record
-        for table in tables(text)
-        if header in table.headers
-        for record in table.records()
-    ]
 
 
 def compare(

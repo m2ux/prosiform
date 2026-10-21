@@ -1,7 +1,7 @@
 description = "An unencoded number sign opens the fragment, so a reference spelling the path literally names the document before it and fails on the suffix the remainder leaves."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 2",
+  "Resolution sequence — step 2",
   "Markdown and source-heading profile — File suffixes, an explicit entry with another suffix fails",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]

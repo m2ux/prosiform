@@ -4,7 +4,7 @@ clauses = [
   "Input and output contract — Whole documents",
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Preamble",
-  "Markdown and source-heading profile — pipe tables enabled",
+  "Markdown and source-heading profile, pipe tables enabled",
   "Markdown and source-heading profile — Typography",
   "Parser and source-preserving edits — Untouched content",
   "Entry line",

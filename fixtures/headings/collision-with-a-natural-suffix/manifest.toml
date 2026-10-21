@@ -1,7 +1,7 @@
 description = "A heading whose own text spells an ordinal keeps it, and a heading the renderer numbers apart passes over every ordinal something already carries, so no two headings share a fragment."
 
 clauses = [
-  "Source-heading resolution — GitHub-compatible slugs and duplicate tracking",
+  "Source-heading resolution, gitHub-compatible slugs and duplicate tracking",
   "Bundle destinations — Ordinal assignment",
   "Entry line",
 ]

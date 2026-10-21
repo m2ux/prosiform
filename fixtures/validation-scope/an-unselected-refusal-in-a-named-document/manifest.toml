@@ -1,9 +1,9 @@
 description = "Raw HTML in a section no reference selected, in the document the command line named, leaves a run that selected another section of that document successful."
 
 clauses = [
-  "Validation scope — validate supported selected syntax within the selected dependency closure",
+  "Validation scope, validate supported selected syntax within the selected dependency closure",
   "Markdown and source-heading profile — HTML, raw HTML in selected content fails",
-  "Source markup policy — raw HTML in selected content",
+  "Source markup policy, raw HTML in selected content",
 ]
 
 [invocation]

@@ -2,10 +2,10 @@ description = "A command line naming no allowed source root is refused as invali
 
 clauses = [
   "CLI contract — --root DIR, required allowed source root",
-  "CLI contract — a missing --root",
-  "CLI contract — a command line the grammar does not admit",
+  "CLI contract, a missing --root",
+  "CLI contract, a command line the grammar does not admit",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
-  "CLI contract — one code for the form of the command line, and the message says which fault it was",
+  "CLI contract, one code for the form of the command line, and the message says which fault it was",
 ]
 
 [invocation]

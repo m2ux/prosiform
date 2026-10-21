@@ -2,7 +2,7 @@ description = "A reference definition whose label spells a task marker turns no 
 
 clauses = [
   "Markdown and source-heading profile — Task lists",
-  "Source-local reference interpretation — definition removal",
+  "Source-local reference interpretation — step 4",
   "Adversarial acceptance fixtures — Profile",
 ]
 
