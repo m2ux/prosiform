@@ -41,19 +41,17 @@ prosiform --root my-skill \
 
 #### Compile agent-specific rules
 
-The bundled `rules/agents.md` instructions direct the agent to compile the deferred link matching its harness identity. Each harness document links its checks normally, so this second compilation includes them under a `Checks` group.
+The bundled `rules/agents.md` instructions direct the agent to compile the deferred link matching its harness identity.
 
 ```bash
 # Codex
-prosiform --root my-skill --group checks:1 \
-  --output codex-bundle.md rules/codex.md
+prosiform --root my-skill --output codex-bundle.md rules/codex.md
 
 # Claude
-prosiform --root my-skill --group checks:1 \
-  --output claude-bundle.md rules/claude.md
+prosiform --root my-skill --output claude-bundle.md rules/claude.md
 ```
 
-![Each agent compiles its deferred document and its normally linked checks. Codex includes Tests; Claude includes Review. Each output contains a Checks group and the selected harness instructions.](docs/images/agent-rules.png)
+![Each agent compiles its deferred document: rules/codex contains instructions to keep patches focused and run relevant tests; rules/claude contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
 
 ## Installation
 
