@@ -151,7 +151,7 @@ An error decides a failing run.
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the allowed root cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |
-| `E_TARGET_NOT_FOUND` | Validation and failure contract — a local Markdown reference resolving to nothing. |
+| `E_TARGET_NOT_FOUND` | Link classification — a reference under the root naming no document, or no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
 | `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content. |
