@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1152" viewBox="0 0 1800 1152" role="img" aria-labelledby="title description">
 <title id="title">Compile selected documents and their linked dependencies</title>
-<desc id="description">SKILL.md routes to procedure.md and rules.md. Procedure links to tips.md, which is recursively included. Rules links to archive.md with the deferral marker ¬, so its link is retained but archive content is excluded. The bundle contains procedure, rules, and tips only.</desc>
+<desc id="description">SKILL.md routes to procedure.md and rules.md. Procedure links to tips.md, which is included. Rules links to Set 1 at 1.md and ¬ Set 2 at 2.md. Set 1 is included; Set 2 remains a deferred link. The bundle contains 1, procedure, rules, and tips.</desc>
 <rect width="1800" height="1152" fill="#0d1117"/>
 <g font-family="IBM Plex Mono">
 <rect x="32" y="32" width="510" height="480" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/><text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">Source tree</text>
@@ -9,7 +9,7 @@
 <rect x="612" y="402" width="510" height="348" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 402 H1110 Q1122 402 1122 414 V464 H612 V414 Q612 402 624 402" fill="#202a36"/><text x="640" y="443" font-size="25" fill="#b1c6df" font-weight="400">rules.md</text>
 <rect x="612" y="772" width="510" height="348" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 772 H1110 Q1122 772 1122 784 V834 H612 V784 Q612 772 624 772" fill="#202a36"/><text x="640" y="813" font-size="25" fill="#b1c6df" font-weight="400">tips.md</text>
 <rect x="1252" y="32" width="510" height="1088" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/><text x="1280" y="73" font-size="25" fill="#b1c6df" font-weight="400">bundle.md</text>
-<text x="151" y="143" font-size="29" fill="#e6edf3" font-weight="400">my-skill/</text><path d="M67 124 v-20 h26 l10 10 h28 v39 H67z" fill="#329def"/><path d="M92 171 V451" fill="none" stroke="#65758b" stroke-width="3"/><path d="M92 207 H121 M126 187 h21 l11 11 v29 h-32z M147 187 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="216" font-size="24" fill="#e6edf3" font-weight="400">SKILL.md</text><rect x="401" y="187" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="214" font-size="20" fill="#58a6ff" font-weight="400">routing</text><path d="M92 268 H121 M126 248 h21 l11 11 v29 h-32z M147 248 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="277" font-size="24" fill="#e6edf3" font-weight="400">procedure.md</text><rect x="401" y="248" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="275" font-size="20" fill="#58a6ff" font-weight="400">selected</text><path d="M92 329 H121 M126 309 h21 l11 11 v29 h-32z M147 309 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="338" font-size="24" fill="#e6edf3" font-weight="400">rules.md</text><rect x="401" y="309" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="336" font-size="20" fill="#58a6ff" font-weight="400">selected</text><path d="M92 390 H121 M126 370 h21 l11 11 v29 h-32z M147 370 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="399" font-size="24" fill="#e6edf3" font-weight="400">tips.md</text><rect x="401" y="370" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="397" font-size="20" fill="#58a6ff" font-weight="400">included</text><path d="M92 451 H121 M126 431 h21 l11 11 v29 h-32z M147 431 v11 h11" fill="none" stroke="#e3b341" stroke-width="2.5"/><text x="173" y="460" font-size="24" fill="#e6edf3" font-weight="400">archive.md</text><rect x="401" y="431" width="116" height="38" rx="19" fill="#102333" stroke="#e3b341"/><text x="413" y="458" font-size="20" fill="#e3b341" font-weight="400">deferred</text>
+<text x="151" y="143" font-size="29" fill="#e6edf3" font-weight="400">my-skill/</text><path d="M67 124 v-20 h26 l10 10 h28 v39 H67z" fill="#329def"/><path d="M92 171 V457" fill="none" stroke="#65758b" stroke-width="3"/><path d="M92 207 H121 M126 187 h21 l11 11 v29 h-32z M147 187 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="216" font-size="24" fill="#e6edf3" font-weight="400">SKILL.md</text><rect x="401" y="187" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="214" font-size="20" fill="#58a6ff" font-weight="400">routing</text><path d="M92 257 H121 M126 237 h21 l11 11 v29 h-32z M147 237 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="266" font-size="24" fill="#e6edf3" font-weight="400">procedure.md</text><rect x="401" y="237" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="264" font-size="20" fill="#58a6ff" font-weight="400">selected</text><path d="M92 307 H121 M126 287 h21 l11 11 v29 h-32z M147 287 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="316" font-size="24" fill="#e6edf3" font-weight="400">rules.md</text><rect x="401" y="287" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="314" font-size="20" fill="#58a6ff" font-weight="400">selected</text><path d="M92 357 H121 M126 337 h21 l11 11 v29 h-32z M147 337 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="366" font-size="24" fill="#e6edf3" font-weight="400">tips.md</text><rect x="401" y="337" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="364" font-size="20" fill="#58a6ff" font-weight="400">included</text><path d="M92 407 H121 M126 387 h21 l11 11 v29 h-32z M147 387 v11 h11" fill="none" stroke="#58a6ff" stroke-width="2.5"/><text x="173" y="416" font-size="24" fill="#e6edf3" font-weight="400">1.md</text><rect x="401" y="387" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="414" font-size="20" fill="#58a6ff" font-weight="400">included</text><path d="M92 457 H121 M126 437 h21 l11 11 v29 h-32z M147 437 v11 h11" fill="none" stroke="#e3b341" stroke-width="2.5"/><text x="173" y="466" font-size="24" fill="#e6edf3" font-weight="400">2.md</text><rect x="401" y="437" width="116" height="38" rx="19" fill="#102333" stroke="#e3b341"/><text x="413" y="464" font-size="20" fill="#e3b341" font-weight="400">deferred</text>
 <text x="60" y="660" font-size="30" fill="#e6edf3" font-weight="500">Publish a page</text>
 <text x="60" y="722" font-size="23" fill="#e6edf3" font-weight="400">Compile these documents:</text>
 <text x="60" y="790" font-size="26" fill="#58a6ff" font-weight="400">Procedure</text><path d="M60 797 h140.4" stroke="#58a6ff" stroke-width="1.5"/>
@@ -19,23 +19,26 @@
 <text x="640" y="278" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
 <text x="640" y="330" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
 <text x="640" y="521" font-size="32" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="640" y="584" font-size="25" fill="#e6edf3" font-weight="400">• Check every link.</text>
-<text x="640" y="636" font-size="25" fill="#e6edf3" font-weight="400">• Use clear headings.</text>
-<text x="640" y="698" font-size="24" fill="#e3b341" font-weight="400">¬ Archive</text><path d="M640 705 h129.6" stroke="#e3b341" stroke-width="1.5"/>
+<text x="640" y="594" font-size="24" fill="#58a6ff" font-weight="400">Set 1</text><path d="M640 601 h72.0" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="640" y="664" font-size="24" fill="#e3b341" font-weight="400">¬ Set 2</text><path d="M640 671 h100.8" stroke="#e3b341" stroke-width="1.5"/>
 <text x="640" y="891" font-size="32" fill="#e6edf3" font-weight="500">Tips</text>
 <text x="640" y="961" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
-<text x="1280" y="160" font-size="34" fill="#e6edf3" font-weight="500">procedure</text>
-<text x="1280" y="222" font-size="24" fill="#e6edf3" font-weight="400">Read</text><text x="1356" y="222" font-size="24" fill="#58a6ff" font-weight="400">Tips</text><path d="M1356 229 h57.599999999999994" stroke="#58a6ff" stroke-width="1.5"/>
-<text x="1280" y="284" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
-<text x="1280" y="336" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
-<path d="M1280 392 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="461" font-size="34" fill="#e6edf3" font-weight="500">rules</text>
-<text x="1280" y="523" font-size="25" fill="#e6edf3" font-weight="400">• Check every link.</text>
-<text x="1280" y="575" font-size="25" fill="#e6edf3" font-weight="400">• Use clear headings.</text>
-<text x="1280" y="637" font-size="24" fill="#e3b341" font-weight="400">¬ Archive</text><path d="M1280 644 h129.6" stroke="#e3b341" stroke-width="1.5"/>
-<path d="M1280 700 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="773" font-size="34" fill="#e6edf3" font-weight="500">tips</text>
-<text x="1280" y="843" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
+<text x="1280" y="153" font-size="34" fill="#e6edf3" font-weight="500">1</text>
+<text x="1280" y="211" font-size="25" fill="#e6edf3" font-weight="400">• Check every link.</text>
+<text x="1280" y="259" font-size="25" fill="#e6edf3" font-weight="400">• Use clear headings.</text>
+<path d="M1280 299 H1734" stroke="#303b49" stroke-width="2"/>
+<text x="1280" y="355" font-size="34" fill="#e6edf3" font-weight="500">procedure</text>
+<text x="1280" y="412" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
+<text x="1356" y="412" font-size="24" fill="#58a6ff" font-weight="400">Tips</text><path d="M1356 419 h57.6" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="1280" y="470" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
+<text x="1280" y="518" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
+<path d="M1280 560 H1734" stroke="#303b49" stroke-width="2"/>
+<text x="1280" y="618" font-size="34" fill="#e6edf3" font-weight="500">rules</text>
+<text x="1280" y="677" font-size="24" fill="#58a6ff" font-weight="400">Set 1</text><path d="M1280 684 h72.0" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="1280" y="735" font-size="24" fill="#e3b341" font-weight="400">¬ Set 2</text><path d="M1280 742 h100.8" stroke="#e3b341" stroke-width="1.5"/>
+<path d="M1280 783 H1734" stroke="#303b49" stroke-width="2"/>
+<text x="1280" y="845" font-size="34" fill="#e6edf3" font-weight="500">tips</text>
+<text x="1280" y="915" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
 <path d="M219 787 C560 787 560 260 600 260" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 253 L612 260 L600 267 Z" fill="#58a6ff"/>
 <path d="M156 861 C500 890 555 568 600 568" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 561 L612 568 L600 575 Z" fill="#58a6ff"/>
 <path d="M784 211 H1090 Q1144 211 1144 265 V939 Q1144 958 1134 958" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 951 L1122 958 L1134 965 Z" fill="#58a6ff"/>
