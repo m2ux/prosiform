@@ -2,7 +2,7 @@ description = "A local Markdown reference resolving to a document under the allo
 
 clauses = [
   "Link classification and resource handling — A target that resolves to nothing",
-  "Section extraction and output hierarchy — eligible roots",
+  "Section extraction and output hierarchy, eligible roots",
   "Validation and failure contract — Publication",
 ]
 

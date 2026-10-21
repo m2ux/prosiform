@@ -1,10 +1,10 @@
 description = "An option the contract does not declare is refused as invalid usage, and the message names the option, so the fault is told apart from the others the code gathers."
 
 clauses = [
-  "CLI contract — an option the contract does not declare",
-  "CLI contract — a command line the grammar does not admit",
+  "CLI contract, an option the contract does not declare",
+  "CLI contract, a command line the grammar does not admit",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
-  "CLI contract — one code for the form of the command line, and the message says which fault it was",
+  "CLI contract, one code for the form of the command line, and the message says which fault it was",
 ]
 
 [invocation]

@@ -1,7 +1,7 @@
 description = "An indented line of three hyphens opens no frontmatter, so the document is bundled whole and keeps the indentation the source wrote."
 
 clauses = [
-  "Frontmatter policy — an indented delimiter, a trailing space, a TOML fence and a leading blank line are not v1 frontmatter",
+  "Frontmatter policy, an indented delimiter, a trailing space, a TOML fence and a leading blank line are not v1 frontmatter",
   "Parser and source-preserving edits — Untouched content",
   "File-scoped hierarchy — Preamble",
   "Adversarial acceptance fixtures — Frontmatter, malformed delimiters",

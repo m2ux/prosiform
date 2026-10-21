@@ -1,8 +1,8 @@
 description = "A link to a document that does not exist, written in a section no reference selected, leaves a run that selected another section of the same file successful."
 
 clauses = [
-  "Validation scope — validate link resolution within the selected dependency closure",
-  "Validation scope — an unrelated broken link in an unselected sibling must not fail bundling",
+  "Validation scope, validate link resolution within the selected dependency closure",
+  "Validation scope, an unrelated broken link in an unselected sibling must not fail bundling",
   "Adversarial acceptance fixtures — File-wide safety, an ordinary unselected broken link does not fail",
 ]
 

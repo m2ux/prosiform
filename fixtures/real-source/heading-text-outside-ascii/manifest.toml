@@ -2,10 +2,14 @@ description = "A workspace skill routing document whose headings carry an em das
 
 clauses = [
   "Input and output contract — Whole documents",
-  "Frontmatter policy — steps 1 through 5",
+  "Frontmatter policy — step 1",
+  "Frontmatter policy — step 2",
+  "Frontmatter policy — step 3",
+  "Frontmatter policy — step 4",
+  "Frontmatter policy — step 5",
   "File-scoped hierarchy — Group shift",
   "File-scoped hierarchy — Preamble",
-  "Source-heading resolution — derive visible heading text from parser events",
+  "Source-heading resolution, derive visible heading text from parser events",
   "Markdown and source-heading profile — Typography",
   "Entry line",
 ]

@@ -1,8 +1,8 @@
 description = "A platform-specific drive path written inside a source names a local document positionally, so it resolves no dependency and is emitted as authored rather than read as a scheme of one letter, and the refusal the same spelling draws as an entry reference does not reach the author's prose."
 
 clauses = [
-  "Reference normalization and path identity — The root is the caller's confinement boundary",
-  "Reference normalization and path identity — a platform-specific drive path",
+  "Reference normalization and path identity, the root is the caller's confinement boundary",
+  "Reference normalization and path identity, a platform-specific drive path",
   "Link classification and resource handling — Local Markdown links resolving outside the root",
 ]
 

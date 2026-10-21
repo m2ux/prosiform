@@ -2,7 +2,7 @@ description = "A source that is a symbolic link below the allowed root is refuse
 
 clauses = [
   "No-symlink source policy",
-  "Reference normalization and path identity — Resolution sequence, step 8",
+  "Resolution sequence — step 8",
 ]
 
 [invocation]

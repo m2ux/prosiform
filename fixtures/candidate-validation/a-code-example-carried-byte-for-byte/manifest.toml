@@ -1,7 +1,7 @@
 description = "A code example keeps its indentation, its runs of spaces, its trailing spaces and the blank line inside it, because untouched bytes are carried rather than reformatted."
 
 clauses = [
-  "Preservation — Untouched non-heading bytes and code examples are not reformatted or repaired",
+  "Validation and failure contract — Preservation, untouched non-heading bytes and code examples are not reformatted or repaired",
   "Post-compilation invariants — Reference preservation",
 ]
 

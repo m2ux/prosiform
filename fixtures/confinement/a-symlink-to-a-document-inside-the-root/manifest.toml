@@ -2,7 +2,7 @@ description = "A symbolic link below the allowed root is refused although its ta
 
 clauses = [
   "No-symlink source policy",
-  "Reference normalization and path identity — Resolution sequence, step 8",
+  "Resolution sequence — step 8",
 ]
 
 [invocation]

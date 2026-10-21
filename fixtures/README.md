@@ -54,7 +54,7 @@ The manifest is the whole declaration. A runner reads it and the fixture's files
 description = "A reference normalizing to a path outside the allowed source root fails."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 7",
+  "Resolution sequence — step 7",
 ]
 
 [invocation]
@@ -76,7 +76,7 @@ chain = ["guide.md", "../outside.md"]
 | Field | Declares |
 | --- | --- |
 | `description` | What the fixture establishes. |
-| `clauses` | The design clauses it encodes, so every clause maps to the fixtures that cover it. |
+| `clauses` | The design clauses it encodes, named as [The clause form](#the-clause-form) states, so every clause maps to the fixtures that cover it. |
 | `invocation.root` | Optional. The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture naming one names a directory it does. A fixture naming none declares a run supplied no allowed source root. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
@@ -88,18 +88,25 @@ chain = ["guide.md", "../outside.md"]
 
 The runner supplies the allowed source root the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
-## The adversarial families
+## The clause form
 
-The [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) lists the families of hard cases a build meets, and a family is a clause like any other, so a fixture encoding one names it among its `clauses`:
+A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
 
 ```toml
 clauses = [
   "Heading-only structural ancestors — Depth",
+  "CLI contract, a command line the grammar does not admit",
   "Adversarial acceptance fixtures — Partial outlines, original skipped heading levels",
 ]
 ```
 
-The family is the text up to the comma and the case follows it, so one reading of the corpus answers which families are represented and by what. The declaration sits in the manifest beside the expectation it qualifies, for the reason the deferral marker does: a listing of families held anywhere else drifts from the fixtures it names in both directions.
+The clause is the text up to the comma and the case this fixture takes of it follows, so two fixtures taking different cases of one clause both map to it. `make conformance` reads the design and these declarations and reports the mapping between them, so a declaration naming no clause the design states fails rather than landing nowhere.
+
+The declaration sits in the manifest beside the expectation it qualifies, for the reason the deferral marker does: a mapping held anywhere else drifts from the fixtures it names in both directions.
+
+## The adversarial families
+
+The design lists the families of hard cases a build meets, and a family is a clause like any other, so a fixture encoding one names it among its `clauses` and one reading of the corpus answers which families are represented and by what.
 
 Two families are named by no fixture, each because the condition it turns on is one a source tree and one invocation cannot declare. Consistency is a source changing, disappearing or resolving elsewhere while the run reads it, and its fixture arrives with [I00:E11:W24](https://github.com/m2ux/prosiform/issues/150). Parser exhaustion is a parser resource limit suppressing a reference lookup, which `E_PARSER_REFERENCE_LIMIT` reports and no build here emits, and its fixture arrives with [I00:E11:W30](https://github.com/m2ux/prosiform/issues/164).
 

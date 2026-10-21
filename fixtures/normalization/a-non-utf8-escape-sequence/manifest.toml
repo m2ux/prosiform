@@ -1,7 +1,7 @@
 description = "An escape sequence that decodes to no valid UTF-8 character is refused rather than replaced, so no byte the author never wrote reaches a document name."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 5",
+  "Resolution sequence — step 5",
   "Markdown and source-heading profile — Encoding",
 ]
 

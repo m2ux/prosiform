@@ -3,7 +3,7 @@ description = "A link whose text opens with the mark is not compiled: the docume
 clauses = [
   "Link classification and resource handling — The deferral mark",
   "Explicitly linked source structure — Explicit dependencies",
-  "Section extraction and output hierarchy — Internal links",
+  "Bundle destinations — Internal links",
   "Adversarial acceptance fixtures — Deferral",
 ]
 

@@ -1,8 +1,8 @@
 description = "An entry reference whose parent segments walk above the allowed source root is refused rather than opened, so a document outside the root is never read."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 7",
-  "Reference normalization and path identity — a normalized path outside the root",
+  "Resolution sequence — step 7",
+  "Resolution sequence — A normalized path outside the root",
 ]
 
 [invocation]

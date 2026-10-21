@@ -3,7 +3,7 @@ description = "A local Markdown reference resolving to a document under the allo
 clauses = [
   "Link classification and resource handling — Local Markdown document links under the root",
   "Explicitly linked source structure — Explicit dependencies",
-  "Compile before publishing — Discover the recursive dependency graph",
+  "Compile before publishing — step 4",
 ]
 
 [invocation]

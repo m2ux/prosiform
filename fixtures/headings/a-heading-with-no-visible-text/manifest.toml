@@ -1,7 +1,7 @@
 description = "A heading whose visible text is empty once a renderer discards it names nothing, and leaves the fragment of every heading after it the one that heading's own text produces."
 
 clauses = [
-  "Source-heading resolution — GitHub-compatible slugs and duplicate tracking",
+  "Source-heading resolution, gitHub-compatible slugs and duplicate tracking",
   "Section extraction and output hierarchy — Source heading index",
   "Input and output contract — Sections",
 ]

@@ -2,7 +2,7 @@ description = "A terminated YAML example whose entries are spelled as list items
 
 clauses = [
   "Block boundaries",
-  "Compile before publishing — Preservation",
+  "Validation and failure contract — Preservation",
 ]
 
 [invocation]

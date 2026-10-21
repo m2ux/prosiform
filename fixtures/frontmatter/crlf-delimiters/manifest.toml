@@ -1,7 +1,11 @@
 description = "An opener and a closer terminated by CRLF are recognized as delimiters, and the closer's CRLF is removed with it."
 
 clauses = [
-  "Frontmatter policy — steps 1 through 5",
+  "Frontmatter policy — step 1",
+  "Frontmatter policy — step 2",
+  "Frontmatter policy — step 3",
+  "Frontmatter policy — step 4",
+  "Frontmatter policy — step 5",
   "Markdown and source-heading profile — Encoding",
   "Validation and failure contract — Preservation",
   "File-scoped hierarchy — Absorbed title",

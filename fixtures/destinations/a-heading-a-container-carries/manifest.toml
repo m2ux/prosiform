@@ -3,8 +3,8 @@ description = "A heading a retained container carries is one the bundle emits an
 clauses = [
   "Bundle destinations — Ordinal assignment",
   "Bundle destinations — Uniqueness",
-  "Bundle destinations — Resolvable where the bundle is read",
-  "Source-heading resolution — enumerate headings in source order, container-nested included",
+  "Resolvable where the bundle is read",
+  "Source-heading resolution, enumerate headings in source order, container-nested included",
   "Entry line",
 ]
 

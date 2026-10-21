@@ -1,7 +1,7 @@
 description = "A platform-specific drive path names a local document the allowed source root cannot contain, and is refused rather than read as a scheme of one letter."
 
 clauses = [
-  "Reference normalization and path identity — a platform-specific drive path",
+  "Reference normalization and path identity, a platform-specific drive path",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
 

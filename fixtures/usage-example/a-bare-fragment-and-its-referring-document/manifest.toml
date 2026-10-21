@@ -1,9 +1,9 @@
 description = "The usage example that supplies a referring document resolves a fragment-only entry reference against that document and bundles the section it names."
 
 clauses = [
-  "CLI contract — Usage examples",
+  "Usage examples",
   "CLI contract — --from DOC, the referring document a fragment-only reference resolves against",
-  "Input and output contract — Selected sections",
+  "Input and output contract — Sections",
   "Entry line",
 ]
 

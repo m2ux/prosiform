@@ -1,7 +1,7 @@
 description = "The usage example that compiles and validates without publishing reaches the same closure and emits nothing on standard output."
 
 clauses = [
-  "CLI contract — Usage examples",
+  "Usage examples",
   "CLI contract — --check, discover, bundle and validate without emitting or publishing the bundle",
   "Validation scope",
 ]

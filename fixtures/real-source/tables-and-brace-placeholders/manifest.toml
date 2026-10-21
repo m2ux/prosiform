@@ -3,7 +3,7 @@ description = "A workspace skill template bundles its six-column pipe tables as 
 clauses = [
   "Input and output contract — Whole documents",
   "File-scoped hierarchy — Absorbed title",
-  "Markdown and source-heading profile — pipe tables enabled",
+  "Markdown and source-heading profile, pipe tables enabled",
   "Markdown and source-heading profile — Unsupported extensions",
   "Parser and source-preserving edits — Untouched content",
   "Entry line",

@@ -1,9 +1,9 @@
 description = "A schemeless reference carrying a query is refused by code rather than opened as a document whose name holds the query."
 
 clauses = [
-  "Reference normalization and path identity — Resolution sequence, step 4",
-  "Reference normalization and path identity — guide.md?view=raw#run",
-  "CLI contract — a command line the contract's grammar does not admit",
+  "Resolution sequence — step 4",
+  "Resolution sequence — guide.md?view=raw#run",
+  "CLI contract, a command line the grammar does not admit",
 ]
 
 [invocation]
