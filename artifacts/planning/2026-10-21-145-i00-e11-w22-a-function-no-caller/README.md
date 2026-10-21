@@ -14,6 +14,7 @@ This row covers AC23 of the deferred-debt epic, which states what fixing the def
 | --- | --- |
 | [w22.md](w22.md) | The task's plan: what decides a reference's destination once ownership is gone, and the one description the design, `candidate` and the fixtures carry |
 | [validation.md](validation.md) | The checks run over the delivery, the reachability audit over every function the package defines, and the limitation it leaves |
+| [changes.md](changes.md) | The decision this row settled, the work folded into it, the row it placed on the epic, and what it held |
 
 ## Links
 
