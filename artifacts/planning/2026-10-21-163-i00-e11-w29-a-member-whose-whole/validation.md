@@ -151,3 +151,7 @@ The unit coverage added with this unit reads the three components: the scan read
 | Branch `i00/e11/w29-a-member-whose-whole` at `a8d0f1f`, after all three | exit `0`; `239 fixture(s), 239 pass, 0 fail, 0 awaited, 0 unexpected pass`; `242 clause(s) the design states, 0 covered by no fixture, 0 declaration(s) naming no clause` |
 
 The clause inventory is the same figure on both, because the design change restates one bullet's prose and names no new clause.
+
+### The revision the instruments ran against
+
+A criterion is verified by its instrument run at the revision the delivering pull request merged into. The epic base stood at `313e1f2` when the pull request opened and had not moved, so the merge commit `d6515a5` and the branch head `a8d0f1f` carry the same tree, `b1c53b7`. The run recorded above against `a8d0f1f` is therefore the run against the merged content, byte for byte, and is what each criterion is ticked on.
