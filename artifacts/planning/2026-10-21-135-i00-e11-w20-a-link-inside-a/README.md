@@ -21,6 +21,7 @@ This row covers AC21 of the deferred-debt epic, which states what fixing the def
 | Resource | Link |
 | --- | --- |
 | Task issue | [#135 \[I00:E11:W20\] Nested Link Rewriting: A Link Inside a Nested Image Stops the Run](https://github.com/m2ux/prosiform/issues/135) |
+| Pull request | [#152 \[I00:E11\] An Enclosing Link Around a Nested Image Read as the Link It Is](https://github.com/m2ux/prosiform/pull/152) |
 | Epic issue | [#39 \[I00:E11\] Deferred Debt](https://github.com/m2ux/prosiform/issues/39) |
 | Initiative issue | [#2 \[I00\] Prototype Compiler](https://github.com/m2ux/prosiform/issues/2) |
 | Initiative plan | [2026-10-17-prosiform-v1](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) |
