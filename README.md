@@ -27,6 +27,10 @@ Leaving retrieval to the agent costs:
 
 ### How It Works
 
+```bash
+prosiform --root my-skill --output bundle.md procedure.md rules.md
+```
+
 ![SKILL.md links to procedure.md and rules.md in the source tree. The two linked documents are selected for compilation and combined into one bundle; SKILL.md is not included.](docs/images/compilation.png)
 
 ## Installation
