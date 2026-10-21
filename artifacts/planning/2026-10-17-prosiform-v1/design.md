@@ -34,7 +34,7 @@ Its `into_offset_iter()` exposes Markdown events paired with source ranges, and 
 
 - **Parsing authority:** Let the parser identify headings, links, images, definitions, code examples, and HTML nodes, the last so they can be refused.
 - **Source positions:** Build the source-range adapter around offset events and reference-definition data. Verify and retain the original spans needed for headings, link/image uses, and definitions; do not equate an enclosing event range with a precise destination span without *validation*.
-- **Source model:** Derive block ancestry, eligible section boundaries, and link ownership from the event stream while retaining canonical source identities and *provenance* ranges.
+- **Source model:** Derive block ancestry, eligible section boundaries, and link positions from the event stream while retaining canonical source identities and *provenance* ranges.
 - **Coordinate mapping:** Map ranges in the parser's input view back to original UTF-8 bytes, including any BOM/frontmatter preprocessing, CRLF, tabs, escapes, and Unicode. Preserve original diagnostic coordinates.
 - **Edits:** Apply validated non-overlapping edits. Handle constructs such as an image inside a link through a defined parent-edit strategy rather than overlapping replacements.
 - **Untouched content:** Preserve original bytes and newline spelling, including code examples. Generated headings and separators may use LF; do not globally reformat sources.
@@ -305,7 +305,7 @@ Bundling is a compile-and-validate process rather than streaming concatenation. 
 
 1. Resolve entry references and allowed source paths.
 2. Read and parse each distinct source file once during discovery, capturing its identity and content hash and excluding leading frontmatter from bundled content.
-3. Index source headings, links, definitions, ownership, and eligible section boundaries.
+3. Index source headings, links, definitions, and eligible section boundaries.
 4. Discover the recursive dependency graph and expand included source coverage to a fixed point.
 5. Consolidate selections, group them by source file, and derive required heading-only ancestors. Check shifted heading depths and assign each emitted heading its destination in bundle order, without treating structural ancestors as new dependencies.
 6. Apply source-local reference conversions, rewrite destinations and heading syntax, and construct the candidate with one filename H1 per source.
@@ -326,11 +326,11 @@ A reference back to content the bundle already carries resolves to that content'
 - **Shared dependency:** A → C and B → C include C once; both links resolve to its destination.
 - **Different section in the same file:** A link to a distinct section is not a direct self-reference solely because the file is the same.
 - **Equivalent references:** Determine identity after canonical path and fragment resolution, rather than comparing the literal link strings.
-- **Link ownership:** Assign each link to the innermost eligible source section containing its position, including inline content in that heading. Links in nested containers belong to that enclosing eligible section. Ownership does not change when a whole document or ancestor section is selected.
+- **Link position:** A reference resolves by its target alone, wherever in the source it sits. A link in a heading's inline content, in a nested container, or in the content above the first eligible heading names the same destination as the same link written anywhere else in that document.
 - **Whole-document selection:** Selecting `guide.md` does not make its links to `guide.md#section` self-references. A document node and its heading-section nodes are distinct identities.
-- **Preamble ownership:** Content before the first eligible heading belongs to the document node. A link from that preamble to the same whole-document node is a direct self-reference; a heading-section link back to its whole document is an ancestor inclusion, not a direct section-to-itself link.
+- **Preamble content:** Content before the first eligible heading is the document node's own, so a whole-document selection carries it and a reference naming that document resolves to the document's destination.
 
-Store link ownership separately from selected inclusion ranges. Consolidating a child section into a larger region must not change whether one of its links is a direct self-reference.
+A destination belongs to the target a reference resolves to rather than to the region the reference sits in, so consolidating a child section into a larger region leaves every destination the bundle carries as it was.
 
 ## Frontmatter policy
 
@@ -514,7 +514,7 @@ Validate the completed document against the source-to-output mapping, not only i
 - **Exactly-once coverage:** Each selected source region's content is represented once after unioning overlaps, excluding a removed leading BOM, stripped frontmatter, and removed reference definitions. Parent inclusion satisfies child inclusion without another copy.
 - **No accidental omissions:** Selected-content coverage equals the resolved dependency closure under the documented transformations. Track generated structure separately so it cannot conceal a missing selected region.
 - **No accidental expansion:** The only unselected source-derived content emitted is required heading-only ancestry. Never include an unselected ancestor's body or siblings merely to supply structure.
-- **Ownership stability:** Link ownership and direct-self-reference classification remain the same before and after overlap consolidation.
+- **Destination stability:** A reference's destination is the one its target was assigned, before and after overlap consolidation.
 - **Block-syntax preservation:** Generated headings and region boundaries must not absorb content into unintended non-heading containers.
 - **Entry line integrity:** The bundle's entry line names every entry reference and no other, and each of its links resolves to the destination that reference's target was assigned.
 - **Group isolation:** Each group has exactly one H1, each contributing source belongs to exactly one group, and a source's emitted headings sit beneath that group's H1 rather than entering another group's outline.

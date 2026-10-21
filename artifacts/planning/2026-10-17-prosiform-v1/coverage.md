@@ -142,8 +142,8 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Self-reference and ancestor-reference behavior | Ancestor reference | I00:E04:AC4 |
 | Self-reference and ancestor-reference behavior | Different section in the same file | I02:E03:AC5, I00:E04:AC4 |
 | Self-reference and ancestor-reference behavior | Equivalent references | I02:E05:AC3, I00:E08:AC2, I00:E04:AC9 |
-| Self-reference and ancestor-reference behavior | Link ownership | I02:E03:AC5, I02:E02:AC5, I02:E01:AC4 |
-| Self-reference and ancestor-reference behavior | Preamble ownership | I02:E03:AC5, I00:E04:AC4, I02:E02:AC5 |
+| Self-reference and ancestor-reference behavior | Link position | I02:E03:AC5, I02:E02:AC5, I02:E01:AC4 |
+| Self-reference and ancestor-reference behavior | Preamble content | I02:E03:AC5, I00:E04:AC4, I02:E02:AC5 |
 | Frontmatter policy | step 3 | I02:E02:AC3, I00:E03:AC1 |
 | Link classification and resource handling | The mark | I02:E03:AC6, I02:AC6, I02:AC5 |
 | Link classification and resource handling | Marked local Markdown document links | I00:E04:AC1, I02:E03:AC1, I00:E05:AC3 |
@@ -190,7 +190,7 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Post-compilation invariants | Exactly-once coverage | I00:AC3, I02:E03:AC4, I02:E03:AC3 |
 | Post-compilation invariants | No accidental omissions | I02:E03:AC4, I02:AC5, I00:E04:AC3 |
 | Post-compilation invariants | No accidental expansion | I02:E02:AC5, I00:E09:AC1, I00:E04:AC10 |
-| Post-compilation invariants | Ownership stability | I00:E04:AC13 |
+| Post-compilation invariants | Destination stability | I00:E04:AC13 |
 | Post-compilation invariants | Block-syntax preservation | I02:E05:AC2, I00:E08:AC1, I00:E06:AC2 |
 | Post-compilation invariants | Entry line integrity | I02:E04:AC6, I00:E05:AC6, I02:E02:AC7 |
 | Post-compilation invariants | Group isolation | I02:E02:AC8, I02:E02:AC4, I00:E09:AC4 |
