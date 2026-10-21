@@ -1,0 +1,19 @@
+description = "A run whose nesting spends the parser's own ceiling on its last valid reference, under every budget at its default, succeeds and bundles what that reference named, so a budget consumed is not itself read as a lookup the parser abandoned."
+
+clauses = [
+  "Adversarial acceptance fixtures — Parser exhaustion, a case that consumes the budget on its last valid reference",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "guide"
+resolved = "guide"

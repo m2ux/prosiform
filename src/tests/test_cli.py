@@ -61,7 +61,7 @@ from prosiform.cli import (
     recheck,
 )
 from prosiform.closure import resolve
-from prosiform.limits import FILES, RESOURCE_LIMIT
+from prosiform.limits import FILES, NESTING, RESOURCE_LIMIT
 from prosiform.profile import (
     HEADROOM,
     PARSER_REFERENCE_LIMIT,
@@ -1799,3 +1799,26 @@ def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) ->
     assert run.status == SUCCESS
     assert "The plan." in run.stdout
     assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+
+
+def test_a_declined_lookup_names_the_reference_under_the_default_budgets(
+    root: Path,
+) -> None:
+    written(root, "guide.md", surrounded(NESTING.default + HEADROOM + 1))
+    written(root, "plan.md", "# Plan\n\nThe plan.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    reported = run.diagnostics()[0]
+    assert reported["code"] == PARSER_REFERENCE_LIMIT
+    assert reported["reference"] == "plan.md"
+    assert reported["source"] == "guide.md:3"
+
+
+def test_a_budget_spent_on_the_last_valid_reference_bundles_it(root: Path) -> None:
+    written(root, "guide.md", surrounded(NESTING.default + HEADROOM))
+    written(root, "plan.md", "# Plan\n\nThe plan.\n")
+    run = invoke("--root", str(root), "--diagnostics", "json", "guide.md")
+    assert run.status == SUCCESS
+    assert "The plan." in run.stdout
+    assert PARSER_REFERENCE_LIMIT not in run.stderr

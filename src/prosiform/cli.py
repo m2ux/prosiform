@@ -391,18 +391,19 @@ def declined(
 ) -> Failure:
     """One reference lookup the parser declined, as the failure to index its source.
 
-    The lookup never ran, so the reference it would have resolved is
-    named by nothing the run holds: the diagnostic names the source and
-    the first span the parser was reading when it declined, which is
-    where an author finds the nesting to write the reference out of. A
-    span the parser records no line for is reported against the source
-    alone.
+    The diagnostic names the reference the declined lookup would have
+    made, together with the first span the parser was reading when it
+    declined, which is where an author finds the nesting to write the
+    reference out of. A span whose construct spells no destination
+    leaves the reference unnamed, and the diagnostic names the source
+    it could not index; a span the parser records no line for is
+    reported against the source alone.
     """
     return input_failure(
         f"the source {path!r} cannot be safely indexed: {suppressed}",
         code=PARSER_REFERENCE_LIMIT,
         remedy=suppressed.remedy,
-        reference=path,
+        reference=suppressed.reference or path,
         source=location(path, source.line(suppressed.line)),
         chain=chain,
     )

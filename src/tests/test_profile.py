@@ -185,3 +185,38 @@ def test_a_later_parse_reads_no_earlier_declined_lookup() -> None:
     with pytest.raises(Suppressed):
         parse(nested(budget + HEADROOM + 1, budget), budget)
     assert links("A [link](page.md) the ceiling leaves alone.\n") == ["page.md"]
+
+
+def test_a_declined_lookup_names_the_reference_it_would_have_made() -> None:
+    budget = 1
+    with pytest.raises(Suppressed) as declined:
+        parse(nested(budget + HEADROOM + 1, budget), budget)
+    assert declined.value.reference == "plan.md"
+    assert "plan.md" in str(declined.value)
+
+
+def test_a_declined_reference_style_lookup_names_its_definition() -> None:
+    budget = 1
+    brackets = "[" * (budget + HEADROOM + 1)
+    source = (
+        f"# Guide\n\nThe guide cites {brackets}the plan][plan].\n\n[plan]: plan.md\n"
+    )
+    with pytest.raises(Suppressed) as declined:
+        parse(source, budget)
+    assert declined.value.reference == "plan.md"
+
+
+def test_a_declined_scan_spelling_no_destination_names_no_reference() -> None:
+    budget = 1
+    brackets = "[" * (budget + HEADROOM + 1)
+    with pytest.raises(Suppressed) as declined:
+        parse(f"# Guide\n\nThe guide opens {brackets}and closes nothing.\n", budget)
+    assert declined.value.reference is None
+
+
+def test_the_ceiling_is_reached_under_every_budget_at_its_default() -> None:
+    budget = NESTING.default
+    assert links(nested(budget + HEADROOM, budget)) == ["plan.md"]
+    with pytest.raises(Suppressed) as declined:
+        parse(nested(budget + HEADROOM + 1, budget), budget)
+    assert declined.value.reference == "plan.md"
