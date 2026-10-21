@@ -3,7 +3,7 @@
 <desc id="description">The shared bundle includes Agents under Rules / Overview, which instructs the agent to compile the deferred Codex or Claude link matching its harness identity. Each compiles its selected document into a bundle headed by its source path, containing its instruction list.</desc>
 <rect width="1800" height="840" fill="#0d1117"/>
 <g font-family="IBM Plex Mono">
-<rect x="32" y="32" width="510" height="776" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/><text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">bundle.md</text>
+<rect x="32" y="32" width="510" height="776" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 32 H530 Q542 32 542 44 V94 H32 V44 Q32 32 44 32" fill="#202a36"/><text x="60" y="73" font-size="25" fill="#b1c6df" font-weight="400">skill-bundle.md</text>
 <rect x="612" y="32" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 32 H1110 Q1122 32 1122 44 V94 H612 V44 Q612 32 624 32" fill="#202a36"/><text x="640" y="73" font-size="25" fill="#b1c6df" font-weight="400">rules/codex.md</text>
 <rect x="612" y="432" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 432 H1110 Q1122 432 1122 444 V494 H612 V444 Q612 432 624 432" fill="#202a36"/><text x="640" y="473" font-size="25" fill="#b1c6df" font-weight="400">rules/claude.md</text>
 <rect x="1252" y="32" width="510" height="376" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/><text x="1280" y="73" font-size="25" fill="#b1c6df" font-weight="400">codex-bundle.md</text>
