@@ -61,6 +61,10 @@ Sixteen clauses state something other than an outcome of one run against one tre
 
 The declared surface already lists an installation claim no run observes with the reason it is unreachable and what would make it observable. A clause no source tree can state takes that entry shape: its name, the reason, and the run that would observe it where one can be named. Nothing is maintained beside the report, so a clause that comes to be reached leaves the listing by leaving its declaration.
 
+## The Defect the Fourth Fixture Found
+
+The fixture carrying every construct the profile supports is the first in the corpus to run an autolink, and an autolink ends the run in an internal error. The corpus states the run the contract requires and marks the fixture as awaiting [I00:E11:W37](https://github.com/m2ux/prosiform/issues/181), which delivers it. The clause is reached by the fixture that declares it, and the build's fault is tracked where it belongs.
+
 ## Whether This Is One Pull Request
 
 It is. The declarations are one line apiece on manifests the report itself holds true — a declaration naming no clause fails the report — and the four fixtures are small. The two component groups, the corpus and the conformance report, change disjoint files.
