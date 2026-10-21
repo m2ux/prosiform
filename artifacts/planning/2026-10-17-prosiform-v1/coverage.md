@@ -65,7 +65,7 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Input and output contract | Continuous Markdown | I02:E03:AC1, I02:E01:AC5, I00:E09:AC3 |
 | Input and output contract | Groups | I02:E02:AC7, I00:E09:AC3, I02:E02:AC8 |
 | Input and output contract | Dependency order | I00:E04:AC9, I02:E02:AC8, I02:E02:AC7 |
-| Input and output contract | Entry line | I02:E04:AC6, I01:E02:AC1, I01:AC5 |
+| Input and output contract | Entry line | I02:E04:AC6, I01:E04:AC1, I01:AC5 |
 | Input and output contract | Entry identity | I02:E03:AC4, I00:E04:AC3, I00:E04:AC13 |
 | Parser and source-preserving edits | Parsing authority | I02:E02:AC9, I02:E01:AC5, I02:E01:AC3 |
 | Parser and source-preserving edits | Source positions | I02:E04:AC3, I01:AC1, I00:E05:AC4 |
@@ -168,7 +168,7 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Agent delivery contract | Exit status | I00:E07:AC3, I02:E05:AC6, I02:E06:AC4 |
 | Agent delivery contract | Response limit | I00:AC12, I00:E07:AC2, I02:E05:AC6 |
 | Agent delivery contract | Entry destinations | I02:E05:AC7, I00:E09:AC3, I00:E08:AC5 |
-| Agent delivery contract | Clean Markdown | I01:E00:AC1, I02:E04:AC6, I01:E02:AC1 |
+| Agent delivery contract | Clean Markdown | I01:E00:AC1, I02:E04:AC6, I01:E04:AC1 |
 | Agent delivery contract | Broken pipes | I02:E05:AC6, I02:AC7, I00:E10:AC7 |
 | Agent delivery contract | No silent fallback | I02:E05:AC6, I02:E05:AC8, I00:E07:AC2 |
 | Source and candidate validation modes | Source mode | I00:E05:AC1, I02:E04:AC1, I00:E08:AC3 |

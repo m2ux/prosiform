@@ -58,8 +58,10 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/21) | Findings Ledger | AC1, AC2, AC9 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/22) | Specification Revision | AC3, AC4, AC8 | | |
-| [E02](https://github.com/m2ux/prosiform/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/22) | Specification Revision | AC3, AC4, AC8 | [E00](https://github.com/m2ux/prosiform/issues/21) | |
+| [E02](https://github.com/m2ux/prosiform/issues/195) | Explicit Grouping | AC3 | | |
+| [E03](https://github.com/m2ux/prosiform/issues/187) | Carried Debt | AC10 | | |
+| [E04](https://github.com/m2ux/prosiform/issues/23) | Specification Freeze | AC5, AC6, AC7 | [E01](https://github.com/m2ux/prosiform/issues/22), [E03](https://github.com/m2ux/prosiform/issues/187) | |
 
 ## Acceptance Criteria
 
@@ -72,6 +74,7 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 - [ ] **AC7.** The specification is settled only after the tool has bundled each source in a declared exposure set, as the freeze check shows.
 - [ ] **AC8.** A prerequisite section is removed only where a recorded bundling supplies what it named, and any shortfall is a ledger entry, as the removal records show.
 - [ ] **AC9.** Each exposure-set source carries a bundled size recorded against the size of the same sources read whole, as the run records show.
+- [ ] **AC10.** Each item the prototype initiative deferred and its product did not need is delivered or carries a recorded deferral, as the carried-debt epic rows show.
 
 ## Non-Goals
 
@@ -87,3 +90,9 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 - **R1.** **Source.** [v1 design](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/design.md) — the specification this initiative settles, including the residual items it names as needing measured real-skill data.
 - **R2.** [Planning decisions](https://github.com/m2ux/prosiform/blob/d45c7f08f3878e71d9d0a99ae728fc69fc21f174/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — why the prototype is used before a production build is committed to, and what marks the specification settled.
 - **R3.** [Proposal](https://github.com/m2ux/prosiform/issues/1) — the scoped problem and the goal clauses these criteria trace to.
+
+
+
+
+
+

@@ -39,7 +39,8 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I00:E11 body](i00-e11.md) | The local source for issue #39, Deferred Debt |
 | [I01:E00 body](i01-e00.md) | The local source for issue #21, Findings Ledger |
 | [I01:E01 body](i01-e01.md) | The local source for issue #22, Specification Revision |
-| [I01:E02 body](i01-e02.md) | The local source for issue #23, Specification Freeze |
+| [I01:E02 body](i01-e02.md) | The local source for issue #195, Explicit Grouping |
+| [I01:E04 body](i01-e04.md) | The local source for issue #23, Specification Freeze |
 | [I02:E00 body](i02-e00.md) | The local source for issue #11, Parser Verdict |
 | [I02:E01 body](i02-e01.md) | The local source for issue #12, Source-Range Adapter |
 | [I02:E02 body](i02-e02.md) | The local source for issue #13, Profile and Outline |
@@ -93,8 +94,13 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E01:W02](i01-e01/w02.md) | The implementation plan for traceability refreshed on each revision |
 | [I01:E01:W03](i01-e01/w03.md) | The implementation plan for open-finding summary from the ledger |
 | [I01:E01:W04](i01-e01/w04.md) | The implementation plan for prerequisite removal and the bundling instruction |
-| [I01:E02:W01](i01-e02/w01.md) | The implementation plan for deferral decisions for the remaining entries |
-| [I01:E02:W02](i01-e02/w02.md) | The implementation plan for freeze check and the tagged revision |
+| [I01:E01:W05](i01-e01/w05.md) | The implementation plan for title case for every generated heading |
+| [I01:E02:W01](i01-e02/w01.md) | The implementation plan for the two grouping options the command takes |
+| [I01:E02:W02](i01-e02/w02.md) | The implementation plan for section and folder groups gathered by name |
+| [I01:E02:W03](i01-e02/w03.md) | The implementation plan for one destination for a name both options give |
+| [I01:E02:W04](i01-e02/w04.md) | The implementation plan for documented grouping modes and their diagrams |
+| [I01:E04:W01](i01-e04/w01.md) | The implementation plan for deferral decisions for the remaining entries |
+| [I01:E04:W02](i01-e04/w02.md) | The implementation plan for freeze check and the tagged revision |
 | [I02:E00:W01](i02-e00/w01.md) | The implementation plan for definition-occurrence reproducer |
 | [I02:E00:W02](i02-e00/w02.md) | The implementation plan for reference-suppression reproducer |
 | [I02:E00:W03](i02-e00/w03.md) | The implementation plan for offset-iterator reproducer and version check |
