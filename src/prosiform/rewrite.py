@@ -22,9 +22,11 @@ token at all.
 
 The scan reads brackets the way the profile's parser reads them. A
 closing bracket pairs with the nearest bracket still open, a link whose
-label already holds a link is the literal text it is, and a bracketed
+own label holds a link is the literal text it is, and a bracketed
 run is a reference-style use only where this source's own definition
-environment holds its label. That environment is this source's and no
+environment holds its label. An image's alternative content is a run of
+its own, so a link written there is the image's and leaves an enclosing
+link the link it is. That environment is this source's and no
 other's, so a literal `[runner]` here stays literal however another
 source defines the same label.
 
@@ -294,6 +296,21 @@ def formed(
     return Use(kind, opening, label, (after, after), after, held)
 
 
+def alternative(one: Use, found: Sequence[Use]) -> bool:
+    """Whether one use is written inside an image's alternative content.
+
+    An image's alternative content is a run of its own, so a use the
+    scan has already read as lying within an image's label belongs to
+    that run rather than to the label of anything enclosing the image.
+    """
+    return any(
+        each.kind == RESOURCE
+        and each.label[0] <= one.opening
+        and one.end <= each.label[1]
+        for each in found
+    )
+
+
 def uses(
     text: str, defined: Mapping[str, Definition], marker: bool = False
 ) -> list[Use]:
@@ -301,10 +318,13 @@ def uses(
 
     The scan reads brackets as the parser reads them: a closing bracket
     pairs with the nearest bracket still open, a bracket an author
-    escaped or wrote inside a code span is text, and a link whose label
-    already holds a link is text as well, because a link holds no link.
-    A pair the scan reads as a use is passed over whole, so a bracket
-    inside a destination or a title opens nothing.
+    escaped or wrote inside a code span is text, and a link whose own
+    label holds a link is text as well, because a link holds no link.
+    A link an image inside that label carries belongs to the image's
+    alternative content, which is a run of its own, so it leaves the
+    enclosing link the link it is. A pair the scan reads as a use is
+    passed over whole, so a bracket inside a destination or a title
+    opens nothing.
 
     A task marker the profile returned to literal text is the one
     bracket pair a definition cannot make a link of, and it opens the
@@ -330,7 +350,10 @@ def uses(
                 at += 1
                 continue
             if one.kind == LINK and any(
-                each.kind == LINK and each.opening > opening for each in found
+                each.kind == LINK
+                and each.opening > opening
+                and not alternative(each, found)
+                for each in found
             ):
                 at += 1
                 continue
