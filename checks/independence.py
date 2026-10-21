@@ -94,13 +94,14 @@ LANGUAGES = (
 
 MACHINERY = (
     "the machinery of modules and packaging",
+    # A word the contract itself uses in its own sense is not here, however
+    # much a language also uses it: the design imports content into a bundle
+    # and checks a heading's namespace, so neither word names a build.
     (
         "module",
         "submodule",
         "package",
-        "namespace",
         "classpath",
-        "import",
         "venv",
         "virtualenv",
         "pip",
