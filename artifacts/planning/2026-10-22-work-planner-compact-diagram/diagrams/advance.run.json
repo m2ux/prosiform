@@ -1,7 +1,8 @@
 {
   "compiler_branch": "main",
-  "compiler_revision": "68dd39c10ad0f5b1ba8087dabbf924be960f50a1",
+  "compiler_revision": "64bac30b870083b64a3fd57744c042257aa4697c",
   "compact": true,
+  "section_level": 3,
   "command": "prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/advance-mode.md",
   "exit_code": 0,
   "sources": {

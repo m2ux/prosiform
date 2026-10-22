@@ -14,11 +14,11 @@ Each of the ten links under Modes in the copied SKILL.md supplies a separate com
 
 The canonical sections declared by [structure.json](work-planner/structure.json) are H2 headings. `--group artifacts:2 --group protocols:2` pools those sections within each directory group: Operations, Fields, Guidance and Commands for artifacts; Procedure and Guidance for protocols. Only reached content contributes. An unused group produces a diagnostic.
 
-Every call uses `--compact --max-output-bytes 1048576`. Images preserve headings and links and represent other content with `…`. Each mode has its own SVG, complete stdout, diagnostics, command, review and run record under [diagrams/](diagrams/). [Mode Runs](mode-runs.json) records all ten successful compilations.
+Every call uses `--compact --section-level 3 --max-output-bytes 1048576`. Images preserve links and titles through H3; deeper titles appear only when their section or subsections contain links. Other content is represented by `…`. Each mode has its own SVG, complete stdout, diagnostics, command, review and run record under [diagrams/](diagrams/). [Mode Runs](mode-runs.json) records all ten successful compilations.
 
 ## Reproduce
 
-Use a clean compiler checkout with its locked environment installed and the [renderer](https://github.com/m2ux/prosiform/blob/68dd39c10ad0f5b1ba8087dabbf924be960f50a1/scripts/render-diagram.py). From this planning folder:
+Use a clean compiler checkout with its locked environment installed and the [renderer](https://github.com/m2ux/prosiform/blob/64bac30b870083b64a3fd57744c042257aa4697c/scripts/render-diagram.py). From this planning folder:
 
 ```bash
 /path/to/prosiform/src/.venv/bin/python render-modes.py --compiler-checkout /path/to/prosiform
