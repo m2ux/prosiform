@@ -31,8 +31,7 @@ Leaving retrieval to the agent costs:
 Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
-pf -r my-skill \
-  -g rules:1 -o skill-bundle.md procedure.md rules/common.md
+pf -r my-skill -g rules:1 -o skill-bundle.md procedure.md rules/common.md
 ```
 
 ![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
