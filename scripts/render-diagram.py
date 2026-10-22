@@ -131,8 +131,8 @@ def compact_markdown(body):
     return "\n\n".join(rows)
 
 
-def filter_section_titles(body, section_level):
-    """Keep deep titles only when their section or descendants contain links."""
+def limit_section_content(body, section_level):
+    """Show content through the selected level and titles one level deeper."""
     if section_level is None:
         return body
     from markdown_it import MarkdownIt
@@ -144,29 +144,22 @@ def filter_section_titles(body, section_level):
     except Unterminated:
         return body
     tokens = MarkdownIt("commonmark").parse(source.text)
+    original = body.splitlines(keepends=True)
     removed = set()
-    for index, token in enumerate(tokens):
-        if token.type != "heading_open" or int(token.tag[1:]) <= section_level:
+    offset = source.first_line - 1
+    headings = [token for token in tokens if token.type == "heading_open" and token.map]
+    for index, token in enumerate(headings):
+        level = int(token.tag[1:])
+        if level <= section_level:
             continue
-        end = index + 1
-        while end < len(tokens):
-            following = tokens[end]
-            if following.type == "heading_open" and following.tag <= token.tag:
+        start = token.map[1] if level == section_level + 1 else token.map[0]
+        end = len(original) - offset
+        for following in headings[index + 1 :]:
+            if int(following.tag[1:]) <= section_level + 1:
+                end = following.map[0]
                 break
-            end += 1
-        linked = any(
-            child.type in ("link_open", "image")
-            for item in tokens[index:end]
-            for child in (item.children or [])
-        )
-        if not linked and token.map:
-            offset = source.first_line - 1
-            removed.update(range(token.map[0] + offset, token.map[1] + offset))
-    return "".join(
-        line
-        for index, line in enumerate(body.splitlines(keepends=True))
-        if index not in removed
-    )
+        removed.update(range(start + offset, end + offset))
+    return "".join(line for index, line in enumerate(original) if index not in removed)
 
 
 def svg(
@@ -197,16 +190,17 @@ def svg(
     blocks.append(treeblock)
     at = top
     for path, content in inputs.items():
-        content = filter_section_titles(content, section_level)
         if compact:
             content = compact_markdown(content)
+        content = limit_section_content(content, section_level)
         block, h = card(466, at, 690, path, content)
         blocks.append(block)
         at += h + 22
     _, bundle_body = split_entry_points(stdout)
-    bundle_body = filter_section_titles(bundle_body, section_level)
+    if compact:
+        bundle_body = compact_markdown(bundle_body)
     expected = (
-        (compact_markdown(bundle_body) if compact else bundle_body)
+        limit_section_content(bundle_body, section_level)
         if stdout
         else "No bundle published."
     )
@@ -258,7 +252,7 @@ def main():
         type=int,
         choices=range(1, 7),
         metavar="N",
-        help="Keep titles through HN; deeper titles require links in their section",
+        help="Show content through HN and titles through H(N+1)",
     )
     parser.add_argument(
         "--max-output-bytes",
@@ -375,8 +369,8 @@ def main():
             else ""
         )
         + (
-            f" Titles below H{options.section_level} appear only when their "
-            "section, including subsections, contains links."
+            f" Content is shown through H{options.section_level}; "
+            f"H{options.section_level + 1} sections show titles only."
             if options.section_level is not None
             else ""
         ),

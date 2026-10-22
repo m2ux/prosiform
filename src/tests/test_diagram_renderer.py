@@ -97,66 +97,69 @@ def test_compact_preserves_empty_and_rejected_states() -> None:
     assert "No bundle published." in diagram
 
 
-def test_section_level_uses_section_boundaries_and_descendant_links() -> None:
+def test_section_level_keeps_boundary_titles_and_hides_their_contents() -> None:
     body = """---
 name: metadata
 ---
-# Title
-## Area
-### Always Visible
-#### Omitted Title
-Body remains.
-#### Linked Parent
-##### Linked Child
-[Read][ref]
-##### Omitted Child
-Plain text.
-#### Linked Sibling
-<https://example.com>
-#### [Linked Title](other.md)
-#### Image Section
-![Image](map.png)
-#### Code Only
-```markdown
-[Fake](missing.md)
-```
-`[Fake](missing.md)`
-
-[ref]: real.md
+# Board
+## Operations
+Visible text and [Visible Link](visible.md).
+### Select Project Board
+[Find Theme Board](hidden.md)
+#### Hidden Detail
+Hidden body.
+### Another Operation
+<https://example.com/hidden>
+## Next Area
+Visible again.
+##### Skipped Levels
+Also hidden.
 """
     module = renderer()
-    filtered = module.filter_section_titles(body, 3)
-    for title in ("Omitted Title", "Omitted Child", "Code Only"):
-        assert title not in filtered
+    filtered = module.limit_section_content(body, 2)
     for title in (
-        "Always Visible",
-        "Linked Parent",
-        "Linked Child",
-        "Linked Sibling",
-        "Linked Title",
-        "Image Section",
+        "Board",
+        "Operations",
+        "Select Project Board",
+        "Another Operation",
+        "Next Area",
     ):
         assert title in filtered
-    assert "Body remains." in filtered
-    assert filtered.startswith("---\nname: metadata\n---\n# Title")
-    assert module.filter_section_titles(body, None) == body
-    assert module.filter_section_titles(body, 6) == body
+    for hidden in (
+        "Find Theme Board",
+        "Hidden Detail",
+        "Hidden body",
+        "example.com",
+        "Skipped Levels",
+        "Also hidden",
+    ):
+        assert hidden not in filtered
+    assert "Visible again." in filtered and "Visible Link" in filtered
+    assert filtered.startswith("---\nname: metadata\n---\n# Board")
+    assert module.limit_section_content(body, None) == body
+    assert module.limit_section_content(body, 6) == body
 
 
 def test_section_level_filters_both_panels_with_optional_compaction() -> None:
     module = renderer()
-    body = "# Title\n\n#### Hidden Detail\n\nBody remains.\n"
+    body = (
+        "# Board\n## Operations\n### Select Project Board\n\n"
+        "[Find Theme Board](hidden.md)\n"
+    )
     inputs = {"SKILL.md": body}
     for compact in (False, True):
         diagram = module.svg(
-            inputs, "skill", body, "main", "a" * 40, compact=compact, section_level=3
+            inputs, "skill", body, "main", "a" * 40, compact=compact, section_level=2
         )
-        assert "Hidden Detail" not in diagram
-        assert ("Body remains." in diagram) is not compact
+        assert diagram.count("Select Project Board") == 2
+        assert "Find Theme Board" not in diagram
         ElementTree.fromstring(diagram)
     assert inputs == {"SKILL.md": body}
 
 
 def test_section_level_handles_setext_titles() -> None:
     body = "Title\n=====\n\nDetails\n-------\n\nText.\n"
-    assert renderer().filter_section_titles(body, 1) == "Title\n=====\n\n\nText.\n"
+    assert (
+        renderer().limit_section_content(body, 1)
+        == "Title\n=====\n\nDetails\n-------\n"
+    )
