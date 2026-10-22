@@ -10,6 +10,8 @@ Each diagram shows its participating source files and complete bundle output, in
 
 ## Contents
 
+### Member structure
+
 - [Case 1: Plain Content](#case-1-plain-content)
 - [Case 2: Preamble And Sections](#case-2-preamble-and-sections)
 - [Case 3: Own Title Absorption](#case-3-own-title-absorption)
@@ -18,12 +20,18 @@ Each diagram shows its participating source files and complete bundle output, in
 - [Case 6: Headings Only](#case-6-headings-only)
 - [Case 7: Title Only](#case-7-title-only)
 - [Case 8: Empty Member](#case-8-empty-member)
+
+### Pooled sections
+
 - [Case 9: Unique Sections](#case-9-unique-sections)
 - [Case 10: Shared Sections](#case-10-shared-sections)
 - [Case 11: Mixed Sections](#case-11-mixed-sections)
 - [Case 12: Body Only Contributions](#case-12-body-only-contributions)
 - [Case 13: Nested Contributions](#case-13-nested-contributions)
 - [Case 14: Empty Contributions](#case-14-empty-contributions)
+
+### Names and casing
+
 - [Case 15: Simple Names](#case-15-simple-names)
 - [Case 16: Nested Names](#case-16-nested-names)
 - [Case 17: Stem Clashes](#case-17-stem-clashes)
@@ -31,27 +39,35 @@ Each diagram shows its participating source files and complete bundle output, in
 - [Case 19: Formatting Clashes](#case-19-formatting-clashes)
 - [Case 20: Group Suffixes](#case-20-group-suffixes)
 - [Case 21: Consistent Variant Names](#case-21-consistent-variant-names)
+
+### Links and selection
+
 - [Case 22: Whole Member Links](#case-22-whole-member-links)
 - [Case 23: Pooled Section Links](#case-23-pooled-section-links)
 - [Case 24: Absorbed Title Links](#case-24-absorbed-title-links)
 - [Case 25: Selected Sections](#case-25-selected-sections)
 - [Case 26: Deferred Links](#case-26-deferred-links)
 - [Case 27: Harness Selection](#case-27-harness-selection)
+
+### Group combinations
+
 - [Case 28: Ungrouped Baseline](#case-28-ungrouped-baseline)
 - [Case 29: Multiple Groups](#case-29-multiple-groups)
 - [Case 30: Nested Precedence](#case-30-nested-precedence)
 - [Case 31: Repeated Directory Names](#case-31-repeated-directory-names)
 - [Case 32: Unmatched Group](#case-32-unmatched-group)
+
+### Rejected commands/output
+
 - [Case 33: Missing Depth](#case-33-missing-depth)
 - [Case 34: Invalid Depth](#case-34-invalid-depth)
 - [Case 35: Duplicate Slug](#case-35-duplicate-slug)
 - [Case 36: Heading Overflow](#case-36-heading-overflow)
 
+
 ## Case 1: Plain Content
 
 Members sit directly beneath Rules when no sections are pooled.
-
-Area: Member structure
 
 ### Command
 
@@ -80,8 +96,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Overview holds preambles beside the pooled Style section.
 
-Area: Member structure
-
 ### Command
 
 ```bash
@@ -109,8 +123,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 A leading own H1 is represented once by its member heading.
 
-Area: Member structure
-
 ### Command
 
 ```bash
@@ -134,8 +146,6 @@ W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 
 ## Case 4: Different Title
 
 An authored title different from the filename survives beneath the member.
-
-Area: Member structure
 
 ### Command
 
@@ -161,8 +171,6 @@ W_ENTRY_DESTINATION: the entry reference 'Other Title' resolves to the destinati
 
 The first own-name H1 is absorbed even when paragraph content precedes it; both paragraphs survive.
 
-Area: Member structure
-
 ### Command
 
 ```bash
@@ -186,8 +194,6 @@ W_ENTRY_DESTINATION: the entry reference 'Later Title' resolves to the destinati
 ## Case 6: Headings Only
 
 Heading-only sections contribute visible structure.
-
-Area: Member structure
 
 ### Command
 
@@ -213,8 +219,6 @@ W_ENTRY_DESTINATION: the entry reference 'First' resolves to the destination 'fi
 
 Absorbing the only title preserves a named member.
 
-Area: Member structure
-
 ### Command
 
 ```bash
@@ -239,8 +243,6 @@ W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 
 
 An empty document still has a member destination.
 
-Area: Member structure
-
 ### Command
 
 ```bash
@@ -264,8 +266,6 @@ W_ENTRY_DESTINATION: the entry reference 'Empty' resolves to the destination 'em
 ## Case 9: Unique Sections
 
 Unique section names need no contributor wrappers.
-
-Area: Pooled sections
 
 ### Command
 
@@ -294,8 +294,6 @@ W_ENTRY_DESTINATION: the entry reference 'Workflow' resolves to the destination 
 
 A shared heading contains a named contribution from each member.
 
-Area: Pooled sections
-
 ### Command
 
 ```bash
@@ -322,8 +320,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 ## Case 11: Mixed Sections
 
 Shared and single-contributor sections coexist.
-
-Area: Pooled sections
 
 ### Command
 
@@ -352,8 +348,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Body-only contributions retain member identity at depth one.
 
-Area: Pooled sections
-
 ### Command
 
 ```bash
@@ -380,8 +374,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 ## Case 13: Nested Contributions
 
 Each contributor retains its own child section beneath the pooled heading.
-
-Area: Pooled sections
 
 ### Command
 
@@ -410,8 +402,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 A shared heading with empty contributions still names both contributors.
 
-Area: Pooled sections
-
 ### Command
 
 ```bash
@@ -438,8 +428,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 ## Case 15: Simple Names
 
 Generated names title-case separators and preserve HTTP.
-
-Area: Names and casing
 
 ### Command
 
@@ -468,8 +456,6 @@ W_ENTRY_DESTINATION: the entry reference 'Quick Start' resolves to the destinati
 
 A unique nested member needs only its filename stem.
 
-Area: Names and casing
-
 ### Command
 
 ```bash
@@ -496,8 +482,6 @@ W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'pl
 ## Case 17: Stem Clashes
 
 Directory suffixes distinguish identical stems.
-
-Area: Names and casing
 
 ### Command
 
@@ -526,8 +510,6 @@ W_ENTRY_DESTINATION: the entry reference 'Web Common' resolves to the destinatio
 
 Qualification reaches the directory segment that distinguishes members.
 
-Area: Names and casing
-
 ### Command
 
 ```bash
@@ -554,8 +536,6 @@ W_ENTRY_DESTINATION: the entry reference 'Team B Web Shared' resolves to the des
 ## Case 19: Formatting Clashes
 
 Names remain distinct after hyphens and underscores become spaces.
-
-Area: Names and casing
 
 ### Command
 
@@ -584,8 +564,6 @@ W_ENTRY_DESTINATION: the entry reference 'B One Two' resolves to the destination
 
 Member names omit the redundant group kind when names stay distinct.
 
-Area: Names and casing
-
 ### Command
 
 ```bash
@@ -612,8 +590,6 @@ W_ENTRY_DESTINATION: the entry reference 'Review' resolves to the destination 'r
 ## Case 21: Consistent Variant Names
 
 Overview and pooled variants share the group-wide member names, including a noncontributor.
-
-Area: Names and casing
 
 ### Command
 
@@ -645,8 +621,6 @@ W_ENTRY_DESTINATION: the entry reference 'C Common' resolves to the destination 
 
 Whole-document links reach distinct contributor headings.
 
-Area: Links and selection
-
 ### Command
 
 ```bash
@@ -670,8 +644,6 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
 ## Case 23: Pooled Section Links
 
 References to each source Style section reach its own variant.
-
-Area: Links and selection
 
 ### Command
 
@@ -697,8 +669,6 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
 
 A link to an absorbed title reaches the member heading.
 
-Area: Links and selection
-
 ### Command
 
 ```bash
@@ -722,8 +692,6 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
 ## Case 25: Selected Sections
 
 Selecting one section preserves its outline and excludes its sibling body.
-
-Area: Links and selection
 
 ### Command
 
@@ -749,8 +717,6 @@ W_ENTRY_DESTINATION: the entry reference 'Selected' resolves to the destination 
 
 Deferred targets exist but contribute no body.
 
-Area: Links and selection
-
 ### Command
 
 ```bash
@@ -775,8 +741,6 @@ W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'c
 
 Selecting Codex includes its common rules and leaves Claude deferred.
 
-Area: Links and selection
-
 ### Command
 
 ```bash
@@ -800,8 +764,6 @@ W_ENTRY_DESTINATION: the entry reference 'Codex' resolves to the destination 'co
 ## Case 28: Ungrouped Baseline
 
 Ungrouped generated names retain paths and authored heading spelling.
-
-Area: Group combinations
 
 ### Command
 
@@ -830,8 +792,6 @@ W_ENTRY_DESTINATION: the entry reference 'Rules/HTTP-Checks' resolves to the des
 
 Distinct slugs contribute independent groups.
 
-Area: Group combinations
-
 ### Command
 
 ```bash
@@ -858,8 +818,6 @@ W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'c
 ## Case 30: Nested Precedence
 
 The deepest named directory owns its member; both groups have content.
-
-Area: Group combinations
 
 ### Command
 
@@ -888,8 +846,6 @@ W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blu
 
 One slug groups matching directories in separate branches.
 
-Area: Group combinations
-
 ### Command
 
 ```bash
@@ -917,8 +873,6 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 An existing directory with no reached members warns while the selected document compiles.
 
-Area: Group combinations
-
 ### Command
 
 ```bash
@@ -944,8 +898,6 @@ W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination
 
 A folder-only group argument is invalid usage and emits no bundle.
 
-Area: Rejected commands/output
-
 ### Command
 
 ```bash
@@ -968,8 +920,6 @@ E_INVALID_GROUP_RULE: the grouping rule 'rules' is not a directory slug and a de
 ## Case 34: Invalid Depth
 
 A depth outside one through six is invalid usage.
-
-Area: Rejected commands/output
 
 ### Command
 
@@ -994,8 +944,6 @@ E_INVALID_GROUP_RULE: the grouping rule 'rules:7' names depth 7, which is outsid
 
 A slug may be declared only once, even with different depths.
 
-Area: Rejected commands/output
-
 ### Command
 
 ```bash
@@ -1018,8 +966,6 @@ E_INVALID_GROUP_RULE: the grouping rule 'rules:2' names 'rules', which another r
 ## Case 36: Heading Overflow
 
 A carried heading that would exceed H6 prevents publication.
-
-Area: Rejected commands/output
 
 ### Command
 

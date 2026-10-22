@@ -125,8 +125,12 @@ def main():
               'Source revision: ['+REVISION[:12]+'](https://github.com/m2ux/prosiform/commit/'+REVISION+').', '',
               'Each diagram shows its participating source files and complete bundle output, including the entry preamble. Diagnostics appear in a separate subsection beneath each diagram when present. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.', '',
               '[Coverage and reproduction](README.md) · [Case definitions](cases.json) · [Run records](runs.json)', '', '## Contents', '']
-    for case in cases:
-        review.append('- ['+case_heading(case)+'](#'+case_anchor(case)+')')
+    for area in dict.fromkeys(case['area'] for case in cases):
+        review.extend(['### '+area, ''])
+        for case in cases:
+            if case['area'] == area:
+                review.append('- ['+case_heading(case)+'](#'+case_anchor(case)+')')
+        review.append('')
     for case in cases:
         root = 'sources/'+case['id']+'/my-skill'
         command = [str(args.compiler.resolve()), '--root', root, *case['args']]
@@ -150,7 +154,7 @@ def main():
         stem.with_suffix('.command.txt').write_text(display+'\n')
         records.append(dict(case=case['id'],command=display,exit_code=run.returncode,stdout_sha256=hashlib.sha256(run.stdout.encode()).hexdigest(),stderr_sha256=hashlib.sha256(run.stderr.encode()).hexdigest()))
         rel = 'cases/'+case['id']
-        review.extend(['','## '+case_heading(case),'',case['focus'],'','Area: '+case['area'],'','### Command','',fence+'bash',display,fence,'',
+        review.extend(['','## '+case_heading(case),'',case['focus'],'','### Command','',fence+'bash',display,fence,'',
                        '[Open SVG]('+rel+'.svg) · [Exact stdout]('+rel+'.stdout.md) · [Diagnostics]('+rel+'.stderr.txt) · [Contents](#contents)','',
                        '!['+case['title']+']('+rel+'.svg)'])
         review.extend(['', '### Diagnostics', '', 'Exit status: '+str(run.returncode)])
