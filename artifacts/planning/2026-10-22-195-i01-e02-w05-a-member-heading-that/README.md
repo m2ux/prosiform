@@ -13,6 +13,7 @@ Two naming conventions in one bundle make a member's identity depend on where th
 | Artifact | What it holds |
 | --- | --- |
 | [w05.md](w05.md) | The implementation plan for this unit |
+| [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
 
 ## Links
 
