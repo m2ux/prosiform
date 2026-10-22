@@ -37,7 +37,7 @@ The commands used the existing installed tools on PATH and the task worktree sou
 
 ## GitHub checks
 
-Pending the exact-head Checks workflow, which runs `make check` including lock validation, installed-wheel smoke and online link checks.
+Passed [Checks](https://github.com/m2ux/prosiform/actions/runs/39740025573/job/119694728292) at exact head 2697757fcf6f2d96ee4bd182d8b02839c073ed8c. The workflow ran the full make check set, including lock validation, installed-wheel smoke and online links.
 
 ## Delivery verification
 
