@@ -6,3 +6,4 @@
 - [x] Show input H3 titles without their contents, render compiled output at full depth, and verify complete compiler output.
 - [x] Group mode files under Modes with one subsection per mode.
 - [x] Omit compact body content without placeholders.
+- [x] Indent body content and links beyond their containing heading.

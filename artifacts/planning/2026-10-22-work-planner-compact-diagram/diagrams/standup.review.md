@@ -1,6 +1,6 @@
 # standup-mode.md
 
-Compiler: main 6feb279c390b505cbb30c3a09a7d1c579949694e
+Compiler: main 20e1bade1b3aea0959ddaba5cf20667c6de8e659
 
 Source files opened by the compiler appear beside the bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations. Compact view omits body content while retaining headings and links. Input content is shown through H2; H3 sections show titles only.
 

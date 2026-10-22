@@ -2,7 +2,7 @@
 
 Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other body content is omitted without placeholders.
 
-Compiler: main 6feb279c390b505cbb30c3a09a7d1c579949694e
+Compiler: main 20e1bade1b3aea0959ddaba5cf20667c6de8e659
 
 ## Modes
 

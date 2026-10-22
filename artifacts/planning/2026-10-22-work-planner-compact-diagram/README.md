@@ -18,7 +18,7 @@ Every call uses `--compact --input-section-level 2 --max-output-bytes 1048576`. 
 
 ## Reproduce
 
-Use a clean compiler checkout with its locked environment installed and the [renderer](https://github.com/m2ux/prosiform/blob/6feb279c390b505cbb30c3a09a7d1c579949694e/scripts/render-diagram.py). From this planning folder:
+Use a clean compiler checkout with its locked environment installed and the [renderer](https://github.com/m2ux/prosiform/blob/20e1bade1b3aea0959ddaba5cf20667c6de8e659/scripts/render-diagram.py). From this planning folder:
 
 ```bash
 /path/to/prosiform/src/.venv/bin/python render-modes.py --compiler-checkout /path/to/prosiform
