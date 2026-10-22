@@ -2,6 +2,10 @@ This bundle was built for [Findings](#findings); everything else is material it 
 
 # Guides
 
+## Overview
+
+### Notes
+
 ## Findings
 
 ### Summary
@@ -16,4 +20,4 @@ The second run held until the last step.
 
 ### Detail
 
-Each step was recorded as it ran, beside [the second run](#findings).
+Each step was recorded as it ran, beside [the second run](#notes).

@@ -1,0 +1,22 @@
+description = "A member whose own title the subsection heading absorbs takes that subsection, though every other region it carries sits at the grouping depth, so a title is absorbed only into a heading the bundle emits and the group names the member. The member contributes a section at the grouping depth, so the group emits an overview section and the subsection sits beneath it."
+
+clauses = [
+  "Grouping — A heading for every member",
+  "Grouping — The overview section",
+  "Grouping — Document content above the grouping depth",
+  "Bundle destinations — Internal links",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "notes:2", "entry.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "entry"
+resolved = "entry"

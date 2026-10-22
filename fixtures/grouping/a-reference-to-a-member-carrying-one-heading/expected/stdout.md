@@ -6,6 +6,4 @@ The member [Bare](#bare) is named by the subsection the group's overview carries
 
 # Notes
 
-## Overview
-
-### Bare
+## Bare
