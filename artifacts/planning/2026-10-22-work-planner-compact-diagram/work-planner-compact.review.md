@@ -1,8 +1,8 @@
 # Work Planner Mode Diagrams
 
-Each mode linked from the copied SKILL.md is compiled separately. Artifacts and protocols pool their canonical H2 sections. Compact images retain links and titles through H2; deeper titles appear only when their section or subsections contain links. Body content is represented by ….
+Each mode linked from the copied SKILL.md is compiled separately. Artifacts and protocols pool their canonical H2 sections. Compact images show content through H2 and H3 titles only. Links, body content and deeper headings within H3 sections are hidden. Other displayed body content is represented by ….
 
-Compiler: main 64bac30b870083b64a3fd57744c042257aa4697c
+Compiler: main 00fd19df3660304cc5bdc979eb635032b905c4aa
 
 ## Modes
 
