@@ -269,7 +269,7 @@ An error decides a failing run.
 | --- | --- |
 | `E_AMBIGUOUS_FILE_GROUP` | File-scoped hierarchy — two documents whose paths differ only by Markdown extension. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
-| `E_GENERATED_INPUT` | Generated input policy — a source opening on a file heading. |
+| `E_GENERATED_INPUT` | Generated input policy — a source opening with the bundle entry declaration. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_GROUP_RULE` | Grouping — a depth outside 1 through 6, an unknown slug, or a repeated slug. |

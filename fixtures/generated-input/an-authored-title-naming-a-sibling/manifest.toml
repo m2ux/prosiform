@@ -1,0 +1,13 @@
+description = "An authored title naming a sibling document bundles."
+clauses = ["Generated input policy"]
+[invocation]
+root = "source"
+arguments = ["notes.md"]
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Notes"
+resolved = "notes"
