@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'procedure' resolves to the destination 'procedure', which the bundle's entry line links it to
+  reference: procedure
+  resolved: procedure
+W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'common', which the bundle's entry line links it to
+  reference: Common
+  resolved: common

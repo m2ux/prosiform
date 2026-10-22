@@ -1,0 +1,1 @@
+prosiform --root my-skill --group rules rules/visual/team-a/web/shared.md rules/visual/team-b/web/shared.md

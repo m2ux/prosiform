@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'plain', which the bundle's entry line links it to
+  reference: Plain
+  resolved: plain

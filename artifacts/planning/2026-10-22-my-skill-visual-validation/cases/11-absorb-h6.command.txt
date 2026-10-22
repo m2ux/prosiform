@@ -1,0 +1,1 @@
+prosiform --root my-skill --group rules rules/visual/heading-h6.md

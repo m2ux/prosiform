@@ -1,0 +1,622 @@
+[
+  {
+    "id": "01-root-documents",
+    "title": "Root documents: generated title case",
+    "args": [
+      "procedure.md"
+    ],
+    "inputs": [
+      "procedure.md",
+      "tips.md"
+    ],
+    "expected_body": "# Procedure\n\nRead [Tips](#tips)\n\n1. Write the draft.\n2. Publish the page.\n\n# Tips\n\nKeep paragraphs short.\n",
+    "coverage": [
+      "194 AC1",
+      "195 AC6"
+    ],
+    "focus": "Procedure and Tips are title-cased; source files stay at the root.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "02-default-paths",
+    "title": "Ungrouped nested and hyphenated names",
+    "args": [
+      "quick-start.md",
+      "guides/HTTP-setup.md"
+    ],
+    "inputs": [
+      "quick-start.md",
+      "guides/HTTP-setup.md"
+    ],
+    "expected_body": "# Guides/HTTP Setup\n\n## keep HTTP spelling\n\nUse the documented endpoint.\n\n# Quick Start\n\nStart with one small change.\n",
+    "coverage": [
+      "194 AC1",
+      "194 AC2",
+      "195 AC6",
+      "195 AC7"
+    ],
+    "focus": "Generated paths preserve slashes and HTTP; the authored heading keeps its spelling.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "03-preamble-only",
+    "title": "Grouped member with no headings",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/plain.md"
+    ],
+    "inputs": [
+      "rules/visual/plain.md"
+    ],
+    "expected_body": "# Rules\n\n## Plain\n\nKeep edits small.\n\n- Check the result.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC5"
+    ],
+    "focus": "One member section; no Overview wrapper.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "04-preamble-headings",
+    "title": "Preamble and authored sections stay together",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/preamble.md"
+    ],
+    "inputs": [
+      "rules/visual/preamble.md"
+    ],
+    "expected_body": "# Rules\n\n## Preamble\n\nRead the context first.\n\n### Style\n\nPrefer short sentences.\n\n### Safety\n\nPreserve user changes.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC7"
+    ],
+    "focus": "The preamble and both source sections remain inside Preamble.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "05-shared-section-names",
+    "title": "Repeated Style sections do not merge",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/blue.md",
+      "rules/visual/red.md"
+    ],
+    "inputs": [
+      "rules/visual/blue.md",
+      "rules/visual/red.md"
+    ],
+    "expected_body": "# Rules\n\n## Blue\n\n### Style\n\nUse concrete names.\n\n### Workflow\n\nReview before publishing.\n\n## Red\n\n### Style\n\nKeep examples short.\n\n### Limits\n\nStop at the agreed scope.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC4"
+    ],
+    "focus": "Blue and Red stay whole; neither Style section collects the other member.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "06-absorb-h1",
+    "title": "Own title absorbed at H1",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h1.md"
+    ],
+    "inputs": [
+      "rules/visual/heading-h1.md"
+    ],
+    "expected_body": "# Rules\n\n## Heading H1\n\nOne member, one title.\n",
+    "coverage": [
+      "195 AC2"
+    ],
+    "focus": "The leading H1 becomes the member title exactly once.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "07-absorb-h2",
+    "title": "Own title absorbed at H2",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h2.md"
+    ],
+    "inputs": [
+      "rules/visual/heading-h2.md"
+    ],
+    "expected_body": "# Rules\n\n## Heading H2\n\nOne member, one title.\n",
+    "coverage": [
+      "195 AC2"
+    ],
+    "focus": "The leading H2 becomes the member title exactly once.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "08-absorb-h3",
+    "title": "Own title absorbed at H3",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h3.md"
+    ],
+    "inputs": [
+      "rules/visual/heading-h3.md"
+    ],
+    "expected_body": "# Rules\n\n## Heading H3\n\nOne member, one title.\n",
+    "coverage": [
+      "195 AC2"
+    ],
+    "focus": "The leading H3 becomes the member title exactly once.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "09-absorb-h4",
+    "title": "Own title absorbed at H4",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h4.md"
+    ],
+    "inputs": [
+      "rules/visual/heading-h4.md"
+    ],
+    "expected_body": "# Rules\n\n## Heading H4\n\nOne member, one title.\n",
+    "coverage": [
+      "195 AC2"
+    ],
+    "focus": "The leading H4 becomes the member title exactly once.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "10-absorb-h5",
+    "title": "Own title absorbed at H5",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h5.md"
+    ],
+    "inputs": [
+      "rules/visual/heading-h5.md"
+    ],
+    "expected_body": "# Rules\n\n## Heading H5\n\nOne member, one title.\n",
+    "coverage": [
+      "195 AC2"
+    ],
+    "focus": "The leading H5 becomes the member title exactly once.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "11-absorb-h6",
+    "title": "Own title absorbed at H6",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h6.md"
+    ],
+    "inputs": [
+      "rules/visual/heading-h6.md"
+    ],
+    "expected_body": "# Rules\n\n## Heading H6\n\nOne member, one title.\n",
+    "coverage": [
+      "195 AC2"
+    ],
+    "focus": "The leading H6 becomes the member title exactly once.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "12-own-title-children",
+    "title": "Own title with an authored child",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/identity.md"
+    ],
+    "inputs": [
+      "rules/visual/identity.md"
+    ],
+    "expected_body": "# Rules\n\n## Identity\n\nThis member keeps its own identity.\n\n### details stay lowercase\n\nPreserve this authored heading.\n",
+    "coverage": [
+      "194 AC2",
+      "195 AC2",
+      "195 AC7"
+    ],
+    "focus": "Identity is absorbed; its child keeps its exact authored case.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "13-other-title",
+    "title": "A different authored title is retained",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/other-title.md"
+    ],
+    "inputs": [
+      "rules/visual/other-title.md"
+    ],
+    "expected_body": "# Rules\n\n## Other Title\n\n### a DIFFERENT title\n\nKeep this authored title exactly.\n",
+    "coverage": [
+      "194 AC2",
+      "195 AC1",
+      "195 AC7"
+    ],
+    "focus": "The filename supplies Other Title; the different authored title remains beneath it.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "14-headings-only",
+    "title": "Member with only authored headings",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/headings-only.md"
+    ],
+    "inputs": [
+      "rules/visual/headings-only.md"
+    ],
+    "expected_body": "# Rules\n\n## Headings Only\n\n### Style\n\n### Limits\n",
+    "coverage": [
+      "195 AC1"
+    ],
+    "focus": "The member is named even without paragraph content.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "15-title-only",
+    "title": "Member with only its own title",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/title-only.md"
+    ],
+    "inputs": [
+      "rules/visual/title-only.md"
+    ],
+    "expected_body": "# Rules\n\n## Title Only\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC2"
+    ],
+    "focus": "Title absorption does not erase the member.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "16-later-title",
+    "title": "A later matching heading is not a leading title",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/later-title.md"
+    ],
+    "inputs": [
+      "rules/visual/later-title.md"
+    ],
+    "expected_body": "# Rules\n\n## Later Title\n\n### introduction stays\n\nRead this first.\n\n### Later Title\n\nThis is not a leading title.\n",
+    "coverage": [
+      "195 AC2",
+      "195 AC7"
+    ],
+    "focus": "Only a leading own-title heading qualifies for absorption.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "17-stem-clash",
+    "title": "Duplicate Common stems need parent names",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/web/common.md",
+      "rules/visual/api/common.md"
+    ],
+    "inputs": [
+      "rules/visual/web/common.md",
+      "rules/visual/api/common.md"
+    ],
+    "expected_body": "# Rules\n\n## Api Common\n\nAPI-specific guidance.\n\n## Web Common\n\nWeb-specific guidance.\n",
+    "coverage": [
+      "195 AC3"
+    ],
+    "focus": "Use the shortest distinguishing suffix after the shared prefix: Api Common and Web Common.",
+    "outcome": "bundle",
+    "notes": "The existing casing convention capitalizes only the first character of each word: api becomes Api, not API."
+  },
+  {
+    "id": "18-deep-stem-clash",
+    "title": "A parent-name clash needs another path segment",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/team-a/web/shared.md",
+      "rules/visual/team-b/web/shared.md"
+    ],
+    "inputs": [
+      "rules/visual/team-a/web/shared.md",
+      "rules/visual/team-b/web/shared.md"
+    ],
+    "expected_body": "# Rules\n\n## Team A Web Shared\n\nTeam A web guidance.\n\n## Team B Web Shared\n\nTeam B web guidance.\n",
+    "coverage": [
+      "195 AC3",
+      "194 AC1"
+    ],
+    "focus": "Web Shared still clashes, so retain the distinguishing Team A or Team B segment.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "19-unique-nested-member",
+    "title": "Unique nested member uses its stem",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/nested/deep-note.md"
+    ],
+    "inputs": [
+      "rules/visual/nested/deep-note.md"
+    ],
+    "expected_body": "# Rules\n\n## Deep Note\n\nUse the deeper document.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC3",
+      "195 AC6"
+    ],
+    "focus": "A unique filename needs no directory qualifier.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "20-generated-versus-authored",
+    "title": "Generated casing versus authored spelling",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/HTTP-checks.md"
+    ],
+    "inputs": [
+      "rules/visual/HTTP-checks.md"
+    ],
+    "expected_body": "# Rules\n\n## HTTP Checks\n\n### do NOT rewrite HTTP\n\nKeep HTTP paths case-sensitive.\n",
+    "coverage": [
+      "194 AC1",
+      "194 AC2",
+      "195 AC6",
+      "195 AC7"
+    ],
+    "focus": "Preserve HTTP in the generated name and every character of the authored heading.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "21-member-destinations",
+    "title": "Whole-member and repeated-heading destinations",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/route.md"
+    ],
+    "inputs": [
+      "rules/visual/route.md",
+      "rules/visual/blue.md",
+      "rules/visual/red.md"
+    ],
+    "expected_body": "# Rules\n\n## Blue\n\n### Style\n\nUse concrete names.\n\n### Workflow\n\nReview before publishing.\n\n## Red\n\n### Style\n\nKeep examples short.\n\n### Limits\n\nStop at the agreed scope.\n\n## Route\n\nRead [Blue](#blue) and [Red](#red).\n\nRevisit [Blue style](#style) and [Red style](#style-1).\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC4"
+    ],
+    "focus": "Blue and Red whole-document links have distinct destinations; duplicate Style fragments remain distinct.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "22-clash-destinations",
+    "title": "Links to members with duplicate stems",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/clash-route.md"
+    ],
+    "inputs": [
+      "rules/visual/clash-route.md",
+      "rules/visual/api/common.md",
+      "rules/visual/web/common.md"
+    ],
+    "expected_body": "# Rules\n\n## Api Common\n\nAPI-specific guidance.\n\n## Clash Route\n\nRead [Web common](#web-common) and [API common](#api-common).\n\n## Web Common\n\nWeb-specific guidance.\n",
+    "coverage": [
+      "195 AC3",
+      "195 AC4"
+    ],
+    "focus": "The same-stem members each have a distinct named destination.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "23-shared-skill",
+    "title": "Shared context and deferred harness selection",
+    "args": [
+      "--group",
+      "rules",
+      "procedure.md",
+      "rules/common.md"
+    ],
+    "inputs": [
+      "procedure.md",
+      "tips.md",
+      "rules/common.md",
+      "rules/agents.md"
+    ],
+    "expected_body": "# Procedure\n\nRead [Tips](#tips)\n\n1. Write the draft.\n2. Publish the page.\n\n# Rules\n\n## Agents\n\nSelect rules for your harness:\n\n- If you are Codex, compile [\u00ac Codex](rules/codex.md).\n- If you are Claude, compile [\u00ac Claude](rules/claude.md).\n\n## Common\n\n- Check every link.\n- Use clear headings.\n\nFollow [Agents](#agents).\n\n# Tips\n\nKeep paragraphs short.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC4",
+      "195 AC6",
+      "195 AC8"
+    ],
+    "focus": "Rules contains Agents and Common directly; harness files remain deferred.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "24-harness-codex",
+    "title": "Second stage: Codex as a member",
+    "args": [
+      "--group",
+      "rules",
+      "rules/codex.md"
+    ],
+    "inputs": [
+      "rules/codex.md"
+    ],
+    "expected_body": "# Rules\n\n## Codex\n\n- Keep patches focused.\n- Run relevant tests.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC4",
+      "195 AC8"
+    ],
+    "focus": "Only the selected harness is present; no Overview wrapper.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "25-harness-claude",
+    "title": "Second stage: Claude as a member",
+    "args": [
+      "--group",
+      "rules",
+      "rules/claude.md"
+    ],
+    "inputs": [
+      "rules/claude.md"
+    ],
+    "expected_body": "# Rules\n\n## Claude\n\n- Review the proposed change.\n- Report actionable findings.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC4",
+      "195 AC8"
+    ],
+    "focus": "Only the selected harness is present; no Overview wrapper.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "26-multiple-groups",
+    "title": "Repeated option for different folder slugs",
+    "args": [
+      "--group",
+      "rules",
+      "--group",
+      "checks",
+      "rules/visual/plain.md",
+      "checks/visual/final-check.md"
+    ],
+    "inputs": [
+      "rules/visual/plain.md",
+      "checks/visual/final-check.md"
+    ],
+    "expected_body": "# Checks\n\n## Final Check\n\nVerify the final result.\n\n# Rules\n\n## Plain\n\nKeep edits small.\n\n- Check the result.\n",
+    "coverage": [
+      "195 AC5",
+      "195 AC6"
+    ],
+    "focus": "Each named folder contributes its own group.",
+    "outcome": "bundle",
+    "notes": ""
+  },
+  {
+    "id": "27-old-depth-rejected",
+    "title": "Retired depth syntax is rejected",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/plain.md"
+    ],
+    "inputs": [
+      "rules/visual/plain.md"
+    ],
+    "expected_body": "",
+    "coverage": [
+      "195 AC5"
+    ],
+    "focus": "The proposed CLI rejects --group rules:1 and publishes no bundle.",
+    "outcome": "rejection",
+    "notes": ""
+  },
+  {
+    "id": "28-duplicate-group-rejected",
+    "title": "Repeated identical folder rule is rejected",
+    "args": [
+      "--group",
+      "rules",
+      "--group",
+      "rules",
+      "rules/visual/plain.md"
+    ],
+    "inputs": [
+      "rules/visual/plain.md"
+    ],
+    "expected_body": "",
+    "coverage": [
+      "195 AC5"
+    ],
+    "focus": "Repeatable means different folder slugs; the same slug twice is rejected.",
+    "outcome": "rejection",
+    "notes": ""
+  },
+  {
+    "id": "29-deepest-matching-folder",
+    "title": "Nested matching folders use the deepest group",
+    "args": [
+      "--group",
+      "rules",
+      "--group",
+      "nested",
+      "rules/visual/nested/deep-note.md"
+    ],
+    "inputs": [
+      "rules/visual/nested/deep-note.md"
+    ],
+    "expected_body": "# Nested\n\n## Deep Note\n\nUse the deeper document.\n",
+    "coverage": [
+      "195 AC1",
+      "195 AC5"
+    ],
+    "focus": "Existing deepest-folder selection is retained; the unused outer rule contributes no section.",
+    "outcome": "bundle",
+    "notes": "Scope assumption: the issue changes arrangement, not deepest-directory membership. Confirm this retained behavior during review."
+  },
+  {
+    "id": "30-ungrouped-harness",
+    "title": "Ungrouped harness path is title-cased",
+    "args": [
+      "rules/codex.md"
+    ],
+    "inputs": [
+      "rules/codex.md"
+    ],
+    "expected_body": "# Rules/Codex\n\n- Keep patches focused.\n- Run relevant tests.\n",
+    "coverage": [
+      "194 AC1",
+      "195 AC6"
+    ],
+    "focus": "Title casing also covers the default document heading, without --group.",
+    "outcome": "bundle",
+    "notes": ""
+  }
+]

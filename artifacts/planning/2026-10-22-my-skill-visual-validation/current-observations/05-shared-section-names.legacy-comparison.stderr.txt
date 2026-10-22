@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Style' resolves to the destination 'style', which the bundle's entry line links it to
+  reference: Style
+  resolved: style
+W_ENTRY_DESTINATION: the entry reference 'Style' resolves to the destination 'style', which the bundle's entry line links it to
+  reference: Style
+  resolved: style

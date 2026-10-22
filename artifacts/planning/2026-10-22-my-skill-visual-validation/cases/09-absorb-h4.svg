@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="518" viewBox="0 0 2142 518" role="img" aria-labelledby="title desc"><title id="title">Own title absorbed at H4</title><desc id="desc">The leading H4 becomes the member title exactly once. Proposed output, not compiler evidence.</desc><rect width="2142" height="518" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">09-absorb-h4 · Own title absorbed at H4</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">PROPOSED OUTPUT · issues #194 and #195 · not produced by the current compiler</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root my-skill --group rules rules/visual/heading-h4.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">The leading H4 becomes the member title exactly once.</text><rect x="32" y="208" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 262 H442" stroke="#303b49"/>
+<text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="356" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="393" font-size="20" fill="#e6edf3" font-weight="400">   └─ visual/</text>
+<text x="70" y="430" font-size="20" fill="#e6edf3" font-weight="400">      └─ heading-h4.md</text><rect x="466" y="208" width="690" height="182" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="244" font-size="21" fill="#b1c6df" font-weight="400">rules/visual/heading-h4.md</text>
+<path d="M466 262 H1156" stroke="#303b49"/>
+<text x="478" y="322" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="552" y="322" font-size="23" fill="#e6edf3" font-weight="500">Heading H4</text>
+<text x="504" y="372" font-size="20" fill="#e6edf3" font-weight="400">One member, one title.</text><rect x="1230" y="208" width="880" height="245" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Expected bundle body</text>
+<path d="M1230 262 H2110" stroke="#303b49"/>
+<text x="1242" y="329" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="329" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="385" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="385" font-size="26" fill="#e6edf3" font-weight="500">Heading H4</text>
+<text x="1268" y="435" font-size="20" fill="#e6edf3" font-weight="400">One member, one title.</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="493" font-size="17" fill="#b1c6df" font-weight="400">Bundle body shown in full; generated entry preamble omitted. Exact Markdown and link destinations: adjacent .expected.md.</text></g></svg>

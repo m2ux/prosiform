@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="651" viewBox="0 0 2142 651" role="img" aria-labelledby="title desc"><title id="title">Duplicate Common stems need parent names</title><desc id="desc">Use the shortest distinguishing suffix after the shared prefix: Api Common and Web Common. Proposed output, not compiler evidence.</desc><rect width="2142" height="651" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">17-stem-clash · Duplicate Common stems need parent names</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">PROPOSED OUTPUT · issues #194 and #195 · not produced by the current compiler</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root my-skill --group rules rules/visual/web/common.md rules/visual/api/common.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">Use the shortest distinguishing suffix after the shared prefix: Api Common and Web Common.</text><text x="32" y="183" font-size="18" fill="#e3b341" font-weight="400">Review note: The existing casing convention capitalizes only the first character of each word: api becomes Api, not API.</text><rect x="32" y="235" width="410" height="351" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="271" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 289 H442" stroke="#303b49"/>
+<text x="70" y="346" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="383" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="420" font-size="20" fill="#e6edf3" font-weight="400">   └─ visual/</text>
+<text x="70" y="457" font-size="20" fill="#e6edf3" font-weight="400">      ├─ api/</text>
+<text x="70" y="494" font-size="20" fill="#e6edf3" font-weight="400">      │  └─ common.md</text>
+<text x="70" y="531" font-size="20" fill="#e6edf3" font-weight="400">      └─ web/</text>
+<text x="70" y="568" font-size="20" fill="#e6edf3" font-weight="400">         └─ common.md</text><rect x="466" y="235" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="271" font-size="21" fill="#b1c6df" font-weight="400">rules/visual/web/common.md</text>
+<path d="M466 289 H1156" stroke="#303b49"/>
+<text x="504" y="346" font-size="20" fill="#e6edf3" font-weight="400">Web-specific guidance.</text><rect x="466" y="386" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="422" font-size="21" fill="#b1c6df" font-weight="400">rules/visual/api/common.md</text>
+<path d="M466 440 H1156" stroke="#303b49"/>
+<text x="504" y="497" font-size="20" fill="#e6edf3" font-weight="400">API-specific guidance.</text><rect x="1230" y="235" width="880" height="351" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="271" font-size="21" fill="#b1c6df" font-weight="400">Expected bundle body</text>
+<path d="M1230 289 H2110" stroke="#303b49"/>
+<text x="1242" y="356" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="356" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="412" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="412" font-size="26" fill="#e6edf3" font-weight="500">Api Common</text>
+<text x="1268" y="462" font-size="20" fill="#e6edf3" font-weight="400">API-specific guidance.</text>
+<text x="1242" y="518" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="518" font-size="26" fill="#e6edf3" font-weight="500">Web Common</text>
+<text x="1268" y="568" font-size="20" fill="#e6edf3" font-weight="400">Web-specific guidance.</text><path d="M1172 335 H1190 V323 L1218 351 L1190 379 V367 H1172Z" fill="#58a6ff"/><text x="32" y="626" font-size="17" fill="#b1c6df" font-weight="400">Bundle body shown in full; generated entry preamble omitted. Exact Markdown and link destinations: adjacent .expected.md.</text></g></svg>

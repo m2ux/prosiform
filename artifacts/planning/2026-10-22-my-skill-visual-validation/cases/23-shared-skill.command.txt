@@ -1,0 +1,1 @@
+prosiform --root my-skill --group rules procedure.md rules/common.md

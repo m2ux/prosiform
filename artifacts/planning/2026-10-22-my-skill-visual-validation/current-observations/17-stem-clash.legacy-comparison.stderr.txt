@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'common', which the bundle's entry line links it to
+  reference: Common
+  resolved: common
+W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'common-1', which the bundle's entry line links it to
+  reference: Common
+  resolved: common-1

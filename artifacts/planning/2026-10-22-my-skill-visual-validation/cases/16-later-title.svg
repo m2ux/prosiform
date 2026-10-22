@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="674" viewBox="0 0 2142 674" role="img" aria-labelledby="title desc"><title id="title">A later matching heading is not a leading title</title><desc id="desc">Only a leading own-title heading qualifies for absorption. Proposed output, not compiler evidence.</desc><rect width="2142" height="674" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">16-later-title · A later matching heading is not a leading title</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">PROPOSED OUTPUT · issues #194 and #195 · not produced by the current compiler</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root my-skill --group rules rules/visual/later-title.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">Only a leading own-title heading qualifies for absorption.</text><rect x="32" y="208" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 262 H442" stroke="#303b49"/>
+<text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="356" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="393" font-size="20" fill="#e6edf3" font-weight="400">   └─ visual/</text>
+<text x="70" y="430" font-size="20" fill="#e6edf3" font-weight="400">      └─ later-title.md</text><rect x="466" y="208" width="690" height="299" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="244" font-size="21" fill="#b1c6df" font-weight="400">rules/visual/later-title.md</text>
+<path d="M466 262 H1156" stroke="#303b49"/>
+<text x="478" y="329" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="329" font-size="30" fill="#e6edf3" font-weight="500">introduction stays</text>
+<text x="504" y="379" font-size="20" fill="#e6edf3" font-weight="400">Read this first.</text>
+<text x="478" y="439" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="439" font-size="30" fill="#e6edf3" font-weight="500">Later Title</text>
+<text x="504" y="489" font-size="20" fill="#e6edf3" font-weight="400">This is not a leading title.</text><rect x="1230" y="208" width="880" height="401" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Expected bundle body</text>
+<path d="M1230 262 H2110" stroke="#303b49"/>
+<text x="1242" y="329" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="329" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="385" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="385" font-size="26" fill="#e6edf3" font-weight="500">Later Title</text>
+<text x="1242" y="438" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="438" font-size="23" fill="#e6edf3" font-weight="500">introduction stays</text>
+<text x="1268" y="488" font-size="20" fill="#e6edf3" font-weight="400">Read this first.</text>
+<text x="1242" y="541" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="541" font-size="23" fill="#e6edf3" font-weight="500">Later Title</text>
+<text x="1268" y="591" font-size="20" fill="#e6edf3" font-weight="400">This is not a leading title.</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="649" font-size="17" fill="#b1c6df" font-weight="400">Bundle body shown in full; generated entry preamble omitted. Exact Markdown and link destinations: adjacent .expected.md.</text></g></svg>

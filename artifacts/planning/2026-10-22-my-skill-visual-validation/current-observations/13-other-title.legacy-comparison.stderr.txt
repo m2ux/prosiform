@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'a DIFFERENT title' resolves to the destination 'a-different-title', which the bundle's entry line links it to
+  reference: a DIFFERENT title
+  resolved: a-different-title

@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Shared' resolves to the destination 'shared', which the bundle's entry line links it to
+  reference: Shared
+  resolved: shared
+W_ENTRY_DESTINATION: the entry reference 'Shared' resolves to the destination 'shared-1', which the bundle's entry line links it to
+  reference: Shared
+  resolved: shared-1

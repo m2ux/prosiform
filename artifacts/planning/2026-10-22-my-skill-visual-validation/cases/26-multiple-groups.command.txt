@@ -1,0 +1,1 @@
+prosiform --root my-skill --group rules --group checks rules/visual/plain.md checks/visual/final-check.md

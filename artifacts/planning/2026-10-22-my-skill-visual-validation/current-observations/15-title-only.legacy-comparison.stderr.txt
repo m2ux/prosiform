@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'Title Only' resolves to the destination 'title-only', which the bundle's entry line links it to
+  reference: Title Only
+  resolved: title-only

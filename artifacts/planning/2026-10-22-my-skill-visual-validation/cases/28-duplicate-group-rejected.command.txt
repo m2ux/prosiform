@@ -1,0 +1,1 @@
+prosiform --root my-skill --group rules --group rules rules/visual/plain.md

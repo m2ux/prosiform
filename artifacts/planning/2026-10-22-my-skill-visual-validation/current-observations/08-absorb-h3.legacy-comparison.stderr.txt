@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'Heading H3' resolves to the destination 'heading-h3', which the bundle's entry line links it to
+  reference: Heading H3
+  resolved: heading-h3

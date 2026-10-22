@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'guides/HTTP-setup' resolves to the destination 'guideshttp-setup', which the bundle's entry line links it to
+  reference: guides/HTTP-setup
+  resolved: guideshttp-setup
+W_ENTRY_DESTINATION: the entry reference 'quick-start' resolves to the destination 'quick-start', which the bundle's entry line links it to
+  reference: quick-start
+  resolved: quick-start

@@ -1,0 +1,1 @@
+prosiform --root my-skill --group rules --group nested rules/visual/nested/deep-note.md

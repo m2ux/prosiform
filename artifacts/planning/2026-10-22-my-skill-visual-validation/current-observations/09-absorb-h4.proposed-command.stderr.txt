@@ -1,0 +1,2 @@
+E_INVALID_GROUP_RULE: the grouping rule 'rules' is not a directory slug and a depth separated by a colon
+  remedy: run prosiform --help for usage

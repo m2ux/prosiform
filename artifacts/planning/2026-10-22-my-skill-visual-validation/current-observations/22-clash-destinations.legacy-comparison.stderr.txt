@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'Clash Route' resolves to the destination 'clash-route', which the bundle's entry line links it to
+  reference: Clash Route
+  resolved: clash-route

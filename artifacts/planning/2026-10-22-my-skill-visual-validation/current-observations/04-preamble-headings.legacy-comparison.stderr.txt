@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'Preamble' resolves to the destination 'preamble', which the bundle's entry line links it to
+  reference: Preamble
+  resolved: preamble

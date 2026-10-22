@@ -1,0 +1,614 @@
+[
+  {
+    "case": "01-root-documents",
+    "mode": "proposed-command",
+    "args": [
+      "procedure.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "01-root-documents",
+    "mode": "legacy-comparison",
+    "args": [
+      "procedure.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "02-default-paths",
+    "mode": "proposed-command",
+    "args": [
+      "quick-start.md",
+      "guides/HTTP-setup.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "02-default-paths",
+    "mode": "legacy-comparison",
+    "args": [
+      "quick-start.md",
+      "guides/HTTP-setup.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "03-preamble-only",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/plain.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "03-preamble-only",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/plain.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "04-preamble-headings",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/preamble.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "04-preamble-headings",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/preamble.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "05-shared-section-names",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/blue.md",
+      "rules/visual/red.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "05-shared-section-names",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/blue.md",
+      "rules/visual/red.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "06-absorb-h1",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h1.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "06-absorb-h1",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/heading-h1.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "07-absorb-h2",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h2.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "07-absorb-h2",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/heading-h2.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "08-absorb-h3",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h3.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "08-absorb-h3",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/heading-h3.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "09-absorb-h4",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h4.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "09-absorb-h4",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/heading-h4.md"
+    ],
+    "exit_code": 1
+  },
+  {
+    "case": "10-absorb-h5",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h5.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "10-absorb-h5",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/heading-h5.md"
+    ],
+    "exit_code": 1
+  },
+  {
+    "case": "11-absorb-h6",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/heading-h6.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "11-absorb-h6",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/heading-h6.md"
+    ],
+    "exit_code": 1
+  },
+  {
+    "case": "12-own-title-children",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/identity.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "12-own-title-children",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/identity.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "13-other-title",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/other-title.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "13-other-title",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/other-title.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "14-headings-only",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/headings-only.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "14-headings-only",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/headings-only.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "15-title-only",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/title-only.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "15-title-only",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/title-only.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "16-later-title",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/later-title.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "16-later-title",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/later-title.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "17-stem-clash",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/web/common.md",
+      "rules/visual/api/common.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "17-stem-clash",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/web/common.md",
+      "rules/visual/api/common.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "18-deep-stem-clash",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/team-a/web/shared.md",
+      "rules/visual/team-b/web/shared.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "18-deep-stem-clash",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/team-a/web/shared.md",
+      "rules/visual/team-b/web/shared.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "19-unique-nested-member",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/nested/deep-note.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "19-unique-nested-member",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/nested/deep-note.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "20-generated-versus-authored",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/HTTP-checks.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "20-generated-versus-authored",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/HTTP-checks.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "21-member-destinations",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/route.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "21-member-destinations",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/route.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "22-clash-destinations",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/visual/clash-route.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "22-clash-destinations",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/clash-route.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "23-shared-skill",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "procedure.md",
+      "rules/common.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "23-shared-skill",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "procedure.md",
+      "rules/common.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "24-harness-codex",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/codex.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "24-harness-codex",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/codex.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "25-harness-claude",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "rules/claude.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "25-harness-claude",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/claude.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "26-multiple-groups",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "--group",
+      "checks",
+      "rules/visual/plain.md",
+      "checks/visual/final-check.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "26-multiple-groups",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "--group",
+      "checks:1",
+      "rules/visual/plain.md",
+      "checks/visual/final-check.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "27-old-depth-rejected",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/plain.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "27-old-depth-rejected",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/visual/plain.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "28-duplicate-group-rejected",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "--group",
+      "rules",
+      "rules/visual/plain.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "28-duplicate-group-rejected",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "--group",
+      "rules:1",
+      "rules/visual/plain.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "29-deepest-matching-folder",
+    "mode": "proposed-command",
+    "args": [
+      "--group",
+      "rules",
+      "--group",
+      "nested",
+      "rules/visual/nested/deep-note.md"
+    ],
+    "exit_code": 2
+  },
+  {
+    "case": "29-deepest-matching-folder",
+    "mode": "legacy-comparison",
+    "args": [
+      "--group",
+      "rules:1",
+      "--group",
+      "nested:1",
+      "rules/visual/nested/deep-note.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "30-ungrouped-harness",
+    "mode": "proposed-command",
+    "args": [
+      "rules/codex.md"
+    ],
+    "exit_code": 0
+  },
+  {
+    "case": "30-ungrouped-harness",
+    "mode": "legacy-comparison",
+    "args": [
+      "rules/codex.md"
+    ],
+    "exit_code": 0
+  }
+]

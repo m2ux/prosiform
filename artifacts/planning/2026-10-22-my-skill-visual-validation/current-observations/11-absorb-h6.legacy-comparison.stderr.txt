@@ -1,0 +1,5 @@
+E_HEADING_DEPTH_OVERFLOW: 'rules/visual/heading-h6.md' emits the heading 'Heading H6' at level 9, which is beyond H6
+  reference: rules/visual/heading-h6.md
+  source: rules/visual/heading-h6.md
+  chain: rules/visual/heading-h6.md
+  remedy: raise the heading in the source, or select a section of it
