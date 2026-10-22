@@ -2,13 +2,13 @@ description = "A slug named by two grouping rules is refused as an invalid optio
 
 clauses = [
   "Grouping, a grouping rule refused for its repetition",
-  "CLI contract — --group SLUG:DEPTH, repeatable, once per slug",
+  "CLI contract — -g SLUG:DEPTH, repeatable, once per slug",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--group", "docs:2", "--group", "docs:3", "guide.md"]
+arguments = ["-g", "docs:2", "-g", "docs:3", "guide.md"]
 
 [expected]
 exit_status = 2

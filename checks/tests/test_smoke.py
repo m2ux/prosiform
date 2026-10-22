@@ -30,32 +30,32 @@ def answering(monkeypatch: pytest.MonkeyPatch, response: CompletedProcess[str]) 
 
 def test_a_run_that_exited_nonzero_names_the_step_and_the_reason() -> None:
     with pytest.raises(smoke.Failed) as refused:
-        smoke.succeeded(run(status=2, err="no such option"), "prosiform --root")
+        smoke.succeeded(run(status=2, err="no such option"), "pf -r")
     assert "exited 2" in str(refused.value)
     assert "no such option" in str(refused.value)
 
 
 def test_a_successful_run_is_the_standard_output_it_wrote() -> None:
-    assert smoke.reported(run(out="a bundle\n"), "prosiform") == "a bundle\n"
+    assert smoke.reported(run(out="a bundle\n"), "pf") == "a bundle\n"
 
 
 def test_a_run_writing_to_standard_error_is_refused() -> None:
     with pytest.raises(smoke.Failed) as refused:
-        smoke.reported(run(out="a bundle\n", err="a warning"), "prosiform")
+        smoke.reported(run(out="a bundle\n", err="a warning"), "pf")
     assert "wrote to standard error" in str(refused.value)
 
 
 def test_a_version_response_naming_the_profile_is_the_version(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out=f"prosiform 0.1.0 ({smoke.PROFILE})\n"))
-    assert smoke.version(tmp_path, tmp_path) == f"prosiform 0.1.0 ({smoke.PROFILE})"
+    answering(monkeypatch, run(out=f"pf 0.1.0 ({smoke.PROFILE})\n"))
+    assert smoke.version(tmp_path, tmp_path) == f"pf 0.1.0 ({smoke.PROFILE})"
 
 
 def test_a_version_response_naming_no_profile_is_refused(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out="prosiform 0.1.0\n"))
+    answering(monkeypatch, run(out="pf 0.1.0\n"))
     with pytest.raises(smoke.Failed) as refused:
         smoke.version(tmp_path, tmp_path)
     assert smoke.PROFILE in str(refused.value)
@@ -116,6 +116,17 @@ def test_a_command_outside_the_repository_resolves(tmp_path: Path) -> None:
     installed.write_text("#!/bin/sh\n")
     installed.chmod(0o755)
     assert smoke.resolve(tmp_path) == installed.resolve()
+
+
+def test_an_installation_with_the_retired_command_is_refused(tmp_path: Path) -> None:
+    binaries = tmp_path / smoke.BIN
+    binaries.mkdir()
+    for command in (smoke.COMMAND, "prosiform"):
+        installed = binaries / command
+        installed.write_text("#!/bin/sh\n")
+        installed.chmod(0o755)
+    with pytest.raises(smoke.Failed, match="retired prosiform command"):
+        smoke.resolve(tmp_path)
 
 
 def test_a_workspace_inside_the_repository_establishes_nothing() -> None:

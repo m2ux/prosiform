@@ -2,13 +2,13 @@ description = "A construct in a section no reference selected, nesting container
 
 clauses = [
   "Validation scope, an opened file can fail because an unselected construct exceeds a declared file-wide parsing-safety limit",
-  "Resource limits — --max-nesting",
+  "Resource limits — -N",
   "Adversarial acceptance fixtures — File-wide safety, excessive parsing depth in an unselected sibling",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--max-nesting", "3", "guide.md#procedure"]
+arguments = ["-N", "3", "guide.md#procedure"]
 
 [expected]
 exit_status = 1

@@ -6,7 +6,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--max-files", "0", "alpha.md"]
+arguments = ["-F", "0", "alpha.md"]
 
 [expected]
 exit_status = 2

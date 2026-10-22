@@ -12,7 +12,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--group", "modes:2", "modes/plan-mode.md", "modes/review-mode.md"]
+arguments = ["-g", "modes:2", "modes/plan-mode.md", "modes/review-mode.md"]
 
 [expected]
 exit_status = 0

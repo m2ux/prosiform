@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--group", "docs:1", "docs/notes.md", "docs/guide.md"]
+arguments = ["-g", "docs:1", "docs/notes.md", "docs/guide.md"]
 
 [expected]
 exit_status = 0

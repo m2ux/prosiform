@@ -1,12 +1,12 @@
 description = "A run whose sources sum to more raw bytes than the input budget names fails at the source that crosses the sum, each source counted once."
 
 clauses = [
-  "Resource limits — --max-input-bytes",
+  "Resource limits — -I",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--max-input-bytes", "60", "alpha.md"]
+arguments = ["-I", "60", "alpha.md"]
 
 [expected]
 exit_status = 1

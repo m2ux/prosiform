@@ -54,8 +54,8 @@ from runner import BUILD, BuildNotConfigured, build_under_test
 INVOCATION = ROOT / "invocation.md"
 WIDTH = "80"
 
-HELP = "--help"
-VERSION = "--version"
+HELP = "-h"
+VERSION = "-v"
 
 OPTION = "Option"
 EFFECT = "Effect"

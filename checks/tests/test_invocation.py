@@ -39,7 +39,7 @@ from invocation import (
 )
 from runner import BUILD, BuildNotConfigured
 
-HELP = """usage: tool --root DIR [OPTIONS] REF [REF ...]
+HELP = """usage: tool -r DIR [OPTIONS] REF [REF ...]
 
 Bundle the local Markdown closure of one or more entry references into one
 validated document.
@@ -47,16 +47,16 @@ validated document.
 positional arguments:
   REF                   an entry reference: a root-relative document, a
                         document and a fragment, or a fragment alone with
-                        --from
+                        -f
 
 options:
-  --root DIR            the allowed source root; required, and resolved from
+  -r DIR            the allowed source root; required, and resolved from
                         the working directory
-  -o, --output FILE     publish the validated bundle to FILE, atomically;
+  -o FILE     publish the validated bundle to FILE, atomically;
                         default or - is standard output
-  --diagnostics {text,json}
+  -d {text,json}
                         the diagnostic format on standard error; default text
-  --help                show this usage, the defaults, and the exit-status
+  -h                show this usage, the defaults, and the exit-status
                         meanings
 
 exit statuses:
@@ -77,8 +77,8 @@ def canned(directory: Path) -> str:
     version_text.write_text(VERSION, encoding="utf-8")
     script = (
         'case "$1" in '
-        f"--help) cat {shlex.quote(str(help_text))} ;; "
-        f"--version) cat {shlex.quote(str(version_text))} ;; "
+        f"-h) cat {shlex.quote(str(help_text))} ;; "
+        f"-v) cat {shlex.quote(str(version_text))} ;; "
         "*) exit 2 ;; "
         "esac"
     )
@@ -143,7 +143,7 @@ def test_a_documented_option_the_command_does_not_expose_fails(
     documented: Path,
 ) -> None:
     row = (
-        "| `--root DIR` | the allowed source root; required, and resolved from "
+        "| `-r DIR` | the allowed source root; required, and resolved from "
         "the working directory |"
     )
     invented = "| `--depth N` | how deep a run follows a link |"
@@ -155,13 +155,11 @@ def test_an_option_the_command_exposes_and_no_table_names_fails(
     documented: Path,
 ) -> None:
     row = (
-        "| `--diagnostics {text,json}` | the diagnostic format on standard "
-        "error; default text |\n"
+        "| `-d {text,json}` | the diagnostic format on standard error; default text |\n"
     )
     reported = faults(documented, row)
     assert any(
-        "--diagnostics {text,json}" in fault and "no table names it" in fault
-        for fault in reported
+        "-d {text,json}" in fault and "no table names it" in fault for fault in reported
     )
 
 
@@ -170,8 +168,7 @@ def test_a_row_whose_wording_left_the_help_text_fails(documented: Path) -> None:
         documented, "default or - is standard output", "default - is standard output"
     )
     assert any(
-        "-o, --output FILE" in fault and "the command's help reads" in fault
-        for fault in reported
+        "-o FILE" in fault and "the command's help reads" in fault for fault in reported
     )
 
 

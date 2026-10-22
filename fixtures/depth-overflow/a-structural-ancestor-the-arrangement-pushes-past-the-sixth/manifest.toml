@@ -10,7 +10,7 @@ clauses = [
 [invocation]
 root = "source"
 arguments = [
-  "--group",
+  "-g",
   "references:1",
   "references/alpha.md#the-sixth",
   "references/beta.md#standards",

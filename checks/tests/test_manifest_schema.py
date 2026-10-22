@@ -106,7 +106,7 @@ def test_a_manifest_naming_no_source_tree_validates() -> None:
         {
             "severity": "error",
             "code": "E_INVALID_USAGE",
-            "message_contains": ["--root"],
+            "message_contains": ["-r"],
         }
     ]
     assert errors(manifest) == []

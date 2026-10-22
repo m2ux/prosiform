@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--group", "guides:2", "entry.md"]
+arguments = ["-g", "guides:2", "entry.md"]
 
 [expected]
 exit_status = 0

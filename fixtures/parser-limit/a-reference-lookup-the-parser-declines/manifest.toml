@@ -6,7 +6,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--max-nesting", "1", "guide.md"]
+arguments = ["-N", "1", "guide.md"]
 
 [expected]
 exit_status = 1

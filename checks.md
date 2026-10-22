@@ -30,7 +30,7 @@ The tools the first seven call are pinned by [`src/uv.lock`](src/README.md), and
 `make conformance` reads the design, the corpus and the codes the build under test reports for itself, so the coverage it reports and the comparison it makes are both read from the contract and the build rather than from either alone. `make independence` reads those same three and the report between them, and holds what the corpus binds to the behaviour the design states rather than to the build that happens to be written beside it. `make corpus`, `make invocation`, `make conformance` and `make independence` run a build named by configuration rather than one they choose, so one corpus, one documented invocation and one declared surface bind every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a corpus run resolves it from the fixture's own directory:
 
 ```bash
-export PROSIFORM_BUILD="uv run --project $PWD/src --frozen prosiform"
+export PROSIFORM_BUILD="uv run --project $PWD/src --frozen pf"
 ```
 
 There is no default and no fallback: with nothing configured the run fails rather than passing over the corpus, because a corpus run that skips sits inside a passing suite saying nothing.

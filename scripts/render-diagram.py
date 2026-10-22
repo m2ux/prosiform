@@ -312,11 +312,11 @@ def main():
         parser.error("The entry document must be under --root")
     if options.section:
         entry += "#" + options.section
-    arguments = ["--root", str(root)]
+    arguments = ["-r", str(root)]
     if options.max_output_bytes is not None:
-        arguments.extend(["--max-output-bytes", str(options.max_output_bytes)])
+        arguments.extend(["-O", str(options.max_output_bytes)])
     for group in options.group:
-        arguments.extend(["--group", group])
+        arguments.extend(["-g", group])
     arguments.append(entry)
     captured = {}
     read_source = cli.read_source

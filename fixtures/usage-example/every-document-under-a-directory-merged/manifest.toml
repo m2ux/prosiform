@@ -13,9 +13,9 @@ clauses = [
 [invocation]
 root = "source"
 arguments = [
-  "--group",
+  "-g",
   "artifacts:2",
-  "--group",
+  "-g",
   "modes:2",
   "modes/plan-mode.md",
 ]

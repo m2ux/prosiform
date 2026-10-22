@@ -1,4 +1,4 @@
-"""The prosiform command: its options, its two streams and its exit statuses.
+"""The pf command: its options, its two streams and its exit statuses.
 
 One invocation names an allowed source root and one or more entry
 references, and returns a status naming the category of its outcome.
@@ -7,8 +7,8 @@ run publishes, or the response an informational run returns, or nothing at
 all. Diagnostics go to standard error in the format the run asked for, so
 a caller reads a result from the status and an explanation from a stream
 that never carries the bundle. An informational run names no source root
-and returns one of three responses: the usage `--help` shows, the version
-and profile `--version` names, and the error and warning codes `--codes`
+and returns one of three responses: the usage `-h` shows, the version
+and profile `-v` names, and the error and warning codes `-C`
 reports, which are the codes each part of this build declares rather than
 a list written out a second time.
 
@@ -103,7 +103,7 @@ A reference with no fragment, or with an empty one, selects the whole
 document. A reference carrying a nonempty fragment selects the section
 that fragment names, which runs to the next document-level heading of
 equal or higher level; a fragment alone selects from the document
-`--from` names. Each document a run selects from carries every region
+`-f` names. Each document a run selects from carries every region
 the run's references selected from it into one group of the bundle: its
 own file group, or the merged group a grouping rule puts it in with the
 other documents under a directory of that slug. The groups are ordered
@@ -133,7 +133,7 @@ snapshot made immutable outside this tool.
 Two of the outcomes the contract declares are facts about the run rather
 than about any document it reads, so a source tree and an invocation
 state neither: a source that changes during compilation, and a run that
-fails in itself. `--fault NAME` is how a conformance run reaches them.
+fails in itself. `-x NAME` is how a conformance run reaches them.
 `source-changed` writes other bytes to each source the run read, between
 discovery and the recheck, so the recheck meets a source that is no
 longer the source the run read; `internal` fails the run in itself once
@@ -283,7 +283,7 @@ from prosiform.source import (
     CODES as SOURCE_CODES,
 )
 
-NAME = "prosiform"
+NAME = "pf"
 
 SUCCESS = 0
 INPUT_FAILURE = 1
@@ -346,7 +346,6 @@ FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT)
 
 GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DECIMAL = re.compile(r"^[0-9]+$")
-DIAGNOSTICS_OPTION = "--diagnostics"
 
 EXIT_STATUSES = """exit statuses:
   0  successful compilation, validation, or informational response
@@ -383,7 +382,7 @@ def usage_failure(
             message,
             code=code,
             reference=reference,
-            remedy=f"run {NAME} --help for usage",
+            remedy=f"run {NAME} -h for usage",
         ),
     )
 
@@ -504,7 +503,7 @@ def parser() -> Parser:
     grammar = Parser(
         prog=NAME,
         add_help=False,
-        usage=f"{NAME} --root DIR [OPTIONS] REF [REF ...]",
+        usage=f"{NAME} -r DIR [OPTIONS] REF [REF ...]",
         description=(
             "Bundle the local Markdown closure of one or more entry references "
             "into one validated document."
@@ -513,82 +512,85 @@ def parser() -> Parser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     grammar.add_argument(
-        "--root",
+        "-r",
+        dest="root",
         metavar="DIR",
-        help="the allowed source root; required, and resolved from the "
-        "working directory",
+        help="required source root; relative to working directory",
     )
     grammar.add_argument(
-        "--from",
+        "-f",
         dest="referrer",
         metavar="DOC",
-        help="the root-relative referring document a fragment-only reference "
-        "resolves against",
+        help="root-relative document for fragment-only references",
     )
     grammar.add_argument(
         "-o",
-        "--output",
+        dest="output",
         metavar="FILE",
         default=STANDARD_OUTPUT,
-        help="publish the validated bundle to FILE, atomically; "
-        "default or - is standard output",
+        help="atomic validated output to FILE; default or -: stdout",
     )
     grammar.add_argument(
-        "--group",
+        "-g",
+        dest="group",
         metavar="SLUG:DEPTH",
         action="append",
         default=[],
-        help="merge every document under a directory named SLUG at source "
-        "heading level DEPTH, 1 through 6; repeatable, once per slug",
+        help="merge documents under directories named SLUG at heading DEPTH "
+        "(1–6); repeatable, once per slug",
     )
     grammar.add_argument(
-        "--check",
+        "-c",
+        dest="check",
         action="store_true",
-        help="discover, bundle and validate without emitting or publishing "
-        "the bundle; accepted with --output",
+        help="discover, bundle, validate; publish nothing; accepts -o",
     )
     grammar.add_argument(
-        "--diagnostics",
+        "-d",
+        dest="diagnostics",
         choices=FORMATS,
         default=TEXT,
-        help=f"the diagnostic format on standard error; default {TEXT}",
+        help=f"stderr diagnostics; default {TEXT}",
     )
     grammar.add_argument(
-        "--fault",
+        "-x",
+        dest="fault",
         choices=FAULTS,
-        help="perform a fault on the run itself, so a conformance run reaches "
-        "an outcome no source tree states; none by default",
+        help="inject a conformance run fault no source tree expresses; default none",
     )
     for budget in BUDGETS:
         grammar.add_argument(
             budget.option,
+            dest=budget.dest,
             metavar="N",
             type=override,
             default=budget.default,
-            help=f"the budget of {budget.counted}; "
-            f"a positive decimal integer, default {budget.default}",
+            help=f"{budget.counted}; positive decimal integer, "
+            f"default {budget.default}",
         )
     grammar.add_argument(
-        "--codes",
+        "-C",
+        dest="codes",
         action="store_true",
-        help="report the error and warning codes this build can emit",
+        help="list this build's error and warning codes",
     )
     grammar.add_argument(
-        "--version",
+        "-v",
+        dest="version",
         action="store_true",
-        help="report the tool version and the profile identifier",
+        help="tool version and profile identifier",
     )
     grammar.add_argument(
-        "--help",
+        "-h",
+        dest="help",
         action="store_true",
-        help="show this usage, the defaults, and the exit-status meanings",
+        help="usage, defaults and exit statuses",
     )
     grammar.add_argument(
         "references",
         metavar="REF",
         nargs="*",
-        help="an entry reference: a root-relative document, a document and a "
-        "fragment, or a fragment alone with --from",
+        help="root-relative document, document#fragment, or #fragment with -f",
     )
     return grammar
 
@@ -602,15 +604,20 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     grammar then reports it as the usage failure it is.
     """
     selected = TEXT
-    for at, token in enumerate(arguments):
-        if token == DIAGNOSTICS_OPTION and at + 1 < len(arguments):
-            value = arguments[at + 1]
-        elif token.startswith(f"{DIAGNOSTICS_OPTION}="):
-            value = token.partition("=")[2]
-        else:
+    tokens = iter(arguments)
+    for token in tokens:
+        if token == "--":
+            break
+        if not token.startswith("-") or token.startswith("--"):
             continue
-        if value in FORMATS:
-            selected = value
+        for at, option in enumerate(token[1:], start=1):
+            if option in "cCvh":
+                continue
+            if option in "rfogdxFBIOTLNE":
+                value = token[at + 1 :].removeprefix("=") or next(tokens, "")
+                if option == "d" and value in FORMATS:
+                    selected = value
+            break
     return selected
 
 
@@ -1007,7 +1014,7 @@ def contributing(
     """Each file group the bundle carries, by the path that names it.
 
     A reference naming a document selects from that document, and a
-    fragment alone selects from the document `--from` names. The path
+    fragment alone selects from the document `-f` names. The path
     is the identity the reference normalized to, so two references
     spelling one document name one group, which carries what each of
     them selected, and the groups are ordered by root-relative path so
@@ -1740,14 +1747,14 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         publish(grammar.format_help(), stdout)
         return SUCCESS
     if options.version:
-        publish(f"{NAME} {version(NAME)} ({PROFILE})\n", stdout)
+        publish(f"{NAME} {version('prosiform')} ({PROFILE})\n", stdout)
         return SUCCESS
     if options.codes:
         publish("".join(f"{code}\n" for code in CODES), stdout)
         return SUCCESS
 
     if options.root is None:
-        raise usage_failure("--root is required and names the allowed source root")
+        raise usage_failure("-r is required and names the allowed source root")
     if not options.references:
         raise usage_failure("at least one entry reference is required")
     requested = [entry(reference) for reference in options.references]
@@ -1755,7 +1762,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         for one in requested:
             if not one.path:
                 raise usage_failure(
-                    f"the fragment-only reference {one.original!r} needs --from to "
+                    f"the fragment-only reference {one.original!r} needs -f to "
                     f"name the document it resolves against"
                 )
     inforce = rules(options.group)

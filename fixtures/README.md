@@ -85,7 +85,7 @@ chain = ["guide.md", "../outside.md"]
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `expected.absent` | Optional. The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A fixture whose run creates no file names none. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
-| `fault` | Optional. The fault the run performs on itself, `source-changed` or `internal`, which the runner asks for as `--fault NAME`. A fixture declaring none declares a run that meets no fault. |
+| `fault` | Optional. The fault the run performs on itself, `source-changed` or `internal`, which the runner asks for as `-x NAME`. A fixture declaring none declares a run that meets no fault. |
 
 The runner supplies the allowed source root the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
@@ -118,7 +118,7 @@ A run's working directory is the fixture's own, so a path an invocation writes l
 ```toml
 [invocation]
 root = "source"
-arguments = ["--check", "--output", "bundle.md", "guide.md"]
+arguments = ["-c", "-o", "bundle.md", "guide.md"]
 
 [expected]
 exit_status = 0
@@ -151,7 +151,7 @@ The declared diagnostic is the whole of the declaration, so nothing beside `invo
 
 ## A run with no allowed source root
 
-The contract requires `--root`, so a command line naming none is refused for its own form: `E_INVALID_USAGE` and exit status 2. The runner supplies the root a manifest names, so a manifest naming none declares that invocation:
+The contract requires `-r`, so a command line naming none is refused for its own form: `E_INVALID_USAGE` and exit status 2. The runner supplies the root a manifest names, so a manifest naming none declares that invocation:
 
 ```toml
 [invocation]
@@ -164,7 +164,7 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["--root"]
+message_contains = ["-r"]
 ```
 
 The invocation a manifest declares is the whole invocation, so a fixture states a run supplied nothing as readily as it states one supplied a tree. Such a fixture carries no source tree, because the run reaches no tree to read.
@@ -176,7 +176,7 @@ Some of what a run writes is the build's own. A version string is the clearest c
 ```toml
 [invocation]
 root = "source"
-arguments = ["--version"]
+arguments = ["-v"]
 
 [expected]
 exit_status = 0
@@ -192,7 +192,7 @@ A diagnostic declares the same thing about its message, which is how two faults 
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["#a-section", "--from"]
+message_contains = ["#a-section", "-f"]
 ```
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the path that named an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
@@ -201,11 +201,11 @@ The contract gathers six faults under the code, and each is a fixture, so what t
 
 | Fault | Fixture |
 | --- | --- |
-| A missing `--root` | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
+| A missing `-r` | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
 | No entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
-| A fragment-only reference with no `--from` | [`cli/fragment-only-reference-without-from`](cli/fragment-only-reference-without-from/manifest.toml) |
+| A fragment-only reference with no `-f` | [`cli/fragment-only-reference-without-from`](cli/fragment-only-reference-without-from/manifest.toml) |
 | An output path naming an input source | [`cli/output-naming-an-input-source`](cli/output-naming-an-input-source/manifest.toml) |
 
 An entry reference whose own spelling the grammar does not admit — a query, an encoded separator, an over-long escape, an escape decoding to no UTF-8 — carries the same code, and the `normalization/` family states it where the clause under test is the resolution sequence rather than the command line's shape.
@@ -224,7 +224,7 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Two of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, and a run that fails in itself. A fixture declares a source tree, an invocation and a result, so neither arises from that declaration, and the contract declares `--fault NAME` for a conformance run to reach them. A manifest names the fault its run meets:
+Two of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, and a run that fails in itself. A fixture declares a source tree, an invocation and a result, so neither arises from that declaration, and the contract declares `-x NAME` for a conformance run to reach them. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
@@ -314,7 +314,7 @@ export PROSIFORM_BUILD=prosiform
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner appends `--root`, the fixture's source tree resolved to an absolute path, `--diagnostics json`, and `--fault` where the manifest names one, to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner appends `-r`, the fixture's source tree resolved to an absolute path, `-d json`, and `-x` where the manifest names one, to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

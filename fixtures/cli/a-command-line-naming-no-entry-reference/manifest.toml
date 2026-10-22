@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--check"]
+arguments = ["-c"]
 
 [expected]
 exit_status = 2

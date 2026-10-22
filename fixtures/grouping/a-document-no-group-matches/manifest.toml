@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--group", "modes:2", "entry.md"]
+arguments = ["-g", "modes:2", "entry.md"]
 
 [expected]
 exit_status = 0

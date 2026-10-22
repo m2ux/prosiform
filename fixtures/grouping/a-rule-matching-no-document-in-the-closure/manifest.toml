@@ -6,7 +6,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--group", "other:2", "docs/guide.md"]
+arguments = ["-g", "other:2", "docs/guide.md"]
 
 [expected]
 exit_status = 0

@@ -49,7 +49,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROJECT = ROOT / "src"
 PYTHON_VERSION = PROJECT / ".python-version"
 
-COMMAND = "prosiform"
+COMMAND = "pf"
 PROFILE = "skill-markdown-v1"
 
 OBSERVED = (
@@ -132,6 +132,8 @@ def resolve(environment: Path) -> Path:
             f"the installed environment names no {COMMAND} command, so a caller "
             f"has nothing to resolve by name"
         )
+    if shutil.which("prosiform", path=str(environment / BIN)) is not None:
+        raise Failed("the installed environment exposes the retired prosiform command")
     where = Path(found).resolve()
     if where.is_relative_to(ROOT):
         raise Failed(
@@ -176,9 +178,7 @@ def reported(run: subprocess.CompletedProcess[str], what: str) -> str:
 
 def version(environment: Path, elsewhere: Path) -> str:
     """The version response, read from a directory unrelated to the repository."""
-    response = reported(
-        invoke(environment, elsewhere, "--version"), f"{COMMAND} --version"
-    )
+    response = reported(invoke(environment, elsewhere, "-v"), f"{COMMAND} -v")
     if PROFILE not in response:
         raise Failed(
             f"the version response {response.strip()!r} names no {PROFILE} profile"
@@ -193,8 +193,8 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     error carries the destination the entry reference resolved to, so
     the installed command's stream split is the one the contract names.
     """
-    what = f"{COMMAND} --root {sources} {ENTRY}"
-    run = invoke(environment, elsewhere, "--root", str(sources), ENTRY)
+    what = f"{COMMAND} -r {sources} {ENTRY}"
+    run = invoke(environment, elsewhere, "-r", str(sources), ENTRY)
     succeeded(run, what)
     if run.stdout != BUNDLE:
         raise Failed(

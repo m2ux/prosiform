@@ -270,9 +270,9 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
-        "--root",
+        "-r",
         str((fixture / "source").resolve()),
-        "--diagnostics",
+        "-d",
         "json",
         "guide.md#alpha",
         "other.md",
@@ -321,7 +321,7 @@ def test_a_path_the_run_leaves_absent_holds(
     """A declared path the run never creates is the expectation being met."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        arguments=("-c", "-o", "bundle.md", "guide.md"),
         absent=("bundle.md",),
     )
     configure(monkeypatch, "/bin/true")
@@ -336,7 +336,7 @@ def test_a_path_the_run_creates_names_the_expectation(
     """A run that writes the file it was told to validate without writing fails."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        arguments=("-c", "-o", "bundle.md", "guide.md"),
         absent=("bundle.md",),
     )
     configure(monkeypatch, publishing("bundle.md", "# Guide\n"))
@@ -353,7 +353,7 @@ def test_a_path_the_run_creates_is_removed(
     """A corpus run leaves the fixture directory the manifest declares."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        arguments=("-c", "-o", "bundle.md", "guide.md"),
         absent=("bundle.md",),
     )
     configure(monkeypatch, publishing("bundle.md", "# Guide\n"))
@@ -367,7 +367,7 @@ def test_a_fixture_already_holding_a_declared_absent_path_is_refused(
     """A declaration the directory contradicts says nothing about the run."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--check", "--output", "bundle.md", "guide.md"),
+        arguments=("-c", "-o", "bundle.md", "guide.md"),
         absent=("bundle.md",),
     )
     (fixture / "bundle.md").write_bytes(b"# Guide\n")
@@ -446,7 +446,7 @@ def test_a_fixture_naming_no_root_is_run_with_none(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
-        "--diagnostics",
+        "-d",
         "json",
         "guide.md",
     ]
@@ -526,7 +526,7 @@ def test_an_output_carrying_the_declared_text_passes(
     """A response whose whole is the build's own is stated by what it carries."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--version",),
+        arguments=("-v",),
         stdout_contains=("prosiform ", "(skill-markdown-v1)"),
     )
     configure(
@@ -543,7 +543,7 @@ def test_an_output_missing_the_declared_text_names_what_is_absent(
     """The same declaration refuses a response that states another profile."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--version",),
+        arguments=("-v",),
         stdout_contains=("prosiform ", "(skill-markdown-v1)"),
     )
     configure(
@@ -562,7 +562,7 @@ def test_an_output_declared_as_text_is_not_held_to_bytes(
     """Two builds whose responses differ in every other byte both hold."""
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("--version",),
+        arguments=("-v",),
         stdout_contains=("prosiform ",),
     )
     configure(monkeypatch, replaying(tmp_path, b"prosiform 0.1.0\n", b"", 0))
@@ -579,11 +579,11 @@ def test_a_message_carrying_the_declared_text_passes(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=2,
-        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "--from"]},),
+        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "-f"]},),
     )
     emitted = dict(INVALID_USAGE)
     emitted["message"] = (
-        "the fragment-only reference '#a-section' needs --from "
+        "the fragment-only reference '#a-section' needs -f "
         "to name the document it resolves against"
     )
     configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
@@ -598,7 +598,7 @@ def test_a_message_declaration_tells_two_faults_under_one_code_apart(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=2,
-        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "--from"]},),
+        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "-f"]},),
     )
     emitted = dict(INVALID_USAGE)
     emitted["message"] = "the command line names no entry reference"
@@ -606,7 +606,7 @@ def test_a_message_declaration_tells_two_faults_under_one_code_apart(
     detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
     assert "diagnostic 1's message does not carry 2 declared texts" in detail
     assert "'#a-section' is absent" in detail
-    assert "'--from' is absent" in detail
+    assert "'-f' is absent" in detail
     assert "names no entry reference" in detail
 
 
@@ -616,14 +616,14 @@ def test_a_diagnostic_carrying_no_message_is_reported(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=2,
-        diagnostics=({**INVALID_USAGE, "message_contains": ["--from"]},),
+        diagnostics=({**INVALID_USAGE, "message_contains": ["-f"]},),
     )
     configure(
         monkeypatch, replaying(tmp_path, b"", diagnostic_lines(dict(INVALID_USAGE)), 2)
     )
     detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
     assert "diagnostic 1 carries no message" in detail
-    assert "expected text '--from'" in detail
+    assert "expected text '-f'" in detail
 
 
 def test_a_diagnostic_declaring_no_message_text_reads_no_message(
@@ -823,13 +823,13 @@ def test_the_run_receives_the_fault_the_manifest_names(
     run_fixture(fixture)
     written = record.read_text(encoding="utf-8").splitlines()
     assert written[-5:] == [
-        "--diagnostics",
+        "-d",
         "json",
-        "--fault",
+        "-x",
         "source-changed",
         "guide.md",
     ]
-    assert written[0] == "--root"
+    assert written[0] == "-r"
 
 
 def test_a_run_meeting_no_fault_asks_for_none(
@@ -839,7 +839,7 @@ def test_a_run_meeting_no_fault_asks_for_none(
     record = tmp_path / "argv"
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
-    assert "--fault" not in record.read_text(encoding="utf-8").splitlines()
+    assert "-x" not in record.read_text(encoding="utf-8").splitlines()
 
 
 def test_a_fixture_declaring_a_fault_runs_in_a_copy_of_itself(
@@ -862,6 +862,6 @@ def test_a_fault_points_the_run_at_the_copy(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     written = record.read_text(encoding="utf-8").splitlines()
-    given = Path(written[written.index("--root") + 1])
+    given = Path(written[written.index("-r") + 1])
     assert given.name == "source"
     assert given != (fixture / "source").resolve()

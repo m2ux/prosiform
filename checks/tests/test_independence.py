@@ -65,8 +65,8 @@ DOCUMENTATION = """## Invocation
 
 | Option | Effect |
 | --- | --- |
-| `--root DIR` | the allowed source root |
-| `--diagnostics {text,json}` | the diagnostic format on standard error |
+| `-r DIR` | the allowed source root |
+| `-d {text,json}` | the diagnostic format on standard error |
 """
 
 ORDINARY = """an and another artefact beside build by can check claim clause
@@ -222,7 +222,7 @@ def test_the_contract_declares_its_interface_terms() -> None:
     assert "W_ENTRY_DESTINATION" in declared
     assert "warning" in declared
     assert "4" in declared
-    assert "--diagnostics {text,json}" in declared
+    assert "-d {text,json}" in declared
 
 
 def test_an_interface_term_the_contract_declares_is_admitted(stated: set[str]) -> None:

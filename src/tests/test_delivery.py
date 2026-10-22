@@ -32,7 +32,7 @@ BUNDLE = (
 )
 SOURCE = "# Guide\n\nThe command bundles this document.\n"
 ENTRY = "guide.md"
-ENTRY_POINT = "prosiform"
+ENTRY_POINT = "pf"
 
 
 def fields(result: Delivery) -> list[str]:
@@ -129,7 +129,7 @@ def test_the_structured_result_carries_the_diagnostic_stream() -> None:
 
 
 def test_a_run_of_the_entry_point_delivers_its_bundle(root: Path) -> None:
-    result = deliver(command("--root", str(root), ENTRY), LIMIT)
+    result = deliver(command("-r", str(root), ENTRY), LIMIT)
     assert result.outcome is Outcome.DELIVERED
     assert result.document == BUNDLE
     assert result.status == 0
@@ -138,16 +138,16 @@ def test_a_run_of_the_entry_point_delivers_its_bundle(root: Path) -> None:
 def test_a_run_of_the_entry_point_over_the_transport_limit_delivers_nothing(
     root: Path,
 ) -> None:
-    whole = deliver(command("--root", str(root), ENTRY), LIMIT)
+    whole = deliver(command("-r", str(root), ENTRY), LIMIT)
     assert whole.document is not None
-    result = deliver(command("--root", str(root), ENTRY), whole.counted - 1)
+    result = deliver(command("-r", str(root), ENTRY), whole.counted - 1)
     assert result.outcome is Outcome.OVER_TRANSPORT_LIMIT
     assert result.status == 0
     assert result.document is None
 
 
 def test_a_failing_run_of_the_entry_point_is_read_from_its_status(root: Path) -> None:
-    result = deliver(command("--root", str(root), "absent.md"), LIMIT)
+    result = deliver(command("-r", str(root), "absent.md"), LIMIT)
     assert result.outcome is Outcome.BUILD_FAILED
     assert result.status != 0
     assert result.document is None

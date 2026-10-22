@@ -57,4 +57,4 @@ jobs:
           # Unsetting this fails the job rather than passing over the corpus
           # or the documentation, which is what makes a green run a
           # statement.
-          PROSIFORM_BUILD: uv run --project ${{ github.workspace }}/src --frozen prosiform
+          PROSIFORM_BUILD: uv run --project ${{ github.workspace }}/src --frozen pf

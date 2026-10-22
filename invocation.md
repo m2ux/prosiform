@@ -1,117 +1,69 @@
 # Invocation
 
-Compile a document or section and its local Markdown dependencies into one validated bundle.
+Compile local Markdown entries and their dependencies into one validated bundle.
+
+```text
+pf -r DIR [OPTIONS] REF [REF ...]
+```
 
 ## Options
 
-`prosiform --help` lists options, defaults, and exit statuses. The tables below match that output; `make invocation` verifies them.
+Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid.
+`pf -h` and these tables agree; `make invocation` verifies them.
 
 | Option | Effect |
 | --- | --- |
-| `REF` | an entry reference: a root-relative document, a document and a fragment, or a fragment alone with --from |
-| `--root DIR` | the allowed source root; required, and resolved from the working directory |
-| `--from DOC` | the root-relative referring document a fragment-only reference resolves against |
-| `-o, --output FILE` | publish the validated bundle to FILE, atomically; default or - is standard output |
-| `--group SLUG:DEPTH` | merge every document under a directory named SLUG at source heading level DEPTH, 1 through 6; repeatable, once per slug |
-| `--check` | discover, bundle and validate without emitting or publishing the bundle; accepted with --output |
-| `--diagnostics {text,json}` | the diagnostic format on standard error; default text |
-| `--fault {source-changed,internal}` | perform a fault on the run itself, so a conformance run reaches an outcome no source tree states; none by default |
-| `--max-files N` | the budget of distinct source documents opened; a positive decimal integer, default 256 |
-| `--max-file-bytes N` | the budget of raw bytes in one source; a positive decimal integer, default 1048576 |
-| `--max-input-bytes N` | the budget of raw source bytes, counted once per source; a positive decimal integer, default 16777216 |
-| `--max-output-bytes N` | the budget of bytes of the complete bundle; a positive decimal integer, default 262144 |
-| `--max-targets N` | the budget of distinct document and section targets discovered; a positive decimal integer, default 4096 |
-| `--max-links N` | the budget of authored link and image occurrences in selected content; a positive decimal integer, default 32768 |
-| `--max-nesting N` | the budget of levels of container nesting in one source; a positive decimal integer, default 64 |
-| `--max-expansion-depth N` | the budget of link hops from the nearest entry reference; a positive decimal integer, default 8 |
-| `--codes` | report the error and warning codes this build can emit |
-| `--version` | report the tool version and the profile identifier |
-| `--help` | show this usage, the defaults, and the exit-status meanings |
-
-Resource budgets must be positive decimal integers. Zero is invalid.
+| `REF` | root-relative document, document#fragment, or #fragment with -f |
+| `-r DIR` | required source root; relative to working directory |
+| `-f DOC` | root-relative document for fragment-only references |
+| `-o FILE` | atomic validated output to FILE; default or -: stdout |
+| `-g SLUG:DEPTH` | merge documents under directories named SLUG at heading DEPTH (1–6); repeatable, once per slug |
+| `-c` | discover, bundle, validate; publish nothing; accepts -o |
+| `-d {text,json}` | stderr diagnostics; default text |
+| `-x {source-changed,internal}` | inject a conformance run fault no source tree expresses; default none |
+| `-F N` | distinct source documents opened; positive decimal integer, default 256 |
+| `-B N` | raw bytes in one source; positive decimal integer, default 1048576 |
+| `-I N` | raw source bytes, counted once per source; positive decimal integer, default 16777216 |
+| `-O N` | bytes of the complete bundle; positive decimal integer, default 262144 |
+| `-T N` | distinct document and section targets discovered; positive decimal integer, default 4096 |
+| `-L N` | authored link and image occurrences in selected content; positive decimal integer, default 32768 |
+| `-N N` | levels of container nesting in one source; positive decimal integer, default 64 |
+| `-E N` | link hops from the nearest entry reference; positive decimal integer, default 8 |
+| `-C` | list this build's error and warning codes |
+| `-v` | tool version and profile identifier |
+| `-h` | usage, defaults and exit statuses |
 
 ## Examples
 
-Run these from the repository root. See [worked examples](example/README.md) for input and output excerpts.
-
-### Bundle a procedure
+Run from the repository root; [worked examples](example/README.md) show input and output.
 
 ```bash
-prosiform --root example/work-tracker modes/plan-mode.md
-```
-
-### Select a section
-
-```bash
-prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
-```
-
-### Merge directories
-
-```bash
-prosiform --root example/work-tracker \
-  --group artifacts:2 --group modes:2 \
+pf -r example/work-tracker modes/plan-mode.md
+pf -r example/work-tracker 'artifacts/epic.md#delivery-findings'
+pf -r example/work-tracker \
+  -g artifacts:2 -g modes:2 \
   modes/plan-mode.md
-```
-
-### Validate without publishing
-
-```bash
-prosiform --root example/work-tracker --check modes/plan-mode.md
+pf -r example/work-tracker -c modes/plan-mode.md
 ```
 
 ## Bundling rules
 
-### Source preparation
-
-Sources must be valid UTF-8. The build removes one leading byte-order mark and one leading frontmatter block, then parses the content under `skill-markdown-v1`.
-
-### Selection and dependencies
-
-- Each entry selects a whole document or a named section.
-- Links to local Markdown under `--root` resolve relative to the source document and are followed until no new dependencies remain.
-- Each contributing document forms a group headed by its title-cased root-relative path, unless `--group` merges it.
-- Compiled links point to headings in the bundle.
-- Links outside the root remain as authored and contribute no content.
-
-### Merged directories
-
-`--group` arranges member sections beneath a title-cased directory heading. Member subsections hold their content above the grouping depth. An `Overview` section contains those subsections when the group also emits merged sections at the grouping depth; otherwise they sit directly beneath the group heading.
-
-Each member has a distinct destination. Generated member headings use the shortest distinguishing path and title case; authored headings and filesystem paths retain their spelling. See the [grouped examples](example/README.md#merge-directories).
-
-### Deferred links
-
-A link whose text starts with `¬` defers compilation of its target. The target must exist, including any named section, but contributes no content through that link.
-
-The emitted link preserves its text, marker, and following spaces. Its destination is relative to the allowed root, ready for a separate run.
-
-### Invalid input
-
-These failures return `1` with a diagnostic naming the defect and source location:
-
-- Invalid UTF-8 or unterminated frontmatter.
-- Raw HTML or unsupported dependency or section-naming constructs.
-- Document paths that differ only by Markdown extension.
-- Missing documents or sections referenced under the root, including deferred targets.
+- **Sources:** valid UTF-8; strip one leading byte-order mark and one leading frontmatter block; parse as `skill-markdown-v1`.
+- **Closure:** entries select whole documents or named sections. Follow local Markdown links under `-r`, relative to their source document, until no new dependencies remain. Compiled links target bundle headings. Outside-root links stay authored and contribute nothing.
+- **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless `-g` merges it. Merged groups use title-cased directory headings. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
+- **Deferred links:** link text starting with `¬` requires an existing document/section but adds no content through that link. Preserve text, marker and following spaces; emit a root-relative destination for a separate run.
+- **Invalid input:** invalid UTF-8, unterminated frontmatter, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
 
 ## Output
 
-### Bundle and responses
-
-Standard output contains the bundle, an informational response, or nothing. A bundle opens with links to its entry points:
+Stdout contains a bundle, an informational response, or nothing. Bundles open with entry-point links:
 
 ```markdown
 This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
 ```
 
-### Diagnostics
-
-Diagnostics go to standard error. The default is text; `--diagnostics json` emits one JSON object per line.
-
-### Exit statuses
-
-Use the exit status to determine the outcome.
+Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.
+Use exit status to determine the outcome:
 
 | Exit | Meaning |
 | --- | --- |
@@ -121,12 +73,8 @@ Use the exit status to determine the outcome.
 | `3` | output publication or delivery failure, a broken pipe among them |
 | `4` | unexpected internal error |
 
-### Failed runs
-
-A failed run publishes nothing. The caller halts and surfaces the diagnostic; reading the sources itself is unsupported.
+A failed run publishes nothing. Halt and surface its diagnostic; reading the sources itself is unsupported.
 
 ## Supported environment
 
-The supported environment is POSIX: Linux and macOS.
-
-Root confinement rests on rooted, no-follow source access using `O_NOFOLLOW`, `O_DIRECTORY`, and `O_CLOEXEC`. Symbolic links below the root are refused. The build refuses to start when these flags are unavailable.
+The supported environment is POSIX (Linux, macOS). Root confinement rests on rooted, no-follow source access using `O_NOFOLLOW`, `O_DIRECTORY`, `O_CLOEXEC`. Refuse symbolic links below the root; refuse startup if these flags are unavailable.
