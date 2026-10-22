@@ -59,5 +59,3 @@ prosiform --root example/work-tracker modes/plan-mode.md
 ```bash
 prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
 ```
-
-See [worked input and output examples](example/README.md) and the [full option reference](invocation.md).
