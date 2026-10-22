@@ -52,3 +52,10 @@ Paths below are relative to the inspected Prosiform main checkout. They identify
 - A sandboxed local check passed for the planning inventory, nine acceptance-criterion identifiers, all twelve fixture manifest paths and all local Markdown links outside inline code examples.
 - Runtime commands were informational only; skill creation, compiler tests and independent agent evaluations are future implementation work.
 - Planning files are isolated in the existing engineering worktree; unrelated `.wp/` and workspace changes are excluded from the commit.
+
+## Proposal Publication
+
+- Published [#208](https://github.com/m2ux/prosiform/issues/208), titled `[P04] Markdown Authoring: Prosiform-Compatible Documents From Agent Requests`, on 2026-10-22 at the user's request.
+- Proposal format validation returned zero fixes, zero metadata changes and zero content decisions. API readback matched the exact submitted body, title and labels; the issue is open and unassigned.
+- The user approved placement on the Proposals board. The existing funnel is project 16, titled `Proposals: Incoming Feature and Project Funnel`; the proposal's item is `279429112`, with status `Suggested`.
+- The published body is retained in [proposal.md](proposal.md). Its goal preserves the confirmed general-Markdown scope and links the detailed plan as supporting material.

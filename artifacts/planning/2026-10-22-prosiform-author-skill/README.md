@@ -14,11 +14,14 @@ Compatibility includes both accepted syntax and explicit links to the content a 
 | --- | --- |
 | [Plan](plan.md) | Scope, skill design, compatibility coverage, sequential implementation and acceptance criteria |
 | [Evidence](evidence.md) | Inspected revisions, source discrepancies and planning validation |
+| [Proposal](proposal.md) | Published proposal body: problem, goal, scope and references |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
+| Proposal | [#208 — Markdown Authoring](https://github.com/m2ux/prosiform/issues/208) |
+| Proposals board | [Incoming Feature and Project Funnel](https://github.com/users/m2ux/projects/16) |
 | Requested skill guidelines | [workflow-server skill guidelines](https://github.com/m2ux/workflow-server/blob/workspace/skills/guidelines.md) |
 | Prosiform contract | [Design at the inspected revision](https://github.com/m2ux/prosiform/blob/4cbd8a7a7e63dd145321d4d786bd57a762f1afd1/artifacts/planning/2026-10-17-prosiform-v1/design.md) |
 | Prosiform invocation | [Invocation at the inspected revision](https://github.com/m2ux/prosiform/blob/ea82c8bb03acb2f3c3ca64f6003005d4bf53ebd6/invocation.md) |

@@ -10,7 +10,7 @@ An agent can create Markdown files for an intended Prosiform compilation, preser
 - **Requests.**  “Create Prosiform-compatible Markdown”, “write a document for Prosiform”, and “write linked Markdown that Prosiform can bundle”.
 - **Boundary.**  Creating documents and correcting them during authoring; a repository-wide migration or standalone audit is a separate request.
 - **Non-goals.**  Compiler changes, a new Markdown dialect, a second validator, installation tooling, publishing generated documents, and imposing agent-skill structure on ordinary documents.
-- **This record.**  A creation plan; implementation requires a subsequent request. No issue, initiative or board expansion is needed for this single delivery unit.
+- **This record.**  A creation plan tracked by [proposal #208](https://github.com/m2ux/prosiform/issues/208); implementation requires a subsequent request. The delivery scope is one implementation unit.
 
 ## Source Authority
 
