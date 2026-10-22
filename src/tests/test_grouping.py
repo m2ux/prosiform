@@ -102,6 +102,25 @@ def test_a_member_a_stem_distinguishes_is_named_by_that_stem_alone() -> None:
     }
 
 
+@pytest.mark.parametrize(
+    ("paths", "named", "expected"),
+    [
+        (
+            ["modes/a/plan.md", "modes/b/plan-mode.md"],
+            "modes",
+            ["A Plan", "B Plan"],
+        ),
+        (["g/a/notes.md", "g/b/Notes.md"], "g", ["A Notes", "B Notes"]),
+        (["g/a/one-two.md", "g/b/one_two.md"], "g", ["A One Two", "B One Two"]),
+        (["modes/plan.md", "modes/plan-mode.md"], "modes", ["Plan", "Plan Mode"]),
+    ],
+)
+def test_final_member_names_distinguish_after_formatting(
+    paths: list[str], named: str, expected: list[str]
+) -> None:
+    assert list(member_headings(paths, named).values()) == expected
+
+
 def test_one_segment_distinguishes_documents_in_one_directory() -> None:
     assert member_headings(["modes/plan-mode.md", "modes/review-mode.md"], "modes") == {
         "modes/plan-mode.md": "Plan",

@@ -27,14 +27,14 @@ Every section with more than one contributing document splits into
 variants, whether those contributions hold body text, subheadings or
 only the section heading. A sole contributor keeps its own arrangement.
 Each member's name is measured once against the whole group and serves
-both its overview subsection and every variant, with a trailing word
-the group's heading already states dropped in both places.
+both its overview subsection and every variant, following the same
+qualification and group-word removal in both places.
 
 A member's subsection is named by the shortest run of that document's
 root-relative path which distinguishes it from the group's other
 members, in title case, measured after the leading segments they all
-share are dropped and less a trailing word the group's own heading
-already states, which is the run a variant heading is shortened to. It
+share are dropped. A trailing word the group's heading states is
+omitted where qualification still distinguishes the displayed names. It
 carries the member's content above the grouping depth. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
@@ -138,32 +138,13 @@ def states(heading: str, word: str) -> bool:
 
 
 def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
-    """The heading naming each member of a merged group, by its path.
+    """The final displayed name distinguishing each member of a merged group.
 
-    The heading is the run of trailing path segments that tells the
-    member apart from the group's others, in title case, which is the
-    run a variant heading carries, so one bundle states a member's name
-    one way wherever a reader meets it. A trailing word the group's own
-    heading already states is dropped, because the subsection sits
-    beneath that heading and a reader has read it there.
-    """
-    headings: dict[str, str] = {}
-    for path, run in distinguishing(paths).items():
-        spelled = [word for part in run for word in words(part)]
-        if len(spelled) > 1 and states(named, spelled[-1]):
-            spelled = spelled[:-1]
-        headings[path] = SPACE.join(word[:1].upper() + word[1:] for word in spelled)
-    return headings
-
-
-def distinguishing(paths: Sequence[str]) -> dict[str, list[str]]:
-    """The run of trailing path segments that tells each document apart.
-
-    The run is the shortest that distinguishes, measured after the
-    leading segments they all share are dropped and with the Markdown
-    suffix gone from the last of them. One segment distinguishes
-    documents in one directory; documents of the same name in different
-    directories take as many as their paths need.
+    Shared leading directories are omitted. Trailing path segments are
+    added until the title-cased names, with the group's trailing word
+    removed, distinguish the members. Where every segment is needed and
+    removing that word still joins names, the complete names retain it.
+    Overview subsections and variants use this same group-wide mapping.
     """
     spelled = {path: list(PurePosixPath(path).parts) for path in paths}
     shortest = min(len(one) for one in spelled.values())
@@ -178,11 +159,20 @@ def distinguishing(paths: Sequence[str]) -> dict[str, list[str]]:
         for path, one in spelled.items()
     }
     longest = max(len(one) for one in trimmed.values())
+    complete: dict[str, str] = {}
     for run in range(1, longest + 1):
-        taken = {path: one[-run:] for path, one in trimmed.items()}
-        if len({tuple(one) for one in taken.values()}) == len(taken):
-            return taken
-    return trimmed
+        complete = {
+            path: titled(SPACE.join(parts[-run:])) for path, parts in trimmed.items()
+        }
+        headings = {}
+        for path, heading in complete.items():
+            parts = heading.split(SPACE)
+            if len(parts) > 1 and states(named, parts[-1]):
+                parts = parts[:-1]
+            headings[path] = SPACE.join(parts)
+        if len(set(headings.values())) == len(headings):
+            return headings
+    return complete
 
 
 @dataclass(frozen=True)

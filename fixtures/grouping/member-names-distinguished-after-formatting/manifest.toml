@@ -1,0 +1,28 @@
+description = "Member names remain distinct after title case and removal of the group word, in both member subsections and variants."
+
+clauses = [
+  "Grouping — Variants by document",
+  "Grouping — Document content above the grouping depth",
+  "Grouping — A heading for every member",
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "modes:2", "modes/a/plan.md", "modes/b/plan-mode.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "A Plan"
+resolved = "a-plan"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "B Plan"
+resolved = "b-plan"
