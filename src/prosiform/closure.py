@@ -425,9 +425,9 @@ def resolvable(document: str, text: str) -> Reference | None:
 def rebased(found: Reference, text: str) -> str:
     """One deferred link's destination: its target's path from the allowed source root.
 
-    The path is the one the reference normalized to, which is the
-    spelling the bundle's file headings carry, so a run holding nothing
-    but the root follows the link the bundle hands it. The authored
+    The path is the one the reference normalized to, carrying the
+    spelling the filesystem holds, so a run holding nothing but the
+    root follows the link the bundle hands it. The authored
     spelling cannot serve: it is written relative to the source
     document carrying the link, and the bundle records no such
     directory for a reference it did not compile.

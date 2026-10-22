@@ -65,17 +65,17 @@ BIN = "bin"
 ENTRY = "guide.md"
 SOURCE = "# Guide\n\nThe installed command bundles this document.\n"
 BUNDLE = (
-    "This bundle was built for [guide](#guide); everything else is material "
+    "This bundle was built for [Guide](#guide); everything else is material "
     "it references.\n"
     "\n"
-    "# guide\n"
+    "# Guide\n"
     "\n"
     "The installed command bundles this document.\n"
 )
 REPORT = (
-    "W_ENTRY_DESTINATION: the entry reference 'guide' resolves to the "
+    "W_ENTRY_DESTINATION: the entry reference 'Guide' resolves to the "
     "destination 'guide', which the bundle's entry line links it to\n"
-    "  reference: guide\n"
+    "  reference: Guide\n"
     "  resolved: guide\n"
 )
 

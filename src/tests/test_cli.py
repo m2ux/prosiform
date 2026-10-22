@@ -823,9 +823,9 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     assert run.status == SUCCESS
     assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
     assert run.stdout == (
-        "This bundle was built for [guide](#guide); "
+        "This bundle was built for [Guide](#guide); "
         "everything else is material it references.\n"
-        "\n# guide\n\n## Run\n\nDo it.\n"
+        "\n# Guide\n\n## Run\n\nDo it.\n"
     )
 
 
@@ -859,9 +859,9 @@ def test_an_entry_destination_is_reported_in_the_format_the_run_declares(
     run = invoke("--root", str(root), "--diagnostics", "text", "guide.md")
     assert run.status == SUCCESS
     assert run.stderr == (
-        f"{ENTRY_DESTINATION}: the entry reference 'guide' resolves to the "
+        f"{ENTRY_DESTINATION}: the entry reference 'Guide' resolves to the "
         "destination 'guide', which the bundle's entry line links it to\n"
-        "  reference: guide\n"
+        "  reference: Guide\n"
         "  resolved: guide\n"
     )
 
@@ -898,21 +898,21 @@ def test_two_sources_sharing_a_basename_stay_distinguishable(root: Path) -> None
     written(root, "notes/note.md", "# Note\n\nUnder notes.\n")
     run = invoke("--root", str(root), "docs/note.md", "notes/note.md")
     assert run.status == SUCCESS
-    assert "# docs/note\n" in run.stdout
-    assert "# notes/note\n" in run.stdout
+    assert "# Docs/Note\n" in run.stdout
+    assert "# Notes/Note\n" in run.stdout
 
 
 def test_groups_are_ordered_by_root_relative_path(root: Path) -> None:
     written(root, "docs/note.md", "# Note\n")
     written(root, "guide.md", "# Guide\n")
     ordered = invoke("--root", str(root), "guide.md", "docs/note.md").stdout
-    assert ordered.index("# docs/note\n") < ordered.index("# guide\n")
+    assert ordered.index("# Docs/Note\n") < ordered.index("# Guide\n")
 
 
 def test_one_document_named_twice_is_one_group(root: Path) -> None:
     written(root, "guide.md", "# Guide\n")
     run = invoke("--root", str(root), "guide.md", "sub/../guide.md")
-    assert run.stdout.count("# guide\n") == 1
+    assert run.stdout.count("# Guide\n") == 1
 
 
 def test_two_paths_differing_only_by_suffix_are_an_ambiguous_file_group(
@@ -975,7 +975,7 @@ def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.stdout == (
         "This bundle was built for [Run](#run); everything else is material it "
-        "references.\n\n# guide\n\n### Run\n\nDo it.\n"
+        "references.\n\n# Guide\n\n### Run\n\nDo it.\n"
     )
 
 
@@ -1007,8 +1007,8 @@ def test_a_referring_document_contributes_no_group(root: Path) -> None:
     written(root, "docs/note.md", "# Note\n")
     run = invoke("--root", str(root), "--from", "guide.md", "docs/note.md")
     assert run.status == SUCCESS
-    assert "# guide\n" not in run.stdout
-    assert "# docs/note\n" in run.stdout
+    assert "# Guide\n" not in run.stdout
+    assert "# Docs/Note\n" in run.stdout
 
 
 def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> None:
@@ -1018,8 +1018,8 @@ def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> N
     assert run.status == SUCCESS
     assert run.stdout == ""
     assert destination.read_text() == (
-        "This bundle was built for [guide](#guide); "
-        "everything else is material it references.\n\n# guide\n\nBody.\n"
+        "This bundle was built for [Guide](#guide); "
+        "everything else is material it references.\n\n# Guide\n\nBody.\n"
     )
 
 
@@ -1259,7 +1259,7 @@ def test_a_marked_reference_under_the_root_is_not_compiled(root: Path) -> None:
     written(root, "rules.md", "# Rules\n\nEvery rule the procedure requires.\n")
     run = invoke("--root", str(root), "guide.md")
     assert run.status == SUCCESS
-    assert "# rules" not in run.stdout
+    assert "# Rules" not in run.stdout
     assert "Every rule the procedure requires." not in run.stdout
 
 
@@ -1297,7 +1297,7 @@ def test_a_deferral_stands_where_another_reference_carried_its_target(
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("--root", str(root), "guide.md")
     assert run.status == SUCCESS
-    assert "# rules" in run.stdout
+    assert "# Rules" in run.stdout
     assert "See [\u00ac the rules](rules.md)" in run.stdout
     assert "It requires [the rules](#rules)" in run.stdout
 
@@ -1638,7 +1638,7 @@ def test_a_target_at_the_expansion_depth_is_bundled(root: Path) -> None:
     chained(root)
     run = invoke("--root", str(root), "--max-expansion-depth", "2", "alpha.md")
     assert run.status == SUCCESS
-    assert "# gamma" in run.stdout
+    assert "# Gamma" in run.stdout
 
 
 def test_a_crossed_budget_publishes_no_output_file(root: Path, tmp_path: Path) -> None:
