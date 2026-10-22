@@ -87,53 +87,53 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
-Expose one command, with bundled Markdown on stdout and diagnostics on stderr. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+Expose `pf` as the sole executable, with case-sensitive short flags, bundled Markdown on stdout and diagnostics on stderr. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
-prosiform --root DIR [OPTIONS] REF [REF ...]
+pf -r DIR [OPTIONS] REF [REF ...]
 ```
 
 | Option | Behavior |
 | --- | --- |
-| `--root DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
-| `--from DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
-| `-o, --output FILE` | Atomically publish validated output to a file, resolved from the process working directory; default or `-` means stdout. A path naming an input source is refused. |
-| `--group SLUG:DEPTH` | Merge every document under a directory named `SLUG` at source heading level `DEPTH`, which is 1 through 6; repeatable, once per slug. Documents no group names keep their own group. |
-| `--check` | Discover, bundle, and validate without emitting or publishing the bundle. |
-| `--diagnostics text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
-| `--version` | Report tool version and profile identifier. |
-| `--help` | Show usage, defaults, and exit-status meanings. |
+| `-r DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
+| `-f DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
+| `-o FILE` | Atomically publish validated output to a file, resolved from the process working directory; default or `-` means stdout. A path naming an input source is refused. |
+| `-g SLUG:DEPTH` | Merge every document under a directory named `SLUG` at source heading level `DEPTH`, which is 1 through 6; repeatable, once per slug. Documents no group names keep their own group. |
+| `-c` | Discover, bundle, and validate without emitting or publishing the bundle. |
+| `-d text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
+| `-v` | Report tool version and profile identifier. |
+| `-h` | Show usage, defaults, and exit-status meanings. |
 
 Each resource budget adds one option of its own, declared with its default and its counting rule at Resource limits.
 
-`--check` accepts `--output FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
+`-c` accepts `-o FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
-A command line the grammar above does not admit is refused with `E_INVALID_USAGE`. A missing `--root`, no entry reference, an option the contract does not declare, an option value outside the set its row names, a fragment-only reference with no `--from`, and an output path naming an input source are all one defect — the command line's own form — and they lead a caller to one remedy, so they take one code and the message says which fault it was. A grouping rule keeps `E_INVALID_GROUP_RULE`, which names a defect in the rule's value rather than in the grammar that admits the option. A `--root` naming no directory is well formed and names a root that is not there: it fails with `E_ROOT_NOT_FOUND` as the input failure it is.
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`. A missing `-r`, no entry reference, an option the contract does not declare, an option value outside the set its row names, a fragment-only reference with no `-f`, and an output path naming an input source are all one defect — the command line's own form — and they lead a caller to one remedy, so they take one code and the message says which fault it was. A grouping rule keeps `E_INVALID_GROUP_RULE`, which names a defect in the rule's value rather than in the grammar that admits the option. A `-r` naming no directory is well formed and names a root that is not there: it fails with `E_ROOT_NOT_FOUND` as the input failure it is.
 
 ### Usage examples
 
 ```bash
 # A procedure and everything it reaches. The routing document the caller
 # read to find it, SKILL.md, is not an entry reference and is not bundled.
-prosiform --root example/work-tracker modes/plan-mode.md
+pf -r example/work-tracker modes/plan-mode.md
 
 # Grouped: every document under a named directory merged at a heading level.
-prosiform --root example/work-tracker \
-  --group artifacts:2 --group modes:2 \
+pf -r example/work-tracker \
+  -g artifacts:2 -g modes:2 \
   modes/plan-mode.md
 
 # Multiple selected targets.
-prosiform --root example/work-tracker \
+pf -r example/work-tracker \
   'artifacts/epic-issue-body.md#record-epic-delivery' \
   'artifacts/epic.md#delivery-findings'
 
 # A referring document supplies context for a bare fragment only.
-prosiform --root example/work-tracker \
-  --from artifacts/epic-issue-body.md \
+pf -r example/work-tracker \
+  -f artifacts/epic-issue-body.md \
   '#record-epic-delivery'
 
 # Full compilation and validation, without publication.
-prosiform --root example/work-tracker --check \
+pf -r example/work-tracker -c \
   'artifacts/epic-issue-body.md#record-epic-delivery'
 ```
 
@@ -176,10 +176,10 @@ The hierarchy guarantee is the original selected source outline beneath one addi
 
 ### Grouping
 
-A group is the unit the bundle is organized into. By default a group is one source document, headed by its path. A group changes that for part of the tree: `--group SLUG:DEPTH`, repeatable, names a directory slug and a source heading level, and every document under any directory of that slug is merged at that level.
+A group is the unit the bundle is organized into. By default a group is one source document, headed by its path. A group changes that for part of the tree: `-g SLUG:DEPTH`, repeatable, names a directory slug and a source heading level, and every document under any directory of that slug is merged at that level.
 
 ```text
---group artifacts:2 --group references:2
+-g artifacts:2 -g references:2
 ```
 
 A grouping rule is refused with `E_INVALID_GROUP_RULE` when its depth is outside 1 through 6, when its slug names no directory under the allowed source root, or when a slug is given twice. A depth outside the range and a slug given twice are faults in the command line's own form and exit 2; a slug naming no such directory is a fault in the tree the rule points at and exits 1, as a reference naming no document does. A code names a defect and an exit status names a category of outcome, so one code decides either status according to the fault it names. A rule whose directories contribute no document to the *closure* is not an error: it arranges nothing, and the run reports it as `W_EMPTY_GROUP_RULE` on stderr.
@@ -376,7 +376,7 @@ Require an explicit allowed source root and canonicalize that root once. Command
 
 The root is the caller's confinement boundary, not a claim about how the sources are organized. It must contain every document the entry references reach: a collection that shares material with a sibling collection is rooted above both, since a reference leaving the root fails whether or not its author meant it. A refused reference therefore says the root is too narrow at least as often as it says the link is wrong, and the diagnostic names the resolved path so the caller can tell which.
 
-A fragment-only command-line reference requires `--from DOC`; otherwise it fails. File-naming positional references remain root-relative even when `--from` is present. A fragment-only source link uses its source document automatically.
+A fragment-only command-line reference requires `-f DOC`; otherwise it fails. File-naming positional references remain root-relative even when `-f` is present. A fragment-only source link uses its source document automatically.
 
 ### Resolution sequence
 
@@ -427,14 +427,14 @@ Use deterministic configurable limits and fail rather than truncate. These are a
 
 | Option | Default | Counting rule |
 | --- | --- | --- |
-| `--max-files` | `256` | Distinct normalized source-document identities opened. |
-| `--max-file-bytes` | `1,048,576` | Raw bytes in one source, including frontmatter and any BOM. |
-| `--max-input-bytes` | `16,777,216` | Sum of raw source bytes, once per source identity. |
-| `--max-output-bytes` | `262,144` | Complete UTF-8 bundle, including filename headings, structural ancestors, and separators. |
-| `--max-targets` | `4,096` | Distinct canonical document/section targets discovered, even if later subsumed. |
-| `--max-links` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
-| `--max-nesting` | `64` | Supported syntactic container nesting; exceeding the limit is an error. |
-| `--max-expansion-depth` | `8` | Link hops from the nearest entry reference to a reached target, counted along its shortest path. |
+| `-F` | `256` | Distinct normalized source-document identities opened. |
+| `-B` | `1,048,576` | Raw bytes in one source, including frontmatter and any BOM. |
+| `-I` | `16,777,216` | Sum of raw source bytes, once per source identity. |
+| `-O` | `262,144` | Complete UTF-8 bundle, including filename headings, structural ancestors, and separators. |
+| `-T` | `4,096` | Distinct canonical document/section targets discovered, even if later subsumed. |
+| `-L` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
+| `-N` | `64` | Supported syntactic container nesting; exceeding the limit is an error. |
+| `-E` | `8` | Link hops from the nearest entry reference to a reached target, counted along its shortest path. |
 
 Crossing any of these fails the compilation with `E_RESOURCE_LIMIT`, and the diagnostic names the budget crossed and the figure that crossed it. One code covers all eight because one remedy does: the sources are restructured or the number is raised, and the figure the run reports is what says which.
 
@@ -442,7 +442,7 @@ Accept positive decimal integer overrides; zero must not mean unlimited. Travers
 
 *Expansion depth* constrains the shape of a reference graph rather than its size, which the file, byte and target budgets bound. It exists so a document reaches what governs it directly, and a chain that outgrows the budget is a prompt to restructure the sources rather than to raise the number.
 
-Enforce `--max-nesting` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
+Enforce `-N` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
 
 The wrapper must enforce any smaller transport limit; 256 KiB is not universally safe for agent delivery. Do not estimate tokens by dividing bytes by a constant; future token budgets must name and pin the tokenizer.
 
@@ -481,7 +481,7 @@ An unrelated broken link in an unselected sibling must not fail bundling. If clo
 
 An opened file can nevertheless fail because an unselected construct exceeds a declared file-wide parsing-safety limit. Diagnose this as inability to safely index the containing source, not as an inferred dependency on that sibling.
 
-Keep `--max-links` scoped to authored occurrences in the selected closure. If full-file indexing needs another work budget or instrumentation, specify it separately rather than silently changing that option's meaning.
+Keep `-L` scoped to authored occurrences in the selected closure. If full-file indexing needs another work budget or instrumentation, specify it separately rather than silently changing that option's meaning.
 
 ### Source and candidate validation modes
 
@@ -562,7 +562,7 @@ An unexpected internal error carries `E_UNEXPECTED_INTERNAL_ERROR`. It names the
 
 Every failing outcome this contract names carries a code, so a diagnostic without one reports a defect the contract does not define.
 
-With `--diagnostics json`, emit one JSON object per stderr line, including `severity`, `code`, `message`, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate. The resolved identity is named `resolved`: a bundle destination where the reference reached one, and a canonical source path where it reached a document. Do not mix JSON diagnostics with progress prose.
+With `-d json`, emit one JSON object per stderr line, including `severity`, `code`, `message`, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate. The resolved identity is named `resolved`: a bundle destination where the reference reached one, and a canonical source path where it reached a document. Do not mix JSON diagnostics with progress prose.
 
 ## Adversarial acceptance fixtures
 
@@ -593,7 +593,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **File-wide safety:** Excessive parsing depth in an unselected sibling can fail with a file-indexing resource diagnostic, while an ordinary unselected broken link does not.
 - **Profile:** Task markers protected from definitions, disabled typographic rewriting, Markdown suffix classification, and explicit rejection of unsupported selected dependency constructs.
 - **Frontmatter:** Optional BOM, exact opening/closing delimiters, `...` termination, leading-blank-line distinction, malformed delimiters, and missing closers.
-- **CLI:** Root versus `--from` resolution, `--check` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
+- **CLI:** Root versus `-f` resolution, `-c` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
 - **Limits:** Every limit fails at the first exceeded boundary without truncation; zero/negative overrides fail; parser nesting cannot silently fall back to different syntax.
 
 ## Implementation verification and residual policy detail
