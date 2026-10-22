@@ -1,7 +1,5 @@
 # Group command visual review
 
-**36 diagrams of actual compiler output.**
-
 Source revision: [08a8c0317924](https://github.com/m2ux/prosiform/commit/08a8c0317924e69d5377464ee6961bbc948be85b).
 
 Each diagram shows its participating source files and bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Diagnostics appear in a separate subsection beneath each diagram when present. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.
