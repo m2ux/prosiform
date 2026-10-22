@@ -15,6 +15,7 @@ The arrangement is what a reader of a bundled skill meets first, so a wrapper th
 | [w01.md](w01.md) | The implementation plan for this unit |
 | [permutations.md](permutations.md) | The six member shapes the arrangement is read against, what the build emits for each, and the two cases this unit separates |
 | [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
+| [changes.md](changes.md) | The plan changes this session applied, the ones it held, and the debt its validation found |
 
 ## Links
 
@@ -24,3 +25,5 @@ The arrangement is what a reader of a bundled skill meets first, so a wrapper th
 | Initiative | [#20 \[I01\] Field Refinement](https://github.com/m2ux/prosiform/issues/20) |
 | Epic planning | [i01-e02](../2026-10-17-prosiform-v1/i01-e02) |
 | Epic base | [i01/e02/main](https://github.com/m2ux/prosiform/tree/i01/e02/main) |
+| Delivery | [#197](https://github.com/m2ux/prosiform/pull/197) |
+| Review | [#198](https://github.com/m2ux/prosiform/pull/198) |
