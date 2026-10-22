@@ -91,14 +91,12 @@ def svg(case):
         block,h=card(466,at,690,path,(HERE/'sources'/case['id']/'my-skill'/path).read_text())
         blocks.append(block);at+=h+22
     expected = case['stdout'] or 'No bundle published.'
-    if case['stderr']:
-        expected += '\n\nDiagnostics (stderr):\n' + case['stderr']
     outblock,outh=card(1230,top,880,'Compiler output · exit '+str(case['actual_exit']),expected,True)
     blocks.append(outblock)
     middle=top+100
     blocks.append(f'<path d="M1172 {middle} H1190 V{middle-12} L1218 {middle+16} L1190 {middle+44} V{middle+32} H1172Z" fill="{LINK}"/>')
     height=max(at,top+outh,top+treeheight)+65
-    footer='Full output shown. Exact Markdown, link destinations and diagnostics are in the adjacent stdout.md and stderr.txt files.'
+    footer='Full bundle output shown. Exact Markdown and link destinations: adjacent stdout.md. Diagnostics: case review subsection.'
     blocks.append(txt(32,height-25,footer,17,MUTED))
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="{height}" viewBox="0 0 2142 {height}" role="img" aria-labelledby="title desc"><title id="title">{html.escape(case["title"])}</title><desc id="desc">{html.escape(case["focus"])} Observed output from the pinned compiler.</desc><rect width="2142" height="{height}" fill="{BG}"/><g font-family="{FONT}" xml:space="preserve">'+''.join(header+blocks)+'</g></svg>\n'
 def main():
@@ -117,7 +115,7 @@ def main():
     fence = chr(96)*3
     review = ['# Group command visual review', '', '**36 diagrams of actual compiler output.**', '',
               'Source revision: ['+REVISION[:12]+'](https://github.com/m2ux/prosiform/commit/'+REVISION+').', '',
-              'Each diagram shows its participating source files and complete output, including the entry preamble. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.', '',
+              'Each diagram shows its participating source files and complete bundle output, including the entry preamble. Diagnostics appear in a separate subsection beneath each diagram when present. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.', '',
               '[Coverage and reproduction](README.md) · [Case definitions](cases.json) · [Run records](runs.json)', '', '## Contents', '']
     for case in cases:
         review.append('- ['+case['id']+': '+case['title']+'](#case-'+case['id']+')')
@@ -147,6 +145,8 @@ def main():
         review.extend(['','## Case '+case['id'],'',case['focus'],'','Area: '+case['area']+' · Exit status: '+str(run.returncode),'',fence+'bash',display,fence,'',
                        '[Open SVG]('+rel+'.svg) · [Exact stdout]('+rel+'.stdout.md) · [Diagnostics]('+rel+'.stderr.txt) · [Contents](#contents)','',
                        '!['+case['title']+']('+rel+'.svg)'])
+        if run.stderr:
+            review.extend(['', '### Diagnostics (stderr)', '', fence+'text', run.stderr.rstrip(), fence])
     (HERE/'REVIEW.md').write_text('\n'.join(review)+'\n')
     (HERE/'runs.json').write_text(json.dumps(dict(compiler_revision=revision,cases=records),indent=2)+'\n')
     hashes = {str(p.relative_to(HERE)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((HERE/'sources').rglob('*.md'))}
@@ -162,7 +162,7 @@ def main():
         readme.append('| ['+case['id']+'](cases/'+case['id']+'.svg) | '+case['focus']+' |')
     readme += ['','## Sources and evidence','',
                'Each case has an isolated my-skill source tree under sources/. These small authored examples isolate the approved behaviors; they are not copies of the full example skill. The source-sha256.json manifest pins every input. Cases 26 and 27 include deferred target files for validation without including their contents in the bundle.','',
-               'The SVG layout derives from the [original visual validation renderer](../2026-10-22-my-skill-visual-validation/render.py). Images display observed compiler output, with complete stdout and stderr stored beside each image. They support review of current behavior, not independent proof that every requirement is correct.','',
+               'The SVG layout derives from the [original visual validation renderer](../2026-10-22-my-skill-visual-validation/render.py). Images display observed bundle output. Diagnostics appear beneath each image in a separate review subsection when present; complete stdout and stderr are also stored beside each image. They support review of current behavior, not independent proof that every requirement is correct.','',
                '## Reproduce','',
                'Check out the pinned revision, install its locked dependencies with uv sync --frozen --no-dev from src/, then run from this folder:','',fence+'bash',
                'python3 render.py --compiler /path/to/prosiform/src/.venv/bin/prosiform --checkout /path/to/prosiform',fence,'',

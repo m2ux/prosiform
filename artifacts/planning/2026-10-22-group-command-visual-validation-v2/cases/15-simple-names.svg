@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1144" viewBox="0 0 2142 1144" role="img" aria-labelledby="title desc"><title id="title">Simple names</title><desc id="desc">Generated names title-case separators and preserve HTTP. Observed output from the pinned compiler.</desc><rect width="2142" height="1144" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">15-simple-names · Simple names</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-checks.md rules/quick_start.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">Generated names title-case separators and preserve HTTP.</text><rect x="32" y="208" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="711" viewBox="0 0 2142 711" role="img" aria-labelledby="title desc"><title id="title">Simple names</title><desc id="desc">Generated names title-case separators and preserve HTTP. Observed output from the pinned compiler.</desc><rect width="2142" height="711" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">15-simple-names · Simple names</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-checks.md rules/quick_start.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">Generated names title-case separators and preserve HTTP.</text><rect x="32" y="208" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
 <path d="M32 262 H442" stroke="#303b49"/>
 <text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
@@ -10,7 +10,7 @@
 <text x="504" y="319" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text><rect x="466" y="359" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="490" y="395" font-size="21" fill="#b1c6df" font-weight="400">rules/quick_start.md</text>
 <path d="M466 413 H1156" stroke="#303b49"/>
-<text x="504" y="470" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text><rect x="1230" y="208" width="880" height="871" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="504" y="470" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text><rect x="1230" y="208" width="880" height="438" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Compiler output · exit 0</text>
 <path d="M1230 262 H2110" stroke="#303b49"/>
 <text x="1268" y="319" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for HTTP Checks and Quick Start; everything</text>
@@ -22,15 +22,4 @@
 <text x="1268" y="522" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text>
 <text x="1242" y="578" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
 <text x="1292" y="578" font-size="26" fill="#e6edf3" font-weight="500">Quick Start</text>
-<text x="1268" y="628" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text>
-<text x="1268" y="691" font-size="20" fill="#e6edf3" font-weight="400">Diagnostics (stderr):</text>
-<text x="1268" y="728" font-size="20" fill="#e6edf3" font-weight="400">W_ENTRY_DESTINATION: the entry reference &#x27;HTTP Checks&#x27; resolves to</text>
-<text x="1268" y="765" font-size="20" fill="#e6edf3" font-weight="400">the destination &#x27;http-checks&#x27;, which the bundle&#x27;s entry line links</text>
-<text x="1268" y="802" font-size="20" fill="#e6edf3" font-weight="400">it to</text>
-<text x="1268" y="839" font-size="20" fill="#e6edf3" font-weight="400">  reference: HTTP Checks</text>
-<text x="1268" y="876" font-size="20" fill="#e6edf3" font-weight="400">  resolved: http-checks</text>
-<text x="1268" y="913" font-size="20" fill="#e6edf3" font-weight="400">W_ENTRY_DESTINATION: the entry reference &#x27;Quick Start&#x27; resolves to</text>
-<text x="1268" y="950" font-size="20" fill="#e6edf3" font-weight="400">the destination &#x27;quick-start&#x27;, which the bundle&#x27;s entry line links</text>
-<text x="1268" y="987" font-size="20" fill="#e6edf3" font-weight="400">it to</text>
-<text x="1268" y="1024" font-size="20" fill="#e6edf3" font-weight="400">  reference: Quick Start</text>
-<text x="1268" y="1061" font-size="20" fill="#e6edf3" font-weight="400">  resolved: quick-start</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="1119" font-size="17" fill="#b1c6df" font-weight="400">Full output shown. Exact Markdown, link destinations and diagnostics are in the adjacent stdout.md and stderr.txt files.</text></g></svg>
+<text x="1268" y="628" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="686" font-size="17" fill="#b1c6df" font-weight="400">Full bundle output shown. Exact Markdown and link destinations: adjacent stdout.md. Diagnostics: case review subsection.</text></g></svg>

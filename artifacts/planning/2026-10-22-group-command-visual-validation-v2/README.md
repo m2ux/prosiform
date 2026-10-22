@@ -63,7 +63,7 @@ The compiler uses --group SLUG:DEPTH. Matching source sections are pooled, membe
 
 Each case has an isolated my-skill source tree under sources/. These small authored examples isolate the approved behaviors; they are not copies of the full example skill. The source-sha256.json manifest pins every input. Cases 26 and 27 include deferred target files for validation without including their contents in the bundle.
 
-The SVG layout derives from the [original visual validation renderer](../2026-10-22-my-skill-visual-validation/render.py). Images display observed compiler output, with complete stdout and stderr stored beside each image. They support review of current behavior, not independent proof that every requirement is correct.
+The SVG layout derives from the [original visual validation renderer](../2026-10-22-my-skill-visual-validation/render.py). Images display observed bundle output. Diagnostics appear beneath each image in a separate review subsection when present; complete stdout and stderr are also stored beside each image. They support review of current behavior, not independent proof that every requirement is correct.
 
 ## Reproduce
 
