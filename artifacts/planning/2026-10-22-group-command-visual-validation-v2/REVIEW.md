@@ -1,4 +1,4 @@
-# Group command visual review
+# Group Command Visual Review
 
 Source revision: [08a8c0317924](https://github.com/m2ux/prosiform/commit/08a8c0317924e69d5377464ee6961bbc948be85b).
 
@@ -8,7 +8,7 @@ Each diagram shows its participating source files and bundle body. The opening c
 
 ## Contents
 
-### Member structure
+### Member Structure
 
 - [Case 1: Plain Content](#case-1-plain-content)
 - [Case 2: Preamble And Sections](#case-2-preamble-and-sections)
@@ -19,7 +19,7 @@ Each diagram shows its participating source files and bundle body. The opening c
 - [Case 7: Title Only](#case-7-title-only)
 - [Case 8: Empty Member](#case-8-empty-member)
 
-### Pooled sections
+### Pooled Sections
 
 - [Case 9: Unique Sections](#case-9-unique-sections)
 - [Case 10: Shared Sections](#case-10-shared-sections)
@@ -28,7 +28,7 @@ Each diagram shows its participating source files and bundle body. The opening c
 - [Case 13: Nested Contributions](#case-13-nested-contributions)
 - [Case 14: Empty Contributions](#case-14-empty-contributions)
 
-### Names and casing
+### Names And Casing
 
 - [Case 15: Simple Names](#case-15-simple-names)
 - [Case 16: Nested Names](#case-16-nested-names)
@@ -38,7 +38,7 @@ Each diagram shows its participating source files and bundle body. The opening c
 - [Case 20: Group Suffixes](#case-20-group-suffixes)
 - [Case 21: Consistent Variant Names](#case-21-consistent-variant-names)
 
-### Links and selection
+### Links And Selection
 
 - [Case 22: Whole Member Links](#case-22-whole-member-links)
 - [Case 23: Pooled Section Links](#case-23-pooled-section-links)
@@ -47,7 +47,7 @@ Each diagram shows its participating source files and bundle body. The opening c
 - [Case 26: Deferred Links](#case-26-deferred-links)
 - [Case 27: Harness Selection](#case-27-harness-selection)
 
-### Group combinations
+### Group Combinations
 
 - [Case 28: Ungrouped Baseline](#case-28-ungrouped-baseline)
 - [Case 29: Multiple Groups](#case-29-multiple-groups)
@@ -55,7 +55,7 @@ Each diagram shows its participating source files and bundle body. The opening c
 - [Case 31: Repeated Directory Names](#case-31-repeated-directory-names)
 - [Case 32: Unmatched Group](#case-32-unmatched-group)
 
-### Rejected commands/output
+### Rejected Commands/Output
 
 - [Case 33: Missing Depth](#case-33-missing-depth)
 - [Case 34: Invalid Depth](#case-34-invalid-depth)

@@ -1,4 +1,4 @@
-# Diagram renderer
+# Diagram Renderer
 
 `render-diagram.py` bundles one Markdown entry document and draws its opened source files beside the output. Each call produces one diagram. Local Markdown dependencies are discovered by Prosiform.
 

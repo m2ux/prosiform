@@ -1,4 +1,4 @@
-# Group command visual validation v2
+# Group Command Visual Validation V2
 
 **[Review all 36 diagrams](REVIEW.md).**
 
@@ -18,7 +18,7 @@ The compiler uses --group SLUG:DEPTH. Matching source sections are pooled, membe
 | Rejected commands/output | 4 |
 | **Total** | **36** |
 
-## Case index
+## Case Index
 
 | Case | Review focus |
 | --- | --- |
@@ -59,7 +59,7 @@ The compiler uses --group SLUG:DEPTH. Matching source sections are pooled, membe
 | [Case 35: Duplicate Slug](cases/35-duplicate-slug.svg) | A slug may be declared only once, even with different depths. |
 | [Case 36: Heading Overflow](cases/36-heading-overflow.svg) | A carried heading that would exceed H6 prevents publication. |
 
-## Sources and evidence
+## Sources And Evidence
 
 Each case has an isolated my-skill source tree under sources/. These small authored examples isolate the approved behaviors; they are not copies of the full example skill. The source-sha256.json manifest pins every input. Cases 26 and 27 include deferred target files for validation without including their contents in the bundle.
 
