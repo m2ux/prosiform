@@ -36,7 +36,7 @@ prosiform --root my-skill \
   --group rules:1 --output skill-bundle.md procedure.md rules/common.md
 ```
 
-![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
+![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, an arrow connects the Tips link to the bundled Tips section. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
 #### Compile agent-specific rules
 

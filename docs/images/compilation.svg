@@ -78,6 +78,7 @@
 <path d="M1280 1080 H1734" stroke="#303b49" stroke-width="2"/>
 <text x="1280" y="1142" font-size="34" fill="#e6edf3" font-weight="500">Tips</text>
 <text x="1280" y="1212" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
+<path d="M1426 219 H1724 Q1748 219 1748 243 V1108 Q1748 1132 1724 1132 H1390" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1390 1125 L1378 1132 L1390 1139 Z" fill="#58a6ff"/>
 <path d="M219 875 H560 V260 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 253 L612 260 L600 267 Z" fill="#58a6ff"/>
 <path d="M156 949 H578 V840 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 833 L612 840 L600 847 Z" fill="#58a6ff"/>
 <path d="M784 151 H1090 Q1138 151 1138 205 V524 H1134" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M1134 517 L1122 524 L1134 531 Z" fill="#58a6ff"/>
