@@ -13,6 +13,7 @@ A reference that reaches the wrong member is a silent fault: the bundle validate
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The implementation plan for this unit |
+| [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
 
 ## Links
 
