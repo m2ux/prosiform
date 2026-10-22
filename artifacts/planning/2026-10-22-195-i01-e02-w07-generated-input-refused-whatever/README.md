@@ -13,6 +13,8 @@ The policy is stated in the design, declared by corpus fixtures, and implemented
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w07.md) | Component, design and validation obligations |
+| [Validation](validation.md) | Tested revisions, observations and delivery limitations |
+| [Change list](changes.md) | Applied and held plan changes |
 
 ## Links
 
