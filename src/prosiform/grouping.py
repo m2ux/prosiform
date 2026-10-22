@@ -31,8 +31,11 @@ throughout. A section no such body splits is arranged by name, and the
 names inside it that two or more documents contribute take variants of
 their own.
 
-A member's subsection is named by that document's stem in title case,
-less a trailing word the group's own heading already states, and it
+A member's subsection is named by the shortest run of that document's
+root-relative path which distinguishes it from the group's other
+members, in title case, measured after the leading segments they all
+share are dropped and less a trailing word the group's own heading
+already states, which is the run a variant heading is shortened to. It
 carries the member's content above the grouping depth. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
@@ -131,28 +134,41 @@ def states(heading: str, word: str) -> bool:
     return one in (other, f"{other}s")
 
 
-def member_heading(path: str, named: str) -> str:
-    """One member's overview subsection heading: its stem, in title case.
+def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
+    """The heading naming each member of a merged group, by its path.
 
-    A trailing word the group's own heading already states is dropped,
-    because the subsection sits beneath that heading and a reader has
-    read it there.
+    The heading is the run of trailing path segments that tells the
+    member apart from the group's others, in title case, which is the
+    run a variant heading carries, so one bundle states a member's name
+    one way wherever a reader meets it. A trailing word the group's own
+    heading already states is dropped, because the subsection sits
+    beneath that heading and a reader has read it there.
     """
-    spelled = words(PurePosixPath(path).stem)
-    if len(spelled) > 1 and states(named, spelled[-1]):
-        spelled = spelled[:-1]
-    return SPACE.join(word[:1].upper() + word[1:] for word in spelled)
+    headings: dict[str, str] = {}
+    for path, run in distinguishing(paths).items():
+        spelled = [word for part in run for word in words(part)]
+        if len(spelled) > 1 and states(named, spelled[-1]):
+            spelled = spelled[:-1]
+        headings[path] = SPACE.join(word[:1].upper() + word[1:] for word in spelled)
+    return headings
 
 
 def qualifiers(paths: Sequence[str]) -> dict[str, str]:
-    """The name each document takes as a variant heading, by its path.
+    """The name each document takes as a variant heading, by its path."""
+    return {
+        path: SPACE.join(titled(part) for part in run)
+        for path, run in distinguishing(paths).items()
+    }
 
-    The name is the shortest run of the path's trailing segments that
-    tells the documents apart, measured after the leading segments they
-    all share are dropped and with the Markdown suffix gone from the
-    last of them. One segment distinguishes documents in one directory;
-    documents of the same name in different directories take as many as
-    their paths need.
+
+def distinguishing(paths: Sequence[str]) -> dict[str, list[str]]:
+    """The run of trailing path segments that tells each document apart.
+
+    The run is the shortest that distinguishes, measured after the
+    leading segments they all share are dropped and with the Markdown
+    suffix gone from the last of them. One segment distinguishes
+    documents in one directory; documents of the same name in different
+    directories take as many as their paths need.
     """
     spelled = {path: list(PurePosixPath(path).parts) for path in paths}
     shortest = min(len(one) for one in spelled.values())
@@ -168,16 +184,10 @@ def qualifiers(paths: Sequence[str]) -> dict[str, str]:
     }
     longest = max(len(one) for one in trimmed.values())
     for run in range(1, longest + 1):
-        taken = {path: tuple(one[-run:]) for path, one in trimmed.items()}
-        if len(set(taken.values())) == len(taken):
-            return {
-                path: SPACE.join(titled(part) for part in each)
-                for path, each in taken.items()
-            }
-    return {
-        path: SPACE.join(titled(part) for part in each)
-        for path, each in trimmed.items()
-    }
+        taken = {path: one[-run:] for path, one in trimmed.items()}
+        if len({tuple(one) for one in taken.values()}) == len(taken):
+            return taken
+    return trimmed
 
 
 @dataclass(frozen=True)
@@ -498,6 +508,11 @@ def overview(
     carries. A member whose selected content all sits at the grouping
     depth takes none: the merged sections it contributes to name it.
 
+    The heading naming a member carries the run of its path that tells
+    it apart from the group's other members, measured against every
+    member the group merges rather than those taking a subsection, so
+    one answer to what a member is called serves the whole group.
+
     The subsections sit beneath an `Overview` section where the group
     also emits merged sections, so a member's preamble is read as that
     member's rather than as one more of the group's own sections. Where
@@ -521,6 +536,7 @@ def overview(
     }
     if not any(named_here.values()):
         return
+    headings = member_headings([member.path for member in members], named)
     at = MEMBER_LEVEL if pooled else SECTION_LEVEL
     if pooled:
         text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
@@ -532,7 +548,7 @@ def overview(
         if member.absorbing is not None:
             answers.append((member.path, member.named[id(member.absorbing)]))
         text, recorded = generated_part(
-            member_heading(member.path, named), at, MEMBER_OVERVIEW, answers
+            headings[member.path], at, MEMBER_OVERVIEW, answers
         )
         into.part(text, recorded, [recorded])
         for one in above[member.path]:
