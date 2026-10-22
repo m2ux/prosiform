@@ -67,6 +67,6 @@ The SVG layout derives from the [original visual validation renderer](../2026-10
 
 ## Renderer
 
-The reusable [diagram renderer](../../../scripts/README.md) takes a Markdown entry document such as SKILL.md and renders one bundle per call. Source files, commands and assertions for this review set are recorded in [cases.json](cases.json). The combined REVIEW.md is the curated case index.
+The reusable [diagram renderer](https://github.com/m2ux/prosiform/blob/main/docs/diagram-renderer.md) takes a Markdown entry document such as SKILL.md and renders one bundle per call. Source files, commands and assertions for this review set are recorded in [cases.json](cases.json). The combined REVIEW.md is the curated case index.
 
 Image headers show the compiler branch and commit. Case titles, commands, explanations and diagnostics belong in the review text.

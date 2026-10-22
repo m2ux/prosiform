@@ -2,7 +2,7 @@
 
 Engineering artifacts for md-composer.
 
-[Diagram renderer usage](scripts/README.md)
+[Diagram Renderer Usage](https://github.com/m2ux/prosiform/blob/main/docs/diagram-renderer.md)
 
 ## Structure
 
@@ -11,7 +11,6 @@ Engineering artifacts for md-composer.
 ├── README.md                 # This file
 ├── AGENTS.md                 # AI agent guidelines
 ├── ARCHITECTURE.md           # Engineering scenarios guide
-├── scripts/                 # Engineering tools and usage guides
 └── artifacts/                # Output artifacts
     ├── adr/                  # Architecture Decision Records
     ├── planning/             # Work package plans
