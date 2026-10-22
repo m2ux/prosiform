@@ -18,7 +18,7 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | `--group SLUG:DEPTH` | Grouping rule; repeat for distinct slugs. |
 | `--section FRAGMENT` | Bundle one section of the entry document. |
 | `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
-| `--compact` | Retain headings and links; replace other body content with `…` in both image panels. |
+| `--compact` | Retain headings and links; omit other body content in both image panels. |
 | `--input-section-level N` | Input panels: show content through HN (1–6) and titles one level deeper. Defaults to all content. |
 | `--compiled-section-level N` | Compiled panel: same cutoff, independently selected. Defaults to all content. |
 | `--branch NAME` | Compiler branch; required for a detached checkout. Must point to its current commit. |
@@ -26,7 +26,7 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 
 Call the tool again for another document or grouping arrangement, using a different output prefix.
 
-For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Prose, lists and code examples collapse to placeholders between retained items. Exact stdout and diagnostics remain complete.
+For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Other prose and code examples are omitted without placeholders. Exact stdout and diagnostics remain complete.
 
 Compact mode affects the image, not the bundle size. If compilation exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
 

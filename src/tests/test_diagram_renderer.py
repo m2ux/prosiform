@@ -37,7 +37,7 @@ Read [Inline](target.md) and [Reference][ref].
 [ref]: other.md#detail
 """
     compact = renderer().compact_markdown(body)
-    assert compact.startswith("# Exact HTTP Title\n\n…\n\n## Subsection")
+    assert compact.startswith("# Exact HTTP Title\n\n## Subsection")
     assert "[Inline](target.md)" in compact
     assert "[Reference](other.md#detail)" in compact
     assert "[https://example.com](https://example.com)" in compact
@@ -64,7 +64,7 @@ def test_compact_does_not_promote_code_examples_to_headings_or_links() -> None:
 - Other list content.
 """
     compact = renderer().compact_markdown(body)
-    assert compact.startswith("# Real Title\n\n…\n\n## Next Section")
+    assert compact.startswith("# Real Title\n\n## Next Section")
     assert "[Real](real.md)" in compact
     assert "missing.md" not in compact
     assert "Example Title" not in compact
@@ -92,6 +92,7 @@ def test_compact_changes_both_panels_without_changing_input() -> None:
 def test_compact_preserves_empty_and_rejected_states() -> None:
     module = renderer()
     assert module.compact_markdown("") == ""
+    assert module.compact_markdown("Plain body text.") == ""
     assert module.compact_markdown("# Title Only\n") == "# Title Only"
     diagram = module.svg({}, "skill", "", "main", "a" * 40, compact=True)
     assert "No bundle published." in diagram

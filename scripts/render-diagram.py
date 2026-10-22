@@ -83,7 +83,7 @@ def split_entry_points(stdout):
 
 
 def compact_markdown(body):
-    """Keep parsed headings and links; collapse other content to a placeholder."""
+    """Keep parsed headings and links; omit other content."""
     from markdown_it import MarkdownIt
 
     from prosiform.source import Unterminated, content
@@ -91,13 +91,9 @@ def compact_markdown(body):
     try:
         body = content(body).text
     except Unterminated:
-        return "…"
+        return ""
     tokens = MarkdownIt("commonmark").parse(body)
     rows = []
-
-    def omit():
-        if not rows or rows[-1] != "…":
-            rows.append("…")
 
     for index, token in enumerate(tokens):
         if token.type == "inline":
@@ -124,10 +120,6 @@ def compact_markdown(body):
                     rows.append(
                         "![" + child.content + "](" + str(child.attrGet("src")) + ")"
                     )
-                elif child.content.strip(" \t\r\n.,;:!?()[]-"):
-                    omit()
-        elif token.type in ("fence", "code_block", "html_block", "hr"):
-            omit()
     return "\n\n".join(rows)
 
 
@@ -270,7 +262,7 @@ def main():
     parser.add_argument(
         "--compact",
         action="store_true",
-        help="Show headings and links; replace other content with … in both panels",
+        help="Show headings and links; omit other content in both panels",
     )
     parser.add_argument(
         "--output",
@@ -372,7 +364,7 @@ def main():
         "Markdown presentation; the stdout file preserves exact content and "
         "link destinations."
         + (
-            " Compact view replaces body content with … "
+            " Compact view omits body content "
             "while retaining headings and links."
             if options.compact
             else ""
