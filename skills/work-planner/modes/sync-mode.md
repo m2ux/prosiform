@@ -137,7 +137,9 @@ The main path meets [Outcomes](#outcomes).
     - [Issue Closure](../protocols/issue-closure.md) the initiative when it reports closable.
 12. **Sync the board.**
     Run [Select Project Board](../artifacts/board.md#select-project-board) for the initiative's theme.
-    - Run [Copy Project Board](../artifacts/board.md#copy-project-board) if it is absent.
+    - When the board is absent:
+      - Read the originating proposal identified in the initiative's [References](../artifacts/initiative-issue-body.md#references) through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue); return unresolved provenance before board creation for a proposal-derived initiative.
+      - Run [Copy Project Board](../artifacts/board.md#copy-project-board) with the owner, repository, theme title and originating proposal record when applicable.
     - Follow [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
