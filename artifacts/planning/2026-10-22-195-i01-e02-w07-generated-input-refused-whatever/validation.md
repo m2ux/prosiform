@@ -28,7 +28,7 @@ checks/conformance.py and checks/independence.py both pass against the published
 
 ## Remote checks
 
-GitHub Checks is running for this head: https://github.com/m2ux/prosiform/actions/runs/39738407786. Its result is recorded before merge.
+GitHub Checks passed for head 4165f5c4be3491f9ef650afba897f721744279aa: https://github.com/m2ux/prosiform/actions/runs/39738407786. This is the repository's complete make check, including installation smoke, online links and all remaining named checks. PR #210 targets i01/e02/main and delivers task #207 (W07), covering epic AC9. This recorded relation is used under the user's CLI linkage exception.
 
 ## Delivery limits
 
