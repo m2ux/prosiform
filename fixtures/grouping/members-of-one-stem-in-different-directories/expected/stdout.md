@@ -18,10 +18,14 @@ What the second run recorded before its sections.
 
 ## Findings
 
-### Summary
+### Alpha Notes
+
+#### Summary
 
 The first run held throughout.
 
-### Detail
+### Beta Notes
+
+#### Detail
 
 The second run held until the last step.

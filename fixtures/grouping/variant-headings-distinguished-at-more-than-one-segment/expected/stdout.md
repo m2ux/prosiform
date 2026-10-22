@@ -1,4 +1,4 @@
-This bundle was built for [Findings](#findings); everything else is material it references.
+This bundle was built for [Alpha Notes](#alpha-notes); everything else is material it references.
 
 # Guides
 
@@ -8,16 +8,18 @@ This bundle was built for [Findings](#findings); everything else is material it 
 
 ## Findings
 
-### Summary
+### Alpha Notes
 
-#### Alpha Notes
+#### Summary
 
 The first run held throughout.
 
-#### Beta Notes
-
-The second run held until the last step.
-
-### Detail
+#### Detail
 
 Each step was recorded as it ran, beside [the second run](#beta-notes).
+
+### Beta Notes
+
+#### Summary
+
+The second run held until the last step.
