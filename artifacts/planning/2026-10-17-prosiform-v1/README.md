@@ -99,6 +99,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E02:W03](i01-e02/w03.md) | The implementation plan for title case for every generated heading |
 | [I01:E02:W04](i01-e02/w04.md) | The implementation plan for documented grouping and its diagrams |
 | [I01:E02:W05](i01-e02/w05.md) | The implementation plan for a member heading that names one document |
+| [I01:E02:W06](i01-e02/w06.md) | The implementation plan for one name for a member in both places |
 | [I01:E02 joins](i01-e02/joins.md) | The independent row pairs this epic takes as separate pull requests |
 | [I01:E02 permutations](i01-e02/permutations) | The member shapes the arrangement is read against |
 | [I01:E04:W01](i01-e04/w01.md) | The implementation plan for deferral decisions for the remaining entries |
