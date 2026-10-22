@@ -1,6 +1,6 @@
 This bundle was built for [One](#one) and [Two](#two); everything else is material it references.
 
-# guide
+# Guide
 
 ### Alpha
 

@@ -1,6 +1,6 @@
-This bundle was built for [article](#article) and [café](#café-1); everything else is material it references.
+This bundle was built for [Article](#article) and [Café](#café-1); everything else is material it references.
 
-# article
+# Article
 
 An opening paragraph, above the first heading.
 
@@ -12,6 +12,6 @@ A heading naming itself with an entity.
 
 A heading naming itself with the characters it shows.
 
-# café
+# Café
 
 A document whose path produces the slug the entity heading above already took.

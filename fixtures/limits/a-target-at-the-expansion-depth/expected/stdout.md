@@ -1,13 +1,13 @@
-This bundle was built for [alpha](#alpha); everything else is material it references.
+This bundle was built for [Alpha](#alpha); everything else is material it references.
 
-# alpha
+# Alpha
 
 Alpha requires [beta](#beta).
 
-# beta
+# Beta
 
 Beta requires [gamma](#gamma).
 
-# gamma
+# Gamma
 
 Gamma is the end of the chain.

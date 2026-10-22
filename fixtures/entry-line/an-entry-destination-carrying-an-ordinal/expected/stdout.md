@@ -1,12 +1,12 @@
 This bundle was built for [Step](#step) and [Step](#step-1); everything else is material it references.
 
-# notes
+# Notes
 
 ### Step
 
 The step the notes describe.
 
-# rules
+# Rules
 
 ### Step
 

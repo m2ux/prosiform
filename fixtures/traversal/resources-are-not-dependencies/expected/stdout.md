@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 ![The architecture](https://example.com/architecture.png) illustrates the
 [specification](https://example.com/spec.md), and the
@@ -11,6 +11,6 @@ traversed.
 The procedure requires [the shared rules](#rules), which the bundle
 carries.
 
-# rules
+# Rules
 
 Every rule the procedure requires.

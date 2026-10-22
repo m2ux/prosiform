@@ -1,0 +1,21 @@
+description = "A heading an author wrote and a filesystem path a run names carry the spelling their source gave them, beside a file heading the bundle generated in title case, so the convention reaches what the compiler wrote and nothing else."
+
+clauses = [
+  "Input and output contract — Generated headings",
+  "Link classification and resource handling — A deferred link's destination",
+  "Adversarial acceptance fixtures — File hierarchy, a heading an author wrote and a deferred link's path keeping the spelling their source gave them",
+]
+
+[invocation]
+root = "source"
+arguments = ["field-guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Field-Guide"
+resolved = "field-guide"

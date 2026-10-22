@@ -1,6 +1,6 @@
-This bundle was built for [article](#article) and [run](#run-4); everything else is material it references.
+This bundle was built for [Article](#article) and [Run](#run-4); everything else is material it references.
 
-# article
+# Article
 
 ### Run
 
@@ -22,6 +22,6 @@ A heading reaching the next free ordinal after that.
 
 A second heading spelling an ordinal, which is numbered from its own slug.
 
-# run
+# Run
 
 A document whose path produces a slug the headings above already took, with ordinals behind it.

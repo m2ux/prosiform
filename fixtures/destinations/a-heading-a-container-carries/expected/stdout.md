@@ -1,6 +1,6 @@
-This bundle was built for [article](#article) and [Run](#run-2); everything else is material it references.
+This bundle was built for [Article](#article) and [Run](#run-2); everything else is material it references.
 
-# article
+# Article
 
 An opening paragraph, above the headings the fixture measures.
 
@@ -14,7 +14,7 @@ An opening paragraph, above the headings the fixture measures.
 
   A heading a retained list item carries, indexed beside the rest.
 
-# guide
+# Guide
 
 ### Run
 

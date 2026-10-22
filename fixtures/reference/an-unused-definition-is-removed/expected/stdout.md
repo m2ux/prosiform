@@ -1,9 +1,9 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# first
+# First
 
 The document the first definition of the label names.
 
-# guide
+# Guide
 
 The guide names [the rules](#first) and nothing else.

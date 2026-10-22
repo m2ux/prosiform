@@ -1,4 +1,4 @@
-This bundle was built for [Guide](#guide) and [notes/Note](#notesnote); everything else is material it references.
+This bundle was built for [Guide](#guide) and [Notes/Note](#notesnote); everything else is material it references.
 
 # Guide
 
@@ -6,7 +6,7 @@ This bundle was built for [Guide](#guide) and [notes/Note](#notesnote); everythi
 
 A document whose suffix is spelled in capitals.
 
-# notes/Note
+# Notes/Note
 
 ## Taking a note
 

@@ -1,6 +1,6 @@
-This bundle was built for [docs/my-note](#docsmy-note); everything else is material it references.
+This bundle was built for [Docs/My-Note](#docsmy-note); everything else is material it references.
 
-# docs/my-note
+# Docs/My-Note
 
 ## Run
 

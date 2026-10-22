@@ -1,5 +1,5 @@
-This bundle was built for [notes/draft \#](#notesdraft-); everything else is material it references.
+This bundle was built for [Notes/Draft \#](#notesdraft-); everything else is material it references.
 
-# notes/draft \#
+# Notes/Draft \#
 
 A document whose path ends in a space and a number sign.

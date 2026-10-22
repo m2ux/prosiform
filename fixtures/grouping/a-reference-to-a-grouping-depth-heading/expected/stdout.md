@@ -1,6 +1,6 @@
-This bundle was built for [entry](#entry); everything else is material it references.
+This bundle was built for [Entry](#entry); everything else is material it references.
 
-# entry
+# Entry
 
 A name two documents carry is reached as [the planning procedure](#plan-mode) and as [the review procedure](#review-mode).
 

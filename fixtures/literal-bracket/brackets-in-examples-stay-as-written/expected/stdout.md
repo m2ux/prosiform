@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The guide names [the runner](#run) and shows `[runner]` as an example.
 
@@ -10,6 +10,6 @@ A [runner] use and its definition:
 [runner]: run.md
 ```
 
-# run
+# Run
 
 How the runner runs.

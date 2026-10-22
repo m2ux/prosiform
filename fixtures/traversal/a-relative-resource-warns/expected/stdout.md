@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 ![The architecture](architecture.png) illustrates the procedure, and
 [the house style](theme.css) names a file the bundle neither opens nor

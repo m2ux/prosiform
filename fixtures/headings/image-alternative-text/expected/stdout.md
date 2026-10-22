@@ -1,6 +1,6 @@
-This bundle was built for [article](#article) and [the--overview](#the--overview-1); everything else is material it references.
+This bundle was built for [Article](#article) and [The--Overview](#the--overview-1); everything else is material it references.
 
-# article
+# Article
 
 ### The ![A diagram](plan.png) overview
 
@@ -10,6 +10,6 @@ A heading carrying an image between two words.
 
 A heading carrying none.
 
-# the--overview
+# The--Overview
 
 A document whose path produces the slug the heading above already took.

@@ -1,6 +1,6 @@
 This bundle was built for [Stop](#stop); everything else is material it references.
 
-# guide
+# Guide
 
 ### Stop
 

@@ -1,11 +1,11 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure follows [¬ the shared guidelines](../guidelines.md), which
 live above the allowed source root, and requires
 [the shared rules](#rules), which the root holds.
 
-# rules
+# Rules
 
 Every rule the procedure requires.

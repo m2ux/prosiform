@@ -1,6 +1,6 @@
-This bundle was built for [artifacts/architecture-overview](#artifactsarchitecture-overview); everything else is material it references.
+This bundle was built for [Artifacts/Architecture-Overview](#artifactsarchitecture-overview); everything else is material it references.
 
-# artifacts/architecture-overview
+# Artifacts/Architecture-Overview
 
 The architecture overview explains one pull request's changes to the engineer who reviews them: where the change sits in the system, how it behaves, and in what order to read the diff. Its reader knows software and does not know this codebase. It lives in a planning record.
 

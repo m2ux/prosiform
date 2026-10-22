@@ -1,12 +1,12 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# docs/note
+# Docs/Note
 
 ### Shared
 
 The note's shared section.
 
-# guide
+# Guide
 
 ## Shared
 
