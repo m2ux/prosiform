@@ -1,6 +1,6 @@
 # Validation
 
-Tested revision: `446f70e9b3c08562b20b7b586233b09412bfa0fc`, based on epic revision `c876051`.
+Documented-command verification revision: `2697757fcf6f2d96ee4bd182d8b02839c073ed8c`, based on epic revision `c876051`.
 
 ## Documented commands and diagrams
 
@@ -25,7 +25,7 @@ Both PNGs were visually inspected: titles fit their panels, source filenames rem
 
 ## Local checks
 
-Passed: 754 source tests; 606 harness tests with one existing skip; all 251 corpus fixtures; lint, formatting, type checking, layout, command tables, vocabulary, invocation, conformance and independence.
+At implementation revision 446f70e9b3c08562b20b7b586233b09412bfa0fc, passed: 754 source tests; 606 harness tests with one existing skip; all 251 corpus fixtures; lint, formatting, type checking, layout, command tables, vocabulary, invocation, conformance and independence.
 
 ```text
 python -m pytest -c src/pyproject.toml src/tests
@@ -33,7 +33,7 @@ make lint format-check typecheck harness corpus layout tables vocabulary invocat
 git diff --check
 ```
 
-The commands used the existing installed tools on PATH and the task worktree source through PYTHONPATH. An initial source-test invocation lacked the console entry point on PATH; all tests passed after supplying that environment. No product failure was found. Lock, installed-wheel smoke and online links are covered by the remote full check set.
+The commands used the existing installed tools on PATH and the task worktree source through PYTHONPATH. An initial source-test invocation lacked the console entry point on PATH; all tests passed after supplying that environment. No product failure was found. The final revision clarifies one documentation sentence; all command and diagram comparisons were rerun successfully. Lock, installed-wheel smoke and online links are covered by the remote full check set.
 
 ## GitHub checks
 
