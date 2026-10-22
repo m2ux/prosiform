@@ -175,6 +175,7 @@ An initiative criterion meets the [shared acceptance criteria](issue-body.md#sha
 
 ### References
 
+- A proposal-derived initiative identifies its originating proposal in References with the proposal's exact title and issue URL, labelled as the originating proposal.
 - A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources).
 - A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
 

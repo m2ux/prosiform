@@ -16,7 +16,6 @@ Read these files first.
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Work Item](../artifacts/work-item.md)
 - [Repository Labels](../artifacts/repository-labels.md)
-- [Task Body](../artifacts/task-body.md)
 - [Issue Body](../artifacts/issue-body.md)
 - [Epic](../artifacts/epic.md)
 - [Delivery Branches](../artifacts/delivery-branches.md)
@@ -71,10 +70,6 @@ The main path meets [Outcomes](#outcomes).
      - Save the epics in dependency order, each carrying its confirmed priority label.
      - Replace every temporary link in the initiative and epic bodies with the saved issue identity.
      - Confirm no unresolved epic placeholder remains.
-   - For each task needing its own discussion or evidence:
-     - Call [Populate Task Body](../artifacts/task-body.md#populate-task-body).
-     - Validate it against its kind's fields.
-     - Save the task issue.
    - Call [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) with the saved initiative context.
    - Call [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body) with every saved epic.
    - Resolve findings.

@@ -18,11 +18,11 @@ The theme or proposals board the request names.
 
 A missing theme board, or a missing proposals board.
 
-**Inputs:** Board owner, repository, selected board kind and theme title when applicable.
+**Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
 
 1. When no open board is titled `Proposals`, run [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
 2. When the selected theme board is absent:
-   - Run [Create Theme Board](#create-theme-board) with the owner, repository and theme title.
+   - Run [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
    - Require the new theme's label and board before an initiative takes that theme.
 
 ### *Create* Proposals Board
@@ -42,14 +42,15 @@ A new proposals board linked to the supplied repository.
 
 A new theme board linked to the supplied repository.
 
-**Inputs:** Board owner, repository and theme title.
+**Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
 
-1. Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
-2. Use the returned number as the copy source.
-3. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
-4. Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
-5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
-6. Return the new board number after linking succeeds.
+1. Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
+2. Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+3. Use the returned number as the copy source.
+4. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
+5. Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+6. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+7. Return the new board number after linking succeeds.
 
 ### *Place* Issue on Board
 
@@ -131,7 +132,7 @@ An initiative carries one `theme:*` label, and each of its epics carries the sam
 
 ### One Board Per Theme
 
-- Its title is the theme's name, a colon, and its description. In the example, Canon is `Canon: Definitions Checked Against the Design Canon`.
+- A proposal-derived board title is the originating proposal's exact `[Pxx]` designator, a space, the theme name, a colon, and its description: `[P03] Canon: Definitions Checked Against the Design Canon`. Preserve the proposal's digits exactly. A board with no originating proposal uses `Name: Description`.
 - It is linked to the repository.
 - It holds the theme's initiatives, their epics and their task issues.
 
@@ -260,18 +261,18 @@ gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
 
 ### Find Theme Board
 
-Prints the number of the open board for one theme, by the theme's name that opens its title.
+Prints the number of the open board for one theme, by its theme name after any proposal designator.
 
 **Inputs:** Board owner and theme name.
 
 ```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | startswith("<theme-name>: ")) | .number'
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | sub("^\\[P[0-9]+\\] "; "") | startswith("<theme-name>: ")) | .number'
 ```
 
 **Example:**
 
 ```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | startswith("Canon: ")) | .number'
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | sub("^\\[P[0-9]+\\] "; "") | startswith("Canon: ")) | .number'
 ```
 
 ### Find Status Field
