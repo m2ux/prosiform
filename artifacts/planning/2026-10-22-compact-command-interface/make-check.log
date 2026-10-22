@@ -1,0 +1,2158 @@
+cd src && uv lock --check
+Resolved 22 packages in 0.90ms
+uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks
+All checks passed!
+uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks
+55 files already formatted
+uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks
+Success: no issues found in 54 source files
+cd src && uv run --frozen pytest
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 36%]
+........................................................................ [ 45%]
+........................................................................ [ 54%]
+........................................................................ [ 63%]
+........................................................................ [ 72%]
+........................................................................ [ 81%]
+........................................................................ [ 90%]
+........................................................................ [ 99%]
+........                                                                 [100%]
+800 passed in 0.86s
+uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 47%]
+........................................................................ [ 59%]
+........................................................................ [ 70%]
+........................................................................ [ 82%]
+........................................................................ [ 94%]
+.................................                                        [100%]
+609 passed in 9.96s
+uv run --project src --frozen python checks/corpus.py
+absorbed-title/a-reference-naming-a-title-no-heading-absorbed: pass
+absorbed-title/a-reference-naming-an-absorbed-title: pass
+ancestor-promotion/a-link-to-a-heading-only-ancestor: pass
+ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies: pass
+ancestor-promotion/a-promotion-two-documents-out: pass
+boundary/a-code-example-a-list-reads-as-markup: pass
+boundary/a-nested-list-and-the-list-below-it: pass
+boundary/a-yaml-example-the-bundle-keeps-intact: pass
+boundary/the-file-heading-between-two-groups: pass
+boundary/two-lists-a-definition-separates: pass
+candidate-validation/a-code-example-carried-byte-for-byte: pass
+candidate-validation/a-definition-removed-beside-its-literal-example: pass
+candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere: pass
+candidate-validation/a-selected-region-between-two-unselected-ones: pass
+candidate-validation/crlf-lines-beside-a-rewritten-link: pass
+candidate-validation/every-line-terminated-with-crlf: pass
+candidate-validation/repeated-identical-prose-in-two-regions: pass
+candidate-validation/tabs-beside-a-rewritten-link: pass
+candidate-validation/untouched-bytes-beside-a-rewritten-link: pass
+citation/a-marked-reference-above-the-root: pass
+citation/a-reference-above-the-root: pass
+cli/a-command-line-naming-no-allowed-source-root: pass
+cli/a-command-line-naming-no-entry-reference: pass
+cli/an-allowed-source-root-naming-no-directory: pass
+cli/an-option-the-contract-does-not-declare: pass
+cli/diagnostics-format-unknown: pass
+cli/fragment-only-reference-without-from: pass
+cli/group-rule-depth: pass
+cli/group-rule-repeated-slug: pass
+cli/group-rule-unknown-slug: pass
+cli/informational-usage-response: pass
+cli/informational-version-response: pass
+cli/output-naming-a-dependency-source: pass
+cli/output-naming-an-input-source: pass
+cli/output-naming-what-a-link-points-at: pass
+cli/validation-only-run: pass
+cli/validation-only-run-with-an-output-file: pass
+confinement/a-drive-path-inside-a-source: pass
+confinement/a-parent-segment-above-the-root: pass
+confinement/a-root-relative-reference-inside-a-source: pass
+confinement/a-symlink-chain-below-the-root: pass
+confinement/a-symlink-to-a-document-inside-the-root: pass
+confinement/a-symlinked-directory-below-the-root: pass
+confinement/a-symlinked-source: pass
+consolidation/a-child-then-its-whole-document: pass
+consolidation/a-subsection-and-its-section: pass
+deferral/a-deferral-stands-where-another-reference-carried-its-target: pass
+deferral/a-deferred-destination-named-from-the-root: pass
+deferral/a-deferred-fragment-of-its-own-document: pass
+deferral/a-deferred-reference-naming-no-document: pass
+deferral/a-deferred-reference-naming-no-heading: pass
+deferral/a-marked-reference-is-not-compiled: pass
+delivery/a-failing-run-publishes-no-bundle: pass
+delivery/an-entry-destination-is-reported: pass
+delivery/an-entry-destination-under-a-grouping-rule: pass
+delivery/an-output-destination-that-refuses-the-write: pass
+depth-overflow/a-source-heading-the-shift-places-at-the-sixth: pass
+depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth: pass
+depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth: pass
+destinations/a-heading-a-container-carries: pass
+destinations/source-heading-fragments: pass
+determinism/entry-references-in-another-order: pass
+determinism/entry-references-in-source-order: pass
+determinism/groups-in-root-relative-path-order: pass
+diagnostics/a-failure-two-hops-from-the-entry-reference: pass
+diagnostics/a-run-that-fails-in-itself: pass
+diagnostics/one-json-object-per-diagnostic-line: pass
+entry-line/an-entry-destination-carrying-an-ordinal: pass
+extraction/a-fragment-alone-selects-from-the-referrer: pass
+extraction/a-heading-a-blockquote-carries: pass
+extraction/a-heading-only-in-a-code-example: pass
+extraction/a-list-item-heading-as-a-target: pass
+extraction/a-section-the-document-outlasts: pass
+extraction/a-setext-heading-as-a-root: pass
+extraction/a-subsection-inside-the-section: pass
+extraction/an-unterminated-example-at-the-section-end: pass
+extraction/heading-like-text-in-a-code-example: pass
+extraction/nested-section-target: pass
+extraction/section-to-the-next-sibling: pass
+file-wide-safety/an-unselected-construct-crosses-a-safety-limit: pass
+frontmatter/crlf-delimiters: pass
+frontmatter/delimiter-with-trailing-spaces: pass
+frontmatter/dot-terminated: pass
+frontmatter/indented-delimiter: pass
+frontmatter/leading-blank-line: pass
+frontmatter/optional-mark: pass
+frontmatter/toml-fence: pass
+frontmatter/unterminated-block: pass
+frontmatter/yaml-example-in-a-code-block: pass
+generated-input/a-bundle-offered-as-input: pass
+generated-input/a-bundle-over-mixed-case-paths: pass
+generated-input/a-document-titled-with-its-own-name: pass
+generated-input/a-file-heading-example-in-a-code-block: pass
+generated-input/a-file-heading-outside-the-selection: pass
+generated-input/a-title-spelling-a-path-that-names-no-document: pass
+generated-input/an-authored-title-naming-a-sibling: pass
+grouping/a-document-no-group-matches: pass
+grouping/a-group-emitting-no-merged-section: pass
+grouping/a-member-carrying-one-heading-bundled-by-document: pass
+grouping/a-member-named-by-the-title-it-absorbs: pass
+grouping/a-pooled-subset-keeps-group-member-names: pass
+grouping/a-reference-to-a-grouping-depth-heading: pass
+grouping/a-reference-to-a-member-carrying-one-heading: pass
+grouping/a-rule-matching-no-document-in-the-closure: pass
+grouping/a-section-shallower-than-the-grouping-depth: pass
+grouping/a-variant-drops-the-group-word: pass
+grouping/a-whole-document-reference-to-a-member: pass
+grouping/an-entry-naming-a-member-carrying-one-heading: pass
+grouping/member-names-distinguished-after-formatting: pass
+grouping/members-of-one-stem-in-different-directories: pass
+grouping/mixed-contributions-name-every-member: pass
+grouping/one-entry-bundled-by-document: pass
+grouping/one-entry-bundled-by-group: pass
+grouping/one-entry-under-a-group: pass
+grouping/one-spelling-for-every-generated-heading: pass
+grouping/structural-ancestors-inside-a-merged-group: pass
+grouping/subheadings-name-every-member: pass
+grouping/two-members-contributing-one-heading-text: pass
+grouping/variant-headings-distinguished-at-more-than-one-segment: pass
+headings/a-heading-with-no-visible-text: pass
+headings/an-authored-heading-beside-a-generated-one: pass
+headings/an-entity-in-a-heading: pass
+headings/collision-with-a-natural-suffix: pass
+headings/image-alternative-text: pass
+hierarchy/a-preamble-before-a-kept-title: pass
+hierarchy/a-setext-heading-a-quote-carries: pass
+hierarchy/a-setext-heading-an-absorbed-title-leaves: pass
+hierarchy/a-setext-heading-becomes-atx: pass
+hierarchy/a-setext-heading-over-two-lines: pass
+hierarchy/a-shift-that-writes-a-level-only: pass
+hierarchy/every-level-moves-down-one: pass
+hierarchy/headings-a-container-carries: pass
+hierarchy/regions-the-source-separates: pass
+identity/a-path-ending-in-a-number-sign: pass
+identity/a-second-h1-leaves-the-title: pass
+identity/a-title-the-path-spells-with-a-space: pass
+identity/a-title-the-path-spells-with-hyphens: pass
+identity/an-h1-below-the-first-heading: pass
+identity/an-ordinal-names-no-source-heading: pass
+identity/path-needing-escaping: pass
+identity/paths-differing-only-by-suffix: pass
+identity/same-basename-in-two-directories: pass
+identity/title-the-path-does-not-carry: pass
+identity/two-headings-sharing-a-slug: pass
+identity/whole-document: pass
+limits/a-file-count-budget-crossed: pass
+limits/a-link-budget-crossed: pass
+limits/a-negative-override-is-refused: pass
+limits/a-nesting-budget-crossed: pass
+limits/a-source-byte-budget-crossed: pass
+limits/a-target-at-the-expansion-depth: pass
+limits/a-target-budget-crossed: pass
+limits/a-zero-override-is-refused: pass
+limits/an-expansion-depth-budget-crossed: pass
+limits/an-input-byte-budget-crossed: pass
+limits/an-output-byte-budget-crossed: pass
+literal-bracket/a-bracket-another-source-defines: pass
+literal-bracket/brackets-in-examples-stay-as-written: pass
+normalization/a-double-encoded-escape: pass
+normalization/a-drive-path: pass
+normalization/a-non-utf8-escape-sequence: pass
+normalization/a-parent-segment-and-a-fragment: pass
+normalization/a-parent-segment-reaching-the-root-boundary: pass
+normalization/a-protocol-relative-url: pass
+normalization/a-scheme-and-an-authority-in-selected-content: pass
+normalization/an-empty-fragment: pass
+normalization/an-encoded-number-sign: pass
+normalization/an-encoded-path-separator: pass
+normalization/an-escaped-fragment: pass
+normalization/an-over-long-percent-escape: pass
+normalization/an-unencoded-number-sign: pass
+normalization/bare-text-paths: pass
+normalization/query-on-an-entry-reference: pass
+normalization/root-escape: pass
+normalization/root-relative-entry-reference: pass
+normalization/two-spellings-of-one-document: pass
+ownership/a-self-reference-after-consolidation: pass
+ownership/an-ancestor-reference-after-consolidation: pass
+ownership/an-ancestor-reference-with-the-child-selected: pass
+parser-limit/a-budget-spent-on-the-last-valid-reference: pass
+parser-limit/a-lookup-suppressed-below-every-declared-budget: pass
+parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches: pass
+parser-limit/a-reference-lookup-the-parser-declines: pass
+profile/entry-suffix-outside-the-profile: pass
+profile/extension-lookalikes: pass
+profile/html-in-a-code-example: pass
+profile/invalid-byte-mid-document: pass
+profile/markdown-suffixes-in-mixed-case: pass
+profile/raw-html-in-selected-content: pass
+profile/source-not-utf8: pass
+profile/task-markers-and-typography: pass
+profile/task-markers-protected-from-definitions: pass
+profile/the-constructs-the-profile-supports: pass
+profile/unsupported-construct: pass
+profile/utf16-byte-order-mark: pass
+real-source/absorbed-title-and-self-references: pass
+real-source/frontmatter-and-a-shifted-group: pass
+real-source/heading-text-outside-ascii: pass
+real-source/markdown-inside-a-code-example: pass
+real-source/preamble-above-the-first-heading: pass
+real-source/tables-and-brace-placeholders: pass
+reference/a-definition-a-container-carries: pass
+reference/a-definition-outside-the-selected-section: pass
+reference/a-definition-spelled-across-two-lines: pass
+reference/a-document-outside-the-root-is-text: pass
+reference/a-document-under-the-root-is-a-dependency: pass
+reference/a-label-two-definitions-spell-in-different-case: pass
+reference/a-link-inside-an-image-a-link-carries: pass
+reference/a-link-inside-image-alternative-content: pass
+reference/a-reference-style-image-with-a-title: pass
+reference/a-reference-under-the-root-naming-no-document: pass
+reference/a-reference-under-the-root-naming-no-heading: pass
+reference/an-html-link-naming-a-document-under-the-root: pass
+reference/an-unused-definition-is-removed: pass
+reference/conflicting-labels-across-files: pass
+resource/a-bundle-naming-no-resource-does-not-warn: pass
+resource/a-marked-resource-is-emitted-as-authored: pass
+resource/an-image-naming-a-document-under-the-root: pass
+rewriting/a-cross-group-reference: pass
+rewriting/a-fragment-only-dependency: pass
+rewriting/a-link-inside-a-heading: pass
+rewriting/a-reference-style-link: pass
+rewriting/no-link-names-a-source-path: pass
+rewriting/two-targets-sharing-a-slug: pass
+self-reference/a-link-back-to-an-including-ancestor: pass
+self-reference/a-link-spelled-another-way-to-the-same-section: pass
+self-reference/a-link-to-another-section-of-the-same-file: pass
+self-reference/a-link-to-the-same-section: pass
+self-reference/a-preamble-link-to-its-own-document: pass
+self-reference/a-section-link-to-its-whole-document: pass
+source-consistency/a-source-that-changes-during-compilation: pass
+structural-ancestors/a-title-the-file-heading-already-names: pass
+structural-ancestors/an-ancestor-carries-no-body-or-sibling: pass
+structural-ancestors/an-ancestor-heading-is-literal-text: pass
+structural-ancestors/an-ancestor-two-selections-share: pass
+structural-ancestors/an-outline-that-skips-a-level: pass
+structural-ancestors/disjoint-selections-keep-their-outline: pass
+traversal/a-cycle-of-dependencies: pass
+traversal/a-link-in-a-code-example: pass
+traversal/a-reference-under-the-root-is-bundled: pass
+traversal/a-relative-resource-warns: pass
+traversal/a-second-reference-to-one-document: pass
+traversal/resources-are-not-dependencies: pass
+usage-example/a-bare-fragment-and-its-referring-document: pass
+usage-example/a-procedure-and-everything-it-reaches: pass
+usage-example/every-document-under-a-directory-merged: pass
+usage-example/two-selected-sections: pass
+usage-example/validation-without-publication: pass
+validation-scope/an-unselected-broken-link: pass
+validation-scope/an-unselected-refusal-in-a-named-document: pass
+validation-scope/an-unselected-refusal-in-a-reached-document: pass
+validation-scope/the-sibling-once-closure-includes-it: pass
+corpus check: 252 fixture(s), 252 pass, 0 fail, 0 awaited, 0 unexpected pass
+python3 checks/smoke.py
+ok   wheel        prosiform-0.9.0-py3-none-any.whl
+ok   installed    /tmp/pf-smoke-6mvmffx6/environment
+ok   resolved     pf — /tmp/pf-smoke-6mvmffx6/environment/bin/pf, outside the repository
+ok   version      pf 0.9.0 (skill-markdown-v1)
+ok   bundled      guide.md from /tmp/pf-smoke-6mvmffx6/sources, run from /tmp/pf-smoke-6mvmffx6/elsewhere
+ok   glossary     glossary.md, shipped
+
+smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
+python3 checks/layout.py
+ok   docs/ — 10 tracked file(s), the documentation this repository owns
+ok   fixtures/ — 930 tracked file(s), the language-neutral fixture corpus
+ok   src/ — 31 tracked file(s), the build
+
+layout check: 3 tree(s) present
+python3 checks/tables.py
+ok   command     make layout — checks/README.md
+ok   command     make links — checks/README.md
+ok   command     make tables — checks/README.md
+ok   command     make vocabulary — checks/README.md
+ok   command     make harness — checks/README.md
+ok   command     make harness — checks/README.md
+ok   command     make corpus — checks/README.md
+ok   command     make conformance — checks/README.md
+ok   command     make independence — checks/README.md
+ok   command     make invocation — checks/README.md
+ok   command     make smoke — checks/README.md
+ok   command     make lock-check — checks.md
+ok   command     make lint — checks.md
+ok   command     make format-check — checks.md
+ok   command     make typecheck — checks.md
+ok   command     make test — checks.md
+ok   command     make harness — checks.md
+ok   command     make corpus — checks.md
+ok   command     make smoke — checks.md
+ok   command     make layout — checks.md
+ok   command     make tables — checks.md
+ok   command     make links — checks.md
+ok   command     make vocabulary — checks.md
+ok   command     make invocation — checks.md
+ok   command     make conformance — checks.md
+ok   command     make independence — checks.md
+ok   command     make check — checks.md
+ok   declared    Python — src/README.md
+ok   declared    markdown-it-py — src/README.md
+ok   command     make test — src/README.md
+ok   command     make harness — src/README.md
+ok   command     make corpus — src/README.md
+ok   command     make lint — src/README.md
+ok   command     make format-check — src/README.md
+ok   command     make typecheck — src/README.md
+ok   command     make lock-check — src/README.md
+ok   declared    pytest — src/README.md
+ok   declared    ruff — src/README.md
+ok   declared    mypy — src/README.md
+ok   declared    jsonschema — src/README.md
+ok   declared    types-jsonschema — src/README.md
+
+table check: 16 command(s) and 7 declaration(s), each declared by the project and named by a table
+python3 checks/links.py --online
+ok   remote     https://img.shields.io/badge/license-Apache%202.0-blue.svg
+ok   local      LICENSE
+ok   remote     https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg
+ok   repository https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md
+ok   remote     https://img.shields.io/badge/CommonMark-based-lightgrey.svg
+ok   remote     https://commonmark.org/
+ok   local      invocation.md
+ok   local      docs/glossary.md
+ok   local      fixtures/README.md
+ok   local      docs/README.md
+ok   repository https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner-compact.review.md
+ok   local      example/my-skill/SKILL.md
+ok   local      docs/images/compilation.png
+ok   local      ../Makefile
+ok   local      tests
+ok   local      ../fixtures/manifest.schema.json
+ok   local      ../fixtures/README.md
+ok   local      ../invocation.md
+ok   local      tests/anchors.json
+ok   local      fixtures/README.md
+ok   local      Makefile
+ok   local      src/README.md
+ok   local      docs/glossary.md
+ok   local      docs/corpus-vocabulary.md
+ok   local      checks/README.md
+ok   local      diagram-renderer.md
+ok   local      glossary.md
+ok   local      corpus-vocabulary.md
+ok   local      versioning.md
+ok   local      output-budget.md
+ok   local      ../fixtures/README.md
+ok   repository https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md
+ok   local      glossary.md
+ok   repository https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md
+ok   local      ../fixtures/README.md
+ok   local      ../src/README.md
+ok   local      ../invocation.md
+ok   local      work-tracker/SKILL.md
+ok   local      ../fixtures/usage-example
+ok   local      ../README.md#installation
+ok   local      work-tracker/modes/plan-mode.md
+ok   local      ../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md
+ok   local      ../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml
+ok   local      work-tracker/artifacts/epic-issue-body.md
+ok   local      ../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md
+ok   local      ../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml
+ok   local      ../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md
+ok   local      my-skill/SKILL.md
+ok   local      ../README.md#how-it-works
+ok   local      ../fixtures/usage-example/two-selected-sections/manifest.toml
+ok   local      ../fixtures/usage-example/two-selected-sections/expected/stdout.md
+ok   local      ../fixtures/usage-example/every-document-under-a-directory-merged/manifest.toml
+ok   local      ../fixtures/usage-example/validation-without-publication/manifest.toml
+ok   local      ../fixtures/usage-example/validation-without-publication/expected/stdout.md
+ok   local      ../checks.md
+ok   local      procedure.md
+ok   local      rules/common.md
+ok   remote     https://github.com/m2ux/prosiform/issues/194
+ok   remote     https://github.com/m2ux/prosiform/issues/195
+ok   repository https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-22-my-skill-visual-validation
+ok   local      tips.md
+ok   local      codex.md
+ok   local      claude.md
+ok   local      agents.md
+ok   local      web/common.md
+ok   local      api/common.md
+ok   local      blue.md
+ok   local      red.md
+ok   local      blue.md#style
+ok   local      red.md#style
+ok   local      modes/plan-mode.md
+ok   local      epic.md
+ok   local      #template
+ok   local      #work-breakdown
+ok   local      #validate-epic-body
+ok   local      #sync-epic
+ok   local      #task-delivery
+ok   local      epic.md#delivery-findings
+ok   local      #fields
+ok   local      #match-pull-requests
+ok   local      #delivery-findings
+ok   local      ../artifacts/epic-issue-body.md
+ok   local      ../artifacts/epic.md
+ok   local      ../SKILL.md
+ok   local      #outcomes
+ok   local      ../artifacts/epic-issue-body.md#populate-epic-issue-body
+ok   local      ../artifacts/epic-issue-body.md#validate-epic-body
+ok   local      ../artifacts/epic-issue-body.md#record-epic-delivery
+ok   local      ../artifacts/epic.md#delivery-findings
+ok   repository https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md
+ok   local      ../example/README.md
+ok   local      #the-clause-form
+ok   remote     https://github.com/m2ux/prosiform/issues/150
+ok   remote     https://github.com/m2ux/prosiform/issues/164
+ok   local      cli/a-command-line-naming-no-allowed-source-root/manifest.toml
+ok   local      cli/a-command-line-naming-no-entry-reference/manifest.toml
+ok   local      cli/an-option-the-contract-does-not-declare/manifest.toml
+ok   local      cli/diagnostics-format-unknown/manifest.toml
+ok   local      cli/fragment-only-reference-without-from/manifest.toml
+ok   local      cli/output-naming-an-input-source/manifest.toml
+ok   local      source-consistency/a-source-that-changes-during-compilation/manifest.toml
+ok   local      diagnostics/a-run-that-fails-in-itself/manifest.toml
+ok   local      manifest.schema.json
+ok   remote     https://json-schema.org/draft/2020-12
+ok   local      example/README.md
+ok   local      ../fixtures/README.md
+ok   local      ../Makefile
+ok   remote     https://pypi.org/project/markdown-it-py/
+ok   local      ../docs/glossary.md
+ok   local      ../checks/README.md
+ok   remote     https://pypi.org/project/pytest/
+ok   remote     https://pypi.org/project/ruff/
+ok   remote     https://pypi.org/project/mypy/
+ok   remote     https://pypi.org/project/jsonschema/
+ok   remote     https://pypi.org/project/types-jsonschema/
+
+link check: every reference in 51 document(s) resolved
+python3 checks/vocabulary.py
+vocabulary check: 36 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on origin/engineering, every one defined in docs/glossary.md, and every definition carried by the contract across 24 source(s)
+uv run --project src --frozen python checks/invocation.py
+ok   option      REF
+ok   option      -r DIR
+ok   option      -f DOC
+ok   option      -o FILE
+ok   option      -g SLUG:DEPTH
+ok   option      -c
+ok   option      -d {text,json}
+ok   option      -x {source-changed,internal}
+ok   option      -F N
+ok   option      -B N
+ok   option      -I N
+ok   option      -O N
+ok   option      -T N
+ok   option      -L N
+ok   option      -N N
+ok   option      -E N
+ok   option      -C
+ok   option      -v
+ok   option      -h
+ok   status      0
+ok   status      1
+ok   status      2
+ok   status      3
+ok   status      4
+ok   profile     skill-markdown-v1
+ok   statement   a failed run stops the work
+ok   statement   reading the sources instead is unsupported
+ok   statement   which platforms are supported
+ok   statement   the support rests on no-follow access
+
+invocation check: 29 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
+uv run --project src --frozen python checks/conformance.py
+# Clause mapping
+
+Input and output contract: 0 fixture(s)
+Input and output contract — Entry references: 1 fixture(s)
+    usage-example/a-procedure-and-everything-it-reaches
+Input and output contract — Whole documents: 9 fixture(s)
+    identity/whole-document
+    normalization/an-empty-fragment
+    real-source/absorbed-title-and-self-references
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+    real-source/markdown-inside-a-code-example
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+    usage-example/a-procedure-and-everything-it-reaches
+Input and output contract — Sections: 4 fixture(s)
+    extraction/section-to-the-next-sibling
+    headings/a-heading-with-no-visible-text
+    usage-example/a-bare-fragment-and-its-referring-document
+    usage-example/two-selected-sections
+Input and output contract — Recursive bundling: 1 fixture(s)
+    validation-scope/an-unselected-refusal-in-a-reached-document
+Input and output contract — Continuous Markdown: 1 fixture(s)
+    rewriting/a-cross-group-reference
+Input and output contract — Generated headings: 2 fixture(s)
+    grouping/one-spelling-for-every-generated-heading
+    headings/an-authored-heading-beside-a-generated-one
+Input and output contract — Groups: 7 fixture(s)
+    consolidation/a-child-then-its-whole-document
+    consolidation/a-subsection-and-its-section
+    determinism/entry-references-in-another-order
+    determinism/entry-references-in-source-order
+    determinism/groups-in-root-relative-path-order
+    grouping/a-member-carrying-one-heading-bundled-by-document
+    grouping/one-entry-bundled-by-document
+Input and output contract — Dependency order: 2 fixture(s)
+    grouping/a-document-no-group-matches
+    identity/same-basename-in-two-directories
+Input and output contract — Entry line: 1 fixture(s)
+    delivery/an-entry-destination-is-reported
+Input and output contract — Entry identity: 1 fixture(s)
+    consolidation/a-child-then-its-whole-document
+Parser and source-preserving edits: 0 fixture(s)
+Parser and source-preserving edits — Parsing authority: 0 fixture(s)
+Parser and source-preserving edits — Source positions: 0 fixture(s)
+Parser and source-preserving edits — Source model: 0 fixture(s)
+Parser and source-preserving edits — Coordinate mapping: 2 fixture(s)
+    candidate-validation/crlf-lines-beside-a-rewritten-link
+    candidate-validation/tabs-beside-a-rewritten-link
+Parser and source-preserving edits — Edits: 0 fixture(s)
+Parser and source-preserving edits — Untouched content: 18 fixture(s)
+    candidate-validation/crlf-lines-beside-a-rewritten-link
+    candidate-validation/every-line-terminated-with-crlf
+    candidate-validation/tabs-beside-a-rewritten-link
+    frontmatter/delimiter-with-trailing-spaces
+    frontmatter/indented-delimiter
+    frontmatter/leading-blank-line
+    frontmatter/toml-fence
+    frontmatter/yaml-example-in-a-code-block
+    hierarchy/a-shift-that-writes-a-level-only
+    hierarchy/headings-a-container-carries
+    profile/html-in-a-code-example
+    profile/task-markers-and-typography
+    profile/the-constructs-the-profile-supports
+    real-source/absorbed-title-and-self-references
+    real-source/frontmatter-and-a-shifted-group
+    real-source/markdown-inside-a-code-example
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+Parser and source-preserving edits — Validation: 0 fixture(s)
+Mandatory parser viability gates: 0 fixture(s)
+Mandatory parser viability gates — Complete definition occurrences: 1 fixture(s)
+    reference/a-label-two-definitions-spell-in-different-case
+Mandatory parser viability gates — Observable reference-resolution suppression: 3 fixture(s)
+    parser-limit/a-lookup-suppressed-below-every-declared-budget
+    parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches
+    parser-limit/a-reference-lookup-the-parser-declines
+Markdown and source-heading profile: 3 fixture(s)
+    cli/informational-version-response
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+Markdown and source-heading profile — Core syntax: 1 fixture(s)
+    profile/the-constructs-the-profile-supports
+Markdown and source-heading profile — Task lists: 2 fixture(s)
+    profile/task-markers-and-typography
+    profile/task-markers-protected-from-definitions
+Markdown and source-heading profile — HTML: 6 fixture(s)
+    profile/html-in-a-code-example
+    profile/raw-html-in-selected-content
+    real-source/frontmatter-and-a-shifted-group
+    reference/an-html-link-naming-a-document-under-the-root
+    validation-scope/an-unselected-refusal-in-a-named-document
+    validation-scope/an-unselected-refusal-in-a-reached-document
+Markdown and source-heading profile — Typography: 3 fixture(s)
+    profile/task-markers-and-typography
+    real-source/heading-text-outside-ascii
+    real-source/preamble-above-the-first-heading
+Markdown and source-heading profile — Bare text: 2 fixture(s)
+    normalization/bare-text-paths
+    profile/extension-lookalikes
+Markdown and source-heading profile — Unsupported extensions: 3 fixture(s)
+    profile/extension-lookalikes
+    profile/unsupported-construct
+    real-source/tables-and-brace-placeholders
+Markdown and source-heading profile — File suffixes: 3 fixture(s)
+    normalization/an-unencoded-number-sign
+    profile/entry-suffix-outside-the-profile
+    profile/markdown-suffixes-in-mixed-case
+Markdown and source-heading profile — Encoding: 7 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    normalization/a-non-utf8-escape-sequence
+    profile/invalid-byte-mid-document
+    profile/source-not-utf8
+    profile/utf16-byte-order-mark
+Source-heading resolution: 9 fixture(s)
+    destinations/a-heading-a-container-carries
+    destinations/source-heading-fragments
+    headings/a-heading-with-no-visible-text
+    headings/an-entity-in-a-heading
+    headings/collision-with-a-natural-suffix
+    headings/image-alternative-text
+    identity/an-ordinal-names-no-source-heading
+    identity/two-headings-sharing-a-slug
+    real-source/heading-text-outside-ascii
+CLI contract: 9 fixture(s)
+    cli/a-command-line-naming-no-allowed-source-root
+    cli/a-command-line-naming-no-entry-reference
+    cli/an-allowed-source-root-naming-no-directory
+    cli/an-option-the-contract-does-not-declare
+    cli/diagnostics-format-unknown
+    cli/fragment-only-reference-without-from
+    cli/output-naming-a-dependency-source
+    cli/output-naming-an-input-source
+    normalization/query-on-an-entry-reference
+CLI contract — -r DIR: 1 fixture(s)
+    cli/a-command-line-naming-no-allowed-source-root
+CLI contract — -f DOC: 2 fixture(s)
+    extraction/a-fragment-alone-selects-from-the-referrer
+    usage-example/a-bare-fragment-and-its-referring-document
+CLI contract — -o FILE: 4 fixture(s)
+    cli/output-naming-a-dependency-source
+    cli/output-naming-an-input-source
+    cli/output-naming-what-a-link-points-at
+    cli/validation-only-run-with-an-output-file
+CLI contract — -g SLUG:DEPTH: 2 fixture(s)
+    cli/group-rule-depth
+    cli/group-rule-repeated-slug
+CLI contract — -c: 3 fixture(s)
+    cli/validation-only-run
+    cli/validation-only-run-with-an-output-file
+    usage-example/validation-without-publication
+CLI contract — -d text|json: 1 fixture(s)
+    cli/diagnostics-format-unknown
+CLI contract — -v: 1 fixture(s)
+    cli/informational-version-response
+CLI contract — -h: 1 fixture(s)
+    cli/informational-usage-response
+Usage examples: 5 fixture(s)
+    usage-example/a-bare-fragment-and-its-referring-document
+    usage-example/a-procedure-and-everything-it-reaches
+    usage-example/every-document-under-a-directory-merged
+    usage-example/two-selected-sections
+    usage-example/validation-without-publication
+Explicitly linked source structure: 0 fixture(s)
+Explicitly linked source structure — Generic bundling: 2 fixture(s)
+    structural-ancestors/an-ancestor-carries-no-body-or-sibling
+    structural-ancestors/an-ancestor-heading-is-literal-text
+Explicitly linked source structure — Explicit dependencies: 5 fixture(s)
+    citation/a-marked-reference-above-the-root
+    citation/a-reference-above-the-root
+    deferral/a-marked-reference-is-not-compiled
+    reference/a-document-outside-the-root-is-text
+    reference/a-document-under-the-root-is-a-dependency
+Explicitly linked source structure — Reading versus execution: 0 fixture(s)
+Section extraction and output hierarchy: 9 fixture(s)
+    extraction/a-fragment-alone-selects-from-the-referrer
+    extraction/a-heading-only-in-a-code-example
+    extraction/a-setext-heading-as-a-root
+    extraction/heading-like-text-in-a-code-example
+    normalization/a-parent-segment-and-a-fragment
+    normalization/an-escaped-fragment
+    normalization/two-spellings-of-one-document
+    real-source/markdown-inside-a-code-example
+    reference/a-reference-under-the-root-naming-no-heading
+Section extraction and output hierarchy — Boundary: 8 fixture(s)
+    extraction/a-section-the-document-outlasts
+    extraction/a-setext-heading-as-a-root
+    extraction/a-subsection-inside-the-section
+    extraction/an-unterminated-example-at-the-section-end
+    extraction/heading-like-text-in-a-code-example
+    extraction/section-to-the-next-sibling
+    hierarchy/regions-the-source-separates
+    usage-example/two-selected-sections
+Section extraction and output hierarchy — Subsections: 2 fixture(s)
+    extraction/a-section-the-document-outlasts
+    extraction/a-subsection-inside-the-section
+Section extraction and output hierarchy — Containers: 2 fixture(s)
+    extraction/a-heading-a-blockquote-carries
+    extraction/a-list-item-heading-as-a-target
+Section extraction and output hierarchy — Nested target: 2 fixture(s)
+    extraction/a-list-item-heading-as-a-target
+    extraction/nested-section-target
+Section extraction and output hierarchy — Enclosing inclusion: 2 fixture(s)
+    extraction/a-heading-a-blockquote-carries
+    hierarchy/headings-a-container-carries
+Section extraction and output hierarchy — Source heading index: 2 fixture(s)
+    extraction/nested-section-target
+    headings/a-heading-with-no-visible-text
+File-scoped hierarchy: 9 fixture(s)
+    boundary/the-file-heading-between-two-groups
+    generated-input/a-document-titled-with-its-own-name
+    grouping/one-spelling-for-every-generated-heading
+    identity/a-path-ending-in-a-number-sign
+    identity/path-needing-escaping
+    identity/paths-differing-only-by-suffix
+    identity/same-basename-in-two-directories
+    normalization/an-encoded-number-sign
+    normalization/two-spellings-of-one-document
+File-scoped hierarchy — Absorbed title: 19 fixture(s)
+    absorbed-title/a-reference-naming-a-title-no-heading-absorbed
+    absorbed-title/a-reference-naming-an-absorbed-title
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    hierarchy/a-preamble-before-a-kept-title
+    hierarchy/a-setext-heading-an-absorbed-title-leaves
+    identity/a-second-h1-leaves-the-title
+    identity/a-title-the-path-spells-with-a-space
+    identity/a-title-the-path-spells-with-hyphens
+    identity/an-h1-below-the-first-heading
+    identity/same-basename-in-two-directories
+    identity/title-the-path-does-not-carry
+    identity/whole-document
+    profile/markdown-suffixes-in-mixed-case
+    real-source/absorbed-title-and-self-references
+    real-source/markdown-inside-a-code-example
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+File-scoped hierarchy — Group shift: 20 fixture(s)
+    depth-overflow/a-source-heading-the-shift-places-at-the-sixth
+    extraction/a-subsection-inside-the-section
+    hierarchy/a-preamble-before-a-kept-title
+    hierarchy/a-setext-heading-a-quote-carries
+    hierarchy/a-setext-heading-an-absorbed-title-leaves
+    hierarchy/a-setext-heading-becomes-atx
+    hierarchy/a-setext-heading-over-two-lines
+    hierarchy/a-shift-that-writes-a-level-only
+    hierarchy/every-level-moves-down-one
+    hierarchy/headings-a-container-carries
+    hierarchy/regions-the-source-separates
+    identity/a-second-h1-leaves-the-title
+    identity/a-title-the-path-spells-with-a-space
+    identity/a-title-the-path-spells-with-hyphens
+    identity/an-h1-below-the-first-heading
+    identity/title-the-path-does-not-carry
+    identity/whole-document
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+    structural-ancestors/a-title-the-file-heading-already-names
+File-scoped hierarchy — Heading syntax: 7 fixture(s)
+    extraction/a-setext-heading-as-a-root
+    hierarchy/a-setext-heading-a-quote-carries
+    hierarchy/a-setext-heading-an-absorbed-title-leaves
+    hierarchy/a-setext-heading-becomes-atx
+    hierarchy/a-setext-heading-over-two-lines
+    hierarchy/a-shift-that-writes-a-level-only
+    hierarchy/every-level-moves-down-one
+File-scoped hierarchy — Containers: 5 fixture(s)
+    extraction/a-heading-a-blockquote-carries
+    extraction/heading-like-text-in-a-code-example
+    hierarchy/a-setext-heading-a-quote-carries
+    hierarchy/headings-a-container-carries
+    real-source/markdown-inside-a-code-example
+File-scoped hierarchy — Preamble: 9 fixture(s)
+    frontmatter/delimiter-with-trailing-spaces
+    frontmatter/indented-delimiter
+    frontmatter/leading-blank-line
+    frontmatter/toml-fence
+    hierarchy/a-preamble-before-a-kept-title
+    identity/a-title-the-path-spells-with-a-space
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+    real-source/preamble-above-the-first-heading
+File-scoped hierarchy — Source order: 7 fixture(s)
+    consolidation/a-subsection-and-its-section
+    determinism/entry-references-in-another-order
+    determinism/entry-references-in-source-order
+    hierarchy/a-preamble-before-a-kept-title
+    hierarchy/regions-the-source-separates
+    structural-ancestors/an-ancestor-two-selections-share
+    structural-ancestors/disjoint-selections-keep-their-outline
+File-scoped hierarchy — Depth overflow: 3 fixture(s)
+    depth-overflow/a-source-heading-the-shift-places-at-the-sixth
+    depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth
+    depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth
+Grouping: 7 fixture(s)
+    cli/group-rule-depth
+    cli/group-rule-repeated-slug
+    cli/group-rule-unknown-slug
+    grouping/a-member-carrying-one-heading-bundled-by-document
+    grouping/a-rule-matching-no-document-in-the-closure
+    grouping/one-entry-bundled-by-document
+    grouping/one-entry-bundled-by-group
+Grouping — Group membership: 4 fixture(s)
+    grouping/a-document-no-group-matches
+    grouping/one-entry-bundled-by-group
+    grouping/variant-headings-distinguished-at-more-than-one-segment
+    usage-example/every-document-under-a-directory-merged
+Grouping — Group structure: 6 fixture(s)
+    delivery/an-entry-destination-under-a-grouping-rule
+    grouping/a-section-shallower-than-the-grouping-depth
+    grouping/one-entry-bundled-by-group
+    grouping/one-entry-under-a-group
+    grouping/structural-ancestors-inside-a-merged-group
+    usage-example/every-document-under-a-directory-merged
+Grouping — Verbatim names: 3 fixture(s)
+    grouping/a-reference-to-a-grouping-depth-heading
+    grouping/one-entry-under-a-group
+    usage-example/every-document-under-a-directory-merged
+Grouping — Document-keyed sections: 7 fixture(s)
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-reference-to-a-grouping-depth-heading
+    grouping/a-section-shallower-than-the-grouping-depth
+    grouping/a-variant-drops-the-group-word
+    grouping/mixed-contributions-name-every-member
+    grouping/one-entry-under-a-group
+    grouping/subheadings-name-every-member
+Grouping — Variants by document: 9 fixture(s)
+    depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-variant-drops-the-group-word
+    grouping/member-names-distinguished-after-formatting
+    grouping/mixed-contributions-name-every-member
+    grouping/one-entry-bundled-by-group
+    grouping/one-entry-under-a-group
+    grouping/subheadings-name-every-member
+    grouping/variant-headings-distinguished-at-more-than-one-segment
+Grouping — Residual ambiguity: 1 fixture(s)
+    grouping/one-entry-under-a-group
+Grouping — Group naming: 4 fixture(s)
+    grouping/a-document-no-group-matches
+    grouping/one-entry-bundled-by-group
+    grouping/one-spelling-for-every-generated-heading
+    usage-example/every-document-under-a-directory-merged
+Grouping — Document content above the grouping depth: 18 fixture(s)
+    delivery/an-entry-destination-under-a-grouping-rule
+    grouping/a-group-emitting-no-merged-section
+    grouping/a-member-named-by-the-title-it-absorbs
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-reference-to-a-member-carrying-one-heading
+    grouping/a-section-shallower-than-the-grouping-depth
+    grouping/a-variant-drops-the-group-word
+    grouping/a-whole-document-reference-to-a-member
+    grouping/an-entry-naming-a-member-carrying-one-heading
+    grouping/member-names-distinguished-after-formatting
+    grouping/members-of-one-stem-in-different-directories
+    grouping/mixed-contributions-name-every-member
+    grouping/one-entry-bundled-by-group
+    grouping/one-entry-under-a-group
+    grouping/structural-ancestors-inside-a-merged-group
+    grouping/subheadings-name-every-member
+    grouping/variant-headings-distinguished-at-more-than-one-segment
+    usage-example/every-document-under-a-directory-merged
+Grouping — A heading for every member: 9 fixture(s)
+    grouping/a-group-emitting-no-merged-section
+    grouping/a-member-named-by-the-title-it-absorbs
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-variant-drops-the-group-word
+    grouping/member-names-distinguished-after-formatting
+    grouping/members-of-one-stem-in-different-directories
+    grouping/mixed-contributions-name-every-member
+    grouping/subheadings-name-every-member
+    grouping/two-members-contributing-one-heading-text
+Grouping — The overview section: 3 fixture(s)
+    grouping/a-group-emitting-no-merged-section
+    grouping/a-member-named-by-the-title-it-absorbs
+    grouping/a-reference-to-a-member-carrying-one-heading
+Grouping — Merged section references: 1 fixture(s)
+    grouping/a-reference-to-a-grouping-depth-heading
+Heading-only structural ancestors: 3 fixture(s)
+    grouping/structural-ancestors-inside-a-merged-group
+    structural-ancestors/an-ancestor-carries-no-body-or-sibling
+    structural-ancestors/disjoint-selections-keep-their-outline
+Heading-only structural ancestors — Heading text: 1 fixture(s)
+    structural-ancestors/an-ancestor-heading-is-literal-text
+Heading-only structural ancestors — Provenance: 0 fixture(s)
+Heading-only structural ancestors — Deduplication: 4 fixture(s)
+    ancestor-promotion/a-link-to-a-heading-only-ancestor
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+    structural-ancestors/an-ancestor-two-selections-share
+Heading-only structural ancestors — Named titles: 1 fixture(s)
+    structural-ancestors/a-title-the-file-heading-already-names
+Heading-only structural ancestors — Targets: 3 fixture(s)
+    ancestor-promotion/a-link-to-a-heading-only-ancestor
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+Heading-only structural ancestors — Depth: 3 fixture(s)
+    depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth
+    structural-ancestors/an-outline-that-skips-a-level
+    structural-ancestors/disjoint-selections-keep-their-outline
+Block boundaries: 6 fixture(s)
+    boundary/a-code-example-a-list-reads-as-markup
+    boundary/a-nested-list-and-the-list-below-it
+    boundary/a-yaml-example-the-bundle-keeps-intact
+    boundary/the-file-heading-between-two-groups
+    boundary/two-lists-a-definition-separates
+    extraction/an-unterminated-example-at-the-section-end
+Bundle destinations: 4 fixture(s)
+    absorbed-title/a-reference-naming-a-title-no-heading-absorbed
+    absorbed-title/a-reference-naming-an-absorbed-title
+    reference/a-link-inside-an-image-a-link-carries
+    reference/a-link-inside-image-alternative-content
+Bundle destinations — One document: 1 fixture(s)
+    rewriting/a-cross-group-reference
+Bundle destinations — Ordinal assignment: 6 fixture(s)
+    destinations/a-heading-a-container-carries
+    destinations/source-heading-fragments
+    headings/an-entity-in-a-heading
+    headings/collision-with-a-natural-suffix
+    headings/image-alternative-text
+    rewriting/two-targets-sharing-a-slug
+Bundle destinations — Document destinations: 11 fixture(s)
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-variant-drops-the-group-word
+    grouping/a-whole-document-reference-to-a-member
+    grouping/an-entry-naming-a-member-carrying-one-heading
+    grouping/member-names-distinguished-after-formatting
+    grouping/members-of-one-stem-in-different-directories
+    grouping/mixed-contributions-name-every-member
+    grouping/subheadings-name-every-member
+    grouping/two-members-contributing-one-heading-text
+    identity/path-needing-escaping
+    rewriting/a-cross-group-reference
+Bundle destinations — Internal links: 10 fixture(s)
+    deferral/a-deferral-stands-where-another-reference-carried-its-target
+    deferral/a-deferred-destination-named-from-the-root
+    deferral/a-marked-reference-is-not-compiled
+    grouping/a-member-named-by-the-title-it-absorbs
+    grouping/a-reference-to-a-member-carrying-one-heading
+    real-source/absorbed-title-and-self-references
+    real-source/markdown-inside-a-code-example
+    rewriting/a-cross-group-reference
+    rewriting/a-fragment-only-dependency
+    rewriting/no-link-names-a-source-path
+Bundle destinations — Visible headings: 1 fixture(s)
+    rewriting/a-link-inside-a-heading
+Bundle destinations — Uniqueness: 3 fixture(s)
+    destinations/a-heading-a-container-carries
+    rewriting/no-link-names-a-source-path
+    rewriting/two-targets-sharing-a-slug
+Resolvable where the bundle is read: 1 fixture(s)
+    destinations/a-heading-a-container-carries
+Entry line: 27 fixture(s)
+    delivery/an-entry-destination-is-reported
+    destinations/a-heading-a-container-carries
+    destinations/source-heading-fragments
+    headings/an-entity-in-a-heading
+    headings/collision-with-a-natural-suffix
+    headings/image-alternative-text
+    hierarchy/a-preamble-before-a-kept-title
+    hierarchy/regions-the-source-separates
+    identity/a-path-ending-in-a-number-sign
+    identity/a-second-h1-leaves-the-title
+    identity/a-title-the-path-spells-with-a-space
+    identity/a-title-the-path-spells-with-hyphens
+    identity/an-h1-below-the-first-heading
+    identity/path-needing-escaping
+    identity/same-basename-in-two-directories
+    identity/title-the-path-does-not-carry
+    identity/whole-document
+    real-source/absorbed-title-and-self-references
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+    real-source/markdown-inside-a-code-example
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+    usage-example/a-bare-fragment-and-its-referring-document
+    usage-example/a-procedure-and-everything-it-reaches
+    usage-example/every-document-under-a-directory-merged
+    usage-example/two-selected-sections
+Entry line — Link text: 5 fixture(s)
+    entry-line/an-entry-destination-carrying-an-ordinal
+    extraction/section-to-the-next-sibling
+    grouping/a-group-emitting-no-merged-section
+    grouping/an-entry-naming-a-member-carrying-one-heading
+    grouping/two-members-contributing-one-heading-text
+Entry line — Order: 1 fixture(s)
+    delivery/an-entry-destination-is-reported
+Entry line — No execution verb: 1 fixture(s)
+    usage-example/a-procedure-and-everything-it-reaches
+Entry line — Generated structure: 1 fixture(s)
+    entry-line/an-entry-destination-carrying-an-ordinal
+Entry line — Reading scope at the point of use: 1 fixture(s)
+    usage-example/a-procedure-and-everything-it-reaches
+Markdown-only output: 1 fixture(s)
+    destinations/source-heading-fragments
+Source markup policy: 3 fixture(s)
+    boundary/a-code-example-a-list-reads-as-markup
+    profile/html-in-a-code-example
+    validation-scope/an-unselected-refusal-in-a-named-document
+Source-local reference interpretation: 3 fixture(s)
+    literal-bracket/a-bracket-another-source-defines
+    reference/a-definition-outside-the-selected-section
+    reference/conflicting-labels-across-files
+Source-local reference interpretation — step 1: 6 fixture(s)
+    profile/the-constructs-the-profile-supports
+    reference/a-definition-outside-the-selected-section
+    reference/a-definition-spelled-across-two-lines
+    reference/a-reference-style-image-with-a-title
+    reference/conflicting-labels-across-files
+    rewriting/a-reference-style-link
+Source-local reference interpretation — step 2: 2 fixture(s)
+    reference/a-definition-spelled-across-two-lines
+    reference/a-reference-style-image-with-a-title
+Source-local reference interpretation — step 3: 3 fixture(s)
+    reference/a-definition-spelled-across-two-lines
+    rewriting/a-fragment-only-dependency
+    rewriting/a-reference-style-link
+Source-local reference interpretation — step 4: 9 fixture(s)
+    profile/task-markers-protected-from-definitions
+    profile/the-constructs-the-profile-supports
+    reference/a-definition-a-container-carries
+    reference/a-definition-outside-the-selected-section
+    reference/a-definition-spelled-across-two-lines
+    reference/a-label-two-definitions-spell-in-different-case
+    reference/an-unused-definition-is-removed
+    reference/conflicting-labels-across-files
+    rewriting/a-reference-style-link
+Source-local reference interpretation — step 5: 3 fixture(s)
+    literal-bracket/a-bracket-another-source-defines
+    literal-bracket/brackets-in-examples-stay-as-written
+    profile/extension-lookalikes
+Source-local reference interpretation — step 6: 2 fixture(s)
+    literal-bracket/brackets-in-examples-stay-as-written
+    traversal/a-link-in-a-code-example
+Compile before publishing: 6 fixture(s)
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    cli/validation-only-run
+    cli/validation-only-run-with-an-output-file
+    consolidation/a-child-then-its-whole-document
+    determinism/groups-in-root-relative-path-order
+    traversal/a-cycle-of-dependencies
+Compile before publishing — step 1: 1 fixture(s)
+    normalization/root-escape
+Compile before publishing — step 2: 1 fixture(s)
+    traversal/a-second-reference-to-one-document
+Compile before publishing — step 3: 1 fixture(s)
+    destinations/a-heading-a-container-carries
+Compile before publishing — step 4: 8 fixture(s)
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+    cli/output-naming-a-dependency-source
+    reference/a-document-under-the-root-is-a-dependency
+    source-consistency/a-source-that-changes-during-compilation
+    traversal/a-reference-under-the-root-is-bundled
+    usage-example/a-procedure-and-everything-it-reaches
+    usage-example/two-selected-sections
+Compile before publishing — step 5: 5 fixture(s)
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+    consolidation/a-child-then-its-whole-document
+    consolidation/a-subsection-and-its-section
+    determinism/entry-references-in-source-order
+Compile before publishing — step 6: 1 fixture(s)
+    rewriting/a-reference-style-link
+Compile before publishing — step 7: 1 fixture(s)
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+Compile before publishing — step 8: 1 fixture(s)
+    source-consistency/a-source-that-changes-during-compilation
+Compile before publishing — step 9: 1 fixture(s)
+    delivery/a-failing-run-publishes-no-bundle
+Self-reference and ancestor-reference behavior: 1 fixture(s)
+    self-reference/a-link-back-to-an-including-ancestor
+Self-reference and ancestor-reference behavior — Direct self-reference: 2 fixture(s)
+    self-reference/a-link-spelled-another-way-to-the-same-section
+    self-reference/a-link-to-the-same-section
+Self-reference and ancestor-reference behavior — Ancestor reference: 1 fixture(s)
+    self-reference/a-link-back-to-an-including-ancestor
+Self-reference and ancestor-reference behavior — Shared dependency: 1 fixture(s)
+    traversal/a-cycle-of-dependencies
+Self-reference and ancestor-reference behavior — Different section in the same file: 1 fixture(s)
+    self-reference/a-link-to-another-section-of-the-same-file
+Self-reference and ancestor-reference behavior — Equivalent references: 2 fixture(s)
+    normalization/two-spellings-of-one-document
+    self-reference/a-link-spelled-another-way-to-the-same-section
+Self-reference and ancestor-reference behavior — Link position: 3 fixture(s)
+    ownership/a-self-reference-after-consolidation
+    ownership/an-ancestor-reference-after-consolidation
+    ownership/an-ancestor-reference-with-the-child-selected
+Self-reference and ancestor-reference behavior — Whole-document selection: 1 fixture(s)
+    self-reference/a-section-link-to-its-whole-document
+Self-reference and ancestor-reference behavior — Preamble content: 2 fixture(s)
+    self-reference/a-preamble-link-to-its-own-document
+    self-reference/a-section-link-to-its-whole-document
+Frontmatter policy: 6 fixture(s)
+    frontmatter/delimiter-with-trailing-spaces
+    frontmatter/indented-delimiter
+    frontmatter/leading-blank-line
+    frontmatter/toml-fence
+    frontmatter/yaml-example-in-a-code-block
+    real-source/markdown-inside-a-code-example
+Frontmatter policy — step 1: 5 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+Frontmatter policy — step 2: 5 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+Frontmatter policy — step 3: 5 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+Frontmatter policy — step 4: 5 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+Frontmatter policy — step 5: 5 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+Frontmatter policy — step 6: 1 fixture(s)
+    frontmatter/unterminated-block
+Link classification and resource handling: 1 fixture(s)
+    reference/a-document-under-the-root-is-a-dependency
+Link classification and resource handling — Local Markdown document links under the root: 9 fixture(s)
+    normalization/bare-text-paths
+    reference/a-document-under-the-root-is-a-dependency
+    reference/a-link-inside-an-image-a-link-carries
+    reference/a-link-inside-image-alternative-content
+    rewriting/a-link-inside-a-heading
+    traversal/a-cycle-of-dependencies
+    traversal/a-reference-under-the-root-is-bundled
+    traversal/a-second-reference-to-one-document
+    usage-example/a-procedure-and-everything-it-reaches
+Link classification and resource handling — The deferral mark: 2 fixture(s)
+    deferral/a-deferred-fragment-of-its-own-document
+    deferral/a-marked-reference-is-not-compiled
+Link classification and resource handling — A deferred link's destination: 3 fixture(s)
+    deferral/a-deferral-stands-where-another-reference-carried-its-target
+    deferral/a-deferred-destination-named-from-the-root
+    headings/an-authored-heading-beside-a-generated-one
+Link classification and resource handling — A deferred link's target: 3 fixture(s)
+    deferral/a-deferred-destination-named-from-the-root
+    deferral/a-deferred-reference-naming-no-document
+    deferral/a-deferred-reference-naming-no-heading
+Link classification and resource handling — Local Markdown links resolving outside the root: 8 fixture(s)
+    citation/a-marked-reference-above-the-root
+    citation/a-reference-above-the-root
+    confinement/a-drive-path-inside-a-source
+    confinement/a-root-relative-reference-inside-a-source
+    normalization/root-escape
+    reference/a-document-outside-the-root-is-text
+    traversal/a-reference-under-the-root-is-bundled
+    traversal/a-second-reference-to-one-document
+Link classification and resource handling — Fragment-only links: 2 fixture(s)
+    deferral/a-deferred-fragment-of-its-own-document
+    rewriting/a-fragment-only-dependency
+Link classification and resource handling — A target that resolves to nothing: 4 fixture(s)
+    deferral/a-deferred-reference-naming-no-document
+    deferral/a-deferred-reference-naming-no-heading
+    reference/a-reference-under-the-root-naming-no-document
+    reference/a-reference-under-the-root-naming-no-heading
+Link classification and resource handling — Everything else: 6 fixture(s)
+    normalization/a-protocol-relative-url
+    normalization/a-scheme-and-an-authority-in-selected-content
+    profile/the-constructs-the-profile-supports
+    resource/a-bundle-naming-no-resource-does-not-warn
+    traversal/a-relative-resource-warns
+    traversal/resources-are-not-dependencies
+Link classification and resource handling — Resources: 2 fixture(s)
+    resource/a-marked-resource-is-emitted-as-authored
+    resource/an-image-naming-a-document-under-the-root
+Link classification and resource handling — Unsupported local-document syntax: 1 fixture(s)
+    reference/an-html-link-naming-a-document-under-the-root
+Link classification and resource handling — Examples: 4 fixture(s)
+    literal-bracket/brackets-in-examples-stay-as-written
+    real-source/absorbed-title-and-self-references
+    real-source/frontmatter-and-a-shifted-group
+    traversal/a-link-in-a-code-example
+Reference normalization and path identity: 8 fixture(s)
+    citation/a-reference-above-the-root
+    cli/fragment-only-reference-without-from
+    confinement/a-drive-path-inside-a-source
+    confinement/a-root-relative-reference-inside-a-source
+    extraction/a-fragment-alone-selects-from-the-referrer
+    normalization/a-drive-path
+    normalization/a-protocol-relative-url
+    normalization/root-relative-entry-reference
+Resolution sequence: 0 fixture(s)
+Resolution sequence — step 1: 1 fixture(s)
+    normalization/an-escaped-fragment
+Resolution sequence — step 2: 4 fixture(s)
+    identity/a-path-ending-in-a-number-sign
+    normalization/an-encoded-number-sign
+    normalization/an-encoded-path-separator
+    normalization/an-unencoded-number-sign
+Resolution sequence — step 3: 1 fixture(s)
+    normalization/a-scheme-and-an-authority-in-selected-content
+Resolution sequence — step 4: 1 fixture(s)
+    normalization/query-on-an-entry-reference
+Resolution sequence — step 5: 5 fixture(s)
+    identity/an-ordinal-names-no-source-heading
+    normalization/a-double-encoded-escape
+    normalization/a-non-utf8-escape-sequence
+    normalization/an-escaped-fragment
+    normalization/an-over-long-percent-escape
+Resolution sequence — step 6: 2 fixture(s)
+    normalization/an-encoded-path-separator
+    normalization/an-over-long-percent-escape
+Resolution sequence — step 7: 4 fixture(s)
+    confinement/a-parent-segment-above-the-root
+    normalization/a-parent-segment-and-a-fragment
+    normalization/a-parent-segment-reaching-the-root-boundary
+    normalization/root-escape
+Resolution sequence — step 8: 4 fixture(s)
+    confinement/a-symlink-chain-below-the-root
+    confinement/a-symlink-to-a-document-inside-the-root
+    confinement/a-symlinked-directory-below-the-root
+    confinement/a-symlinked-source
+Resolution sequence — step 9: 2 fixture(s)
+    normalization/an-empty-fragment
+    normalization/an-escaped-fragment
+Resolution sequence — guide.md: 1 fixture(s)
+    identity/whole-document
+Resolution sequence — guide.md#: 1 fixture(s)
+    normalization/an-empty-fragment
+Resolution sequence — #run within guide.md: 1 fixture(s)
+    rewriting/a-fragment-only-dependency
+Resolution sequence — guide.md?view=raw#run: 1 fixture(s)
+    normalization/query-on-an-entry-reference
+Resolution sequence — notes%23draft.md#run: 1 fixture(s)
+    normalization/an-encoded-number-sign
+Resolution sequence — notes%2523draft.md#run: 1 fixture(s)
+    normalization/a-double-encoded-escape
+Resolution sequence — sub/../guide.md#run: 2 fixture(s)
+    normalization/a-parent-segment-and-a-fragment
+    normalization/a-parent-segment-reaching-the-root-boundary
+Resolution sequence — A normalized path outside the root: 4 fixture(s)
+    citation/a-marked-reference-above-the-root
+    confinement/a-parent-segment-above-the-root
+    normalization/root-escape
+    reference/a-document-outside-the-root-is-text
+No-symlink source policy: 6 fixture(s)
+    cli/output-naming-what-a-link-points-at
+    confinement/a-symlink-chain-below-the-root
+    confinement/a-symlink-to-a-document-inside-the-root
+    confinement/a-symlinked-directory-below-the-root
+    confinement/a-symlinked-source
+    traversal/resources-are-not-dependencies
+Resources are text: 8 fixture(s)
+    headings/image-alternative-text
+    profile/the-constructs-the-profile-supports
+    reference/a-reference-style-image-with-a-title
+    resource/a-bundle-naming-no-resource-does-not-warn
+    resource/a-marked-resource-is-emitted-as-authored
+    resource/an-image-naming-a-document-under-the-root
+    traversal/a-relative-resource-warns
+    traversal/resources-are-not-dependencies
+Resource limits: 2 fixture(s)
+    limits/a-negative-override-is-refused
+    limits/a-zero-override-is-refused
+Resource limits — -F: 1 fixture(s)
+    limits/a-file-count-budget-crossed
+Resource limits — -B: 1 fixture(s)
+    limits/a-source-byte-budget-crossed
+Resource limits — -I: 1 fixture(s)
+    limits/an-input-byte-budget-crossed
+Resource limits — -O: 1 fixture(s)
+    limits/an-output-byte-budget-crossed
+Resource limits — -T: 1 fixture(s)
+    limits/a-target-budget-crossed
+Resource limits — -L: 1 fixture(s)
+    limits/a-link-budget-crossed
+Resource limits — -N: 2 fixture(s)
+    file-wide-safety/an-unselected-construct-crosses-a-safety-limit
+    limits/a-nesting-budget-crossed
+Resource limits — -E: 2 fixture(s)
+    limits/a-target-at-the-expansion-depth
+    limits/an-expansion-depth-budget-crossed
+Source consistency: 1 fixture(s)
+    source-consistency/a-source-that-changes-during-compilation
+Generated input policy: 7 fixture(s)
+    generated-input/a-bundle-offered-as-input
+    generated-input/a-bundle-over-mixed-case-paths
+    generated-input/a-document-titled-with-its-own-name
+    generated-input/a-file-heading-example-in-a-code-block
+    generated-input/a-file-heading-outside-the-selection
+    generated-input/a-title-spelling-a-path-that-names-no-document
+    generated-input/an-authored-title-naming-a-sibling
+Agent delivery contract: 0 fixture(s)
+Agent delivery contract — Exit status: 1 fixture(s)
+    delivery/a-failing-run-publishes-no-bundle
+Agent delivery contract — Response limit: 0 fixture(s)
+Agent delivery contract — Entry destinations: 5 fixture(s)
+    cli/validation-only-run
+    delivery/an-entry-destination-is-reported
+    delivery/an-entry-destination-under-a-grouping-rule
+    grouping/a-member-carrying-one-heading-bundled-by-document
+    grouping/one-entry-bundled-by-document
+Agent delivery contract — Clean Markdown: 1 fixture(s)
+    delivery/an-entry-destination-is-reported
+Agent delivery contract — Broken pipes: 0 fixture(s)
+Agent delivery contract — No silent fallback: 1 fixture(s)
+    limits/an-output-byte-budget-crossed
+Validation scope: 9 fixture(s)
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    file-wide-safety/an-unselected-construct-crosses-a-safety-limit
+    generated-input/a-file-heading-outside-the-selection
+    structural-ancestors/an-ancestor-heading-is-literal-text
+    usage-example/validation-without-publication
+    validation-scope/an-unselected-broken-link
+    validation-scope/an-unselected-refusal-in-a-named-document
+    validation-scope/an-unselected-refusal-in-a-reached-document
+    validation-scope/the-sibling-once-closure-includes-it
+Source and candidate validation modes: 2 fixture(s)
+    generated-input/a-bundle-offered-as-input
+    generated-input/a-bundle-over-mixed-case-paths
+Source and candidate validation modes — Source mode: 1 fixture(s)
+    identity/an-ordinal-names-no-source-heading
+Source and candidate validation modes — Candidate mode: 4 fixture(s)
+    candidate-validation/a-definition-removed-beside-its-literal-example
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+    candidate-validation/a-selected-region-between-two-unselected-ones
+    candidate-validation/repeated-identical-prose-in-two-regions
+Source and candidate validation modes — Ownership: 1 fixture(s)
+    ownership/an-ancestor-reference-with-the-child-selected
+Source and candidate validation modes — Preprocessing: 1 fixture(s)
+    rewriting/a-cross-group-reference
+Source and candidate validation modes — Reuse: 2 fixture(s)
+    generated-input/a-bundle-offered-as-input
+    generated-input/a-bundle-over-mixed-case-paths
+Validation and failure contract: 1 fixture(s)
+    diagnostics/a-failure-two-hops-from-the-entry-reference
+Validation and failure contract — Resolution: 1 fixture(s)
+    diagnostics/a-failure-two-hops-from-the-entry-reference
+Validation and failure contract — Target integrity: 1 fixture(s)
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+Validation and failure contract — Uniqueness: 1 fixture(s)
+    rewriting/two-targets-sharing-a-slug
+Validation and failure contract — Boundaries: 1 fixture(s)
+    boundary/a-code-example-a-list-reads-as-markup
+Validation and failure contract — Preservation: 9 fixture(s)
+    boundary/a-yaml-example-the-bundle-keeps-intact
+    candidate-validation/a-code-example-carried-byte-for-byte
+    candidate-validation/a-definition-removed-beside-its-literal-example
+    candidate-validation/untouched-bytes-beside-a-rewritten-link
+    frontmatter/crlf-delimiters
+    frontmatter/dot-terminated
+    frontmatter/optional-mark
+    profile/invalid-byte-mid-document
+    profile/utf16-byte-order-mark
+Validation and failure contract — Completeness: 1 fixture(s)
+    reference/a-reference-under-the-root-naming-no-document
+Validation and failure contract — Safety: 1 fixture(s)
+    confinement/a-parent-segment-above-the-root
+Validation and failure contract — Publication: 12 fixture(s)
+    deferral/a-deferred-reference-naming-no-document
+    deferral/a-deferred-reference-naming-no-heading
+    delivery/a-failing-run-publishes-no-bundle
+    delivery/an-output-destination-that-refuses-the-write
+    extraction/a-heading-only-in-a-code-example
+    extraction/a-list-item-heading-as-a-target
+    extraction/nested-section-target
+    frontmatter/unterminated-block
+    identity/paths-differing-only-by-suffix
+    identity/two-headings-sharing-a-slug
+    reference/a-reference-under-the-root-naming-no-document
+    reference/a-reference-under-the-root-naming-no-heading
+Post-compilation invariants: 1 fixture(s)
+    candidate-validation/repeated-identical-prose-in-two-regions
+Post-compilation invariants — One intended destination: 4 fixture(s)
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+    rewriting/a-link-inside-a-heading
+    rewriting/no-link-names-a-source-path
+    rewriting/two-targets-sharing-a-slug
+Post-compilation invariants — Reference preservation: 6 fixture(s)
+    candidate-validation/a-code-example-carried-byte-for-byte
+    candidate-validation/untouched-bytes-beside-a-rewritten-link
+    normalization/a-scheme-and-an-authority-in-selected-content
+    normalization/bare-text-paths
+    structural-ancestors/an-ancestor-heading-is-literal-text
+    traversal/a-second-reference-to-one-document
+Post-compilation invariants — No new links: 1 fixture(s)
+    candidate-validation/untouched-bytes-beside-a-rewritten-link
+Post-compilation invariants — No definition leakage: 1 fixture(s)
+    candidate-validation/a-definition-removed-beside-its-literal-example
+Post-compilation invariants — Exactly-once coverage: 1 fixture(s)
+    candidate-validation/repeated-identical-prose-in-two-regions
+Post-compilation invariants — No accidental omissions: 1 fixture(s)
+    candidate-validation/a-selected-region-between-two-unselected-ones
+Post-compilation invariants — No accidental expansion: 3 fixture(s)
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    candidate-validation/a-selected-region-between-two-unselected-ones
+    structural-ancestors/an-ancestor-carries-no-body-or-sibling
+Post-compilation invariants — Destination stability: 3 fixture(s)
+    ownership/a-self-reference-after-consolidation
+    ownership/an-ancestor-reference-after-consolidation
+    ownership/an-ancestor-reference-with-the-child-selected
+Post-compilation invariants — Block-syntax preservation: 1 fixture(s)
+    boundary/the-file-heading-between-two-groups
+Post-compilation invariants — Entry line integrity: 3 fixture(s)
+    delivery/an-entry-destination-is-reported
+    delivery/an-entry-destination-under-a-grouping-rule
+    entry-line/an-entry-destination-carrying-an-ordinal
+Post-compilation invariants — Group isolation: 1 fixture(s)
+    grouping/a-document-no-group-matches
+Post-compilation invariants — Outline preservation: 2 fixture(s)
+    grouping/structural-ancestors-inside-a-merged-group
+    structural-ancestors/an-outline-that-skips-a-level
+Post-compilation invariants — Depth safety: 2 fixture(s)
+    depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth
+    depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth
+Exit status and JSON diagnostics: 3 fixture(s)
+    diagnostics/a-failure-two-hops-from-the-entry-reference
+    diagnostics/a-run-that-fails-in-itself
+    diagnostics/one-json-object-per-diagnostic-line
+Exit status and JSON diagnostics — 0: 3 fixture(s)
+    cli/informational-usage-response
+    cli/informational-version-response
+    cli/validation-only-run
+Exit status and JSON diagnostics — 1: 16 fixture(s)
+    cli/an-allowed-source-root-naming-no-directory
+    cli/group-rule-unknown-slug
+    identity/an-ordinal-names-no-source-heading
+    identity/paths-differing-only-by-suffix
+    identity/two-headings-sharing-a-slug
+    normalization/a-drive-path
+    normalization/an-unencoded-number-sign
+    normalization/root-relative-entry-reference
+    profile/entry-suffix-outside-the-profile
+    profile/invalid-byte-mid-document
+    profile/raw-html-in-selected-content
+    profile/source-not-utf8
+    profile/unsupported-construct
+    profile/utf16-byte-order-mark
+    reference/an-html-link-naming-a-document-under-the-root
+    validation-scope/the-sibling-once-closure-includes-it
+Exit status and JSON diagnostics — 2: 9 fixture(s)
+    cli/a-command-line-naming-no-allowed-source-root
+    cli/a-command-line-naming-no-entry-reference
+    cli/an-option-the-contract-does-not-declare
+    cli/diagnostics-format-unknown
+    cli/fragment-only-reference-without-from
+    cli/group-rule-depth
+    cli/group-rule-repeated-slug
+    cli/output-naming-a-dependency-source
+    cli/output-naming-an-input-source
+Exit status and JSON diagnostics — 3: 1 fixture(s)
+    delivery/an-output-destination-that-refuses-the-write
+Exit status and JSON diagnostics — 4: 1 fixture(s)
+    diagnostics/a-run-that-fails-in-itself
+Adversarial acceptance fixtures: 0 fixture(s)
+Adversarial acceptance fixtures — Identity: 1 fixture(s)
+    real-source/absorbed-title-and-self-references
+Adversarial acceptance fixtures — Coverage: 1 fixture(s)
+    determinism/entry-references-in-another-order
+Adversarial acceptance fixtures — Destinations: 1 fixture(s)
+    destinations/source-heading-fragments
+Adversarial acceptance fixtures — References: 3 fixture(s)
+    literal-bracket/a-bracket-another-source-defines
+    reference/a-reference-style-image-with-a-title
+    reference/conflicting-labels-across-files
+Adversarial acceptance fixtures — Deferral: 1 fixture(s)
+    deferral/a-marked-reference-is-not-compiled
+Adversarial acceptance fixtures — Extraction: 1 fixture(s)
+    extraction/section-to-the-next-sibling
+Adversarial acceptance fixtures — Boundaries: 1 fixture(s)
+    boundary/two-lists-a-definition-separates
+Adversarial acceptance fixtures — File hierarchy: 6 fixture(s)
+    absorbed-title/a-reference-naming-a-title-no-heading-absorbed
+    absorbed-title/a-reference-naming-an-absorbed-title
+    depth-overflow/a-source-heading-the-shift-places-at-the-sixth
+    depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth
+    grouping/one-spelling-for-every-generated-heading
+    headings/an-authored-heading-beside-a-generated-one
+Adversarial acceptance fixtures — Grouping: 1 fixture(s)
+    grouping/one-entry-under-a-group
+Adversarial acceptance fixtures — Partial outlines: 8 fixture(s)
+    ancestor-promotion/a-link-to-a-heading-only-ancestor
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+    structural-ancestors/an-ancestor-carries-no-body-or-sibling
+    structural-ancestors/an-ancestor-heading-is-literal-text
+    structural-ancestors/an-ancestor-two-selections-share
+    structural-ancestors/an-outline-that-skips-a-level
+    structural-ancestors/disjoint-selections-keep-their-outline
+Adversarial acceptance fixtures — Entry line: 1 fixture(s)
+    entry-line/an-entry-destination-carrying-an-ordinal
+Adversarial acceptance fixtures — Wrapper identity: 1 fixture(s)
+    consolidation/a-child-then-its-whole-document
+Adversarial acceptance fixtures — Normalization: 1 fixture(s)
+    normalization/an-empty-fragment
+Adversarial acceptance fixtures — Resources: 1 fixture(s)
+    resource/a-bundle-naming-no-resource-does-not-warn
+Adversarial acceptance fixtures — Consistency: 1 fixture(s)
+    source-consistency/a-source-that-changes-during-compilation
+Adversarial acceptance fixtures — Validation scope: 1 fixture(s)
+    validation-scope/the-sibling-once-closure-includes-it
+Adversarial acceptance fixtures — Generated inputs: 2 fixture(s)
+    generated-input/a-bundle-offered-as-input
+    generated-input/a-bundle-over-mixed-case-paths
+Adversarial acceptance fixtures — Delivery: 1 fixture(s)
+    delivery/an-entry-destination-is-reported
+Adversarial acceptance fixtures — Parser fidelity: 3 fixture(s)
+    candidate-validation/crlf-lines-beside-a-rewritten-link
+    candidate-validation/every-line-terminated-with-crlf
+    candidate-validation/tabs-beside-a-rewritten-link
+Adversarial acceptance fixtures — Definition inventory: 4 fixture(s)
+    reference/a-definition-a-container-carries
+    reference/a-definition-spelled-across-two-lines
+    reference/a-label-two-definitions-spell-in-different-case
+    reference/an-unused-definition-is-removed
+Adversarial acceptance fixtures — Parser exhaustion: 2 fixture(s)
+    parser-limit/a-budget-spent-on-the-last-valid-reference
+    parser-limit/a-lookup-suppressed-below-every-declared-budget
+Adversarial acceptance fixtures — Validation modes: 1 fixture(s)
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+Adversarial acceptance fixtures — File-wide safety: 2 fixture(s)
+    file-wide-safety/an-unselected-construct-crosses-a-safety-limit
+    validation-scope/an-unselected-broken-link
+Adversarial acceptance fixtures — Profile: 4 fixture(s)
+    profile/extension-lookalikes
+    profile/html-in-a-code-example
+    profile/task-markers-and-typography
+    profile/task-markers-protected-from-definitions
+Adversarial acceptance fixtures — Frontmatter: 9 fixture(s)
+    frontmatter/crlf-delimiters
+    frontmatter/delimiter-with-trailing-spaces
+    frontmatter/dot-terminated
+    frontmatter/indented-delimiter
+    frontmatter/leading-blank-line
+    frontmatter/optional-mark
+    frontmatter/toml-fence
+    frontmatter/unterminated-block
+    frontmatter/yaml-example-in-a-code-block
+Adversarial acceptance fixtures — CLI: 1 fixture(s)
+    cli/validation-only-run
+Adversarial acceptance fixtures — Limits: 1 fixture(s)
+    limits/a-target-budget-crossed
+
+# Uncovered clauses
+
+
+# Unnamed declarations
+
+
+# Declared surface
+
+exit status 0: 181 fixture(s)
+    absorbed-title/a-reference-naming-a-title-no-heading-absorbed
+    absorbed-title/a-reference-naming-an-absorbed-title
+    ancestor-promotion/a-link-to-a-heading-only-ancestor
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+    boundary/a-yaml-example-the-bundle-keeps-intact
+    boundary/the-file-heading-between-two-groups
+    candidate-validation/a-code-example-carried-byte-for-byte
+    candidate-validation/a-definition-removed-beside-its-literal-example
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+    candidate-validation/a-selected-region-between-two-unselected-ones
+    candidate-validation/crlf-lines-beside-a-rewritten-link
+    candidate-validation/every-line-terminated-with-crlf
+    candidate-validation/repeated-identical-prose-in-two-regions
+    candidate-validation/tabs-beside-a-rewritten-link
+    candidate-validation/untouched-bytes-beside-a-rewritten-link
+    citation/a-marked-reference-above-the-root
+    citation/a-reference-above-the-root
+    cli/informational-usage-response
+    cli/informational-version-response
+    cli/validation-only-run
+    cli/validation-only-run-with-an-output-file
+    confinement/a-drive-path-inside-a-source
+    confinement/a-root-relative-reference-inside-a-source
+    consolidation/a-child-then-its-whole-document
+    consolidation/a-subsection-and-its-section
+    deferral/a-deferral-stands-where-another-reference-carried-its-target
+    deferral/a-deferred-destination-named-from-the-root
+    deferral/a-deferred-fragment-of-its-own-document
+    deferral/a-marked-reference-is-not-compiled
+    delivery/an-entry-destination-is-reported
+    delivery/an-entry-destination-under-a-grouping-rule
+    depth-overflow/a-source-heading-the-shift-places-at-the-sixth
+    destinations/a-heading-a-container-carries
+    destinations/source-heading-fragments
+    determinism/entry-references-in-another-order
+    determinism/entry-references-in-source-order
+    determinism/groups-in-root-relative-path-order
+    diagnostics/one-json-object-per-diagnostic-line
+    entry-line/an-entry-destination-carrying-an-ordinal
+    extraction/a-fragment-alone-selects-from-the-referrer
+    extraction/a-heading-a-blockquote-carries
+    extraction/a-section-the-document-outlasts
+    extraction/a-setext-heading-as-a-root
+    extraction/a-subsection-inside-the-section
+    extraction/heading-like-text-in-a-code-example
+    extraction/section-to-the-next-sibling
+    frontmatter/crlf-delimiters
+    frontmatter/delimiter-with-trailing-spaces
+    frontmatter/dot-terminated
+    frontmatter/indented-delimiter
+    frontmatter/leading-blank-line
+    frontmatter/optional-mark
+    frontmatter/toml-fence
+    frontmatter/yaml-example-in-a-code-block
+    generated-input/a-document-titled-with-its-own-name
+    generated-input/a-file-heading-example-in-a-code-block
+    generated-input/a-title-spelling-a-path-that-names-no-document
+    generated-input/an-authored-title-naming-a-sibling
+    grouping/a-document-no-group-matches
+    grouping/a-group-emitting-no-merged-section
+    grouping/a-member-carrying-one-heading-bundled-by-document
+    grouping/a-member-named-by-the-title-it-absorbs
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-reference-to-a-grouping-depth-heading
+    grouping/a-reference-to-a-member-carrying-one-heading
+    grouping/a-rule-matching-no-document-in-the-closure
+    grouping/a-section-shallower-than-the-grouping-depth
+    grouping/a-variant-drops-the-group-word
+    grouping/a-whole-document-reference-to-a-member
+    grouping/an-entry-naming-a-member-carrying-one-heading
+    grouping/member-names-distinguished-after-formatting
+    grouping/members-of-one-stem-in-different-directories
+    grouping/mixed-contributions-name-every-member
+    grouping/one-entry-bundled-by-document
+    grouping/one-entry-bundled-by-group
+    grouping/one-entry-under-a-group
+    grouping/one-spelling-for-every-generated-heading
+    grouping/structural-ancestors-inside-a-merged-group
+    grouping/subheadings-name-every-member
+    grouping/two-members-contributing-one-heading-text
+    grouping/variant-headings-distinguished-at-more-than-one-segment
+    headings/a-heading-with-no-visible-text
+    headings/an-authored-heading-beside-a-generated-one
+    headings/an-entity-in-a-heading
+    headings/collision-with-a-natural-suffix
+    headings/image-alternative-text
+    hierarchy/a-preamble-before-a-kept-title
+    hierarchy/a-setext-heading-a-quote-carries
+    hierarchy/a-setext-heading-an-absorbed-title-leaves
+    hierarchy/a-setext-heading-becomes-atx
+    hierarchy/a-setext-heading-over-two-lines
+    hierarchy/a-shift-that-writes-a-level-only
+    hierarchy/every-level-moves-down-one
+    hierarchy/headings-a-container-carries
+    hierarchy/regions-the-source-separates
+    identity/a-path-ending-in-a-number-sign
+    identity/a-second-h1-leaves-the-title
+    identity/a-title-the-path-spells-with-a-space
+    identity/a-title-the-path-spells-with-hyphens
+    identity/an-h1-below-the-first-heading
+    identity/path-needing-escaping
+    identity/same-basename-in-two-directories
+    identity/title-the-path-does-not-carry
+    identity/whole-document
+    limits/a-target-at-the-expansion-depth
+    literal-bracket/a-bracket-another-source-defines
+    literal-bracket/brackets-in-examples-stay-as-written
+    normalization/a-double-encoded-escape
+    normalization/a-parent-segment-and-a-fragment
+    normalization/a-parent-segment-reaching-the-root-boundary
+    normalization/a-scheme-and-an-authority-in-selected-content
+    normalization/an-empty-fragment
+    normalization/an-encoded-number-sign
+    normalization/an-escaped-fragment
+    normalization/bare-text-paths
+    normalization/root-escape
+    normalization/two-spellings-of-one-document
+    ownership/a-self-reference-after-consolidation
+    ownership/an-ancestor-reference-after-consolidation
+    ownership/an-ancestor-reference-with-the-child-selected
+    parser-limit/a-budget-spent-on-the-last-valid-reference
+    parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches
+    profile/extension-lookalikes
+    profile/html-in-a-code-example
+    profile/markdown-suffixes-in-mixed-case
+    profile/task-markers-and-typography
+    profile/task-markers-protected-from-definitions
+    profile/the-constructs-the-profile-supports
+    real-source/absorbed-title-and-self-references
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+    real-source/markdown-inside-a-code-example
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+    reference/a-definition-a-container-carries
+    reference/a-definition-outside-the-selected-section
+    reference/a-definition-spelled-across-two-lines
+    reference/a-document-outside-the-root-is-text
+    reference/a-document-under-the-root-is-a-dependency
+    reference/a-label-two-definitions-spell-in-different-case
+    reference/a-link-inside-an-image-a-link-carries
+    reference/a-link-inside-image-alternative-content
+    reference/a-reference-style-image-with-a-title
+    reference/an-unused-definition-is-removed
+    reference/conflicting-labels-across-files
+    resource/a-bundle-naming-no-resource-does-not-warn
+    resource/a-marked-resource-is-emitted-as-authored
+    resource/an-image-naming-a-document-under-the-root
+    rewriting/a-cross-group-reference
+    rewriting/a-fragment-only-dependency
+    rewriting/a-link-inside-a-heading
+    rewriting/a-reference-style-link
+    rewriting/no-link-names-a-source-path
+    rewriting/two-targets-sharing-a-slug
+    self-reference/a-link-back-to-an-including-ancestor
+    self-reference/a-link-spelled-another-way-to-the-same-section
+    self-reference/a-link-to-another-section-of-the-same-file
+    self-reference/a-link-to-the-same-section
+    self-reference/a-preamble-link-to-its-own-document
+    self-reference/a-section-link-to-its-whole-document
+    structural-ancestors/a-title-the-file-heading-already-names
+    structural-ancestors/an-ancestor-carries-no-body-or-sibling
+    structural-ancestors/an-ancestor-heading-is-literal-text
+    structural-ancestors/an-ancestor-two-selections-share
+    structural-ancestors/an-outline-that-skips-a-level
+    structural-ancestors/disjoint-selections-keep-their-outline
+    traversal/a-cycle-of-dependencies
+    traversal/a-link-in-a-code-example
+    traversal/a-reference-under-the-root-is-bundled
+    traversal/a-relative-resource-warns
+    traversal/a-second-reference-to-one-document
+    traversal/resources-are-not-dependencies
+    usage-example/a-bare-fragment-and-its-referring-document
+    usage-example/a-procedure-and-everything-it-reaches
+    usage-example/every-document-under-a-directory-merged
+    usage-example/two-selected-sections
+    usage-example/validation-without-publication
+    validation-scope/an-unselected-broken-link
+    validation-scope/an-unselected-refusal-in-a-named-document
+    validation-scope/an-unselected-refusal-in-a-reached-document
+exit status 1: 54 fixture(s)
+    boundary/a-code-example-a-list-reads-as-markup
+    boundary/a-nested-list-and-the-list-below-it
+    boundary/two-lists-a-definition-separates
+    cli/an-allowed-source-root-naming-no-directory
+    cli/group-rule-unknown-slug
+    cli/output-naming-what-a-link-points-at
+    confinement/a-parent-segment-above-the-root
+    confinement/a-symlink-chain-below-the-root
+    confinement/a-symlink-to-a-document-inside-the-root
+    confinement/a-symlinked-directory-below-the-root
+    confinement/a-symlinked-source
+    deferral/a-deferred-reference-naming-no-document
+    deferral/a-deferred-reference-naming-no-heading
+    delivery/a-failing-run-publishes-no-bundle
+    depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth
+    depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth
+    diagnostics/a-failure-two-hops-from-the-entry-reference
+    extraction/a-heading-only-in-a-code-example
+    extraction/a-list-item-heading-as-a-target
+    extraction/an-unterminated-example-at-the-section-end
+    extraction/nested-section-target
+    file-wide-safety/an-unselected-construct-crosses-a-safety-limit
+    frontmatter/unterminated-block
+    generated-input/a-bundle-offered-as-input
+    generated-input/a-bundle-over-mixed-case-paths
+    generated-input/a-file-heading-outside-the-selection
+    identity/an-ordinal-names-no-source-heading
+    identity/paths-differing-only-by-suffix
+    identity/two-headings-sharing-a-slug
+    limits/a-file-count-budget-crossed
+    limits/a-link-budget-crossed
+    limits/a-nesting-budget-crossed
+    limits/a-source-byte-budget-crossed
+    limits/a-target-budget-crossed
+    limits/an-expansion-depth-budget-crossed
+    limits/an-input-byte-budget-crossed
+    limits/an-output-byte-budget-crossed
+    normalization/a-drive-path
+    normalization/a-protocol-relative-url
+    normalization/an-unencoded-number-sign
+    normalization/root-relative-entry-reference
+    parser-limit/a-lookup-suppressed-below-every-declared-budget
+    parser-limit/a-reference-lookup-the-parser-declines
+    profile/entry-suffix-outside-the-profile
+    profile/invalid-byte-mid-document
+    profile/raw-html-in-selected-content
+    profile/source-not-utf8
+    profile/unsupported-construct
+    profile/utf16-byte-order-mark
+    reference/a-reference-under-the-root-naming-no-document
+    reference/a-reference-under-the-root-naming-no-heading
+    reference/an-html-link-naming-a-document-under-the-root
+    source-consistency/a-source-that-changes-during-compilation
+    validation-scope/the-sibling-once-closure-includes-it
+exit status 2: 15 fixture(s)
+    cli/a-command-line-naming-no-allowed-source-root
+    cli/a-command-line-naming-no-entry-reference
+    cli/an-option-the-contract-does-not-declare
+    cli/diagnostics-format-unknown
+    cli/fragment-only-reference-without-from
+    cli/group-rule-depth
+    cli/group-rule-repeated-slug
+    cli/output-naming-a-dependency-source
+    cli/output-naming-an-input-source
+    limits/a-negative-override-is-refused
+    limits/a-zero-override-is-refused
+    normalization/a-non-utf8-escape-sequence
+    normalization/an-encoded-path-separator
+    normalization/an-over-long-percent-escape
+    normalization/query-on-an-entry-reference
+exit status 3: 1 fixture(s)
+    delivery/an-output-destination-that-refuses-the-write
+exit status 4: 1 fixture(s)
+    diagnostics/a-run-that-fails-in-itself
+error E_AMBIGUOUS_FILE_GROUP: 1 fixture(s), the build reports it
+    identity/paths-differing-only-by-suffix
+error E_AMBIGUOUS_SOURCE_HEADING: 1 fixture(s), the build reports it
+    identity/two-headings-sharing-a-slug
+error E_GENERATED_INPUT: 3 fixture(s), the build reports it
+    generated-input/a-bundle-offered-as-input
+    generated-input/a-bundle-over-mixed-case-paths
+    generated-input/a-file-heading-outside-the-selection
+error E_HEADING_DEPTH_OVERFLOW: 2 fixture(s), the build reports it
+    depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth
+    depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth
+error E_INVALID_ENCODING: 3 fixture(s), the build reports it
+    profile/invalid-byte-mid-document
+    profile/source-not-utf8
+    profile/utf16-byte-order-mark
+error E_INVALID_GROUP_RULE: 3 fixture(s), the build reports it
+    cli/group-rule-depth
+    cli/group-rule-repeated-slug
+    cli/group-rule-unknown-slug
+error E_INVALID_USAGE: 13 fixture(s), the build reports it
+    cli/a-command-line-naming-no-allowed-source-root
+    cli/a-command-line-naming-no-entry-reference
+    cli/an-option-the-contract-does-not-declare
+    cli/diagnostics-format-unknown
+    cli/fragment-only-reference-without-from
+    cli/output-naming-a-dependency-source
+    cli/output-naming-an-input-source
+    limits/a-negative-override-is-refused
+    limits/a-zero-override-is-refused
+    normalization/a-non-utf8-escape-sequence
+    normalization/an-encoded-path-separator
+    normalization/an-over-long-percent-escape
+    normalization/query-on-an-entry-reference
+error E_NESTED_SECTION_TARGET: 2 fixture(s), the build reports it
+    extraction/a-list-item-heading-as-a-target
+    extraction/nested-section-target
+error E_PARSER_REFERENCE_LIMIT: 2 fixture(s), the build reports it
+    parser-limit/a-lookup-suppressed-below-every-declared-budget
+    parser-limit/a-reference-lookup-the-parser-declines
+error E_PUBLICATION_FAILED: 1 fixture(s), the build reports it
+    delivery/an-output-destination-that-refuses-the-write
+error E_RAW_HTML: 2 fixture(s), the build reports it
+    profile/raw-html-in-selected-content
+    reference/an-html-link-naming-a-document-under-the-root
+error E_RESOURCE_LIMIT: 9 fixture(s), the build reports it
+    file-wide-safety/an-unselected-construct-crosses-a-safety-limit
+    limits/a-file-count-budget-crossed
+    limits/a-link-budget-crossed
+    limits/a-nesting-budget-crossed
+    limits/a-source-byte-budget-crossed
+    limits/a-target-budget-crossed
+    limits/an-expansion-depth-budget-crossed
+    limits/an-input-byte-budget-crossed
+    limits/an-output-byte-budget-crossed
+error E_ROOT_NOT_FOUND: 1 fixture(s), the build reports it
+    cli/an-allowed-source-root-naming-no-directory
+error E_SOURCE_CHANGED: 1 fixture(s), the build reports it
+    source-consistency/a-source-that-changes-during-compilation
+error E_SOURCE_OUTSIDE_ROOT: 4 fixture(s), the build reports it
+    confinement/a-parent-segment-above-the-root
+    normalization/a-drive-path
+    normalization/a-protocol-relative-url
+    normalization/root-relative-entry-reference
+error E_SOURCE_SYMLINK: 5 fixture(s), the build reports it
+    cli/output-naming-what-a-link-points-at
+    confinement/a-symlink-chain-below-the-root
+    confinement/a-symlink-to-a-document-inside-the-root
+    confinement/a-symlinked-directory-below-the-root
+    confinement/a-symlinked-source
+error E_TARGET_NOT_FOUND: 9 fixture(s), the build reports it
+    deferral/a-deferred-reference-naming-no-document
+    deferral/a-deferred-reference-naming-no-heading
+    delivery/a-failing-run-publishes-no-bundle
+    diagnostics/a-failure-two-hops-from-the-entry-reference
+    extraction/a-heading-only-in-a-code-example
+    identity/an-ordinal-names-no-source-heading
+    reference/a-reference-under-the-root-naming-no-document
+    reference/a-reference-under-the-root-naming-no-heading
+    validation-scope/the-sibling-once-closure-includes-it
+error E_UNEXPECTED_INTERNAL_ERROR: 1 fixture(s), the build reports it
+    diagnostics/a-run-that-fails-in-itself
+error E_UNSAFE_BUNDLE_BOUNDARY: 4 fixture(s), the build reports it
+    boundary/a-code-example-a-list-reads-as-markup
+    boundary/a-nested-list-and-the-list-below-it
+    boundary/two-lists-a-definition-separates
+    extraction/an-unterminated-example-at-the-section-end
+error E_UNSUPPORTED_CONSTRUCT: 1 fixture(s), the build reports it
+    profile/unsupported-construct
+error E_UNSUPPORTED_ENTRY_SUFFIX: 2 fixture(s), the build reports it
+    normalization/an-unencoded-number-sign
+    profile/entry-suffix-outside-the-profile
+error E_UNTERMINATED_FRONTMATTER: 1 fixture(s), the build reports it
+    frontmatter/unterminated-block
+warning W_EMPTY_GROUP_RULE: 1 fixture(s), the build reports it
+    grouping/a-rule-matching-no-document-in-the-closure
+warning W_ENTRY_DESTINATION: 179 fixture(s), the build reports it
+    absorbed-title/a-reference-naming-a-title-no-heading-absorbed
+    absorbed-title/a-reference-naming-an-absorbed-title
+    ancestor-promotion/a-link-to-a-heading-only-ancestor
+    ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies
+    ancestor-promotion/a-promotion-two-documents-out
+    boundary/a-yaml-example-the-bundle-keeps-intact
+    boundary/the-file-heading-between-two-groups
+    candidate-validation/a-code-example-carried-byte-for-byte
+    candidate-validation/a-definition-removed-beside-its-literal-example
+    candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere
+    candidate-validation/a-selected-region-between-two-unselected-ones
+    candidate-validation/crlf-lines-beside-a-rewritten-link
+    candidate-validation/every-line-terminated-with-crlf
+    candidate-validation/repeated-identical-prose-in-two-regions
+    candidate-validation/tabs-beside-a-rewritten-link
+    candidate-validation/untouched-bytes-beside-a-rewritten-link
+    citation/a-marked-reference-above-the-root
+    citation/a-reference-above-the-root
+    cli/validation-only-run
+    cli/validation-only-run-with-an-output-file
+    confinement/a-drive-path-inside-a-source
+    confinement/a-root-relative-reference-inside-a-source
+    consolidation/a-child-then-its-whole-document
+    consolidation/a-subsection-and-its-section
+    deferral/a-deferral-stands-where-another-reference-carried-its-target
+    deferral/a-deferred-destination-named-from-the-root
+    deferral/a-deferred-fragment-of-its-own-document
+    deferral/a-marked-reference-is-not-compiled
+    delivery/an-entry-destination-is-reported
+    delivery/an-entry-destination-under-a-grouping-rule
+    depth-overflow/a-source-heading-the-shift-places-at-the-sixth
+    destinations/a-heading-a-container-carries
+    destinations/source-heading-fragments
+    determinism/entry-references-in-another-order
+    determinism/entry-references-in-source-order
+    determinism/groups-in-root-relative-path-order
+    diagnostics/one-json-object-per-diagnostic-line
+    entry-line/an-entry-destination-carrying-an-ordinal
+    extraction/a-fragment-alone-selects-from-the-referrer
+    extraction/a-heading-a-blockquote-carries
+    extraction/a-section-the-document-outlasts
+    extraction/a-setext-heading-as-a-root
+    extraction/a-subsection-inside-the-section
+    extraction/heading-like-text-in-a-code-example
+    extraction/section-to-the-next-sibling
+    frontmatter/crlf-delimiters
+    frontmatter/delimiter-with-trailing-spaces
+    frontmatter/dot-terminated
+    frontmatter/indented-delimiter
+    frontmatter/leading-blank-line
+    frontmatter/optional-mark
+    frontmatter/toml-fence
+    frontmatter/yaml-example-in-a-code-block
+    generated-input/a-document-titled-with-its-own-name
+    generated-input/a-file-heading-example-in-a-code-block
+    generated-input/a-title-spelling-a-path-that-names-no-document
+    generated-input/an-authored-title-naming-a-sibling
+    grouping/a-document-no-group-matches
+    grouping/a-group-emitting-no-merged-section
+    grouping/a-member-carrying-one-heading-bundled-by-document
+    grouping/a-member-named-by-the-title-it-absorbs
+    grouping/a-pooled-subset-keeps-group-member-names
+    grouping/a-reference-to-a-grouping-depth-heading
+    grouping/a-reference-to-a-member-carrying-one-heading
+    grouping/a-rule-matching-no-document-in-the-closure
+    grouping/a-section-shallower-than-the-grouping-depth
+    grouping/a-variant-drops-the-group-word
+    grouping/a-whole-document-reference-to-a-member
+    grouping/an-entry-naming-a-member-carrying-one-heading
+    grouping/member-names-distinguished-after-formatting
+    grouping/members-of-one-stem-in-different-directories
+    grouping/mixed-contributions-name-every-member
+    grouping/one-entry-bundled-by-document
+    grouping/one-entry-bundled-by-group
+    grouping/one-entry-under-a-group
+    grouping/one-spelling-for-every-generated-heading
+    grouping/structural-ancestors-inside-a-merged-group
+    grouping/subheadings-name-every-member
+    grouping/two-members-contributing-one-heading-text
+    grouping/variant-headings-distinguished-at-more-than-one-segment
+    headings/a-heading-with-no-visible-text
+    headings/an-authored-heading-beside-a-generated-one
+    headings/an-entity-in-a-heading
+    headings/collision-with-a-natural-suffix
+    headings/image-alternative-text
+    hierarchy/a-preamble-before-a-kept-title
+    hierarchy/a-setext-heading-a-quote-carries
+    hierarchy/a-setext-heading-an-absorbed-title-leaves
+    hierarchy/a-setext-heading-becomes-atx
+    hierarchy/a-setext-heading-over-two-lines
+    hierarchy/a-shift-that-writes-a-level-only
+    hierarchy/every-level-moves-down-one
+    hierarchy/headings-a-container-carries
+    hierarchy/regions-the-source-separates
+    identity/a-path-ending-in-a-number-sign
+    identity/a-second-h1-leaves-the-title
+    identity/a-title-the-path-spells-with-a-space
+    identity/a-title-the-path-spells-with-hyphens
+    identity/an-h1-below-the-first-heading
+    identity/path-needing-escaping
+    identity/same-basename-in-two-directories
+    identity/title-the-path-does-not-carry
+    identity/whole-document
+    limits/a-target-at-the-expansion-depth
+    literal-bracket/a-bracket-another-source-defines
+    literal-bracket/brackets-in-examples-stay-as-written
+    normalization/a-double-encoded-escape
+    normalization/a-parent-segment-and-a-fragment
+    normalization/a-parent-segment-reaching-the-root-boundary
+    normalization/a-scheme-and-an-authority-in-selected-content
+    normalization/an-empty-fragment
+    normalization/an-encoded-number-sign
+    normalization/an-escaped-fragment
+    normalization/bare-text-paths
+    normalization/root-escape
+    normalization/two-spellings-of-one-document
+    ownership/a-self-reference-after-consolidation
+    ownership/an-ancestor-reference-after-consolidation
+    ownership/an-ancestor-reference-with-the-child-selected
+    parser-limit/a-budget-spent-on-the-last-valid-reference
+    parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches
+    profile/extension-lookalikes
+    profile/html-in-a-code-example
+    profile/markdown-suffixes-in-mixed-case
+    profile/task-markers-and-typography
+    profile/task-markers-protected-from-definitions
+    profile/the-constructs-the-profile-supports
+    real-source/absorbed-title-and-self-references
+    real-source/frontmatter-and-a-shifted-group
+    real-source/heading-text-outside-ascii
+    real-source/markdown-inside-a-code-example
+    real-source/preamble-above-the-first-heading
+    real-source/tables-and-brace-placeholders
+    reference/a-definition-a-container-carries
+    reference/a-definition-outside-the-selected-section
+    reference/a-definition-spelled-across-two-lines
+    reference/a-document-outside-the-root-is-text
+    reference/a-document-under-the-root-is-a-dependency
+    reference/a-label-two-definitions-spell-in-different-case
+    reference/a-link-inside-an-image-a-link-carries
+    reference/a-link-inside-image-alternative-content
+    reference/a-reference-style-image-with-a-title
+    reference/an-unused-definition-is-removed
+    reference/conflicting-labels-across-files
+    resource/a-bundle-naming-no-resource-does-not-warn
+    resource/a-marked-resource-is-emitted-as-authored
+    resource/an-image-naming-a-document-under-the-root
+    rewriting/a-cross-group-reference
+    rewriting/a-fragment-only-dependency
+    rewriting/a-link-inside-a-heading
+    rewriting/a-reference-style-link
+    rewriting/no-link-names-a-source-path
+    rewriting/two-targets-sharing-a-slug
+    self-reference/a-link-back-to-an-including-ancestor
+    self-reference/a-link-spelled-another-way-to-the-same-section
+    self-reference/a-link-to-another-section-of-the-same-file
+    self-reference/a-link-to-the-same-section
+    self-reference/a-preamble-link-to-its-own-document
+    self-reference/a-section-link-to-its-whole-document
+    structural-ancestors/a-title-the-file-heading-already-names
+    structural-ancestors/an-ancestor-carries-no-body-or-sibling
+    structural-ancestors/an-ancestor-heading-is-literal-text
+    structural-ancestors/an-ancestor-two-selections-share
+    structural-ancestors/an-outline-that-skips-a-level
+    structural-ancestors/disjoint-selections-keep-their-outline
+    traversal/a-cycle-of-dependencies
+    traversal/a-link-in-a-code-example
+    traversal/a-reference-under-the-root-is-bundled
+    traversal/a-relative-resource-warns
+    traversal/a-second-reference-to-one-document
+    traversal/resources-are-not-dependencies
+    usage-example/a-bare-fragment-and-its-referring-document
+    usage-example/a-procedure-and-everything-it-reaches
+    usage-example/every-document-under-a-directory-merged
+    usage-example/two-selected-sections
+    usage-example/validation-without-publication
+    validation-scope/an-unselected-broken-link
+    validation-scope/an-unselected-refusal-in-a-named-document
+    validation-scope/an-unselected-refusal-in-a-reached-document
+warning W_RESOURCE_PORTABILITY: 9 fixture(s), the build reports it
+    diagnostics/one-json-object-per-diagnostic-line
+    headings/image-alternative-text
+    profile/the-constructs-the-profile-supports
+    reference/a-link-inside-an-image-a-link-carries
+    reference/a-link-inside-image-alternative-content
+    reference/a-reference-style-image-with-a-title
+    resource/a-marked-resource-is-emitted-as-authored
+    resource/an-image-naming-a-document-under-the-root
+    traversal/a-relative-resource-warns
+installation claim another platform: unfixturable, the smoke run observes this host and the continuous-integration runner, and a platform whose command wrapper and path resolution differ is a different mechanism
+    observable once the smoke run observes a command named on another platform's path
+installation claim a machine that never held the repository: unfixturable, the repository is on disk throughout the run and merely unreachable by path, working directory and environment, and removing it is not something a check inside it can do
+    observable once the smoke run observes a command installed on a machine that never held this repository
+installation claim the command line the documentation gives a reader: unfixturable, the run installs an artefact it builds rather than running the command line the documentation's installation section states
+    observable once the smoke run observes a command installed by the command line the documentation gives a reader
+
+# Clauses no run states
+
+clause Input and output contract: unfixturable, the heading opens straight onto the rules beneath it
+    each rule beneath it states its own outcome and carries its own clause
+clause Resolution sequence: unfixturable, the heading opens straight onto the numbered steps beneath it
+    each step beneath it states its own outcome and carries its own clause
+clause Parser and source-preserving edits: unfixturable, its prose binds how a build identifies and edits the spans of a source rather than what a run emits
+    the invariants state what those means must produce, each carrying its own clause
+clause Parser and source-preserving edits — Parsing authority: unfixturable, it binds what the reading of a source is let identify
+    the rules governing what a bundle carries state the outcome, each carrying its own clause
+clause Parser and source-preserving edits — Source positions: unfixturable, it binds how the spans of a source are built and retained
+    the invariants a candidate is held to state what those spans must produce, each carrying its own clause
+clause Parser and source-preserving edits — Source model: unfixturable, it binds what a build derives from the stream it reads
+    the selection, boundary and destination rules state the outcome that derivation reaches, each carrying its own clause
+clause Parser and source-preserving edits — Edits: unfixturable, it binds how edits are applied and how overlapping ones are resolved
+    the bytes a bundle carries state the outcome, under the rules governing that content
+clause Parser and source-preserving edits — Validation: unfixturable, it requires the candidate be read again and the declared invariants checked
+    each invariant states its own outcome and carries its own clause
+clause Mandatory parser viability gates: unfixturable, it states when its gates apply, before a production reading of sources is selected or any bundle is published
+    the gates are met in choosing that reading rather than by any run over a source tree
+clause Explicitly linked source structure: unfixturable, it states how sources are to be authored
+    the rules beneath it state what a run does with sources so authored, each carrying its own clause
+clause Explicitly linked source structure — Reading versus execution: unfixturable, it holds that inclusion makes material available without authorizing its execution, which no bundle's bytes show
+    the authored instructions carry the execution verbs and the call boundaries that state it
+clause Heading-only structural ancestors — Provenance: unfixturable, it requires ancestry be recorded apart from selected content, which a bundle states nothing of on its own
+    the depth and deduplication rules state its effects, each carrying its own clause
+clause Agent delivery contract: unfixturable, it states what a successful compilation does and does not establish about a transport
+    a run produces a bundle and an exit status, and neither states what a transport delivered
+clause Agent delivery contract — Response limit: unfixturable, it binds the calling wrapper's buffering and the response size it enforces
+    observable once a consumer of the run's output is declared beside the source tree
+clause Agent delivery contract — Broken pipes: unfixturable, it binds the wrapper's reporting of a transport failure
+    a fixture declares a source tree and an invocation, and reaches no consumer of the run's output
+clause Adversarial acceptance fixtures: unfixturable, it instructs that a corpus be written before broad implementation
+    the corpus this report reads is what states it
+
+# Sections stating no behaviour
+
+section Design status: non-behavioural, it states what the project has decided about its builds and the obligations each carries, and no outcome a run produces
+section Implementation verification and residual policy detail: non-behavioural, it states what remains to be proven once implementation is authorized, and no outcome a run produces
+section Upstream follow-up reference: non-behavioural, it states what an upstream contribution would say and what is to be consulted before one is drafted, and no outcome a run produces
+
+conformance report: 245 clause(s) the design states, 0 covered by no fixture, 0 declaration(s) naming no clause; 30 declared name(s) reached, 0 unfixturable, 0 declared code(s) the build reports nowhere, 0 reported code(s) the contract declares nowhere, 16 clause(s) no run states, 3 section(s) stating no behaviour, 3 installation claim(s) no run observes
+uv run --project src --frozen python checks/independence.py
+ok   vocabulary  2335 word(s) from artifacts/planning/2026-10-17-prosiform-v1/design.md, docs/glossary.md, 51 declared name(s) and docs/corpus-vocabulary.md
+ok   corpus      252 fixture(s) and their identities
+ok   report      the conformance report as it renders
+
+independence check: every word of every fixture declaration and every report entry is one the contract states

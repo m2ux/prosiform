@@ -14,6 +14,9 @@ The task reduces invocation and reference-reading token costs while retaining th
 | --- | --- |
 | [Task Body](issue.md) | Standalone scope and acceptance criteria |
 | [Plan](plan.md) | Flag mapping, implementation boundary, verification and decision evidence |
+| [Delivery](delivery.md) | Tested revision, complete gate, measurements and delivery state |
+| [Coverage](coverage.md) | Fact-by-fact baseline contract review |
+| [Measurement](measurement.json) | Pinned tokenizer counts and input hashes |
 
 ## Links
 

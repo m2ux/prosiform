@@ -1,0 +1,80 @@
+# Invocation
+
+Compile local Markdown entries and their dependencies into one validated bundle.
+
+```text
+pf -r DIR [OPTIONS] REF [REF ...]
+```
+
+## Options
+
+Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid.
+`pf -h` and these tables agree; `make invocation` verifies them.
+
+| Option | Effect |
+| --- | --- |
+| `REF` | root-relative document, document#fragment, or #fragment with -f |
+| `-r DIR` | required source root; relative to working directory |
+| `-f DOC` | root-relative document for fragment-only references |
+| `-o FILE` | atomic validated output to FILE; default or -: stdout |
+| `-g SLUG:DEPTH` | merge documents under directories named SLUG at heading DEPTH (1–6); repeatable, once per slug |
+| `-c` | discover, bundle, validate; publish nothing; accepts -o |
+| `-d {text,json}` | stderr diagnostics; default text |
+| `-x {source-changed,internal}` | inject a conformance run fault no source tree expresses; default none |
+| `-F N` | distinct source documents opened; positive decimal integer, default 256 |
+| `-B N` | raw bytes in one source; positive decimal integer, default 1048576 |
+| `-I N` | raw source bytes, counted once per source; positive decimal integer, default 16777216 |
+| `-O N` | bytes of the complete bundle; positive decimal integer, default 262144 |
+| `-T N` | distinct document and section targets discovered; positive decimal integer, default 4096 |
+| `-L N` | authored link and image occurrences in selected content; positive decimal integer, default 32768 |
+| `-N N` | levels of container nesting in one source; positive decimal integer, default 64 |
+| `-E N` | link hops from the nearest entry reference; positive decimal integer, default 8 |
+| `-C` | list this build's error and warning codes |
+| `-v` | tool version and profile identifier |
+| `-h` | usage, defaults and exit statuses |
+
+## Examples
+
+Run from the repository root; [worked examples](example/README.md) show input and output.
+
+```bash
+pf -r example/work-tracker modes/plan-mode.md
+pf -r example/work-tracker 'artifacts/epic.md#delivery-findings'
+pf -r example/work-tracker \
+  -g artifacts:2 -g modes:2 \
+  modes/plan-mode.md
+pf -r example/work-tracker -c modes/plan-mode.md
+```
+
+## Bundling rules
+
+- **Sources:** valid UTF-8; strip one leading byte-order mark and one leading frontmatter block; parse as `skill-markdown-v1`.
+- **Closure:** entries select whole documents or named sections. Follow local Markdown links under `-r`, relative to their source document, until no new dependencies remain. Compiled links target bundle headings. Outside-root links stay authored and contribute nothing.
+- **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless `-g` merges it. Merged groups use title-cased directory headings. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
+- **Deferred links:** link text starting with `¬` requires an existing document/section but adds no content through that link. Preserve text, marker and following spaces; emit a root-relative destination for a separate run.
+- **Invalid input:** invalid UTF-8, unterminated frontmatter, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
+
+## Output
+
+Stdout contains a bundle, an informational response, or nothing. Bundles open with entry-point links:
+
+```markdown
+This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
+```
+
+Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.
+Use exit status to determine the outcome:
+
+| Exit | Meaning |
+| --- | --- |
+| `0` | successful compilation, validation, or informational response |
+| `1` | input, dependency, policy, safety, or resource-limit failure |
+| `2` | invalid usage or option combination |
+| `3` | output publication or delivery failure, a broken pipe among them |
+| `4` | unexpected internal error |
+
+A failed run publishes nothing. Halt and surface its diagnostic; reading the sources itself is unsupported.
+
+## Supported environment
+
+The supported environment is POSIX (Linux, macOS). Root confinement rests on rooted, no-follow source access using `O_NOFOLLOW`, `O_DIRECTORY`, `O_CLOEXEC`. Refuse symbolic links below the root; refuse startup if these flags are unavailable.

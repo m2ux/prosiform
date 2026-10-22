@@ -1,0 +1,12 @@
+pf -r example/work-tracker modes/plan-mode.md
+
+
+pf -r example/work-tracker 'artifacts/epic.md#delivery-findings'
+
+
+pf -r example/work-tracker \
+  -g artifacts:2 -g modes:2 \
+  modes/plan-mode.md
+
+
+pf -r example/work-tracker -c modes/plan-mode.md

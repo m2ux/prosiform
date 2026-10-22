@@ -1,0 +1,12 @@
+prosiform --root example/work-tracker modes/plan-mode.md
+
+
+prosiform --root example/work-tracker 'artifacts/epic.md#delivery-findings'
+
+
+prosiform --root example/work-tracker \
+  --group artifacts:2 --group modes:2 \
+  modes/plan-mode.md
+
+
+prosiform --root example/work-tracker --check modes/plan-mode.md

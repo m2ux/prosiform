@@ -1,0 +1,35 @@
+./Makefile:64:	$(UV_RUN) ruff format --check --config $(TOOL_CONFIG) $(PYTHON_SOURCES)
+./Makefile:70:	cd src && uv lock --check
+./src/README.md:28:- `uv sync --check` detects environment drift from the lockfile.
+./src/README.md:30:- `uv lock --check` checks the lockfile against declared dependencies.
+./src/README.md:70:| `make format-check` | `ruff format --check` over the same files; reports formatting without applying it. |
+./src/README.md:72:| `make lock-check` | `uv lock --check`; fails if the lockfile disagrees with declared dependencies. |
+./scripts/render-diagram.py:249:        "--root",
+./scripts/render-diagram.py:254:        "--group",
+./scripts/render-diagram.py:270:        "--max-output-bytes",
+./scripts/render-diagram.py:280:        "--output",
+./scripts/render-diagram.py:312:        parser.error("The entry document must be under --root")
+./docs/diagram-renderer.md:10:/path/to/prosiform/src/.venv/bin/python scripts/render-diagram.py /path/to/my-skill/SKILL.md --group rules:2 --output /tmp/skill-diagram
+./docs/diagram-renderer.md:16:| `--output PREFIX` | Required output path prefix. Existing files with this prefix are overwritten. |
+./docs/diagram-renderer.md:17:| `--root DIR` | Allowed source root; defaults to the entry document's directory. |
+./docs/diagram-renderer.md:18:| `--group SLUG:DEPTH` | Grouping rule; repeat for distinct slugs. |
+./docs/diagram-renderer.md:20:| `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
+./docs/diagram-renderer.md:31:Compact mode affects the image, not the bundle size. If compilation exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
+./src/tests/test_cli.py:206:        "--root",
+./src/tests/test_cli.py:207:        "--from",
+./src/tests/test_cli.py:208:        "--output",
+./src/tests/test_cli.py:209:        "--group",
+./src/tests/test_cli.py:210:        "--check",
+./src/tests/test_cli.py:211:        "--diagnostics",
+./src/tests/test_cli.py:212:        "--fault",
+./src/tests/test_cli.py:213:        "--max-files",
+./src/tests/test_cli.py:214:        "--max-file-bytes",
+./src/tests/test_cli.py:215:        "--max-input-bytes",
+./src/tests/test_cli.py:216:        "--max-output-bytes",
+./src/tests/test_cli.py:217:        "--max-targets",
+./src/tests/test_cli.py:218:        "--max-links",
+./src/tests/test_cli.py:219:        "--max-nesting",
+./src/tests/test_cli.py:220:        "--max-expansion-depth",
+./src/tests/test_cli.py:221:        "--codes",
+./src/tests/test_cli.py:222:        "--version",
+./src/tests/test_cli.py:223:        "--help",

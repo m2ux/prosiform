@@ -1,0 +1,76 @@
+{
+  "tokenizer": "tiktoken",
+  "version": "0.12.0",
+  "encoding": "o200k_base",
+  "baseline_revision": "9e11aedb062d8afdaffe111e6af9af454a1b8a68",
+  "inputs": {
+    "baseline-commands.txt": {
+      "sha256": "28f58a18d3c3ce30cdf5e35069874afa6c3166c949ed5efeba45107d6a38b473",
+      "bytes": 305,
+      "tokens": 78
+    },
+    "baseline-help.txt": {
+      "sha256": "7a02fbedbe7a93b4412bca68707da07c587153fba1da9df75b20e74aca2799bc",
+      "bytes": 3160,
+      "tokens": 607
+    },
+    "baseline-invocation.md": {
+      "sha256": "01a6d6545a31cabca9c9c958d19b7d7addbfa6911d2b0b5070dd3bd7d89f74b0",
+      "bytes": 6227,
+      "tokens": 1360
+    },
+    "candidate-commands.txt": {
+      "sha256": "4132d7993004e3a70a3b938374ae786ec91945d04dda2307a83c5b89fce42206",
+      "bytes": 246,
+      "tokens": 74
+    },
+    "candidate-help.txt": {
+      "sha256": "666729a571dbb04b95d196b194500bb54bb1d0e7744dab457aab7fb9d92d0645",
+      "bytes": 2468,
+      "tokens": 477
+    },
+    "candidate-invocation.md": {
+      "sha256": "9711764f0e7e6261a21b10dace3db9d21cfe057e0fc1ec4f7ca71917a88e78d2",
+      "bytes": 4708,
+      "tokens": 1086
+    }
+  },
+  "comparisons": {
+    "invocation.md": {
+      "baseline": 1360,
+      "candidate": 1086,
+      "saved": 274,
+      "percent_saved": 20.15
+    },
+    "commands.txt": {
+      "baseline": 78,
+      "candidate": 74,
+      "saved": 4,
+      "percent_saved": 5.13
+    },
+    "help.txt": {
+      "baseline": 607,
+      "candidate": 477,
+      "saved": 130,
+      "percent_saved": 21.42
+    }
+  },
+  "per_command_tokens": {
+    "baseline": [
+      14,
+      20,
+      28,
+      16
+    ],
+    "candidate": [
+      13,
+      19,
+      27,
+      15
+    ]
+  },
+  "command_token_sums": {
+    "baseline": 78,
+    "candidate": 74
+  }
+}

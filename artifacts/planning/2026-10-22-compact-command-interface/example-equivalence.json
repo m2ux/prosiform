@@ -1,0 +1,30 @@
+[
+  {
+    "example": 1,
+    "status": 0,
+    "stdout_bytes": 9510,
+    "stderr_bytes": 203,
+    "identical": true
+  },
+  {
+    "example": 2,
+    "status": 0,
+    "stdout_bytes": 1384,
+    "stderr_bytes": 213,
+    "identical": true
+  },
+  {
+    "example": 3,
+    "status": 0,
+    "stdout_bytes": 9561,
+    "stderr_bytes": 161,
+    "identical": true
+  },
+  {
+    "example": 4,
+    "status": 0,
+    "stdout_bytes": 0,
+    "stderr_bytes": 203,
+    "identical": true
+  }
+]

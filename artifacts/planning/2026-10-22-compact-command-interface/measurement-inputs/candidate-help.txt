@@ -1,0 +1,46 @@
+usage: pf -r DIR [OPTIONS] REF [REF ...]
+
+Bundle the local Markdown closure of one or more entry references into one validated document.
+
+positional arguments:
+  REF                   root-relative document, document#fragment, or
+                        #fragment with -f
+
+options:
+  -r DIR                required source root; relative to working directory
+  -f DOC                root-relative document for fragment-only references
+  -o FILE               atomic validated output to FILE; default or -: stdout
+  -g SLUG:DEPTH         merge documents under directories named SLUG at
+                        heading DEPTH (1–6); repeatable, once per slug
+  -c                    discover, bundle, validate; publish nothing; accepts
+                        -o
+  -d {text,json}        stderr diagnostics; default text
+  -x {source-changed,internal}
+                        inject a conformance run fault no source tree
+                        expresses; default none
+  -F N                  distinct source documents opened; positive decimal
+                        integer, default 256
+  -B N                  raw bytes in one source; positive decimal integer,
+                        default 1048576
+  -I N                  raw source bytes, counted once per source; positive
+                        decimal integer, default 16777216
+  -O N                  bytes of the complete bundle; positive decimal
+                        integer, default 262144
+  -T N                  distinct document and section targets discovered;
+                        positive decimal integer, default 4096
+  -L N                  authored link and image occurrences in selected
+                        content; positive decimal integer, default 32768
+  -N N                  levels of container nesting in one source; positive
+                        decimal integer, default 64
+  -E N                  link hops from the nearest entry reference; positive
+                        decimal integer, default 8
+  -C                    list this build's error and warning codes
+  -v                    tool version and profile identifier
+  -h                    usage, defaults and exit statuses
+
+exit statuses:
+  0  successful compilation, validation, or informational response
+  1  input, dependency, policy, safety, or resource-limit failure
+  2  invalid usage or option combination
+  3  output publication or delivery failure, a broken pipe among them
+  4  unexpected internal error
