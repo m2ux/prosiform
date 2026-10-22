@@ -1,6 +1,6 @@
-This bundle was built for [gitnexus-impact-analysis/SKILL](#gitnexus-impact-analysisskill); everything else is material it references.
+This bundle was built for [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill); everything else is material it references.
 
-# gitnexus-impact-analysis/SKILL
+# Gitnexus-Impact-Analysis/SKILL
 
 ## Impact Analysis with GitNexus
 

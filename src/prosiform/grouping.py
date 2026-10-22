@@ -6,13 +6,13 @@ beneath one heading carrying the slug in title case. A document no rule
 names keeps its own file group, so one bundle can carry both
 arrangements.
 
-A merged group emits its slug as an H1, an `Overview` section holding
-what its members carry above the grouping depth, and then one H2 for each
-distinct source heading text at that depth. A member's heading at the
-grouping depth is replaced by the merged one and its content moves to sit
-beneath it, so the level a heading is emitted at is the level its author
-wrote under a shift the arrangement supplies rather than a single shift
-for the whole group.
+A merged group emits its slug as an H1, a subsection naming each member
+and holding what that member carries above the grouping depth, and then
+one H2 for each distinct source heading text at that depth. A member's
+heading at the grouping depth is replaced by the merged one and its
+content moves to sit beneath it, so the level a heading is emitted at is
+the level its author wrote under a shift the arrangement supplies rather
+than a single shift for the whole group.
 
 A merged heading keeps its source text. Where that text occurs once in
 the group it is emitted alone, and where several documents contribute it
@@ -23,25 +23,37 @@ distinguishes it from the others, in title case, measured after the
 leading segments they all share are dropped, because those are the
 context the group heading already states.
 
-Two rules decide where a document's name goes, and they are applied in
-that order. A merged section carrying body text above its first
-subheading, in more than one document, is the document's section rather
-than a container of named items, so it splits into variants by document
-throughout. A section no such body splits is arranged by name, and the
-names inside it that two or more documents contribute take variants of
-their own.
+Every section with more than one contributing document splits into
+variants, whether those contributions hold body text, subheadings or
+only the section heading. A sole contributor keeps its own arrangement.
+Each member's name is measured once against the whole group and serves
+both its overview subsection and every variant, following the same
+qualification and group-word removal in both places.
 
-The `Overview` section carries each member's content above the grouping
-depth under a subsection named by that document's stem in title case,
-less a trailing word the group's own heading already states. That heading
+A member's subsection is named by the shortest run of that document's
+root-relative path which distinguishes it from the group's other
+members, in title case, measured after the leading segments they all
+share are dropped. A trailing word the group's heading states is
+omitted where qualification still distinguishes the displayed names. It
+carries the member's content above the grouping depth. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
-to the member resolves. The section also carries a subsection for each
-member the arrangement emits nothing else from, so that the group names
-every member it merges; such a subsection is the heading alone, the
-member's own H1 absorbed into it. A member whose content all sits at the
-grouping depth is named by the merged sections it contributes to, and a
-reference to it resolves to its first contribution.
+to the member resolves. A member whose H1 the heading absorbs takes a
+subsection, as does one the arrangement emits nothing else from, so the
+group names every member it merges; such a subsection is the heading
+alone. A member whose content all sits at the grouping depth is named by
+the merged sections it contributes to, and a reference to it resolves to
+the first heading the group emits from it that no other member shares:
+the variant heading naming the document where its contribution carries a
+heading text another member contributes too, and the merged heading
+itself where that text occurs once in the group. No two members of one
+group therefore reach one destination.
+
+The subsections sit beneath an `Overview` section where the group also
+emits merged sections, so a member's preamble is read as that member's
+rather than as one more of the group's own sections. Where the group
+emits no merged section they are its whole structure and sit directly
+beneath its heading.
 
 Grouping is decided before ancestry. The rules fix each document's
 membership, its grouping depth and the shift each of its contributions
@@ -125,28 +137,14 @@ def states(heading: str, word: str) -> bool:
     return one in (other, f"{other}s")
 
 
-def member_heading(path: str, named: str) -> str:
-    """One member's overview subsection heading: its stem, in title case.
+def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
+    """The final displayed name distinguishing each member of a merged group.
 
-    A trailing word the group's own heading already states is dropped,
-    because the subsection sits beneath that heading and a reader has
-    read it there.
-    """
-    spelled = words(PurePosixPath(path).stem)
-    if len(spelled) > 1 and states(named, spelled[-1]):
-        spelled = spelled[:-1]
-    return SPACE.join(word[:1].upper() + word[1:] for word in spelled)
-
-
-def qualifiers(paths: Sequence[str]) -> dict[str, str]:
-    """The name each document takes as a variant heading, by its path.
-
-    The name is the shortest run of the path's trailing segments that
-    tells the documents apart, measured after the leading segments they
-    all share are dropped and with the Markdown suffix gone from the
-    last of them. One segment distinguishes documents in one directory;
-    documents of the same name in different directories take as many as
-    their paths need.
+    Shared leading directories are omitted. Trailing path segments are
+    added until the title-cased names, with the group's trailing word
+    removed, distinguish the members. Where every segment is needed and
+    removing that word still joins names, the complete names retain it.
+    Overview subsections and variants use this same group-wide mapping.
     """
     spelled = {path: list(PurePosixPath(path).parts) for path in paths}
     shortest = min(len(one) for one in spelled.values())
@@ -161,17 +159,20 @@ def qualifiers(paths: Sequence[str]) -> dict[str, str]:
         for path, one in spelled.items()
     }
     longest = max(len(one) for one in trimmed.values())
+    complete: dict[str, str] = {}
     for run in range(1, longest + 1):
-        taken = {path: tuple(one[-run:]) for path, one in trimmed.items()}
-        if len(set(taken.values())) == len(taken):
-            return {
-                path: SPACE.join(titled(part) for part in each)
-                for path, each in taken.items()
-            }
-    return {
-        path: SPACE.join(titled(part) for part in each)
-        for path, each in trimmed.items()
-    }
+        complete = {
+            path: titled(SPACE.join(parts[-run:])) for path, parts in trimmed.items()
+        }
+        headings = {}
+        for path, heading in complete.items():
+            parts = heading.split(SPACE)
+            if len(parts) > 1 and states(named, parts[-1]):
+                parts = parts[:-1]
+            headings[path] = SPACE.join(parts)
+        if len(set(headings.values())) == len(headings):
+            return headings
+    return complete
 
 
 @dataclass(frozen=True)
@@ -200,17 +201,16 @@ class Member:
     absorbing: Token | None
     items: list[Item] = field(default_factory=list)
 
-    @property
-    def shift(self) -> int:
+    def shift(self, at: int) -> int:
         """The levels the member's content above the grouping depth moves by.
 
-        The subsection the overview carries it under sits at the third
-        level, so a title that heading absorbs leaves the member's own
-        H1 unemitted and its sections one level below the subsection;
-        a title it does not absorb is emitted beneath the subsection
-        and takes the level that makes room.
+        The subsection naming the member sits at the level supplied, so
+        a title that heading absorbs leaves the member's own H1
+        unemitted and its sections one level below the subsection; a
+        title it does not absorb is emitted beneath the subsection and
+        takes the level that makes room.
         """
-        return MEMBER_LEVEL - 1 if self.absorbing is not None else MEMBER_LEVEL
+        return at - 1 if self.absorbing is not None else at
 
 
 def prepared(
@@ -402,15 +402,6 @@ def under(member: Member, anchor: Token, depth: int) -> list[Item]:
     ]
 
 
-def naming(member: Member, token: Token, depth: int) -> Token | None:
-    """The heading just inside a merged section that holds one of its items."""
-    chain = [*member.chains[id(token)]]
-    if token.type == HEADING_OPEN:
-        chain.append(token)
-    inside = [one for one in chain if depth < level(one) <= depth + 1]
-    return inside[-1] if inside else None
-
-
 def merged(
     named: str,
     depth: int,
@@ -426,8 +417,10 @@ def merged(
     title = titled(named)
     into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
     into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
-    overview(into, named, depth, members)
-    sections(into, depth, members)
+    pooled = contributions(depth, members)
+    headings = member_headings([member.path for member in members], named)
+    overview(into, headings, depth, members, bool(pooled))
+    sections(into, depth, pooled, headings)
     for member in members:
         contributed(into, member)
     reached: dict[Target, int] = {}
@@ -448,46 +441,94 @@ def merged(
     )
 
 
-def contributed(into: "Assembly", member: Member) -> None:
-    """Where a reference to one member resolves, the overview naming it nowhere.
+def names_one(one: Emitted, path: str) -> bool:
+    """Whether one emitted heading names that member and no other.
 
-    A member whose content all sits at the grouping depth is given no
-    overview subsection, so the destinations that subsection holds —
-    the document itself, and the title its own heading carries — are
-    answered by the first heading the group emits from it, and by the
-    group's own heading where it emits none carrying the member. Each of
-    the two destinations is therefore one the bundle has, whatever the
-    member contributes, so a reference the closure resolved into a
-    merged group is rewritten rather than left for the entry line to
-    read as one it never assigned.
+    A carried heading answers to one source heading per contributing
+    document, so a merged heading several documents write names none of
+    them alone and a heading one document writes names that one. A
+    generated heading carries no source heading, and the targets it
+    answers are what it names: a variant heading answers one document's
+    heading, and the group's own heading answers nothing. A structural
+    ancestor answers nothing by construction and is no destination.
+    """
+    if isinstance(one, Generated):
+        return bool(one.answers) and all(target[0] == path for target in one.answers)
+    if isinstance(one, Carried):
+        return bool(one.origins) and all(origin.path == path for origin in one.origins)
+    return False
+
+
+def contributed(into: "Assembly", member: Member) -> None:
+    """Where a whole-document reference resolves for a member with no subsection.
+
+    A member whose content all sits at the grouping depth is named by
+    the merged sections it contributes to, so the document itself is
+    answered by the first heading the group emits from it that no other
+    member shares: the variant heading naming the document where its
+    contribution carries a heading text another member contributes too,
+    and the merged heading itself where that text occurs once in the
+    group. Two members contributing one heading text therefore reach
+    two destinations.
+
+    Where the group emits no heading naming the member alone, the first
+    heading it emits from the member answers, and the group's own
+    heading where it emits none carrying it. That destination is
+    therefore one the bundle has, whatever the member contributes, so a
+    reference the closure resolved into a merged group is rewritten
+    rather than left for the entry line to read as one it never
+    assigned.
     """
     answered = {target for one in into.headings for target in one.answers}
-    wanted: list[Target] = [(member.path, None)]
-    if member.absorbing is not None:
-        wanted.append((member.path, member.named[id(member.absorbing)]))
-    found = next(
-        (
-            at
-            for at, one in enumerate(into.headings)
-            if isinstance(one, Carried)
-            and any(origin.path == member.path for origin in one.origins)
-        ),
-        GROUP_AT,
+    whole: Target = (member.path, None)
+    if whole in answered:
+        return
+    alone = next(
+        (at for at, one in enumerate(into.headings) if names_one(one, member.path)),
+        None,
     )
-    for target in wanted:
-        if target not in answered:
-            into.answer(found, target)
+    found = (
+        alone
+        if alone is not None
+        else next(
+            (
+                at
+                for at, one in enumerate(into.headings)
+                if isinstance(one, Carried)
+                and any(origin.path == member.path for origin in one.origins)
+            ),
+            GROUP_AT,
+        )
+    )
+    into.answer(found, whole)
 
 
-def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) -> None:
-    """The group's `Overview` section, and the subsection each member takes in it.
+def overview(
+    into: Assembly,
+    headings: Mapping[str, str],
+    depth: int,
+    members: Sequence[Member],
+    pooled: bool,
+) -> None:
+    """The subsection each member is named by, and the `Overview` carrying them.
 
     A member takes a subsection where it carries selected content above
-    the grouping depth, and where the arrangement emits nothing else
-    from it at all. Every item of a member is either above the grouping
-    depth or anchored at it, so the second case is the member with no
-    items: its whole content is the H1 the subsection heading absorbs,
-    and the heading is the group's naming of it.
+    the grouping depth, where its own H1 is absorbed into that heading,
+    and where the arrangement emits nothing else from it at all, so
+    every member the group merges is named by a heading the bundle
+    carries. A member whose selected content all sits at the grouping
+    depth takes none: the merged sections it contributes to name it.
+
+    The heading naming a member carries the run of its path that tells
+    it apart from the group's other members, measured against every
+    member the group merges rather than those taking a subsection, so
+    one answer to what a member is called serves the whole group.
+
+    The subsections sit beneath an `Overview` section where the group
+    also emits merged sections, so a member's preamble is read as that
+    member's rather than as one more of the group's own sections. Where
+    the group emits no merged section the subsections are its whole
+    structure, and they sit directly beneath its heading.
     """
     above = {
         member.path: [
@@ -499,12 +540,17 @@ def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) 
         for member in members
     }
     named_here = {
-        member.path: bool(above[member.path]) or not member.items for member in members
+        member.path: bool(above[member.path])
+        or not member.items
+        or member.absorbing is not None
+        for member in members
     }
     if not any(named_here.values()):
         return
-    text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
-    into.part(text, recorded, [recorded])
+    at = MEMBER_LEVEL if pooled else SECTION_LEVEL
+    if pooled:
+        text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
+        into.part(text, recorded, [recorded])
     for member in members:
         if not named_here[member.path]:
             continue
@@ -512,11 +558,11 @@ def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) 
         if member.absorbing is not None:
             answers.append((member.path, member.named[id(member.absorbing)]))
         text, recorded = generated_part(
-            member_heading(member.path, named), MEMBER_LEVEL, MEMBER_OVERVIEW, answers
+            headings[member.path], at, MEMBER_OVERVIEW, answers
         )
         into.part(text, recorded, [recorded])
         for one in above[member.path]:
-            into.region(member, one.token, member.shift)
+            into.region(member, one.token, member.shift(at))
 
 
 def contributions(
@@ -542,21 +588,15 @@ def contributions(
     return list(found.items())
 
 
-def keyed(member: Member, anchor: Token, depth: int) -> bool:
-    """Whether one member writes body text above the first subheading of a section."""
-    for one in under(member, anchor, depth):
-        if one.token.type == HEADING_OPEN:
-            return False
-        return True
-    return False
-
-
-def sections(into: Assembly, depth: int, members: Sequence[Member]) -> None:
+def sections(
+    into: Assembly,
+    depth: int,
+    pooled: Sequence[tuple[str, list[tuple[Member, Token]]]],
+    headings: Mapping[str, str],
+) -> None:
     """One H2 for each distinct source heading text at the grouping depth."""
-    for text, contributing in contributions(depth, members):
-        split = sum(keyed(member, anchor, depth) for member, anchor in contributing) > 1
-        variants = split and len(contributing) > 1
-        section(into, depth, text, contributing, variants)
+    for text, contributing in pooled:
+        section(into, depth, text, contributing, headings)
 
 
 def section(
@@ -564,10 +604,11 @@ def section(
     depth: int,
     text: str,
     contributing: Sequence[tuple[Member, Token]],
-    variants: bool,
+    headings: Mapping[str, str],
 ) -> None:
     """One merged section: its heading, then the content its members contribute."""
     by = SECTION_LEVEL - depth
+    variants = len(contributing) > 1
     answers = (
         ()
         if variants
@@ -579,10 +620,9 @@ def section(
     )
     merged_heading(into, text, SECTION_LEVEL, contributing, by, answers)
     if variants:
-        qualified = qualifiers([member.path for member, _ in contributing])
         for member, anchor in contributing:
             heading, recorded = generated_part(
-                qualified[member.path],
+                headings[member.path],
                 MEMBER_LEVEL,
                 VARIANT_HEADING,
                 [(member.path, member.named[id(anchor)])]
@@ -593,7 +633,9 @@ def section(
             for one in under(member, anchor, depth):
                 into.region(member, one.token, by + 1)
         return
-    names(into, depth, contributing, by)
+    for member, anchor in contributing:
+        for one in under(member, anchor, depth):
+            into.region(member, one.token, by)
 
 
 def merged_heading(
@@ -626,72 +668,3 @@ def merged_heading(
     member, anchor = selecting[0]
     published, recorded, _ = carried_part(member, anchor, by)
     into.part(published, recorded, [Carried(text, at, tuple(origins), tuple(answers))])
-
-
-def names(
-    into: Assembly,
-    depth: int,
-    contributing: Sequence[tuple[Member, Token]],
-    by: int,
-) -> None:
-    """The names inside one merged section, each emitted once for every document."""
-    for member, anchor in contributing:
-        for one in under(member, anchor, depth):
-            if naming(member, one.token, depth) is None:
-                into.region(member, one.token, by)
-    found: dict[str, list[tuple[Member, Token]]] = {}
-    for member, anchor in contributing:
-        seen: list[Token] = []
-        for one in under(member, anchor, depth):
-            held = naming(member, one.token, depth)
-            if held is None or held in seen:
-                continue
-            seen.append(held)
-            found.setdefault(single_line(member.text[id(held)]), []).append(
-                (member, held)
-            )
-    for text, carrying in found.items():
-        name(into, depth, text, carrying, by)
-
-
-def name(
-    into: Assembly,
-    depth: int,
-    text: str,
-    carrying: Sequence[tuple[Member, Token]],
-    by: int,
-) -> None:
-    """One name inside a merged section, bare or carrying a variant per document."""
-    at = depth + 1 + by
-    if len(carrying) == 1:
-        member, held = carrying[0]
-        for one in held_items(member, held, depth):
-            into.region(member, one.token, by)
-        return
-    merged_heading(into, text, at, carrying, by, ())
-    qualified = qualifiers([member.path for member, _ in carrying])
-    for member, held in carrying:
-        heading, recorded = generated_part(
-            qualified[member.path],
-            at + 1,
-            VARIANT_HEADING,
-            [(member.path, member.named[id(held)])]
-            if id(held) in member.emitting
-            else [],
-        )
-        into.part(heading, recorded, [recorded])
-        for one in held_items(member, held, depth):
-            if one.token is held:
-                continue
-            into.region(member, one.token, by + 1)
-
-
-def held_items(member: Member, held: Token, depth: int) -> list[Item]:
-    """Every item of one member that sits under one name of a merged section."""
-    anchor = anchored(member, held, depth)
-    return [
-        one
-        for one in member.items
-        if anchored(member, one.token, depth) is anchor
-        and naming(member, one.token, depth) is held
-    ]

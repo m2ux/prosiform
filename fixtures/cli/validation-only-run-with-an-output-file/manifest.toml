@@ -18,5 +18,5 @@ absent = ["bundle.md"]
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "guide"
+reference = "Guide"
 resolved = "guide"

@@ -1,6 +1,6 @@
-This bundle was built for [notes%23draft](#notes23draft); everything else is material it references.
+This bundle was built for [Notes%23draft](#notes23draft); everything else is material it references.
 
-# notes%23draft
+# Notes%23draft
 
 ## notes#draft
 

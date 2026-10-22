@@ -14,7 +14,7 @@ Reads a plan back against the goal it states.
 
 ## Procedure
 
-### Plan Mode
+### Plan
 
 Walk the plan from the goal down.
 
@@ -23,7 +23,7 @@ Walk the plan from the goal down.
 1. Name the goal.
 2. Name the work that meets it.
 
-### Review Mode
+### Review
 
 Walk the plan from the goal up.
 
@@ -34,21 +34,23 @@ Walk the plan from the goal up.
 
 ## Operations
 
-### Draft
+### Plan
+
+#### Draft
 
 Write the first pass.
 
-### Review
-
-#### Plan Mode
+#### Review
 
 Read the draft back against the goal.
 
-#### Review Mode
+### Review
+
+#### Review
 
 Read each line of the plan against its goal.
 
-### Record
+#### Record
 
 Write the findings down.
 

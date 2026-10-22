@@ -1,4 +1,4 @@
-This bundle was built for [Operations](#operations); everything else is material it references.
+This bundle was built for [Plan](#plan); everything else is material it references.
 
 # Modes
 
@@ -10,21 +10,23 @@ Reads a plan back against the goal it states.
 
 ## Operations
 
-### Draft
+### Plan
+
+#### Draft
 
 Write the first pass, reading it back as [Review Mode](#review) states.
 
-### Review
-
-#### Plan Mode
+#### Review
 
 Read the draft back against the goal.
 
-#### Review Mode
+### Review
+
+#### Review
 
 Read each line of the plan against its goal.
 
-### Record
+#### Record
 
 Write the findings down.
 

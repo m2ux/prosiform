@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# docs/repository-labels
+# Docs/Repository-Labels
 
 Every label the repository carries.
 
@@ -8,7 +8,7 @@ Every label the repository carries.
 
 A heading the file heading did not absorb.
 
-# guide
+# Guide
 
 The scope is named in [Scope](#scope), and the
 title in [Repository Labels](#docsrepository-labels).

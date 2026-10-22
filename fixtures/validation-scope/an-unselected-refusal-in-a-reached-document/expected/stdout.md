@@ -1,12 +1,12 @@
 This bundle was built for [Procedure](#procedure); everything else is material it references.
 
-# guide
+# Guide
 
 ### Procedure
 
 Follow [the review step](#review) before publishing.
 
-# process
+# Process
 
 ### Review
 

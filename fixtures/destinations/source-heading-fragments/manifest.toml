@@ -26,29 +26,29 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "article"
+reference = "Article"
 resolved = "article"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "caf\u00e9-m\u00fcnster"
+reference = "Caf\u00e9-M\u00fcnster"
 resolved = "caf\u00e9-m\u00fcnster-1"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "notes"
+reference = "Notes"
 resolved = "notes-2"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "the-code-span-and-bold-text"
+reference = "The-Code-Span-And-Bold-Text"
 resolved = "the-code-span-and-bold-text-1"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "whats-new-v10"
+reference = "Whats-New-V10"
 resolved = "whats-new-v10-1"

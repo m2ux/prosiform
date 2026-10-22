@@ -1,9 +1,9 @@
-This bundle was built for [guide](#guide) and [notes](#notes); everything else is material it references.
+This bundle was built for [Guide](#guide) and [Notes](#notes); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure needs [the diagram](diagram.png).
 
-# notes
+# Notes
 
 A note the procedure refers to.

@@ -1,6 +1,6 @@
-This bundle was built for [notes](#notes); everything else is material it references.
+This bundle was built for [Notes](#notes); everything else is material it references.
 
-# notes
+# Notes
 
 ## Fruit/Vegetables
 

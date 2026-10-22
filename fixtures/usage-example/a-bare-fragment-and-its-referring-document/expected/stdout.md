@@ -1,6 +1,6 @@
 This bundle was built for [Record Epic Delivery](#record-epic-delivery); everything else is material it references.
 
-# artifacts/epic-issue-body
+# Artifacts/Epic-Issue-Body
 
 ### Operations
 
@@ -64,7 +64,7 @@ work-tracker sync '<epic-json-file>' --prs '<pull-request-records-file>' --links
 work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --fix fixed-943.md
 ```
 
-# artifacts/epic
+# Artifacts/Epic
 
 ### Fields
 

@@ -131,17 +131,3 @@ def read_source(root: Path, path: str) -> bytes:
     """One source's bytes, read by descending its path from the allowed root."""
     with os.fdopen(opened(root, path), "rb") as handle:
         return handle.read()
-
-
-def present(root: Path, path: str) -> bool:
-    """Whether one root-relative path names a source the allowed root yields.
-
-    The question is the one the read answers, asked without the bytes,
-    so a path the root declines on its own terms names no document here
-    however else the filesystem could reach one.
-    """
-    try:
-        os.close(opened(root, path))
-    except Unreadable:
-        return False
-    return True

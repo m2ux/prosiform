@@ -1,4 +1,4 @@
-description = "A source opening on a file heading is refused although the run selected a later section, because what a document opens on is a fact about the file rather than about the regions a run selected."
+description = "A source opening with the entry declaration is refused although the run selected a later section, because what a document opens on is a fact about the file rather than about the regions a run selected."
 
 clauses = [
   "Generated input policy",
@@ -16,5 +16,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_GENERATED_INPUT"
-reference = "notes"
+reference = "This bundle was built for [Notes](#notes); everything else is material it references."
 source = "report.md:1"

@@ -1,6 +1,6 @@
 This bundle was built for [Step](#step); everything else is material it references.
 
-# manual
+# Manual
 
 ### Procedure
 

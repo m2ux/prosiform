@@ -1,14 +1,14 @@
-This bundle was built for [alpha](#alpha), [One](#one) and [Two](#two); everything else is material it references.
+This bundle was built for [Alpha](#alpha), [One](#one) and [Two](#two); everything else is material it references.
 
-# alpha
+# Alpha
 
 Alpha body, which needs [zeta](#zeta).
 
-# beta
+# Beta
 
 Beta body.
 
-# middle
+# Middle
 
 ### One
 
@@ -18,6 +18,6 @@ One body, which needs [beta](#beta).
 
 Two body.
 
-# zeta
+# Zeta
 
 Zeta body.

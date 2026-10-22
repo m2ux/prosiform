@@ -1,6 +1,6 @@
-This bundle was built for [templates/integration-review](#templatesintegration-review); everything else is material it references.
+This bundle was built for [Templates/Integration-Review](#templatesintegration-review); everything else is material it references.
 
-# templates/integration-review
+# Templates/Integration-Review
 
 ## Verdict
 

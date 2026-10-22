@@ -22,5 +22,5 @@ resolved = "guide"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "notes/Note"
+reference = "Notes/Note"
 resolved = "notesnote"

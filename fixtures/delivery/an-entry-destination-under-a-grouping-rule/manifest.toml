@@ -1,4 +1,4 @@
-description = "A grouping rule naming a directory the sources sit under merges every document beneath it, and the run reports the entry references and destinations its bundle's entry line carries. Each entry names a whole document that carries nothing above the grouping depth, so each resolves to that document's first contribution to the merged group rather than to a file heading."
+description = "A grouping rule naming a directory the sources sit under merges every document beneath it, and the run reports the entry references and destinations its bundle's entry line carries. Each entry names a whole document, and each resolves to the subsection naming that member rather than to a file heading."
 
 clauses = [
   "Agent delivery contract — Entry destinations",

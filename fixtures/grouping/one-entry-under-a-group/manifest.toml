@@ -1,4 +1,4 @@
-description = "Two documents merged at one heading level show every arrangement the grouping rules make in one bundle: a section both documents write body text above its first subheading in splits into a variant per document and the names inside it stay with the document that wrote them, a section carrying only named items does not split, a name one document carries is left bare, and a name both carry is emitted once with each document's content beneath a variant heading."
+description = "Two documents merged at one heading level split pooled sections into a variant per document, with each document's text and subheadings beneath its variant. Body text and subheading contributions take the same arrangement; a section contributed by only one document is left bare."
 
 clauses = [
   "Grouping — Group structure",

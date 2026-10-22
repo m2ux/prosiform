@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide) and [notes](#notes); everything else is material it references.
+This bundle was built for [Guide](#guide) and [Notes](#notes); everything else is material it references.
 
-# guide
+# Guide
 
 An opening paragraph, above the first eligible heading.
 
@@ -8,6 +8,6 @@ An opening paragraph, above the first eligible heading.
 
 Carry the procedure out.
 
-# notes
+# Notes
 
 What was observed while running it.

@@ -1,11 +1,11 @@
-This bundle was built for [one/guide](#oneguide); everything else is material it references.
+This bundle was built for [One/Guide](#oneguide); everything else is material it references.
 
-# one/guide
+# One/Guide
 
 The procedure requires [the review step](#review),
 which another group carries.
 
-# two/process
+# Two/Process
 
 ### Review
 

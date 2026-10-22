@@ -1,14 +1,14 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 A literal [runner] this source defines nothing for, beside the
 [tools](#tools) it requires.
 
-# run
+# Run
 
 How the runner runs.
 
-# tools
+# Tools
 
 The tools resolve [the runner](#run) against their own definition.

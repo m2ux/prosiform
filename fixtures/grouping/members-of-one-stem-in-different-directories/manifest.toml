@@ -1,0 +1,21 @@
+description = "Two members of a merged group carry one filename stem in different directories, so the subsection naming each carries the run of its path that tells it apart from the other. A whole-document reference to each member resolves to the subsection carrying that run."
+
+clauses = [
+  "Grouping — Document content above the grouping depth",
+  "Grouping — A heading for every member",
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "guides:2", "entry.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Entry"
+resolved = "entry"

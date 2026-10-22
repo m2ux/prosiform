@@ -1,8 +1,8 @@
-This bundle was built for [notes/bare](#notesbare) and [notes/kept](#noteskept); everything else is material it references.
+This bundle was built for [Notes/Bare](#notesbare) and [Notes/Kept](#noteskept); everything else is material it references.
 
-# notes/bare
+# Notes/Bare
 
-# notes/kept
+# Notes/Kept
 
 What this document states before its first section.
 

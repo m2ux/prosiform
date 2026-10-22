@@ -1,18 +1,18 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure requires [the note's step](#step) and
 [the rule's step](#step-1), which carry one heading text
 between them.
 
-# notes
+# Notes
 
 ### Step
 
 The step the notes describe.
 
-# rules
+# Rules
 
 ### Step
 

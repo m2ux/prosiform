@@ -1,13 +1,13 @@
-This bundle was built for [zulu](#zulu); everything else is material it references.
+This bundle was built for [Zulu](#zulu); everything else is material it references.
 
-# alpha
+# Alpha
 
 Alpha body.
 
-# mike
+# Mike
 
 Mike body, which needs [alpha](#alpha).
 
-# zulu
+# Zulu
 
 Zulu body, which needs [mike](#mike).

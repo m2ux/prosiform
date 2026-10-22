@@ -1,14 +1,14 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure defers [¬ the shared rules](rules.md) and requires
 [the house style](#house) whole.
 
-# house
+# House
 
 The house style requires [the shared rules](#rules).
 
-# rules
+# Rules
 
 Every rule the procedure requires.

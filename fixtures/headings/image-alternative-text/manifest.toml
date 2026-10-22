@@ -22,11 +22,11 @@ code = "W_RESOURCE_PORTABILITY"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "article"
+reference = "Article"
 resolved = "article"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "the--overview"
+reference = "The--Overview"
 resolved = "the--overview-1"

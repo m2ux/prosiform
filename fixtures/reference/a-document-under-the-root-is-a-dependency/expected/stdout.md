@@ -1,16 +1,16 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure requires [the shared rules](#rules) whole and
 [the review step](#review) in part.
 
-# process
+# Process
 
 ### Review
 
 The section the procedure requires.
 
-# rules
+# Rules
 
 Every rule the procedure requires.

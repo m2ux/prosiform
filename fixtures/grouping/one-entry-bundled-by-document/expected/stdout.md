@@ -1,6 +1,6 @@
 This bundle was built for [Operations](#operations); everything else is material it references.
 
-# modes/plan-mode
+# Modes/Plan-Mode
 
 ### Operations
 
@@ -12,7 +12,7 @@ Write the first pass, reading it back as [Review Mode](#modesreview-mode) states
 
 Read the draft back against the goal.
 
-# modes/review-mode
+# Modes/Review-Mode
 
 Reads a plan back against the goal it states.
 

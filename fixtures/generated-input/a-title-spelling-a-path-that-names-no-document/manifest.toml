@@ -1,4 +1,4 @@
-description = "An authored title carrying a slash bundles, because the path its text spells names no document under the allowed source root once a Markdown suffix is appended."
+description = "An authored title bundles without a bundle entry declaration."
 
 clauses = [
   "Generated input policy, a title naming no document under the root",
@@ -15,5 +15,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "notes"
+reference = "Notes"
 resolved = "notes"

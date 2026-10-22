@@ -1,6 +1,6 @@
 This bundle was built for [Detail](#detail); everything else is material it references.
 
-# guide
+# Guide
 
 ### Alpha \& the note bold
 

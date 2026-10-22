@@ -1,7 +1,8 @@
-description = "A compiled reference naming a member whose whole content is the one heading its overview subsection absorbs is rewritten to that subsection, so every reference the run compiled into a merged group carries a destination the bundle has."
+description = "A compiled reference naming a member whose whole content is the one heading its subsection absorbs is rewritten to that subsection, so every reference the run compiled into a merged group carries a destination the bundle has. The group emits no merged section, so the subsection sits directly beneath the group heading and no overview section is emitted."
 
 clauses = [
   "Grouping — Document content above the grouping depth",
+  "Grouping — The overview section",
   "Bundle destinations — Internal links",
 ]
 
@@ -16,5 +17,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "entry"
+reference = "Entry"
 resolved = "entry"

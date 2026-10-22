@@ -1,0 +1,28 @@
+description = "A group whose members carry nothing at the grouping depth emits no merged section, so the subsection naming each member is the group's whole structure and sits directly beneath the group heading. No overview section is emitted, and each entry reference resolves to the subsection naming the member it names."
+
+clauses = [
+  "Grouping — The overview section",
+  "Grouping — A heading for every member",
+  "Grouping — Document content above the grouping depth",
+  "Entry line — Link text",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "rules:1", "rules/agents.md", "rules/common.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Agents"
+resolved = "agents"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Common"
+resolved = "common"

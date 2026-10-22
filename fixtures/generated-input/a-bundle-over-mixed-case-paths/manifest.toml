@@ -1,0 +1,23 @@
+description = "A published bundle over mixed-case paths is refused by its entry declaration."
+
+clauses = [
+  "Generated input policy",
+  "Generated input policy, the entry declaration",
+  "Adversarial acceptance fixtures — Generated inputs",
+  "Source and candidate validation modes",
+  "Source and candidate validation modes — Reuse",
+]
+
+[invocation]
+root = "source"
+arguments = ["bundle.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_GENERATED_INPUT"
+reference = "This bundle was built for [Docs/Guide](#docsguide); everything else is material it references."
+source = "bundle.md:1"
