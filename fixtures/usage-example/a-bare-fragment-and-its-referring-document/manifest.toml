@@ -2,14 +2,14 @@ description = "The usage example that supplies a referring document resolves a f
 
 clauses = [
   "Usage examples",
-  "CLI contract — --from DOC, the referring document a fragment-only reference resolves against",
+  "CLI contract — -f DOC, the referring document a fragment-only reference resolves against",
   "Input and output contract — Sections",
   "Entry line",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--from", "artifacts/epic-issue-body.md", "#record-epic-delivery"]
+arguments = ["-f", "artifacts/epic-issue-body.md", "#record-epic-delivery"]
 
 [expected]
 exit_status = 0

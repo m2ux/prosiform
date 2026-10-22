@@ -1,18 +1,18 @@
 description = "The usage response shows the invocation the contract documents, a default an option carries and the meaning of each exit status, and the wording around them is the build's own, so the response is stated as the text it carries rather than as bytes."
 
 clauses = [
-  "CLI contract — --help, show usage, defaults, and exit-status meanings",
+  "CLI contract — -h, show usage, defaults, and exit-status meanings",
   "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--help"]
+arguments = ["-h"]
 
 [expected]
 exit_status = 0
 stdout_contains = [
-  "prosiform --root DIR [OPTIONS] REF [REF ...]",
+  "pf -r DIR [OPTIONS] REF [REF ...]",
   "default 256",
   "compilation, validation, or informational",
   "dependency, policy, safety, or resource-limit failure",

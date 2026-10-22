@@ -2,13 +2,13 @@ description = "A grouping rule naming a depth outside 1 through 6 is refused as 
 
 clauses = [
   "Grouping, a grouping rule refused for its depth",
-  "CLI contract — --group SLUG:DEPTH, a depth of 1 through 6",
+  "CLI contract — -g SLUG:DEPTH, a depth of 1 through 6",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--group", "docs:9", "guide.md"]
+arguments = ["-g", "docs:9", "guide.md"]
 
 [expected]
 exit_status = 2

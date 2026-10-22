@@ -1,7 +1,7 @@
 description = "A validation-only run bundles and validates its entry reference and publishes nothing, so it succeeds with standard output empty and standard error carrying the destination that reference resolved to."
 
 clauses = [
-  "CLI contract — --check, discover, bundle and validate without emitting or publishing the bundle",
+  "CLI contract — -c, discover, bundle and validate without emitting or publishing the bundle",
   "Compile before publishing, no success output is published until the complete candidate has been constructed and validated",
   "Agent delivery contract — Entry destinations",
   "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--check", "guide.md"]
+arguments = ["-c", "guide.md"]
 
 [expected]
 exit_status = 0

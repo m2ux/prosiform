@@ -2,13 +2,13 @@ description = "The usage example that compiles and validates without publishing 
 
 clauses = [
   "Usage examples",
-  "CLI contract — --check, discover, bundle and validate without emitting or publishing the bundle",
+  "CLI contract — -c, discover, bundle and validate without emitting or publishing the bundle",
   "Validation scope",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--check", "artifacts/epic-issue-body.md#record-epic-delivery"]
+arguments = ["-c", "artifacts/epic-issue-body.md#record-epic-delivery"]
 
 [expected]
 exit_status = 0

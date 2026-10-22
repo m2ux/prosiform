@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-prosiform = "prosiform.cli:main"
+pf = "prosiform.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/m2ux/prosiform"

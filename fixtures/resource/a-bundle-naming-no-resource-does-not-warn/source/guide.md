@@ -3,7 +3,7 @@
 The command reads a relative path:
 
 ```console
-$ prosiform --root . docs/pics/plan.png
+$ pf -r . docs/pics/plan.png
 ```
 
 The [specification](https://example.com/spec.pdf) carries a scheme, so

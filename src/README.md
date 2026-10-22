@@ -4,7 +4,7 @@ The Python implementation of prosiform, checked against the behavioural contract
 
 ### Command line
 
-Installing the package provides `prosiform`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes responses and bundles to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
+Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes responses and bundles to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
 
 ### Agent delivery
 
@@ -53,7 +53,7 @@ The wheel includes [`docs/glossary.md`](../docs/glossary.md) at `prosiform/docs/
 
 ### Installation check
 
-`make smoke`, run from the repository root, builds the wheel, installs it in a temporary environment, and invokes `prosiform` from outside the repository. This checks packaging and entry-point resolution on every change.
+`make smoke`, run from the repository root, builds the wheel, installs it in a temporary environment, and invokes `pf` from outside the repository. This checks packaging and entry-point resolution on every change.
 
 ## Checks
 
@@ -65,7 +65,7 @@ Run these from the repository root alongside the [repository checks](../checks/R
 | --- | --- |
 | `make test` | `pytest` over `src/tests/`; empty discovery fails with exit status 5. |
 | `make harness` | `pytest` over `checks/tests/`, validating fixture manifests and the corpus runner. |
-| `make corpus` | `checks/corpus.py` over every fixture against the command in `PROSIFORM_BUILD`. Use `prosiform` to test this build's console entry point. |
+| `make corpus` | `checks/corpus.py` over every fixture against the command in `PROSIFORM_BUILD`. Use `pf` to test this build's console entry point. |
 | `make lint` | `ruff check` over the package, its tests, and `checks/`. |
 | `make format-check` | `ruff format --check` over the same files; reports formatting without applying it. |
 | `make typecheck` | Strict `mypy` over the same files. |

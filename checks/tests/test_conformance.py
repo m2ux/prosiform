@@ -63,8 +63,8 @@ Insert blank-line separation between maximal emitted regions.
 
 | Option | Default |
 | --- | --- |
-| `--max-files` | `256` |
-| `--max-links` | `32,768` |
+| `-F` | `256` |
+| `-L` | `32,768` |
 
 ```text
 - **Fenced:** a bullet inside a fence is an example rather than a rule.
@@ -159,7 +159,7 @@ def corpus(tmp_path: Path) -> Path:
     fixture(
         directory,
         "a-limit-crossed",
-        ["Resource limits — --max-files"],
+        ["Resource limits — -F"],
         status=1,
         diagnostics=[{"severity": "error", "code": "E_RESOURCE_LIMIT"}],
     )
@@ -188,8 +188,8 @@ def test_a_clause_is_a_heading_or_an_enumerated_rule_under_one() -> None:
         "Frontmatter policy — step 1",
         "Frontmatter policy — step 2",
         "Resource limits",
-        "Resource limits — --max-files",
-        "Resource limits — --max-links",
+        "Resource limits — -F",
+        "Resource limits — -L",
         "Input and output contract",
         "Input and output contract — Entry references",
         "Agent delivery contract",
@@ -204,7 +204,7 @@ def test_a_clause_a_fixture_names_carries_that_fixture(corpus: Path) -> None:
     )
     entry = "family/an-entry-line-naming-one-entry"
     assert mapped["Entry line — Link text"] == (entry,)
-    assert mapped["Resource limits — --max-files"] == ("family/a-limit-crossed",)
+    assert mapped["Resource limits — -F"] == ("family/a-limit-crossed",)
 
 
 def test_a_clause_the_case_follows_carries_the_fixture_naming_it(
@@ -219,7 +219,7 @@ def test_a_clause_the_case_follows_carries_the_fixture_naming_it(
 
 def test_a_clause_no_fixture_names_is_uncovered(corpus: Path) -> None:
     uncovered = [clause.name for clause in report(DESIGN, corpus, REPORTED).uncovered]
-    assert "Resource limits — --max-links" in uncovered
+    assert "Resource limits — -L" in uncovered
     assert "Entry line — Order" in uncovered
     assert "Entry line — Link text" not in uncovered
 

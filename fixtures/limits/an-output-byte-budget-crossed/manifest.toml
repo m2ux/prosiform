@@ -1,13 +1,13 @@
 description = "A complete bundle larger than the output budget fails the run rather than being truncated to fit, and nothing is published."
 
 clauses = [
-  "Resource limits — --max-output-bytes",
+  "Resource limits — -O",
   "Agent delivery contract — No silent fallback",
 ]
 
 [invocation]
 root = "source"
-arguments = ["--max-output-bytes", "64", "alpha.md"]
+arguments = ["-O", "64", "alpha.md"]
 
 [expected]
 exit_status = 1

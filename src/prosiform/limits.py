@@ -38,32 +38,29 @@ class Budget:
     """One declared budget: the option that sets it, its default, and its rule."""
 
     option: str
+    dest: str
     default: int
     counted: str
 
-    @property
-    def dest(self) -> str:
-        """The attribute an option of this name parses into."""
-        return self.option.removeprefix("--").replace("-", "_")
 
-
-FILES = Budget("--max-files", 256, "distinct source documents opened")
-FILE_BYTES = Budget("--max-file-bytes", 1_048_576, "raw bytes in one source")
+FILES = Budget("-F", "max_files", 256, "distinct source documents opened")
+FILE_BYTES = Budget("-B", "max_file_bytes", 1_048_576, "raw bytes in one source")
 INPUT_BYTES = Budget(
-    "--max-input-bytes", 16_777_216, "raw source bytes, counted once per source"
+    "-I", "max_input_bytes", 16_777_216, "raw source bytes, counted once per source"
 )
-OUTPUT_BYTES = Budget("--max-output-bytes", 262_144, "bytes of the complete bundle")
+OUTPUT_BYTES = Budget("-O", "max_output_bytes", 262_144, "bytes of the complete bundle")
 TARGETS = Budget(
-    "--max-targets", 4_096, "distinct document and section targets discovered"
+    "-T", "max_targets", 4_096, "distinct document and section targets discovered"
 )
 LINKS = Budget(
-    "--max-links",
+    "-L",
+    "max_links",
     32_768,
     "authored link and image occurrences in selected content",
 )
-NESTING = Budget("--max-nesting", 64, "levels of container nesting in one source")
+NESTING = Budget("-N", "max_nesting", 64, "levels of container nesting in one source")
 EXPANSION_DEPTH = Budget(
-    "--max-expansion-depth", 8, "link hops from the nearest entry reference"
+    "-E", "max_expansion_depth", 8, "link hops from the nearest entry reference"
 )
 
 BUDGETS = (

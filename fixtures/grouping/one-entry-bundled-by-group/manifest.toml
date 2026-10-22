@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--group", "modes:2", "modes/plan-mode.md#operations"]
+arguments = ["-g", "modes:2", "modes/plan-mode.md#operations"]
 
 [expected]
 exit_status = 0

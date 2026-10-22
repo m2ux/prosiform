@@ -24,7 +24,7 @@ The caller reached this mode through the routing document [¬ SKILL.md](../SKILL
 ### Command
 
 ```bash
-prosiform --root example/work-tracker modes/plan-mode.md
+pf -r example/work-tracker modes/plan-mode.md
 ```
 
 ### Output
@@ -73,8 +73,8 @@ One epic body with supplied delivery matches and completed rows recorded.
 ### Command
 
 ```bash
-prosiform --root example/work-tracker \
-  --from artifacts/epic-issue-body.md '#record-epic-delivery'
+pf -r example/work-tracker \
+  -f artifacts/epic-issue-body.md '#record-epic-delivery'
 ```
 
 ### Output
@@ -108,7 +108,7 @@ The selection retains its structural ancestor, shifts the selected heading down 
 ### Above-depth prose
 
 ```bash
-prosiform --root example/work-tracker --group artifacts:2 --group modes:2 modes/plan-mode.md
+pf -r example/work-tracker -g artifacts:2 -g modes:2 modes/plan-mode.md
 ```
 
 The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) includes an `Overview` because each artifact's introductory prose needs a section:
@@ -138,7 +138,7 @@ An epic's task delivery findings, integration readiness and completion state.
 The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated member headings name each contribution directly beneath `Rules`:
 
 ```bash
-prosiform --root example/my-skill --group rules:1 procedure.md rules/common.md
+pf -r example/my-skill -g rules:1 procedure.md rules/common.md
 ```
 
 The grouped portion is:
@@ -170,10 +170,10 @@ Every case below uses the same [source tree](work-tracker/SKILL.md). Each manife
 | Example | Invocation fixture | Expected output |
 | --- | --- | --- |
 | Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) |
-| Select a fragment with `--from` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
+| Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
-| Merge directories with `--group` | [Manifest](../fixtures/usage-example/every-document-under-a-directory-merged/manifest.toml) | [Bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) |
-| Validate with `--check` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
+| Merge directories with `-g` | [Manifest](../fixtures/usage-example/every-document-under-a-directory-merged/manifest.toml) | [Bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) |
+| Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
 
 ## Source and validation
 

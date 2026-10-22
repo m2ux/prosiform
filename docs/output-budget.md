@@ -1,6 +1,6 @@
 # The output budget, measured
 
-`--max-output-bytes` defaults to 262,144. The figure is an engineering default, and
+`-O` defaults to 262,144. The figure is an engineering default, and
 the bundling it has to admit or refuse is the one the proposal used as its evidence:
 the closure of Plan Mode in the `work-planner` skill, 39 documents and 318,018 bytes
 read whole.
@@ -9,8 +9,8 @@ read whole.
 48,987 over the budget, and the run publishes nothing:
 
 ```text
-E_RESOURCE_LIMIT: the run reached 311131 bytes of the complete bundle, which crosses the --max-output-bytes budget of 262144
-  remedy: restructure the sources, or raise --max-output-bytes
+E_RESOURCE_LIMIT: the run reached 311131 bytes of the complete bundle, which crosses the -O budget of 262144
+  remedy: restructure the sources, or raise -O
 ```
 
 The bundle is 97.8% of the bytes its sources hold: the link-reference definitions it
@@ -55,12 +55,12 @@ test:
 mkdir -p /tmp/closure
 git archive acac858 skills/work-planner skills/guidelines.md | tar -x -C /tmp/closure
 sed -i 's|(SKILL.md#command-conventions)|(SKILL.md)|' /tmp/closure/skills/work-planner/guidelines.md
-<build> --root /tmp/closure/skills work-planner/modes/plan-mode.md
+<build> -r /tmp/closure/skills work-planner/modes/plan-mode.md
 ```
 
 The run is refused, so the figure is read off the refusal: `limits.Crossed` carries the
 budget, the limit and the counted figure, and the diagnostic reports all three. Raising
-`--max-output-bytes` publishes the bundle, and its size on disk equals the figure the
+`-O` publishes the bundle, and its size on disk equals the figure the
 refusal named.
 
 ## What the measurement settles

@@ -34,7 +34,7 @@ An entry no fixture declares at all has no reason to state and fails the
 report.
 
 The build under test states the same surface from the other side: invoked
-with `--codes` it writes every code it can report, and each code entry
+with `-C` it writes every code it can report, and each code entry
 records whether that listing carries it. The two statements are held to
 each other in both directions — a code the contract declares that the
 build reports nowhere, and a code the build reports that the contract
@@ -104,7 +104,7 @@ BULLET = re.compile(r"^- \*\*(.+?)[:.]?\*\*")
 STEP = re.compile(r"^(\d+)\.\s+\S")
 SEPARATOR = " — "
 AWAITING = "awaiting"
-CODES = "--codes"
+CODES = "-C"
 STATUS_KIND = "exit status"
 REPORTED_KIND = "reported code"
 

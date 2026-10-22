@@ -16,7 +16,7 @@ fixture is never reported as holding against a build that never ran.
 
 The runner supplies the allowed source root the manifest names and asks
 for diagnostics as data, which the contract's command line spells
-`--root DIR` and `--diagnostics json`. A manifest writes neither, so a
+`-r DIR` and `-d json`. A manifest writes neither, so a
 diagnostic's code is compared as a value rather than as prose. A manifest
 naming no root declares a run supplied none, which is how the command line
 the contract refuses for naming no allowed source root is stated.
@@ -34,7 +34,7 @@ removed, so a run leaves the fixture directory as the manifest declares it.
 Two of the contract's outcomes are facts about the run rather than about
 any document it reads, so no source tree states them. A manifest names
 the fault its run meets and the runner asks the run for it, which the
-contract's command line spells `--fault NAME`: the fault is the run's
+contract's command line spells `-x NAME`: the fault is the run's
 own, so what a fixture observes is the build's own detection rather than
 a report the corpus asked for. A fault writes to the tree it runs over,
 so a fixture declaring one runs in a copy of itself and the corpus
@@ -446,17 +446,17 @@ def run_fixture(fixture: Path) -> Result:
     invocation = manifest["invocation"]
     expected = manifest["expected"]
     declared = manifest.get(FAULT)
-    requested = ["--fault", declared] if declared is not None else []
+    requested = ["-x", declared] if declared is not None else []
     allowed = build_timeout()
     with worked(fixture, declared) as working:
         named = invocation.get("root")
         allowed_root = (
-            ["--root", str((working / named).resolve())] if named is not None else []
+            ["-r", str((working / named).resolve())] if named is not None else []
         )
         argv = [
             *build_under_test(),
             *allowed_root,
-            "--diagnostics",
+            "-d",
             "json",
             *requested,
             *invocation["arguments"],

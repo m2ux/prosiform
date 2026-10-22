@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["--output", "no-such-directory/bundle.md", "guide.md"]
+arguments = ["-o", "no-such-directory/bundle.md", "guide.md"]
 
 [expected]
 exit_status = 3
