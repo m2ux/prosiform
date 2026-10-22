@@ -5,7 +5,7 @@
 - [x] Implement and verify the short command surface.
 - [x] Compact the specification and review baseline fact coverage.
 - [x] Measure token savings and run the complete checks.
-- [ ] Publish commits, evidence and the delivery pull request (in progress).
+- [x] Publish commits, evidence and the delivery pull request.
 
 ## Scope
 
@@ -65,4 +65,4 @@ The retired executable appears only in its negative installation check, package 
 
 ## Delivery state
 
-Implementation is committed and pushed. Repository main has no branch protection or active rules. Linking and merge await confirmation of the repository auto-close setting required by Work Planner; no setting has been changed. No additional implementation scope or deferred debt was introduced.
+Implementation is committed and pushed in [PR #213](https://github.com/m2ux/prosiform/pull/213), targeting main at head `f11eb7dd831e6cb839dd305dd81e3fc7655e2634`. The published body and head match their intended values. Repository main has no branch protection or active rules. Linking and merge await confirmation of the repository auto-close setting required by Work Planner; no setting has been changed. CI triggers only on pushes to main and initiative branches, so this standalone task branch has no remote check run; the complete gate evidence above is local. No additional implementation scope or deferred debt was introduced.
