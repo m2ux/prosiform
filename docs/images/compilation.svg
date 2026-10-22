@@ -53,14 +53,14 @@
 <text x="640" y="1263" font-size="23" fill="#e6edf3" font-weight="400">If you are Claude, compile</text>
 <text x="640" y="1301" font-size="24" fill="#e3b341" font-weight="400">¬ Claude</text>
 <path d="M640 1308 h115.2" stroke="#e3b341" stroke-width="1.5"/>
-<text x="1280" y="160" font-size="34" fill="#e6edf3" font-weight="500">procedure</text>
+<text x="1280" y="160" font-size="34" fill="#e6edf3" font-weight="500">Procedure</text>
 <text x="1280" y="222" font-size="24" fill="#e6edf3" font-weight="400">Read</text>
 <text x="1356" y="222" font-size="24" fill="#58a6ff" font-weight="400">Tips</text>
 <path d="M1356 229 h57.6" stroke="#58a6ff" stroke-width="1.5"/>
 <text x="1280" y="284" font-size="25" fill="#e6edf3" font-weight="400">1. Write the draft.</text>
 <text x="1280" y="336" font-size="25" fill="#e6edf3" font-weight="400">2. Publish the page.</text>
 <path d="M1280 380 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="442" font-size="34" fill="#e6edf3">rules/agents</text>
+<text x="1280" y="442" font-size="34" fill="#e6edf3">Rules/Agents</text>
 <text x="1280" y="496" font-size="23" fill="#e6edf3">Select rules for your harness:</text>
 <text x="1280" y="554" font-size="23" fill="#e6edf3">If you are Codex, compile</text>
 <text x="1280" y="592" font-size="24" fill="#e3b341">¬ Codex</text>
@@ -69,13 +69,13 @@
 <text x="1280" y="688" font-size="24" fill="#e3b341">¬ Claude</text>
 <path d="M1280 695 h115.2" stroke="#e3b341" stroke-width="1.5"/>
 <path d="M1280 810 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="870" font-size="34" fill="#e6edf3">rules/common</text>
+<text x="1280" y="870" font-size="34" fill="#e6edf3">Rules/Common</text>
 <text x="1280" y="922" font-size="25" fill="#e6edf3">• Check every link.</text>
 <text x="1280" y="970" font-size="25" fill="#e6edf3">• Use clear headings.</text>
 <text x="1280" y="1020" font-size="24" fill="#e6edf3">Follow</text>
 <text x="1384" y="1020" font-size="24" fill="#58a6ff">Agents</text><path d="M1384 1027 h86.4" stroke="#58a6ff" stroke-width="1.5"/>
 <path d="M1280 1080 H1734" stroke="#303b49" stroke-width="2"/>
-<text x="1280" y="1142" font-size="34" fill="#e6edf3" font-weight="500">tips</text>
+<text x="1280" y="1142" font-size="34" fill="#e6edf3" font-weight="500">Tips</text>
 <text x="1280" y="1212" font-size="25" fill="#e6edf3" font-weight="400">Keep paragraphs short.</text>
 <path d="M219 875 H560 V260 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 253 L612 260 L600 267 Z" fill="#58a6ff"/>
 <path d="M156 949 H578 V840 H600" fill="none" stroke="#58a6ff" stroke-width="3"/><path d="M600 833 L612 840 L600 847 Z" fill="#58a6ff"/>
