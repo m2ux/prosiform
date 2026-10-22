@@ -4,7 +4,7 @@ The shape every issue body shares: its title, its Problem and Proposal, its acce
 
 ## Operations
 
-### Write Issue Table
+### *Write* Issue Table
 
 The shared table, before a kind fills its cells.
 
@@ -15,7 +15,7 @@ The shared table, before a kind fills its cells.
    - The shared cells must meet [Tables](#tables).
 2. Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
 
-### Check Round of Edits
+### *Check* Round of Edits
 
 The shared check after a round of edits.
 
@@ -24,7 +24,7 @@ The shared check after a round of edits.
 1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields) in this file.
 2. Run [Check Body Format](#check-body-format) on every issue the round changed.
 
-### Validate Issue Body
+### *Validate* Issue Body
 
 One body checked against its supplied kind and template.
 
@@ -34,7 +34,7 @@ One body checked against its supplied kind and template.
 2. Review the body against the supplied field conditions.
 3. Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
 
-### Apply Body Corrections
+### *Apply* Body Corrections
 
 One body rewritten from confirmed local findings.
 
@@ -49,7 +49,7 @@ One body rewritten from confirmed local findings.
 6. Validate the body through [Validate Issue Body](#validate-issue-body).
 7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
-### Build Body Snapshot
+### *Build* Body Snapshot
 
 A local issue-shaped record for body validation.
 
@@ -59,6 +59,25 @@ A local issue-shaped record for body validation.
 2. Preserve the existing issue's identity and state when supplied.
 3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
 4. Return the JSON path for validation. No tracker issue is created by this operation.
+
+### *Repair* Issue Format
+
+The saved format corrections for one issue and any unresolved content findings.
+
+**Inputs:** Issue identity, current JSON, kind template and field conditions, required related evidence and output body path.
+
+1. Run [Validate Issue Body](#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
+   - Return an unreadable source as a blocker before editing.
+2. Review the returned diff.
+   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](issue.md#save-tracker-issue), without asking.
+   - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
+3. Resolve a non-mechanical finding confined to this body.
+   - Obtain the user's decision.
+   - Run [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
+   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+4. Run [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
+   - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
+   - Return the saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
 ## Fields
 

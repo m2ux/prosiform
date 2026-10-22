@@ -1,0 +1,1299 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="33645" viewBox="0 0 2142 33645" role="img" aria-labelledby="title desc"><title id="title">Source documents and compiled bundle</title><desc id="desc">Source documents and actual compiler output.</desc><rect width="2142" height="33645" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="20" fill="#e3b341" font-weight="400">main 68dd39c10ad0</text><rect x="32" y="80" width="410" height="610" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 134 H442" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">work-planner/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ artifacts/</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">│  ├─</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">architecture-overview.md</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ delivery-branches.md</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ issue.md</text>
+<text x="70" y="413" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ planning-record.md</text>
+<text x="70" y="450" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ pull-request-body.md</text>
+<text x="70" y="487" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ pull-request.md</text>
+<text x="70" y="524" font-size="20" fill="#e6edf3" font-weight="400">│  └─ repository-graph.md</text>
+<text x="70" y="561" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
+<text x="70" y="598" font-size="20" fill="#e6edf3" font-weight="400">│  └─ understand-mode.md</text>
+<text x="70" y="635" font-size="20" fill="#e6edf3" font-weight="400">└─ protocols/</text>
+<text x="70" y="672" font-size="20" fill="#e6edf3" font-weight="400">   └─ change-overview.md</text><rect x="466" y="80" width="690" height="2343" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="116" font-size="21" fill="#b1c6df" font-weight="400">artifacts/architecture-overview.md</text>
+<path d="M466 134 H1156" stroke="#303b49"/>
+<text x="478" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="201" font-size="30" fill="#e6edf3" font-weight="500">Architecture Overview</text>
+<text x="504" y="251" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="307" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="307" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="360" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="360" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Architecture Overview</text>
+<text x="504" y="410" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="460" font-size="20" fill="#58a6ff" font-weight="400">Measured Structure</text>
+<text x="504" y="510" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="560" font-size="20" fill="#58a6ff" font-weight="400">Diagrams</text>
+<text x="504" y="610" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="660" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="504" y="710" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="760" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="504" y="810" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="860" font-size="20" fill="#58a6ff" font-weight="400">Sections</text>
+<text x="504" y="910" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="960" font-size="20" fill="#58a6ff" font-weight="400">Code References</text>
+<text x="504" y="1010" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1066" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="1066" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="1119" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1119" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="504" y="1169" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1222" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1222" font-size="23" fill="#e6edf3" font-weight="500">Diagrams</text>
+<text x="504" y="1272" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1325" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1325" font-size="23" fill="#e6edf3" font-weight="500">Register</text>
+<text x="504" y="1375" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1428" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1428" font-size="23" fill="#e6edf3" font-weight="500">Code References</text>
+<text x="504" y="1478" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1531" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1531" font-size="23" fill="#e6edf3" font-weight="500">Measured Structure</text>
+<text x="504" y="1581" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1634" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1634" font-size="23" fill="#e6edf3" font-weight="500">One Concept Per Diagram</text>
+<text x="504" y="1684" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1737" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1737" font-size="23" fill="#e6edf3" font-weight="500">Highlight</text>
+<text x="504" y="1787" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1840" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1840" font-size="23" fill="#e6edf3" font-weight="500">Labelled Edges</text>
+<text x="504" y="1890" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="1943" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1943" font-size="23" fill="#e6edf3" font-weight="500">Collections</text>
+<text x="504" y="1993" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="2046" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2046" font-size="23" fill="#e6edf3" font-weight="500">What Changed</text>
+<text x="504" y="2096" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="2149" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2149" font-size="23" fill="#e6edf3" font-weight="500">Reading Order</text>
+<text x="504" y="2199" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="2252" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2252" font-size="23" fill="#e6edf3" font-weight="500">Length</text>
+<text x="504" y="2302" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="2355" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2355" font-size="23" fill="#e6edf3" font-weight="500">Sections</text>
+<text x="504" y="2405" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="2445" width="690" height="6438" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="2481" font-size="21" fill="#b1c6df" font-weight="400">artifacts/delivery-branches.md</text>
+<path d="M466 2499 H1156" stroke="#303b49"/>
+<text x="478" y="2566" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="2566" font-size="30" fill="#e6edf3" font-weight="500">Delivery Branches</text>
+<text x="504" y="2616" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="2672" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="2672" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="2725" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2725" font-size="23" fill="#e6edf3" font-weight="500">*Prepare* Delivery Bases</text>
+<text x="504" y="2775" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="2825" font-size="20" fill="#58a6ff" font-weight="400">List Long-Lived Branches</text>
+<text x="504" y="2875" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="2925" font-size="20" fill="#58a6ff" font-weight="400">List Epic Bases</text>
+<text x="504" y="2975" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3025" font-size="20" fill="#58a6ff" font-weight="400">Create Epic Base</text>
+<text x="504" y="3075" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="3128" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3128" font-size="23" fill="#e6edf3" font-weight="500">*Create* Epic Base</text>
+<text x="504" y="3178" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3228" font-size="20" fill="#58a6ff" font-weight="400">Fetch Remote Branch</text>
+<text x="504" y="3278" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3328" font-size="20" fill="#58a6ff" font-weight="400">Publish Epic Base</text>
+<text x="504" y="3378" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3428" font-size="20" fill="#58a6ff" font-weight="400">Epic Bases</text>
+<text x="504" y="3478" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="3531" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3531" font-size="23" fill="#e6edf3" font-weight="500">*Update* Epic Base</text>
+<text x="504" y="3581" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3631" font-size="20" fill="#58a6ff" font-weight="400">Epic Bases</text>
+<text x="504" y="3681" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3731" font-size="20" fill="#58a6ff" font-weight="400">Fetch Remote Branch</text>
+<text x="504" y="3781" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3831" font-size="20" fill="#58a6ff" font-weight="400">Add Epic Base Worktree</text>
+<text x="504" y="3881" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="3931" font-size="20" fill="#58a6ff" font-weight="400">Fetch Remote Branch</text>
+<text x="504" y="3981" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4031" font-size="20" fill="#58a6ff" font-weight="400">Merge Remote Branch</text>
+<text x="504" y="4081" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4131" font-size="20" fill="#58a6ff" font-weight="400">Push Epic Base</text>
+<text x="504" y="4181" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="4234" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="4234" font-size="23" fill="#e6edf3" font-weight="500">*Update* Task Branch</text>
+<text x="504" y="4284" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4334" font-size="20" fill="#58a6ff" font-weight="400">Fetch Remote Branch</text>
+<text x="504" y="4384" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4434" font-size="20" fill="#58a6ff" font-weight="400">Merge Remote Branch</text>
+<text x="504" y="4484" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4534" font-size="20" fill="#58a6ff" font-weight="400">Push Task Branch</text>
+<text x="504" y="4584" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="4637" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="4637" font-size="23" fill="#e6edf3" font-weight="500">*Create* Task Worktree</text>
+<text x="504" y="4687" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4737" font-size="20" fill="#58a6ff" font-weight="400">Task Branches</text>
+<text x="504" y="4787" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4837" font-size="20" fill="#58a6ff" font-weight="400">Fetch Remote Branch</text>
+<text x="504" y="4887" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="4937" font-size="20" fill="#58a6ff" font-weight="400">Add Task Worktree</text>
+<text x="504" y="4987" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="5040" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="5040" font-size="23" fill="#e6edf3" font-weight="500">*Create* Pull Request Worktree</text>
+<text x="504" y="5090" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5140" font-size="20" fill="#58a6ff" font-weight="400">Fetch Review Head</text>
+<text x="504" y="5190" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5240" font-size="20" fill="#58a6ff" font-weight="400">Read Checkout Revision</text>
+<text x="504" y="5290" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5340" font-size="20" fill="#58a6ff" font-weight="400">Review Worktrees</text>
+<text x="504" y="5390" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5440" font-size="20" fill="#58a6ff" font-weight="400">Read Checkout Status</text>
+<text x="504" y="5490" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5540" font-size="20" fill="#58a6ff" font-weight="400">Add Review Worktree</text>
+<text x="504" y="5590" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="5643" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="5643" font-size="23" fill="#e6edf3" font-weight="500">*Read* Target Requirements</text>
+<text x="504" y="5693" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5743" font-size="20" fill="#58a6ff" font-weight="400">Fetch Branch Protection</text>
+<text x="504" y="5793" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="5843" font-size="20" fill="#58a6ff" font-weight="400">Fetch Active Branch Rules</text>
+<text x="504" y="5893" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="5946" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="5946" font-size="23" fill="#e6edf3" font-weight="500">*Read* Delivery Branches</text>
+<text x="504" y="5996" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="6046" font-size="20" fill="#58a6ff" font-weight="400">List Long-Lived Branches</text>
+<text x="504" y="6096" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="6146" font-size="20" fill="#58a6ff" font-weight="400">List Epic Bases</text>
+<text x="504" y="6196" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="6252" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="6252" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="6305" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="6305" font-size="23" fill="#e6edf3" font-weight="500">Branches</text>
+<text x="504" y="6355" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="6408" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="6408" font-size="23" fill="#e6edf3" font-weight="500">Epic Bases</text>
+<text x="504" y="6458" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="6511" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="6511" font-size="23" fill="#e6edf3" font-weight="500">Review Worktrees</text>
+<text x="504" y="6561" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="6614" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="6614" font-size="23" fill="#e6edf3" font-weight="500">Task Branches</text>
+<text x="504" y="6664" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="6720" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="6720" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="6773" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="6773" font-size="23" fill="#e6edf3" font-weight="500">List Epic Bases</text>
+<text x="504" y="6823" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="6873" font-size="20" fill="#58a6ff" font-weight="400">long-lived branch</text>
+<text x="504" y="6923" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="6973" font-size="20" fill="#58a6ff" font-weight="400">Epic Bases</text>
+<text x="504" y="7023" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7076" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7076" font-size="23" fill="#e6edf3" font-weight="500">List Long-Lived Branches</text>
+<text x="504" y="7126" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="7176" font-size="20" fill="#58a6ff" font-weight="400">Branches</text>
+<text x="504" y="7226" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7279" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7279" font-size="23" fill="#e6edf3" font-weight="500">Fetch Remote Branch</text>
+<text x="504" y="7329" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7382" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7382" font-size="23" fill="#e6edf3" font-weight="500">Publish Epic Base</text>
+<text x="504" y="7432" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7485" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7485" font-size="23" fill="#e6edf3" font-weight="500">Merge Remote Branch</text>
+<text x="504" y="7535" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7588" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7588" font-size="23" fill="#e6edf3" font-weight="500">Push Epic Base</text>
+<text x="504" y="7638" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7691" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7691" font-size="23" fill="#e6edf3" font-weight="500">Push Task Branch</text>
+<text x="504" y="7741" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7794" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7794" font-size="23" fill="#e6edf3" font-weight="500">Add Task Worktree</text>
+<text x="504" y="7844" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="7894" font-size="20" fill="#58a6ff" font-weight="400">Task Branches</text>
+<text x="504" y="7944" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="7997" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="7997" font-size="23" fill="#e6edf3" font-weight="500">Fetch Review Head</text>
+<text x="504" y="8047" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="8100" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="8100" font-size="23" fill="#e6edf3" font-weight="500">Add Epic Base Worktree</text>
+<text x="504" y="8150" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="8200" font-size="20" fill="#58a6ff" font-weight="400">Epic Bases</text>
+<text x="504" y="8250" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="8303" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="8303" font-size="23" fill="#e6edf3" font-weight="500">Add Review Worktree</text>
+<text x="504" y="8353" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="8403" font-size="20" fill="#58a6ff" font-weight="400">Review Worktrees</text>
+<text x="504" y="8453" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="8506" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="8506" font-size="23" fill="#e6edf3" font-weight="500">Fetch Branch Protection</text>
+<text x="504" y="8556" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="8609" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="8609" font-size="23" fill="#e6edf3" font-weight="500">Fetch Active Branch Rules</text>
+<text x="504" y="8659" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="8712" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="8712" font-size="23" fill="#e6edf3" font-weight="500">Read Checkout Revision</text>
+<text x="504" y="8762" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="8815" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="8815" font-size="23" fill="#e6edf3" font-weight="500">Read Checkout Status</text>
+<text x="504" y="8865" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="8905" width="690" height="6197" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="8941" font-size="21" fill="#b1c6df" font-weight="400">artifacts/issue.md</text>
+<path d="M466 8959 H1156" stroke="#303b49"/>
+<text x="478" y="9026" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="9026" font-size="30" fill="#e6edf3" font-weight="500">Issue</text>
+<text x="504" y="9076" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="9132" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="9132" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="9185" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="9185" font-size="23" fill="#e6edf3" font-weight="500">*Read* Tracker Issue</text>
+<text x="504" y="9235" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="9285" font-size="20" fill="#58a6ff" font-weight="400">Fetch Tracker Issue</text>
+<text x="504" y="9335" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="9385" font-size="20" fill="#58a6ff" font-weight="400">Fetch Issue Body</text>
+<text x="504" y="9435" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="9485" font-size="20" fill="#58a6ff" font-weight="400">Fetch Issue Comments</text>
+<text x="504" y="9535" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="9588" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="9588" font-size="23" fill="#e6edf3" font-weight="500">*Save* Tracker Issue</text>
+<text x="504" y="9638" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="9688" font-size="20" fill="#58a6ff" font-weight="400">Create Tracker Issue</text>
+<text x="504" y="9738" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="9788" font-size="20" fill="#58a6ff" font-weight="400">Patch Issue Body</text>
+<text x="504" y="9838" font-size="20" fill="#58a6ff" font-weight="400">Retitle Tracker Issue</text>
+<text x="504" y="9888" font-size="20" fill="#58a6ff" font-weight="400">Add Issue Labels</text>
+<text x="504" y="9938" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="9988" font-size="20" fill="#58a6ff" font-weight="400">Remove Issue Label</text>
+<text x="504" y="10038" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10088" font-size="20" fill="#58a6ff" font-weight="400">Comment on Issue</text>
+<text x="504" y="10138" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10188" font-size="20" fill="#58a6ff" font-weight="400">Fetch Tracker Issue</text>
+<text x="504" y="10238" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="10291" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="10291" font-size="23" fill="#e6edf3" font-weight="500">*Close* Tracker Issue</text>
+<text x="504" y="10341" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10391" font-size="20" fill="#58a6ff" font-weight="400">Capture Issue Development</text>
+<text x="504" y="10441" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10491" font-size="20" fill="#58a6ff" font-weight="400">Check Issue Closure</text>
+<text x="504" y="10541" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10591" font-size="20" fill="#58a6ff" font-weight="400">Close as Completed</text>
+<text x="504" y="10641" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="10694" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="10694" font-size="23" fill="#e6edf3" font-weight="500">*Close* Transferred Work</text>
+<text x="504" y="10744" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10794" font-size="20" fill="#58a6ff" font-weight="400">Comment on Issue</text>
+<text x="504" y="10844" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10894" font-size="20" fill="#58a6ff" font-weight="400">Close as Not Planned</text>
+<text x="504" y="10944" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="10994" font-size="20" fill="#58a6ff" font-weight="400">Fetch Tracker Issue</text>
+<text x="504" y="11044" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="11097" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="11097" font-size="23" fill="#e6edf3" font-weight="500">*Comment* on Issue</text>
+<text x="504" y="11147" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="11197" font-size="20" fill="#58a6ff" font-weight="400">Post Inline Comment</text>
+<text x="504" y="11247" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="11297" font-size="20" fill="#58a6ff" font-weight="400">Post Comment File</text>
+<text x="504" y="11347" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="11400" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="11400" font-size="23" fill="#e6edf3" font-weight="500">*Close* as Completed</text>
+<text x="504" y="11450" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="11500" font-size="20" fill="#58a6ff" font-weight="400">Capture Issue Development</text>
+<text x="504" y="11550" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="11600" font-size="20" fill="#58a6ff" font-weight="400">Check Issue Closure</text>
+<text x="504" y="11650" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="11700" font-size="20" fill="#58a6ff" font-weight="400">Set Completed State</text>
+<text x="504" y="11750" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="11803" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="11803" font-size="23" fill="#e6edf3" font-weight="500">*Capture* Issue Development</text>
+<text x="504" y="11853" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="11903" font-size="20" fill="#58a6ff" font-weight="400">Read Issue Development</text>
+<text x="504" y="11953" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="12003" font-size="20" fill="#58a6ff" font-weight="400">Write Development Snapshot</text>
+<text x="504" y="12053" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="12103" font-size="20" fill="#58a6ff" font-weight="400">Fetch Tracker Issue</text>
+<text x="504" y="12153" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="12206" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="12206" font-size="23" fill="#e6edf3" font-weight="500">*Read* Issue Development</text>
+<text x="504" y="12256" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="12309" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="12309" font-size="23" fill="#e6edf3" font-weight="500">*Confirm* Repository Auto-Close</text>
+<text x="504" y="12359" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="12409" font-size="20" fill="#58a6ff" font-weight="400">Auto-Close Setting</text>
+<text x="504" y="12459" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="12512" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="12512" font-size="23" fill="#e6edf3" font-weight="500">*Read* Repository Issues</text>
+<text x="504" y="12562" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="12612" font-size="20" fill="#58a6ff" font-weight="400">Fetch All Issues</text>
+<text x="504" y="12662" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="12715" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="12715" font-size="23" fill="#e6edf3" font-weight="500">*Locate* Initiative Issue</text>
+<text x="504" y="12765" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="12815" font-size="20" fill="#58a6ff" font-weight="400">Find Initiative Issue</text>
+<text x="504" y="12865" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="12918" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="12918" font-size="23" fill="#e6edf3" font-weight="500">*Select* Tracker Number</text>
+<text x="504" y="12968" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="13018" font-size="20" fill="#58a6ff" font-weight="400">List Prefixed Titles</text>
+<text x="504" y="13068" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13124" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="13124" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="504" y="13174" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13227" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13227" font-size="23" fill="#e6edf3" font-weight="500">Auto-Close Setting</text>
+<text x="504" y="13277" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13333" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="13333" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="13386" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13386" font-size="23" fill="#e6edf3" font-weight="500">Create Tracker Issue</text>
+<text x="504" y="13436" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13489" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13489" font-size="23" fill="#e6edf3" font-weight="500">Patch Issue Body</text>
+<text x="504" y="13539" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13592" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13592" font-size="23" fill="#e6edf3" font-weight="500">Fetch Issue Body</text>
+<text x="504" y="13642" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13695" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13695" font-size="23" fill="#e6edf3" font-weight="500">Retitle Tracker Issue</text>
+<text x="504" y="13745" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13798" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13798" font-size="23" fill="#e6edf3" font-weight="500">Add Issue Labels</text>
+<text x="504" y="13848" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="13901" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="13901" font-size="23" fill="#e6edf3" font-weight="500">Remove Issue Label</text>
+<text x="504" y="13951" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14004" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14004" font-size="23" fill="#e6edf3" font-weight="500">Fetch Issue Comments</text>
+<text x="504" y="14054" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14107" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14107" font-size="23" fill="#e6edf3" font-weight="500">Fetch Tracker Issue</text>
+<text x="504" y="14157" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14210" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14210" font-size="23" fill="#e6edf3" font-weight="500">Check Issue Closure</text>
+<text x="504" y="14260" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14313" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14313" font-size="23" fill="#e6edf3" font-weight="500">Close as Not Planned</text>
+<text x="504" y="14363" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14416" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14416" font-size="23" fill="#e6edf3" font-weight="500">Post Inline Comment</text>
+<text x="504" y="14466" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14519" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14519" font-size="23" fill="#e6edf3" font-weight="500">Post Comment File</text>
+<text x="504" y="14569" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14622" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14622" font-size="23" fill="#e6edf3" font-weight="500">Set Completed State</text>
+<text x="504" y="14672" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14725" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14725" font-size="23" fill="#e6edf3" font-weight="500">Write Development Snapshot</text>
+<text x="504" y="14775" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14828" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14828" font-size="23" fill="#e6edf3" font-weight="500">Fetch All Issues</text>
+<text x="504" y="14878" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="14931" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="14931" font-size="23" fill="#e6edf3" font-weight="500">Find Initiative Issue</text>
+<text x="504" y="14981" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="15034" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="15034" font-size="23" fill="#e6edf3" font-weight="500">List Prefixed Titles</text>
+<text x="504" y="15084" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="15124" width="690" height="2896" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="15160" font-size="21" fill="#b1c6df" font-weight="400">artifacts/planning-record.md</text>
+<path d="M466 15178 H1156" stroke="#303b49"/>
+<text x="478" y="15245" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="15245" font-size="30" fill="#e6edf3" font-weight="500">Planning Record</text>
+<text x="504" y="15295" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="15351" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="15351" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="15404" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="15404" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Planning Record</text>
+<text x="504" y="15454" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="15504" font-size="20" fill="#58a6ff" font-weight="400">Add Planning Record</text>
+<text x="504" y="15554" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="15604" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="504" y="15654" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="15704" font-size="20" fill="#58a6ff" font-weight="400">Layout</text>
+<text x="504" y="15754" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="15804" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="504" y="15854" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="15904" font-size="20" fill="#58a6ff" font-weight="400">Layout</text>
+<text x="504" y="15954" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="16004" font-size="20" fill="#58a6ff" font-weight="400">Artifacts</text>
+<text x="504" y="16054" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="16107" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="16107" font-size="23" fill="#e6edf3" font-weight="500">*Publish* Planning Record</text>
+<text x="504" y="16157" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="16207" font-size="20" fill="#58a6ff" font-weight="400">Find Engineering Worktree</text>
+<text x="504" y="16257" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="16307" font-size="20" fill="#58a6ff" font-weight="400">Commit Planning Record</text>
+<text x="504" y="16357" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="16407" font-size="20" fill="#58a6ff" font-weight="400">Shared Worktree</text>
+<text x="504" y="16457" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="16507" font-size="20" fill="#58a6ff" font-weight="400">Push Engineering Branch</text>
+<text x="504" y="16557" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="16613" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="16613" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="16666" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="16666" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="504" y="16716" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="16769" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="16769" font-size="23" fill="#e6edf3" font-weight="500">Shared Worktree</text>
+<text x="504" y="16819" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="16872" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="16872" font-size="23" fill="#e6edf3" font-weight="500">Layout</text>
+<text x="504" y="16922" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="16975" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="16975" font-size="23" fill="#e6edf3" font-weight="500">Header</text>
+<text x="504" y="17025" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17078" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17078" font-size="23" fill="#e6edf3" font-weight="500">Executive Summary</text>
+<text x="504" y="17128" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17181" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17181" font-size="23" fill="#e6edf3" font-weight="500">Artifacts</text>
+<text x="504" y="17231" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17284" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17284" font-size="23" fill="#e6edf3" font-weight="500">Links</text>
+<text x="504" y="17334" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17390" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="17390" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="17443" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17443" font-size="23" fill="#e6edf3" font-weight="500">Find Engineering Worktree</text>
+<text x="504" y="17493" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17546" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17546" font-size="23" fill="#e6edf3" font-weight="500">Commit Planning Record</text>
+<text x="504" y="17596" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="17646" font-size="20" fill="#58a6ff" font-weight="400">Shared Worktree</text>
+<text x="504" y="17696" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17749" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17749" font-size="23" fill="#e6edf3" font-weight="500">Push Engineering Branch</text>
+<text x="504" y="17799" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="17852" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="17852" font-size="23" fill="#e6edf3" font-weight="500">Add Planning Record</text>
+<text x="504" y="17902" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="17952" font-size="20" fill="#58a6ff" font-weight="400">planning layout</text>
+<text x="504" y="18002" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="18042" width="690" height="2125" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="18078" font-size="21" fill="#b1c6df" font-weight="400">artifacts/pull-request-body.md</text>
+<path d="M466 18096 H1156" stroke="#303b49"/>
+<text x="478" y="18163" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="18163" font-size="30" fill="#e6edf3" font-weight="500">Pull Request Body</text>
+<text x="504" y="18213" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="18269" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="18269" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="18322" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="18322" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Pull Request Body</text>
+<text x="504" y="18372" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="18422" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="504" y="18472" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="18522" font-size="20" fill="#58a6ff" font-weight="400">Populate Review Body</text>
+<text x="504" y="18572" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="18622" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="504" y="18672" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="18722" font-size="20" fill="#58a6ff" font-weight="400">Test Plan</text>
+<text x="504" y="18772" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="18825" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="18825" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Review Body</text>
+<text x="504" y="18875" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="18925" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="504" y="18975" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="19025" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="504" y="19075" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="19125" font-size="20" fill="#58a6ff" font-weight="400">Review Body</text>
+<text x="504" y="19175" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="19228" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="19228" font-size="23" fill="#e6edf3" font-weight="500">*Link* Architecture Overview</text>
+<text x="504" y="19278" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="19328" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="504" y="19378" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="19434" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="19434" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="19487" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="19487" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="504" y="19537" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="19590" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="19590" font-size="23" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="504" y="19640" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="19693" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="19693" font-size="23" fill="#e6edf3" font-weight="500">Review Body</text>
+<text x="504" y="19743" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="19796" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="19796" font-size="23" fill="#e6edf3" font-weight="500">Test Plan</text>
+<text x="504" y="19846" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="19899" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="19899" font-size="23" fill="#e6edf3" font-weight="500">Test Coverage</text>
+<text x="504" y="19949" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="19999" font-size="20" fill="#58a6ff" font-weight="400">coverage report</text>
+<text x="504" y="20049" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="20099" font-size="20" fill="#58a6ff" font-weight="400">Coverage Reports</text>
+<text x="504" y="20149" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="20189" width="690" height="9217" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="20225" font-size="21" fill="#b1c6df" font-weight="400">artifacts/pull-request.md</text>
+<path d="M466 20243 H1156" stroke="#303b49"/>
+<text x="478" y="20310" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="20310" font-size="30" fill="#e6edf3" font-weight="500">Pull Request</text>
+<text x="504" y="20360" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="20416" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="20416" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="20469" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="20469" font-size="23" fill="#e6edf3" font-weight="500">*Merge* Delivery Pull Request</text>
+<text x="504" y="20519" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="20569" font-size="20" fill="#58a6ff" font-weight="400">Close Tracker Issue</text>
+<text x="504" y="20619" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="20669" font-size="20" fill="#58a6ff" font-weight="400">Merge Pull Request</text>
+<text x="504" y="20719" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="20769" font-size="20" fill="#58a6ff" font-weight="400">Merge Epic Pull Request</text>
+<text x="504" y="20819" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="20872" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="20872" font-size="23" fill="#e6edf3" font-weight="500">*Access* Development Links</text>
+<text x="504" y="20922" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="20972" font-size="20" fill="#58a6ff" font-weight="400">Close Tracker Issue</text>
+<text x="504" y="21022" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21072" font-size="20" fill="#58a6ff" font-weight="400">Read Development Links</text>
+<text x="504" y="21122" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21172" font-size="20" fill="#58a6ff" font-weight="400">Confirm Repository Auto-Close</text>
+<text x="504" y="21222" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21272" font-size="20" fill="#58a6ff" font-weight="400">Set Development Link</text>
+<text x="504" y="21322" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21372" font-size="20" fill="#58a6ff" font-weight="400">Remove Development Link</text>
+<text x="504" y="21422" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21472" font-size="20" fill="#58a6ff" font-weight="400">Read Development Links</text>
+<text x="504" y="21522" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="21575" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="21575" font-size="23" fill="#e6edf3" font-weight="500">*Fetch* Pull Request Issue Links</text>
+<text x="504" y="21625" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21675" font-size="20" fill="#58a6ff" font-weight="400">Access Development Links</text>
+<text x="504" y="21725" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21775" font-size="20" fill="#58a6ff" font-weight="400">Write Pull Request Links</text>
+<text x="504" y="21825" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="21878" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="21878" font-size="23" fill="#e6edf3" font-weight="500">*Link* Pull Request to Issue</text>
+<text x="504" y="21928" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="21978" font-size="20" fill="#58a6ff" font-weight="400">Close Tracker Issue</text>
+<text x="504" y="22028" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22078" font-size="20" fill="#58a6ff" font-weight="400">Access Development Links</text>
+<text x="504" y="22128" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22178" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request Issue Links</text>
+<text x="504" y="22228" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="22281" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="22281" font-size="23" fill="#e6edf3" font-weight="500">*Merge* Epic Pull Request</text>
+<text x="504" y="22331" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22381" font-size="20" fill="#58a6ff" font-weight="400">Submit Epic Merge</text>
+<text x="504" y="22431" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22481" font-size="20" fill="#58a6ff" font-weight="400">Read Merge Result</text>
+<text x="504" y="22531" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="22584" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="22584" font-size="23" fill="#e6edf3" font-weight="500">*Fetch* All Initiative Pull Requests</text>
+<text x="504" y="22634" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22684" font-size="20" fill="#58a6ff" font-weight="400">Fetch Repository Initiative Pull Requests</text>
+<text x="504" y="22734" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22784" font-size="20" fill="#58a6ff" font-weight="400">Append Repository Initiative Pull Requests</text>
+<text x="504" y="22834" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="22887" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="22887" font-size="23" fill="#e6edf3" font-weight="500">*Read* Initiative Pull Requests</text>
+<text x="504" y="22937" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="22987" font-size="20" fill="#58a6ff" font-weight="400">Fetch Initiative Pull Requests</text>
+<text x="504" y="23037" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="23090" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="23090" font-size="23" fill="#e6edf3" font-weight="500">*Read* Pull Request State</text>
+<text x="504" y="23140" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23190" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request</text>
+<text x="504" y="23240" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23290" font-size="20" fill="#58a6ff" font-weight="400">Save Pull Request Snapshot</text>
+<text x="504" y="23340" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23390" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request Files</text>
+<text x="504" y="23440" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23490" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request Reviews</text>
+<text x="504" y="23540" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="23593" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="23593" font-size="23" fill="#e6edf3" font-weight="500">*Publish* Pull Request</text>
+<text x="504" y="23643" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23693" font-size="20" fill="#58a6ff" font-weight="400">Open Task Pull Request</text>
+<text x="504" y="23743" font-size="20" fill="#58a6ff" font-weight="400">Open Epic Pull Request</text>
+<text x="504" y="23793" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23843" font-size="20" fill="#58a6ff" font-weight="400">Open Discussion Pull Request</text>
+<text x="504" y="23893" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="23943" font-size="20" fill="#58a6ff" font-weight="400">Link Pull Request to Issue</text>
+<text x="504" y="23993" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24043" font-size="20" fill="#58a6ff" font-weight="400">Issue Links</text>
+<text x="504" y="24093" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24143" font-size="20" fill="#58a6ff" font-weight="400">Patch Pull Request Body</text>
+<text x="504" y="24193" font-size="20" fill="#58a6ff" font-weight="400">Retitle Pull Request</text>
+<text x="504" y="24243" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24293" font-size="20" fill="#58a6ff" font-weight="400">Retarget Pull Request</text>
+<text x="504" y="24343" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24393" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="24443" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="24496" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="24496" font-size="23" fill="#e6edf3" font-weight="500">*Locate* Review Pull Request</text>
+<text x="504" y="24546" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24596" font-size="20" fill="#58a6ff" font-weight="400">Find Review Pull Request</text>
+<text x="504" y="24646" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="24699" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="24699" font-size="23" fill="#e6edf3" font-weight="500">*Read* Head Evidence</text>
+<text x="504" y="24749" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24799" font-size="20" fill="#58a6ff" font-weight="400">Fetch Head Check Runs</text>
+<text x="504" y="24849" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="24899" font-size="20" fill="#58a6ff" font-weight="400">Fetch Head Status</text>
+<text x="504" y="24949" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="25002" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="25002" font-size="23" fill="#e6edf3" font-weight="500">*Merge* Task Pull Requests</text>
+<text x="504" y="25052" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25102" font-size="20" fill="#58a6ff" font-weight="400">Confirm Repository Auto-Close</text>
+<text x="504" y="25152" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25202" font-size="20" fill="#58a6ff" font-weight="400">Merge Delivery Pull Request</text>
+<text x="504" y="25252" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25302" font-size="20" fill="#58a6ff" font-weight="400">Update Epic Base</text>
+<text x="504" y="25352" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25402" font-size="20" fill="#58a6ff" font-weight="400">Fetch Merge Readiness</text>
+<text x="504" y="25452" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25502" font-size="20" fill="#58a6ff" font-weight="400">Merge Delivery Pull Request</text>
+<text x="504" y="25552" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25602" font-size="20" fill="#58a6ff" font-weight="400">Update Task Branch</text>
+<text x="504" y="25652" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25702" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="25752" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="25805" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="25805" font-size="23" fill="#e6edf3" font-weight="500">*Fetch* Merge Readiness</text>
+<text x="504" y="25855" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="25905" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="25955" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="26005" font-size="20" fill="#58a6ff" font-weight="400">Read Target Requirements</text>
+<text x="504" y="26055" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="26105" font-size="20" fill="#58a6ff" font-weight="400">Read Head Evidence</text>
+<text x="504" y="26155" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="26205" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="26255" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="26305" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="26355" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="26411" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="26411" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="26464" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="26464" font-size="23" fill="#e6edf3" font-weight="500">State</text>
+<text x="504" y="26514" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="26567" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="26567" font-size="23" fill="#e6edf3" font-weight="500">Scope</text>
+<text x="504" y="26617" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="26670" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="26670" font-size="23" fill="#e6edf3" font-weight="500">Other Pull Requests</text>
+<text x="504" y="26720" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="26773" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="26773" font-size="23" fill="#e6edf3" font-weight="500">Issue Links</text>
+<text x="504" y="26823" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="26879" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="26879" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="26932" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="26932" font-size="23" fill="#e6edf3" font-weight="500">Open Discussion Pull Request</text>
+<text x="504" y="26982" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27035" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27035" font-size="23" fill="#e6edf3" font-weight="500">Retarget Pull Request</text>
+<text x="504" y="27085" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27138" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27138" font-size="23" fill="#e6edf3" font-weight="500">Fetch Pull Request</text>
+<text x="504" y="27188" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27241" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27241" font-size="23" fill="#e6edf3" font-weight="500">Retitle Pull Request</text>
+<text x="504" y="27291" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27344" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27344" font-size="23" fill="#e6edf3" font-weight="500">Open Task Pull Request</text>
+<text x="504" y="27394" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27447" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27447" font-size="23" fill="#e6edf3" font-weight="500">Open Epic Pull Request</text>
+<text x="504" y="27497" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27550" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27550" font-size="23" fill="#e6edf3" font-weight="500">Merge Pull Request</text>
+<text x="504" y="27600" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27653" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27653" font-size="23" fill="#e6edf3" font-weight="500">Patch Pull Request Body</text>
+<text x="504" y="27703" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27756" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27756" font-size="23" fill="#e6edf3" font-weight="500">Find Review Pull Request</text>
+<text x="504" y="27806" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27859" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27859" font-size="23" fill="#e6edf3" font-weight="500">Submit Epic Merge</text>
+<text x="504" y="27909" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="27962" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="27962" font-size="23" fill="#e6edf3" font-weight="500">Read Merge Result</text>
+<text x="504" y="28012" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28065" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28065" font-size="23" fill="#e6edf3" font-weight="500">Read Development Links</text>
+<text x="504" y="28115" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28168" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28168" font-size="23" fill="#e6edf3" font-weight="500">Set Development Link</text>
+<text x="504" y="28218" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="28268" font-size="20" fill="#58a6ff" font-weight="400">GitHub&#x27;s sidebar linking procedure</text>
+<text x="504" y="28318" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28371" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28371" font-size="23" fill="#e6edf3" font-weight="500">Remove Development Link</text>
+<text x="504" y="28421" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28474" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28474" font-size="23" fill="#e6edf3" font-weight="500">Write Pull Request Links</text>
+<text x="504" y="28524" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28577" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28577" font-size="23" fill="#e6edf3" font-weight="500">Save Pull Request Snapshot</text>
+<text x="504" y="28627" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28680" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28680" font-size="23" fill="#e6edf3" font-weight="500">Fetch Pull Request Reviews</text>
+<text x="504" y="28730" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28783" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28783" font-size="23" fill="#e6edf3" font-weight="500">Fetch Initiative Pull Requests</text>
+<text x="504" y="28833" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28886" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28886" font-size="23" fill="#e6edf3" font-weight="500">Fetch Repository Initiative Pull Requests</text>
+<text x="504" y="28936" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="28989" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="28989" font-size="23" fill="#e6edf3" font-weight="500">Append Repository Initiative Pull</text>
+<text x="540" y="29029" font-size="23" fill="#e6edf3" font-weight="500">Requests</text>
+<text x="504" y="29079" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="29132" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="29132" font-size="23" fill="#e6edf3" font-weight="500">Fetch Pull Request Files</text>
+<text x="504" y="29182" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="29235" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="29235" font-size="23" fill="#e6edf3" font-weight="500">Fetch Head Check Runs</text>
+<text x="504" y="29285" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="29338" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="29338" font-size="23" fill="#e6edf3" font-weight="500">Fetch Head Status</text>
+<text x="504" y="29388" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="29428" width="690" height="2190" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="29464" font-size="21" fill="#b1c6df" font-weight="400">artifacts/repository-graph.md</text>
+<path d="M466 29482 H1156" stroke="#303b49"/>
+<text x="478" y="29549" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="29549" font-size="30" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="504" y="29599" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="29655" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="29655" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="29708" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="29708" font-size="23" fill="#e6edf3" font-weight="500">*Measure* Repository Change</text>
+<text x="504" y="29758" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="29808" font-size="20" fill="#58a6ff" font-weight="400">Index Status</text>
+<text x="504" y="29858" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="29908" font-size="20" fill="#58a6ff" font-weight="400">Index Repository</text>
+<text x="504" y="29958" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="30008" font-size="20" fill="#58a6ff" font-weight="400">Change Surface</text>
+<text x="504" y="30058" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="30108" font-size="20" fill="#58a6ff" font-weight="400">Symbol Context</text>
+<text x="504" y="30158" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="30208" font-size="20" fill="#58a6ff" font-weight="400">Flow Trace</text>
+<text x="504" y="30258" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="30308" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="504" y="30358" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="30414" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="30414" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="30467" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="30467" font-size="23" fill="#e6edf3" font-weight="500">Revision</text>
+<text x="504" y="30517" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="30570" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="30570" font-size="23" fill="#e6edf3" font-weight="500">Freshness</text>
+<text x="504" y="30620" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="30673" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="30673" font-size="23" fill="#e6edf3" font-weight="500">Changed Symbols</text>
+<text x="504" y="30723" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="30776" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="30776" font-size="23" fill="#e6edf3" font-weight="500">Symbol Relationships</text>
+<text x="504" y="30826" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="30879" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="30879" font-size="23" fill="#e6edf3" font-weight="500">Flow Traces</text>
+<text x="504" y="30929" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="30985" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="30985" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="31038" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="31038" font-size="23" fill="#e6edf3" font-weight="500">Index Status</text>
+<text x="504" y="31088" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="31141" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="31141" font-size="23" fill="#e6edf3" font-weight="500">Index Repository</text>
+<text x="504" y="31191" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="31244" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="31244" font-size="23" fill="#e6edf3" font-weight="500">Change Surface</text>
+<text x="504" y="31294" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="31347" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="31347" font-size="23" fill="#e6edf3" font-weight="500">Symbol Context</text>
+<text x="504" y="31397" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="31450" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="31450" font-size="23" fill="#e6edf3" font-weight="500">Flow Trace</text>
+<text x="504" y="31500" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="31550" font-size="20" fill="#58a6ff" font-weight="400">Flow Traces</text>
+<text x="504" y="31600" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="31640" width="690" height="601" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="31676" font-size="21" fill="#b1c6df" font-weight="400">modes/understand-mode.md</text>
+<path d="M466 31694 H1156" stroke="#303b49"/>
+<text x="478" y="31761" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="31761" font-size="30" fill="#e6edf3" font-weight="500">Understand Mode</text>
+<text x="504" y="31811" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="31867" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="31867" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="504" y="31917" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="31967" font-size="20" fill="#58a6ff" font-weight="400">Outcomes</text>
+<text x="504" y="32017" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="32067" font-size="20" fill="#58a6ff" font-weight="400">Change Overview</text>
+<text x="504" y="32117" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="32173" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="32173" font-size="26" fill="#e6edf3" font-weight="500">Outcomes</text>
+<text x="504" y="32223" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="466" y="32263" width="690" height="1295" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="32299" font-size="21" fill="#b1c6df" font-weight="400">protocols/change-overview.md</text>
+<path d="M466 32317 H1156" stroke="#303b49"/>
+<text x="478" y="32384" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="32384" font-size="30" fill="#e6edf3" font-weight="500">Change Overview</text>
+<text x="504" y="32434" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="478" y="32490" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="32490" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="504" y="32540" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="32590" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="32640" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="32690" font-size="20" fill="#58a6ff" font-weight="400">Create Pull Request Worktree</text>
+<text x="504" y="32740" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="32790" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="504" y="32840" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="32890" font-size="20" fill="#58a6ff" font-weight="400">Measure Repository Change</text>
+<text x="504" y="32940" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="32990" font-size="20" fill="#58a6ff" font-weight="400">Populate Planning Record</text>
+<text x="504" y="33040" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="33090" font-size="20" fill="#58a6ff" font-weight="400">Populate Architecture Overview</text>
+<text x="504" y="33140" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="33190" font-size="20" fill="#58a6ff" font-weight="400">Populate Planning Record</text>
+<text x="504" y="33240" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="33290" font-size="20" fill="#58a6ff" font-weight="400">Publish Planning Record</text>
+<text x="504" y="33340" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="33390" font-size="20" fill="#58a6ff" font-weight="400">Link Architecture Overview</text>
+<text x="504" y="33440" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="504" y="33490" font-size="20" fill="#58a6ff" font-weight="400">Publish Pull Request</text>
+<text x="504" y="33540" font-size="20" fill="#e6edf3" font-weight="400">…</text><rect x="1230" y="80" width="880" height="17589" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="116" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
+<path d="M1230 134 H2110" stroke="#303b49"/>
+<text x="1242" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="201" font-size="30" fill="#e6edf3" font-weight="500">Artifacts</text>
+<text x="1242" y="257" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="257" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="1242" y="310" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="310" font-size="23" fill="#e6edf3" font-weight="500">Architecture Overview</text>
+<text x="1242" y="363" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="363" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Architecture Overview</text>
+<text x="1268" y="413" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="463" font-size="20" fill="#58a6ff" font-weight="400">Measured Structure</text>
+<text x="1268" y="513" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="563" font-size="20" fill="#58a6ff" font-weight="400">Diagrams</text>
+<text x="1268" y="613" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="663" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="1268" y="713" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="763" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="1268" y="813" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="863" font-size="20" fill="#58a6ff" font-weight="400">Sections</text>
+<text x="1268" y="913" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="963" font-size="20" fill="#58a6ff" font-weight="400">Code References</text>
+<text x="1268" y="1013" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="1066" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="1066" font-size="23" fill="#e6edf3" font-weight="500">Delivery Branches</text>
+<text x="1242" y="1119" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1119" font-size="23" fill="#e6edf3" font-weight="500">*Create* Pull Request Worktree</text>
+<text x="1268" y="1169" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1219" font-size="20" fill="#58a6ff" font-weight="400">Fetch Review Head</text>
+<text x="1268" y="1269" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1319" font-size="20" fill="#58a6ff" font-weight="400">Read Checkout Revision</text>
+<text x="1268" y="1369" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1419" font-size="20" fill="#58a6ff" font-weight="400">Review Worktrees</text>
+<text x="1268" y="1469" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1519" font-size="20" fill="#58a6ff" font-weight="400">Read Checkout Status</text>
+<text x="1268" y="1569" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1619" font-size="20" fill="#58a6ff" font-weight="400">Add Review Worktree</text>
+<text x="1268" y="1669" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="1722" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="1722" font-size="23" fill="#e6edf3" font-weight="500">Issue</text>
+<text x="1242" y="1775" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1775" font-size="23" fill="#e6edf3" font-weight="500">*Close* Tracker Issue</text>
+<text x="1268" y="1825" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1875" font-size="20" fill="#58a6ff" font-weight="400">Capture Issue Development</text>
+<text x="1268" y="1925" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="1975" font-size="20" fill="#58a6ff" font-weight="400">Check Issue Closure</text>
+<text x="1268" y="2025" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2075" font-size="20" fill="#58a6ff" font-weight="400">Close as Completed</text>
+<text x="1268" y="2125" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="2178" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="2178" font-size="23" fill="#e6edf3" font-weight="500">*Close* as Completed</text>
+<text x="1268" y="2228" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2278" font-size="20" fill="#58a6ff" font-weight="400">Capture Issue Development</text>
+<text x="1268" y="2328" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2378" font-size="20" fill="#58a6ff" font-weight="400">Check Issue Closure</text>
+<text x="1268" y="2428" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2478" font-size="20" fill="#58a6ff" font-weight="400">Set Completed State</text>
+<text x="1268" y="2528" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="2581" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="2581" font-size="23" fill="#e6edf3" font-weight="500">*Capture* Issue Development</text>
+<text x="1268" y="2631" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2681" font-size="20" fill="#58a6ff" font-weight="400">Read Issue Development</text>
+<text x="1268" y="2731" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2781" font-size="20" fill="#58a6ff" font-weight="400">Write Development Snapshot</text>
+<text x="1268" y="2831" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="2881" font-size="20" fill="#58a6ff" font-weight="400">Fetch Tracker Issue</text>
+<text x="1268" y="2931" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="2984" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="2984" font-size="23" fill="#e6edf3" font-weight="500">*Read* Issue Development</text>
+<text x="1268" y="3034" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="3087" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="3087" font-size="23" fill="#e6edf3" font-weight="500">*Confirm* Repository Auto-Close</text>
+<text x="1268" y="3137" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3187" font-size="20" fill="#58a6ff" font-weight="400">Auto-Close Setting</text>
+<text x="1268" y="3237" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="3290" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="3290" font-size="23" fill="#e6edf3" font-weight="500">Planning Record</text>
+<text x="1242" y="3343" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="3343" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Planning Record</text>
+<text x="1268" y="3393" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3443" font-size="20" fill="#58a6ff" font-weight="400">Add Planning Record</text>
+<text x="1268" y="3493" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3543" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="1268" y="3593" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3643" font-size="20" fill="#58a6ff" font-weight="400">Layout</text>
+<text x="1268" y="3693" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3743" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="1268" y="3793" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3843" font-size="20" fill="#58a6ff" font-weight="400">Layout</text>
+<text x="1268" y="3893" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="3943" font-size="20" fill="#58a6ff" font-weight="400">Artifacts</text>
+<text x="1268" y="3993" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="4046" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="4046" font-size="23" fill="#e6edf3" font-weight="500">*Publish* Planning Record</text>
+<text x="1268" y="4096" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="4146" font-size="20" fill="#58a6ff" font-weight="400">Find Engineering Worktree</text>
+<text x="1268" y="4196" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="4246" font-size="20" fill="#58a6ff" font-weight="400">Commit Planning Record</text>
+<text x="1268" y="4296" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="4346" font-size="20" fill="#58a6ff" font-weight="400">Shared Worktree</text>
+<text x="1268" y="4396" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="4446" font-size="20" fill="#58a6ff" font-weight="400">Push Engineering Branch</text>
+<text x="1268" y="4496" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="4549" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="4549" font-size="23" fill="#e6edf3" font-weight="500">Pull Request Body</text>
+<text x="1242" y="4602" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="4602" font-size="23" fill="#e6edf3" font-weight="500">*Link* Architecture Overview</text>
+<text x="1268" y="4652" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="4702" font-size="20" fill="#58a6ff" font-weight="400">Template</text>
+<text x="1268" y="4752" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="4805" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="4805" font-size="23" fill="#e6edf3" font-weight="500">Pull Request</text>
+<text x="1242" y="4858" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="4858" font-size="23" fill="#e6edf3" font-weight="500">*Access* Development Links</text>
+<text x="1268" y="4908" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="4958" font-size="20" fill="#58a6ff" font-weight="400">Close Tracker Issue</text>
+<text x="1268" y="5008" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5058" font-size="20" fill="#58a6ff" font-weight="400">Read Development Links</text>
+<text x="1268" y="5108" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5158" font-size="20" fill="#58a6ff" font-weight="400">Confirm Repository Auto-Close</text>
+<text x="1268" y="5208" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5258" font-size="20" fill="#58a6ff" font-weight="400">Set Development Link</text>
+<text x="1268" y="5308" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5358" font-size="20" fill="#58a6ff" font-weight="400">Remove Development Link</text>
+<text x="1268" y="5408" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5458" font-size="20" fill="#58a6ff" font-weight="400">Read Development Links</text>
+<text x="1268" y="5508" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="5561" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="5561" font-size="23" fill="#e6edf3" font-weight="500">*Fetch* Pull Request Issue Links</text>
+<text x="1268" y="5611" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5661" font-size="20" fill="#58a6ff" font-weight="400">Access Development Links</text>
+<text x="1268" y="5711" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5761" font-size="20" fill="#58a6ff" font-weight="400">Write Pull Request Links</text>
+<text x="1268" y="5811" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="5864" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="5864" font-size="23" fill="#e6edf3" font-weight="500">*Link* Pull Request to Issue</text>
+<text x="1268" y="5914" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="5964" font-size="20" fill="#58a6ff" font-weight="400">Close Tracker Issue</text>
+<text x="1268" y="6014" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6064" font-size="20" fill="#58a6ff" font-weight="400">Access Development Links</text>
+<text x="1268" y="6114" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6164" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request Issue Links</text>
+<text x="1268" y="6214" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="6267" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="6267" font-size="23" fill="#e6edf3" font-weight="500">*Read* Pull Request State</text>
+<text x="1268" y="6317" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6367" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request</text>
+<text x="1268" y="6417" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6467" font-size="20" fill="#58a6ff" font-weight="400">Save Pull Request Snapshot</text>
+<text x="1268" y="6517" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6567" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request Files</text>
+<text x="1268" y="6617" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6667" font-size="20" fill="#58a6ff" font-weight="400">Fetch Pull Request Reviews</text>
+<text x="1268" y="6717" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="6770" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="6770" font-size="23" fill="#e6edf3" font-weight="500">*Publish* Pull Request</text>
+<text x="1268" y="6820" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="6870" font-size="20" fill="#58a6ff" font-weight="400">Open Task Pull Request</text>
+<text x="1268" y="6920" font-size="20" fill="#58a6ff" font-weight="400">Open Epic Pull Request</text>
+<text x="1268" y="6970" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7020" font-size="20" fill="#58a6ff" font-weight="400">Open Discussion Pull Request</text>
+<text x="1268" y="7070" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7120" font-size="20" fill="#58a6ff" font-weight="400">Link Pull Request to Issue</text>
+<text x="1268" y="7170" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7220" font-size="20" fill="#58a6ff" font-weight="400">Issue Links</text>
+<text x="1268" y="7270" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7320" font-size="20" fill="#58a6ff" font-weight="400">Patch Pull Request Body</text>
+<text x="1268" y="7370" font-size="20" fill="#58a6ff" font-weight="400">Retitle Pull Request</text>
+<text x="1268" y="7420" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7470" font-size="20" fill="#58a6ff" font-weight="400">Retarget Pull Request</text>
+<text x="1268" y="7520" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7570" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="1268" y="7620" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="7673" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="7673" font-size="23" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="1242" y="7726" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="7726" font-size="23" fill="#e6edf3" font-weight="500">*Measure* Repository Change</text>
+<text x="1268" y="7776" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7826" font-size="20" fill="#58a6ff" font-weight="400">Index Status</text>
+<text x="1268" y="7876" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="7926" font-size="20" fill="#58a6ff" font-weight="400">Index Repository</text>
+<text x="1268" y="7976" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="8026" font-size="20" fill="#58a6ff" font-weight="400">Change Surface</text>
+<text x="1268" y="8076" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="8126" font-size="20" fill="#58a6ff" font-weight="400">Symbol Context</text>
+<text x="1268" y="8176" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="8226" font-size="20" fill="#58a6ff" font-weight="400">Flow Trace</text>
+<text x="1268" y="8276" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="8326" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="1268" y="8376" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="8432" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="8432" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="1242" y="8485" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="8485" font-size="23" fill="#e6edf3" font-weight="500">Architecture Overview</text>
+<text x="1242" y="8538" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="8538" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="1268" y="8588" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="8641" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="8641" font-size="23" fill="#e6edf3" font-weight="500">Diagrams</text>
+<text x="1268" y="8691" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="8744" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="8744" font-size="23" fill="#e6edf3" font-weight="500">Register</text>
+<text x="1268" y="8794" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="8847" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="8847" font-size="23" fill="#e6edf3" font-weight="500">Code References</text>
+<text x="1268" y="8897" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="8950" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="8950" font-size="23" fill="#e6edf3" font-weight="500">Measured Structure</text>
+<text x="1268" y="9000" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9053" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9053" font-size="23" fill="#e6edf3" font-weight="500">One Concept Per Diagram</text>
+<text x="1268" y="9103" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9156" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9156" font-size="23" fill="#e6edf3" font-weight="500">Highlight</text>
+<text x="1268" y="9206" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9259" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9259" font-size="23" fill="#e6edf3" font-weight="500">Labelled Edges</text>
+<text x="1268" y="9309" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9362" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9362" font-size="23" fill="#e6edf3" font-weight="500">Collections</text>
+<text x="1268" y="9412" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9465" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9465" font-size="23" fill="#e6edf3" font-weight="500">What Changed</text>
+<text x="1268" y="9515" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9568" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9568" font-size="23" fill="#e6edf3" font-weight="500">Reading Order</text>
+<text x="1268" y="9618" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9671" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9671" font-size="23" fill="#e6edf3" font-weight="500">Length</text>
+<text x="1268" y="9721" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9774" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9774" font-size="23" fill="#e6edf3" font-weight="500">Sections</text>
+<text x="1268" y="9824" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="9877" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="9877" font-size="23" fill="#e6edf3" font-weight="500">Delivery Branches</text>
+<text x="1242" y="9930" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="9930" font-size="23" fill="#e6edf3" font-weight="500">Review Worktrees</text>
+<text x="1268" y="9980" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10033" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="10033" font-size="23" fill="#e6edf3" font-weight="500">Issue</text>
+<text x="1242" y="10086" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10086" font-size="23" fill="#e6edf3" font-weight="500">Auto-Close Setting</text>
+<text x="1268" y="10136" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10189" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="10189" font-size="23" fill="#e6edf3" font-weight="500">Planning Record</text>
+<text x="1242" y="10242" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10242" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="1268" y="10292" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10345" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10345" font-size="23" fill="#e6edf3" font-weight="500">Shared Worktree</text>
+<text x="1268" y="10395" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10448" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10448" font-size="23" fill="#e6edf3" font-weight="500">Layout</text>
+<text x="1268" y="10498" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10551" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10551" font-size="23" fill="#e6edf3" font-weight="500">Header</text>
+<text x="1268" y="10601" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10654" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10654" font-size="23" fill="#e6edf3" font-weight="500">Executive Summary</text>
+<text x="1268" y="10704" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10757" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10757" font-size="23" fill="#e6edf3" font-weight="500">Artifacts</text>
+<text x="1268" y="10807" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10860" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="10860" font-size="23" fill="#e6edf3" font-weight="500">Links</text>
+<text x="1268" y="10910" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="10963" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="10963" font-size="23" fill="#e6edf3" font-weight="500">Pull Request Body</text>
+<text x="1242" y="11016" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11016" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="1268" y="11066" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11119" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="11119" font-size="23" fill="#e6edf3" font-weight="500">Pull Request</text>
+<text x="1242" y="11172" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11172" font-size="23" fill="#e6edf3" font-weight="500">Issue Links</text>
+<text x="1268" y="11222" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11275" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="11275" font-size="23" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="1242" y="11328" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11328" font-size="23" fill="#e6edf3" font-weight="500">Revision</text>
+<text x="1268" y="11378" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11431" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11431" font-size="23" fill="#e6edf3" font-weight="500">Freshness</text>
+<text x="1268" y="11481" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11534" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11534" font-size="23" fill="#e6edf3" font-weight="500">Changed Symbols</text>
+<text x="1268" y="11584" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11637" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11637" font-size="23" fill="#e6edf3" font-weight="500">Symbol Relationships</text>
+<text x="1268" y="11687" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11740" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11740" font-size="23" fill="#e6edf3" font-weight="500">Flow Traces</text>
+<text x="1268" y="11790" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="11846" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="11846" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="1242" y="11899" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="11899" font-size="23" fill="#e6edf3" font-weight="500">Delivery Branches</text>
+<text x="1242" y="11952" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="11952" font-size="23" fill="#e6edf3" font-weight="500">Fetch Review Head</text>
+<text x="1268" y="12002" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12055" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12055" font-size="23" fill="#e6edf3" font-weight="500">Add Review Worktree</text>
+<text x="1268" y="12105" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="12155" font-size="20" fill="#58a6ff" font-weight="400">Review Worktrees</text>
+<text x="1268" y="12205" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12258" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12258" font-size="23" fill="#e6edf3" font-weight="500">Read Checkout Revision</text>
+<text x="1268" y="12308" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12361" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12361" font-size="23" fill="#e6edf3" font-weight="500">Read Checkout Status</text>
+<text x="1268" y="12411" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12464" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="12464" font-size="23" fill="#e6edf3" font-weight="500">Issue</text>
+<text x="1242" y="12517" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12517" font-size="23" fill="#e6edf3" font-weight="500">Fetch Tracker Issue</text>
+<text x="1268" y="12567" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12620" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12620" font-size="23" fill="#e6edf3" font-weight="500">Check Issue Closure</text>
+<text x="1268" y="12670" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12723" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12723" font-size="23" fill="#e6edf3" font-weight="500">Set Completed State</text>
+<text x="1268" y="12773" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12826" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12826" font-size="23" fill="#e6edf3" font-weight="500">Write Development Snapshot</text>
+<text x="1268" y="12876" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="12929" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="12929" font-size="23" fill="#e6edf3" font-weight="500">Planning Record</text>
+<text x="1242" y="12982" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="12982" font-size="23" fill="#e6edf3" font-weight="500">Find Engineering Worktree</text>
+<text x="1268" y="13032" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13085" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13085" font-size="23" fill="#e6edf3" font-weight="500">Commit Planning Record</text>
+<text x="1268" y="13135" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="13185" font-size="20" fill="#58a6ff" font-weight="400">Shared Worktree</text>
+<text x="1268" y="13235" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13288" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13288" font-size="23" fill="#e6edf3" font-weight="500">Push Engineering Branch</text>
+<text x="1268" y="13338" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13391" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13391" font-size="23" fill="#e6edf3" font-weight="500">Add Planning Record</text>
+<text x="1268" y="13441" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="13491" font-size="20" fill="#58a6ff" font-weight="400">planning layout</text>
+<text x="1268" y="13541" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13594" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="13594" font-size="23" fill="#e6edf3" font-weight="500">Pull Request</text>
+<text x="1242" y="13647" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13647" font-size="23" fill="#e6edf3" font-weight="500">Open Discussion Pull Request</text>
+<text x="1268" y="13697" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13750" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13750" font-size="23" fill="#e6edf3" font-weight="500">Retarget Pull Request</text>
+<text x="1268" y="13800" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13853" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13853" font-size="23" fill="#e6edf3" font-weight="500">Fetch Pull Request</text>
+<text x="1268" y="13903" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="13956" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="13956" font-size="23" fill="#e6edf3" font-weight="500">Retitle Pull Request</text>
+<text x="1268" y="14006" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14059" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14059" font-size="23" fill="#e6edf3" font-weight="500">Open Task Pull Request</text>
+<text x="1268" y="14109" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14162" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14162" font-size="23" fill="#e6edf3" font-weight="500">Open Epic Pull Request</text>
+<text x="1268" y="14212" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14265" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14265" font-size="23" fill="#e6edf3" font-weight="500">Patch Pull Request Body</text>
+<text x="1268" y="14315" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14368" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14368" font-size="23" fill="#e6edf3" font-weight="500">Read Development Links</text>
+<text x="1268" y="14418" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14471" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14471" font-size="23" fill="#e6edf3" font-weight="500">Set Development Link</text>
+<text x="1268" y="14521" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="14571" font-size="20" fill="#58a6ff" font-weight="400">GitHub&#x27;s sidebar linking procedure</text>
+<text x="1268" y="14621" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14674" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14674" font-size="23" fill="#e6edf3" font-weight="500">Remove Development Link</text>
+<text x="1268" y="14724" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14777" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14777" font-size="23" fill="#e6edf3" font-weight="500">Write Pull Request Links</text>
+<text x="1268" y="14827" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14880" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14880" font-size="23" fill="#e6edf3" font-weight="500">Save Pull Request Snapshot</text>
+<text x="1268" y="14930" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="14983" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="14983" font-size="23" fill="#e6edf3" font-weight="500">Fetch Pull Request Reviews</text>
+<text x="1268" y="15033" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15086" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="15086" font-size="23" fill="#e6edf3" font-weight="500">Fetch Pull Request Files</text>
+<text x="1268" y="15136" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15189" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="15189" font-size="23" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="1242" y="15242" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="15242" font-size="23" fill="#e6edf3" font-weight="500">Index Status</text>
+<text x="1268" y="15292" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15345" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="15345" font-size="23" fill="#e6edf3" font-weight="500">Index Repository</text>
+<text x="1268" y="15395" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15448" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="15448" font-size="23" fill="#e6edf3" font-weight="500">Change Surface</text>
+<text x="1268" y="15498" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15551" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="15551" font-size="23" fill="#e6edf3" font-weight="500">Symbol Context</text>
+<text x="1268" y="15601" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15654" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="15654" font-size="23" fill="#e6edf3" font-weight="500">Flow Trace</text>
+<text x="1268" y="15704" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="15754" font-size="20" fill="#58a6ff" font-weight="400">Flow Traces</text>
+<text x="1268" y="15804" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15864" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="15864" font-size="30" fill="#e6edf3" font-weight="500">Modes/Understand-Mode</text>
+<text x="1268" y="15914" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="15970" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="15970" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1268" y="16020" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="16070" font-size="20" fill="#58a6ff" font-weight="400">Outcomes</text>
+<text x="1268" y="16120" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="16170" font-size="20" fill="#58a6ff" font-weight="400">Change Overview</text>
+<text x="1268" y="16220" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="16276" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="16276" font-size="26" fill="#e6edf3" font-weight="500">Outcomes</text>
+<text x="1268" y="16326" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="16386" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="16386" font-size="30" fill="#e6edf3" font-weight="500">Protocols</text>
+<text x="1242" y="16442" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="16442" font-size="26" fill="#e6edf3" font-weight="500">Overview</text>
+<text x="1242" y="16495" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="16495" font-size="23" fill="#e6edf3" font-weight="500">Change Overview</text>
+<text x="1268" y="16545" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1242" y="16601" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="16601" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1268" y="16651" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="16701" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="1268" y="16751" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="16801" font-size="20" fill="#58a6ff" font-weight="400">Create Pull Request Worktree</text>
+<text x="1268" y="16851" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="16901" font-size="20" fill="#58a6ff" font-weight="400">Read Pull Request State</text>
+<text x="1268" y="16951" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17001" font-size="20" fill="#58a6ff" font-weight="400">Measure Repository Change</text>
+<text x="1268" y="17051" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17101" font-size="20" fill="#58a6ff" font-weight="400">Populate Planning Record</text>
+<text x="1268" y="17151" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17201" font-size="20" fill="#58a6ff" font-weight="400">Populate Architecture Overview</text>
+<text x="1268" y="17251" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17301" font-size="20" fill="#58a6ff" font-weight="400">Populate Planning Record</text>
+<text x="1268" y="17351" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17401" font-size="20" fill="#58a6ff" font-weight="400">Publish Planning Record</text>
+<text x="1268" y="17451" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17501" font-size="20" fill="#58a6ff" font-weight="400">Link Architecture Overview</text>
+<text x="1268" y="17551" font-size="20" fill="#e6edf3" font-weight="400">…</text>
+<text x="1268" y="17601" font-size="20" fill="#58a6ff" font-weight="400">Publish Pull Request</text>
+<text x="1268" y="17651" font-size="20" fill="#e6edf3" font-weight="400">…</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>

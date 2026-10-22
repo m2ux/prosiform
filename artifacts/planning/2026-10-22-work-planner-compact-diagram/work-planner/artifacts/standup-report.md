@@ -4,7 +4,7 @@ A board progress report for a selected window, formatted for pasting into Slack.
 
 ## Operations
 
-### Compose Standup Report
+### *Compose* Standup Report
 
 The copyable report and any missing-evidence findings.
 
@@ -38,7 +38,9 @@ The management paragraph is set off by blank lines, with the board's link beneat
 - **In progress.**
   Epics and task issues In Progress or In Review, each epic with its open pull requests, or else its next task.
 - **Next.**
-  The five Ready items ranked by priority label, each epic with its next task, and a count of the rest.
+  The five Ready items, each epic with its next task, and a count of the rest.
+  - They rank by the priority label of the initiative their epic belongs to, then by their epic's own.
+  - An epic is placed ahead of any listed epic naming it, so a supplier reads before the work drawing on it. An epic names another when a task row names one of its rows or the initiative row names it whole.
 - **Key.**
   I Initiative, E Epic and W Work Item. Opening marks are ✅ done, 🔄 in progress (an initiative or epic open and not In Review), 👀 in review, 📝 draft and ▶️ ready.
 

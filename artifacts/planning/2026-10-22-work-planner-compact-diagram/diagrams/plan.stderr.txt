@@ -1,0 +1,3 @@
+W_ENTRY_DESTINATION: the entry reference 'Modes/Plan-Mode' resolves to the destination 'modesplan-mode', which the bundle's entry line links it to
+  reference: Modes/Plan-Mode
+  resolved: modesplan-mode

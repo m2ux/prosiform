@@ -4,7 +4,7 @@ The labels available for issue metadata in one repository.
 
 ## Operations
 
-### Ensure Repository Labels
+### *Ensure* Repository Labels
 
 The required label definitions available for issue publication.
 
@@ -14,15 +14,6 @@ The required label definitions available for issue publication.
 2. Compare the returned labels with the supplied required names.
 3. Run [Create Label](#create-label) for each absent required definition.
 4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
-
-### Read Repository Labels
-
-The current label definitions available for issue publication.
-
-**Inputs:** Repository.
-
-1. Run [List Labels](#list-labels) for the supplied repository.
-2. Return the available names.
 
 ## Fields
 

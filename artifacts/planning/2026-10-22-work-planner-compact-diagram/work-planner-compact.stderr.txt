@@ -1,3 +1,0 @@
-W_ENTRY_DESTINATION: the entry reference 'SKILL' resolves to the destination 'skill', which the bundle's entry line links it to
-  reference: SKILL
-  resolved: skill

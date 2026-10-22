@@ -1,0 +1,99 @@
+{
+  "compiler_revision": "68dd39c10ad0f5b1ba8087dabbf924be960f50a1",
+  "groups": [
+    "artifacts:2",
+    "protocols:2"
+  ],
+  "modes": [
+    {
+      "mode": "Propose",
+      "entry": "modes/propose-mode.md",
+      "fragment": "",
+      "output": "diagrams/propose",
+      "exit_code": 0,
+      "opened_files": 6,
+      "bundle_bytes": 23091
+    },
+    {
+      "mode": "Plan",
+      "entry": "modes/plan-mode.md",
+      "fragment": "",
+      "output": "diagrams/plan",
+      "exit_code": 0,
+      "opened_files": 35,
+      "bundle_bytes": 208472
+    },
+    {
+      "mode": "Align",
+      "entry": "modes/align-mode.md",
+      "fragment": "",
+      "output": "diagrams/align",
+      "exit_code": 0,
+      "opened_files": 21,
+      "bundle_bytes": 129833
+    },
+    {
+      "mode": "Sync",
+      "entry": "modes/sync-mode.md",
+      "fragment": "",
+      "output": "diagrams/sync",
+      "exit_code": 0,
+      "opened_files": 27,
+      "bundle_bytes": 159120
+    },
+    {
+      "mode": "Advance",
+      "entry": "modes/advance-mode.md",
+      "fragment": "",
+      "output": "diagrams/advance",
+      "exit_code": 0,
+      "opened_files": 29,
+      "bundle_bytes": 173074
+    },
+    {
+      "mode": "Deliver",
+      "entry": "modes/deliver-mode.md",
+      "fragment": "",
+      "output": "diagrams/deliver",
+      "exit_code": 0,
+      "opened_files": 39,
+      "bundle_bytes": 247821
+    },
+    {
+      "mode": "Understand",
+      "entry": "modes/understand-mode.md",
+      "fragment": "",
+      "output": "diagrams/understand",
+      "exit_code": 0,
+      "opened_files": 9,
+      "bundle_bytes": 44120
+    },
+    {
+      "mode": "Hoist",
+      "entry": "modes/hoist-mode.md",
+      "fragment": "",
+      "output": "diagrams/hoist",
+      "exit_code": 0,
+      "opened_files": 15,
+      "bundle_bytes": 86800
+    },
+    {
+      "mode": "Standup",
+      "entry": "modes/standup-mode.md",
+      "fragment": "",
+      "output": "diagrams/standup",
+      "exit_code": 0,
+      "opened_files": 29,
+      "bundle_bytes": 169223
+    },
+    {
+      "mode": "Revise",
+      "entry": "modes/revise-mode.md",
+      "fragment": "",
+      "output": "diagrams/revise",
+      "exit_code": 0,
+      "opened_files": 7,
+      "bundle_bytes": 45015
+    }
+  ]
+}

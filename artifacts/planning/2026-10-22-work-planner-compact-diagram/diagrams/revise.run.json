@@ -1,0 +1,18 @@
+{
+  "compiler_branch": "main",
+  "compiler_revision": "68dd39c10ad0f5b1ba8087dabbf924be960f50a1",
+  "compact": true,
+  "command": "prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/revise-mode.md",
+  "exit_code": 0,
+  "sources": {
+    "modes/revise-mode.md": "3a79b3d4acccc68eef488bb8365518de9c287b6462cef96250f42a0fbc121b78",
+    "guidelines.md": "c241f75bb7c90dcd9ab3fb6d6ea61f7beab2de5195a10605ff598cef8ab07e21",
+    "artifacts/issue-body.md": "cd38d9c771111109c84323f93c6f1df88f898792e926d0c487a5087f54749ba4",
+    "artifacts/pull-request-body.md": "f4c7ecfc4d82faa395d77413eefdb78f0d2547dfaa4064d2f860c8a1f1805ee1",
+    "SKILL.md": "8980e97439331198a76ba5d4dc3219c441682859ade2a4e0643f684918b8d423",
+    "artifacts/repository-graph.md": "56bafea192460ced40c6623abf5ca3a8a8181d51731d39857117e11266f011e0",
+    "references/requirement-characteristics.md": "ac9fe4cc179fba843ec711218e0b0704320cb078f3c790b1e08b231d9a7d74ee"
+  },
+  "stdout_sha256": "f9efa51c432137cbb9797e064d4ffdea50233d2e92b394d154c0ba16452df2a2",
+  "stderr_sha256": "3a05aec96f30215495984f134e774f6982683de6d66d18b538216d9cdb8b0cb8"
+}

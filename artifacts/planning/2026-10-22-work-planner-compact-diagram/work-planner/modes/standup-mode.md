@@ -11,7 +11,7 @@ The main path meets [Outcomes](#outcomes).
    - Retain the selected window and initiative filter.
    - Complete steps 2–6 separately for each selected board.
 2. **Bring delivery current.**
-   - Use the supplied delivery-update checkpoint and captured changes when available.
+   - Use the delivery results and board state a caller passed in, where this run follows one that already brought the board current. A request made directly by the user supplies none, so the checkpoint is absent.
    - If the checkpoint is absent:
      - Read the board through [Read Board State](../artifacts/board.md#read-board-state).
      - Treat each selected initiative's delivery state as needing refresh.
@@ -21,7 +21,7 @@ The main path meets [Outcomes](#outcomes).
    - Retain it as a gap if presenting a partial report.
 3. **Fetch.**
    Run [Read Board State](../artifacts/board.md#read-board-state) with the selected board identity.
-   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the selected board repositories.
+   - Run [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](../artifacts/board.md#repositories) Read Board State returned.
    - Run [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) for those records.
    - Pass the returned snapshots to Compose Standup Report.
 4. **Compose.**
@@ -34,8 +34,8 @@ The main path meets [Outcomes](#outcomes).
 6. **Report.**
    Present the returned report verbatim in a fenced block for copying.
    - Put unresolved findings beneath it.
-   - For an unreadable epic body:
-     - Run [Repair Issue Format](align-mode.md#repair-issue-format) with the epic identity, current JSON, [epic template and field conditions](../artifacts/epic-issue-body.md#fields), required related evidence and output body path.
+   - For an epic [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) returns with an unreadable Work Breakdown:
+     - Run [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with the epic identity, current JSON, [epic template and field conditions](../artifacts/epic-issue-body.md#fields), required related evidence and output body path.
      - If it confirms a saved correction, repeat steps 3–6 with refreshed records, retaining the selected board, window and initiative filter.
      - If it reports a blocker or no correction, return the unresolved finding without repeating the same repair.
 

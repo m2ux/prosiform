@@ -4,7 +4,7 @@ Populates one initiative body. The body states the goal as criteria and lists th
 
 ## Operations
 
-### Populate Initiative Issue Body
+### *Populate* Initiative Issue Body
 
 One initiative body and its local validation findings.
 
@@ -14,7 +14,7 @@ One initiative body and its local validation findings.
 2. Follow [Check Round of Edits](issue-body.md#check-round-of-edits).
 3. Return the populated body and its local format findings to the caller.
 
-### Draft Initiative Issue Body
+### *Draft* Initiative Issue Body
 
 One initiative body, scoped to one proposal.
 
@@ -34,7 +34,7 @@ One initiative body, scoped to one proposal.
    - Each row must meet [Work Breakdown](#work-breakdown).
    - An item a test cannot observe must stay named as [Coverage Reports](issue-body.md#coverage-reports) define.
 
-### Record Initiative Delivery
+### *Record* Initiative Delivery
 
 One initiative body with its epic delivery recorded.
 
@@ -43,7 +43,7 @@ One initiative body with its epic delivery recorded.
 1. Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
 2. Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
-### Record Initiative Criteria
+### *Record* Initiative Criteria
 
 Verified criteria and completed rows in one initiative body.
 
@@ -52,7 +52,7 @@ Verified criteria and completed rows in one initiative body.
 1. Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
 2. Return the body and refused criteria. Complete rows receive Done ticks.
 
-### Validate Initiative Body
+### *Validate* Initiative Body
 
 The body's local format and field findings.
 
@@ -63,7 +63,7 @@ The body's local format and field findings.
 3. Include excluded names in Problem and Proposal and criterion/source departures in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-### Read Requirement Sources
+### *Read* Requirement Sources
 
 The requirements evidence used to validate an initiative's criteria.
 
@@ -166,6 +166,7 @@ An initiative criterion meets the [shared acceptance criteria](issue-body.md#sha
 
 ### References
 
+- A proposal-derived initiative identifies its originating proposal in References with the proposal's exact title and issue URL, labelled as the originating proposal.
 - A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources).
 - A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
 

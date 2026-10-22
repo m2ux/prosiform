@@ -4,7 +4,7 @@ The membership, status and assignee changes that record delivery on one board.
 
 ## Operations
 
-### Plan Board Changes
+### *Plan* Board Changes
 
 The board changes implied by supplied delivery state.
 
@@ -13,6 +13,46 @@ The board changes implied by supplied delivery state.
 1. Require the complete pull-request issue-link snapshot; refuse the computation without it.
 2. Run [Compute Board Changes](#compute-board-changes), mapping the supplied records and board context to its parameters.
 3. Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms their live state.
+
+### *Record* Epic Review
+
+One epic's board item at In Review, recording that its delivery is complete and its review draft awaits the user's mark.
+
+**Inputs:** Epic issue identity, board identity and output paths.
+
+1. Run [Read Board State](board.md#read-board-state) for the supplied board to obtain its items and Status field.
+2. Run [Read Board Configuration](board.md#read-board-configuration) with the board identity and output paths for the Status option ids.
+3. Match the epic's issue to its board item.
+   - Return an absent item as a finding and stop. The status write below needs it.
+4. Run [Update Item Status](board.md#update-item-status) with the board and item identities, the Status field and In Review option ids, and that status in its request body file, meeting [Status Changes](#status-changes).
+   - Repeat the write and read the item again when it still shows the preceding status. The item list can lag a write.
+5. Return the confirmed status or the discrepancy left for the caller.
+
+### *Record* Board Delivery
+
+The board's status and assignees after its issues record delivery.
+
+**Inputs:** Saved initiative, epic and task identities, board identity, output directory, and the repositories the board's issues live in.
+
+1. Read the issues, the board and its delivery records.
+   - Run [Read Tracker Issue](issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
+   - Run [Read Board State](board.md#read-board-state) for the selected board.
+   - Run [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for its repositories.
+   - Run [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) for those records.
+   - Run [Read Board Configuration](board.md#read-board-configuration) with the board and output paths.
+   - Run [Read Board Assignee](board.md#read-board-assignee) for the assignment login.
+   - Pass these returned snapshots to Plan Board Changes.
+2. Run [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
+   - Fetch each unresolved issue.
+   - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
+3. Run each emitted call, including the assignee calls, which act on the issue rather than the board item.
+   - Run [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
+   - If that item still shows the preceding status:
+     - Repeat its write.
+     - Repeat the same item read. The item list can lag a write.
+4. Fetch the issues and items again.
+   - Run [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
+   - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
 ## Fields
 
@@ -23,6 +63,8 @@ An open initiative or epic whose criteria are all ticked is In Review. An epic w
 An initiative or epic with no open pull request and unticked criteria keeps Ready or Backlog, and keeps In Progress when delivery has started. In Review then becomes In Progress. One not yet on the board is added at Backlog, or at In Progress when delivery has started. Delivery does not move an initiative or epic between Ready and Backlog.
 
 Task readiness meets [Task Eligibility](board-queue.md#task-eligibility). The caller supplies saved issue bodies and closure state.
+
+A task gated on an [unresolvable dependency](board-queue.md#unresolvable-dependencies) keeps the Status it holds: the row waits on no delivery, so no status follows from its gate. The run names the row and the entry and exits nonzero, as every reader of that cell does.
 
 ### Change Calls
 

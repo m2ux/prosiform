@@ -4,7 +4,7 @@ The indexed symbols, relationships and ordered flows for a repository revision.
 
 ## Operations
 
-### Measure Repository Change
+### *Measure* Repository Change
 
 Current graph evidence for the supplied change.
 

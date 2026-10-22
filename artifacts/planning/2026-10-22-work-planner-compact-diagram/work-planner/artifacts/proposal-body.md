@@ -4,7 +4,7 @@ Populates one proposal body.
 
 ## Operations
 
-### Populate Proposal Body
+### *Populate* Proposal Body
 
 One proposal body from a confirmed problem and goal.
 
@@ -15,7 +15,7 @@ One proposal body from a confirmed problem and goal.
   - The Problem must meet the shared [Problem and Proposal](issue-body.md#problem-and-proposal) conditions.
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
-### Validate Proposal Body
+### *Validate* Proposal Body
 
 The body's local format and field findings.
 

@@ -111,7 +111,7 @@ COVERAGE = re.compile(r'AC\d+(?:, AC\d+)*')
 LINK = re.compile(r'\[([^\]]*)\]\(([^)]*)\)')
 EPIC_REF = re.compile(r'(?<![\w:])(?:I(\d\d):)?E(\d\d)(?::W\d\d)?(?![\w:])')
 DEPENDENCY = {
-    'epic': re.compile(r'W\d\d(?:[–-]W\d\d)?|E\d\d(?::W\d\d)?|I\d\d:E\d\d(?::W\d\d)?|#\d+'),
+    'epic': re.compile(r'W\d\d(?:[–-]W\d\d)?|E\d\d:W\d\d|I\d\d:E\d\d(?::W\d\d)?|#\d+'),
     'initiative': re.compile(r'E\d\d|I\d\d:E\d\d|#\d+'),
 }
 

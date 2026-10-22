@@ -1,0 +1,4 @@
+W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
+W_ENTRY_DESTINATION: the entry reference 'Modes/Hoist-Mode' resolves to the destination 'modeshoist-mode', which the bundle's entry line links it to
+  reference: Modes/Hoist-Mode
+  resolved: modeshoist-mode

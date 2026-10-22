@@ -1,23 +1,27 @@
-# Work Planner Compact Diagram
+# Work Planner Mode Diagrams
 
-[Compact Diagram Review](work-planner-compact.review.md)
+[Mode Diagram Review](work-planner-compact.review.md)
 
 ## Source
 
-The [workspace skill](https://github.com/m2ux/prosiform/tree/032ea2e8e79eeec62f073e129e3692ca74fbc2e5/skills/work-planner) is copied into [work-planner/](work-planner/): 64 files, including 38 Markdown documents. The copy omits 24 Prerequisites sections, each through the next heading of equal or higher level. One stale internal link is repaired as recorded below. Other sections and non-Markdown files retain their source content.
+The [workspace skill](https://github.com/m2ux/prosiform/tree/959dbc6635f76a31048a9734ae5ac80de8a3b367/skills/work-planner) is copied into [work-planner/](work-planner/): 77 files, including 49 Markdown documents. The copy omits 35 Prerequisites sections, each through the next heading of equal or higher level. All other content matches that source revision.
 
-[Source Manifest](source-manifest.json) records the source revision, source and copy hashes, and removed section ranges.
+[Source Manifest](source-manifest.json) records the source revision, source and copy hashes, and removed section ranges. The workspace originals are untouched.
 
 ## Rendering
 
-The [main-branch renderer](https://github.com/m2ux/prosiform/blob/560926e9c1817d601ec23efe6294bfdb45d9068a/scripts/render-diagram.py) uses `work-planner/SKILL.md` as its entry document with `--compact`, without grouping rules. Headings and links remain visible; other body content is represented by `…`. Exact output, diagnostics and compiler provenance accompany the diagram.
+Each of the ten links under Modes in the copied SKILL.md supplies a separate compiler entry. The Markdown review has one subsection per mode, in that link order. Local dependencies are bundled under the shared work-planner root.
 
-Compilation succeeds, opening all 38 Markdown files and producing a 283,084-byte bundle. The output budget is 1,048,576 bytes. From this folder, using a clean compiler checkout at the pinned revision:
+The canonical sections declared by [structure.json](work-planner/structure.json) are H2 headings. `--group artifacts:2 --group protocols:2` pools those sections within each directory group: Operations, Fields, Guidance and Commands for artifacts; Procedure and Guidance for protocols. Only reached content contributes. An unused group produces a diagnostic.
+
+Every call uses `--compact --max-output-bytes 1048576`. Images preserve headings and links and represent other content with `…`. Each mode has its own SVG, complete stdout, diagnostics, command, review and run record under [diagrams/](diagrams/). [Mode Runs](mode-runs.json) records all ten successful compilations.
+
+## Reproduce
+
+Use a clean compiler checkout with its locked environment installed and the [renderer](https://github.com/m2ux/prosiform/blob/68dd39c10ad0f5b1ba8087dabbf924be960f50a1/scripts/render-diagram.py). From this planning folder:
 
 ```bash
-/path/to/prosiform/src/.venv/bin/python /path/to/prosiform/scripts/render-diagram.py work-planner/SKILL.md --compact --max-output-bytes 1048576 --revision 560926e9c1817d601ec23efe6294bfdb45d9068a --output work-planner-compact
+/path/to/prosiform/src/.venv/bin/python render-modes.py --compiler-checkout /path/to/prosiform
 ```
 
-## Source Link Review
-
-The copied `guidelines.md` links to `SKILL.md#conventions`, matching the entry document's Conventions heading. The source snapshot contains `SKILL.md#command-conventions`; the source manifest records the repair. The workspace originals are untouched.
+The script reads the mode links, invokes the single-document renderer once per mode, verifies successful outputs, and assembles the combined review. Compiler provenance is recorded for each invocation.

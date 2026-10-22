@@ -4,7 +4,7 @@ Populates one standalone issue body.
 
 ## Operations
 
-### Populate Standalone Body
+### *Populate* Standalone Body
 
 One standalone issue body from its supplied scope.
 
@@ -15,7 +15,7 @@ One standalone issue body from its supplied scope.
   - The Problem and Proposal must meet [Problem and Proposal](issue-body.md#problem-and-proposal).
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
-### Revise Standalone Body
+### *Revise* Standalone Body
 
 One standalone body with its confirmed boundary integrated.
 

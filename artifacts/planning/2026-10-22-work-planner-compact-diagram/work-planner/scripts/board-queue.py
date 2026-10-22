@@ -15,7 +15,10 @@ line for an initiative In Progress with no priority, a tie line when labelled in
 the highest rank, a wait line for an open pull request, and a next line for epics.
 --unplanned names an initiative the user left with no priority. It returns to Backlog once its
 open pull requests have completed, and its epics return with it. Initiatives with the same
-priority number run together. A priority is a positive integer with no maximum.
+priority number run together, as do the epics of one initiative, whose highest number counts the
+epics already In Progress. An epic with no priority label ranks below every number, so it waits
+while a labelled sibling can start or is running. A priority is a positive integer with no
+maximum.
 """
 import argparse
 import json
@@ -24,7 +27,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from board import Board, linked_issue, open_questions, rows
+from board import Board, Resolution, linked_issue, open_questions, rows, weakest
 from format import cell, id_cell, row_id
 from statuses import PLACED, QUEUE, Changes, Jurisdiction, StatusField, board_items, key_of, label
 from sync import PR_REF, Unreadable, pull_requests
@@ -39,7 +42,7 @@ def label_names(issue: dict) -> set[str]:
 
 
 def rank(issue: dict) -> int | None:
-    """The initiative's priority. A larger number is higher. Two labels count as the larger."""
+    """The issue's priority. A larger number is higher. Two labels count as the larger."""
     found = [int(matched.group(1)) for name in label_names(issue) if (matched := RANK.fullmatch(name))]
     return max(found) if found else None
 
@@ -89,15 +92,18 @@ def partial(board: Board, key: tuple[str, int], why: str) -> bool:
     except Unreadable as exc:
         board.unresolved.append(f'{why}: {exc}')
         return False
-    return any(board.row_delivered(key, task, why) for task in tasks)
+    return any(board.row_delivered(key, task, why) is Resolution.MET for task in tasks)
 
 
 def is_next(board: Board, initiative: tuple[str, int], epic: tuple[str, int] | None, depends: str,
-            epics: dict[str, tuple[str, int]], why: str) -> bool:
+            epics: dict[str, tuple[str, int]], why: str) -> Resolution:
+    """How far the gates on one epic row resolve. An unresolvable gate is the row's own answer, so
+    the caller leaves the epic where it stands rather than reading it as a prerequisite to come."""
     issue = board.issues.get(epic) if epic else None
     if issue is None or issue['state'] != 'open' or open_questions(issue):
-        return False
-    return board.met(depends, initiative, epics, why) and board.epic_dependencies_met(epic, epics, why)
+        return Resolution.UNMET
+    return weakest([board.met(depends, initiative, epics, why),
+                    board.epic_prerequisites_met(epic, epics, why)])
 
 
 class Queue:
@@ -110,6 +116,7 @@ class Queue:
         self.shelved: set = set()
         self.board = Board(issues, [], home, prs)
         self.wanted: dict = {}
+        self.unresolvable: list[str] = []
         self.notes: list[str] = []
         self.children: dict = {}
         self.parents: dict = {}
@@ -144,8 +151,10 @@ class Queue:
         return {key[0].lower(), *(epic[0].lower() for _, epic, _ in rows_of)}
 
     def activate(self, key: tuple[str, int]) -> None:
-        """Partly completed epics are In Progress, and the next unstarted epics are Ready."""
+        """Partly completed epics are In Progress, and the unstarted epics of the highest priority
+        set are Ready. The set counts the epics already under way, so a lower one waits."""
         rows_of, epics = self.load(key)
+        candidates, running = [], []
         for row_name, epic_key, depends in rows_of:
             held = self.status.get(epic_key)
             if held in ('In Review', 'Done') or self.issues[epic_key]['state'] != 'open':
@@ -153,12 +162,20 @@ class Queue:
             why = f'{self.line(key)} {row_name}'
             if partial(self.board, epic_key, why):
                 self.place(epic_key, 'In Progress')
+                running.append(epic_key)
             elif held == 'In Progress':
+                running.append(epic_key)
+            elif (answer := is_next(self.board, key, epic_key, depends, epics, why)) is Resolution.MET:
+                candidates.append(epic_key)
+            elif answer is Resolution.UNRESOLVABLE:
+                self.unresolvable.append(why)
                 continue
-            elif is_next(self.board, key, epic_key, depends, epics, why):
-                self.place(epic_key, 'Ready')
             elif held == 'Ready':
                 self.place(epic_key, 'Backlog')
+        ranked = {epic_key: rank(self.issues[epic_key]) for epic_key in (*candidates, *running)}
+        top = max((found for found in ranked.values() if found is not None), default=None)
+        for epic_key in candidates:
+            self.place(epic_key, 'Ready' if top is None or ranked[epic_key] == top else 'Backlog')
 
     def park(self) -> None:
         """A Ready epic whose initiative is not In Progress, and was not just returned there, goes Backlog."""
@@ -310,7 +327,9 @@ def main() -> int:
             continue
         changes.place(key, queue.line(key), issues[key], status.get(key), new, item_ids[key], home)
     asking = any(note.strip().startswith(('order', 'ask')) for note in queue.notes)
-    return changes.report(notes=queue.notes, unresolved=queue.board.unresolved, asking=asking)
+    printed = changes.report(notes=queue.notes, unresolved=queue.board.unresolved,
+                             asking=asking or bool(queue.unresolvable))
+    return 1 if queue.unresolvable else printed
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ Populates one epic body. The body states one slice of the design and lists the t
 
 ## Operations
 
-### Populate Epic Issue Body
+### *Populate* Epic Issue Body
 
 One epic body and its local validation findings.
 
@@ -21,7 +21,7 @@ One epic body and its local validation findings.
 6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
 7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
-### Record Epic Delivery
+### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -31,7 +31,7 @@ One epic body with supplied delivery matches and completed rows recorded.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-### Record Epic Criteria
+### *Record* Epic Criteria
 
 Verified criteria and completed rows in one epic body.
 
@@ -40,7 +40,7 @@ Verified criteria and completed rows in one epic body.
 1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
 2. Return the body and refused criteria. Complete rows receive Done ticks.
 
-### Reserve Task Rows
+### *Reserve* Task Rows
 
 Task rows held for one confirmed delivery session.
 
@@ -50,7 +50,7 @@ Task rows held for one confirmed delivery session.
 2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
 3. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
-### Release Task Rows
+### *Release* Task Rows
 
 Held task rows returned to their work-item links.
 
@@ -60,7 +60,7 @@ Held task rows returned to their work-item links.
 2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
 3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
-### Validate Epic Body
+### *Validate* Epic Body
 
 The body's local format and field findings.
 
@@ -71,7 +71,7 @@ The body's local format and field findings.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-### Revise Epic Rows
+### *Revise* Epic Rows
 
 One epic body with confirmed task-grain and coverage corrections.
 
@@ -81,6 +81,25 @@ One epic body with confirmed task-grain and coverage corrections.
    - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
    - Split a task exceeding the allowed criterion grain into the confirmed tasks.
 2. Return the revised body and any cross-body numbering or dependency changes for the caller.
+
+### *Plan* Gap Task
+
+The agreed disposition of criteria a delivered row left unmet.
+
+**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
+
+1. Present each unmet criterion and its missing evidence to the user.
+   - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
+   - Record an unanswered decision as pending.
+   - If no criteria need further work, return the pending findings to the caller.
+   - Continue to the draft step with only the criteria the user confirms need further work.
+2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
+   - Confirm the draft with the user.
+   - On acceptance, call [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
+   - Return an unanswered draft as pending without continuing to the reconcile step.
+3. Run [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
+   - Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+   - Return the saved row and criterion disposition to the caller. Done follows [Tables](issue-body.md#tables).
 
 ## Fields
 
@@ -131,6 +150,8 @@ One epic body with confirmed task-grain and coverage corrections.
 
 ### Work Breakdown
 
+New tasks exist as epic rows with their details, discussion and evidence in the epic and planning record. Planning creates no separate task issues. Existing issues hoisted into an epic retain their records and row links when new tasks are planned.
+
 The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
 - **Done.**
@@ -143,7 +164,7 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
   Coverage names the epic's criteria the task must meet. Each row claims only criteria its work makes true; it cannot claim a criterion another row delivers alone or one its work cannot meet. A complete task's cell is empty.
 - **Depends on.**
   A task row names the rows it depends on. An earlier task in the epic (`W03`, `W04–W09`), a row of an earlier epic (`[E01:W02](…)`), or something outside the initiative (`#750`, `[I05:E00:W02](…)`).
-  - A task row names a whole epic (`[E01](…)`) only when every row of that epic must hold before the task starts, which is when the task consumes an output every row of the epic produces. The dependency is the row that produces the output the task consumes.
+  - A task row names rows, never an epic. It names the row producing each output it consumes (`[E01:W01](…), [E01:W02](…)`), and where the task consumes from every row of an epic that is what establishes the whole-epic reach.
   - Cross-epic dependencies name rows before any issue of the epic is created. Both tables exist, and each edge names the row that produces what the dependent row consumes.
   - A dependency listed twice or already implied by another in the cell is unsound. A task that measures, extends or consumes another task's output depends on it, even when the prose does not say so.
 - **Task grain.**

@@ -4,7 +4,7 @@ The queue for one theme board: initiative priority sets, status and assignee cha
 
 ## Operations
 
-### Plan Board Queue
+### *Plan* Board Queue
 
 Derives the queue from supplied board and delivery snapshots and confirmed decisions.
 
@@ -15,6 +15,7 @@ Derives the queue from supplied board and delivery snapshots and confirmed decis
    - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
 2. Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
    - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
+   - Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
    - The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
 
 ## Fields
@@ -27,7 +28,9 @@ The queue belongs to one theme board, identified as `users/{owner}/projectsV2/{i
 
 A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one initiative count as the larger number.
+The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
+
+A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 ### Initiative Status
 
@@ -41,14 +44,16 @@ A priority label is `priority:` and a positive integer. A larger number is highe
 ### Epic Status
 
 - On an initiative In Progress, a partly completed epic is In Progress even with open questions. Partly completed means a delivered task row on an epic that is not closed as completed. Delivery follows [Task Delivery](epic-issue-body.md#task-delivery), using the supplied evidence.
-- On that initiative, an unstarted epic is next and Ready when every prerequisite epic named by its task rows or initiative row is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
+- On that initiative, an unstarted epic can start when every prerequisite epic its initiative row names is closed as completed, all of each prerequisite's bases have merged into their long-lived branches, and the epic's Open Questions section is empty.
+- Of the epics that can start, those carrying the highest priority number are next and Ready, all together. The highest counts the epics already In Progress, so an epic of a lower number waits while a higher one runs.
+- An epic with no priority label ranks below every number, so it is Ready only when no labelled sibling can start or is running.
 - Any other Ready epic of that initiative moves to Backlog.
 - An epic In Review or Done remains in that state.
 - On an initiative that moves to Backlog, its epics move to Backlog. A Ready epic of an initiative that is not In Progress moves to Backlog.
 
 ### Task Eligibility
 
-A task is Ready only when its epic is Ready or In Progress. The queue contains no task issue changes; task status comes from the supplied delivery state.
+A task is Ready only when its epic is Ready or In Progress and every row its Depends on cell names is delivered. A row naming another epic's row waits for that epic to close, since its output reaches this epic's base when that epic's bases merge, and the rows beside it wait for nothing it waits on. The queue contains no task issue changes; task status comes from the supplied delivery state.
 
 ### Proposed Changes
 
@@ -63,6 +68,22 @@ The queue contains calls for Status and assignee changes to initiatives and epic
 | `wait` | An open pull request names one of an initiative's epics | That initiative and the pull request |
 | `next` | An initiative is In Progress and has epics that are Ready | Those epics |
 
+### Recommended Decisions
+
+The answer a caller applies where it resolves an `order` or `ask` line on its own.
+
+- For `order`, priority 1 on every open initiative already In Progress or named by an open pull request, and no number on the rest. Where no initiative qualifies, nothing is under way and the line has no recommended answer.
+- For `ask`, the number of the highest set already running, so the initiative joins it, or 1 where no initiative carries a priority label.
+
+### Unresolvable Dependencies
+
+A `Depends on` entry that names no row and links no issue, names an issue the run was not given, or names a row the epic it points to does not carry, cannot resolve. No delivery makes it readable, so it is told apart from a prerequisite that has not landed.
+
+- The report names the row and the entry as written, and a run that met one while deciding a placement exits nonzero.
+- The epic that row gates keeps the Status it holds. The run proposes no move for it, so a Ready epic is not returned to Backlog on an entry nobody can read.
+- Every entry of a cell is read, so a cell carrying two names both.
+- A note raised while reading delivery rather than deciding a placement is reported and leaves the exit status alone.
+
 ### Completeness
 
 An `order` or `ask` line means a decision is pending. An unresolved issue reference means dependency evidence is missing. Either leaves the queue incomplete.
@@ -73,7 +94,7 @@ A complete queue may still propose changes. Live board state has converged when 
 
 ### Compute Board Queue
 
-Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue.
+Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue. It exits nonzero where an [unresolvable dependency](#unresolvable-dependencies) stopped it placing a row.
 
 **Inputs:** Current board and delivery snapshots, board identity, assignee login, output directory, resolved dependency evidence, confirmed unplanned initiatives and the permitted Status scope.
 

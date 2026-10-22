@@ -1,0 +1,26 @@
+{
+  "compiler_branch": "main",
+  "compiler_revision": "68dd39c10ad0f5b1ba8087dabbf924be960f50a1",
+  "compact": true,
+  "command": "prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/hoist-mode.md",
+  "exit_code": 0,
+  "sources": {
+    "modes/hoist-mode.md": "0d8f7ceea066a6eaef46c5a33f3916fbf2cca4dcc509e082eb19c2d7efb045a1",
+    "artifacts/issue.md": "8e57171f53e69c730fe50995756463944b95d935ae97f4a183f1e30fb7fa1ef9",
+    "artifacts/placement.md": "81c502f0cce0d6a838a479de15264a8edc87480caa169b144b17a7b0184a3960",
+    "artifacts/plan-change.md": "618220f049fea5ae6aea2fe8bf1ba2fd7062858b974c38ca8ae1406d634cd238",
+    "guidelines.md": "c241f75bb7c90dcd9ab3fb6d6ea61f7beab2de5195a10605ff598cef8ab07e21",
+    "artifacts/issue-body.md": "cd38d9c771111109c84323f93c6f1df88f898792e926d0c487a5087f54749ba4",
+    "artifacts/dependency-graph.md": "6ff09f1b07a246708e0dac832513bd776923248f3aa22e7fbde32a2854371c54",
+    "artifacts/epic-issue-body.md": "2ff69aa213ce94d4a10c636c7f8ed886720de89e35895c47ccc234ab49183436",
+    "artifacts/initiative-issue-body.md": "0471b4c02fb007ce77f82c4df15f5b843fa0a1f3ddb2e8b250c3630fca88996d",
+    "artifacts/task-body.md": "a737fd5a7c33498ecfc0fdf811a0f7497d88710070b286b3a05444094876410a",
+    "artifacts/standalone-body.md": "09913263680927fd2f6f2fdcc391d9612864215a955dcf3aee9e987f7e103231",
+    "artifacts/work-item.md": "6ddd9c00790c40064fa2e6dc1fd467c0cf5c4709811c3f94b18a0b0d6bc9c8d0",
+    "artifacts/pull-request.md": "a7193cc2ae80b47e16e12899401d5f4cf5bfbc81d9cb12790ee35ebb96ac25b2",
+    "references/requirement-characteristics.md": "ac9fe4cc179fba843ec711218e0b0704320cb078f3c790b1e08b231d9a7d74ee",
+    "artifacts/epic.md": "63bd829c2e59d57fe4745969a5e886de52de693e38b2a0e9e0cff60449d187b3"
+  },
+  "stdout_sha256": "3e41f32f2b295242d3fedf540ae282f363ba57910e7fb92c2b9b7fcb7ece435d",
+  "stderr_sha256": "0bbd120dba4c2525d845873a5fadb04bd0e713d2614049852df9f8ebf54ceabb"
+}

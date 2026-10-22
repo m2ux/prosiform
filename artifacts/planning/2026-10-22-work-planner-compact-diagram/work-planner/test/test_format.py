@@ -9,7 +9,7 @@ import unittest
 from fixtures import SCRIPTS, issue, pr
 
 sys.path.insert(0, str(SCRIPTS))
-from format import Review  # noqa: E402
+from format import DEPENDENCY, Review  # noqa: E402
 
 
 def body(problem: str, proposal: str) -> str:
@@ -204,6 +204,22 @@ class Proposal(unittest.TestCase):
         r = Review(issue(1, '[P00] Key Validation: Reject Bad Keys', body=text, labels=('type:proposal',)))
         r.run()
         self.assertTrue(any('initiative template' in item for item in r.decide))
+
+
+class TaskRowDependencies(unittest.TestCase):
+    """A task row names rows; the initiative row is the one that names epics."""
+
+    def test_the_epic_kind_takes_only_row_references(self):
+        accepted = ('W03', 'W04–W09', 'E01:W02', 'I05:E00:W02', '#750')
+        for value in accepted:
+            with self.subTest(value=value):
+                self.assertTrue(DEPENDENCY['epic'].fullmatch(value))
+        self.assertIsNone(DEPENDENCY['epic'].fullmatch('E01'))
+
+    def test_the_initiative_kind_takes_epic_references(self):
+        for value in ('E01', 'I05:E00', '#750'):
+            with self.subTest(value=value):
+                self.assertTrue(DEPENDENCY['initiative'].fullmatch(value))
 
 
 class References(unittest.TestCase):

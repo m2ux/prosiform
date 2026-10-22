@@ -4,7 +4,7 @@ The long-lived branches, epic bases and task branches used for delivery.
 
 ## Operations
 
-### Prepare Delivery Bases
+### *Prepare* Delivery Bases
 
 The branches a task pull request targets.
 
@@ -18,25 +18,7 @@ The branches a task pull request targets.
 4. Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
 5. Run [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
-### Create Task Branch
-
-One unit's branch and worktree, rooted in its epic base.
-
-**Inputs:** Project checkout, task branch name, epic base, worktree path and confirmed prerequisite evidence.
-
-1. Take the caller's confirmed prerequisite evidence, branch, worktree and selected base as inputs.
-2. Run [Create Task Worktree](#create-task-worktree) with those paths and names, meeting [Task Branches](#task-branches).
-
-### Update Delivery Branch
-
-The current upstream content in a delivery branch.
-
-**Inputs:** Selected branch type and name, its worktree and the upstream branch to merge.
-
-1. When the selected branch is an epic base, run [Update Epic Base](#update-epic-base) in its worktree with its long-lived target.
-2. When the selected branch is a task branch, run [Update Task Branch](#update-task-branch) in its worktree with the task branch name and epic base. A conflict stops the operation and is reported.
-
-### Create Epic Base
+### *Create* Epic Base
 
 The missing epic branch rooted in its remote long-lived branch.
 
@@ -48,20 +30,22 @@ The missing epic branch rooted in its remote long-lived branch.
    - Run [Publish Epic Base](#publish-epic-base) with that remote source and the missing epic base name, such as `i07/e00/main`, meeting [Epic Bases](#epic-bases).
    - Return the created branch or the failure.
 
-### Update Epic Base
+### *Update* Epic Base
 
 The current long-lived target merged into an epic base.
 
-**Inputs:** Epic-base worktree and its corresponding long-lived target branch.
+**Inputs:** Project checkout and epic base branch.
 
-1. Run [Fetch Remote Branch](#fetch-remote-branch) in the epic-base worktree with its corresponding long-lived target, such as `main`.
-2. Stop on failure.
-3. Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the target branch name, such as `main`, to merge `origin/main`. A conflict stops the update, leaves the pull request open and is reported.
-4. After a successful merge:
+1. Take the long-lived target and the worktree path from the base name, meeting [Epic Bases](#epic-bases).
+2. Run [Fetch Remote Branch](#fetch-remote-branch) in the project checkout with that epic base; stop on failure.
+3. Run [Add Epic Base Worktree](#add-epic-base-worktree) for an absent worktree, and reuse an existing one; stop on failure, which a base checked out elsewhere returns.
+4. Run [Fetch Remote Branch](#fetch-remote-branch) in that worktree with the long-lived target, such as `main`; stop on failure.
+5. Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the target branch name, such as `main`, to merge `origin/main`. A conflict stops the update, leaves the pull request open and is reported.
+6. After a successful merge:
    - Run [Push Epic Base](#push-epic-base) in the same worktree.
    - Return the updated branch or the failure.
 
-### Update Task Branch
+### *Update* Task Branch
 
 The current epic base merged into a unit's task branch.
 
@@ -74,7 +58,7 @@ The current epic base merged into a unit's task branch.
    - Run [Push Task Branch](#push-task-branch) with the task branch as destination.
    - Return the updated branch or the failure.
 
-### Create Task Worktree
+### *Create* Task Worktree
 
 The worktree and branch one unit's session works in.
 
@@ -86,25 +70,26 @@ The worktree and branch one unit's session works in.
 4. Run [Add Task Worktree](#add-task-worktree) with the supplied path and task branch, rooted in the fetched epic base.
 5. Return the worktree path and branch or the failure.
 
-### Create Pull Request Worktree
+### *Create* Pull Request Worktree
 
 The detached worktree where the graph reads the reviewed change.
 
-**Inputs:** Repository checkout, pull request number, verified head commit and worktree path.
+**Inputs:** Repository checkout, pull request number and verified head commit.
 
 1. Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
 2. Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
 3. If it differs from the verified head, return a changed-head finding before creating a worktree.
-4. If the supplied worktree already exists:
+4. Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
+5. If that worktree already exists:
    - Run Read Checkout Revision there for `HEAD`.
    - Run [Read Checkout Status](#read-checkout-status) there.
    - Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
    - Otherwise retain it and select an unused path suffixed with the verified commit.
-5. For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
-6. Confirm its HEAD through Read Checkout Revision.
-7. Return the selected detached worktree path and head, or the discrepancy before measuring.
+6. For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
+7. Confirm its HEAD through Read Checkout Revision.
+8. Return the selected detached worktree path and head, or the discrepancy before measuring.
 
-### Read Target Requirements
+### *Read* Target Requirements
 
 The protection and active rules governing one target branch.
 
@@ -114,7 +99,7 @@ The protection and active rules governing one target branch.
 2. Run [Fetch Active Branch Rules](#fetch-active-branch-rules) for the same target.
 3. Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
 
-### Read Delivery Branches
+### *Read* Delivery Branches
 
 The configured long-lived branches and existing epic bases.
 
@@ -138,12 +123,25 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - Each long-lived branch an epic changes has a base branch, named for the initiative, the epic and that branch, and rooted in that long-lived branch. Its prerequisite epics are closed as completed with every delivery base merged.
 - **Example.**
   An epic base cut from `main` is `i07/e00/main`.
+- The base's last segment is its long-lived branch, which gives the target it merges and is merged into.
+- Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
+- **Example.**
+  `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
 - Every pull request delivering the epic's tasks targets that epic base.
 - A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
+
+### Review Worktrees
+
+A reviewed pull request is read in a detached worktree, named by its number under the worktree directory of the repository's main working tree.
+
+- **Example.**
+  Pull request 950 is read at `.worktrees/pr-950`.
 
 ### Task Branches
 
 A unit's task branch is cut from the epic base for the long-lived branch the unit changes, named for its initiative, epic and first task in lowercase separated by slashes, and hyphenated with a slug of at most four words from its Description when one exists: `i01/e02/w04-write-defaults`. Every pull request delivering the unit's work is opened from this branch.
+
+Its worktree is named by that branch under the worktree directory of the repository's main working tree.
 
 ## Commands
 
@@ -153,7 +151,7 @@ Prints one epic's base branch names, one per line.
 
 **Inputs:** Repository checkout and epic branch prefix.
 
-- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a long-lived branch, as the [Work Breakdown Guide](#branches) defines.
+- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
 - The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
 - The output contains one full base branch name per line.
 
@@ -243,6 +241,8 @@ Creates a task branch and worktree at the fetched epic base.
 
 **Inputs:** Project checkout, worktree path, task branch, fetched epic base and confirmed prerequisite evidence.
 
+- The path resolves against the directory the command runs in, so supply it as [Task Branches](#task-branches) anchors it rather than relative to a linked worktree.
+
 ```bash
 git worktree add '<worktree-path>' -b '<task-branch>' 'origin/<epic-base>'
 ```
@@ -269,11 +269,31 @@ git fetch origin 'pull/<pull-request-number>/head'
 git fetch origin pull/950/head
 ```
 
+### Add Epic Base Worktree
+
+Creates the worktree for an existing epic base.
+
+**Inputs:** Project checkout, worktree path and fetched epic base.
+
+- The path resolves against the directory the command runs in, so supply it as [Epic Bases](#epic-bases) anchors it rather than relative to a linked worktree.
+
+```bash
+git worktree add '<worktree-path>' '<epic-base>'
+```
+
+**Example:**
+
+```bash
+git worktree add .worktrees/i07/e00/main i07/e00/main
+```
+
 ### Add Review Worktree
 
 Creates a detached worktree at the fetched review head.
 
 **Inputs:** Repository checkout, worktree path and fetched head commit.
+
+- The path resolves against the directory the command runs in, so supply it as [Review Worktrees](#review-worktrees) anchors it rather than relative to a linked worktree.
 
 ```bash
 git worktree add --detach '<worktree-path>' '<head-commit>'
