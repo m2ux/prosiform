@@ -273,7 +273,7 @@ This bundle was built for [Plan Mode](#plan-mode); everything else is material i
 - **Generated structure:** The line is recorded with the group, file and variant headings as generated structure, not as selected content, so it counts toward no source's coverage. Its links are ordinary internal references and are validated as such.
 - **Reading scope at the point of use:** A bundle can hold several documents' procedures. The line is where the bundle says which one it was built for, so the distinction between the material to act on and the material it references survives into the document the agent actually reads.
 
-The line is not a detection signal. An authored document may legitimately open with links into its own sections, so generated-input detection continues to rest on the file heading alone.
+The complete entry declaration is the reserved output signal used by the Generated input policy. Authored links into a document's own sections carry no such signal without the declaration's opening and closing prose.
 
 ### Markdown-only output
 
