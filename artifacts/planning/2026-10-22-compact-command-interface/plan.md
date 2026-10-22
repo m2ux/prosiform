@@ -2,7 +2,7 @@
 
 ## Decision
 
-The user selected option A: short forms as the primary interface, including `pf`, short flags and a compact command specification. The workspace requires removal of obsolete interfaces, so executable and long-option compatibility aliases are absent. Prosiform remains the package and product name. This is one standalone task; implementation is pending.
+The user selected option A: short forms as the primary interface, including `pf`, short flags and a compact command specification. The workspace requires removal of obsolete interfaces, so executable and long-option compatibility aliases are absent. Prosiform remains the package and product name. This standalone task is delivered through [PR #213](https://github.com/m2ux/prosiform/pull/213); [delivery evidence](delivery.md) records validation and completion.
 
 ## Command Mapping
 

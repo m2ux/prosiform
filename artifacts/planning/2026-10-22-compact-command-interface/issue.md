@@ -26,11 +26,11 @@ Make `pf` and short flags Prosiform's command interface, with a compact command 
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** A clean installation exposes exactly the planned `pf` command surface, as installed-command smoke tests and parser tests for every mapped option and rejected retired spelling show.
-- [ ] **AC2.** Each translated invocation preserves its defined compilation, validation or informational outcome, as the updated corpus, CLI tests and complete `make check` run show, allowing command-spelling changes in help and diagnostics.
-- [ ] **AC3.** The compact specification covers every baseline command-contract fact, as a fact-by-fact coverage review and `make invocation` show.
-- [ ] **AC4.** The compact specification and aggregate equivalent command sample each use fewer tokens than their pinned baselines, as a reproducible report naming the tokenizer, version, inputs and counts shows.
-- [ ] **AC5.** Active repository callers and governing CLI documentation use the planned short interface, as an audited search for retired executable and option spellings shows.
+- [x] **AC1.** A clean installation exposes exactly the planned `pf` command surface, as installed-command smoke tests and parser tests for every mapped option and rejected retired spelling show.
+- [x] **AC2.** Each translated invocation preserves its defined compilation, validation or informational outcome, as the updated corpus, CLI tests and complete `make check` run show, allowing command-spelling changes in help and diagnostics.
+- [x] **AC3.** The compact specification covers every baseline command-contract fact, as a fact-by-fact coverage review and `make invocation` show.
+- [x] **AC4.** The compact specification and aggregate equivalent command sample each use fewer tokens than their pinned baselines, as a reproducible report naming the tokenizer, version, inputs and counts shows.
+- [x] **AC5.** Active repository callers and governing CLI documentation use the planned short interface, as an audited search for retired executable and option spellings shows.
 
 ## References
 
