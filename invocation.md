@@ -70,9 +70,15 @@ Sources must be valid UTF-8. The build removes one leading byte-order mark and o
 
 - Each entry selects a whole document or a named section.
 - Links to local Markdown under `--root` resolve relative to the source document and are followed until no new dependencies remain.
-- Each contributing document forms a group headed by its root-relative path, unless `--group` merges it.
+- Each contributing document forms a group headed by its title-cased root-relative path, unless `--group` merges it.
 - Compiled links point to headings in the bundle.
 - Links outside the root remain as authored and contribute no content.
+
+### Merged directories
+
+`--group` arranges member sections beneath a title-cased directory heading. An `Overview` section holds above-depth content that has no heading of its own. When each contribution already has a heading naming its member, those headings sit directly beneath the group heading.
+
+Each member has a distinct destination. Generated member headings use the shortest distinguishing path and title case; authored headings and filesystem paths retain their spelling. See the [grouped examples](example/README.md#merge-directories).
 
 ### Deferred links
 

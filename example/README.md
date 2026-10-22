@@ -103,6 +103,66 @@ The selection retains its structural ancestor, shifts the selected heading down 
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml).
 
+## Merge directories
+
+### Above-depth prose
+
+```bash
+prosiform --root example/work-tracker --group artifacts:2 --group modes:2 modes/plan-mode.md
+```
+
+The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) includes an `Overview` because each artifact's introductory prose needs a section:
+
+```markdown
+# Artifacts
+
+## Overview
+
+### Epic Issue Body
+
+Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
+
+The delivery lines this body records are defined in [Epic](#epic).
+
+### Epic
+
+An epic's task delivery findings, integration readiness and completion state.
+
+## Operations
+
+### Epic Issue Body
+```
+
+### Named members beneath the group
+
+The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated member headings name each contribution directly beneath `Rules`:
+
+```bash
+prosiform --root example/my-skill --group rules:1 procedure.md rules/common.md
+```
+
+The grouped portion is:
+
+```markdown
+# Rules
+
+## Agents
+
+Select rules for your harness:
+
+- If you are Codex, compile [¬ Codex](rules/codex.md).
+- If you are Claude, compile [¬ Claude](rules/claude.md).
+
+## Common
+
+- Check every link.
+- Use clear headings.
+
+Follow [Agents](#agents).
+```
+
+`Overview` is absent here. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The ungrouped [README diagrams](../README.md#how-it-works) show the same documents under their title-cased path headings.
+
 ## More fixture examples
 
 Every case below uses the same [source tree](work-tracker/SKILL.md). Each manifest records the arguments, exit status, and diagnostics.
