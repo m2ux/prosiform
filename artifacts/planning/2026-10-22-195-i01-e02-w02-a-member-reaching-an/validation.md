@@ -2,12 +2,14 @@
 
 The checks this unit ran, the revision they ran against and what each observed.
 
-**Revision:** `i01/e02/w02-a-member-reaching-an` at `6ff7d37`, cut from `origin/i01/e02/main` at `a56a738`.
+**Revision:** `i01/e02/w02-a-member-reaching-an` at `6ff7d37`, cut from `origin/i01/e02/main` at `a56a738`, and again at `58c41d4` with `origin/i01/e02/main` merged in at `9037a91`.
 **Build under test:** `PROSIFORM_BUILD="uv run --project <worktree>/src --frozen prosiform"`.
 
 ## Repository checks
 
 `make check` runs the repository's whole set — lock, lint, format, typecheck, unit tests, harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence — and stops at the first failure.
+
+At `6ff7d37`:
 
 ```text
 728 passed in 0.69s
@@ -23,6 +25,18 @@ independence check: every word of every fixture declaration and every report ent
 ```
 
 Exit status 0.
+
+At `58c41d4`, with W05's member heading merged in, every target holds and the vocabulary check reports the contract term `title case` that W03 marks on the engineering branch and whose glossary entry is not yet in the repository:
+
+```text
+726 passed in 0.68s
+599 passed in 8.92s
+corpus check: 243 fixture(s), 243 pass, 0 fail, 0 awaited, 0 unexpected pass
+FAIL title case — the design marks it as a contract term, and docs/glossary.md does not define it
+vocabulary check: 1 term(s) the glossary and the contract disagree on
+```
+
+Exit status 2. The epic base `i01/e02/main` at `9037a91` reports the same failure, which no revision of this branch carries or can answer: the checks read the design from the contract branch as it currently stands, so a term marked there before its glossary entry reaches the repository fails every branch at once. [#204](https://github.com/m2ux/prosiform/issues/204) carries that reading.
 
 ## A group whose members' first contributions carry one heading text
 

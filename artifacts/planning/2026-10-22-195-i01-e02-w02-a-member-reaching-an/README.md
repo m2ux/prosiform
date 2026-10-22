@@ -14,6 +14,7 @@ A reference that reaches the wrong member is a silent fault: the bundle validate
 | --- | --- |
 | [w02.md](w02.md) | The implementation plan for this unit |
 | [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
+| [changes.md](changes.md) | The plan changes this session applied, the ones it held, and the debt its validation found |
 
 ## Links
 
@@ -23,4 +24,5 @@ A reference that reaches the wrong member is a silent fault: the bundle validate
 | Initiative | [#20 \[I01\] Field Refinement](https://github.com/m2ux/prosiform/issues/20) |
 | Epic planning | [i01-e02](../2026-10-17-prosiform-v1/i01-e02) |
 | Epic base | [i01/e02/main](https://github.com/m2ux/prosiform/tree/i01/e02/main) |
+| Delivery | [#201](https://github.com/m2ux/prosiform/pull/201) |
 | Review | [#198](https://github.com/m2ux/prosiform/pull/198) |
