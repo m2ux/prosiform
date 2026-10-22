@@ -2,7 +2,7 @@
 
 The checks this unit ran, the revision they ran against and what each observed.
 
-**Revision:** `i01/e02/w02-a-member-reaching-an` at `6ff7d37`, cut from `origin/i01/e02/main` at `a56a738`, and again at `58c41d4` with `origin/i01/e02/main` merged in at `9037a91`.
+**Revision:** `i01/e02/w02-a-member-reaching-an` at `6ff7d37`, cut from `origin/i01/e02/main` at `a56a738`, and again at `62c2a3d` with `origin/i01/e02/main` merged in at `9037a91`.
 **Build under test:** `PROSIFORM_BUILD="uv run --project <worktree>/src --frozen prosiform"`.
 
 ## Repository checks
@@ -26,7 +26,7 @@ independence check: every word of every fixture declaration and every report ent
 
 Exit status 0.
 
-At `58c41d4`, with W05's member heading merged in, every target holds and the vocabulary check reports the contract term `title case` that W03 marks on the engineering branch and whose glossary entry is not yet in the repository:
+At `62c2a3d`, with W05's member heading merged in, every target holds and the vocabulary check reports the contract term `title case` that W03 marks on the engineering branch and whose glossary entry is not yet in the repository:
 
 ```text
 726 passed in 0.68s
@@ -85,6 +85,8 @@ Observed: AC3.
 ## The merged arrangement held to what it was
 
 Every fixture declaring a pooled section, a variant heading or a grouping depth passes on the bytes it already declared: `grouping/one-entry-under-a-group`, `grouping/a-reference-to-a-grouping-depth-heading`, `grouping/variant-headings-distinguished-at-more-than-one-segment`, `grouping/structural-ancestors-inside-a-merged-group`, `grouping/a-section-shallower-than-the-grouping-depth`, `grouping/a-document-no-group-matches` and `usage-example/every-document-under-a-directory-merged`. No expectation of a merged section or a variant heading changed in this unit.
+
+Two declarations stating the destination a grouped entry reference reaches were restated to the destinations their own bytes show — `delivery/an-entry-destination-under-a-grouping-rule` and `grouping/a-whole-document-reference-to-a-member` — and both pass on those bytes unchanged.
 
 ## The reproduction tree
 
