@@ -23,13 +23,12 @@ distinguishes it from the others, in title case, measured after the
 leading segments they all share are dropped, because those are the
 context the group heading already states.
 
-Two rules decide where a document's name goes, and they are applied in
-that order. A merged section carrying body text above its first
-subheading, in more than one document, is the document's section rather
-than a container of named items, so it splits into variants by document
-throughout. A section no such body splits is arranged by name, and the
-names inside it that two or more documents contribute take variants of
-their own.
+Every section with more than one contributing document splits into
+variants, whether those contributions hold body text, subheadings or
+only the section heading. A sole contributor keeps its own arrangement.
+Each member's name is measured once against the whole group and serves
+both its overview subsection and every variant, with a trailing word
+the group's heading already states dropped in both places.
 
 A member's subsection is named by the shortest run of that document's
 root-relative path which distinguishes it from the group's other
@@ -155,14 +154,6 @@ def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
             spelled = spelled[:-1]
         headings[path] = SPACE.join(word[:1].upper() + word[1:] for word in spelled)
     return headings
-
-
-def qualifiers(paths: Sequence[str]) -> dict[str, str]:
-    """The name each document takes as a variant heading, by its path."""
-    return {
-        path: SPACE.join(titled(part) for part in run)
-        for path, run in distinguishing(paths).items()
-    }
 
 
 def distinguishing(paths: Sequence[str]) -> dict[str, list[str]]:
@@ -421,15 +412,6 @@ def under(member: Member, anchor: Token, depth: int) -> list[Item]:
     ]
 
 
-def naming(member: Member, token: Token, depth: int) -> Token | None:
-    """The heading just inside a merged section that holds one of its items."""
-    chain = [*member.chains[id(token)]]
-    if token.type == HEADING_OPEN:
-        chain.append(token)
-    inside = [one for one in chain if depth < level(one) <= depth + 1]
-    return inside[-1] if inside else None
-
-
 def merged(
     named: str,
     depth: int,
@@ -446,8 +428,9 @@ def merged(
     into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
     into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
-    overview(into, named, depth, members, bool(pooled))
-    sections(into, depth, pooled)
+    headings = member_headings([member.path for member in members], named)
+    overview(into, headings, depth, members, bool(pooled))
+    sections(into, depth, pooled, headings)
     for member in members:
         contributed(into, member)
     reached: dict[Target, int] = {}
@@ -532,7 +515,7 @@ def contributed(into: "Assembly", member: Member) -> None:
 
 def overview(
     into: Assembly,
-    named: str,
+    headings: Mapping[str, str],
     depth: int,
     members: Sequence[Member],
     pooled: bool,
@@ -574,7 +557,6 @@ def overview(
     }
     if not any(named_here.values()):
         return
-    headings = member_headings([member.path for member in members], named)
     at = MEMBER_LEVEL if pooled else SECTION_LEVEL
     if pooled:
         text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
@@ -616,25 +598,15 @@ def contributions(
     return list(found.items())
 
 
-def keyed(member: Member, anchor: Token, depth: int) -> bool:
-    """Whether one member writes body text above the first subheading of a section."""
-    for one in under(member, anchor, depth):
-        if one.token.type == HEADING_OPEN:
-            return False
-        return True
-    return False
-
-
 def sections(
     into: Assembly,
     depth: int,
     pooled: Sequence[tuple[str, list[tuple[Member, Token]]]],
+    headings: Mapping[str, str],
 ) -> None:
     """One H2 for each distinct source heading text at the grouping depth."""
     for text, contributing in pooled:
-        split = sum(keyed(member, anchor, depth) for member, anchor in contributing) > 1
-        variants = split and len(contributing) > 1
-        section(into, depth, text, contributing, variants)
+        section(into, depth, text, contributing, headings)
 
 
 def section(
@@ -642,10 +614,11 @@ def section(
     depth: int,
     text: str,
     contributing: Sequence[tuple[Member, Token]],
-    variants: bool,
+    headings: Mapping[str, str],
 ) -> None:
     """One merged section: its heading, then the content its members contribute."""
     by = SECTION_LEVEL - depth
+    variants = len(contributing) > 1
     answers = (
         ()
         if variants
@@ -657,10 +630,9 @@ def section(
     )
     merged_heading(into, text, SECTION_LEVEL, contributing, by, answers)
     if variants:
-        qualified = qualifiers([member.path for member, _ in contributing])
         for member, anchor in contributing:
             heading, recorded = generated_part(
-                qualified[member.path],
+                headings[member.path],
                 MEMBER_LEVEL,
                 VARIANT_HEADING,
                 [(member.path, member.named[id(anchor)])]
@@ -671,7 +643,9 @@ def section(
             for one in under(member, anchor, depth):
                 into.region(member, one.token, by + 1)
         return
-    names(into, depth, contributing, by)
+    for member, anchor in contributing:
+        for one in under(member, anchor, depth):
+            into.region(member, one.token, by)
 
 
 def merged_heading(
@@ -704,72 +678,3 @@ def merged_heading(
     member, anchor = selecting[0]
     published, recorded, _ = carried_part(member, anchor, by)
     into.part(published, recorded, [Carried(text, at, tuple(origins), tuple(answers))])
-
-
-def names(
-    into: Assembly,
-    depth: int,
-    contributing: Sequence[tuple[Member, Token]],
-    by: int,
-) -> None:
-    """The names inside one merged section, each emitted once for every document."""
-    for member, anchor in contributing:
-        for one in under(member, anchor, depth):
-            if naming(member, one.token, depth) is None:
-                into.region(member, one.token, by)
-    found: dict[str, list[tuple[Member, Token]]] = {}
-    for member, anchor in contributing:
-        seen: list[Token] = []
-        for one in under(member, anchor, depth):
-            held = naming(member, one.token, depth)
-            if held is None or held in seen:
-                continue
-            seen.append(held)
-            found.setdefault(single_line(member.text[id(held)]), []).append(
-                (member, held)
-            )
-    for text, carrying in found.items():
-        name(into, depth, text, carrying, by)
-
-
-def name(
-    into: Assembly,
-    depth: int,
-    text: str,
-    carrying: Sequence[tuple[Member, Token]],
-    by: int,
-) -> None:
-    """One name inside a merged section, bare or carrying a variant per document."""
-    at = depth + 1 + by
-    if len(carrying) == 1:
-        member, held = carrying[0]
-        for one in held_items(member, held, depth):
-            into.region(member, one.token, by)
-        return
-    merged_heading(into, text, at, carrying, by, ())
-    qualified = qualifiers([member.path for member, _ in carrying])
-    for member, held in carrying:
-        heading, recorded = generated_part(
-            qualified[member.path],
-            at + 1,
-            VARIANT_HEADING,
-            [(member.path, member.named[id(held)])]
-            if id(held) in member.emitting
-            else [],
-        )
-        into.part(heading, recorded, [recorded])
-        for one in held_items(member, held, depth):
-            if one.token is held:
-                continue
-            into.region(member, one.token, by + 1)
-
-
-def held_items(member: Member, held: Token, depth: int) -> list[Item]:
-    """Every item of one member that sits under one name of a merged section."""
-    anchor = anchored(member, held, depth)
-    return [
-        one
-        for one in member.items
-        if anchored(member, one.token, depth) is anchor
-        and naming(member, one.token, depth) is held
-    ]
