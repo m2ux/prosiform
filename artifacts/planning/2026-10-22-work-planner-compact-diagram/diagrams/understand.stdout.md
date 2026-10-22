@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Understand-Mode](#modesunderstand-mode); everything else is material it references.
+This bundle was built for [Understand Mode](#understand-mode); everything else is material it references.
 
 # Artifacts
 
@@ -1029,11 +1029,13 @@ gitnexus query --query '<flow-identity>' --limit 1
 gitnexus query --query "Queue Placement" --limit 1
 ```
 
-# Modes/Understand-Mode
+# Modes
+
+## Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -1046,7 +1048,7 @@ The main path meets [Outcomes](#outcomes).
 3. **Report.**
    Report the pull request, record folder, diagrams and References row of each overview.
 
-## Outcomes
+### Outcomes
 
 - **The change explained.**
   The engineer reviewing the pull request has its structure and its flows, read at the head commit under review.

@@ -4,7 +4,8 @@
   "compiled_section_level": null,
   "groups": [
     "artifacts:2",
-    "protocols:2"
+    "protocols:2",
+    "modes:1"
   ],
   "modes": [
     {
@@ -14,7 +15,7 @@
       "output": "diagrams/propose",
       "exit_code": 0,
       "opened_files": 6,
-      "bundle_bytes": 23091
+      "bundle_bytes": 23086
     },
     {
       "mode": "Plan",
@@ -23,7 +24,7 @@
       "output": "diagrams/plan",
       "exit_code": 0,
       "opened_files": 35,
-      "bundle_bytes": 208472
+      "bundle_bytes": 208443
     },
     {
       "mode": "Align",
@@ -32,7 +33,7 @@
       "output": "diagrams/align",
       "exit_code": 0,
       "opened_files": 21,
-      "bundle_bytes": 129833
+      "bundle_bytes": 129828
     },
     {
       "mode": "Sync",
@@ -41,7 +42,7 @@
       "output": "diagrams/sync",
       "exit_code": 0,
       "opened_files": 27,
-      "bundle_bytes": 159120
+      "bundle_bytes": 159107
     },
     {
       "mode": "Advance",
@@ -50,7 +51,7 @@
       "output": "diagrams/advance",
       "exit_code": 0,
       "opened_files": 29,
-      "bundle_bytes": 173074
+      "bundle_bytes": 173053
     },
     {
       "mode": "Deliver",
@@ -59,7 +60,7 @@
       "output": "diagrams/deliver",
       "exit_code": 0,
       "opened_files": 39,
-      "bundle_bytes": 247821
+      "bundle_bytes": 247781
     },
     {
       "mode": "Understand",
@@ -68,7 +69,7 @@
       "output": "diagrams/understand",
       "exit_code": 0,
       "opened_files": 9,
-      "bundle_bytes": 44120
+      "bundle_bytes": 44115
     },
     {
       "mode": "Hoist",
@@ -77,7 +78,7 @@
       "output": "diagrams/hoist",
       "exit_code": 0,
       "opened_files": 15,
-      "bundle_bytes": 86800
+      "bundle_bytes": 86795
     },
     {
       "mode": "Standup",
@@ -86,7 +87,7 @@
       "output": "diagrams/standup",
       "exit_code": 0,
       "opened_files": 29,
-      "bundle_bytes": 169223
+      "bundle_bytes": 169202
     },
     {
       "mode": "Revise",
@@ -95,7 +96,7 @@
       "output": "diagrams/revise",
       "exit_code": 0,
       "opened_files": 7,
-      "bundle_bytes": 45015
+      "bundle_bytes": 45013
     }
   ]
 }

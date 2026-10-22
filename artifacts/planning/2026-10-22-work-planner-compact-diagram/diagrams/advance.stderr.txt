@@ -1,3 +1,3 @@
-W_ENTRY_DESTINATION: the entry reference 'Modes/Advance-Mode' resolves to the destination 'modesadvance-mode', which the bundle's entry line links it to
-  reference: Modes/Advance-Mode
-  resolved: modesadvance-mode
+W_ENTRY_DESTINATION: the entry reference 'Advance Mode' resolves to the destination 'advance-mode', which the bundle's entry line links it to
+  reference: Advance Mode
+  resolved: advance-mode

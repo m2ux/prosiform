@@ -51,7 +51,7 @@ def main():
     python = checkout/'src/.venv/bin/python'
     selected = modes()
     overview = ['# Work Planner Mode Diagrams', '',
-                'Each mode linked from the copied SKILL.md is compiled separately. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by ….', '',
+                'Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by ….', '',
                 'Compiler: main '+revision, '', '## Modes', '']
     overview.extend('- ['+mode['name']+'](#'+mode['slug']+')' for mode in selected)
     records = []
@@ -59,7 +59,7 @@ def main():
         prefix = 'diagrams/'+mode['slug']
         command = [str(python),str(renderer),'work-planner/'+mode['path'],
                    '--root','work-planner','--compact','--input-section-level','2','--group','artifacts:2',
-                   '--group','protocols:2','--max-output-bytes','1048576',
+                   '--group','protocols:2','--group','modes:1','--max-output-bytes','1048576',
                    '--revision',revision,'--output',prefix]
         if mode['fragment']:
             command += ['--section',mode['fragment']]
@@ -68,6 +68,8 @@ def main():
         record = json.loads((HERE/(prefix+'.run.json')).read_text())
         assert record['compact'] and record['exit_code'] == 0
         assert record['input_section_level'] == 2 and record['compiled_section_level'] is None
+        bundle = (HERE/(prefix+'.stdout.md')).read_text()
+        assert '\n# Modes\n' in bundle and '\n## '+mode['name']+' Mode\n' in bundle
         assert record['command'].endswith(mode['path']+('#'+mode['fragment'] if mode['fragment'] else ''))
         ET.parse(HERE/(prefix+'.svg'))
         review = (HERE/(prefix+'.review.md')).read_text()
@@ -78,7 +80,7 @@ def main():
         records.append(dict(mode=mode['name'],entry=mode['path'],fragment=mode['fragment'],output=prefix,exit_code=record['exit_code'],opened_files=len(record['sources']),bundle_bytes=(HERE/(prefix+'.stdout.md')).stat().st_size))
         print(mode['name']+': rendered '+str(len(record['sources']))+' opened documents',flush=True)
     (HERE/'work-planner-compact.review.md').write_text('\n'.join(overview)+'\n')
-    (HERE/'mode-runs.json').write_text(json.dumps(dict(compiler_revision=revision,input_section_level=2,compiled_section_level=None,groups=['artifacts:2','protocols:2'],modes=records),indent=2)+'\n')
+    (HERE/'mode-runs.json').write_text(json.dumps(dict(compiler_revision=revision,input_section_level=2,compiled_section_level=None,groups=['artifacts:2','protocols:2','modes:1'],modes=records),indent=2)+'\n')
     print('Rendered '+str(len(records))+' mode diagrams.')
 
 

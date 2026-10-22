@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Propose-Mode](#modespropose-mode); everything else is material it references.
+This bundle was built for [Propose Mode](#propose-mode); everything else is material it references.
 
 # Artifacts
 
@@ -611,11 +611,13 @@ Creates the label specified by its name, colour and description.
 gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
 ```
 
-# Modes/Propose-Mode
+# Modes
+
+## Propose Mode
 
 Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -654,7 +656,7 @@ The main path meets [Outcomes](#outcomes).
 8. **Report.**
    Give the issue's URL, and the board's when the issue was placed.
 
-## Outcomes
+### Outcomes
 
 - **A scoped problem.**
   The user has one problem scoped, and has confirmed its goal.

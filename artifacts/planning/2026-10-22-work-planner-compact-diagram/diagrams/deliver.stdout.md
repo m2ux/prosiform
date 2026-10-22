@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Deliver-Mode](#modesdeliver-mode); everything else is material it references.
+This bundle was built for [Deliver Mode](#deliver-mode); everything else is material it references.
 
 # Artifacts
 
@@ -4014,11 +4014,13 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
-# Modes/Advance-Mode
+# Modes
+
+## Advance Mode
 
 Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -4027,7 +4029,7 @@ The main path meets [Outcomes](#outcomes).
    - Use the returned owner and board number for the sync and fetch steps.
    - Resolve a pending theme selection before continuing.
 2. **Sync.**
-   Run [Sync Mode](#modessync-mode) for each open initiative on the selected board, with the allowance the caller supplied.
+   Run [Sync Mode](#sync-mode) for each open initiative on the selected board, with the allowance the caller supplied.
    - Wait for its saved delivery results before the fetch step.
    - Return any blocker that prevents current delivery from being established.
 3. **Fetch.**
@@ -4072,7 +4074,7 @@ The main path meets [Outcomes](#outcomes).
 8. **Report.**
    Report each move and each `order`, `ask`, `wait` and `next` line using [Report Lines](#report-lines).
 
-## Outcomes
+### Outcomes
 
 - **A queue.**
   The user has a queue for one theme: which initiatives are underway together, which are next, and which wait.
@@ -4081,11 +4083,11 @@ The main path meets [Outcomes](#outcomes).
 - **Epics follow the initiative.**
   On the initiative that is underway, the epics planned to start together can start, and a partly completed epic stays underway.
 
-# Modes/Deliver-Mode
+## Deliver Mode
 
 Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, stands a completed epic in review on the board, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-1).
 
@@ -4093,7 +4095,7 @@ The main path meets [Outcomes](#outcomes-1).
    Run [Select Project Board](#select-project-board) with the requested theme or board identity.
    - Use its returned owner and board number for the following steps.
 2. **Advance.**
-   Run [Advance Mode](#modesadvance-mode) for the selected board, with the [allowance](#allowance) this run applies.
+   Run [Advance Mode](#advance-mode) for the selected board, with the [allowance](#allowance) this run applies.
    - Continue to the fetch step only after it returns a complete applied queue.
    - Report an unavailable dependency, and a queue decision it recorded rather than asked, before dispatch. An incomplete queue means no initiative is under way, so the run has no work to offer.
    - Carry the [change list](#change-list) it returns into the report step.
@@ -4161,7 +4163,7 @@ The main path meets [Outcomes](#outcomes-1).
    Each pull request merged, and each left open by a conflict; each epic moved to In Review; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
    - Report the run's [change list](#change-list) as a list of its own, so each plan change this run applied, and each it held for the user, is read in one place.
 
-### Run Delivery Session
+#### Run Delivery Session
 
 The confirmed unit carried from its supplied brief through implementation and delivery.
 
@@ -4211,20 +4213,20 @@ The confirmed unit carried from its supplied brief through implementation and de
    - The session's own classification decides.
    - For each deferred item:
      - Create it as a standalone issue through [Save Tracker Issue](#save-tracker-issue).
-     - Run [Hoist Mode](#modeshoist-mode) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](#deferred-debt).
+     - Run [Hoist Mode](#hoist-mode) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](#deferred-debt).
      - Where the initiative has no such epic, the placement raises it as a new epic, carrying the criterion its initiative row covers.
      - Run [Record Plan Change](#record-plan-change) with the placement it returns.
    - Resume the arising-issues step with each saved placement or reported blocker.
 10. **Arising issues.**
     Create each issue that arose during delivery as a standalone issue with [Save Tracker Issue](#save-tracker-issue), with no agent-engineering prefix.
-    - Run [Hoist Mode](#modeshoist-mode) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.
+    - Run [Hoist Mode](#hoist-mode) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.
     - Run [Record Plan Change](#record-plan-change) with each placement it applied and each it held.
 11. **Report the changes.**
     Register the session's [change list](#change-list) in its planning folder through [Populate Planning Record](#populate-planning-record).
     - Run [Publish Planning Record](#publish-planning-record) for the record's folder.
     - Return the list with the delivery session result, so the user reads each plan change this session applied and each it held.
 
-## Outcomes
+### Outcomes
 
 - **Available work started.**
   The user has each confirmed unit of the theme board in a session, with a planning record held for that session.
@@ -4244,16 +4246,16 @@ The confirmed unit carried from its supplied brief through implementation and de
 - **Plan changes applied and reported.**
   The user reads what delivery changed in the plan, and work needing an initiative is left open for them to decide.
 
-## Guidance
+### Guidance
 
 - **Allowance.**
   This mode's runs, and every session they dispatch, apply each kind in [Change Kinds](#change-kinds). A change outside them is held and reported.
 
-# Modes/Hoist-Mode
+## Hoist Mode
 
 Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-2).
 
@@ -4291,7 +4293,7 @@ The main path meets [Outcomes](#outcomes-2).
    Report each orphan's placement, the issues changed, created or closed, and the orphans left.
    - Return the [change list](#change-list) with it, so the caller reports each placement this mode made and each it held.
 
-## Outcomes
+### Outcomes
 
 - **Each orphan placed.**
   The user has each chosen standalone issue joined to an initiative, epic or task, or left open.
@@ -4300,11 +4302,11 @@ The main path meets [Outcomes](#outcomes-2).
 - **The decision respected.**
   An orphan moves on the user's word, or on the allowance its caller supplied, and work needing a decision outside that allowance stays where it is.
 
-# Modes/Sync-Mode
+## Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-3).
 
@@ -4424,14 +4426,14 @@ The main path meets [Outcomes](#outcomes-3).
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](#modesunderstand-mode) with the task's open pull request or each epic review pull request, one run per base.
+    - Run [Understand Mode](#understand-mode) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
 
-## Outcomes
+### Outcomes
 
 - **Delivery recorded.**
   The user has each landed task tied to the pull request that delivered it, and has what now holds recorded on the initiative and its epics.
@@ -4444,11 +4446,11 @@ The main path meets [Outcomes](#outcomes-3).
 - **The queue stays undecided.**
   A sync on its own leaves the choice of what to start next undecided.
 
-# Modes/Understand-Mode
+## Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-4).
 
@@ -4461,7 +4463,7 @@ The main path meets [Outcomes](#outcomes-4).
 3. **Report.**
    Report the pull request, record folder, diagrams and References row of each overview.
 
-## Outcomes
+### Outcomes
 
 - **The change explained.**
   The engineer reviewing the pull request has its structure and its flows, read at the head commit under review.

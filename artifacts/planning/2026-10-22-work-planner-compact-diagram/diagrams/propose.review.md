@@ -9,12 +9,12 @@ Source files opened by the compiler appear beside the bundle body. The opening c
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/propose-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/propose-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Propose-Mode](propose.stdout.md#modespropose-mode); everything else is material it references.
+This bundle was built for [Propose Mode](propose.stdout.md#propose-mode); everything else is material it references.
 
 ### Diagnostics
 
@@ -22,7 +22,7 @@ Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
-W_ENTRY_DESTINATION: the entry reference 'Modes/Propose-Mode' resolves to the destination 'modespropose-mode', which the bundle's entry line links it to
-  reference: Modes/Propose-Mode
-  resolved: modespropose-mode
+W_ENTRY_DESTINATION: the entry reference 'Propose Mode' resolves to the destination 'propose-mode', which the bundle's entry line links it to
+  reference: Propose Mode
+  resolved: propose-mode
 ```

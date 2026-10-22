@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Standup-Mode](#modesstandup-mode); everything else is material it references.
+This bundle was built for [Standup Mode](#standup-mode); everything else is material it references.
 
 # Artifacts
 
@@ -2993,11 +2993,13 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
-# Modes/Standup-Mode
+# Modes
+
+## Standup Mode
 
 Summarises a project board as a standup, in Slack markup for pasting into a channel: a paragraph for management on what the window accomplished, then what completed, what is in progress, and what is next. The board's Status is the source, so the summary is as current as the board.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -3010,7 +3012,7 @@ The main path meets [Outcomes](#outcomes).
    - If the checkpoint is absent:
      - Read the board through [Read Board State](#read-board-state).
      - Treat each selected initiative's delivery state as needing refresh.
-   - For initiatives with known delivery changes or unknown freshness, run [Sync Mode](#modessync-mode) for the affected initiatives on that board.
+   - For initiatives with known delivery changes or unknown freshness, run [Sync Mode](#sync-mode) for the affected initiatives on that board.
    - Resume the fetch step after their delivery results are saved.
    - Report a blocker that prevents a current summary.
    - Retain it as a gap if presenting a partial report.
@@ -3034,7 +3036,7 @@ The main path meets [Outcomes](#outcomes).
      - If it confirms a saved correction, repeat steps 3–6 with refreshed records, retaining the selected board, window and initiative filter.
      - If it reports a blocker or no correction, return the unresolved finding without repeating the same repair.
 
-## Outcomes
+### Outcomes
 
 - **A standup for the window.**
   The user has a summary they can paste, of what the window accomplished, what completed, what is in progress, and what is next.
@@ -3045,11 +3047,11 @@ The main path meets [Outcomes](#outcomes).
 - **A paragraph for management.**
   The user has one paragraph on what the window delivered for the initiatives it serves.
 
-# Modes/Sync-Mode
+## Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-1).
 
@@ -3169,14 +3171,14 @@ The main path meets [Outcomes](#outcomes-1).
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](#modesunderstand-mode) with the task's open pull request or each epic review pull request, one run per base.
+    - Run [Understand Mode](#understand-mode) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
 
-## Outcomes
+### Outcomes
 
 - **Delivery recorded.**
   The user has each landed task tied to the pull request that delivered it, and has what now holds recorded on the initiative and its epics.
@@ -3189,11 +3191,11 @@ The main path meets [Outcomes](#outcomes-1).
 - **The queue stays undecided.**
   A sync on its own leaves the choice of what to start next undecided.
 
-# Modes/Understand-Mode
+## Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-2).
 
@@ -3206,7 +3208,7 @@ The main path meets [Outcomes](#outcomes-2).
 3. **Report.**
    Report the pull request, record folder, diagrams and References row of each overview.
 
-## Outcomes
+### Outcomes
 
 - **The change explained.**
   The engineer reviewing the pull request has its structure and its flows, read at the head commit under review.

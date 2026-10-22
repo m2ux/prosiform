@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Revise-Mode](#modesrevise-mode); everything else is material it references.
+This bundle was built for [Revise Mode](#revise-mode); everything else is material it references.
 
 # SKILL
 
@@ -587,11 +587,13 @@ Follow the shared [change rules](../guidelines.md#changes) for worktree isolatio
 - **Delivery.**
   Run the associated tests and integration checks before opening or updating the implementation pull request. Commit and push the changes from their owning worktrees; subsequent corrections update the same pull request.
 
-# Modes/Revise-Mode
+# Modes
+
+## Revise Mode
 
 Changes the skill itself: SKILL.md, its modes, artifacts, references and scripts.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -628,16 +630,16 @@ The main path meets [Outcomes](#outcomes).
    - Push.
    - Report what changed in each file.
 
-## Outcomes
+### Outcomes
 
 - **The skill matches the request.**
   The user has the change they asked for in the skill, committed and pushed.
 - **The guidelines hold.**
   The change agrees with the guidelines, and a new rule the user stated for how the skill is written is part of that change.
 
-## Operations
+### Operations
 
-### Run Tests
+#### Run Tests
 
 Runs the skill's script tests.
 
@@ -647,7 +649,7 @@ Runs the skill's script tests.
 cd "<workspace>/skills/work-planner" && "<workspace>/scripts/sbx" python3 -m unittest discover -s test
 ```
 
-### Check Skill Files
+#### Check Skill Files
 
 Checks the affected skill's Markdown structure and links.
 

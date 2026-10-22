@@ -9,19 +9,19 @@ Source files opened by the compiler appear beside the bundle body. The opening c
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/standup-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/standup-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Standup-Mode](standup.stdout.md#modesstandup-mode); everything else is material it references.
+This bundle was built for [Standup Mode](standup.stdout.md#standup-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Standup-Mode' resolves to the destination 'modesstandup-mode', which the bundle's entry line links it to
-  reference: Modes/Standup-Mode
-  resolved: modesstandup-mode
+W_ENTRY_DESTINATION: the entry reference 'Standup Mode' resolves to the destination 'standup-mode', which the bundle's entry line links it to
+  reference: Standup Mode
+  resolved: standup-mode
 ```

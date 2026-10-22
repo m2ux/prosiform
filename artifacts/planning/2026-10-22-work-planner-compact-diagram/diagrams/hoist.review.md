@@ -9,12 +9,12 @@ Source files opened by the compiler appear beside the bundle body. The opening c
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/hoist-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/hoist-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Hoist-Mode](hoist.stdout.md#modeshoist-mode); everything else is material it references.
+This bundle was built for [Hoist Mode](hoist.stdout.md#hoist-mode); everything else is material it references.
 
 ### Diagnostics
 
@@ -22,7 +22,7 @@ Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
-W_ENTRY_DESTINATION: the entry reference 'Modes/Hoist-Mode' resolves to the destination 'modeshoist-mode', which the bundle's entry line links it to
-  reference: Modes/Hoist-Mode
-  resolved: modeshoist-mode
+W_ENTRY_DESTINATION: the entry reference 'Hoist Mode' resolves to the destination 'hoist-mode', which the bundle's entry line links it to
+  reference: Hoist Mode
+  resolved: hoist-mode
 ```

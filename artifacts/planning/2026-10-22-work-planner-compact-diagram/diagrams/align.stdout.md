@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Align-Mode](#modesalign-mode); everything else is material it references.
+This bundle was built for [Align Mode](#align-mode); everything else is material it references.
 
 # Artifacts
 
@@ -2356,13 +2356,15 @@ gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/files' --jq 
 gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > changed-files.txt
 ```
 
-# Modes/Align-Mode
+# Modes
+
+## Align Mode
 
 Brings one or more existing proposal, initiative, epic, task, and standalone issues and/or PRs into line with the plan they belong to and structurally aligns them with the guidelines they are held to. 
 
 Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -2486,7 +2488,7 @@ The main path meets [Outcomes](#outcomes).
     With or without a correction:
     - Report what changed on each issue, including each finding the criteria check reported.
 
-## Outcomes
+### Outcomes
 
 - **Issues brought into line.**
   The issues the user named, or an initiative and its open epics, agree with the plan they state, and the user has decided what still needs a judgement.

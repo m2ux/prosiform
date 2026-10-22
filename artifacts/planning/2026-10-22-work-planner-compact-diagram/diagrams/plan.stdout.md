@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
 
 # Artifacts
 
@@ -3619,11 +3619,13 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
-# Modes/Plan-Mode
+# Modes
+
+## Plan Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -3631,7 +3633,7 @@ The main path meets [Outcomes](#outcomes).
    - When the user names a proposal, its associated issue body defines the problem scope.
    - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
    - When neither a proposal nor an existing initiative is named:
-     - Run [Propose Mode](#modespropose-mode) with the user's goal.
+     - Run [Propose Mode](#propose-mode) with the user's goal.
      - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
 2. **Prepare the planning record.**
    - For an initiative, epic or complex plan, call [Populate Planning Record](#populate-planning-record) with the record identity, folder and supplied evidence files.
@@ -3703,14 +3705,14 @@ The main path meets [Outcomes](#outcomes).
    - Repeat goal and ordering review on changed bodies before returning readiness.
 9. **Record delivered work.**
    When work has landed:
-   - Run [Sync Mode](#modessync-mode) for the affected initiative.
+   - Run [Sync Mode](#sync-mode) for the affected initiative.
    - For an unplaced task issue:
      - Add its row through Populate Epic Issue Body.
      - Save that body.
      - Repeat Sync Mode with the refreshed epic.
    - Return the saved delivery state or blockers.
 
-## Outcomes
+### Outcomes
 
 - **A scoped initiative.**
   The user has an initiative scoped to the proposal they named, or to a proposal raised for that problem.
@@ -3723,11 +3725,11 @@ The main path meets [Outcomes](#outcomes).
 - **Review before creation.**
   Findings on that initiative are folded in before any of its issues are created.
 
-# Modes/Propose-Mode
+## Propose Mode
 
 Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-1).
 
@@ -3766,7 +3768,7 @@ The main path meets [Outcomes](#outcomes-1).
 8. **Report.**
    Give the issue's URL, and the board's when the issue was placed.
 
-## Outcomes
+### Outcomes
 
 - **A scoped problem.**
   The user has one problem scoped, and has confirmed its goal.
@@ -3775,11 +3777,11 @@ The main path meets [Outcomes](#outcomes-1).
 - **On the proposals board.**
   When the user wants the proposal on the proposals board, it is there, raised, and unassigned.
 
-# Modes/Sync-Mode
+## Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-2).
 
@@ -3899,14 +3901,14 @@ The main path meets [Outcomes](#outcomes-2).
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](#modesunderstand-mode) with the task's open pull request or each epic review pull request, one run per base.
+    - Run [Understand Mode](#understand-mode) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
 
-## Outcomes
+### Outcomes
 
 - **Delivery recorded.**
   The user has each landed task tied to the pull request that delivered it, and has what now holds recorded on the initiative and its epics.
@@ -3919,11 +3921,11 @@ The main path meets [Outcomes](#outcomes-2).
 - **The queue stays undecided.**
   A sync on its own leaves the choice of what to start next undecided.
 
-# Modes/Understand-Mode
+## Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-3).
 
@@ -3936,7 +3938,7 @@ The main path meets [Outcomes](#outcomes-3).
 3. **Report.**
    Report the pull request, record folder, diagrams and References row of each overview.
 
-## Outcomes
+### Outcomes
 
 - **The change explained.**
   The engineer reviewing the pull request has its structure and its flows, read at the head commit under review.

@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Hoist-Mode](#modeshoist-mode); everything else is material it references.
+This bundle was built for [Hoist Mode](#hoist-mode); everything else is material it references.
 
 # Artifacts
 
@@ -1483,11 +1483,13 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
-# Modes/Hoist-Mode
+# Modes
+
+## Hoist Mode
 
 Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -1525,7 +1527,7 @@ The main path meets [Outcomes](#outcomes).
    Report each orphan's placement, the issues changed, created or closed, and the orphans left.
    - Return the [change list](#change-list) with it, so the caller reports each placement this mode made and each it held.
 
-## Outcomes
+### Outcomes
 
 - **Each orphan placed.**
   The user has each chosen standalone issue joined to an initiative, epic or task, or left open.

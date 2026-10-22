@@ -4,7 +4,7 @@
   "compact": true,
   "input_section_level": 2,
   "compiled_section_level": null,
-  "command": "prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/align-mode.md",
+  "command": "prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/align-mode.md",
   "exit_code": 0,
   "sources": {
     "modes/align-mode.md": "6b7c13f1bcf1daf0f83c3bdc35de6918f187baf470886137ef997691b2a483e8",
@@ -29,6 +29,6 @@
     "artifacts/planning-record.md": "81e53c7216ea2794baf0a91764e2a5ed5104b5938af36997449382b67ede13d3",
     "artifacts/work-item.md": "6ddd9c00790c40064fa2e6dc1fd467c0cf5c4709811c3f94b18a0b0d6bc9c8d0"
   },
-  "stdout_sha256": "0327a131686254c35458d2f5232ab9e4426fdfbf42065c7368d8c7e64caa0925",
-  "stderr_sha256": "e20caddc7bd2c81643a3ca657651d865b6b2076c6f869210c9684aaf4d95c039"
+  "stdout_sha256": "331b52acd4d533fc0114c76d44b99a4f11c6ec94f132d6f1f0299f6bfbee2609",
+  "stderr_sha256": "98383879726f44fbc6295f3744e41399ebc9212a4845d5487ef7638fca3f29c2"
 }

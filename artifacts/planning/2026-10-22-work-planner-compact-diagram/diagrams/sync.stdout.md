@@ -1,4 +1,4 @@
-This bundle was built for [Modes/Sync-Mode](#modessync-mode); everything else is material it references.
+This bundle was built for [Sync Mode](#sync-mode); everything else is material it references.
 
 # Artifacts
 
@@ -2888,11 +2888,13 @@ Read this before adding or changing a mode.
 - **Sections.**
   Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
-# Modes/Sync-Mode
+# Modes
+
+## Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes).
 
@@ -3012,14 +3014,14 @@ The main path meets [Outcomes](#outcomes).
     - Follow [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](#modesunderstand-mode) with the task's open pull request or each epic review pull request, one run per base.
+    - Run [Understand Mode](#understand-mode) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
     - Report queue decisions unevaluated by this run.
     Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
 
-## Outcomes
+### Outcomes
 
 - **Delivery recorded.**
   The user has each landed task tied to the pull request that delivered it, and has what now holds recorded on the initiative and its epics.
@@ -3032,11 +3034,11 @@ The main path meets [Outcomes](#outcomes).
 - **The queue stays undecided.**
   A sync on its own leaves the choice of what to start next undecided.
 
-# Modes/Understand-Mode
+## Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
-## Procedure
+### Procedure
 
 The main path meets [Outcomes](#outcomes-1).
 
@@ -3049,7 +3051,7 @@ The main path meets [Outcomes](#outcomes-1).
 3. **Report.**
    Report the pull request, record folder, diagrams and References row of each overview.
 
-## Outcomes
+### Outcomes
 
 - **The change explained.**
   The engineer reviewing the pull request has its structure and its flows, read at the head commit under review.

@@ -12,7 +12,7 @@ The [workspace skill](https://github.com/m2ux/prosiform/tree/959dbc6635f76a31048
 
 Each of the ten links under Modes in the copied SKILL.md supplies a separate compiler entry. The Markdown review has one subsection per mode, in that link order. Local dependencies are bundled under the shared work-planner root.
 
-The canonical sections declared by [structure.json](work-planner/structure.json) are H2 headings. `--group artifacts:2 --group protocols:2` pools those sections within each directory group: Operations, Fields, Guidance and Commands for artifacts; Procedure and Guidance for protocols. Only reached content contributes. An unused group produces a diagnostic.
+The canonical sections declared by [structure.json](work-planner/structure.json) are H2 headings. `--group artifacts:2 --group protocols:2` pools those sections within each directory group: Operations, Fields, Guidance and Commands for artifacts; Procedure and Guidance for protocols. The additional argument `--group modes:1` groups mode files under Modes, with each H1 title (such as Propose Mode) as a subsection. Only reached content contributes. An unused group produces a diagnostic.
 
 Every call uses `--compact --input-section-level 2 --max-output-bytes 1048576`. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by `…`. Each mode has its own SVG, complete stdout, diagnostics, command, review and run record under [diagrams/](diagrams/). [Mode Runs](mode-runs.json) records all ten successful compilations.
 

@@ -1,3 +1,3 @@
-W_ENTRY_DESTINATION: the entry reference 'Modes/Sync-Mode' resolves to the destination 'modessync-mode', which the bundle's entry line links it to
-  reference: Modes/Sync-Mode
-  resolved: modessync-mode
+W_ENTRY_DESTINATION: the entry reference 'Sync Mode' resolves to the destination 'sync-mode', which the bundle's entry line links it to
+  reference: Sync Mode
+  resolved: sync-mode

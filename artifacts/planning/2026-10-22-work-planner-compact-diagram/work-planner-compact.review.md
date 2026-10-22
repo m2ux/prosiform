@@ -1,6 +1,6 @@
 # Work Planner Mode Diagrams
 
-Each mode linked from the copied SKILL.md is compiled separately. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by ….
+Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by ….
 
 Compiler: main 800081b75ad8eb1b6ecbbfb59ac382592f496853
 
@@ -26,12 +26,12 @@ Entry document: [modes/propose-mode.md](work-planner/modes/propose-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/propose-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/propose-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Propose-Mode](diagrams/propose.stdout.md#modespropose-mode); everything else is material it references.
+This bundle was built for [Propose Mode](diagrams/propose.stdout.md#propose-mode); everything else is material it references.
 
 ### Diagnostics
 
@@ -39,9 +39,9 @@ Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
-W_ENTRY_DESTINATION: the entry reference 'Modes/Propose-Mode' resolves to the destination 'modespropose-mode', which the bundle's entry line links it to
-  reference: Modes/Propose-Mode
-  resolved: modespropose-mode
+W_ENTRY_DESTINATION: the entry reference 'Propose Mode' resolves to the destination 'propose-mode', which the bundle's entry line links it to
+  reference: Propose Mode
+  resolved: propose-mode
 ```
 
 ## Plan
@@ -53,21 +53,21 @@ Entry document: [modes/plan-mode.md](work-planner/modes/plan-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/plan-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/plan-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Plan-Mode](diagrams/plan.stdout.md#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan Mode](diagrams/plan.stdout.md#plan-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Plan-Mode' resolves to the destination 'modesplan-mode', which the bundle's entry line links it to
-  reference: Modes/Plan-Mode
-  resolved: modesplan-mode
+W_ENTRY_DESTINATION: the entry reference 'Plan Mode' resolves to the destination 'plan-mode', which the bundle's entry line links it to
+  reference: Plan Mode
+  resolved: plan-mode
 ```
 
 ## Align
@@ -79,12 +79,12 @@ Entry document: [modes/align-mode.md](work-planner/modes/align-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/align-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/align-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Align-Mode](diagrams/align.stdout.md#modesalign-mode); everything else is material it references.
+This bundle was built for [Align Mode](diagrams/align.stdout.md#align-mode); everything else is material it references.
 
 ### Diagnostics
 
@@ -92,9 +92,9 @@ Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
-W_ENTRY_DESTINATION: the entry reference 'Modes/Align-Mode' resolves to the destination 'modesalign-mode', which the bundle's entry line links it to
-  reference: Modes/Align-Mode
-  resolved: modesalign-mode
+W_ENTRY_DESTINATION: the entry reference 'Align Mode' resolves to the destination 'align-mode', which the bundle's entry line links it to
+  reference: Align Mode
+  resolved: align-mode
 ```
 
 ## Sync
@@ -106,21 +106,21 @@ Entry document: [modes/sync-mode.md](work-planner/modes/sync-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/sync-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/sync-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Sync-Mode](diagrams/sync.stdout.md#modessync-mode); everything else is material it references.
+This bundle was built for [Sync Mode](diagrams/sync.stdout.md#sync-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Sync-Mode' resolves to the destination 'modessync-mode', which the bundle's entry line links it to
-  reference: Modes/Sync-Mode
-  resolved: modessync-mode
+W_ENTRY_DESTINATION: the entry reference 'Sync Mode' resolves to the destination 'sync-mode', which the bundle's entry line links it to
+  reference: Sync Mode
+  resolved: sync-mode
 ```
 
 ## Advance
@@ -132,21 +132,21 @@ Entry document: [modes/advance-mode.md](work-planner/modes/advance-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/advance-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/advance-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Advance-Mode](diagrams/advance.stdout.md#modesadvance-mode); everything else is material it references.
+This bundle was built for [Advance Mode](diagrams/advance.stdout.md#advance-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Advance-Mode' resolves to the destination 'modesadvance-mode', which the bundle's entry line links it to
-  reference: Modes/Advance-Mode
-  resolved: modesadvance-mode
+W_ENTRY_DESTINATION: the entry reference 'Advance Mode' resolves to the destination 'advance-mode', which the bundle's entry line links it to
+  reference: Advance Mode
+  resolved: advance-mode
 ```
 
 ## Deliver
@@ -158,21 +158,21 @@ Entry document: [modes/deliver-mode.md](work-planner/modes/deliver-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/deliver-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/deliver-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Deliver-Mode](diagrams/deliver.stdout.md#modesdeliver-mode); everything else is material it references.
+This bundle was built for [Deliver Mode](diagrams/deliver.stdout.md#deliver-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Deliver-Mode' resolves to the destination 'modesdeliver-mode', which the bundle's entry line links it to
-  reference: Modes/Deliver-Mode
-  resolved: modesdeliver-mode
+W_ENTRY_DESTINATION: the entry reference 'Deliver Mode' resolves to the destination 'deliver-mode', which the bundle's entry line links it to
+  reference: Deliver Mode
+  resolved: deliver-mode
 ```
 
 ## Understand
@@ -184,21 +184,21 @@ Entry document: [modes/understand-mode.md](work-planner/modes/understand-mode.md
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/understand-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/understand-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Understand-Mode](diagrams/understand.stdout.md#modesunderstand-mode); everything else is material it references.
+This bundle was built for [Understand Mode](diagrams/understand.stdout.md#understand-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Understand-Mode' resolves to the destination 'modesunderstand-mode', which the bundle's entry line links it to
-  reference: Modes/Understand-Mode
-  resolved: modesunderstand-mode
+W_ENTRY_DESTINATION: the entry reference 'Understand Mode' resolves to the destination 'understand-mode', which the bundle's entry line links it to
+  reference: Understand Mode
+  resolved: understand-mode
 ```
 
 ## Hoist
@@ -210,12 +210,12 @@ Entry document: [modes/hoist-mode.md](work-planner/modes/hoist-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/hoist-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/hoist-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Hoist-Mode](diagrams/hoist.stdout.md#modeshoist-mode); everything else is material it references.
+This bundle was built for [Hoist Mode](diagrams/hoist.stdout.md#hoist-mode); everything else is material it references.
 
 ### Diagnostics
 
@@ -223,9 +223,9 @@ Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
-W_ENTRY_DESTINATION: the entry reference 'Modes/Hoist-Mode' resolves to the destination 'modeshoist-mode', which the bundle's entry line links it to
-  reference: Modes/Hoist-Mode
-  resolved: modeshoist-mode
+W_ENTRY_DESTINATION: the entry reference 'Hoist Mode' resolves to the destination 'hoist-mode', which the bundle's entry line links it to
+  reference: Hoist Mode
+  resolved: hoist-mode
 ```
 
 ## Standup
@@ -237,21 +237,21 @@ Entry document: [modes/standup-mode.md](work-planner/modes/standup-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/standup-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/standup-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Standup-Mode](diagrams/standup.stdout.md#modesstandup-mode); everything else is material it references.
+This bundle was built for [Standup Mode](diagrams/standup.stdout.md#standup-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Standup-Mode' resolves to the destination 'modesstandup-mode', which the bundle's entry line links it to
-  reference: Modes/Standup-Mode
-  resolved: modesstandup-mode
+W_ENTRY_DESTINATION: the entry reference 'Standup Mode' resolves to the destination 'standup-mode', which the bundle's entry line links it to
+  reference: Standup Mode
+  resolved: standup-mode
 ```
 
 ## Revise
@@ -263,12 +263,12 @@ Entry document: [modes/revise-mode.md](work-planner/modes/revise-mode.md).
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/revise-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/revise-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Revise-Mode](diagrams/revise.stdout.md#modesrevise-mode); everything else is material it references.
+This bundle was built for [Revise Mode](diagrams/revise.stdout.md#revise-mode); everything else is material it references.
 
 ### Diagnostics
 
@@ -276,7 +276,7 @@ Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'protocols' arranges nothing, because the closure carries no document under a directory of that slug
-W_ENTRY_DESTINATION: the entry reference 'Modes/Revise-Mode' resolves to the destination 'modesrevise-mode', which the bundle's entry line links it to
-  reference: Modes/Revise-Mode
-  resolved: modesrevise-mode
+W_ENTRY_DESTINATION: the entry reference 'Revise Mode' resolves to the destination 'revise-mode', which the bundle's entry line links it to
+  reference: Revise Mode
+  resolved: revise-mode
 ```

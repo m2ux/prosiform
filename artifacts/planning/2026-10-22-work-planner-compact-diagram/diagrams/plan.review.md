@@ -9,19 +9,19 @@ Source files opened by the compiler appear beside the bundle body. The opening c
 ### Command
 
 ```bash
-prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 modes/plan-mode.md
+prosiform --root /tmp/prosiform-diagram-engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner --max-output-bytes 1048576 --group artifacts:2 --group protocols:2 --group modes:1 modes/plan-mode.md
 ```
 
 ### Entry Points
 
-This bundle was built for [Modes/Plan-Mode](plan.stdout.md#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan Mode](plan.stdout.md#plan-mode); everything else is material it references.
 
 ### Diagnostics
 
 Exit status: 0
 
 ```text
-W_ENTRY_DESTINATION: the entry reference 'Modes/Plan-Mode' resolves to the destination 'modesplan-mode', which the bundle's entry line links it to
-  reference: Modes/Plan-Mode
-  resolved: modesplan-mode
+W_ENTRY_DESTINATION: the entry reference 'Plan Mode' resolves to the destination 'plan-mode', which the bundle's entry line links it to
+  reference: Plan Mode
+  resolved: plan-mode
 ```
