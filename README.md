@@ -38,8 +38,6 @@ prosiform --root my-skill \
 
 ![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
-![Each agent compiles its deferred document: Rules/Codex contains instructions to keep patches focused and run relevant tests; Rules/Claude contains instructions to review the proposed change and report actionable findings.](docs/images/agent-rules.png)
-
 ## Installation
 
 Requires Python 3.13+ on Linux or macOS. From the repository root:
