@@ -2,7 +2,7 @@
 
 The checks this unit ran, the revision they ran against and what each observed.
 
-**Revision:** `i01/e02/w03-title-case-for-every` at `1d12607`, cut from `origin/i01/e02/main` at `a56a738`.
+**Revision:** `i01/e02/w03-title-case-for-every` at `94a3255`, cut from `origin/i01/e02/main` at `a56a738` and merged with that base at `8863b72`, which carries W02 and W05.
 **Build under test:** `PROSIFORM_BUILD="uv run --project <worktree>/src --frozen prosiform"`.
 
 ## Repository checks
@@ -10,9 +10,9 @@ The checks this unit ran, the revision they ran against and what each observed.
 `make check` runs the repository's whole set — lock, lint, format, typecheck, unit tests, harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence — and stops at the first failure. It ran unsandboxed in the unit's worktree.
 
 ```text
-736 passed in 0.72s            (src/tests)
-599 passed in 7.97s            (checks/tests)
-corpus check: 243 fixture(s), 243 pass, 0 fail, 0 awaited, 0 unexpected pass
+737 passed in 0.70s            (src/tests)
+601 passed in 8.93s            (checks/tests)
+corpus check: 245 fixture(s), 245 pass, 0 fail, 0 awaited, 0 unexpected pass
 smoke check: the installed command is named on the path, independent of the
   working directory, independent of this repository
 link check: every reference in 23 document(s) resolved
@@ -29,7 +29,7 @@ independence check: every word of every fixture declaration and every report
 
 Exit status 0.
 
-The corpus carries two fixtures more than it did, and every expected bundle that carried a file heading now declares it in title case. The 158 expected outputs that changed were rewritten only where the produced bytes matched the declared bytes under case folding, so each difference is a letter and nothing else; two manifests whose declared references are written as Unicode escapes were corrected by hand to the same rule.
+The corpus carries two fixtures of this unit's own, and every expected bundle that carried a file heading now declares it in title case. The 158 expected outputs that changed were rewritten only where the produced bytes matched the declared bytes under case folding, so each difference is a letter and nothing else; two manifests whose declared references are written as Unicode escapes were corrected by hand to the same rule.
 
 ## Generated headings in one spelling
 
