@@ -14,6 +14,7 @@ The arrangement is what a reader of a bundled skill meets first, so a wrapper th
 | --- | --- |
 | [w01.md](w01.md) | The implementation plan for this unit |
 | [permutations.md](permutations.md) | The six member shapes the arrangement is read against, what the build emits for each, and the two cases this unit separates |
+| [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
 
 ## Links
 
