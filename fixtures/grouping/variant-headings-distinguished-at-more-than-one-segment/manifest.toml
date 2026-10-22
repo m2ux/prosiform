@@ -1,4 +1,4 @@
-description = "Two documents of one name in different directories contribute one heading text to one merged section, so the name is emitted once and each document's content hangs beneath it under a variant heading. One trailing path segment is the documents' shared stem and does not tell them apart, so each variant heading carries the two segments that do. The second document is reached as a whole, so the subsection naming it absorbs its title and is where that reference resolves."
+description = "Two documents of one name in different directories contribute one heading text to one merged section, so the name is emitted once and each document's content hangs beneath it under a variant heading. One trailing path segment is the documents' shared stem and does not tell them apart, so each variant heading carries the two segments that do. The second document is reached as a whole, so the subsection naming it absorbs its title and is where that reference resolves; that subsection carries the same run of the path its variant heading does, so the bundle states the document's name one way."
 
 clauses = [
   "Grouping — Group membership",

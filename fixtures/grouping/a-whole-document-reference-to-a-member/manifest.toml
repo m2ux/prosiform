@@ -1,4 +1,4 @@
-description = "A whole-document reference to a member carrying content above the grouping depth resolves to that member's overview subsection, which is named by the document's stem in title case. A member carrying nothing above that depth, and no title for that heading to absorb, is given no subsection, and a whole-document reference to it resolves to its first contribution to the group."
+description = "A whole-document reference to a member carrying content above the grouping depth resolves to that member's overview subsection, which is named by the run of the document's path that tells it apart from the other members, here its stem alone. A member carrying nothing above that depth, and no title for that heading to absorb, is given no subsection, and a whole-document reference to it resolves to its first contribution to the group."
 
 clauses = [
   "Grouping — Document content above the grouping depth",
