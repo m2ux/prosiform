@@ -7,7 +7,9 @@ The plan changes this session applied, the ones it held, and the debt its valida
 | Change | Kind | Where |
 | --- | --- | --- |
 | The design states the destination a member carrying nothing above the grouping depth reaches | Design record | [`design.md`](../2026-10-17-prosiform-v1/design.md), `A heading for every member`, `Link text` and the grouping corpus list |
-| W02's row links its pull request, which frees the row the record held | Epic delivery | [#195](https://github.com/m2ux/prosiform/issues/195) |
+| W02's row links its pull request, carries its Done tick and its criterion AC3 is ticked | Epic delivery | [#195](https://github.com/m2ux/prosiform/issues/195), [#201](https://github.com/m2ux/prosiform/pull/201) merged into `i01/e02/main` at `8863b72` |
+| The review pull request cites this delivery and states the destination rule as it stands | Epic review | [#198](https://github.com/m2ux/prosiform/pull/198) |
+| Two corpus declarations restated to the destinations their own bytes show | Corpus | `delivery/an-entry-destination-under-a-grouping-rule`, `grouping/a-whole-document-reference-to-a-member` |
 | A member named by no heading in its section, raised and placed as a new task | Task creation | [#203](https://github.com/m2ux/prosiform/issues/203) as `I01:E03:W11`, criterion AC12 on [#187](https://github.com/m2ux/prosiform/issues/187), board status Backlog |
 | A check reading a branch that moves beneath it, raised and placed as a new task | Task creation | [#204](https://github.com/m2ux/prosiform/issues/204) as `I01:E03:W12`, criterion AC13 on [#187](https://github.com/m2ux/prosiform/issues/187), board status Backlog |
 
@@ -25,3 +27,7 @@ Nothing. No change this session met needed an initiative, and none fell outside 
 
 - **Nothing blocking.**
   Every check this unit's criterion rests on passes, and no debt stood between the criterion and its verification.
+
+## The merge
+
+[#201](https://github.com/m2ux/prosiform/pull/201) merged into `i01/e02/main` at `8863b72` with every target of `make check` holding on its head but `make vocabulary`, which reports a contract term marked on the engineering branch by [#194](https://github.com/m2ux/prosiform/issues/194) and not yet defined in `docs/glossary.md`. The base reported the same failure at `9037a91`, before this branch reached it, so the merge changed nothing about it. The reading that lets one commit's result turn on another branch is [#204](https://github.com/m2ux/prosiform/issues/204).
