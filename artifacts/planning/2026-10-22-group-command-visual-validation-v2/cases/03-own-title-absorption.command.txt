@@ -1,0 +1,1 @@
+prosiform --root sources/03-own-title-absorption/my-skill --group rules:2 rules/identity.md

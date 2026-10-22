@@ -1,0 +1,1 @@
+prosiform --root sources/09-unique-sections/my-skill --group rules:2 rules/blue.md rules/red.md

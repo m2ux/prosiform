@@ -1,0 +1,1 @@
+prosiform --root sources/27-harness-selection/my-skill --group rules:2 rules/codex.md

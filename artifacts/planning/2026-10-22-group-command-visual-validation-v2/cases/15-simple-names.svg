@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="496" viewBox="0 0 2142 496" role="img" aria-labelledby="title desc"><title id="title">Source documents and compiled bundle</title><desc id="desc">Source documents and actual compiler output.</desc><rect width="2142" height="496" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="20" fill="#e3b341" font-weight="400">main 08a8c0317924</text><rect x="32" y="80" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 134 H442" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">   ├─ HTTP-checks.md</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">   └─ quick_start.md</text><rect x="466" y="80" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="116" font-size="21" fill="#b1c6df" font-weight="400">rules/HTTP-checks.md</text>
+<path d="M466 134 H1156" stroke="#303b49"/>
+<text x="504" y="191" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text><rect x="466" y="231" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="267" font-size="21" fill="#b1c6df" font-weight="400">rules/quick_start.md</text>
+<path d="M466 285 H1156" stroke="#303b49"/>
+<text x="504" y="342" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text><rect x="1230" y="80" width="880" height="351" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="116" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
+<path d="M1230 134 H2110" stroke="#303b49"/>
+<text x="1242" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="201" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="257" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="257" font-size="26" fill="#e6edf3" font-weight="500">HTTP Checks</text>
+<text x="1268" y="307" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text>
+<text x="1242" y="363" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="363" font-size="26" fill="#e6edf3" font-weight="500">Quick Start</text>
+<text x="1268" y="413" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>

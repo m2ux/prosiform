@@ -1,0 +1,4 @@
+W_EMPTY_GROUP_RULE: the grouping rule for 'rules' arranges nothing, because the closure carries no document under a directory of that slug
+W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination 'procedure', which the bundle's entry line links it to
+  reference: Procedure
+  resolved: procedure

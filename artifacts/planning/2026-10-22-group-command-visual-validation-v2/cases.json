@@ -1,0 +1,805 @@
+[
+  {
+    "id": "01-plain-content",
+    "title": "Plain content",
+    "area": "Member structure",
+    "focus": "Members sit directly beneath Rules when no sections are pooled.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [],
+    "absent": [
+      "## Overview"
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "02-preamble-and-sections",
+    "title": "Preamble and sections",
+    "area": "Member structure",
+    "focus": "Overview holds preambles beside the pooled Style section.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Overview",
+      "## Style"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "03-own-title-absorption",
+    "title": "Own title absorption",
+    "area": "Member structure",
+    "focus": "A leading own H1 is represented once by its member heading.",
+    "inputs": [
+      "rules/identity.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/identity.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Identity"
+    ],
+    "absent": [
+      "### Identity"
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "04-different-title",
+    "title": "Different title",
+    "area": "Member structure",
+    "focus": "An authored title different from the filename survives beneath the member.",
+    "inputs": [
+      "rules/other-title.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/other-title.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "### Authored NAME"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "05-later-title",
+    "title": "Later title",
+    "area": "Member structure",
+    "focus": "The first own-name H1 is absorbed even when paragraph content precedes it; both paragraphs survive.",
+    "inputs": [
+      "rules/later-title.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/later-title.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Later Title",
+      "Read first.",
+      "Read second."
+    ],
+    "absent": [
+      "### Later Title"
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "06-headings-only",
+    "title": "Headings only",
+    "area": "Member structure",
+    "focus": "Heading-only sections contribute visible structure.",
+    "inputs": [
+      "rules/outline.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/outline.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## First",
+      "## Second"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "07-title-only",
+    "title": "Title only",
+    "area": "Member structure",
+    "focus": "Absorbing the only title preserves a named member.",
+    "inputs": [
+      "rules/identity.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/identity.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Identity"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "08-empty-member",
+    "title": "Empty member",
+    "area": "Member structure",
+    "focus": "An empty document still has a member destination.",
+    "inputs": [
+      "rules/empty.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/empty.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Empty"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "09-unique-sections",
+    "title": "Unique sections",
+    "area": "Pooled sections",
+    "focus": "Unique section names need no contributor wrappers.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Style",
+      "## Workflow"
+    ],
+    "absent": [
+      "## Overview"
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "10-shared-sections",
+    "title": "Shared sections",
+    "area": "Pooled sections",
+    "focus": "A shared heading contains a named contribution from each member.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "### Blue",
+      "### Red"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "11-mixed-sections",
+    "title": "Mixed sections",
+    "area": "Pooled sections",
+    "focus": "Shared and single-contributor sections coexist.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "### Blue",
+      "### Red",
+      "## Workflow"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "12-body-only-contributions",
+    "title": "Body only contributions",
+    "area": "Pooled sections",
+    "focus": "Body-only contributions retain member identity at depth one.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:1",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "### Blue",
+      "### Red"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "13-nested-contributions",
+    "title": "Nested contributions",
+    "area": "Pooled sections",
+    "focus": "Each contributor retains its own child section beneath the pooled heading.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "#### Detail"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "14-empty-contributions",
+    "title": "Empty contributions",
+    "area": "Pooled sections",
+    "focus": "A shared heading with empty contributions still names both contributors.",
+    "inputs": [
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "### Blue",
+      "### Red"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "15-simple-names",
+    "title": "Simple names",
+    "area": "Names and casing",
+    "focus": "Generated names title-case separators and preserve HTTP.",
+    "inputs": [
+      "rules/HTTP-checks.md",
+      "rules/quick_start.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/HTTP-checks.md",
+      "rules/quick_start.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## HTTP Checks",
+      "## Quick Start"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "16-nested-names",
+    "title": "Nested names",
+    "area": "Names and casing",
+    "focus": "A unique nested member needs only its filename stem.",
+    "inputs": [
+      "rules/nested/deep-note.md",
+      "rules/plain.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/nested/deep-note.md",
+      "rules/plain.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Deep Note"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "17-stem-clashes",
+    "title": "Stem clashes",
+    "area": "Names and casing",
+    "focus": "Directory suffixes distinguish identical stems.",
+    "inputs": [
+      "rules/api/common.md",
+      "rules/web/common.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/api/common.md",
+      "rules/web/common.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Api Common",
+      "## Web Common"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "18-deep-clashes",
+    "title": "Deep clashes",
+    "area": "Names and casing",
+    "focus": "Qualification reaches the directory segment that distinguishes members.",
+    "inputs": [
+      "rules/team-a/web/shared.md",
+      "rules/team-b/web/shared.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/team-a/web/shared.md",
+      "rules/team-b/web/shared.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Team A Web Shared",
+      "## Team B Web Shared"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "19-formatting-clashes",
+    "title": "Formatting clashes",
+    "area": "Names and casing",
+    "focus": "Names remain distinct after hyphens and underscores become spaces.",
+    "inputs": [
+      "rules/a/one-two.md",
+      "rules/b/one_two.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/a/one-two.md",
+      "rules/b/one_two.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## A One Two",
+      "## B One Two"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "20-group-suffixes",
+    "title": "Group suffixes",
+    "area": "Names and casing",
+    "focus": "Member names omit the redundant group kind when names stay distinct.",
+    "inputs": [
+      "modes/plan-mode.md",
+      "modes/review-mode.md"
+    ],
+    "args": [
+      "--group",
+      "modes:2",
+      "modes/plan-mode.md",
+      "modes/review-mode.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Plan",
+      "## Review"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "21-consistent-variant-names",
+    "title": "Consistent variant names",
+    "area": "Names and casing",
+    "focus": "Overview and pooled variants share the group-wide member names, including a noncontributor.",
+    "inputs": [
+      "rules/a/common.md",
+      "rules/b/common.md",
+      "rules/c/common.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/a/common.md",
+      "rules/b/common.md",
+      "rules/c/common.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "### A Common",
+      "### B Common",
+      "### C Common"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "22-whole-member-links",
+    "title": "Whole member links",
+    "area": "Links and selection",
+    "focus": "Whole-document links reach distinct contributor headings.",
+    "inputs": [
+      "route.md",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "route.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "[Blue](#blue)",
+      "[Red](#red)"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "23-pooled-section-links",
+    "title": "Pooled section links",
+    "area": "Links and selection",
+    "focus": "References to each source Style section reach its own variant.",
+    "inputs": [
+      "route.md",
+      "rules/blue.md",
+      "rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "route.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "[Blue style](#blue)",
+      "[Red style](#red)"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "24-absorbed-title-links",
+    "title": "Absorbed title links",
+    "area": "Links and selection",
+    "focus": "A link to an absorbed title reaches the member heading.",
+    "inputs": [
+      "route.md",
+      "rules/identity.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "route.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "[Identity](#identity)",
+      "## Identity"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "25-selected-sections",
+    "title": "Selected sections",
+    "area": "Links and selection",
+    "focus": "Selecting one section preserves its outline and excludes its sibling body.",
+    "inputs": [
+      "rules/guide.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/guide.md#selected"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "Keep this."
+    ],
+    "absent": [
+      "Exclude this."
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "26-deferred-links",
+    "title": "Deferred links",
+    "area": "Links and selection",
+    "focus": "Deferred targets exist but contribute no body.",
+    "inputs": [
+      "rules/common.md",
+      "rules/detail.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/common.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "[\u00ac Detail](rules/detail.md)"
+    ],
+    "absent": [
+      "Deferred body."
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "27-harness-selection",
+    "title": "Harness selection",
+    "area": "Links and selection",
+    "focus": "Selecting Codex includes its common rules and leaves Claude deferred.",
+    "inputs": [
+      "rules/codex.md",
+      "rules/common.md",
+      "rules/claude.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/codex.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "Codex instructions.",
+      "Shared instructions."
+    ],
+    "absent": [
+      "Claude instructions."
+    ],
+    "diagnostic": null
+  },
+  {
+    "id": "28-ungrouped-baseline",
+    "title": "Ungrouped baseline",
+    "area": "Group combinations",
+    "focus": "Ungrouped generated names retain paths and authored heading spelling.",
+    "inputs": [
+      "procedure.md",
+      "rules/HTTP-checks.md"
+    ],
+    "args": [
+      "procedure.md",
+      "rules/HTTP-checks.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "# Rules/HTTP-Checks",
+      "# Procedure",
+      "authored HTTP spelling"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "29-multiple-groups",
+    "title": "Multiple groups",
+    "area": "Group combinations",
+    "focus": "Distinct slugs contribute independent groups.",
+    "inputs": [
+      "rules/common.md",
+      "checks/final.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "--group",
+      "checks:1",
+      "rules/common.md",
+      "checks/final.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "# Rules",
+      "# Checks"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "30-nested-precedence",
+    "title": "Nested precedence",
+    "area": "Group combinations",
+    "focus": "The deepest named directory owns its member; both groups have content.",
+    "inputs": [
+      "rules/plain.md",
+      "rules/visual/blue.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "--group",
+      "visual:1",
+      "rules/plain.md",
+      "rules/visual/blue.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "# Rules",
+      "# Visual"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "31-repeated-directory-names",
+    "title": "Repeated directory names",
+    "area": "Group combinations",
+    "focus": "One slug groups matching directories in separate branches.",
+    "inputs": [
+      "a/rules/blue.md",
+      "b/rules/red.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "a/rules/blue.md",
+      "b/rules/red.md"
+    ],
+    "exit_code": 0,
+    "contains": [
+      "## Blue",
+      "## Red"
+    ],
+    "absent": [],
+    "diagnostic": null
+  },
+  {
+    "id": "32-unmatched-group",
+    "title": "Unmatched group",
+    "area": "Group combinations",
+    "focus": "An existing directory with no reached members warns while the selected document compiles.",
+    "inputs": [
+      "procedure.md",
+      "rules/unselected.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "procedure.md"
+    ],
+    "exit_code": 0,
+    "contains": [],
+    "absent": [
+      "Unselected rules."
+    ],
+    "diagnostic": "W_EMPTY_GROUP_RULE"
+  },
+  {
+    "id": "33-missing-depth",
+    "title": "Missing depth",
+    "area": "Rejected commands/output",
+    "focus": "A folder-only group argument is invalid usage and emits no bundle.",
+    "inputs": [
+      "rules/plain.md"
+    ],
+    "args": [
+      "--group",
+      "rules",
+      "rules/plain.md"
+    ],
+    "exit_code": 2,
+    "contains": [],
+    "absent": [],
+    "diagnostic": "E_INVALID_GROUP_RULE"
+  },
+  {
+    "id": "34-invalid-depth",
+    "title": "Invalid depth",
+    "area": "Rejected commands/output",
+    "focus": "A depth outside one through six is invalid usage.",
+    "inputs": [
+      "rules/plain.md"
+    ],
+    "args": [
+      "--group",
+      "rules:7",
+      "rules/plain.md"
+    ],
+    "exit_code": 2,
+    "contains": [],
+    "absent": [],
+    "diagnostic": "E_INVALID_GROUP_RULE"
+  },
+  {
+    "id": "35-duplicate-slug",
+    "title": "Duplicate slug",
+    "area": "Rejected commands/output",
+    "focus": "A slug may be declared only once, even with different depths.",
+    "inputs": [
+      "rules/plain.md"
+    ],
+    "args": [
+      "--group",
+      "rules:1",
+      "--group",
+      "rules:2",
+      "rules/plain.md"
+    ],
+    "exit_code": 2,
+    "contains": [],
+    "absent": [],
+    "diagnostic": "E_INVALID_GROUP_RULE"
+  },
+  {
+    "id": "36-heading-overflow",
+    "title": "Heading overflow",
+    "area": "Rejected commands/output",
+    "focus": "A carried heading that would exceed H6 prevents publication.",
+    "inputs": [
+      "rules/deep.md"
+    ],
+    "args": [
+      "--group",
+      "rules:2",
+      "rules/deep.md"
+    ],
+    "exit_code": 1,
+    "contains": [],
+    "absent": [],
+    "diagnostic": "E_HEADING_DEPTH_OVERFLOW"
+  }
+]

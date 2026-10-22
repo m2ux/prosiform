@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Plan' resolves to the destination 'plan', which the bundle's entry line links it to
+  reference: Plan
+  resolved: plan
+W_ENTRY_DESTINATION: the entry reference 'Review' resolves to the destination 'review', which the bundle's entry line links it to
+  reference: Review
+  resolved: review

@@ -1,0 +1,1 @@
+prosiform --root sources/26-deferred-links/my-skill --group rules:2 rules/common.md

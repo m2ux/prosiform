@@ -1,0 +1,1 @@
+prosiform --root sources/25-selected-sections/my-skill --group rules:2 'rules/guide.md#selected'

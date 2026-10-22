@@ -1,0 +1,368 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="6058" viewBox="0 0 2142 6058" role="img" aria-labelledby="title desc"><title id="title">Source documents and compiled bundle</title><desc id="desc">Source documents and actual compiler output.</desc><rect width="2142" height="6058" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="20" fill="#e3b341" font-weight="400">main 20e1bade1b3a</text><rect x="32" y="80" width="410" height="536" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 134 H442" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">work-planner/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">├─ artifacts/</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ issue-body.md</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ pull-request-body.md</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">│  └─ repository-graph.md</text>
+<text x="70" y="413" font-size="20" fill="#e6edf3" font-weight="400">├─ guidelines.md</text>
+<text x="70" y="450" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
+<text x="70" y="487" font-size="20" fill="#e6edf3" font-weight="400">│  └─ revise-mode.md</text>
+<text x="70" y="524" font-size="20" fill="#e6edf3" font-weight="400">└─ references/</text>
+<text x="70" y="561" font-size="20" fill="#e6edf3" font-weight="400">   └─</text>
+<text x="70" y="598" font-size="20" fill="#e6edf3" font-weight="400">requirement-characteristics.md</text><rect x="466" y="80" width="690" height="963" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="116" font-size="21" fill="#b1c6df" font-weight="400">SKILL.md</text>
+<path d="M466 134 H1156" stroke="#303b49"/>
+<text x="478" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="201" font-size="30" fill="#e6edf3" font-weight="500">Work Planner</text>
+<text x="478" y="257" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="257" font-size="26" fill="#e6edf3" font-weight="500">Modes</text>
+<text x="540" y="307" font-size="20" fill="#58a6ff" font-weight="400">Propose</text>
+<text x="540" y="357" font-size="20" fill="#58a6ff" font-weight="400">Plan</text>
+<text x="540" y="407" font-size="20" fill="#58a6ff" font-weight="400">Align</text>
+<text x="540" y="457" font-size="20" fill="#58a6ff" font-weight="400">Sync</text>
+<text x="540" y="507" font-size="20" fill="#58a6ff" font-weight="400">Advance</text>
+<text x="540" y="557" font-size="20" fill="#58a6ff" font-weight="400">Deliver</text>
+<text x="540" y="607" font-size="20" fill="#58a6ff" font-weight="400">Understand</text>
+<text x="540" y="657" font-size="20" fill="#58a6ff" font-weight="400">Hoist</text>
+<text x="540" y="707" font-size="20" fill="#58a6ff" font-weight="400">Standup</text>
+<text x="540" y="757" font-size="20" fill="#58a6ff" font-weight="400">Revise</text>
+<text x="478" y="813" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="813" font-size="26" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="540" y="863" font-size="20" fill="#58a6ff" font-weight="400">interview rules</text>
+<text x="540" y="913" font-size="20" fill="#58a6ff" font-weight="400">allowance</text>
+<text x="478" y="969" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="969" font-size="26" fill="#e6edf3" font-weight="500">Conventions</text>
+<text x="478" y="1025" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="1025" font-size="26" fill="#e6edf3" font-weight="500">Dependencies</text><rect x="466" y="1065" width="690" height="1040" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="1101" font-size="21" fill="#b1c6df" font-weight="400">artifacts/issue-body.md</text>
+<path d="M466 1119 H1156" stroke="#303b49"/>
+<text x="478" y="1186" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="1186" font-size="30" fill="#e6edf3" font-weight="500">Issue Body</text>
+<text x="478" y="1242" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="1242" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="1295" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1295" font-size="23" fill="#e6edf3" font-weight="500">*Write* Issue Table</text>
+<text x="478" y="1335" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1335" font-size="23" fill="#e6edf3" font-weight="500">*Check* Round of Edits</text>
+<text x="478" y="1375" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1375" font-size="23" fill="#e6edf3" font-weight="500">*Validate* Issue Body</text>
+<text x="478" y="1415" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1415" font-size="23" fill="#e6edf3" font-weight="500">*Apply* Body Corrections</text>
+<text x="478" y="1455" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1455" font-size="23" fill="#e6edf3" font-weight="500">*Build* Body Snapshot</text>
+<text x="478" y="1495" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1495" font-size="23" fill="#e6edf3" font-weight="500">*Repair* Issue Format</text>
+<text x="478" y="1538" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="1538" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="1591" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1591" font-size="23" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="478" y="1631" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1631" font-size="23" fill="#e6edf3" font-weight="500">Problem and Proposal</text>
+<text x="478" y="1671" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1671" font-size="23" fill="#e6edf3" font-weight="500">Shared Acceptance Criteria</text>
+<text x="478" y="1711" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1711" font-size="23" fill="#e6edf3" font-weight="500">Tables</text>
+<text x="478" y="1751" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1751" font-size="23" fill="#e6edf3" font-weight="500">Numbering</text>
+<text x="478" y="1791" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1791" font-size="23" fill="#e6edf3" font-weight="500">Reference Form</text>
+<text x="478" y="1831" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1831" font-size="23" fill="#e6edf3" font-weight="500">Body</text>
+<text x="478" y="1871" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1871" font-size="23" fill="#e6edf3" font-weight="500">Stale References</text>
+<text x="478" y="1911" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1911" font-size="23" fill="#e6edf3" font-weight="500">References</text>
+<text x="478" y="1951" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1951" font-size="23" fill="#e6edf3" font-weight="500">Coverage Reports</text>
+<text x="478" y="1991" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="1991" font-size="23" fill="#e6edf3" font-weight="500">Format Findings</text>
+<text x="478" y="2034" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="2034" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="2087" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2087" font-size="23" fill="#e6edf3" font-weight="500">Check Body Format</text><rect x="466" y="2127" width="690" height="584" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="2163" font-size="21" fill="#b1c6df" font-weight="400">artifacts/pull-request-body.md</text>
+<path d="M466 2181 H1156" stroke="#303b49"/>
+<text x="478" y="2248" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="2248" font-size="30" fill="#e6edf3" font-weight="500">Pull Request Body</text>
+<text x="478" y="2304" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="2304" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="2357" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2357" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Pull Request Body</text>
+<text x="478" y="2397" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2397" font-size="23" fill="#e6edf3" font-weight="500">*Populate* Review Body</text>
+<text x="478" y="2437" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2437" font-size="23" fill="#e6edf3" font-weight="500">*Link* Architecture Overview</text>
+<text x="478" y="2480" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="2480" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="2533" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2533" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="478" y="2573" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2573" font-size="23" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="478" y="2613" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2613" font-size="23" fill="#e6edf3" font-weight="500">Review Body</text>
+<text x="478" y="2653" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2653" font-size="23" fill="#e6edf3" font-weight="500">Test Plan</text>
+<text x="478" y="2693" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2693" font-size="23" fill="#e6edf3" font-weight="500">Test Coverage</text><rect x="466" y="2733" width="690" height="760" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="2769" font-size="21" fill="#b1c6df" font-weight="400">artifacts/repository-graph.md</text>
+<path d="M466 2787 H1156" stroke="#303b49"/>
+<text x="478" y="2854" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="2854" font-size="30" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="478" y="2910" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="2910" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="2963" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="2963" font-size="23" fill="#e6edf3" font-weight="500">*Measure* Repository Change</text>
+<text x="478" y="3006" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3006" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="478" y="3059" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3059" font-size="23" fill="#e6edf3" font-weight="500">Revision</text>
+<text x="478" y="3099" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3099" font-size="23" fill="#e6edf3" font-weight="500">Freshness</text>
+<text x="478" y="3139" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3139" font-size="23" fill="#e6edf3" font-weight="500">Changed Symbols</text>
+<text x="478" y="3179" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3179" font-size="23" fill="#e6edf3" font-weight="500">Symbol Relationships</text>
+<text x="478" y="3219" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3219" font-size="23" fill="#e6edf3" font-weight="500">Flow Traces</text>
+<text x="478" y="3262" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3262" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="478" y="3315" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3315" font-size="23" fill="#e6edf3" font-weight="500">Index Status</text>
+<text x="478" y="3355" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3355" font-size="23" fill="#e6edf3" font-weight="500">Index Repository</text>
+<text x="478" y="3395" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3395" font-size="23" fill="#e6edf3" font-weight="500">Change Surface</text>
+<text x="478" y="3435" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3435" font-size="23" fill="#e6edf3" font-weight="500">Symbol Context</text>
+<text x="478" y="3475" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="3475" font-size="23" fill="#e6edf3" font-weight="500">Flow Trace</text><rect x="466" y="3515" width="690" height="1155" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="3551" font-size="21" fill="#b1c6df" font-weight="400">guidelines.md</text>
+<path d="M466 3569 H1156" stroke="#303b49"/>
+<text x="478" y="3636" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="3636" font-size="30" fill="#e6edf3" font-weight="500">Guidelines</text>
+<text x="528" y="3686" font-size="20" fill="#58a6ff" font-weight="400">shared skill guidelines</text>
+<text x="478" y="3742" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3742" font-size="26" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="478" y="3798" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3798" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="478" y="3854" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3854" font-size="26" fill="#e6edf3" font-weight="500">Prose</text>
+<text x="478" y="3910" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3910" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="3966" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="3966" font-size="26" fill="#e6edf3" font-weight="500">Modes</text>
+<text x="478" y="4022" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4022" font-size="26" fill="#e6edf3" font-weight="500">Protocols</text>
+<text x="478" y="4078" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4078" font-size="26" fill="#e6edf3" font-weight="500">Artifacts</text>
+<text x="478" y="4134" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4134" font-size="26" fill="#e6edf3" font-weight="500">References</text>
+<text x="478" y="4190" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4190" font-size="26" fill="#e6edf3" font-weight="500">Entry Point</text>
+<text x="540" y="4240" font-size="20" fill="#58a6ff" font-weight="400">Issue Body</text>
+<text x="540" y="4290" font-size="20" fill="#58a6ff" font-weight="400">Pull Request Body</text>
+<text x="540" y="4340" font-size="20" fill="#58a6ff" font-weight="400">Conventions</text>
+<text x="540" y="4390" font-size="20" fill="#58a6ff" font-weight="400">Repository Graph</text>
+<text x="478" y="4446" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4446" font-size="26" fill="#e6edf3" font-weight="500">Progressive Disclosure</text>
+<text x="540" y="4496" font-size="20" fill="#58a6ff" font-weight="400">progressive disclosure</text>
+<text x="540" y="4546" font-size="20" fill="#58a6ff" font-weight="400">disclosure verification</text>
+<text x="478" y="4602" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4602" font-size="26" fill="#e6edf3" font-weight="500">Changes</text>
+<text x="540" y="4652" font-size="20" fill="#58a6ff" font-weight="400">change rules</text><rect x="466" y="4692" width="690" height="950" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="4728" font-size="21" fill="#b1c6df" font-weight="400">modes/revise-mode.md</text>
+<path d="M466 4746 H1156" stroke="#303b49"/>
+<text x="478" y="4813" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="4813" font-size="30" fill="#e6edf3" font-weight="500">Revise Mode</text>
+<text x="478" y="4869" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="4869" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="540" y="4919" font-size="20" fill="#58a6ff" font-weight="400">Outcomes</text>
+<text x="540" y="4969" font-size="20" fill="#58a6ff" font-weight="400">shared skill guidelines</text>
+<text x="540" y="5019" font-size="20" fill="#58a6ff" font-weight="400">skill guidelines</text>
+<text x="540" y="5069" font-size="20" fill="#58a6ff" font-weight="400">Interview</text>
+<text x="540" y="5119" font-size="20" fill="#58a6ff" font-weight="400">shared skill guidelines</text>
+<text x="540" y="5169" font-size="20" fill="#58a6ff" font-weight="400">skill guidelines</text>
+<text x="540" y="5219" font-size="20" fill="#58a6ff" font-weight="400">Progressive disclosure</text>
+<text x="540" y="5269" font-size="20" fill="#58a6ff" font-weight="400">Run Tests</text>
+<text x="540" y="5319" font-size="20" fill="#58a6ff" font-weight="400">Check Skill Files</text>
+<text x="540" y="5369" font-size="20" fill="#58a6ff" font-weight="400">disclosure verification</text>
+<text x="540" y="5419" font-size="20" fill="#58a6ff" font-weight="400">representative scenarios</text>
+<text x="478" y="5475" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="5475" font-size="26" fill="#e6edf3" font-weight="500">Outcomes</text>
+<text x="478" y="5531" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="5531" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="478" y="5584" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="5584" font-size="23" fill="#e6edf3" font-weight="500">Run Tests</text>
+<text x="478" y="5624" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="540" y="5624" font-size="23" fill="#e6edf3" font-weight="500">Check Skill Files</text><rect x="466" y="5664" width="690" height="307" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="5700" font-size="21" fill="#b1c6df" font-weight="400">references/requirement-characteristics.md</text>
+<path d="M466 5718 H1156" stroke="#303b49"/>
+<text x="478" y="5785" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="5785" font-size="30" fill="#e6edf3" font-weight="500">Requirement Characteristics</text>
+<text x="478" y="5841" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="5841" font-size="26" fill="#e6edf3" font-weight="500">Individual</text>
+<text x="478" y="5897" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="5897" font-size="26" fill="#e6edf3" font-weight="500">A Set</text>
+<text x="478" y="5953" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="5953" font-size="26" fill="#e6edf3" font-weight="500">Wording</text><rect x="1230" y="80" width="880" height="5013" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="116" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
+<path d="M1230 134 H2110" stroke="#303b49"/>
+<text x="1242" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="201" font-size="30" fill="#e6edf3" font-weight="500">SKILL</text>
+<text x="1242" y="257" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="257" font-size="26" fill="#e6edf3" font-weight="500">Work Planner</text>
+<text x="1242" y="310" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="310" font-size="23" fill="#e6edf3" font-weight="500">Conventions</text>
+<text x="1242" y="370" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="370" font-size="30" fill="#e6edf3" font-weight="500">Artifacts</text>
+<text x="1242" y="426" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="426" font-size="26" fill="#e6edf3" font-weight="500">Overview</text>
+<text x="1242" y="479" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="479" font-size="23" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="1242" y="535" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="535" font-size="26" fill="#e6edf3" font-weight="500">Fields</text>
+<text x="1242" y="588" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="588" font-size="23" fill="#e6edf3" font-weight="500">Issue Body</text>
+<text x="1242" y="641" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="641" font-size="23" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="1242" y="694" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="694" font-size="23" fill="#e6edf3" font-weight="500">Problem and Proposal</text>
+<text x="1242" y="747" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="747" font-size="23" fill="#e6edf3" font-weight="500">Shared Acceptance Criteria</text>
+<text x="1328" y="797" font-size="20" fill="#58a6ff" font-weight="400">Requirement Characteristics</text>
+<text x="1242" y="850" font-size="11" fill="#b1c6df" font-weight="400">H5</text>
+<text x="1328" y="850" font-size="23" fill="#e6edf3" font-weight="500">Verifiable</text>
+<text x="1340" y="900" font-size="20" fill="#58a6ff" font-weight="400">Coverage Reports</text>
+<text x="1242" y="953" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="953" font-size="23" fill="#e6edf3" font-weight="500">Tables</text>
+<text x="1242" y="1006" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1006" font-size="23" fill="#e6edf3" font-weight="500">Numbering</text>
+<text x="1242" y="1059" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1059" font-size="23" fill="#e6edf3" font-weight="500">Reference Form</text>
+<text x="1242" y="1112" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1112" font-size="23" fill="#e6edf3" font-weight="500">Body</text>
+<text x="1242" y="1165" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1165" font-size="23" fill="#e6edf3" font-weight="500">Stale References</text>
+<text x="1242" y="1218" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1218" font-size="23" fill="#e6edf3" font-weight="500">References</text>
+<text x="1242" y="1271" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1271" font-size="23" fill="#e6edf3" font-weight="500">Coverage Reports</text>
+<text x="1242" y="1324" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1324" font-size="23" fill="#e6edf3" font-weight="500">Format Findings</text>
+<text x="1242" y="1377" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="1377" font-size="23" fill="#e6edf3" font-weight="500">Pull Request Body</text>
+<text x="1242" y="1430" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1430" font-size="23" fill="#e6edf3" font-weight="500">Template</text>
+<text x="1242" y="1483" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1483" font-size="23" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="1242" y="1536" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1536" font-size="23" fill="#e6edf3" font-weight="500">Review Body</text>
+<text x="1242" y="1589" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1589" font-size="23" fill="#e6edf3" font-weight="500">Test Plan</text>
+<text x="1242" y="1642" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1642" font-size="23" fill="#e6edf3" font-weight="500">Test Coverage</text>
+<text x="1328" y="1692" font-size="20" fill="#58a6ff" font-weight="400">coverage report</text>
+<text x="1328" y="1742" font-size="20" fill="#58a6ff" font-weight="400">Coverage Reports</text>
+<text x="1242" y="1795" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="1795" font-size="23" fill="#e6edf3" font-weight="500">Repository Graph</text>
+<text x="1242" y="1848" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1848" font-size="23" fill="#e6edf3" font-weight="500">Revision</text>
+<text x="1242" y="1901" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1901" font-size="23" fill="#e6edf3" font-weight="500">Freshness</text>
+<text x="1242" y="1954" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="1954" font-size="23" fill="#e6edf3" font-weight="500">Changed Symbols</text>
+<text x="1242" y="2007" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="2007" font-size="23" fill="#e6edf3" font-weight="500">Symbol Relationships</text>
+<text x="1242" y="2060" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="2060" font-size="23" fill="#e6edf3" font-weight="500">Flow Traces</text>
+<text x="1242" y="2116" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="2116" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="1242" y="2169" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="2169" font-size="23" fill="#e6edf3" font-weight="500">*Measure* Repository Change</text>
+<text x="1316" y="2219" font-size="20" fill="#58a6ff" font-weight="400">Index Status</text>
+<text x="1316" y="2269" font-size="20" fill="#58a6ff" font-weight="400">Index Repository</text>
+<text x="1316" y="2319" font-size="20" fill="#58a6ff" font-weight="400">Change Surface</text>
+<text x="1316" y="2369" font-size="20" fill="#58a6ff" font-weight="400">Symbol Context</text>
+<text x="1316" y="2419" font-size="20" fill="#58a6ff" font-weight="400">Flow Trace</text>
+<text x="1316" y="2469" font-size="20" fill="#58a6ff" font-weight="400">Fields</text>
+<text x="1242" y="2525" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="2525" font-size="26" fill="#e6edf3" font-weight="500">Commands</text>
+<text x="1242" y="2578" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="2578" font-size="23" fill="#e6edf3" font-weight="500">Index Status</text>
+<text x="1242" y="2631" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="2631" font-size="23" fill="#e6edf3" font-weight="500">Index Repository</text>
+<text x="1242" y="2684" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="2684" font-size="23" fill="#e6edf3" font-weight="500">Change Surface</text>
+<text x="1242" y="2737" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="2737" font-size="23" fill="#e6edf3" font-weight="500">Symbol Context</text>
+<text x="1242" y="2790" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="2790" font-size="23" fill="#e6edf3" font-weight="500">Flow Trace</text>
+<text x="1316" y="2840" font-size="20" fill="#58a6ff" font-weight="400">Flow Traces</text>
+<text x="1242" y="2900" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="2900" font-size="30" fill="#e6edf3" font-weight="500">Guidelines</text>
+<text x="1292" y="2950" font-size="20" fill="#58a6ff" font-weight="400">shared skill guidelines</text>
+<text x="1242" y="3006" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3006" font-size="26" fill="#e6edf3" font-weight="500">Titles</text>
+<text x="1242" y="3062" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3062" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1242" y="3118" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3118" font-size="26" fill="#e6edf3" font-weight="500">Prose</text>
+<text x="1242" y="3174" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3174" font-size="26" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="1242" y="3230" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3230" font-size="26" fill="#e6edf3" font-weight="500">Modes</text>
+<text x="1242" y="3286" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3286" font-size="26" fill="#e6edf3" font-weight="500">Protocols</text>
+<text x="1242" y="3342" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3342" font-size="26" fill="#e6edf3" font-weight="500">Artifacts</text>
+<text x="1242" y="3398" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3398" font-size="26" fill="#e6edf3" font-weight="500">References</text>
+<text x="1242" y="3454" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3454" font-size="26" fill="#e6edf3" font-weight="500">Entry Point</text>
+<text x="1304" y="3504" font-size="20" fill="#58a6ff" font-weight="400">Issue Body</text>
+<text x="1304" y="3554" font-size="20" fill="#58a6ff" font-weight="400">Pull Request Body</text>
+<text x="1304" y="3604" font-size="20" fill="#58a6ff" font-weight="400">Conventions</text>
+<text x="1304" y="3654" font-size="20" fill="#58a6ff" font-weight="400">Repository Graph</text>
+<text x="1242" y="3710" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3710" font-size="26" fill="#e6edf3" font-weight="500">Progressive Disclosure</text>
+<text x="1304" y="3760" font-size="20" fill="#58a6ff" font-weight="400">progressive disclosure</text>
+<text x="1304" y="3810" font-size="20" fill="#58a6ff" font-weight="400">disclosure verification</text>
+<text x="1242" y="3866" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="3866" font-size="26" fill="#e6edf3" font-weight="500">Changes</text>
+<text x="1304" y="3916" font-size="20" fill="#58a6ff" font-weight="400">change rules</text>
+<text x="1242" y="3976" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="3976" font-size="30" fill="#e6edf3" font-weight="500">Modes</text>
+<text x="1242" y="4032" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="4032" font-size="26" fill="#e6edf3" font-weight="500">Revise Mode</text>
+<text x="1242" y="4085" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="4085" font-size="23" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1316" y="4135" font-size="20" fill="#58a6ff" font-weight="400">Outcomes</text>
+<text x="1316" y="4185" font-size="20" fill="#58a6ff" font-weight="400">shared skill guidelines</text>
+<text x="1316" y="4235" font-size="20" fill="#58a6ff" font-weight="400">skill guidelines</text>
+<text x="1316" y="4285" font-size="20" fill="#58a6ff" font-weight="400">Interview</text>
+<text x="1316" y="4335" font-size="20" fill="#58a6ff" font-weight="400">shared skill guidelines</text>
+<text x="1316" y="4385" font-size="20" fill="#58a6ff" font-weight="400">skill guidelines</text>
+<text x="1316" y="4435" font-size="20" fill="#58a6ff" font-weight="400">Progressive disclosure</text>
+<text x="1316" y="4485" font-size="20" fill="#58a6ff" font-weight="400">Run Tests</text>
+<text x="1316" y="4535" font-size="20" fill="#58a6ff" font-weight="400">Check Skill Files</text>
+<text x="1316" y="4585" font-size="20" fill="#58a6ff" font-weight="400">disclosure verification</text>
+<text x="1316" y="4635" font-size="20" fill="#58a6ff" font-weight="400">representative scenarios</text>
+<text x="1242" y="4688" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="4688" font-size="23" fill="#e6edf3" font-weight="500">Outcomes</text>
+<text x="1242" y="4741" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="4741" font-size="23" fill="#e6edf3" font-weight="500">Operations</text>
+<text x="1242" y="4794" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="4794" font-size="23" fill="#e6edf3" font-weight="500">Run Tests</text>
+<text x="1242" y="4847" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1316" y="4847" font-size="23" fill="#e6edf3" font-weight="500">Check Skill Files</text>
+<text x="1242" y="4907" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="4907" font-size="30" fill="#e6edf3" font-weight="500">References/Requirement-Characteristics</text>
+<text x="1242" y="4963" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="4963" font-size="26" fill="#e6edf3" font-weight="500">Individual</text>
+<text x="1242" y="5019" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="5019" font-size="26" fill="#e6edf3" font-weight="500">A Set</text>
+<text x="1242" y="5075" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="5075" font-size="26" fill="#e6edf3" font-weight="500">Wording</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>

@@ -1,0 +1,1 @@
+prosiform --root sources/34-invalid-depth/my-skill --group rules:7 rules/plain.md

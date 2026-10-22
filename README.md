@@ -2,6 +2,8 @@
 
 Engineering artifacts for md-composer.
 
+[Diagram Renderer Usage](https://github.com/m2ux/prosiform/blob/main/docs/diagram-renderer.md)
+
 ## Structure
 
 ```

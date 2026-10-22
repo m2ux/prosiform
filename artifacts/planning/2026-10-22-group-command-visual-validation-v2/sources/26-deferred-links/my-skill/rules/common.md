@@ -1,0 +1,1 @@
+Read [¬ Detail](detail.md).

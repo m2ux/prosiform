@@ -1,0 +1,1 @@
+prosiform --root sources/33-missing-depth/my-skill --group rules rules/plain.md
