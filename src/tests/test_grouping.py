@@ -15,7 +15,7 @@ import pytest
 from prosiform.bundle import Group
 from prosiform.cli import membership
 from prosiform.grouping import (
-    member_heading,
+    member_headings,
     merged,
     prepared,
     qualifiers,
@@ -69,20 +69,38 @@ def test_a_group_heading_states_the_kind_its_members_are(
     assert states(heading, word) is expected
 
 
-@pytest.mark.parametrize(
-    ("path", "named", "expected"),
-    [
-        ("artifacts/epic-issue-body.md", "artifacts", "Epic Issue Body"),
-        ("modes/plan-mode.md", "modes", "Plan"),
-        ("modes/review-mode.md", "modes", "Review"),
-        ("modes/mode.md", "modes", "Mode"),
-        ("notes/bare.md", "notes", "Bare"),
-    ],
-)
-def test_a_member_is_named_by_its_stem_less_what_the_group_states(
-    path: str, named: str, expected: str
-) -> None:
-    assert member_heading(path, named) == expected
+def test_a_member_is_named_by_its_stem_less_what_the_group_states() -> None:
+    assert member_headings(
+        ["modes/plan-mode.md", "modes/review-mode.md", "modes/mode.md"], "modes"
+    ) == {
+        "modes/plan-mode.md": "Plan",
+        "modes/review-mode.md": "Review",
+        "modes/mode.md": "Mode",
+    }
+    assert member_headings(
+        ["artifacts/epic-issue-body.md", "artifacts/bare.md"], "artifacts"
+    ) == {
+        "artifacts/epic-issue-body.md": "Epic Issue Body",
+        "artifacts/bare.md": "Bare",
+    }
+
+
+def test_members_of_one_stem_take_the_segments_that_tell_them_apart() -> None:
+    assert member_headings(
+        ["guides/alpha/notes.md", "guides/beta/notes.md"], "guides"
+    ) == {
+        "guides/alpha/notes.md": "Alpha Notes",
+        "guides/beta/notes.md": "Beta Notes",
+    }
+
+
+def test_a_member_a_stem_distinguishes_is_named_by_that_stem_alone() -> None:
+    assert member_headings(
+        ["guides/alpha/notes.md", "guides/beta/summary.md"], "guides"
+    ) == {
+        "guides/alpha/notes.md": "Notes",
+        "guides/beta/summary.md": "Summary",
+    }
 
 
 def test_one_segment_distinguishes_documents_in_one_directory() -> None:
@@ -191,3 +209,56 @@ def test_a_group_emitting_no_merged_section_carries_no_overview() -> None:
         "## Common",
         "Keep paragraphs short.\n",
     )
+
+
+def answering(one: Group, path: str) -> str:
+    """The text of the heading a whole-document reference to one member reaches."""
+    return next(
+        heading.text
+        for heading in one.record.headings
+        if (path, None) in heading.answers
+    )
+
+
+def test_two_members_contributing_one_heading_text_reach_two_destinations() -> None:
+    one = group_of(
+        "rules",
+        2,
+        {
+            "rules/agents.md": "## Style\n\nName the harness.\n",
+            "rules/common.md": "## Style\n\nKeep paragraphs short.\n",
+        },
+    )
+    assert answering(one, "rules/agents.md") == "Agents"
+    assert answering(one, "rules/common.md") == "Common"
+
+
+def test_a_heading_text_one_member_carries_is_that_member_s_destination() -> None:
+    one = group_of(
+        "rules",
+        2,
+        {
+            "rules/agents.md": "## Style\n\nName the harness.\n",
+            "rules/limits.md": "## Budgets\n\nStay inside the budget.\n",
+        },
+    )
+    assert answering(one, "rules/agents.md") == "Style"
+    assert answering(one, "rules/limits.md") == "Budgets"
+
+
+def test_no_two_members_of_one_group_reach_one_destination() -> None:
+    documents = {
+        "rules/agents.md": "## Style\n\nName the harness.\n",
+        "rules/common.md": "Read this first.\n\n## Style\n\nKeep paragraphs short.\n",
+        "rules/limits.md": "## Budgets\n\nStay inside the budget.\n",
+        "rules/notes.md": "- Jot it down.\n",
+    }
+    one = group_of("rules", 2, documents)
+    reached = [
+        at
+        for at, heading in enumerate(one.record.headings)
+        for path in documents
+        if (path, None) in heading.answers
+    ]
+    assert len(reached) == len(documents)
+    assert len(set(reached)) == len(documents)
