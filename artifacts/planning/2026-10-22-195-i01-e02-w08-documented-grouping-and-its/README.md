@@ -13,6 +13,9 @@ The work refreshes examples and rendered diagrams against the completed merged-g
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w08.md) | Scope, component and command-output validation |
+| [Validation](validation.md) | Tested revision, command comparisons and checks |
+| [Example verification](verify-examples.py) | Executable command, excerpt and SVG comparisons |
+| [Plan changes](changes.md) | Applied and held plan changes |
 
 ## Links
 
