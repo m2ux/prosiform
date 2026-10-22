@@ -102,7 +102,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E02:W06](i01-e02/w06.md) | The implementation plan for one name for a member in both places |
 | [I01:E02:W07](i01-e02/w07.md) | The implementation plan for generated input refused whatever a path spells |
 | [I01:E02:W08](i01-e02/w08.md) | The implementation plan for documented grouping and its diagrams |
-| [I01:E02 joins](i01-e02/joins.md) | The independent row pairs this epic takes as separate pull requests |
+| [I01:E02 joins](i01-e02/joins.md) | The joined delivery unit and the independent pairs taking separate pull requests |
 | [I01:E02 permutations](i01-e02/permutations) | The member shapes the arrangement is read against |
 | [I01:E04:W01](i01-e04/w01.md) | The implementation plan for deferral decisions for the remaining entries |
 | [I01:E04:W02](i01-e04/w02.md) | The implementation plan for freeze check and the tagged revision |
