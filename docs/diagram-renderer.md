@@ -19,7 +19,8 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | `--section FRAGMENT` | Bundle one section of the entry document. |
 | `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
 | `--compact` | Retain headings and links; replace other body content with `…` in both image panels. |
-| `--section-level N` | Show content through HN (1–6) and titles one level deeper. Defaults to all content. |
+| `--input-section-level N` | Input panels: show content through HN (1–6) and titles one level deeper. Defaults to all content. |
+| `--compiled-section-level N` | Compiled panel: same cutoff, independently selected. Defaults to all content. |
 | `--branch NAME` | Compiler branch; required for a detached checkout. Must point to its current commit. |
 | `--revision SHA` | Require an exact compiler commit. |
 
@@ -29,7 +30,7 @@ For a large document set, add `--compact`. It preserves heading levels, inline a
 
 Compact mode affects the image, not the bundle size. If compilation exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
 
-Use `--compact --section-level 2` to show H3 titles without their body content, links or deeper headings. Content under H1–H2 follows the compact-mode rules. The section cutoff also works without compact mode. Both panels are filtered; saved stdout remains complete.
+Use `--compact --input-section-level 2 --compiled-section-level 2` to show H3 titles without their body content, links or deeper headings. Content under H1–H2 follows the compact-mode rules. The section cutoff also works without compact mode. Set either panel independently: `--input-section-level 2 --compiled-section-level 3` shows H3 input titles and H4 compiled titles. Omit an option to show that panel at full depth. Saved stdout remains complete.
 
 ## Output
 

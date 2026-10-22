@@ -163,7 +163,14 @@ def limit_section_content(body, section_level):
 
 
 def svg(
-    inputs, root_name, stdout, branch_name, revision, compact=False, section_level=None
+    inputs,
+    root_name,
+    stdout,
+    branch_name,
+    revision,
+    compact=False,
+    input_section_level=None,
+    compiled_section_level=None,
 ):
     blocks = []
     header = [txt(32, 48, branch_name + " " + revision[:12], 20, AMBER)]
@@ -192,7 +199,7 @@ def svg(
     for path, content in inputs.items():
         if compact:
             content = compact_markdown(content)
-        content = limit_section_content(content, section_level)
+        content = limit_section_content(content, input_section_level)
         block, h = card(466, at, 690, path, content)
         blocks.append(block)
         at += h + 22
@@ -200,7 +207,7 @@ def svg(
     if compact:
         bundle_body = compact_markdown(bundle_body)
     expected = (
-        limit_section_content(bundle_body, section_level)
+        limit_section_content(bundle_body, compiled_section_level)
         if stdout
         else "No bundle published."
     )
@@ -247,13 +254,14 @@ def main():
         help="Grouping rule; repeat for distinct slugs",
     )
     parser.add_argument("--section", help="Select a fragment of the entry document")
-    parser.add_argument(
-        "--section-level",
-        type=int,
-        choices=range(1, 7),
-        metavar="N",
-        help="Show content through HN and titles through H(N+1)",
-    )
+    for panel in ("input", "compiled"):
+        parser.add_argument(
+            f"--{panel}-section-level",
+            type=int,
+            choices=range(1, 7),
+            metavar="N",
+            help=f"Show {panel} content through HN and titles through H(N+1)",
+        )
     parser.add_argument(
         "--max-output-bytes",
         type=int,
@@ -329,7 +337,8 @@ def main():
         branch_name,
         revision,
         compact=options.compact,
-        section_level=options.section_level,
+        input_section_level=options.input_section_level,
+        compiled_section_level=options.compiled_section_level,
     )
     ET.fromstring(rendered)
     output = options.output.absolute()
@@ -368,11 +377,14 @@ def main():
             if options.compact
             else ""
         )
-        + (
-            f" Content is shown through H{options.section_level}; "
-            f"H{options.section_level + 1} sections show titles only."
-            if options.section_level is not None
-            else ""
+        + "".join(
+            f" {panel} content is shown through H{level}; "
+            f"H{level + 1} sections show titles only."
+            for panel, level in (
+                ("Input", options.input_section_level),
+                ("Compiled", options.compiled_section_level),
+            )
+            if level is not None
         ),
         "",
         "![Source documents and compiled bundle](" + destinations[".svg"].name + ")",
@@ -402,7 +414,8 @@ def main():
         compiler_branch=branch_name,
         compiler_revision=revision,
         compact=options.compact,
-        section_level=options.section_level,
+        input_section_level=options.input_section_level,
+        compiled_section_level=options.compiled_section_level,
         command=command,
         exit_code=status,
         sources={

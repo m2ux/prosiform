@@ -149,7 +149,14 @@ def test_section_level_filters_both_panels_with_optional_compaction() -> None:
     inputs = {"SKILL.md": body}
     for compact in (False, True):
         diagram = module.svg(
-            inputs, "skill", body, "main", "a" * 40, compact=compact, section_level=2
+            inputs,
+            "skill",
+            body,
+            "main",
+            "a" * 40,
+            compact=compact,
+            input_section_level=2,
+            compiled_section_level=2,
         )
         assert diagram.count("Select Project Board") == 2
         assert "Find Theme Board" not in diagram
@@ -163,3 +170,23 @@ def test_section_level_handles_setext_titles() -> None:
         renderer().limit_section_content(body, 1)
         == "Title\n=====\n\nDetails\n-------\n"
     )
+
+
+def test_panel_section_levels_are_independent() -> None:
+    module = renderer()
+    source = "# Input\n## Area\n### Operation\n[Input Link](input.md)\n"
+    output = "# Compiled\n## Area\n### Operation\n[Compiled Link](#target)\n"
+    for compact in (False, True):
+        for input_level, compiled_level in ((2, None), (None, 2), (2, 3), (3, 2)):
+            diagram = module.svg(
+                {"SKILL.md": source},
+                "skill",
+                output,
+                "main",
+                "a" * 40,
+                compact=compact,
+                input_section_level=input_level,
+                compiled_section_level=compiled_level,
+            )
+            assert ("Input Link" in diagram) == (input_level != 2)
+            assert ("Compiled Link" in diagram) == (compiled_level != 2)
