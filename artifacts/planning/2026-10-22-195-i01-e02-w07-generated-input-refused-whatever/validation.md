@@ -33,3 +33,7 @@ GitHub Checks passed for head 4165f5c4be3491f9ef650afba897f721744279aa: https://
 ## Delivery limits
 
 The user authorized CLI delivery using recorded issue/PR link evidence. The complete Development field is unavailable through the CLI and was not represented as verified. Auto-close is confirmed disabled. The target branch reports protected=false and protection.enabled=false; the administrator's protection and rules endpoints report the features unavailable on this private repository's plan.
+
+## Delivery
+
+PR #210 merged into i01/e02/main at c876051010379eb10031d5c5679570fceb614c29. The merge tree equals the tested head (git diff --exit-code passed). Task #207 has AC1/AC2 verified, is closed as completed and is Done on Project 18. Epic #195 W07 is Done and AC9 is checked. Draft review #198 includes the functional change and merged task reference; it remains draft. W08 and epic AC6 remain outstanding.

@@ -22,3 +22,4 @@ The policy is stated in the design, declared by corpus fixtures, and implemented
 | --- | --- |
 | Epic | https://github.com/m2ux/prosiform/issues/195 |
 | Task | https://github.com/m2ux/prosiform/issues/207 |
+| Pull request | https://github.com/m2ux/prosiform/pull/210 |
