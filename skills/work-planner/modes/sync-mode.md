@@ -138,7 +138,7 @@ The main path meets [Outcomes](#outcomes).
 12. **Sync the board.**
     Run [Select Project Board](../artifacts/board.md#select-project-board) for the initiative's theme.
     - When the board is absent:
-      - Read the originating proposal through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for a proposal-derived initiative; return unresolved provenance before board creation.
+      - Read the originating proposal identified in the initiative's [References](../artifacts/initiative-issue-body.md#references) through [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue); return unresolved provenance before board creation for a proposal-derived initiative.
       - Run [Copy Project Board](../artifacts/board.md#copy-project-board) with the owner, repository, theme title and originating proposal record when applicable.
     - Follow [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
