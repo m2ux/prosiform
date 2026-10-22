@@ -1,6 +1,6 @@
-This bundle was built for [entry](#entry); everything else is material it references.
+This bundle was built for [Entry](#entry); everything else is material it references.
 
-# entry
+# Entry
 
 Both runs are recorded: [Alpha](#alpha-notes) and [Beta](#beta-notes).
 
