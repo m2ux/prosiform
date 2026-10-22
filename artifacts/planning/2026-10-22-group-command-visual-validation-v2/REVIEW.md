@@ -4,7 +4,7 @@
 
 Source revision: [08a8c0317924](https://github.com/m2ux/prosiform/commit/08a8c0317924e69d5377464ee6961bbc948be85b).
 
-Each diagram shows its participating source files and complete bundle output, including the entry preamble. Diagnostics appear in a separate subsection beneath each diagram when present. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.
+Each diagram shows its participating source files and bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Diagnostics appear in a separate subsection beneath each diagram when present. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.
 
 [Coverage and reproduction](README.md) · [Case definitions](cases.json) · [Run records](runs.json)
 
@@ -76,6 +76,10 @@ prosiform --root sources/01-plain-content/my-skill --group rules:2 rules/blue.md
 
 ![Plain content](cases/01-plain-content.svg)
 
+### Entry Points
+
+This bundle was built for [Blue](cases/01-plain-content.stdout.md#blue) and [Red](cases/01-plain-content.stdout.md#red); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -100,6 +104,10 @@ prosiform --root sources/02-preamble-and-sections/my-skill --group rules:2 rules
 ```
 
 ![Preamble and sections](cases/02-preamble-and-sections.svg)
+
+### Entry Points
+
+This bundle was built for [Blue](cases/02-preamble-and-sections.stdout.md#blue) and [Red](cases/02-preamble-and-sections.stdout.md#red); everything else is material it references.
 
 ### Diagnostics
 
@@ -126,6 +134,10 @@ prosiform --root sources/03-own-title-absorption/my-skill --group rules:2 rules/
 
 ![Own title absorption](cases/03-own-title-absorption.svg)
 
+### Entry Points
+
+This bundle was built for [Identity](cases/03-own-title-absorption.stdout.md#identity); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -147,6 +159,10 @@ prosiform --root sources/04-different-title/my-skill --group rules:2 rules/other
 ```
 
 ![Different title](cases/04-different-title.svg)
+
+### Entry Points
+
+This bundle was built for [Other Title](cases/04-different-title.stdout.md#other-title); everything else is material it references.
 
 ### Diagnostics
 
@@ -170,6 +186,10 @@ prosiform --root sources/05-later-title/my-skill --group rules:2 rules/later-tit
 
 ![Later title](cases/05-later-title.svg)
 
+### Entry Points
+
+This bundle was built for [Later Title](cases/05-later-title.stdout.md#later-title); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -191,6 +211,10 @@ prosiform --root sources/06-headings-only/my-skill --group rules:2 rules/outline
 ```
 
 ![Headings only](cases/06-headings-only.svg)
+
+### Entry Points
+
+This bundle was built for [First](cases/06-headings-only.stdout.md#first); everything else is material it references.
 
 ### Diagnostics
 
@@ -214,6 +238,10 @@ prosiform --root sources/07-title-only/my-skill --group rules:2 rules/identity.m
 
 ![Title only](cases/07-title-only.svg)
 
+### Entry Points
+
+This bundle was built for [Identity](cases/07-title-only.stdout.md#identity); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -236,6 +264,10 @@ prosiform --root sources/08-empty-member/my-skill --group rules:2 rules/empty.md
 
 ![Empty member](cases/08-empty-member.svg)
 
+### Entry Points
+
+This bundle was built for [Empty](cases/08-empty-member.stdout.md#empty); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -257,6 +289,10 @@ prosiform --root sources/09-unique-sections/my-skill --group rules:2 rules/blue.
 ```
 
 ![Unique sections](cases/09-unique-sections.svg)
+
+### Entry Points
+
+This bundle was built for [Style](cases/09-unique-sections.stdout.md#style) and [Workflow](cases/09-unique-sections.stdout.md#workflow); everything else is material it references.
 
 ### Diagnostics
 
@@ -283,6 +319,10 @@ prosiform --root sources/10-shared-sections/my-skill --group rules:2 rules/blue.
 
 ![Shared sections](cases/10-shared-sections.svg)
 
+### Entry Points
+
+This bundle was built for [Blue](cases/10-shared-sections.stdout.md#blue) and [Red](cases/10-shared-sections.stdout.md#red); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -307,6 +347,10 @@ prosiform --root sources/11-mixed-sections/my-skill --group rules:2 rules/blue.m
 ```
 
 ![Mixed sections](cases/11-mixed-sections.svg)
+
+### Entry Points
+
+This bundle was built for [Blue](cases/11-mixed-sections.stdout.md#blue) and [Red](cases/11-mixed-sections.stdout.md#red); everything else is material it references.
 
 ### Diagnostics
 
@@ -333,6 +377,10 @@ prosiform --root sources/12-body-only-contributions/my-skill --group rules:1 rul
 
 ![Body only contributions](cases/12-body-only-contributions.svg)
 
+### Entry Points
+
+This bundle was built for [Blue](cases/12-body-only-contributions.stdout.md#blue) and [Red](cases/12-body-only-contributions.stdout.md#red); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -357,6 +405,10 @@ prosiform --root sources/13-nested-contributions/my-skill --group rules:2 rules/
 ```
 
 ![Nested contributions](cases/13-nested-contributions.svg)
+
+### Entry Points
+
+This bundle was built for [Blue](cases/13-nested-contributions.stdout.md#blue) and [Red](cases/13-nested-contributions.stdout.md#red); everything else is material it references.
 
 ### Diagnostics
 
@@ -383,6 +435,10 @@ prosiform --root sources/14-empty-contributions/my-skill --group rules:2 rules/b
 
 ![Empty contributions](cases/14-empty-contributions.svg)
 
+### Entry Points
+
+This bundle was built for [Blue](cases/14-empty-contributions.stdout.md#blue) and [Red](cases/14-empty-contributions.stdout.md#red); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -407,6 +463,10 @@ prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-che
 ```
 
 ![Simple names](cases/15-simple-names.svg)
+
+### Entry Points
+
+This bundle was built for [HTTP Checks](cases/15-simple-names.stdout.md#http-checks) and [Quick Start](cases/15-simple-names.stdout.md#quick-start); everything else is material it references.
 
 ### Diagnostics
 
@@ -433,6 +493,10 @@ prosiform --root sources/16-nested-names/my-skill --group rules:2 rules/nested/d
 
 ![Nested names](cases/16-nested-names.svg)
 
+### Entry Points
+
+This bundle was built for [Deep Note](cases/16-nested-names.stdout.md#deep-note) and [Plain](cases/16-nested-names.stdout.md#plain); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -457,6 +521,10 @@ prosiform --root sources/17-stem-clashes/my-skill --group rules:2 rules/api/comm
 ```
 
 ![Stem clashes](cases/17-stem-clashes.svg)
+
+### Entry Points
+
+This bundle was built for [Api Common](cases/17-stem-clashes.stdout.md#api-common) and [Web Common](cases/17-stem-clashes.stdout.md#web-common); everything else is material it references.
 
 ### Diagnostics
 
@@ -483,6 +551,10 @@ prosiform --root sources/18-deep-clashes/my-skill --group rules:2 rules/team-a/w
 
 ![Deep clashes](cases/18-deep-clashes.svg)
 
+### Entry Points
+
+This bundle was built for [Team A Web Shared](cases/18-deep-clashes.stdout.md#team-a-web-shared) and [Team B Web Shared](cases/18-deep-clashes.stdout.md#team-b-web-shared); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -507,6 +579,10 @@ prosiform --root sources/19-formatting-clashes/my-skill --group rules:2 rules/a/
 ```
 
 ![Formatting clashes](cases/19-formatting-clashes.svg)
+
+### Entry Points
+
+This bundle was built for [A One Two](cases/19-formatting-clashes.stdout.md#a-one-two) and [B One Two](cases/19-formatting-clashes.stdout.md#b-one-two); everything else is material it references.
 
 ### Diagnostics
 
@@ -533,6 +609,10 @@ prosiform --root sources/20-group-suffixes/my-skill --group modes:2 modes/plan-m
 
 ![Group suffixes](cases/20-group-suffixes.svg)
 
+### Entry Points
+
+This bundle was built for [Plan](cases/20-group-suffixes.stdout.md#plan) and [Review](cases/20-group-suffixes.stdout.md#review); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -557,6 +637,10 @@ prosiform --root sources/21-consistent-variant-names/my-skill --group rules:2 ru
 ```
 
 ![Consistent variant names](cases/21-consistent-variant-names.svg)
+
+### Entry Points
+
+This bundle was built for [A Common](cases/21-consistent-variant-names.stdout.md#a-common), [B Common](cases/21-consistent-variant-names.stdout.md#b-common) and [C Common](cases/21-consistent-variant-names.stdout.md#c-common); everything else is material it references.
 
 ### Diagnostics
 
@@ -586,6 +670,10 @@ prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md
 
 ![Whole member links](cases/22-whole-member-links.svg)
 
+### Entry Points
+
+This bundle was built for [Route](cases/22-whole-member-links.stdout.md#route); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -607,6 +695,10 @@ prosiform --root sources/23-pooled-section-links/my-skill --group rules:2 route.
 ```
 
 ![Pooled section links](cases/23-pooled-section-links.svg)
+
+### Entry Points
+
+This bundle was built for [Route](cases/23-pooled-section-links.stdout.md#route); everything else is material it references.
 
 ### Diagnostics
 
@@ -630,6 +722,10 @@ prosiform --root sources/24-absorbed-title-links/my-skill --group rules:2 route.
 
 ![Absorbed title links](cases/24-absorbed-title-links.svg)
 
+### Entry Points
+
+This bundle was built for [Route](cases/24-absorbed-title-links.stdout.md#route); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -651,6 +747,10 @@ prosiform --root sources/25-selected-sections/my-skill --group rules:2 'rules/gu
 ```
 
 ![Selected sections](cases/25-selected-sections.svg)
+
+### Entry Points
+
+This bundle was built for [Selected](cases/25-selected-sections.stdout.md#selected); everything else is material it references.
 
 ### Diagnostics
 
@@ -674,6 +774,10 @@ prosiform --root sources/26-deferred-links/my-skill --group rules:2 rules/common
 
 ![Deferred links](cases/26-deferred-links.svg)
 
+### Entry Points
+
+This bundle was built for [Common](cases/26-deferred-links.stdout.md#common); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -696,6 +800,10 @@ prosiform --root sources/27-harness-selection/my-skill --group rules:2 rules/cod
 
 ![Harness selection](cases/27-harness-selection.svg)
 
+### Entry Points
+
+This bundle was built for [Codex](cases/27-harness-selection.stdout.md#codex); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -717,6 +825,10 @@ prosiform --root sources/28-ungrouped-baseline/my-skill procedure.md rules/HTTP-
 ```
 
 ![Ungrouped baseline](cases/28-ungrouped-baseline.svg)
+
+### Entry Points
+
+This bundle was built for [Procedure](cases/28-ungrouped-baseline.stdout.md#procedure) and [Rules/HTTP-Checks](cases/28-ungrouped-baseline.stdout.md#ruleshttp-checks); everything else is material it references.
 
 ### Diagnostics
 
@@ -743,6 +855,10 @@ prosiform --root sources/29-multiple-groups/my-skill --group rules:2 --group che
 
 ![Multiple groups](cases/29-multiple-groups.svg)
 
+### Entry Points
+
+This bundle was built for [Final](cases/29-multiple-groups.stdout.md#final) and [Common](cases/29-multiple-groups.stdout.md#common); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -767,6 +883,10 @@ prosiform --root sources/30-nested-precedence/my-skill --group rules:2 --group v
 ```
 
 ![Nested precedence](cases/30-nested-precedence.svg)
+
+### Entry Points
+
+This bundle was built for [Plain](cases/30-nested-precedence.stdout.md#plain) and [Blue](cases/30-nested-precedence.stdout.md#blue); everything else is material it references.
 
 ### Diagnostics
 
@@ -793,6 +913,10 @@ prosiform --root sources/31-repeated-directory-names/my-skill --group rules:2 a/
 
 ![Repeated directory names](cases/31-repeated-directory-names.svg)
 
+### Entry Points
+
+This bundle was built for [Blue](cases/31-repeated-directory-names.stdout.md#blue) and [Red](cases/31-repeated-directory-names.stdout.md#red); everything else is material it references.
+
 ### Diagnostics
 
 Exit status: 0
@@ -817,6 +941,10 @@ prosiform --root sources/32-unmatched-group/my-skill --group rules:2 procedure.m
 ```
 
 ![Unmatched group](cases/32-unmatched-group.svg)
+
+### Entry Points
+
+This bundle was built for [Procedure](cases/32-unmatched-group.stdout.md#procedure); everything else is material it references.
 
 ### Diagnostics
 

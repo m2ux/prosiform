@@ -55,6 +55,13 @@ def card(x,y,width,title,body,output=False):
     return '\n'.join(result),height
 
 
+def split_entry_points(stdout):
+    paragraph, separator, body = stdout.partition('\n\n')
+    if paragraph.startswith('This bundle was built for ') and paragraph.endswith('everything else is material it references.'):
+        return paragraph, body if separator else ''
+    return '', stdout
+
+
 def svg(inputs, root_name, stdout, branch_name, revision):
     blocks=[]
     header=[txt(32,48,branch_name+' '+revision[:12],20,AMBER)]
@@ -79,7 +86,8 @@ def svg(inputs, root_name, stdout, branch_name, revision):
     for path, content in inputs.items():
         block,h=card(466,at,690,path,content)
         blocks.append(block);at+=h+22
-    expected = stdout or 'No bundle published.'
+    _, bundle_body = split_entry_points(stdout)
+    expected = bundle_body or 'No bundle published.'
     outblock,outh=card(1230,top,880,'Compiler output',expected,True)
     blocks.append(outblock)
     middle=top+100
@@ -150,10 +158,13 @@ def main():
     command = shlex.join(['prosiform', *arguments])
     fence = chr(96)*3
     review = ['# '+document.name, '', 'Compiler: '+branch_name+' '+revision, '',
-              'Source files opened by the compiler appear beside its complete bundle output. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations.', '',
+              'Source files opened by the compiler appear beside the bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations.', '',
               '### Command', '', fence+'bash', command, fence, '',
-              '![Source documents and compiled bundle]('+destinations['.svg'].name+')', '',
-              '### Diagnostics', '', 'Exit status: '+str(status)]
+              '![Source documents and compiled bundle]('+destinations['.svg'].name+')']
+    entry_points, _ = split_entry_points(body)
+    if entry_points:
+        review.extend(['', '### Entry Points', '', entry_points.replace('](#', ']('+destinations['.stdout.md'].name+'#')])
+    review.extend(['', '### Diagnostics', '', 'Exit status: '+str(status)])
     if diagnostics:
         review.extend(['', fence+'text', diagnostics.rstrip(), fence])
     record_data = dict(compiler_branch=branch_name, compiler_revision=revision,

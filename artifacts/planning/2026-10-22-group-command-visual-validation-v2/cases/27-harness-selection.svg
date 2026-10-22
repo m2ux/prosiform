@@ -16,18 +16,16 @@
 <text x="504" y="442" font-size="20" fill="#e3b341" font-weight="400">¬ Claude.</text><rect x="466" y="482" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="490" y="518" font-size="21" fill="#b1c6df" font-weight="400">rules/claude.md</text>
 <path d="M466 536 H1156" stroke="#303b49"/>
-<text x="504" y="593" font-size="20" fill="#e6edf3" font-weight="400">Claude instructions.</text><rect x="1230" y="80" width="880" height="538" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="504" y="593" font-size="20" fill="#e6edf3" font-weight="400">Claude instructions.</text><rect x="1230" y="80" width="880" height="451" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="1254" y="116" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
 <path d="M1230 134 H2110" stroke="#303b49"/>
-<text x="1268" y="191" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Codex; everything else is material it</text>
-<text x="1268" y="228" font-size="20" fill="#58a6ff" font-weight="400">references.</text>
-<text x="1242" y="288" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1280" y="288" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="1242" y="344" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1292" y="344" font-size="26" fill="#e6edf3" font-weight="500">Codex</text>
-<text x="1268" y="394" font-size="20" fill="#e6edf3" font-weight="400">Codex instructions.</text>
-<text x="1268" y="444" font-size="20" fill="#58a6ff" font-weight="400">Common.</text>
-<text x="1242" y="500" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1292" y="500" font-size="26" fill="#e6edf3" font-weight="500">Common</text>
-<text x="1268" y="550" font-size="20" fill="#e6edf3" font-weight="400">Shared instructions.</text>
-<text x="1268" y="600" font-size="20" fill="#e3b341" font-weight="400">¬ Claude.</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>
+<text x="1242" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="201" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="257" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="257" font-size="26" fill="#e6edf3" font-weight="500">Codex</text>
+<text x="1268" y="307" font-size="20" fill="#e6edf3" font-weight="400">Codex instructions.</text>
+<text x="1268" y="357" font-size="20" fill="#58a6ff" font-weight="400">Common.</text>
+<text x="1242" y="413" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="413" font-size="26" fill="#e6edf3" font-weight="500">Common</text>
+<text x="1268" y="463" font-size="20" fill="#e6edf3" font-weight="400">Shared instructions.</text>
+<text x="1268" y="513" font-size="20" fill="#e3b341" font-weight="400">¬ Claude.</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>
