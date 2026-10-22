@@ -1,8 +1,8 @@
 # Work Planner Mode Diagrams
 
-Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by ….
+Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other body content is omitted without placeholders.
 
-Compiler: main 800081b75ad8eb1b6ecbbfb59ac382592f496853
+Compiler: main 6feb279c390b505cbb30c3a09a7d1c579949694e
 
 ## Modes
 

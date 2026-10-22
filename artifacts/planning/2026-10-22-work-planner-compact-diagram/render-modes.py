@@ -51,7 +51,7 @@ def main():
     python = checkout/'src/.venv/bin/python'
     selected = modes()
     overview = ['# Work Planner Mode Diagrams', '',
-                'Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other displayed body content is represented by ….', '',
+                'Each mode linked from the copied SKILL.md is compiled separately. Modes group their H1 titles under Modes. Artifacts and protocols pool their canonical H2 sections. Input panels show content through H2 and H3 titles only. Compiled output has no section-depth limit. Other body content is omitted without placeholders.', '',
                 'Compiler: main '+revision, '', '## Modes', '']
     overview.extend('- ['+mode['name']+'](#'+mode['slug']+')' for mode in selected)
     records = []
