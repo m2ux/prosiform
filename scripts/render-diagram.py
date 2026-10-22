@@ -152,7 +152,6 @@ def main():
     review = ['# '+document.name, '', 'Compiler: '+branch_name+' '+revision, '',
               'Source files opened by the compiler appear beside its complete bundle output. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations.', '',
               '### Command', '', fence+'bash', command, fence, '',
-              '[Open SVG]('+destinations['.svg'].name+') · [Exact stdout]('+destinations['.stdout.md'].name+') · [Run record]('+destinations['.run.json'].name+')', '',
               '![Source documents and compiled bundle]('+destinations['.svg'].name+')', '',
               '### Diagnostics', '', 'Exit status: '+str(status)]
     if diagnostics:
