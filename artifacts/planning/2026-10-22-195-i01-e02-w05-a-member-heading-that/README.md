@@ -14,6 +14,7 @@ Two naming conventions in one bundle make a member's identity depend on where th
 | --- | --- |
 | [w05.md](w05.md) | The implementation plan for this unit |
 | [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
+| [changes.md](changes.md) | The plan changes this session applied, the ones it held, and the debt its validation found |
 
 ## Links
 
@@ -24,4 +25,5 @@ Two naming conventions in one bundle make a member's identity depend on where th
 | Initiative | [#20 \[I01\] Field Refinement](https://github.com/m2ux/prosiform/issues/20) |
 | Epic planning | [i01-e02](../2026-10-17-prosiform-v1/i01-e02) |
 | Epic base | [i01/e02/main](https://github.com/m2ux/prosiform/tree/i01/e02/main) |
+| Delivery | [#200](https://github.com/m2ux/prosiform/pull/200) |
 | Review | [#198](https://github.com/m2ux/prosiform/pull/198) |
