@@ -49,7 +49,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **grouping rule** | `SLUG:DEPTH`. Every document under a directory named `SLUG` is merged at source heading level `DEPTH`, beneath one heading carrying the slug in title case. Repeatable, once per slug. |
 | **member** | A source document a grouping rule claims. |
 | **variant** | One of several same-named sections a merged group draws from different documents. Emitted once as a shared heading, with one subheading per source document. |
-| **overview** | The section of a merged group holding each member's content above the grouping depth, one subheading each. |
+| **overview** | The section a merged group gathers its member subheadings beneath, where it also emits merged sections. |
 
 ## Addressing
 

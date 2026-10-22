@@ -1,10 +1,11 @@
 """Assert the names a merged group writes and the membership a rule decides.
 
 The corpus declares what a grouped run publishes. These are the cases
-beneath it: the slug a group is headed by, the name a member's overview
-subsection carries, the members the `Overview` section carries a
-subsection for, the run of a path a variant heading is shortened to, and
-the rule that decides which group a document belongs to.
+beneath it: the slug a group is headed by, the name a member's
+subsection carries, the members a group carries a subsection for and
+where those subsections sit, the run of a path a variant heading is
+shortened to, and the rule that decides which group a document belongs
+to.
 """
 
 from collections.abc import Mapping
@@ -126,15 +127,13 @@ def test_the_deepest_named_directory_decides_between_two_rules() -> None:
     assert membership("artifacts/modes/one.md", {"artifacts": 2, "modes": 3}) == "modes"
 
 
-def test_a_member_the_group_emits_nothing_else_from_takes_an_overview_subsection() -> (
-    None
-):
+def test_a_member_the_group_emits_nothing_else_from_takes_a_subsection() -> None:
     one = group_of(
         "notes",
         2,
         {
             "notes/bare.md": "# Bare\n",
-            "notes/kept.md": "# Kept\n\n## Findings\n\nHeld.\n",
+            "notes/kept.md": "## Findings\n\nHeld.\n",
         },
     )
     assert one.parts == (
@@ -161,5 +160,34 @@ def test_such_a_subsection_answers_the_whole_document_and_the_title_it_absorbed(
 def test_a_member_whose_content_sits_at_the_grouping_depth_takes_no_subsection() -> (
     None
 ):
-    one = group_of("notes", 2, {"notes/bare.md": "# Bare\n\n## Findings\n\nHeld.\n"})
+    one = group_of("notes", 2, {"notes/bare.md": "## Findings\n\nHeld.\n"})
     assert one.parts == ("# Notes", "## Findings\n", "Held.\n")
+
+
+def test_a_member_whose_title_the_subsection_absorbs_takes_one() -> None:
+    one = group_of("notes", 2, {"notes/bare.md": "# Bare\n\n## Findings\n\nHeld.\n"})
+    assert one.parts == (
+        "# Notes",
+        "## Overview",
+        "### Bare",
+        "## Findings\n",
+        "Held.\n",
+    )
+
+
+def test_a_group_emitting_no_merged_section_carries_no_overview() -> None:
+    one = group_of(
+        "rules",
+        1,
+        {
+            "rules/agents.md": "Name the harness.\n",
+            "rules/common.md": "Keep paragraphs short.\n",
+        },
+    )
+    assert one.parts == (
+        "# Rules",
+        "## Agents",
+        "Name the harness.\n",
+        "## Common",
+        "Keep paragraphs short.\n",
+    )
