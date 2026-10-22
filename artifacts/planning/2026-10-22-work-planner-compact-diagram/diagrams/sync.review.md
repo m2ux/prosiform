@@ -2,7 +2,7 @@
 
 Compiler: main 64bac30b870083b64a3fd57744c042257aa4697c
 
-Source files opened by the compiler appear beside the bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations. Compact view replaces body content with … while retaining headings and links. Titles below H3 appear only when their section, including subsections, contains links.
+Source files opened by the compiler appear beside the bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations. Compact view replaces body content with … while retaining headings and links. Titles below H2 appear only when their section, including subsections, contains links.
 
 ![Source documents and compiled bundle](sync.svg)
 

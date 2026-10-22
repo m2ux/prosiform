@@ -14,7 +14,7 @@ Each of the ten links under Modes in the copied SKILL.md supplies a separate com
 
 The canonical sections declared by [structure.json](work-planner/structure.json) are H2 headings. `--group artifacts:2 --group protocols:2` pools those sections within each directory group: Operations, Fields, Guidance and Commands for artifacts; Procedure and Guidance for protocols. Only reached content contributes. An unused group produces a diagnostic.
 
-Every call uses `--compact --section-level 3 --max-output-bytes 1048576`. Images preserve links and titles through H3; deeper titles appear only when their section or subsections contain links. Other content is represented by `…`. Each mode has its own SVG, complete stdout, diagnostics, command, review and run record under [diagrams/](diagrams/). [Mode Runs](mode-runs.json) records all ten successful compilations.
+Every call uses `--compact --section-level 2 --max-output-bytes 1048576`. Images preserve links and titles through H2; deeper titles appear only when their section or subsections contain links. Other content is represented by `…`. Each mode has its own SVG, complete stdout, diagnostics, command, review and run record under [diagrams/](diagrams/). [Mode Runs](mode-runs.json) records all ten successful compilations.
 
 ## Reproduce
 
