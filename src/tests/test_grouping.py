@@ -209,3 +209,56 @@ def test_a_group_emitting_no_merged_section_carries_no_overview() -> None:
         "## Common",
         "Keep paragraphs short.\n",
     )
+
+
+def answering(one: Group, path: str) -> str:
+    """The text of the heading a whole-document reference to one member reaches."""
+    return next(
+        heading.text
+        for heading in one.record.headings
+        if (path, None) in heading.answers
+    )
+
+
+def test_two_members_contributing_one_heading_text_reach_two_destinations() -> None:
+    one = group_of(
+        "rules",
+        2,
+        {
+            "rules/agents.md": "## Style\n\nName the harness.\n",
+            "rules/common.md": "## Style\n\nKeep paragraphs short.\n",
+        },
+    )
+    assert answering(one, "rules/agents.md") == "Agents"
+    assert answering(one, "rules/common.md") == "Common"
+
+
+def test_a_heading_text_one_member_carries_is_that_member_s_destination() -> None:
+    one = group_of(
+        "rules",
+        2,
+        {
+            "rules/agents.md": "## Style\n\nName the harness.\n",
+            "rules/limits.md": "## Budgets\n\nStay inside the budget.\n",
+        },
+    )
+    assert answering(one, "rules/agents.md") == "Style"
+    assert answering(one, "rules/limits.md") == "Budgets"
+
+
+def test_no_two_members_of_one_group_reach_one_destination() -> None:
+    documents = {
+        "rules/agents.md": "## Style\n\nName the harness.\n",
+        "rules/common.md": "Read this first.\n\n## Style\n\nKeep paragraphs short.\n",
+        "rules/limits.md": "## Budgets\n\nStay inside the budget.\n",
+        "rules/notes.md": "- Jot it down.\n",
+    }
+    one = group_of("rules", 2, documents)
+    reached = [
+        at
+        for at, heading in enumerate(one.record.headings)
+        for path in documents
+        if (path, None) in heading.answers
+    ]
+    assert len(reached) == len(documents)
+    assert len(set(reached)) == len(documents)

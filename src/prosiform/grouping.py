@@ -44,7 +44,11 @@ subsection, as does one the arrangement emits nothing else from, so the
 group names every member it merges; such a subsection is the heading
 alone. A member whose content all sits at the grouping depth is named by
 the merged sections it contributes to, and a reference to it resolves to
-its first contribution.
+the first heading the group emits from it that no other member shares:
+the variant heading naming the document where its contribution carries a
+heading text another member contributes too, and the merged heading
+itself where that text occurs once in the group. No two members of one
+group therefore reach one destination.
 
 The subsections sit beneath an `Overview` section where the group also
 emits merged sections, so a member's preamble is read as that member's
@@ -464,30 +468,64 @@ def merged(
     )
 
 
+def names_one(one: Emitted, path: str) -> bool:
+    """Whether one emitted heading names that member and no other.
+
+    A carried heading answers to one source heading per contributing
+    document, so a merged heading several documents write names none of
+    them alone and a heading one document writes names that one. A
+    generated heading carries no source heading, and the targets it
+    answers are what it names: a variant heading answers one document's
+    heading, and the group's own heading answers nothing. A structural
+    ancestor answers nothing by construction and is no destination.
+    """
+    if isinstance(one, Generated):
+        return bool(one.answers) and all(target[0] == path for target in one.answers)
+    if isinstance(one, Carried):
+        return bool(one.origins) and all(origin.path == path for origin in one.origins)
+    return False
+
+
 def contributed(into: "Assembly", member: Member) -> None:
     """Where a whole-document reference resolves for a member with no subsection.
 
     A member whose content all sits at the grouping depth is named by
     the merged sections it contributes to, so the document itself is
-    answered by the first heading the group emits from it, and by the
-    group's own heading where it emits none carrying the member. That
-    destination is therefore one the bundle has, whatever the member
-    contributes, so a reference the closure resolved into a merged
-    group is rewritten rather than left for the entry line to read as
-    one it never assigned.
+    answered by the first heading the group emits from it that no other
+    member shares: the variant heading naming the document where its
+    contribution carries a heading text another member contributes too,
+    and the merged heading itself where that text occurs once in the
+    group. Two members contributing one heading text therefore reach
+    two destinations.
+
+    Where the group emits no heading naming the member alone, the first
+    heading it emits from the member answers, and the group's own
+    heading where it emits none carrying it. That destination is
+    therefore one the bundle has, whatever the member contributes, so a
+    reference the closure resolved into a merged group is rewritten
+    rather than left for the entry line to read as one it never
+    assigned.
     """
     answered = {target for one in into.headings for target in one.answers}
     whole: Target = (member.path, None)
     if whole in answered:
         return
-    found = next(
-        (
-            at
-            for at, one in enumerate(into.headings)
-            if isinstance(one, Carried)
-            and any(origin.path == member.path for origin in one.origins)
-        ),
-        GROUP_AT,
+    alone = next(
+        (at for at, one in enumerate(into.headings) if names_one(one, member.path)),
+        None,
+    )
+    found = (
+        alone
+        if alone is not None
+        else next(
+            (
+                at
+                for at, one in enumerate(into.headings)
+                if isinstance(one, Carried)
+                and any(origin.path == member.path for origin in one.origins)
+            ),
+            GROUP_AT,
+        )
     )
     into.answer(found, whole)
 
