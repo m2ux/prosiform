@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure follows [¬ the diagram](plan.png) and shows
 ![¬ the architecture](plan.png), both of which sit under the allowed

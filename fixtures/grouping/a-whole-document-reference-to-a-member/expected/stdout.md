@@ -1,6 +1,6 @@
-This bundle was built for [entry](#entry); everything else is material it references.
+This bundle was built for [Entry](#entry); everything else is material it references.
 
-# entry
+# Entry
 
 Both members are reached as whole documents: [With Preamble](#with-preamble) carries content above the grouping depth and [Bare](#outcomes) carries none.
 

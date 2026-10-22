@@ -1,6 +1,6 @@
-This bundle was built for [entry](#entry); everything else is material it references.
+This bundle was built for [Entry](#entry); everything else is material it references.
 
-# entry
+# Entry
 
 The member [Bare](#bare) is named by the subsection the group's overview carries for it.
 

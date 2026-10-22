@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The settings live in docs/note.md, and the archived copy sits at
 ../secrets.md. A raw view of the first is spelled docs/note.md?view=raw.

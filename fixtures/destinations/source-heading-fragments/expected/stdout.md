@@ -1,6 +1,6 @@
-This bundle was built for [article](#article), [café-münster](#café-münster-1), [notes](#notes-2), [the-code-span-and-bold-text](#the-code-span-and-bold-text-1) and [whats-new-v10](#whats-new-v10-1); everything else is material it references.
+This bundle was built for [Article](#article), [Café-Münster](#café-münster-1), [Notes](#notes-2), [The-Code-Span-And-Bold-Text](#the-code-span-and-bold-text-1) and [Whats-New-V10](#whats-new-v10-1); everything else is material it references.
 
-# article
+# Article
 
 An opening paragraph, above the first heading the fixture measures.
 
@@ -24,18 +24,18 @@ The first of two headings carrying one text.
 
 The second, which the renderer numbers apart.
 
-# café-münster
+# Café-Münster
 
 A document whose path produces the slug a heading above already took.
 
-# notes
+# Notes
 
 A document whose path produces the slug two headings above already took.
 
-# the-code-span-and-bold-text
+# The-Code-Span-And-Bold-Text
 
 A document whose path produces the slug the markup heading above already took.
 
-# whats-new-v10
+# Whats-New-V10
 
 A document whose path produces the slug the punctuation heading above already took.

@@ -1,6 +1,6 @@
-This bundle was built for [entry](#entry); everything else is material it references.
+This bundle was built for [Entry](#entry); everything else is material it references.
 
-# entry
+# Entry
 
 The member [Titled](#titled) is named by the heading its own title is absorbed into.
 

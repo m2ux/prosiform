@@ -32,7 +32,7 @@ prosiform --root example/work-tracker modes/plan-mode.md
 The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens with:
 
 ```markdown
-This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
 ```
 
 Its planning procedure contains:
@@ -84,7 +84,7 @@ The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referrin
 ```markdown
 This bundle was built for [Record Epic Delivery](#record-epic-delivery); everything else is material it references.
 
-# artifacts/epic-issue-body
+# Artifacts/Epic-Issue-Body
 
 ### Operations
 

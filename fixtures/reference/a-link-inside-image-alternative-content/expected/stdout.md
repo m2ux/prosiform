@@ -1,9 +1,9 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 A picture ![of the [shared rules](#rules) it names](plan.png).
 
-# rules
+# Rules
 
 Every rule the procedure requires.

@@ -23,10 +23,10 @@ from prosiform.delivery import ENCODING, Delivery, Outcome, deliver, received
 LIMIT = 4_096
 
 BUNDLE = (
-    "This bundle was built for [guide](#guide); everything else is material "
+    "This bundle was built for [Guide](#guide); everything else is material "
     "it references.\n"
     "\n"
-    "# guide\n"
+    "# Guide\n"
     "\n"
     "The command bundles this document.\n"
 )
@@ -86,7 +86,7 @@ def test_a_bundle_over_the_transport_limit_carries_no_part_of_the_document() -> 
     result = received(0, oversized.encode(ENCODING), "", LIMIT)
     assert result.document is None
     for value in fields(result):
-        assert "# guide" not in value
+        assert "# Guide" not in value
         assert "x" * 16 not in value
 
 

@@ -22,5 +22,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "modes/plan-mode"
+reference = "Modes/Plan-Mode"
 resolved = "modesplan-mode"

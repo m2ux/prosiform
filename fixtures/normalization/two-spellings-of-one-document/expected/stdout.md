@@ -1,6 +1,6 @@
 This bundle was built for [Run It](#run-it) and [Stop](#stop); everything else is material it references.
 
-# guide
+# Guide
 
 ### Run It
 

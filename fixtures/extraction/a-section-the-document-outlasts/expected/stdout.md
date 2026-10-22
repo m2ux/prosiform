@@ -1,6 +1,6 @@
 This bundle was built for [Run](#run); everything else is material it references.
 
-# guide
+# Guide
 
 ### Run
 

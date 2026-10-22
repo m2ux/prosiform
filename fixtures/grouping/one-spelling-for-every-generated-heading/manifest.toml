@@ -1,0 +1,22 @@
+description = "Every heading one bundle generates carries one title casing: a hyphenated file heading keeps its hyphen and capitalizes each part of the name, a nested one keeps its separator and capitalizes each segment, and a merged group's heading is its directory slug capitalized as it always was."
+
+clauses = [
+  "Input and output contract — Generated headings",
+  "File-scoped hierarchy",
+  "Grouping — Group naming",
+  "Adversarial acceptance fixtures — File hierarchy, a nested path and a hyphenated name emitted in title case beside a merged group's heading",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "rules:2", "entry-point.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Entry-Point"
+resolved = "entry-point"

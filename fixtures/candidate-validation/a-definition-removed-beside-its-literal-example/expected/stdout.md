@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The guide names [the shared rules](#rules).
 
@@ -10,6 +10,6 @@ A definition is written like this:
 [rules]: rules.md
 ```
 
-# rules
+# Rules
 
 Every rule the guide names.

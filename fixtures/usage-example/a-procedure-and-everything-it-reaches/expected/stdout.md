@@ -1,6 +1,6 @@
-This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
 
-# artifacts/epic-issue-body
+# Artifacts/Epic-Issue-Body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
@@ -103,7 +103,7 @@ work-tracker sync '<epic-json-file>' --prs '<pull-request-records-file>' --links
 work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --fix fixed-943.md
 ```
 
-# artifacts/epic
+# Artifacts/Epic
 
 An epic's task delivery findings, integration readiness and completion state.
 
@@ -159,7 +159,7 @@ work-tracker match '<epic-json-file>' --prs '<pull-request-records-file>' --link
 work-tracker match issue-943.json --prs prs.json --links links.json
 ```
 
-# modes/plan-mode
+# Modes/Plan-Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 

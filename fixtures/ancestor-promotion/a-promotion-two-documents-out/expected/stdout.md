@@ -1,10 +1,10 @@
 This bundle was built for [Detail](#detail) and [Gamma](#gamma); everything else is material it references.
 
-# first
+# First
 
 First body, which needs [the second note](#second).
 
-# guide
+# Guide
 
 ### Alpha
 
@@ -20,6 +20,6 @@ Detail body, which needs [the first note](#first).
 
 Gamma body.
 
-# second
+# Second
 
 Second body, which needs [Alpha](#alpha).

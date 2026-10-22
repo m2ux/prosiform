@@ -1,14 +1,14 @@
 This bundle was built for [Alpha](#alpha); everything else is material it references.
 
-# detail
+# Detail
 
 Detail body, which needs [the whole guide](#guide).
 
-# extra
+# Extra
 
 Extra body.
 
-# guide
+# Guide
 
 ## Alpha
 

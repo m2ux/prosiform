@@ -1,11 +1,11 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure requires [the notes](#notes).
 
 A paragraph the run leaves as its source wrote it.
 
-# notes
+# Notes
 
 The document the rewritten link names.

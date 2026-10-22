@@ -1,6 +1,6 @@
 This bundle was built for [Alpha](#alpha) and [Gamma](#gamma); everything else is material it references.
 
-# guide
+# Guide
 
 ### Alpha
 

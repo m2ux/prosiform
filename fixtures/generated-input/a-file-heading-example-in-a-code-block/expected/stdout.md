@@ -1,6 +1,6 @@
-This bundle was built for [examples](#examples); everything else is material it references.
+This bundle was built for [Examples](#examples); everything else is material it references.
 
-# examples
+# Examples
 
 ## Writing Examples
 

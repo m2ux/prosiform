@@ -1,18 +1,18 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide-runner
+# Guide-Runner
 
 The runner the guide's own definition names.
 
-# guide
+# Guide
 
 The guide names [the runner](#guide-runner) its own definition points at, and
 requires [the tools](#tools).
 
-# tools-runner
+# Tools-Runner
 
 The runner the tools' own definition names.
 
-# tools
+# Tools
 
 The tools name [the runner](#tools-runner) their own definition points at.

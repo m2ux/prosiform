@@ -1,6 +1,6 @@
 This bundle was built for [Detail](#detail) and [Gamma](#gamma); everything else is material it references.
 
-# guide
+# Guide
 
 ### Alpha
 
@@ -16,6 +16,6 @@ Detail body, which needs [the note](#note).
 
 Gamma body.
 
-# note
+# Note
 
 Note body, which needs [Alpha](#alpha).

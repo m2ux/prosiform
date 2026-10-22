@@ -4,14 +4,18 @@ A group is a source document unless a grouping rule names the directory
 it sits under, in which case it joins the merged group `grouping`
 assembles. A file group is headed by one generated H1 whose visible
 text is the document's normalized root-relative path with the Markdown
-extension removed. The path is escaped as literal heading text, so
+extension removed, in title case: each word of the path is capitalized
+and every separator the path carries is kept, so the heading names the
+document the filesystem holds and carries the one convention every
+generated heading takes. The path is escaped as literal heading text, so
 punctuation in a filename names a file rather than opening a link, an
 image, emphasis, code, raw HTML, an entity or a strikethrough, or closing
 the heading that carries it. Two
 documents sharing a basename in different directories carry their
 directories in their headings and stay distinguishable; two whose paths
-differ only by Markdown extension produce one heading text twice, which
-the command refuses as an ambiguous file group.
+differ only by Markdown extension, or only by the capitalization of
+their letters, produce one heading text twice, which the command
+refuses as an ambiguous file group.
 
 A group is assembled from the maximal regions the run selected, in
 source order, each carried as the bytes its source wrote. A whole
@@ -156,6 +160,8 @@ ENTRY_LAST = " and "
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
+WORD = re.compile(r"[^-_/\s]+")
+
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
@@ -241,17 +247,30 @@ class Group:
         return tuple(one.answers for one in self.record.headings)
 
 
+def title_cased(text: str) -> str:
+    """One generated heading in title case: each word capitalized, the rest as written.
+
+    A word runs between the separators a name carries, and only its
+    first letter is touched, so a nested name keeps its separators and
+    a hyphenated name keeps its hyphens. The convention changes
+    letters, not structure.
+    """
+    return WORD.sub(lambda word: word.group()[:1].upper() + word.group()[1:], text)
+
+
 def heading_text(path: str) -> str:
-    """One source's file heading: its root-relative path, the Markdown suffix gone.
+    """One source's file heading: its root-relative path in title case, the suffix gone.
 
     The suffix is classified case-insensitively, as the profile
-    classifies one, and the rest of the path keeps the spelling the
-    filesystem holds.
+    classifies one, and the path the heading spells is the path the
+    filesystem holds with each of its words capitalized, so one
+    convention covers this heading and every other the bundle
+    generates.
     """
     spelled = PurePosixPath(path)
     if spelled.suffix.lower() in SUFFIXES:
-        return str(spelled.with_suffix(""))
-    return path
+        return title_cased(str(spelled.with_suffix("")))
+    return title_cased(path)
 
 
 def final_segment(title: str) -> str:

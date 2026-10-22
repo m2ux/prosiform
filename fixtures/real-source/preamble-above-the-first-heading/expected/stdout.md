@@ -1,6 +1,6 @@
-This bundle was built for [references/design-flow](#referencesdesign-flow); everything else is material it references.
+This bundle was built for [References/Design-Flow](#referencesdesign-flow); everything else is material it references.
 
-# references/design-flow
+# References/Design-Flow
 
 How a definition is designed. A requirement becomes a function and an expected behaviour. Structure is synthesised from that behaviour. The behaviour the structure exposes is compared with the expected behaviour, and the structure can be reformulated.
 

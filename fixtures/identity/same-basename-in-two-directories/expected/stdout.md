@@ -1,9 +1,9 @@
-This bundle was built for [docs/note](#docsnote) and [notes/note](#notesnote); everything else is material it references.
+This bundle was built for [Docs/Note](#docsnote) and [Notes/Note](#notesnote); everything else is material it references.
 
-# docs/note
+# Docs/Note
 
 The note the documentation directory carries.
 
-# notes/note
+# Notes/Note
 
 The note the notes directory carries.

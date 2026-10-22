@@ -1,12 +1,12 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure requires [the notes](#notes) and names
 [the notes](#notes) a second time.
 
 It also mentions [the archive](../archive.md), which sits above the root.
 
-# notes
+# Notes
 
 The document two references name.

@@ -20,6 +20,7 @@ from prosiform.bundle import (
     group,
     heading_text,
     openings,
+    title_cased,
 )
 from prosiform.profile import parse
 from prosiform.provenance import STRUCTURAL_ANCESTOR, Origin
@@ -32,15 +33,37 @@ def grouped(path: str, text: str) -> Group:
 
 
 @pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("guide", "Guide"),
+        ("docs/note", "Docs/Note"),
+        ("docs/sub/note", "Docs/Sub/Note"),
+        ("my-note", "My-Note"),
+        ("docs/field-notes", "Docs/Field-Notes"),
+        ("plan_mode", "Plan_Mode"),
+        ("two words", "Two Words"),
+        ("Already Titled", "Already Titled"),
+        ("GUIDE", "GUIDE"),
+        ("notes.v2", "Notes.v2"),
+        ("café-münster", "Café-Münster"),
+    ],
+)
+def test_a_generated_heading_capitalizes_each_word_and_keeps_every_separator(
+    text: str, expected: str
+) -> None:
+    assert title_cased(text) == expected
+
+
+@pytest.mark.parametrize(
     ("path", "expected"),
     [
-        ("guide.md", "guide"),
-        ("guide.markdown", "guide"),
+        ("guide.md", "Guide"),
+        ("guide.markdown", "Guide"),
         ("GUIDE.MARKDOWN", "GUIDE"),
-        ("docs/note.md", "docs/note"),
-        ("docs/sub/note.md", "docs/sub/note"),
-        ("notes.v2.md", "notes.v2"),
-        ("guide", "guide"),
+        ("docs/note.md", "Docs/Note"),
+        ("docs/sub/note.md", "Docs/Sub/Note"),
+        ("notes.v2.md", "Notes.v2"),
+        ("guide", "Guide"),
     ],
 )
 def test_a_file_heading_is_the_path_without_its_markdown_suffix(
@@ -89,8 +112,8 @@ def test_an_escaped_path_closes_no_heading() -> None:
 
 def test_a_path_ending_in_a_number_sign_keeps_it_in_its_file_heading() -> None:
     one = grouped("notes/draft #.md", "A document whose path ends in a number sign.\n")
-    assert one.text.splitlines()[0] == "# notes/draft \\#"
-    assert one.headings[0] == "notes/draft #"
+    assert one.text.splitlines()[0] == "# Notes/Draft \\#"
+    assert one.headings[0] == "Notes/Draft #"
 
 
 def test_the_entry_line_names_one_reference_and_its_destination() -> None:
@@ -110,13 +133,13 @@ def test_the_entry_line_escapes_the_text_of_the_heading_it_names() -> None:
 
 
 def test_a_group_opens_on_its_file_heading() -> None:
-    assert grouped("docs/note.md", "Body.\n").text == "# docs/note\n\nBody.\n"
+    assert grouped("docs/note.md", "Body.\n").text == "# Docs/Note\n\nBody.\n"
 
 
 def test_a_title_the_path_already_names_is_absorbed() -> None:
     carried = grouped("guide.md", "# Guide\n\n## Run\n\nDo it.\n")
-    assert carried.text == "# guide\n\n## Run\n\nDo it.\n"
-    assert carried.headings == ("guide", "Run")
+    assert carried.text == "# Guide\n\n## Run\n\nDo it.\n"
+    assert carried.headings == ("Guide", "Run")
 
 
 def test_a_path_segment_is_slugged_as_the_title_it_is_compared_with_is() -> None:
@@ -127,33 +150,33 @@ def test_a_path_segment_is_slugged_as_the_title_it_is_compared_with_is() -> None
 
 def test_a_hyphenated_segment_absorbs_the_title_spelling_it_with_spaces() -> None:
     carried = grouped("docs/my-note.md", "# My Note\n\n## Run\n")
-    assert carried.text == "# docs/my-note\n\n## Run\n"
+    assert carried.text == "# Docs/My-Note\n\n## Run\n"
 
 
 def test_a_title_naming_another_segment_of_the_path_is_not_absorbed() -> None:
     carried = grouped("docs/note.md", "# Docs\n\n## Run\n")
-    assert carried.text == "# docs/note\n\n## Docs\n\n### Run\n"
+    assert carried.text == "# Docs/Note\n\n## Docs\n\n### Run\n"
 
 
 def test_an_absorbed_group_keeps_its_source_heading_levels() -> None:
     text = "# Guide\n\n## Run\n\n### Detail\n"
-    assert grouped("guide.md", text).text == "# guide\n\n## Run\n\n### Detail\n"
+    assert grouped("guide.md", text).text == "# Guide\n\n## Run\n\n### Detail\n"
 
 
 def test_a_title_the_path_does_not_name_is_kept_and_shifted() -> None:
     carried = grouped("guide.md", "# Another Name\n\n## Run\n")
-    assert carried.text == "# guide\n\n## Another Name\n\n### Run\n"
-    assert carried.headings == ("guide", "Another Name", "Run")
+    assert carried.text == "# Guide\n\n## Another Name\n\n### Run\n"
+    assert carried.headings == ("Guide", "Another Name", "Run")
 
 
 def test_a_second_h1_leaves_the_title_unabsorbed() -> None:
     text = "# Guide\n\nOne.\n\n# Guide\n"
-    assert grouped("guide.md", text).text == "# guide\n\n## Guide\n\nOne.\n\n## Guide\n"
+    assert grouped("guide.md", text).text == "# Guide\n\n## Guide\n\nOne.\n\n## Guide\n"
 
 
 def test_an_h1_that_is_not_the_first_heading_leaves_the_title_unabsorbed() -> None:
     text = "## Run\n\n# Guide\n"
-    assert grouped("guide.md", text).text == "# guide\n\n### Run\n\n## Guide\n"
+    assert grouped("guide.md", text).text == "# Guide\n\n### Run\n\n## Guide\n"
 
 
 def test_a_container_nested_title_is_not_absorbed() -> None:
@@ -161,26 +184,26 @@ def test_a_container_nested_title_is_not_absorbed() -> None:
 
 
 def test_a_document_carrying_no_heading_keeps_its_file_heading_alone() -> None:
-    assert grouped("guide.md", "Body only.\n").text == "# guide\n\nBody only.\n"
+    assert grouped("guide.md", "Body only.\n").text == "# Guide\n\nBody only.\n"
 
 
 def test_a_preamble_sits_after_the_file_heading_and_before_the_first_heading() -> None:
     text = "# Guide\n\nLead text.\n\n## Run\n"
-    assert grouped("guide.md", text).text == "# guide\n\nLead text.\n\n## Run\n"
+    assert grouped("guide.md", text).text == "# Guide\n\nLead text.\n\n## Run\n"
 
 
 def test_a_blank_line_above_the_first_region_is_not_carried() -> None:
-    assert grouped("guide.md", "\n\n# Guide\n\nBody.\n").text == "# guide\n\nBody.\n"
+    assert grouped("guide.md", "\n\n# Guide\n\nBody.\n").text == "# Guide\n\nBody.\n"
 
 
 def test_a_removed_reference_definition_leaves_no_blank_line_behind_it() -> None:
     text = "# Guide\n\n- [x] done\n\n[x]: page.md\n"
-    assert grouped("guide.md", text).text == "# guide\n\n- [x] done\n"
+    assert grouped("guide.md", text).text == "# Guide\n\n- [x] done\n"
 
 
 def test_an_unused_reference_definition_is_removed_with_the_used_ones() -> None:
     text = "# Guide\n\nBody.\n\n[a]: one.md\n[b]: two.md\n"
-    assert grouped("guide.md", text).text == "# guide\n\nBody.\n"
+    assert grouped("guide.md", text).text == "# Guide\n\nBody.\n"
 
 
 @pytest.mark.parametrize(
@@ -197,30 +220,30 @@ def test_an_unused_reference_definition_is_removed_with_the_used_ones() -> None:
 )
 def test_a_region_carries_the_bytes_its_source_wrote(written: str) -> None:
     carried = grouped("guide.md", f"# Guide\n\n{written}\n")
-    assert carried.text == f"# guide\n\n{written}\n"
+    assert carried.text == f"# Guide\n\n{written}\n"
 
 
 def test_a_region_ends_with_the_newline_its_source_spelled() -> None:
     text = "# Guide\r\n\r\nOne line.\r\n\r\n- one\r\n- two\r\n"
     assert grouped("guide.md", text).text == (
-        "# guide\n\nOne line.\r\n\n- one\r\n- two\r\n"
+        "# Guide\n\nOne line.\r\n\n- one\r\n- two\r\n"
     )
 
 
 def test_a_last_line_carrying_no_terminator_ends_with_the_bundles_own() -> None:
     assert grouped("guide.md", "# Guide\r\n\r\nOne line.").text == (
-        "# guide\n\nOne line.\n"
+        "# Guide\n\nOne line.\n"
     )
 
 
 def test_a_bundle_closes_with_the_newline_its_final_part_carries() -> None:
     bundled = assemble("Line.", [grouped("guide.md", "# Guide\r\n\r\nBody.\r\n")])
-    assert bundled == "Line.\n\n# guide\n\nBody.\r\n"
+    assert bundled == "Line.\n\n# Guide\n\nBody.\r\n"
 
 
 def test_the_separation_between_two_regions_is_one_blank_line() -> None:
     text = "# Guide\n\nOne.\n\n\n\n\nTwo.\n"
-    assert grouped("guide.md", text).text == "# guide\n\nOne.\n\nTwo.\n"
+    assert grouped("guide.md", text).text == "# Guide\n\nOne.\n\nTwo.\n"
 
 
 @pytest.mark.parametrize(
@@ -236,23 +259,23 @@ def test_a_heading_a_container_carries_is_shifted_where_it_sits(
     written: str, expected: str
 ) -> None:
     carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
-    assert carried.text == f"# guide\n\n## Another Name\n\n{expected}\n"
+    assert carried.text == f"# Guide\n\n## Another Name\n\n{expected}\n"
 
 
 def test_a_heading_a_container_carries_is_one_the_group_emits() -> None:
     carried = grouped("guide.md", "# Guide\n\n> ## Quoted\n>\n> Inside.\n\n## Run\n")
-    assert carried.headings == ("guide", "Quoted", "Run")
+    assert carried.headings == ("Guide", "Quoted", "Run")
 
 
 def test_a_heading_a_code_example_holds_is_no_heading_the_group_emits() -> None:
     carried = grouped("guide.md", "# Guide\n\n> ```\n> ## Not A Heading\n> ```\n")
-    assert carried.headings == ("guide",)
+    assert carried.headings == ("Guide",)
 
 
 def test_a_container_keeps_the_heading_like_text_a_code_example_holds() -> None:
     written = "> ```markdown\n> ## Not A Heading\n> ```"
     carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
-    assert carried.text == f"# guide\n\n## Another Name\n\n{written}\n"
+    assert carried.text == f"# Guide\n\n## Another Name\n\n{written}\n"
 
 
 @pytest.mark.parametrize(
@@ -269,22 +292,22 @@ def test_a_shifted_group_emits_a_setext_heading_as_atx(
     written: str, expected: str
 ) -> None:
     carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
-    assert carried.text == f"# guide\n\n## Another Name\n\n{expected}\n"
+    assert carried.text == f"# Guide\n\n## Another Name\n\n{expected}\n"
 
 
 def test_a_group_that_shifts_by_nothing_leaves_a_setext_heading_alone() -> None:
     carried = grouped("guide.md", "# Guide\n\nRun\n---\n")
-    assert carried.text == "# guide\n\nRun\n---\n"
+    assert carried.text == "# Guide\n\nRun\n---\n"
 
 
 def test_a_converted_heading_keeps_a_number_sign_run_ending_its_text() -> None:
     carried = grouped("guide.md", "# Another Name\n\nSharp #\n---\n")
-    assert carried.text == "# guide\n\n## Another Name\n\n### Sharp \\#\n"
+    assert carried.text == "# Guide\n\n## Another Name\n\n### Sharp \\#\n"
 
 
 def test_a_converted_heading_shows_the_text_its_source_lines_carried() -> None:
     carried = grouped("guide.md", "# Another Name\n\nRun\nand stop\n---\n")
-    assert carried.headings == ("guide", "Another Name", "Run and stop")
+    assert carried.headings == ("Guide", "Another Name", "Run and stop")
 
 
 def test_a_shift_beyond_the_sixth_level_for_a_nested_heading_is_an_overflow() -> None:
@@ -305,19 +328,19 @@ def test_a_shift_beyond_the_sixth_level_is_an_overflow() -> None:
 
 def test_an_absorbed_group_reaches_the_sixth_level_without_overflow() -> None:
     text = "# Guide\n\n###### Deep\n"
-    assert grouped("guide.md", text).text == "# guide\n\n###### Deep\n"
+    assert grouped("guide.md", text).text == "# Guide\n\n###### Deep\n"
 
 
 def test_a_bundle_ends_in_exactly_one_newline() -> None:
     bundled = assemble("Line.", [grouped("guide.md", "# Guide\n")])
-    assert bundled == "Line.\n\n# guide\n"
+    assert bundled == "Line.\n\n# Guide\n"
 
 
 def test_a_group_is_its_parts_one_blank_line_apart() -> None:
     text = "# Guide\n\nOpening prose.\n\n## Rules\n"
     carried = grouped("guide.md", text)
-    assert carried.parts == ("# guide", "Opening prose.\n", "## Rules\n")
-    assert carried.text == "# guide\n\nOpening prose.\n\n## Rules\n"
+    assert carried.parts == ("# Guide", "Opening prose.\n", "## Rules\n")
+    assert carried.text == "# Guide\n\nOpening prose.\n\n## Rules\n"
 
 
 def test_each_part_opens_one_blank_line_below_the_part_above_it() -> None:
@@ -326,7 +349,7 @@ def test_each_part_opens_one_blank_line_below_the_part_above_it() -> None:
     bundled = assemble("Line.", [carried])
     assert openings([carried], 1) == [2, 4, 6]
     assert [lines(bundled)[at] for at in openings([carried], 1)] == [
-        "# guide\n",
+        "# Guide\n",
         "Opening prose.\n",
         "- A rule.\n",
     ]
@@ -338,9 +361,9 @@ def test_the_parts_of_two_groups_open_in_bundle_order() -> None:
     bundled = assemble("Line.", [first, second])
     assert openings([first, second], 1) == [2, 4, 6]
     assert [lines(bundled)[at] for at in openings([first, second], 1)] == [
-        "# guide\n",
+        "# Guide\n",
         "Opening prose.\n",
-        "# note\n",
+        "# Note\n",
     ]
 
 
@@ -376,24 +399,24 @@ Beta body.
 
 def test_an_unselected_ancestor_is_emitted_as_a_heading_alone() -> None:
     carried = selecting("guide.md", OUTLINED, "one")
-    assert carried.text == "# guide\n\n### Alpha\n\n#### One\n\nOne body.\n"
+    assert carried.text == "# Guide\n\n### Alpha\n\n#### One\n\nOne body.\n"
 
 
 def test_an_ancestor_two_selections_share_is_emitted_once() -> None:
     carried = selecting("guide.md", OUTLINED, "one", "two")
-    assert carried.headings == ("guide", "Alpha", "One", "Two")
+    assert carried.headings == ("Guide", "Alpha", "One", "Two")
 
 
 def test_an_ancestor_stands_in_the_source_order_its_author_wrote() -> None:
     text = "## Alpha\n\n### One\n\nOne body.\n\n## Beta\n\n### Two\n\nTwo body.\n"
     carried = selecting("guide.md", text, "one", "two")
-    assert carried.headings == ("guide", "Alpha", "One", "Beta", "Two")
+    assert carried.headings == ("Guide", "Alpha", "One", "Beta", "Two")
 
 
 def test_a_selected_ancestor_is_the_content_it_is_rather_than_a_heading() -> None:
     carried = selecting("guide.md", OUTLINED, "alpha")
     assert carried.text == (
-        "# guide\n\n### Alpha\n\nAlpha body.\n\n#### One\n\nOne body."
+        "# Guide\n\n### Alpha\n\nAlpha body.\n\n#### One\n\nOne body."
         "\n\n#### Two\n\nTwo body.\n"
     )
     assert carried.record.ancestors() == []
@@ -430,13 +453,13 @@ def test_an_ancestor_accounts_for_the_part_it_emits_and_carries_no_range() -> No
 def test_a_title_the_file_heading_names_is_no_ancestor() -> None:
     text = "# Guide\n\n## Run\n\n### Detail\n\nDetail body.\n"
     carried = selecting("guide.md", text, "detail")
-    assert carried.text == "# guide\n\n### Run\n\n#### Detail\n\nDetail body.\n"
+    assert carried.text == "# Guide\n\n### Run\n\n#### Detail\n\nDetail body.\n"
 
 
 def test_a_heading_a_container_carries_roots_no_ancestor_chain() -> None:
     text = "## Alpha\n\n> ### Quoted\n\n### One\n\nOne body.\n"
     carried = selecting("guide.md", text, "one")
-    assert carried.headings == ("guide", "Alpha", "One")
+    assert carried.headings == ("Guide", "Alpha", "One")
 
 
 def test_an_ancestor_at_the_sixth_level_overflows_on_what_it_places() -> None:

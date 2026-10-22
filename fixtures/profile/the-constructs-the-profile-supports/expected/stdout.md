@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 A paragraph carrying a `code span`, an inline link to [the steps](#steps), a
 reference link to [the appendix](#appendix), an image ![a diagram](diagram.png)

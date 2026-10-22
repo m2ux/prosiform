@@ -1,6 +1,6 @@
-This bundle was built for [artifacts/repository-labels](#artifactsrepository-labels); everything else is material it references.
+This bundle was built for [Artifacts/Repository-Labels](#artifactsrepository-labels); everything else is material it references.
 
-# artifacts/repository-labels
+# Artifacts/Repository-Labels
 
 The labels available for issue metadata in one repository.
 

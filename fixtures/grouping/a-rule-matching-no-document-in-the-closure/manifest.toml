@@ -19,5 +19,5 @@ code = "W_EMPTY_GROUP_RULE"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "docs/guide"
+reference = "Docs/Guide"
 resolved = "docsguide"

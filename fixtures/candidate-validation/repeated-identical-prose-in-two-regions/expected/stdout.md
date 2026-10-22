@@ -1,6 +1,6 @@
 This bundle was built for [Rules](#rules) and [Notes](#notes); everything else is material it references.
 
-# guide
+# Guide
 
 ### Rules
 

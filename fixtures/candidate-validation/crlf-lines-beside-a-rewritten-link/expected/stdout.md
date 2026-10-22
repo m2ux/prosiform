@@ -1,6 +1,6 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# guide
+# Guide
 
 The procedure requires [the notes](#notes).
 
@@ -9,6 +9,6 @@ a code example the source terminated with CRLF
 and the bundle carries as the source wrote it
 ```
 
-# notes
+# Notes
 
 The document the rewritten link names.

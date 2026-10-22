@@ -1,9 +1,9 @@
-This bundle was built for [guide](#guide); everything else is material it references.
+This bundle was built for [Guide](#guide); everything else is material it references.
 
-# docs/repository-labels
+# Docs/Repository-Labels
 
 Every label the repository carries.
 
-# guide
+# Guide
 
 The labels are listed in [Repository Labels](#docsrepository-labels).

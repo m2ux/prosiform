@@ -1,6 +1,6 @@
-This bundle was built for [gitnexus-cli/SKILL](#gitnexus-cliskill); everything else is material it references.
+This bundle was built for [Gitnexus-Cli/SKILL](#gitnexus-cliskill); everything else is material it references.
 
-# gitnexus-cli/SKILL
+# Gitnexus-Cli/SKILL
 
 ## GitNexus CLI Commands
 

@@ -17,11 +17,11 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "article"
+reference = "Article"
 resolved = "article"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "caf\u00e9"
+reference = "Caf\u00e9"
 resolved = "caf\u00e9-1"
