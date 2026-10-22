@@ -21,7 +21,7 @@ Authors can maintain shared rules in one place and reuse them across procedures.
 Leaving retrieval to the agent costs:
 
 * **Missed prerequisites** — a link names a destination; it does not retrieve it
-* **Unbounded reads** — one procedure in a real skill reaches 39 documents and 318,018 bytes when read whole
+* **Unbounded reads** — linked content in a real skill spans to many documents when read whole
 * **No completeness signal** — a prerequisite skipped and one never needed produce the same result
 * **Duplicated rules** — shared context gets copied into each document rather than linked once
 
