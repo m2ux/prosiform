@@ -76,7 +76,7 @@ Sources must be valid UTF-8. The build removes one leading byte-order mark and o
 
 ### Merged directories
 
-`--group` arranges member sections beneath a title-cased directory heading. An `Overview` section holds above-depth content that has no heading of its own. When each contribution already has a heading naming its member, those headings sit directly beneath the group heading.
+`--group` arranges member sections beneath a title-cased directory heading. Member subsections hold their content above the grouping depth. An `Overview` section contains those subsections when the group also emits merged sections at the grouping depth; otherwise they sit directly beneath the group heading.
 
 Each member has a distinct destination. Generated member headings use the shortest distinguishing path and title case; authored headings and filesystem paths retain their spelling. See the [grouped examples](example/README.md#merge-directories).
 
