@@ -1,0 +1,2 @@
+- Jot it down.
+- Move on.
