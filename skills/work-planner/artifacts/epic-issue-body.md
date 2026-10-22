@@ -159,6 +159,8 @@ The agreed disposition of criteria a delivered row left unmet.
 
 ### Work Breakdown
 
+New tasks exist as epic rows with their details, discussion and evidence in the epic and planning record. Planning creates no separate task issues. Existing issues hoisted into an epic retain their records and row links when new tasks are planned.
+
 The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
 - **Done.**

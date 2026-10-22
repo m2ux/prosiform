@@ -79,7 +79,7 @@ One task body with its confirmed delivery and verified criteria recorded.
 ### Sections
 
 - A task has the [epic issue body](epic-issue-body.md)'s sections without the Work Breakdown table.
-- A task is a row of the epic table, and gets its own `[Ixx:Eyy:Wzz]` issue only when it needs discussion or evidence of its own.
+- New task planning follows [Work Breakdown](epic-issue-body.md#work-breakdown). This body describes an existing issue kept as a task.
 
 ## Commands
 
