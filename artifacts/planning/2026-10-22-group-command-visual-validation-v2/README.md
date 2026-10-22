@@ -65,12 +65,8 @@ Each case has an isolated my-skill source tree under sources/. These small autho
 
 The SVG layout derives from the [original visual validation renderer](../2026-10-22-my-skill-visual-validation/render.py). Images display observed bundle output. Diagnostics appear beneath each image in a separate review subsection when present; complete stdout and stderr are also stored beside each image. They support review of current behavior, not independent proof that every requirement is correct.
 
-## Reproduce
+## Renderer
 
-Check out the pinned revision, install its locked dependencies with uv sync --frozen --no-dev from src/, then run from this folder:
+The reusable [diagram renderer](../../../scripts/README.md) takes a Markdown entry document such as SKILL.md and renders one bundle per call. Source files, commands and assertions for this review set are recorded in [cases.json](cases.json). The combined REVIEW.md is the curated case index.
 
-```bash
-python3 render.py --compiler /path/to/prosiform/src/.venv/bin/prosiform --checkout /path/to/prosiform
-```
-
-The renderer checks the compiler revision and clean tracked files, all 36 exit statuses, publication or nonpublication, targeted content expectations and diagnostic codes, and SVG XML validity. Each successful compiler run also performs its own candidate and destination validation. Reproduction requires the compiler environment; SVG viewing needs no dependencies.
+Image headers show the compiler branch and commit. Case titles, commands, explanations and diagnostics belong in the review text.

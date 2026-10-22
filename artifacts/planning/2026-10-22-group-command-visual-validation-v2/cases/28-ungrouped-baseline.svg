@@ -1,27 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="715" viewBox="0 0 2142 715" role="img" aria-labelledby="title desc"><title id="title">Ungrouped baseline</title><desc id="desc">Ungrouped generated names retain paths and authored heading spelling. Observed output from the pinned compiler.</desc><rect width="2142" height="715" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">Case 28: Ungrouped Baseline</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root sources/28-ungrouped-baseline/my-skill procedure.md rules/HTTP-checks.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">Ungrouped generated names retain paths and authored heading spelling.</text><rect x="32" y="208" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
-<path d="M32 262 H442" stroke="#303b49"/>
-<text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
-<text x="70" y="356" font-size="20" fill="#e6edf3" font-weight="400">├─ procedure.md</text>
-<text x="70" y="393" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
-<text x="70" y="430" font-size="20" fill="#e6edf3" font-weight="400">   └─ HTTP-checks.md</text><rect x="466" y="208" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="490" y="244" font-size="21" fill="#b1c6df" font-weight="400">procedure.md</text>
-<path d="M466 262 H1156" stroke="#303b49"/>
-<text x="504" y="319" font-size="20" fill="#e6edf3" font-weight="400">Run the procedure.</text><rect x="466" y="359" width="690" height="189" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="490" y="395" font-size="21" fill="#b1c6df" font-weight="400">rules/HTTP-checks.md</text>
-<path d="M466 413 H1156" stroke="#303b49"/>
-<text x="478" y="480" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="516" y="480" font-size="30" fill="#e6edf3" font-weight="500">authored HTTP spelling</text>
-<text x="504" y="530" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text><rect x="1230" y="208" width="880" height="442" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
-<path d="M1230 262 H2110" stroke="#303b49"/>
-<text x="1268" y="319" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Procedure and Rules/HTTP-Checks;</text>
-<text x="1268" y="356" font-size="20" fill="#58a6ff" font-weight="400">everything else is material it references.</text>
-<text x="1242" y="416" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1280" y="416" font-size="30" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1268" y="466" font-size="20" fill="#e6edf3" font-weight="400">Run the procedure.</text>
-<text x="1242" y="526" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1280" y="526" font-size="30" fill="#e6edf3" font-weight="500">Rules/HTTP-Checks</text>
-<text x="1242" y="582" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1292" y="582" font-size="26" fill="#e6edf3" font-weight="500">authored HTTP spelling</text>
-<text x="1268" y="632" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="690" font-size="17" fill="#b1c6df" font-weight="400">Full bundle output shown. Exact Markdown and link destinations: adjacent stdout.md. Diagnostics: case review subsection.</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="587" viewBox="0 0 2142 587" role="img" aria-labelledby="title desc"><title id="title">Source documents and compiled bundle</title><desc id="desc">Source documents and actual compiler output.</desc><rect width="2142" height="587" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="20" fill="#e3b341" font-weight="400">main 08a8c0317924</text><rect x="32" y="80" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 134 H442" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ procedure.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">   └─ HTTP-checks.md</text><rect x="466" y="80" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="116" font-size="21" fill="#b1c6df" font-weight="400">procedure.md</text>
+<path d="M466 134 H1156" stroke="#303b49"/>
+<text x="504" y="191" font-size="20" fill="#e6edf3" font-weight="400">Run the procedure.</text><rect x="466" y="231" width="690" height="189" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="267" font-size="21" fill="#b1c6df" font-weight="400">rules/HTTP-checks.md</text>
+<path d="M466 285 H1156" stroke="#303b49"/>
+<text x="478" y="352" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="352" font-size="30" fill="#e6edf3" font-weight="500">authored HTTP spelling</text>
+<text x="504" y="402" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text><rect x="1230" y="80" width="880" height="442" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="116" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
+<path d="M1230 134 H2110" stroke="#303b49"/>
+<text x="1268" y="191" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Procedure and Rules/HTTP-Checks;</text>
+<text x="1268" y="228" font-size="20" fill="#58a6ff" font-weight="400">everything else is material it references.</text>
+<text x="1242" y="288" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="288" font-size="30" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1268" y="338" font-size="20" fill="#e6edf3" font-weight="400">Run the procedure.</text>
+<text x="1242" y="398" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="398" font-size="30" fill="#e6edf3" font-weight="500">Rules/HTTP-Checks</text>
+<text x="1242" y="454" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="454" font-size="26" fill="#e6edf3" font-weight="500">authored HTTP spelling</text>
+<text x="1268" y="504" font-size="20" fill="#e6edf3" font-weight="400">Check HTTP.</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>

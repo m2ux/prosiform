@@ -1,38 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="871" viewBox="0 0 2142 871" role="img" aria-labelledby="title desc"><title id="title">Whole member links</title><desc id="desc">Whole-document links reach distinct contributor headings. Observed output from the pinned compiler.</desc><rect width="2142" height="871" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">Case 22: Whole Member Links</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">Whole-document links reach distinct contributor headings.</text><rect x="32" y="208" width="410" height="277" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
-<path d="M32 262 H442" stroke="#303b49"/>
-<text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
-<text x="70" y="356" font-size="20" fill="#e6edf3" font-weight="400">├─ route.md</text>
-<text x="70" y="393" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
-<text x="70" y="430" font-size="20" fill="#e6edf3" font-weight="400">   ├─ blue.md</text>
-<text x="70" y="467" font-size="20" fill="#e6edf3" font-weight="400">   └─ red.md</text><rect x="466" y="208" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="490" y="244" font-size="21" fill="#b1c6df" font-weight="400">route.md</text>
-<path d="M466 262 H1156" stroke="#303b49"/>
-<text x="504" y="319" font-size="20" fill="#58a6ff" font-weight="400">Blue and Red.</text><rect x="466" y="359" width="690" height="185" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="490" y="395" font-size="21" fill="#b1c6df" font-weight="400">rules/blue.md</text>
-<path d="M466 413 H1156" stroke="#303b49"/>
-<text x="478" y="476" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="528" y="476" font-size="26" fill="#e6edf3" font-weight="500">Style</text>
-<text x="504" y="526" font-size="20" fill="#e6edf3" font-weight="400">Blue style.</text><rect x="466" y="566" width="690" height="185" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="490" y="602" font-size="21" fill="#b1c6df" font-weight="400">rules/red.md</text>
-<path d="M466 620 H1156" stroke="#303b49"/>
-<text x="478" y="683" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="528" y="683" font-size="26" fill="#e6edf3" font-weight="500">Style</text>
-<text x="504" y="733" font-size="20" fill="#e6edf3" font-weight="400">Red style.</text><rect x="1230" y="208" width="880" height="598" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
-<path d="M1230 262 H2110" stroke="#303b49"/>
-<text x="1268" y="319" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Route; everything else is material it</text>
-<text x="1268" y="356" font-size="20" fill="#58a6ff" font-weight="400">references.</text>
-<text x="1242" y="416" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1280" y="416" font-size="30" fill="#e6edf3" font-weight="500">Route</text>
-<text x="1268" y="466" font-size="20" fill="#58a6ff" font-weight="400">Blue and Red.</text>
-<text x="1242" y="526" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1280" y="526" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="1242" y="582" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1292" y="582" font-size="26" fill="#e6edf3" font-weight="500">Style</text>
-<text x="1242" y="635" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1304" y="635" font-size="23" fill="#e6edf3" font-weight="500">Blue</text>
-<text x="1268" y="685" font-size="20" fill="#e6edf3" font-weight="400">Blue style.</text>
-<text x="1242" y="738" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1304" y="738" font-size="23" fill="#e6edf3" font-weight="500">Red</text>
-<text x="1268" y="788" font-size="20" fill="#e6edf3" font-weight="400">Red style.</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="846" font-size="17" fill="#b1c6df" font-weight="400">Full bundle output shown. Exact Markdown and link destinations: adjacent stdout.md. Diagnostics: case review subsection.</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="743" viewBox="0 0 2142 743" role="img" aria-labelledby="title desc"><title id="title">Source documents and compiled bundle</title><desc id="desc">Source documents and actual compiler output.</desc><rect width="2142" height="743" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="20" fill="#e3b341" font-weight="400">main 08a8c0317924</text><rect x="32" y="80" width="410" height="277" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 134 H442" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ route.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">   ├─ blue.md</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">   └─ red.md</text><rect x="466" y="80" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="116" font-size="21" fill="#b1c6df" font-weight="400">route.md</text>
+<path d="M466 134 H1156" stroke="#303b49"/>
+<text x="504" y="191" font-size="20" fill="#58a6ff" font-weight="400">Blue and Red.</text><rect x="466" y="231" width="690" height="185" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="267" font-size="21" fill="#b1c6df" font-weight="400">rules/blue.md</text>
+<path d="M466 285 H1156" stroke="#303b49"/>
+<text x="478" y="348" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="348" font-size="26" fill="#e6edf3" font-weight="500">Style</text>
+<text x="504" y="398" font-size="20" fill="#e6edf3" font-weight="400">Blue style.</text><rect x="466" y="438" width="690" height="185" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="474" font-size="21" fill="#b1c6df" font-weight="400">rules/red.md</text>
+<path d="M466 492 H1156" stroke="#303b49"/>
+<text x="478" y="555" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="528" y="555" font-size="26" fill="#e6edf3" font-weight="500">Style</text>
+<text x="504" y="605" font-size="20" fill="#e6edf3" font-weight="400">Red style.</text><rect x="1230" y="80" width="880" height="598" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="116" font-size="21" fill="#b1c6df" font-weight="400">Compiler output</text>
+<path d="M1230 134 H2110" stroke="#303b49"/>
+<text x="1268" y="191" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Route; everything else is material it</text>
+<text x="1268" y="228" font-size="20" fill="#58a6ff" font-weight="400">references.</text>
+<text x="1242" y="288" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="288" font-size="30" fill="#e6edf3" font-weight="500">Route</text>
+<text x="1268" y="338" font-size="20" fill="#58a6ff" font-weight="400">Blue and Red.</text>
+<text x="1242" y="398" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="398" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="454" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="454" font-size="26" fill="#e6edf3" font-weight="500">Style</text>
+<text x="1242" y="507" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="507" font-size="23" fill="#e6edf3" font-weight="500">Blue</text>
+<text x="1268" y="557" font-size="20" fill="#e6edf3" font-weight="400">Blue style.</text>
+<text x="1242" y="610" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1304" y="610" font-size="23" fill="#e6edf3" font-weight="500">Red</text>
+<text x="1268" y="660" font-size="20" fill="#e6edf3" font-weight="400">Red style.</text><path d="M1172 180 H1190 V168 L1218 196 L1190 224 V212 H1172Z" fill="#58a6ff"/></g></svg>
