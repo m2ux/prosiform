@@ -43,4 +43,4 @@ Removed the unused body-text predicate, subset qualifier and nested-name arrange
 
 ## Remote checks
 
-The first CI run at the implementation revision failed the same contract vocabulary check. A rerun was requested after engineering `f967d3b`; its final result is pending.
+The first CI run at the implementation revision failed the same contract vocabulary check. The [rerun](https://github.com/m2ux/prosiform/actions/runs/39735191272/job/119681269711) after engineering `f967d3b` completed successfully at `bc4f53723f6de3c46a3f96afa5350cd651ee2115`. Remote CI ran the complete `make check` command successfully.
