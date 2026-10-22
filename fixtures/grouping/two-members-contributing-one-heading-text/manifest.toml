@@ -1,0 +1,27 @@
+description = "A whole-document reference to a member carrying nothing above the grouping depth, whose first contribution carries a heading text another member contributes too, resolves to the variant heading naming that document rather than to the merged heading both documents share. No two members of the group reach one destination, and the entry line and an internal link each name the member they resolve to."
+
+clauses = [
+  "Grouping — A heading for every member",
+  "Bundle destinations — Document destinations",
+  "Entry line — Link text",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "rules:2", "rules/agents.md", "rules/common.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Agents"
+resolved = "agents"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Common"
+resolved = "common"
