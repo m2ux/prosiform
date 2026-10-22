@@ -33,14 +33,14 @@ Run these diagram examples from `example/`, using [my-skill](example/my-skill/SK
 
 ```bash
 prosiform --root my-skill \
-  --output skill-bundle.md procedure.md rules/common.md
+  --group rules:1 --output skill-bundle.md procedure.md rules/common.md
 ```
 
-![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. Each document has its own bundle section; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
+![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
 #### Compile agent-specific rules
 
-The bundled `rules/agents.md` instructions direct the agent to compile the deferred link matching its harness identity.
+The bundled `Rules → Agents` instructions direct the agent to compile the deferred link matching its harness identity.
 
 ```bash
 # Codex

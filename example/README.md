@@ -161,7 +161,7 @@ Select rules for your harness:
 Follow [Agents](#agents).
 ```
 
-`Overview` is absent here. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The ungrouped [README diagrams](../README.md#how-it-works) show the same documents under their title-cased path headings.
+`Overview` is absent here. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
 
 ## More fixture examples
 
