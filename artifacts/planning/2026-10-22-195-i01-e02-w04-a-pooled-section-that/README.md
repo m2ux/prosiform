@@ -26,3 +26,4 @@ The implementation extends `src/prosiform/grouping.py` on `i01/e02/w04-a-pooled-
 | W04 issue | https://github.com/m2ux/prosiform/issues/203 |
 | W06 issue | https://github.com/m2ux/prosiform/issues/202 |
 | Board | https://github.com/users/m2ux/projects/18/views/4 |
+| Delivery pull request | https://github.com/m2ux/prosiform/pull/209 |
