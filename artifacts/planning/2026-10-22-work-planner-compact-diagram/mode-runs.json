@@ -1,6 +1,7 @@
 {
-  "compiler_revision": "00fd19df3660304cc5bdc979eb635032b905c4aa",
-  "section_level": 2,
+  "compiler_revision": "800081b75ad8eb1b6ecbbfb59ac382592f496853",
+  "input_section_level": 2,
+  "compiled_section_level": null,
   "groups": [
     "artifacts:2",
     "protocols:2"
