@@ -131,7 +131,47 @@ def compact_markdown(body):
     return "\n\n".join(rows)
 
 
-def svg(inputs, root_name, stdout, branch_name, revision, compact=False):
+def filter_section_titles(body, section_level):
+    """Keep deep titles only when their section or descendants contain links."""
+    if section_level is None:
+        return body
+    from markdown_it import MarkdownIt
+
+    from prosiform.source import Unterminated, content
+
+    try:
+        source = content(body)
+    except Unterminated:
+        return body
+    tokens = MarkdownIt("commonmark").parse(source.text)
+    removed = set()
+    for index, token in enumerate(tokens):
+        if token.type != "heading_open" or int(token.tag[1:]) <= section_level:
+            continue
+        end = index + 1
+        while end < len(tokens):
+            following = tokens[end]
+            if following.type == "heading_open" and following.tag <= token.tag:
+                break
+            end += 1
+        linked = any(
+            child.type in ("link_open", "image")
+            for item in tokens[index:end]
+            for child in (item.children or [])
+        )
+        if not linked and token.map:
+            offset = source.first_line - 1
+            removed.update(range(token.map[0] + offset, token.map[1] + offset))
+    return "".join(
+        line
+        for index, line in enumerate(body.splitlines(keepends=True))
+        if index not in removed
+    )
+
+
+def svg(
+    inputs, root_name, stdout, branch_name, revision, compact=False, section_level=None
+):
     blocks = []
     header = [txt(32, 48, branch_name + " " + revision[:12], 20, AMBER)]
     top = 80
@@ -157,12 +197,14 @@ def svg(inputs, root_name, stdout, branch_name, revision, compact=False):
     blocks.append(treeblock)
     at = top
     for path, content in inputs.items():
+        content = filter_section_titles(content, section_level)
         if compact:
             content = compact_markdown(content)
         block, h = card(466, at, 690, path, content)
         blocks.append(block)
         at += h + 22
     _, bundle_body = split_entry_points(stdout)
+    bundle_body = filter_section_titles(bundle_body, section_level)
     expected = (
         (compact_markdown(bundle_body) if compact else bundle_body)
         if stdout
@@ -211,6 +253,13 @@ def main():
         help="Grouping rule; repeat for distinct slugs",
     )
     parser.add_argument("--section", help="Select a fragment of the entry document")
+    parser.add_argument(
+        "--section-level",
+        type=int,
+        choices=range(1, 7),
+        metavar="N",
+        help="Keep titles through HN; deeper titles require links in their section",
+    )
     parser.add_argument(
         "--max-output-bytes",
         type=int,
@@ -280,7 +329,13 @@ def main():
         for path, data in sorted(captured.items())
     }
     rendered = svg(
-        inputs, root.name, body, branch_name, revision, compact=options.compact
+        inputs,
+        root.name,
+        body,
+        branch_name,
+        revision,
+        compact=options.compact,
+        section_level=options.section_level,
     )
     ET.fromstring(rendered)
     output = options.output.absolute()
@@ -318,6 +373,12 @@ def main():
             "while retaining headings and links."
             if options.compact
             else ""
+        )
+        + (
+            f" Titles below H{options.section_level} appear only when their "
+            "section, including subsections, contains links."
+            if options.section_level is not None
+            else ""
         ),
         "",
         "![Source documents and compiled bundle](" + destinations[".svg"].name + ")",
@@ -347,6 +408,7 @@ def main():
         compiler_branch=branch_name,
         compiler_revision=revision,
         compact=options.compact,
+        section_level=options.section_level,
         command=command,
         exit_code=status,
         sources={
