@@ -10,48 +10,50 @@ Each diagram shows its participating source files and complete bundle output, in
 
 ## Contents
 
-- [01-plain-content: Plain content](#case-01-plain-content)
-- [02-preamble-and-sections: Preamble and sections](#case-02-preamble-and-sections)
-- [03-own-title-absorption: Own title absorption](#case-03-own-title-absorption)
-- [04-different-title: Different title](#case-04-different-title)
-- [05-later-title: Later title](#case-05-later-title)
-- [06-headings-only: Headings only](#case-06-headings-only)
-- [07-title-only: Title only](#case-07-title-only)
-- [08-empty-member: Empty member](#case-08-empty-member)
-- [09-unique-sections: Unique sections](#case-09-unique-sections)
-- [10-shared-sections: Shared sections](#case-10-shared-sections)
-- [11-mixed-sections: Mixed sections](#case-11-mixed-sections)
-- [12-body-only-contributions: Body only contributions](#case-12-body-only-contributions)
-- [13-nested-contributions: Nested contributions](#case-13-nested-contributions)
-- [14-empty-contributions: Empty contributions](#case-14-empty-contributions)
-- [15-simple-names: Simple names](#case-15-simple-names)
-- [16-nested-names: Nested names](#case-16-nested-names)
-- [17-stem-clashes: Stem clashes](#case-17-stem-clashes)
-- [18-deep-clashes: Deep clashes](#case-18-deep-clashes)
-- [19-formatting-clashes: Formatting clashes](#case-19-formatting-clashes)
-- [20-group-suffixes: Group suffixes](#case-20-group-suffixes)
-- [21-consistent-variant-names: Consistent variant names](#case-21-consistent-variant-names)
-- [22-whole-member-links: Whole member links](#case-22-whole-member-links)
-- [23-pooled-section-links: Pooled section links](#case-23-pooled-section-links)
-- [24-absorbed-title-links: Absorbed title links](#case-24-absorbed-title-links)
-- [25-selected-sections: Selected sections](#case-25-selected-sections)
-- [26-deferred-links: Deferred links](#case-26-deferred-links)
-- [27-harness-selection: Harness selection](#case-27-harness-selection)
-- [28-ungrouped-baseline: Ungrouped baseline](#case-28-ungrouped-baseline)
-- [29-multiple-groups: Multiple groups](#case-29-multiple-groups)
-- [30-nested-precedence: Nested precedence](#case-30-nested-precedence)
-- [31-repeated-directory-names: Repeated directory names](#case-31-repeated-directory-names)
-- [32-unmatched-group: Unmatched group](#case-32-unmatched-group)
-- [33-missing-depth: Missing depth](#case-33-missing-depth)
-- [34-invalid-depth: Invalid depth](#case-34-invalid-depth)
-- [35-duplicate-slug: Duplicate slug](#case-35-duplicate-slug)
-- [36-heading-overflow: Heading overflow](#case-36-heading-overflow)
+- [Case 1: Plain Content](#case-1-plain-content)
+- [Case 2: Preamble And Sections](#case-2-preamble-and-sections)
+- [Case 3: Own Title Absorption](#case-3-own-title-absorption)
+- [Case 4: Different Title](#case-4-different-title)
+- [Case 5: Later Title](#case-5-later-title)
+- [Case 6: Headings Only](#case-6-headings-only)
+- [Case 7: Title Only](#case-7-title-only)
+- [Case 8: Empty Member](#case-8-empty-member)
+- [Case 9: Unique Sections](#case-9-unique-sections)
+- [Case 10: Shared Sections](#case-10-shared-sections)
+- [Case 11: Mixed Sections](#case-11-mixed-sections)
+- [Case 12: Body Only Contributions](#case-12-body-only-contributions)
+- [Case 13: Nested Contributions](#case-13-nested-contributions)
+- [Case 14: Empty Contributions](#case-14-empty-contributions)
+- [Case 15: Simple Names](#case-15-simple-names)
+- [Case 16: Nested Names](#case-16-nested-names)
+- [Case 17: Stem Clashes](#case-17-stem-clashes)
+- [Case 18: Deep Clashes](#case-18-deep-clashes)
+- [Case 19: Formatting Clashes](#case-19-formatting-clashes)
+- [Case 20: Group Suffixes](#case-20-group-suffixes)
+- [Case 21: Consistent Variant Names](#case-21-consistent-variant-names)
+- [Case 22: Whole Member Links](#case-22-whole-member-links)
+- [Case 23: Pooled Section Links](#case-23-pooled-section-links)
+- [Case 24: Absorbed Title Links](#case-24-absorbed-title-links)
+- [Case 25: Selected Sections](#case-25-selected-sections)
+- [Case 26: Deferred Links](#case-26-deferred-links)
+- [Case 27: Harness Selection](#case-27-harness-selection)
+- [Case 28: Ungrouped Baseline](#case-28-ungrouped-baseline)
+- [Case 29: Multiple Groups](#case-29-multiple-groups)
+- [Case 30: Nested Precedence](#case-30-nested-precedence)
+- [Case 31: Repeated Directory Names](#case-31-repeated-directory-names)
+- [Case 32: Unmatched Group](#case-32-unmatched-group)
+- [Case 33: Missing Depth](#case-33-missing-depth)
+- [Case 34: Invalid Depth](#case-34-invalid-depth)
+- [Case 35: Duplicate Slug](#case-35-duplicate-slug)
+- [Case 36: Heading Overflow](#case-36-heading-overflow)
 
-## Case 01-plain-content
+## Case 1: Plain Content
 
 Members sit directly beneath Rules when no sections are pooled.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/01-plain-content/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -61,7 +63,9 @@ prosiform --root sources/01-plain-content/my-skill --group rules:2 rules/blue.md
 
 ![Plain content](cases/01-plain-content.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -72,11 +76,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 02-preamble-and-sections
+## Case 2: Preamble And Sections
 
 Overview holds preambles beside the pooled Style section.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/02-preamble-and-sections/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -86,7 +92,9 @@ prosiform --root sources/02-preamble-and-sections/my-skill --group rules:2 rules
 
 ![Preamble and sections](cases/02-preamble-and-sections.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -97,11 +105,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 03-own-title-absorption
+## Case 3: Own Title Absorption
 
 A leading own H1 is represented once by its member heading.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/03-own-title-absorption/my-skill --group rules:2 rules/identity.md
@@ -111,7 +121,9 @@ prosiform --root sources/03-own-title-absorption/my-skill --group rules:2 rules/
 
 ![Own title absorption](cases/03-own-title-absorption.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 'identity', which the bundle's entry line links it to
@@ -119,11 +131,13 @@ W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 
   resolved: identity
 ```
 
-## Case 04-different-title
+## Case 4: Different Title
 
 An authored title different from the filename survives beneath the member.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/04-different-title/my-skill --group rules:2 rules/other-title.md
@@ -133,7 +147,9 @@ prosiform --root sources/04-different-title/my-skill --group rules:2 rules/other
 
 ![Different title](cases/04-different-title.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Other Title' resolves to the destination 'other-title', which the bundle's entry line links it to
@@ -141,11 +157,13 @@ W_ENTRY_DESTINATION: the entry reference 'Other Title' resolves to the destinati
   resolved: other-title
 ```
 
-## Case 05-later-title
+## Case 5: Later Title
 
 The first own-name H1 is absorbed even when paragraph content precedes it; both paragraphs survive.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/05-later-title/my-skill --group rules:2 rules/later-title.md
@@ -155,7 +173,9 @@ prosiform --root sources/05-later-title/my-skill --group rules:2 rules/later-tit
 
 ![Later title](cases/05-later-title.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Later Title' resolves to the destination 'later-title', which the bundle's entry line links it to
@@ -163,11 +183,13 @@ W_ENTRY_DESTINATION: the entry reference 'Later Title' resolves to the destinati
   resolved: later-title
 ```
 
-## Case 06-headings-only
+## Case 6: Headings Only
 
 Heading-only sections contribute visible structure.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/06-headings-only/my-skill --group rules:2 rules/outline.md
@@ -177,7 +199,9 @@ prosiform --root sources/06-headings-only/my-skill --group rules:2 rules/outline
 
 ![Headings only](cases/06-headings-only.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'First' resolves to the destination 'first', which the bundle's entry line links it to
@@ -185,11 +209,13 @@ W_ENTRY_DESTINATION: the entry reference 'First' resolves to the destination 'fi
   resolved: first
 ```
 
-## Case 07-title-only
+## Case 7: Title Only
 
 Absorbing the only title preserves a named member.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/07-title-only/my-skill --group rules:2 rules/identity.md
@@ -199,7 +225,9 @@ prosiform --root sources/07-title-only/my-skill --group rules:2 rules/identity.m
 
 ![Title only](cases/07-title-only.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 'identity', which the bundle's entry line links it to
@@ -207,11 +235,13 @@ W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 
   resolved: identity
 ```
 
-## Case 08-empty-member
+## Case 8: Empty Member
 
 An empty document still has a member destination.
 
-Area: Member structure · Exit status: 0
+Area: Member structure
+
+### Command
 
 ```bash
 prosiform --root sources/08-empty-member/my-skill --group rules:2 rules/empty.md
@@ -221,7 +251,9 @@ prosiform --root sources/08-empty-member/my-skill --group rules:2 rules/empty.md
 
 ![Empty member](cases/08-empty-member.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Empty' resolves to the destination 'empty', which the bundle's entry line links it to
@@ -229,11 +261,13 @@ W_ENTRY_DESTINATION: the entry reference 'Empty' resolves to the destination 'em
   resolved: empty
 ```
 
-## Case 09-unique-sections
+## Case 9: Unique Sections
 
 Unique section names need no contributor wrappers.
 
-Area: Pooled sections · Exit status: 0
+Area: Pooled sections
+
+### Command
 
 ```bash
 prosiform --root sources/09-unique-sections/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -243,7 +277,9 @@ prosiform --root sources/09-unique-sections/my-skill --group rules:2 rules/blue.
 
 ![Unique sections](cases/09-unique-sections.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Style' resolves to the destination 'style', which the bundle's entry line links it to
@@ -254,11 +290,13 @@ W_ENTRY_DESTINATION: the entry reference 'Workflow' resolves to the destination 
   resolved: workflow
 ```
 
-## Case 10-shared-sections
+## Case 10: Shared Sections
 
 A shared heading contains a named contribution from each member.
 
-Area: Pooled sections · Exit status: 0
+Area: Pooled sections
+
+### Command
 
 ```bash
 prosiform --root sources/10-shared-sections/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -268,7 +306,9 @@ prosiform --root sources/10-shared-sections/my-skill --group rules:2 rules/blue.
 
 ![Shared sections](cases/10-shared-sections.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -279,11 +319,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 11-mixed-sections
+## Case 11: Mixed Sections
 
 Shared and single-contributor sections coexist.
 
-Area: Pooled sections · Exit status: 0
+Area: Pooled sections
+
+### Command
 
 ```bash
 prosiform --root sources/11-mixed-sections/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -293,7 +335,9 @@ prosiform --root sources/11-mixed-sections/my-skill --group rules:2 rules/blue.m
 
 ![Mixed sections](cases/11-mixed-sections.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -304,11 +348,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 12-body-only-contributions
+## Case 12: Body Only Contributions
 
 Body-only contributions retain member identity at depth one.
 
-Area: Pooled sections · Exit status: 0
+Area: Pooled sections
+
+### Command
 
 ```bash
 prosiform --root sources/12-body-only-contributions/my-skill --group rules:1 rules/blue.md rules/red.md
@@ -318,7 +364,9 @@ prosiform --root sources/12-body-only-contributions/my-skill --group rules:1 rul
 
 ![Body only contributions](cases/12-body-only-contributions.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -329,11 +377,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 13-nested-contributions
+## Case 13: Nested Contributions
 
 Each contributor retains its own child section beneath the pooled heading.
 
-Area: Pooled sections · Exit status: 0
+Area: Pooled sections
+
+### Command
 
 ```bash
 prosiform --root sources/13-nested-contributions/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -343,7 +393,9 @@ prosiform --root sources/13-nested-contributions/my-skill --group rules:2 rules/
 
 ![Nested contributions](cases/13-nested-contributions.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -354,11 +406,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 14-empty-contributions
+## Case 14: Empty Contributions
 
 A shared heading with empty contributions still names both contributors.
 
-Area: Pooled sections · Exit status: 0
+Area: Pooled sections
+
+### Command
 
 ```bash
 prosiform --root sources/14-empty-contributions/my-skill --group rules:2 rules/blue.md rules/red.md
@@ -368,7 +422,9 @@ prosiform --root sources/14-empty-contributions/my-skill --group rules:2 rules/b
 
 ![Empty contributions](cases/14-empty-contributions.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -379,11 +435,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 15-simple-names
+## Case 15: Simple Names
 
 Generated names title-case separators and preserve HTTP.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-checks.md rules/quick_start.md
@@ -393,7 +451,9 @@ prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-che
 
 ![Simple names](cases/15-simple-names.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'HTTP Checks' resolves to the destination 'http-checks', which the bundle's entry line links it to
@@ -404,11 +464,13 @@ W_ENTRY_DESTINATION: the entry reference 'Quick Start' resolves to the destinati
   resolved: quick-start
 ```
 
-## Case 16-nested-names
+## Case 16: Nested Names
 
 A unique nested member needs only its filename stem.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/16-nested-names/my-skill --group rules:2 rules/nested/deep-note.md rules/plain.md
@@ -418,7 +480,9 @@ prosiform --root sources/16-nested-names/my-skill --group rules:2 rules/nested/d
 
 ![Nested names](cases/16-nested-names.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Deep Note' resolves to the destination 'deep-note', which the bundle's entry line links it to
@@ -429,11 +493,13 @@ W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'pl
   resolved: plain
 ```
 
-## Case 17-stem-clashes
+## Case 17: Stem Clashes
 
 Directory suffixes distinguish identical stems.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/17-stem-clashes/my-skill --group rules:2 rules/api/common.md rules/web/common.md
@@ -443,7 +509,9 @@ prosiform --root sources/17-stem-clashes/my-skill --group rules:2 rules/api/comm
 
 ![Stem clashes](cases/17-stem-clashes.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Api Common' resolves to the destination 'api-common', which the bundle's entry line links it to
@@ -454,11 +522,13 @@ W_ENTRY_DESTINATION: the entry reference 'Web Common' resolves to the destinatio
   resolved: web-common
 ```
 
-## Case 18-deep-clashes
+## Case 18: Deep Clashes
 
 Qualification reaches the directory segment that distinguishes members.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/18-deep-clashes/my-skill --group rules:2 rules/team-a/web/shared.md rules/team-b/web/shared.md
@@ -468,7 +538,9 @@ prosiform --root sources/18-deep-clashes/my-skill --group rules:2 rules/team-a/w
 
 ![Deep clashes](cases/18-deep-clashes.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Team A Web Shared' resolves to the destination 'team-a-web-shared', which the bundle's entry line links it to
@@ -479,11 +551,13 @@ W_ENTRY_DESTINATION: the entry reference 'Team B Web Shared' resolves to the des
   resolved: team-b-web-shared
 ```
 
-## Case 19-formatting-clashes
+## Case 19: Formatting Clashes
 
 Names remain distinct after hyphens and underscores become spaces.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/19-formatting-clashes/my-skill --group rules:2 rules/a/one-two.md rules/b/one_two.md
@@ -493,7 +567,9 @@ prosiform --root sources/19-formatting-clashes/my-skill --group rules:2 rules/a/
 
 ![Formatting clashes](cases/19-formatting-clashes.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'A One Two' resolves to the destination 'a-one-two', which the bundle's entry line links it to
@@ -504,11 +580,13 @@ W_ENTRY_DESTINATION: the entry reference 'B One Two' resolves to the destination
   resolved: b-one-two
 ```
 
-## Case 20-group-suffixes
+## Case 20: Group Suffixes
 
 Member names omit the redundant group kind when names stay distinct.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/20-group-suffixes/my-skill --group modes:2 modes/plan-mode.md modes/review-mode.md
@@ -518,7 +596,9 @@ prosiform --root sources/20-group-suffixes/my-skill --group modes:2 modes/plan-m
 
 ![Group suffixes](cases/20-group-suffixes.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Plan' resolves to the destination 'plan', which the bundle's entry line links it to
@@ -529,11 +609,13 @@ W_ENTRY_DESTINATION: the entry reference 'Review' resolves to the destination 'r
   resolved: review
 ```
 
-## Case 21-consistent-variant-names
+## Case 21: Consistent Variant Names
 
 Overview and pooled variants share the group-wide member names, including a noncontributor.
 
-Area: Names and casing · Exit status: 0
+Area: Names and casing
+
+### Command
 
 ```bash
 prosiform --root sources/21-consistent-variant-names/my-skill --group rules:2 rules/a/common.md rules/b/common.md rules/c/common.md
@@ -543,7 +625,9 @@ prosiform --root sources/21-consistent-variant-names/my-skill --group rules:2 ru
 
 ![Consistent variant names](cases/21-consistent-variant-names.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'A Common' resolves to the destination 'a-common', which the bundle's entry line links it to
@@ -557,11 +641,13 @@ W_ENTRY_DESTINATION: the entry reference 'C Common' resolves to the destination 
   resolved: c-common
 ```
 
-## Case 22-whole-member-links
+## Case 22: Whole Member Links
 
 Whole-document links reach distinct contributor headings.
 
-Area: Links and selection · Exit status: 0
+Area: Links and selection
+
+### Command
 
 ```bash
 prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md
@@ -571,7 +657,9 @@ prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md
 
 ![Whole member links](cases/22-whole-member-links.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'route', which the bundle's entry line links it to
@@ -579,11 +667,13 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
   resolved: route
 ```
 
-## Case 23-pooled-section-links
+## Case 23: Pooled Section Links
 
 References to each source Style section reach its own variant.
 
-Area: Links and selection · Exit status: 0
+Area: Links and selection
+
+### Command
 
 ```bash
 prosiform --root sources/23-pooled-section-links/my-skill --group rules:2 route.md
@@ -593,7 +683,9 @@ prosiform --root sources/23-pooled-section-links/my-skill --group rules:2 route.
 
 ![Pooled section links](cases/23-pooled-section-links.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'route', which the bundle's entry line links it to
@@ -601,11 +693,13 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
   resolved: route
 ```
 
-## Case 24-absorbed-title-links
+## Case 24: Absorbed Title Links
 
 A link to an absorbed title reaches the member heading.
 
-Area: Links and selection · Exit status: 0
+Area: Links and selection
+
+### Command
 
 ```bash
 prosiform --root sources/24-absorbed-title-links/my-skill --group rules:2 route.md
@@ -615,7 +709,9 @@ prosiform --root sources/24-absorbed-title-links/my-skill --group rules:2 route.
 
 ![Absorbed title links](cases/24-absorbed-title-links.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'route', which the bundle's entry line links it to
@@ -623,11 +719,13 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
   resolved: route
 ```
 
-## Case 25-selected-sections
+## Case 25: Selected Sections
 
 Selecting one section preserves its outline and excludes its sibling body.
 
-Area: Links and selection · Exit status: 0
+Area: Links and selection
+
+### Command
 
 ```bash
 prosiform --root sources/25-selected-sections/my-skill --group rules:2 'rules/guide.md#selected'
@@ -637,7 +735,9 @@ prosiform --root sources/25-selected-sections/my-skill --group rules:2 'rules/gu
 
 ![Selected sections](cases/25-selected-sections.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Selected' resolves to the destination 'selected', which the bundle's entry line links it to
@@ -645,11 +745,13 @@ W_ENTRY_DESTINATION: the entry reference 'Selected' resolves to the destination 
   resolved: selected
 ```
 
-## Case 26-deferred-links
+## Case 26: Deferred Links
 
 Deferred targets exist but contribute no body.
 
-Area: Links and selection · Exit status: 0
+Area: Links and selection
+
+### Command
 
 ```bash
 prosiform --root sources/26-deferred-links/my-skill --group rules:2 rules/common.md
@@ -659,7 +761,9 @@ prosiform --root sources/26-deferred-links/my-skill --group rules:2 rules/common
 
 ![Deferred links](cases/26-deferred-links.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'common', which the bundle's entry line links it to
@@ -667,11 +771,13 @@ W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'c
   resolved: common
 ```
 
-## Case 27-harness-selection
+## Case 27: Harness Selection
 
 Selecting Codex includes its common rules and leaves Claude deferred.
 
-Area: Links and selection · Exit status: 0
+Area: Links and selection
+
+### Command
 
 ```bash
 prosiform --root sources/27-harness-selection/my-skill --group rules:2 rules/codex.md
@@ -681,7 +787,9 @@ prosiform --root sources/27-harness-selection/my-skill --group rules:2 rules/cod
 
 ![Harness selection](cases/27-harness-selection.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Codex' resolves to the destination 'codex', which the bundle's entry line links it to
@@ -689,11 +797,13 @@ W_ENTRY_DESTINATION: the entry reference 'Codex' resolves to the destination 'co
   resolved: codex
 ```
 
-## Case 28-ungrouped-baseline
+## Case 28: Ungrouped Baseline
 
 Ungrouped generated names retain paths and authored heading spelling.
 
-Area: Group combinations · Exit status: 0
+Area: Group combinations
+
+### Command
 
 ```bash
 prosiform --root sources/28-ungrouped-baseline/my-skill procedure.md rules/HTTP-checks.md
@@ -703,7 +813,9 @@ prosiform --root sources/28-ungrouped-baseline/my-skill procedure.md rules/HTTP-
 
 ![Ungrouped baseline](cases/28-ungrouped-baseline.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination 'procedure', which the bundle's entry line links it to
@@ -714,11 +826,13 @@ W_ENTRY_DESTINATION: the entry reference 'Rules/HTTP-Checks' resolves to the des
   resolved: ruleshttp-checks
 ```
 
-## Case 29-multiple-groups
+## Case 29: Multiple Groups
 
 Distinct slugs contribute independent groups.
 
-Area: Group combinations · Exit status: 0
+Area: Group combinations
+
+### Command
 
 ```bash
 prosiform --root sources/29-multiple-groups/my-skill --group rules:2 --group checks:1 rules/common.md checks/final.md
@@ -728,7 +842,9 @@ prosiform --root sources/29-multiple-groups/my-skill --group rules:2 --group che
 
 ![Multiple groups](cases/29-multiple-groups.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Final' resolves to the destination 'final', which the bundle's entry line links it to
@@ -739,11 +855,13 @@ W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'c
   resolved: common
 ```
 
-## Case 30-nested-precedence
+## Case 30: Nested Precedence
 
 The deepest named directory owns its member; both groups have content.
 
-Area: Group combinations · Exit status: 0
+Area: Group combinations
+
+### Command
 
 ```bash
 prosiform --root sources/30-nested-precedence/my-skill --group rules:2 --group visual:1 rules/plain.md rules/visual/blue.md
@@ -753,7 +871,9 @@ prosiform --root sources/30-nested-precedence/my-skill --group rules:2 --group v
 
 ![Nested precedence](cases/30-nested-precedence.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'plain', which the bundle's entry line links it to
@@ -764,11 +884,13 @@ W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blu
   resolved: blue
 ```
 
-## Case 31-repeated-directory-names
+## Case 31: Repeated Directory Names
 
 One slug groups matching directories in separate branches.
 
-Area: Group combinations · Exit status: 0
+Area: Group combinations
+
+### Command
 
 ```bash
 prosiform --root sources/31-repeated-directory-names/my-skill --group rules:2 a/rules/blue.md b/rules/red.md
@@ -778,7 +900,9 @@ prosiform --root sources/31-repeated-directory-names/my-skill --group rules:2 a/
 
 ![Repeated directory names](cases/31-repeated-directory-names.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
@@ -789,11 +913,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
   resolved: red
 ```
 
-## Case 32-unmatched-group
+## Case 32: Unmatched Group
 
 An existing directory with no reached members warns while the selected document compiles.
 
-Area: Group combinations · Exit status: 0
+Area: Group combinations
+
+### Command
 
 ```bash
 prosiform --root sources/32-unmatched-group/my-skill --group rules:2 procedure.md
@@ -803,7 +929,9 @@ prosiform --root sources/32-unmatched-group/my-skill --group rules:2 procedure.m
 
 ![Unmatched group](cases/32-unmatched-group.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 0
 
 ```text
 W_EMPTY_GROUP_RULE: the grouping rule for 'rules' arranges nothing, because the closure carries no document under a directory of that slug
@@ -812,11 +940,13 @@ W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination
   resolved: procedure
 ```
 
-## Case 33-missing-depth
+## Case 33: Missing Depth
 
 A folder-only group argument is invalid usage and emits no bundle.
 
-Area: Rejected commands/output · Exit status: 2
+Area: Rejected commands/output
+
+### Command
 
 ```bash
 prosiform --root sources/33-missing-depth/my-skill --group rules rules/plain.md
@@ -826,18 +956,22 @@ prosiform --root sources/33-missing-depth/my-skill --group rules rules/plain.md
 
 ![Missing depth](cases/33-missing-depth.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 2
 
 ```text
 E_INVALID_GROUP_RULE: the grouping rule 'rules' is not a directory slug and a depth separated by a colon
   remedy: run prosiform --help for usage
 ```
 
-## Case 34-invalid-depth
+## Case 34: Invalid Depth
 
 A depth outside one through six is invalid usage.
 
-Area: Rejected commands/output · Exit status: 2
+Area: Rejected commands/output
+
+### Command
 
 ```bash
 prosiform --root sources/34-invalid-depth/my-skill --group rules:7 rules/plain.md
@@ -847,18 +981,22 @@ prosiform --root sources/34-invalid-depth/my-skill --group rules:7 rules/plain.m
 
 ![Invalid depth](cases/34-invalid-depth.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 2
 
 ```text
 E_INVALID_GROUP_RULE: the grouping rule 'rules:7' names depth 7, which is outside 1 through 6
   remedy: run prosiform --help for usage
 ```
 
-## Case 35-duplicate-slug
+## Case 35: Duplicate Slug
 
 A slug may be declared only once, even with different depths.
 
-Area: Rejected commands/output · Exit status: 2
+Area: Rejected commands/output
+
+### Command
 
 ```bash
 prosiform --root sources/35-duplicate-slug/my-skill --group rules:1 --group rules:2 rules/plain.md
@@ -868,18 +1006,22 @@ prosiform --root sources/35-duplicate-slug/my-skill --group rules:1 --group rule
 
 ![Duplicate slug](cases/35-duplicate-slug.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 2
 
 ```text
 E_INVALID_GROUP_RULE: the grouping rule 'rules:2' names 'rules', which another rule already names
   remedy: run prosiform --help for usage
 ```
 
-## Case 36-heading-overflow
+## Case 36: Heading Overflow
 
 A carried heading that would exceed H6 prevents publication.
 
-Area: Rejected commands/output · Exit status: 1
+Area: Rejected commands/output
+
+### Command
 
 ```bash
 prosiform --root sources/36-heading-overflow/my-skill --group rules:2 rules/deep.md
@@ -889,7 +1031,9 @@ prosiform --root sources/36-heading-overflow/my-skill --group rules:2 rules/deep
 
 ![Heading overflow](cases/36-heading-overflow.svg)
 
-### Diagnostics (stderr)
+### Diagnostics
+
+Exit status: 1
 
 ```text
 E_HEADING_DEPTH_OVERFLOW: 'rules/deep.md' emits the heading 'Too deep' at level 8, which is beyond H6

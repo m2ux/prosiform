@@ -20,6 +20,14 @@ TEXT, MUTED, LINK, AMBER = '#e6edf3', '#b1c6df', '#58a6ff', '#e3b341'
 REVISION = '08a8c0317924e69d5377464ee6961bbc948be85b'
 
 
+def case_heading(case):
+    return 'Case '+str(int(case['id'].split('-', 1)[0]))+': '+case['title'].title()
+
+
+def case_anchor(case):
+    return case_heading(case).lower().replace(':', '').replace(' ', '-')
+
+
 def txt(x, y, value, size=20, color=TEXT, weight=400):
     return f'<text x="{x}" y="{y}" font-size="{size}" fill="{color}" font-weight="{weight}">{html.escape(value)}</text>'
 
@@ -60,7 +68,7 @@ def card(x,y,width,title,body,output=False):
 def svg(case):
     blocks=[]
     command='prosiform --root sources/'+case['id']+'/my-skill '+shlex.join(case['args'])
-    header=[txt(32,48,case['id']+' · '+case['title'],29),txt(32,90,'ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review',20,AMBER)]
+    header=[txt(32,48,case_heading(case),29),txt(32,90,'ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review',20,AMBER)]
     y=126
     for part in textwrap.wrap(command,132,break_long_words=False):
         header.append(txt(32,y,part,20,LINK));y+=30
@@ -91,7 +99,7 @@ def svg(case):
         block,h=card(466,at,690,path,(HERE/'sources'/case['id']/'my-skill'/path).read_text())
         blocks.append(block);at+=h+22
     expected = case['stdout'] or 'No bundle published.'
-    outblock,outh=card(1230,top,880,'Compiler output · exit '+str(case['actual_exit']),expected,True)
+    outblock,outh=card(1230,top,880,'Compiler output',expected,True)
     blocks.append(outblock)
     middle=top+100
     blocks.append(f'<path d="M1172 {middle} H1190 V{middle-12} L1218 {middle+16} L1190 {middle+44} V{middle+32} H1172Z" fill="{LINK}"/>')
@@ -118,7 +126,7 @@ def main():
               'Each diagram shows its participating source files and complete bundle output, including the entry preamble. Diagnostics appear in a separate subsection beneath each diagram when present. Deferred targets are shown as inputs but contribute no body. Blue text indicates links; amber text indicates deferred links. Exact destinations are in the adjacent Markdown.', '',
               '[Coverage and reproduction](README.md) · [Case definitions](cases.json) · [Run records](runs.json)', '', '## Contents', '']
     for case in cases:
-        review.append('- ['+case['id']+': '+case['title']+'](#case-'+case['id']+')')
+        review.append('- ['+case_heading(case)+'](#'+case_anchor(case)+')')
     for case in cases:
         root = 'sources/'+case['id']+'/my-skill'
         command = [str(args.compiler.resolve()), '--root', root, *case['args']]
@@ -142,11 +150,12 @@ def main():
         stem.with_suffix('.command.txt').write_text(display+'\n')
         records.append(dict(case=case['id'],command=display,exit_code=run.returncode,stdout_sha256=hashlib.sha256(run.stdout.encode()).hexdigest(),stderr_sha256=hashlib.sha256(run.stderr.encode()).hexdigest()))
         rel = 'cases/'+case['id']
-        review.extend(['','## Case '+case['id'],'',case['focus'],'','Area: '+case['area']+' · Exit status: '+str(run.returncode),'',fence+'bash',display,fence,'',
+        review.extend(['','## '+case_heading(case),'',case['focus'],'','Area: '+case['area'],'','### Command','',fence+'bash',display,fence,'',
                        '[Open SVG]('+rel+'.svg) · [Exact stdout]('+rel+'.stdout.md) · [Diagnostics]('+rel+'.stderr.txt) · [Contents](#contents)','',
                        '!['+case['title']+']('+rel+'.svg)'])
+        review.extend(['', '### Diagnostics', '', 'Exit status: '+str(run.returncode)])
         if run.stderr:
-            review.extend(['', '### Diagnostics (stderr)', '', fence+'text', run.stderr.rstrip(), fence])
+            review.extend(['', fence+'text', run.stderr.rstrip(), fence])
     (HERE/'REVIEW.md').write_text('\n'.join(review)+'\n')
     (HERE/'runs.json').write_text(json.dumps(dict(compiler_revision=revision,cases=records),indent=2)+'\n')
     hashes = {str(p.relative_to(HERE)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((HERE/'sources').rglob('*.md'))}
@@ -159,7 +168,7 @@ def main():
         readme.append('| '+area+' | '+str(sum(c['area']==area for c in cases))+' |')
     readme += ['| **Total** | **36** |','','## Case index','','| Case | Review focus |','| --- | --- |']
     for case in cases:
-        readme.append('| ['+case['id']+'](cases/'+case['id']+'.svg) | '+case['focus']+' |')
+        readme.append('| ['+case_heading(case)+'](cases/'+case['id']+'.svg) | '+case['focus']+' |')
     readme += ['','## Sources and evidence','',
                'Each case has an isolated my-skill source tree under sources/. These small authored examples isolate the approved behaviors; they are not copies of the full example skill. The source-sha256.json manifest pins every input. Cases 26 and 27 include deferred target files for validation without including their contents in the bundle.','',
                'The SVG layout derives from the [original visual validation renderer](../2026-10-22-my-skill-visual-validation/render.py). Images display observed bundle output. Diagnostics appear beneath each image in a separate review subsection when present; complete stdout and stderr are also stored beside each image. They support review of current behavior, not independent proof that every requirement is correct.','',
