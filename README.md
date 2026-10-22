@@ -27,9 +27,7 @@ Leaving retrieval to the agent costs:
 
 ### How It Works
 
-#### Compile shared context
-
-Run these diagram examples from `example/`, using [my-skill](example/my-skill/SKILL.md).
+Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
 prosiform --root my-skill \
