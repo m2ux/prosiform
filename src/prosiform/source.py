@@ -48,10 +48,7 @@ sequence of headings a bundle emits.
 Every heading the profile recognizes is indexed, a container-nested one
 included: eligibility to be selected is a later decision, and a heading
 a container carries is one a renderer reading the bundle indexes beside
-the rest. The first of them is read on its own as well, because a
-document opening on a top-level heading of its own may be opening on a
-generated file heading, and what that heading's text names is the whole
-of the signal a caller has.
+the rest.
 
 A source is also recorded as the file it was read from: the canonical
 path that read arrived at, and a hash of the bytes it held. The pair is
@@ -356,26 +353,6 @@ def headed(opening: Token, inline: Token) -> Heading:
 def index(tokens: Sequence[Token]) -> tuple[Heading, ...]:
     """Every heading one complete source document carries, in source order."""
     return tuple(headed(opening, inline) for opening, inline in headings(tokens))
-
-
-def opening_heading(tokens: Sequence[Token]) -> Heading | None:
-    """The document-level H1 a source's first heading is, where it is one.
-
-    A file heading is a document's own first heading, written at the
-    top level. A first heading deeper than that, and a first heading a
-    container carries, each leave the document opening on none, and a
-    heading-like line inside code is no heading at all, so the parser
-    yields nothing here to read.
-    """
-    first = next(headings(tokens), None)
-    if first is None:
-        return None
-    opening, inline = first
-    if level(opening) != TOP_LEVEL:
-        return None
-    if not any(opening is region for region in regions(tokens)):
-        return None
-    return headed(opening, inline)
 
 
 def regions(tokens: Sequence[Token]) -> Iterator[Token]:

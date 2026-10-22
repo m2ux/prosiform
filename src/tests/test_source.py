@@ -39,7 +39,6 @@ from prosiform.source import (
     lines,
     nesting,
     occurrences,
-    opening_heading,
     regions,
     section,
     slug,
@@ -564,37 +563,6 @@ def test_a_container_and_what_it_holds_are_within_one_region() -> None:
     held = [token.type for token in within(tokens, chosen)]
     assert "blockquote_open" in held
     assert "list_item_open" in held
-
-
-def test_a_document_opening_on_a_top_level_heading_names_it() -> None:
-    first = opening_heading(parse("# docs/guide\n\nBody.\n\n# Later\n"))
-    assert first is not None
-    assert first.text == "docs/guide"
-    assert first.line == 1
-
-
-def test_a_document_whose_first_heading_is_deeper_opens_on_none() -> None:
-    assert opening_heading(parse("## Guide\n\nBody.\n\n# Later\n")) is None
-
-
-def test_a_top_level_heading_a_container_carries_opens_no_document() -> None:
-    assert opening_heading(parse("> # Guide\n\nBody.\n")) is None
-
-
-def test_a_document_carrying_no_heading_opens_on_none() -> None:
-    assert opening_heading(parse("Body with no heading.\n")) is None
-
-
-def test_a_heading_the_document_reaches_after_prose_is_still_its_first() -> None:
-    first = opening_heading(parse("An entry line.\n\n# notes\n\nBody.\n"))
-    assert first is not None
-    assert first.text == "notes"
-    assert first.line == 3
-
-
-def test_a_heading_like_line_inside_code_is_no_heading() -> None:
-    assert opening_heading(parse("    # notes\n")) is None
-    assert opening_heading(parse("~~~text\n# notes\n~~~\n")) is None
 
 
 def test_a_content_hash_is_taken_over_the_bytes_the_file_held() -> None:

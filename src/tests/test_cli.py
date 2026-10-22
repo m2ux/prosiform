@@ -1960,3 +1960,58 @@ def test_a_budget_spent_on_the_last_valid_reference_bundles_it(root: Path) -> No
     assert run.status == SUCCESS
     assert "The plan." in run.stdout
     assert PARSER_REFERENCE_LIMIT not in run.stderr
+
+
+@pytest.mark.parametrize("folder", ["docs", "DoCs"])
+@pytest.mark.parametrize("merged", [False, True])
+def test_actual_bundle_reuse_is_refused(
+    tmp_path: Path, folder: str, merged: bool
+) -> None:
+    source = tmp_path / folder / "gUiDe.md"
+    source.parent.mkdir()
+    source.write_text("# Guide\n\n## Install\n\nContent.\n")
+    grouping = ("--group", f"{folder}:2") if merged else ()
+    first = invoke("--root", str(tmp_path), *grouping, f"{folder}/gUiDe.md")
+    assert first.status == SUCCESS
+    (tmp_path / "bundle.md").write_text(first.stdout)
+    second = invoke("--root", str(tmp_path), "--diagnostics", "json", "bundle.md")
+    assert second.status == INPUT_FAILURE
+    assert second.stdout == ""
+    assert second.diagnostics()[0]["code"] == GENERATED_INPUT
+    assert second.diagnostics()[0]["source"] == "bundle.md:1"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "~~~markdown\n{declaration}\n~~~\n",
+        "> {declaration}\n\n# Notes\n",
+        "# Notes\n\n{declaration}\n",
+        "This bundle was built for prose; everything else is material it references.\n",
+        "This bundle was built for [Notes](https://example.com); "
+        "everything else is material it references.\n",
+    ],
+)
+def test_authored_declaration_examples_bundle(tmp_path: Path, text: str) -> None:
+    declaration = (
+        "This bundle was built for [Notes](#notes); "
+        "everything else is material it references."
+    )
+    (tmp_path / "notes.md").write_text(text.format(declaration=declaration))
+    result = invoke("--root", str(tmp_path), "notes.md")
+    assert result.status == SUCCESS
+
+
+def test_generated_input_reports_location_after_frontmatter(tmp_path: Path) -> None:
+    (tmp_path / "bundle.md").write_text(
+        "---\ntitle: Bundle\n---\n\n"
+        "This bundle was built for [Notes](#notes); "
+        "everything else is material it references.\n"
+        "\n# Notes\n\n## Findings\n\nContent.\n"
+    )
+    result = invoke(
+        "--root", str(tmp_path), "--diagnostics", "json", "bundle.md#findings"
+    )
+    assert result.status == INPUT_FAILURE
+    assert result.diagnostics()[0]["code"] == GENERATED_INPUT
+    assert result.diagnostics()[0]["source"] == "bundle.md:5"

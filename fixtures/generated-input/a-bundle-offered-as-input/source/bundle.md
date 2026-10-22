@@ -1,6 +1,6 @@
-This bundle was built for [docs/guide](#docsguide); everything else is material it references.
+This bundle was built for [Docs/Guide](#docsguide); everything else is material it references.
 
-# docs/guide
+# Docs/Guide
 
 ## Setting Up
 
