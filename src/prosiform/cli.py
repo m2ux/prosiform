@@ -113,14 +113,12 @@ a heading a container carries names no section and fails as an
 unsupported target; one naming no heading of its document names
 nothing, and fails as the reference to a missing target it is.
 
-A source opening on a document-level H1 whose text, with a supported
-Markdown suffix appended, names another document under the allowed
-source root is refused as output offered as input. The document being
-read is not that other document, so a title a document's own path
-spells points at itself and bundles, and a heading-like line inside
-code is no heading at all. Detection is read from the complete source,
-because what a document opens on is a fact about the file rather than
-about the regions a run selected.
+A source opening with the bundle entry declaration is refused as output
+offered as input. The first block must be a document-level paragraph with
+the declaration's opening and closing prose and at least one link, all
+links targeting nonempty local fragments. Authored headings name no output;
+code and quoted declarations are examples. Detection reads the complete
+source after transport metadata is stripped, whatever section is selected.
 
 Every source is captured at discovery as the canonical path its read
 arrived at and a hash of the bytes it held, and the whole set is
@@ -177,11 +175,12 @@ from prosiform.access import (
     Absent,
     Symlinked,
     Unreadable,
-    present,
     read_source,
 )
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
+    ENTRY_CLOSING,
+    ENTRY_OPENING,
     HEADING_DEPTH_OVERFLOW,
     MAX_LEVEL,
     Group,
@@ -275,7 +274,6 @@ from prosiform.source import (
     lines,
     nesting,
     occurrences,
-    opening_heading,
     regions,
     section,
     uses,
@@ -859,60 +857,44 @@ def refused(
     )
 
 
-def named_document(root: Path, read: str, title: str) -> str | None:
-    """The document one file heading's text names, other than the one carrying it.
-
-    A file heading is a root-relative path with its Markdown suffix
-    removed, so its text names a document when a supported suffix
-    appended to it reaches one under the allowed source root. The
-    document being read is not that document: a title a document's own
-    path spells points at itself, which is the absorbed title's worked
-    example and names no other source.
-    """
-    for suffix in SUFFIXES:
-        named = f"{title}{suffix}"
-        if named != read and present(root, named):
-            return named
-    return None
-
-
 def generated(
-    root: Path,
     path: str,
     source: Source,
     tokens: Sequence[Token],
     chain: Sequence[str],
 ) -> None:
-    """Refuse one source that opens on another document's file heading.
+    """Refuse a source whose first block declares itself a published bundle.
 
-    A published bundle carries generated file headings and rewritten
-    links, so bundling it again would rewrite generated structure as if
-    an author had written it. The file heading is the signal, and the
-    whole of it: it is no proof of origin, rewriting it defeats the
-    detection, and a bundle whose every group is merged is headed by a
-    directory slug and carries no file heading to read. What the
-    heading does establish is that this document opens by naming
-    another document under the root, which is what output read back as
-    input does.
-
-    The reading is of the complete source, because what a document
-    opens on is a fact about the file rather than about the regions a
-    run selected.
+    The entry declaration is a reserved output convention, independent of
+    path spelling and group kind. Rewriting it defeats detection; an authored
+    declaration with the same form is detected as well. Parsing keeps code
+    and quoted examples outside the document-level declaration.
     """
-    first = opening_heading(tokens)
-    if first is None:
+    if len(tokens) < 3 or tokens[0].type != "paragraph_open":
         return
-    named = named_document(root, path, first.text)
-    if named is None:
+    first = tokens[1]
+    if first.type != "inline" or first.map is None:
+        return
+    if not (
+        first.content.startswith(ENTRY_OPENING)
+        and first.content.endswith(ENTRY_CLOSING)
+    ):
+        return
+    links = [token for token in first.children or () if token.type == "link_open"]
+    if not links or any(
+        not isinstance(href := token.attrGet("href"), str)
+        or not href.startswith("#")
+        or len(href) == 1
+        for token in links
+    ):
         return
     raise input_failure(
-        f"{path!r} opens on the file heading {first.text!r}, which names the "
-        f"document {named!r} under the allowed source root, so it is output "
+        f"{path!r} opens with the bundle entry declaration, so it is output "
         f"offered as input",
         code=GENERATED_INPUT,
         remedy="bundle the sources the document was built from",
-        reference=first.text,
-        source=location(path, source.line(first.line)),
+        reference=first.content,
+        source=location(path, source.line(first.map[0] + 1)),
         chain=chain,
     )
 
@@ -1334,7 +1316,7 @@ def traverse(
                 raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
             limits.hold(INPUT_BYTES, total)
-            generated(root, one.path, source, tokens, one.chain)
+            generated(one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
