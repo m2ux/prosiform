@@ -50,7 +50,7 @@ for name in ['invocation.md', 'example/README.md']:
 
 ns = {'s': 'http://www.w3.org/2000/svg'}
 expected = {'compilation.svg': ['Procedure', 'Rules/Agents', 'Rules/Common', 'Tips'], 'agent-rules.svg': ['Rules/Agents', 'Rules/Codex', 'Rules/Claude']}
-retained = root.parents[1] / '.engineering/artifacts/planning/2026-10-21-readme-compilation-diagram'
+retained = Path(__file__).resolve().parent.parent / '2026-10-21-readme-compilation-diagram'
 for name, headings in expected.items():
     svg = root / 'docs/images' / name
     assert svg.read_bytes() == (retained / name).read_bytes()

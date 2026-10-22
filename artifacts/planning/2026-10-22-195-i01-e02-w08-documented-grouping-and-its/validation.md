@@ -41,4 +41,6 @@ Passed [Checks](https://github.com/m2ux/prosiform/actions/runs/39740025573/job/1
 
 ## Delivery verification
 
-Pending merge. Auto-close was confirmed disabled by the user. Actual Development-field access remains unavailable; the user authorized proceeding through the recorded issue and PR links. W08 has no task issue and its task PR needs no Development relation. Epic review #198 stays draft.
+PR #211 merged into i01/e02/main as aea9a90f5ba1b83b4f27cefe985ff68073e25b59. All documented-command, excerpt and diagram checks passed again at that merged revision; AC6 and W08 were then marked complete. Epic #195 is In Review and remains open. The updated review #198 cites every task merge and remains draft. Auto-close was confirmed disabled by the user. Actual Development-field access remains unavailable; the user authorized proceeding through the recorded issue and PR links. W08 has no task issue and its task PR needs no Development relation. Epic review #198 stays draft.
+
+Target branch readback showed protected=false and protection.enabled=false; both detailed protection APIs reported the private-repository plan restriction. No review requirement was active. Checks passed at exact task head 2697757fcf6f2d96ee4bd182d8b02839c073ed8c, mergeability was clean, and the merge request specified that head. Historical coverage disagreements on #197/AC2 and #201/AC3 remain recorded; neither affects W08/AC6.
