@@ -68,13 +68,13 @@ Each diagram shows its participating source files and bundle body. The opening c
 
 Members sit directly beneath Rules when no sections are pooled.
 
+![Plain content](cases/01-plain-content.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/01-plain-content/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Plain content](cases/01-plain-content.svg)
 
 ### Entry Points
 
@@ -97,13 +97,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Overview holds preambles beside the pooled Style section.
 
+![Preamble and sections](cases/02-preamble-and-sections.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/02-preamble-and-sections/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Preamble and sections](cases/02-preamble-and-sections.svg)
 
 ### Entry Points
 
@@ -126,13 +126,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 A leading own H1 is represented once by its member heading.
 
+![Own title absorption](cases/03-own-title-absorption.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/03-own-title-absorption/my-skill --group rules:2 rules/identity.md
 ```
-
-![Own title absorption](cases/03-own-title-absorption.svg)
 
 ### Entry Points
 
@@ -152,13 +152,13 @@ W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 
 
 An authored title different from the filename survives beneath the member.
 
+![Different title](cases/04-different-title.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/04-different-title/my-skill --group rules:2 rules/other-title.md
 ```
-
-![Different title](cases/04-different-title.svg)
 
 ### Entry Points
 
@@ -178,13 +178,13 @@ W_ENTRY_DESTINATION: the entry reference 'Other Title' resolves to the destinati
 
 The first own-name H1 is absorbed even when paragraph content precedes it; both paragraphs survive.
 
+![Later title](cases/05-later-title.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/05-later-title/my-skill --group rules:2 rules/later-title.md
 ```
-
-![Later title](cases/05-later-title.svg)
 
 ### Entry Points
 
@@ -204,13 +204,13 @@ W_ENTRY_DESTINATION: the entry reference 'Later Title' resolves to the destinati
 
 Heading-only sections contribute visible structure.
 
+![Headings only](cases/06-headings-only.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/06-headings-only/my-skill --group rules:2 rules/outline.md
 ```
-
-![Headings only](cases/06-headings-only.svg)
 
 ### Entry Points
 
@@ -230,13 +230,13 @@ W_ENTRY_DESTINATION: the entry reference 'First' resolves to the destination 'fi
 
 Absorbing the only title preserves a named member.
 
+![Title only](cases/07-title-only.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/07-title-only/my-skill --group rules:2 rules/identity.md
 ```
-
-![Title only](cases/07-title-only.svg)
 
 ### Entry Points
 
@@ -256,13 +256,13 @@ W_ENTRY_DESTINATION: the entry reference 'Identity' resolves to the destination 
 
 An empty document still has a member destination.
 
+![Empty member](cases/08-empty-member.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/08-empty-member/my-skill --group rules:2 rules/empty.md
 ```
-
-![Empty member](cases/08-empty-member.svg)
 
 ### Entry Points
 
@@ -282,13 +282,13 @@ W_ENTRY_DESTINATION: the entry reference 'Empty' resolves to the destination 'em
 
 Unique section names need no contributor wrappers.
 
+![Unique sections](cases/09-unique-sections.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/09-unique-sections/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Unique sections](cases/09-unique-sections.svg)
 
 ### Entry Points
 
@@ -311,13 +311,13 @@ W_ENTRY_DESTINATION: the entry reference 'Workflow' resolves to the destination 
 
 A shared heading contains a named contribution from each member.
 
+![Shared sections](cases/10-shared-sections.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/10-shared-sections/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Shared sections](cases/10-shared-sections.svg)
 
 ### Entry Points
 
@@ -340,13 +340,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Shared and single-contributor sections coexist.
 
+![Mixed sections](cases/11-mixed-sections.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/11-mixed-sections/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Mixed sections](cases/11-mixed-sections.svg)
 
 ### Entry Points
 
@@ -369,13 +369,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Body-only contributions retain member identity at depth one.
 
+![Body only contributions](cases/12-body-only-contributions.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/12-body-only-contributions/my-skill --group rules:1 rules/blue.md rules/red.md
 ```
-
-![Body only contributions](cases/12-body-only-contributions.svg)
 
 ### Entry Points
 
@@ -398,13 +398,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Each contributor retains its own child section beneath the pooled heading.
 
+![Nested contributions](cases/13-nested-contributions.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/13-nested-contributions/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Nested contributions](cases/13-nested-contributions.svg)
 
 ### Entry Points
 
@@ -427,13 +427,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 A shared heading with empty contributions still names both contributors.
 
+![Empty contributions](cases/14-empty-contributions.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/14-empty-contributions/my-skill --group rules:2 rules/blue.md rules/red.md
 ```
-
-![Empty contributions](cases/14-empty-contributions.svg)
 
 ### Entry Points
 
@@ -456,13 +456,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 Generated names title-case separators and preserve HTTP.
 
+![Simple names](cases/15-simple-names.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-checks.md rules/quick_start.md
 ```
-
-![Simple names](cases/15-simple-names.svg)
 
 ### Entry Points
 
@@ -485,13 +485,13 @@ W_ENTRY_DESTINATION: the entry reference 'Quick Start' resolves to the destinati
 
 A unique nested member needs only its filename stem.
 
+![Nested names](cases/16-nested-names.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/16-nested-names/my-skill --group rules:2 rules/nested/deep-note.md rules/plain.md
 ```
-
-![Nested names](cases/16-nested-names.svg)
 
 ### Entry Points
 
@@ -514,13 +514,13 @@ W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'pl
 
 Directory suffixes distinguish identical stems.
 
+![Stem clashes](cases/17-stem-clashes.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/17-stem-clashes/my-skill --group rules:2 rules/api/common.md rules/web/common.md
 ```
-
-![Stem clashes](cases/17-stem-clashes.svg)
 
 ### Entry Points
 
@@ -543,13 +543,13 @@ W_ENTRY_DESTINATION: the entry reference 'Web Common' resolves to the destinatio
 
 Qualification reaches the directory segment that distinguishes members.
 
+![Deep clashes](cases/18-deep-clashes.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/18-deep-clashes/my-skill --group rules:2 rules/team-a/web/shared.md rules/team-b/web/shared.md
 ```
-
-![Deep clashes](cases/18-deep-clashes.svg)
 
 ### Entry Points
 
@@ -572,13 +572,13 @@ W_ENTRY_DESTINATION: the entry reference 'Team B Web Shared' resolves to the des
 
 Names remain distinct after hyphens and underscores become spaces.
 
+![Formatting clashes](cases/19-formatting-clashes.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/19-formatting-clashes/my-skill --group rules:2 rules/a/one-two.md rules/b/one_two.md
 ```
-
-![Formatting clashes](cases/19-formatting-clashes.svg)
 
 ### Entry Points
 
@@ -601,13 +601,13 @@ W_ENTRY_DESTINATION: the entry reference 'B One Two' resolves to the destination
 
 Member names omit the redundant group kind when names stay distinct.
 
+![Group suffixes](cases/20-group-suffixes.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/20-group-suffixes/my-skill --group modes:2 modes/plan-mode.md modes/review-mode.md
 ```
-
-![Group suffixes](cases/20-group-suffixes.svg)
 
 ### Entry Points
 
@@ -630,13 +630,13 @@ W_ENTRY_DESTINATION: the entry reference 'Review' resolves to the destination 'r
 
 Overview and pooled variants share the group-wide member names, including a noncontributor.
 
+![Consistent variant names](cases/21-consistent-variant-names.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/21-consistent-variant-names/my-skill --group rules:2 rules/a/common.md rules/b/common.md rules/c/common.md
 ```
-
-![Consistent variant names](cases/21-consistent-variant-names.svg)
 
 ### Entry Points
 
@@ -662,13 +662,13 @@ W_ENTRY_DESTINATION: the entry reference 'C Common' resolves to the destination 
 
 Whole-document links reach distinct contributor headings.
 
+![Whole member links](cases/22-whole-member-links.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md
 ```
-
-![Whole member links](cases/22-whole-member-links.svg)
 
 ### Entry Points
 
@@ -688,13 +688,13 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
 
 References to each source Style section reach its own variant.
 
+![Pooled section links](cases/23-pooled-section-links.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/23-pooled-section-links/my-skill --group rules:2 route.md
 ```
-
-![Pooled section links](cases/23-pooled-section-links.svg)
 
 ### Entry Points
 
@@ -714,13 +714,13 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
 
 A link to an absorbed title reaches the member heading.
 
+![Absorbed title links](cases/24-absorbed-title-links.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/24-absorbed-title-links/my-skill --group rules:2 route.md
 ```
-
-![Absorbed title links](cases/24-absorbed-title-links.svg)
 
 ### Entry Points
 
@@ -740,13 +740,13 @@ W_ENTRY_DESTINATION: the entry reference 'Route' resolves to the destination 'ro
 
 Selecting one section preserves its outline and excludes its sibling body.
 
+![Selected sections](cases/25-selected-sections.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/25-selected-sections/my-skill --group rules:2 'rules/guide.md#selected'
 ```
-
-![Selected sections](cases/25-selected-sections.svg)
 
 ### Entry Points
 
@@ -766,13 +766,13 @@ W_ENTRY_DESTINATION: the entry reference 'Selected' resolves to the destination 
 
 Deferred targets exist but contribute no body.
 
+![Deferred links](cases/26-deferred-links.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/26-deferred-links/my-skill --group rules:2 rules/common.md
 ```
-
-![Deferred links](cases/26-deferred-links.svg)
 
 ### Entry Points
 
@@ -792,13 +792,13 @@ W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'c
 
 Selecting Codex includes its common rules and leaves Claude deferred.
 
+![Harness selection](cases/27-harness-selection.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/27-harness-selection/my-skill --group rules:2 rules/codex.md
 ```
-
-![Harness selection](cases/27-harness-selection.svg)
 
 ### Entry Points
 
@@ -818,13 +818,13 @@ W_ENTRY_DESTINATION: the entry reference 'Codex' resolves to the destination 'co
 
 Ungrouped generated names retain paths and authored heading spelling.
 
+![Ungrouped baseline](cases/28-ungrouped-baseline.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/28-ungrouped-baseline/my-skill procedure.md rules/HTTP-checks.md
 ```
-
-![Ungrouped baseline](cases/28-ungrouped-baseline.svg)
 
 ### Entry Points
 
@@ -847,13 +847,13 @@ W_ENTRY_DESTINATION: the entry reference 'Rules/HTTP-Checks' resolves to the des
 
 Distinct slugs contribute independent groups.
 
+![Multiple groups](cases/29-multiple-groups.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/29-multiple-groups/my-skill --group rules:2 --group checks:1 rules/common.md checks/final.md
 ```
-
-![Multiple groups](cases/29-multiple-groups.svg)
 
 ### Entry Points
 
@@ -876,13 +876,13 @@ W_ENTRY_DESTINATION: the entry reference 'Common' resolves to the destination 'c
 
 The deepest named directory owns its member; both groups have content.
 
+![Nested precedence](cases/30-nested-precedence.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/30-nested-precedence/my-skill --group rules:2 --group visual:1 rules/plain.md rules/visual/blue.md
 ```
-
-![Nested precedence](cases/30-nested-precedence.svg)
 
 ### Entry Points
 
@@ -905,13 +905,13 @@ W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blu
 
 One slug groups matching directories in separate branches.
 
+![Repeated directory names](cases/31-repeated-directory-names.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/31-repeated-directory-names/my-skill --group rules:2 a/rules/blue.md b/rules/red.md
 ```
-
-![Repeated directory names](cases/31-repeated-directory-names.svg)
 
 ### Entry Points
 
@@ -934,13 +934,13 @@ W_ENTRY_DESTINATION: the entry reference 'Red' resolves to the destination 'red'
 
 An existing directory with no reached members warns while the selected document compiles.
 
+![Unmatched group](cases/32-unmatched-group.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/32-unmatched-group/my-skill --group rules:2 procedure.md
 ```
-
-![Unmatched group](cases/32-unmatched-group.svg)
 
 ### Entry Points
 
@@ -961,13 +961,13 @@ W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination
 
 A folder-only group argument is invalid usage and emits no bundle.
 
+![Missing depth](cases/33-missing-depth.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/33-missing-depth/my-skill --group rules rules/plain.md
 ```
-
-![Missing depth](cases/33-missing-depth.svg)
 
 ### Diagnostics
 
@@ -982,13 +982,13 @@ E_INVALID_GROUP_RULE: the grouping rule 'rules' is not a directory slug and a de
 
 A depth outside one through six is invalid usage.
 
+![Invalid depth](cases/34-invalid-depth.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/34-invalid-depth/my-skill --group rules:7 rules/plain.md
 ```
-
-![Invalid depth](cases/34-invalid-depth.svg)
 
 ### Diagnostics
 
@@ -1003,13 +1003,13 @@ E_INVALID_GROUP_RULE: the grouping rule 'rules:7' names depth 7, which is outsid
 
 A slug may be declared only once, even with different depths.
 
+![Duplicate slug](cases/35-duplicate-slug.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/35-duplicate-slug/my-skill --group rules:1 --group rules:2 rules/plain.md
 ```
-
-![Duplicate slug](cases/35-duplicate-slug.svg)
 
 ### Diagnostics
 
@@ -1024,13 +1024,13 @@ E_INVALID_GROUP_RULE: the grouping rule 'rules:2' names 'rules', which another r
 
 A carried heading that would exceed H6 prevents publication.
 
+![Heading overflow](cases/36-heading-overflow.svg)
+
 ### Command
 
 ```bash
 prosiform --root sources/36-heading-overflow/my-skill --group rules:2 rules/deep.md
 ```
-
-![Heading overflow](cases/36-heading-overflow.svg)
 
 ### Diagnostics
 

@@ -159,8 +159,8 @@ def main():
     fence = chr(96)*3
     review = ['# '+document.name, '', 'Compiler: '+branch_name+' '+revision, '',
               'Source files opened by the compiler appear beside the bundle body. The opening compiler paragraph appears under Entry Points, with links into the exact stdout file. Opened files can include deferred targets; their presence does not imply their content is bundled. Images simplify Markdown presentation; the stdout file preserves exact content and link destinations.', '',
-              '### Command', '', fence+'bash', command, fence, '',
-              '![Source documents and compiled bundle]('+destinations['.svg'].name+')']
+              '![Source documents and compiled bundle]('+destinations['.svg'].name+')', '',
+              '### Command', '', fence+'bash', command, fence]
     entry_points, _ = split_entry_points(body)
     if entry_points:
         review.extend(['', '### Entry Points', '', entry_points.replace('](#', ']('+destinations['.stdout.md'].name+'#')])
