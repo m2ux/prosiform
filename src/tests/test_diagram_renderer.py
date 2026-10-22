@@ -191,3 +191,21 @@ def test_panel_section_levels_are_independent() -> None:
             )
             assert ("Input Link" in diagram) == (input_level != 2)
             assert ("Compiled Link" in diagram) == (compiled_level != 2)
+
+
+def test_body_content_is_indented_beyond_its_containing_heading() -> None:
+    module = renderer()
+    body = (
+        "Preamble\n#### Verify Criteria\n\n[Readiness](#ready)\n"
+        "Body text\n#### Tick Criteria\n[Tick State](#tick)\n"
+        "## Next Area\n[Next Link](#next)\n"
+    )
+    markup, _ = module.card(0, 0, 880, "Compiler output", body, True)
+    root = ElementTree.fromstring("<svg>" + markup + "</svg>")
+    positions = {node.text: float(node.attrib["x"]) for node in root.iter("text")}
+    assert positions["Readiness"] == positions["Verify Criteria"] + 12
+    assert positions["Body text"] == positions["Readiness"]
+    assert positions["Tick State"] == positions["Tick Criteria"] + 12
+    assert positions["Next Link"] == positions["Next Area"] + 12
+    assert positions["Next Link"] < positions["Readiness"]
+    assert positions["Preamble"] < positions["Next Area"]

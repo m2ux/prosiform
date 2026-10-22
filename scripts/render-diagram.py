@@ -28,17 +28,21 @@ def txt(x, y, value, size=20, color=TEXT, weight=400):
 def lines(body, width):
     """Render Markdown headings, paragraphs, lists and link labels without clipping."""
     rows = []
+    section_level = 0
     for raw in body.splitlines():
         if not raw:
-            rows.append(("", 13, 18, 0, False, False))
+            rows.append(("", 13, 18, 0, False, False, 0))
             continue
         heading = re.match(r"^(#{1,6}) (.*)", raw)
         level = len(heading[1]) if heading else 0
+        if heading:
+            section_level = level
+        indent = level if heading else section_level + 1 if section_level else 0
         value = heading[2] if heading else raw
         value = re.sub(r"\[([^]]+)\]\([^)]+\)", r"\1", value)
         value = re.sub(r"^- ", "• ", value)
         size = 30 if level == 1 else 26 if level == 2 else 23 if level else 20
-        available = max(20, int((width - 50 - level * 14) / (size * 0.62)))
+        available = max(20, int((width - 62 - indent * 12) / (size * 0.62)))
         for i, part in enumerate(
             textwrap.wrap(
                 value, available, break_long_words=False, break_on_hyphens=False
@@ -46,7 +50,15 @@ def lines(body, width):
             or [""]
         ):
             rows.append(
-                (part, size + 17, size, level, "[" in raw, i == 0 and bool(level))
+                (
+                    part,
+                    size + 17,
+                    size,
+                    level,
+                    "[" in raw,
+                    i == 0 and bool(level),
+                    indent,
+                )
             )
     return rows
 
@@ -61,14 +73,14 @@ def card(x, y, width, title, body, output=False):
     ]
     result.append(f'<path d="M{x} {y + 54} H{x + width}" stroke="{BORDER}"/>')
     at = y + 74
-    for value, step, size, level, islink, label in rows:
+    for value, step, size, level, islink, label, indent in rows:
         at += step
         if value:
             if label:
                 result.append(txt(x + 12, at, "H" + str(level), 11, MUTED))
             color = AMBER if "¬" in value else LINK if islink else TEXT
             result.append(
-                txt(x + 38 + level * 12, at, value, size, color, 500 if level else 400)
+                txt(x + 38 + indent * 12, at, value, size, color, 500 if level else 400)
             )
     return "\n".join(result), height
 
@@ -364,8 +376,7 @@ def main():
         "Markdown presentation; the stdout file preserves exact content and "
         "link destinations."
         + (
-            " Compact view omits body content "
-            "while retaining headings and links."
+            " Compact view omits body content while retaining headings and links."
             if options.compact
             else ""
         )

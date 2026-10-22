@@ -38,4 +38,6 @@ Each prefix produces `.svg`, `.review.md`, `.stdout.md`, `.stderr.txt`, `.comman
 
 The image header contains only the compiler branch and commit. The opening compiler paragraph appears under Entry Points in the review Markdown, alongside the command, image, exit status and diagnostics. The run record pins the compiler revision and hashes the source bytes and output.
 
+Body content and links are indented one step beyond their containing heading in both panels.
+
 The tool returns the compiler's exit status. A rejected bundle still produces review artifacts; a source file appears only if the compiler opened it. Deferred targets may be displayed without contributing content. The SVG simplifies Markdown formatting; consult `.stdout.md` for exact content and link destinations.
