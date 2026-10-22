@@ -96,7 +96,7 @@ These failures return `1` with a diagnostic naming the defect and source locatio
 Standard output contains the bundle, an informational response, or nothing. A bundle opens with links to its entry points:
 
 ```markdown
-This bundle was built for [modes/plan-mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
 ```
 
 ### Diagnostics
