@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="903" viewBox="0 0 2142 903" role="img" aria-labelledby="title desc"><title id="title">Later title</title><desc id="desc">The first own-name H1 is absorbed even when paragraph content precedes it; both paragraphs survive. Observed output from the pinned compiler.</desc><rect width="2142" height="903" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">05-later-title · Later title</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root sources/05-later-title/my-skill --group rules:2 rules/later-title.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">The first own-name H1 is absorbed even when paragraph content precedes it; both paragraphs survive.</text><rect x="32" y="208" width="410" height="203" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 262 H442" stroke="#303b49"/>
+<text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="356" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="393" font-size="20" fill="#e6edf3" font-weight="400">   └─ later-title.md</text><rect x="466" y="208" width="690" height="239" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="244" font-size="21" fill="#b1c6df" font-weight="400">rules/later-title.md</text>
+<path d="M466 262 H1156" stroke="#303b49"/>
+<text x="504" y="319" font-size="20" fill="#e6edf3" font-weight="400">Read first.</text>
+<text x="478" y="379" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="516" y="379" font-size="30" fill="#e6edf3" font-weight="500">Later Title</text>
+<text x="504" y="429" font-size="20" fill="#e6edf3" font-weight="400">Read second.</text><rect x="1230" y="208" width="880" height="630" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Compiler output · exit 0</text>
+<path d="M1230 262 H2110" stroke="#303b49"/>
+<text x="1268" y="319" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Later Title; everything else is material</text>
+<text x="1268" y="356" font-size="20" fill="#58a6ff" font-weight="400">it references.</text>
+<text x="1242" y="416" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="416" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1242" y="472" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1292" y="472" font-size="26" fill="#e6edf3" font-weight="500">Later Title</text>
+<text x="1268" y="522" font-size="20" fill="#e6edf3" font-weight="400">Read first.</text>
+<text x="1268" y="572" font-size="20" fill="#e6edf3" font-weight="400">Read second.</text>
+<text x="1268" y="635" font-size="20" fill="#e6edf3" font-weight="400">Diagnostics (stderr):</text>
+<text x="1268" y="672" font-size="20" fill="#e6edf3" font-weight="400">W_ENTRY_DESTINATION: the entry reference &#x27;Later Title&#x27; resolves to</text>
+<text x="1268" y="709" font-size="20" fill="#e6edf3" font-weight="400">the destination &#x27;later-title&#x27;, which the bundle&#x27;s entry line links</text>
+<text x="1268" y="746" font-size="20" fill="#e6edf3" font-weight="400">it to</text>
+<text x="1268" y="783" font-size="20" fill="#e6edf3" font-weight="400">  reference: Later Title</text>
+<text x="1268" y="820" font-size="20" fill="#e6edf3" font-weight="400">  resolved: later-title</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="878" font-size="17" fill="#b1c6df" font-weight="400">Full output shown. Exact Markdown, link destinations and diagnostics are in the adjacent stdout.md and stderr.txt files.</text></g></svg>

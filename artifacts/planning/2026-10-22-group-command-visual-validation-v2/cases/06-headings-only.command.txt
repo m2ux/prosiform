@@ -1,0 +1,1 @@
+prosiform --root sources/06-headings-only/my-skill --group rules:2 rules/outline.md

@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'A One Two' resolves to the destination 'a-one-two', which the bundle's entry line links it to
+  reference: A One Two
+  resolved: a-one-two
+W_ENTRY_DESTINATION: the entry reference 'B One Two' resolves to the destination 'b-one-two', which the bundle's entry line links it to
+  reference: B One Two
+  resolved: b-one-two

@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Deep Note' resolves to the destination 'deep-note', which the bundle's entry line links it to
+  reference: Deep Note
+  resolved: deep-note
+W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'plain', which the bundle's entry line links it to
+  reference: Plain
+  resolved: plain

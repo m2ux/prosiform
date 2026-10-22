@@ -1,0 +1,5 @@
+E_HEADING_DEPTH_OVERFLOW: 'rules/deep.md' emits the heading 'Too deep' at level 8, which is beyond H6
+  reference: rules/deep.md
+  source: rules/deep.md
+  chain: rules/deep.md
+  remedy: raise the heading in the source, or select a section of it

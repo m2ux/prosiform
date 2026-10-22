@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'HTTP Checks' resolves to the destination 'http-checks', which the bundle's entry line links it to
+  reference: HTTP Checks
+  resolved: http-checks
+W_ENTRY_DESTINATION: the entry reference 'Quick Start' resolves to the destination 'quick-start', which the bundle's entry line links it to
+  reference: Quick Start
+  resolved: quick-start

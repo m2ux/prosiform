@@ -1,0 +1,257 @@
+{
+  "compiler_revision": "08a8c0317924e69d5377464ee6961bbc948be85b",
+  "cases": [
+    {
+      "case": "01-plain-content",
+      "command": "prosiform --root sources/01-plain-content/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "5afbd59289246f28e9b040817aa03c4116974a9514357a7d1f309e2d82d0cbc7",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "02-preamble-and-sections",
+      "command": "prosiform --root sources/02-preamble-and-sections/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "b966cf385d62a645cae149ca3b47343dd76dc6b64cd4b5b36a98a4d68a3ad057",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "03-own-title-absorption",
+      "command": "prosiform --root sources/03-own-title-absorption/my-skill --group rules:2 rules/identity.md",
+      "exit_code": 0,
+      "stdout_sha256": "88ec458fd85e48a1c5070c35193a098cedaa503f399049ac8887f716a0acb478",
+      "stderr_sha256": "765e0b616373c3a7c49d337a89654d8f06312e69b4d92c111c3d7b83c9592f30"
+    },
+    {
+      "case": "04-different-title",
+      "command": "prosiform --root sources/04-different-title/my-skill --group rules:2 rules/other-title.md",
+      "exit_code": 0,
+      "stdout_sha256": "310349b9ca144247bad76e8dc77e23edc7020c928ecf3fe67f40021018c4dbee",
+      "stderr_sha256": "6dde5a3443e903e5a71f988a87fd80a3bb5a448d991278eb3ff6127770345159"
+    },
+    {
+      "case": "05-later-title",
+      "command": "prosiform --root sources/05-later-title/my-skill --group rules:2 rules/later-title.md",
+      "exit_code": 0,
+      "stdout_sha256": "46c119ce798f96df913106a1399989b8d123dc1c42d4a631f0dc703b7497e586",
+      "stderr_sha256": "9de209f009927a22bd919796632dcf6ec07707232b0daf06835f1dc2cfa0d6a2"
+    },
+    {
+      "case": "06-headings-only",
+      "command": "prosiform --root sources/06-headings-only/my-skill --group rules:2 rules/outline.md",
+      "exit_code": 0,
+      "stdout_sha256": "bb487d7df96de4d2463c97a65098079ddcb2a521bde1555c107e26005adb4a5a",
+      "stderr_sha256": "5d0baac0ac157fa234fe56354fd84abd7621b43546d80b597a4f6e9fc266d589"
+    },
+    {
+      "case": "07-title-only",
+      "command": "prosiform --root sources/07-title-only/my-skill --group rules:2 rules/identity.md",
+      "exit_code": 0,
+      "stdout_sha256": "31d24e105cde437154e610714fb38ca913e3cf539acc4854c3572859c92c815d",
+      "stderr_sha256": "765e0b616373c3a7c49d337a89654d8f06312e69b4d92c111c3d7b83c9592f30"
+    },
+    {
+      "case": "08-empty-member",
+      "command": "prosiform --root sources/08-empty-member/my-skill --group rules:2 rules/empty.md",
+      "exit_code": 0,
+      "stdout_sha256": "c56072016a0aa731e2ec4a1b7960ff5fee11ec34993773329c47b0710d098333",
+      "stderr_sha256": "19fc826208572be41d025d98f48727c989b3dff36438f8da807a5f483cf2c37d"
+    },
+    {
+      "case": "09-unique-sections",
+      "command": "prosiform --root sources/09-unique-sections/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "8179a62e930a15ce017e488d282df6124914d19ad2a7cd3c1436a81e917e7622",
+      "stderr_sha256": "2fcb832dc7d693a0de3eb9456610d8d344514fdd565ccc9c2a12e5acc2128425"
+    },
+    {
+      "case": "10-shared-sections",
+      "command": "prosiform --root sources/10-shared-sections/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "1be9900e5978b7d86e88d2f052c056e71f517c16ae5deb4f5ff553f86a2dc032",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "11-mixed-sections",
+      "command": "prosiform --root sources/11-mixed-sections/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "3260962140676f04281bd63070d78bac96a27c200ee9dd2d758c996beeb3e46f",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "12-body-only-contributions",
+      "command": "prosiform --root sources/12-body-only-contributions/my-skill --group rules:1 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "1be9900e5978b7d86e88d2f052c056e71f517c16ae5deb4f5ff553f86a2dc032",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "13-nested-contributions",
+      "command": "prosiform --root sources/13-nested-contributions/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "50daf39d060c338668ae9c1268088b28e2a6bd9d734ecc033f1a718136c73a81",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "14-empty-contributions",
+      "command": "prosiform --root sources/14-empty-contributions/my-skill --group rules:2 rules/blue.md rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "210fc23c43a84ad9beb19384a1320bf68504212c9a22df786d397dde0c5142c2",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "15-simple-names",
+      "command": "prosiform --root sources/15-simple-names/my-skill --group rules:2 rules/HTTP-checks.md rules/quick_start.md",
+      "exit_code": 0,
+      "stdout_sha256": "fb4e4d8224e6482a2d7b86a4ed067be8badb90f28664c8ddfe939378ef39dd92",
+      "stderr_sha256": "a74eaf3ec89c7a92a4307554fc80fd38fdf814dd286ee3ea9271bf081df4a1df"
+    },
+    {
+      "case": "16-nested-names",
+      "command": "prosiform --root sources/16-nested-names/my-skill --group rules:2 rules/nested/deep-note.md rules/plain.md",
+      "exit_code": 0,
+      "stdout_sha256": "2c284138ce9beddfa37da4bcd9a892bf99d2728bda1d06b0fd1109663e6362e2",
+      "stderr_sha256": "e17fab6b7954dcf2a66c4dd7e18c8c4e31a56ab98e74251d89afe638031e1913"
+    },
+    {
+      "case": "17-stem-clashes",
+      "command": "prosiform --root sources/17-stem-clashes/my-skill --group rules:2 rules/api/common.md rules/web/common.md",
+      "exit_code": 0,
+      "stdout_sha256": "b0f57bdbc1327a01b833f53cee66ebde0a6c53b7f81b050d0efa515099bd8b47",
+      "stderr_sha256": "281e007382c262bbfc8d7aff2652f55314c3598a0d6a8a7ce7fbb948b5cae365"
+    },
+    {
+      "case": "18-deep-clashes",
+      "command": "prosiform --root sources/18-deep-clashes/my-skill --group rules:2 rules/team-a/web/shared.md rules/team-b/web/shared.md",
+      "exit_code": 0,
+      "stdout_sha256": "762a4c9454db0bb5a0ea4bd172cb881df023de411f363eaf0ed367d8501c2a22",
+      "stderr_sha256": "9b20c796bafb22910aaa2d2830d65937416849665fd5028d980a628a313bcddf"
+    },
+    {
+      "case": "19-formatting-clashes",
+      "command": "prosiform --root sources/19-formatting-clashes/my-skill --group rules:2 rules/a/one-two.md rules/b/one_two.md",
+      "exit_code": 0,
+      "stdout_sha256": "a12f56a222752de1baa196ad6c2a091eb85255165ad960440607b1320ccfa1ae",
+      "stderr_sha256": "88b02c38b792bed451d896fd3b23ec6d283a69e3fb064984f20fe28b3c2127b2"
+    },
+    {
+      "case": "20-group-suffixes",
+      "command": "prosiform --root sources/20-group-suffixes/my-skill --group modes:2 modes/plan-mode.md modes/review-mode.md",
+      "exit_code": 0,
+      "stdout_sha256": "1a4b763324ed480bc789a3f955157c2170520179015ac55f8c982e61973b5c83",
+      "stderr_sha256": "af232d5a91d5b8ab73fb19d9159b43b96b849355258b4692780e5f70082206dd"
+    },
+    {
+      "case": "21-consistent-variant-names",
+      "command": "prosiform --root sources/21-consistent-variant-names/my-skill --group rules:2 rules/a/common.md rules/b/common.md rules/c/common.md",
+      "exit_code": 0,
+      "stdout_sha256": "4909a454ffbc2de89cca3c99e0fbb774aa89855dc5c8dbb3ab095b1c74641a74",
+      "stderr_sha256": "2788b60fb2935d884dbe5c8c41172b21fe8128ccb24f1e2e5ee8f800f0585ab1"
+    },
+    {
+      "case": "22-whole-member-links",
+      "command": "prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md",
+      "exit_code": 0,
+      "stdout_sha256": "b943dafe422bad07dcd02230b42f24a8ee7139d79e6dee573797eba0b7fbd966",
+      "stderr_sha256": "dc86637550ad644c6beef099f9aed03bbba2c60e09a6961123ae0e74f9d4ee88"
+    },
+    {
+      "case": "23-pooled-section-links",
+      "command": "prosiform --root sources/23-pooled-section-links/my-skill --group rules:2 route.md",
+      "exit_code": 0,
+      "stdout_sha256": "29fbf46074fa4c2f6e6efd7985a6e91c1dc09d5809f868dee8309c6d360e0663",
+      "stderr_sha256": "dc86637550ad644c6beef099f9aed03bbba2c60e09a6961123ae0e74f9d4ee88"
+    },
+    {
+      "case": "24-absorbed-title-links",
+      "command": "prosiform --root sources/24-absorbed-title-links/my-skill --group rules:2 route.md",
+      "exit_code": 0,
+      "stdout_sha256": "3776880a8c38d6390f9225e437f3cdfa42920786c7b02915cf3c8f8496c52a2d",
+      "stderr_sha256": "dc86637550ad644c6beef099f9aed03bbba2c60e09a6961123ae0e74f9d4ee88"
+    },
+    {
+      "case": "25-selected-sections",
+      "command": "prosiform --root sources/25-selected-sections/my-skill --group rules:2 'rules/guide.md#selected'",
+      "exit_code": 0,
+      "stdout_sha256": "20f9e5f73ffe4d10f2a6b1996284ba08348ab542a2592a66c123fd26ad61e3f4",
+      "stderr_sha256": "dedf43093b164de31b0b81102ac52d5e90a9d15f5fe4f439e1ba4fcf6a76342f"
+    },
+    {
+      "case": "26-deferred-links",
+      "command": "prosiform --root sources/26-deferred-links/my-skill --group rules:2 rules/common.md",
+      "exit_code": 0,
+      "stdout_sha256": "a66ccaeb5176423aa5f7a91e853ba0361758d8de82f5d0cd8f4f0852b63b832a",
+      "stderr_sha256": "013b80bcf4b1111fdb51ddab5fdba4fcac5aa9ad446362f2ae3bdcce5bb28215"
+    },
+    {
+      "case": "27-harness-selection",
+      "command": "prosiform --root sources/27-harness-selection/my-skill --group rules:2 rules/codex.md",
+      "exit_code": 0,
+      "stdout_sha256": "f90b24f41ecf40a7f9cadc59f2466960075caa071a6b1f318faeb0502357f4fe",
+      "stderr_sha256": "88e5ace91247aea56233a937576da8bf5702553424a2ccb2f01536922fa859cd"
+    },
+    {
+      "case": "28-ungrouped-baseline",
+      "command": "prosiform --root sources/28-ungrouped-baseline/my-skill procedure.md rules/HTTP-checks.md",
+      "exit_code": 0,
+      "stdout_sha256": "39fd4abe0e81f3923516ea155c6a395712c863a3d6b760a891ad0705d0f03cd1",
+      "stderr_sha256": "299718cfab4a51428369a78693467aa22d613110788e3d39aab68b4b0eec2dbf"
+    },
+    {
+      "case": "29-multiple-groups",
+      "command": "prosiform --root sources/29-multiple-groups/my-skill --group rules:2 --group checks:1 rules/common.md checks/final.md",
+      "exit_code": 0,
+      "stdout_sha256": "4f1d42ab998f947ce9aa834d77bdd477acf092d2e370f9e047ced8ea58983ab9",
+      "stderr_sha256": "f3ab8b319d5b8c3f33fa1cd3503ccec7c6673f3ccd90932ca8252cca42cf0667"
+    },
+    {
+      "case": "30-nested-precedence",
+      "command": "prosiform --root sources/30-nested-precedence/my-skill --group rules:2 --group visual:1 rules/plain.md rules/visual/blue.md",
+      "exit_code": 0,
+      "stdout_sha256": "a2cce65c6f53618f6ca31e68173e7c771fd25d40989b1b8cdfcb3d5ed1062c77",
+      "stderr_sha256": "06ba3ba0d6f3ae9a28011721d1711144e97d8eb7405fd45c6e9978c24598e5fc"
+    },
+    {
+      "case": "31-repeated-directory-names",
+      "command": "prosiform --root sources/31-repeated-directory-names/my-skill --group rules:2 a/rules/blue.md b/rules/red.md",
+      "exit_code": 0,
+      "stdout_sha256": "b9c018e41d19eb1feb60256d647c25899782b99b2e8daf9e77b307daab78eae6",
+      "stderr_sha256": "f436c40ff1099c964e59dad1790b2979027e3912f81f7bdbbc1057a2c52270eb"
+    },
+    {
+      "case": "32-unmatched-group",
+      "command": "prosiform --root sources/32-unmatched-group/my-skill --group rules:2 procedure.md",
+      "exit_code": 0,
+      "stdout_sha256": "e6990f5b900156dc14745919925f6cdb2655d6a28991185c82a17b5a51855b6c",
+      "stderr_sha256": "e0544bf6b2892ef5eae4e9b1f774e40d10ec155d9c47b5648bea65faabe0f0e0"
+    },
+    {
+      "case": "33-missing-depth",
+      "command": "prosiform --root sources/33-missing-depth/my-skill --group rules rules/plain.md",
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4da215a1fb44bfb81fa058111ad46dcce3499588f9234d95ac290a6a498c115a"
+    },
+    {
+      "case": "34-invalid-depth",
+      "command": "prosiform --root sources/34-invalid-depth/my-skill --group rules:7 rules/plain.md",
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "3dcf39bfb0a31489cb06b0c4411bcd9bfac2dfc7fc07ef6f600d3c556f0305ac"
+    },
+    {
+      "case": "35-duplicate-slug",
+      "command": "prosiform --root sources/35-duplicate-slug/my-skill --group rules:1 --group rules:2 rules/plain.md",
+      "exit_code": 2,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "542404725715380519ef09a426ece25ab8feba268fbc7f21daed376145398a4b"
+    },
+    {
+      "case": "36-heading-overflow",
+      "command": "prosiform --root sources/36-heading-overflow/my-skill --group rules:2 rules/deep.md",
+      "exit_code": 1,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0059c3c0aa8d39cea4a0b08295110760a7052b024bcc6a7dc0cace3f4f11fdc0"
+    }
+  ]
+}

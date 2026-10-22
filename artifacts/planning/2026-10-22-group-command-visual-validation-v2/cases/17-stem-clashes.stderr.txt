@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Api Common' resolves to the destination 'api-common', which the bundle's entry line links it to
+  reference: Api Common
+  resolved: api-common
+W_ENTRY_DESTINATION: the entry reference 'Web Common' resolves to the destination 'web-common', which the bundle's entry line links it to
+  reference: Web Common
+  resolved: web-common

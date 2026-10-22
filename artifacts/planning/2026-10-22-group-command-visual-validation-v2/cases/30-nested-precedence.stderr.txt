@@ -1,0 +1,6 @@
+W_ENTRY_DESTINATION: the entry reference 'Plain' resolves to the destination 'plain', which the bundle's entry line links it to
+  reference: Plain
+  resolved: plain
+W_ENTRY_DESTINATION: the entry reference 'Blue' resolves to the destination 'blue', which the bundle's entry line links it to
+  reference: Blue
+  resolved: blue

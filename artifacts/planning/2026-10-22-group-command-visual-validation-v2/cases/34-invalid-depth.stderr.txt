@@ -1,0 +1,2 @@
+E_INVALID_GROUP_RULE: the grouping rule 'rules:7' names depth 7, which is outside 1 through 6
+  remedy: run prosiform --help for usage

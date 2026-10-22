@@ -1,0 +1,1 @@
+prosiform --root sources/07-title-only/my-skill --group rules:2 rules/identity.md

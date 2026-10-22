@@ -1,0 +1,5 @@
+## Style
+
+### Detail
+
+Blue detail.

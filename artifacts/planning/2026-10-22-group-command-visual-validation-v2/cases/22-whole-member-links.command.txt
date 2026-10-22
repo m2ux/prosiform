@@ -1,0 +1,1 @@
+prosiform --root sources/22-whole-member-links/my-skill --group rules:2 route.md

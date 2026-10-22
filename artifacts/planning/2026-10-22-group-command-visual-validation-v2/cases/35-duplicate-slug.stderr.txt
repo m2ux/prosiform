@@ -1,0 +1,2 @@
+E_INVALID_GROUP_RULE: the grouping rule 'rules:2' names 'rules', which another rule already names
+  remedy: run prosiform --help for usage

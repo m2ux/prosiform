@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="908" viewBox="0 0 2142 908" role="img" aria-labelledby="title desc"><title id="title">Unmatched group</title><desc id="desc">An existing directory with no reached members warns while the selected document compiles. Observed output from the pinned compiler.</desc><rect width="2142" height="908" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><text x="32" y="48" font-size="29" fill="#e6edf3" font-weight="400">32-unmatched-group · Unmatched group</text><text x="32" y="90" font-size="20" fill="#e3b341" font-weight="400">ACTUAL COMPILER OUTPUT · main 08a8c0317924 · group command review</text><text x="32" y="126" font-size="20" fill="#58a6ff" font-weight="400">prosiform --root sources/32-unmatched-group/my-skill --group rules:2 procedure.md</text><text x="32" y="156" font-size="18" fill="#b1c6df" font-weight="400">An existing directory with no reached members warns while the selected document compiles.</text><rect x="32" y="208" width="410" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="244" font-size="21" fill="#b1c6df" font-weight="400">Participating files</text>
+<path d="M32 262 H442" stroke="#303b49"/>
+<text x="70" y="319" font-size="20" fill="#e6edf3" font-weight="400">my-skill/</text>
+<text x="70" y="356" font-size="20" fill="#e6edf3" font-weight="400">├─ procedure.md</text>
+<text x="70" y="393" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="430" font-size="20" fill="#e6edf3" font-weight="400">   └─ unselected.md</text><rect x="466" y="208" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="244" font-size="21" fill="#b1c6df" font-weight="400">procedure.md</text>
+<path d="M466 262 H1156" stroke="#303b49"/>
+<text x="504" y="319" font-size="20" fill="#e6edf3" font-weight="400">Run the procedure.</text><rect x="466" y="359" width="690" height="129" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="490" y="395" font-size="21" fill="#b1c6df" font-weight="400">rules/unselected.md</text>
+<path d="M466 413 H1156" stroke="#303b49"/>
+<text x="504" y="470" font-size="20" fill="#e6edf3" font-weight="400">Unselected rules.</text><rect x="1230" y="208" width="880" height="635" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1254" y="244" font-size="21" fill="#b1c6df" font-weight="400">Compiler output · exit 0</text>
+<path d="M1230 262 H2110" stroke="#303b49"/>
+<text x="1268" y="319" font-size="20" fill="#58a6ff" font-weight="400">This bundle was built for Procedure; everything else is material</text>
+<text x="1268" y="356" font-size="20" fill="#58a6ff" font-weight="400">it references.</text>
+<text x="1242" y="416" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1280" y="416" font-size="30" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1268" y="466" font-size="20" fill="#e6edf3" font-weight="400">Run the procedure.</text>
+<text x="1268" y="529" font-size="20" fill="#e6edf3" font-weight="400">Diagnostics (stderr):</text>
+<text x="1268" y="566" font-size="20" fill="#e6edf3" font-weight="400">W_EMPTY_GROUP_RULE: the grouping rule for &#x27;rules&#x27; arranges</text>
+<text x="1268" y="603" font-size="20" fill="#e6edf3" font-weight="400">nothing, because the closure carries no document under a directory</text>
+<text x="1268" y="640" font-size="20" fill="#e6edf3" font-weight="400">of that slug</text>
+<text x="1268" y="677" font-size="20" fill="#e6edf3" font-weight="400">W_ENTRY_DESTINATION: the entry reference &#x27;Procedure&#x27; resolves to</text>
+<text x="1268" y="714" font-size="20" fill="#e6edf3" font-weight="400">the destination &#x27;procedure&#x27;, which the bundle&#x27;s entry line links</text>
+<text x="1268" y="751" font-size="20" fill="#e6edf3" font-weight="400">it to</text>
+<text x="1268" y="788" font-size="20" fill="#e6edf3" font-weight="400">  reference: Procedure</text>
+<text x="1268" y="825" font-size="20" fill="#e6edf3" font-weight="400">  resolved: procedure</text><path d="M1172 308 H1190 V296 L1218 324 L1190 352 V340 H1172Z" fill="#58a6ff"/><text x="32" y="883" font-size="17" fill="#b1c6df" font-weight="400">Full output shown. Exact Markdown, link destinations and diagnostics are in the adjacent stdout.md and stderr.txt files.</text></g></svg>

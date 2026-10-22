@@ -1,0 +1,1 @@
+prosiform --root sources/04-different-title/my-skill --group rules:2 rules/other-title.md
