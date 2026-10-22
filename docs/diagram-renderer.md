@@ -17,6 +17,7 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | `--root DIR` | Allowed source root; defaults to the entry document's directory. |
 | `--group SLUG:DEPTH` | Grouping rule; repeat for distinct slugs. |
 | `--section FRAGMENT` | Bundle one section of the entry document. |
+| `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
 | `--compact` | Retain headings and links; replace other body content with `…` in both image panels. |
 | `--branch NAME` | Compiler branch; required for a detached checkout. Must point to its current commit. |
 | `--revision SHA` | Require an exact compiler commit. |
@@ -24,6 +25,8 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 Call the tool again for another document or grouping arrangement, using a different output prefix.
 
 For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Prose, lists and code examples collapse to placeholders between retained items. Exact stdout and diagnostics remain complete.
+
+Compact mode affects the image, not the bundle size. If compilation exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
 
 ## Output
 

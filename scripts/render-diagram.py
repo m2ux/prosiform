@@ -212,6 +212,11 @@ def main():
     )
     parser.add_argument("--section", help="Select a fragment of the entry document")
     parser.add_argument(
+        "--max-output-bytes",
+        type=int,
+        help="Compiler output-size budget; defaults to the compiler's limit",
+    )
+    parser.add_argument(
         "--compact",
         action="store_true",
         help="Show headings and links; replace other content with … in both panels",
@@ -253,6 +258,8 @@ def main():
     if options.section:
         entry += "#" + options.section
     arguments = ["--root", str(root)]
+    if options.max_output_bytes is not None:
+        arguments.extend(["--max-output-bytes", str(options.max_output_bytes)])
     for group in options.group:
         arguments.extend(["--group", group])
     arguments.append(entry)
