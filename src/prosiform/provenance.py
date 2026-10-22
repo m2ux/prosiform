@@ -32,7 +32,7 @@ from.
 What a heading resolves is recorded beside it rather than derived from
 it. A target is a document and a fragment of it, or a document alone,
 and the headings that answer one are the filename wrapper, a carried
-heading, a variant heading and a member's overview subsection. A
+heading, a variant heading and the subsection naming a member. A
 structural ancestor answers none: a displayed title is not the section it
 names, and a reference naming that section expands the closure to select
 it, so the heading emitted for it is a carried one.
@@ -102,8 +102,8 @@ class Generated:
     A filename wrapper that absorbed a source heading answers to that
     heading's fragment as well as to the document, because a reference
     naming the absorbed title resolves to the wrapper's own destination.
-    A member's overview subsection answers the same way under a grouping
-    rule, and a variant heading answers to the heading of the document
+    The subsection naming a member answers the same way under a
+    grouping rule, and a variant heading answers to the heading of the document
     it names. The heading is still generated structure: what it answers
     names what resolves to it, not a region of body content it carries.
     """

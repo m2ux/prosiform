@@ -595,7 +595,7 @@ def absorbing(record: Record, path: str, tokens: Sequence[Token]) -> set[int]:
     """The source line of the heading the group names in one source's place.
 
     A file group's heading names the document's title, and a merged
-    group's overview subsection names its member's, whether the group
+    group's member subsection names its member's, whether the group
     emitted that title's section or not: a section beneath it is placed
     by that heading and the title is no structural ancestor. The line
     is what the outline check reads it as emitted at.

@@ -1567,8 +1567,8 @@ def destination_map(
     a file heading answers to its whole document and to the title it
     absorbed, a carried heading to the fragment its author's text
     produced, a merged heading to that fragment in every document that
-    contributed it, and a variant heading or a member's overview
-    subsection to the document it names. A destination is scoped to the
+    contributed it, and a variant heading or the subsection
+    naming a member to the document it names. A destination is scoped to the
     bundle, so the map is one map over every group rather than one map
     for each.
     """

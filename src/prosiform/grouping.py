@@ -6,13 +6,13 @@ beneath one heading carrying the slug in title case. A document no rule
 names keeps its own file group, so one bundle can carry both
 arrangements.
 
-A merged group emits its slug as an H1, an `Overview` section holding
-what its members carry above the grouping depth, and then one H2 for each
-distinct source heading text at that depth. A member's heading at the
-grouping depth is replaced by the merged one and its content moves to sit
-beneath it, so the level a heading is emitted at is the level its author
-wrote under a shift the arrangement supplies rather than a single shift
-for the whole group.
+A merged group emits its slug as an H1, a subsection naming each member
+and holding what that member carries above the grouping depth, and then
+one H2 for each distinct source heading text at that depth. A member's
+heading at the grouping depth is replaced by the merged one and its
+content moves to sit beneath it, so the level a heading is emitted at is
+the level its author wrote under a shift the arrangement supplies rather
+than a single shift for the whole group.
 
 A merged heading keeps its source text. Where that text occurs once in
 the group it is emitted alone, and where several documents contribute it
@@ -31,17 +31,23 @@ throughout. A section no such body splits is arranged by name, and the
 names inside it that two or more documents contribute take variants of
 their own.
 
-The `Overview` section carries each member's content above the grouping
-depth under a subsection named by that document's stem in title case,
-less a trailing word the group's own heading already states. That heading
+A member's subsection is named by that document's stem in title case,
+less a trailing word the group's own heading already states, and it
+carries the member's content above the grouping depth. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
-to the member resolves. The section also carries a subsection for each
-member the arrangement emits nothing else from, so that the group names
-every member it merges; such a subsection is the heading alone, the
-member's own H1 absorbed into it. A member whose content all sits at the
-grouping depth is named by the merged sections it contributes to, and a
-reference to it resolves to its first contribution.
+to the member resolves. A member whose H1 the heading absorbs takes a
+subsection, as does one the arrangement emits nothing else from, so the
+group names every member it merges; such a subsection is the heading
+alone. A member whose content all sits at the grouping depth is named by
+the merged sections it contributes to, and a reference to it resolves to
+its first contribution.
+
+The subsections sit beneath an `Overview` section where the group also
+emits merged sections, so a member's preamble is read as that member's
+rather than as one more of the group's own sections. Where the group
+emits no merged section they are its whole structure and sit directly
+beneath its heading.
 
 Grouping is decided before ancestry. The rules fix each document's
 membership, its grouping depth and the shift each of its contributions
@@ -200,17 +206,16 @@ class Member:
     absorbing: Token | None
     items: list[Item] = field(default_factory=list)
 
-    @property
-    def shift(self) -> int:
+    def shift(self, at: int) -> int:
         """The levels the member's content above the grouping depth moves by.
 
-        The subsection the overview carries it under sits at the third
-        level, so a title that heading absorbs leaves the member's own
-        H1 unemitted and its sections one level below the subsection;
-        a title it does not absorb is emitted beneath the subsection
-        and takes the level that makes room.
+        The subsection naming the member sits at the level supplied, so
+        a title that heading absorbs leaves the member's own H1
+        unemitted and its sections one level below the subsection; a
+        title it does not absorb is emitted beneath the subsection and
+        takes the level that makes room.
         """
-        return MEMBER_LEVEL - 1 if self.absorbing is not None else MEMBER_LEVEL
+        return at - 1 if self.absorbing is not None else at
 
 
 def prepared(
@@ -426,8 +431,9 @@ def merged(
     title = titled(named)
     into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
     into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
-    overview(into, named, depth, members)
-    sections(into, depth, members)
+    pooled = contributions(depth, members)
+    overview(into, named, depth, members, bool(pooled))
+    sections(into, depth, pooled)
     for member in members:
         contributed(into, member)
     reached: dict[Target, int] = {}
@@ -449,22 +455,21 @@ def merged(
 
 
 def contributed(into: "Assembly", member: Member) -> None:
-    """Where a reference to one member resolves, the overview naming it nowhere.
+    """Where a whole-document reference resolves for a member with no subsection.
 
-    A member whose content all sits at the grouping depth is given no
-    overview subsection, so the destinations that subsection holds —
-    the document itself, and the title its own heading carries — are
+    A member whose content all sits at the grouping depth is named by
+    the merged sections it contributes to, so the document itself is
     answered by the first heading the group emits from it, and by the
-    group's own heading where it emits none carrying the member. Each of
-    the two destinations is therefore one the bundle has, whatever the
-    member contributes, so a reference the closure resolved into a
-    merged group is rewritten rather than left for the entry line to
-    read as one it never assigned.
+    group's own heading where it emits none carrying the member. That
+    destination is therefore one the bundle has, whatever the member
+    contributes, so a reference the closure resolved into a merged
+    group is rewritten rather than left for the entry line to read as
+    one it never assigned.
     """
     answered = {target for one in into.headings for target in one.answers}
-    wanted: list[Target] = [(member.path, None)]
-    if member.absorbing is not None:
-        wanted.append((member.path, member.named[id(member.absorbing)]))
+    whole: Target = (member.path, None)
+    if whole in answered:
+        return
     found = next(
         (
             at
@@ -474,20 +479,30 @@ def contributed(into: "Assembly", member: Member) -> None:
         ),
         GROUP_AT,
     )
-    for target in wanted:
-        if target not in answered:
-            into.answer(found, target)
+    into.answer(found, whole)
 
 
-def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) -> None:
-    """The group's `Overview` section, and the subsection each member takes in it.
+def overview(
+    into: Assembly,
+    named: str,
+    depth: int,
+    members: Sequence[Member],
+    pooled: bool,
+) -> None:
+    """The subsection each member is named by, and the `Overview` carrying them.
 
     A member takes a subsection where it carries selected content above
-    the grouping depth, and where the arrangement emits nothing else
-    from it at all. Every item of a member is either above the grouping
-    depth or anchored at it, so the second case is the member with no
-    items: its whole content is the H1 the subsection heading absorbs,
-    and the heading is the group's naming of it.
+    the grouping depth, where its own H1 is absorbed into that heading,
+    and where the arrangement emits nothing else from it at all, so
+    every member the group merges is named by a heading the bundle
+    carries. A member whose selected content all sits at the grouping
+    depth takes none: the merged sections it contributes to name it.
+
+    The subsections sit beneath an `Overview` section where the group
+    also emits merged sections, so a member's preamble is read as that
+    member's rather than as one more of the group's own sections. Where
+    the group emits no merged section the subsections are its whole
+    structure, and they sit directly beneath its heading.
     """
     above = {
         member.path: [
@@ -499,12 +514,17 @@ def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) 
         for member in members
     }
     named_here = {
-        member.path: bool(above[member.path]) or not member.items for member in members
+        member.path: bool(above[member.path])
+        or not member.items
+        or member.absorbing is not None
+        for member in members
     }
     if not any(named_here.values()):
         return
-    text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
-    into.part(text, recorded, [recorded])
+    at = MEMBER_LEVEL if pooled else SECTION_LEVEL
+    if pooled:
+        text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
+        into.part(text, recorded, [recorded])
     for member in members:
         if not named_here[member.path]:
             continue
@@ -512,11 +532,11 @@ def overview(into: Assembly, named: str, depth: int, members: Sequence[Member]) 
         if member.absorbing is not None:
             answers.append((member.path, member.named[id(member.absorbing)]))
         text, recorded = generated_part(
-            member_heading(member.path, named), MEMBER_LEVEL, MEMBER_OVERVIEW, answers
+            member_heading(member.path, named), at, MEMBER_OVERVIEW, answers
         )
         into.part(text, recorded, [recorded])
         for one in above[member.path]:
-            into.region(member, one.token, member.shift)
+            into.region(member, one.token, member.shift(at))
 
 
 def contributions(
@@ -551,9 +571,13 @@ def keyed(member: Member, anchor: Token, depth: int) -> bool:
     return False
 
 
-def sections(into: Assembly, depth: int, members: Sequence[Member]) -> None:
+def sections(
+    into: Assembly,
+    depth: int,
+    pooled: Sequence[tuple[str, list[tuple[Member, Token]]]],
+) -> None:
     """One H2 for each distinct source heading text at the grouping depth."""
-    for text, contributing in contributions(depth, members):
+    for text, contributing in pooled:
         split = sum(keyed(member, anchor, depth) for member, anchor in contributing) > 1
         variants = split and len(contributing) > 1
         section(into, depth, text, contributing, variants)

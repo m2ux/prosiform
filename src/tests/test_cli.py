@@ -371,7 +371,7 @@ def test_each_idle_grouping_rule_is_reported_and_an_arranging_one_is_not(
     assert "'other'" in warned[1]
 
 
-def test_an_entry_naming_a_member_of_one_heading_opens_on_its_overview_subsection(
+def test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", "# Bare\n")
@@ -380,16 +380,16 @@ def test_an_entry_naming_a_member_of_one_heading_opens_on_its_overview_subsectio
     assert run.stdout.startswith("This bundle was built for [Bare](#bare);")
 
 
-def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_contribution(
+def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/second.md", "# Second\n\n## Outcomes\n\nText.\n")
     run = invoke("--root", str(root), "--group", "notes:2", "notes/second.md#second")
     assert run.status == SUCCESS
-    assert run.stdout.startswith("This bundle was built for [Outcomes](#outcomes);")
+    assert run.stdout.startswith("This bundle was built for [Second](#second);")
 
 
-def test_a_reference_into_a_member_of_one_heading_reaches_its_overview_subsection(
+def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", "# Bare\n")
