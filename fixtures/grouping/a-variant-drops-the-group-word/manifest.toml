@@ -1,0 +1,29 @@
+description = "Every contributing member takes its group-wide name and a distinct whole-document destination, with its content under that heading."
+
+clauses = [
+  "Grouping — Document-keyed sections",
+  "Grouping — Variants by document",
+  "Grouping — A heading for every member",
+  "Grouping — Document content above the grouping depth",
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+root = "source"
+arguments = ["--group", "modes:2", "modes/plan-mode.md", "modes/review-mode.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Plan"
+resolved = "plan"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Review"
+resolved = "review"

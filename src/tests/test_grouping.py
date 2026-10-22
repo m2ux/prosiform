@@ -18,12 +18,11 @@ from prosiform.grouping import (
     member_headings,
     merged,
     prepared,
-    qualifiers,
     states,
     titled,
 )
 from prosiform.profile import parse
-from prosiform.provenance import MEMBER_OVERVIEW, Generated
+from prosiform.provenance import MEMBER_OVERVIEW, VARIANT_HEADING, Generated
 from prosiform.source import lines
 
 
@@ -104,14 +103,16 @@ def test_a_member_a_stem_distinguishes_is_named_by_that_stem_alone() -> None:
 
 
 def test_one_segment_distinguishes_documents_in_one_directory() -> None:
-    assert qualifiers(["modes/plan-mode.md", "modes/review-mode.md"]) == {
-        "modes/plan-mode.md": "Plan Mode",
-        "modes/review-mode.md": "Review Mode",
+    assert member_headings(["modes/plan-mode.md", "modes/review-mode.md"], "modes") == {
+        "modes/plan-mode.md": "Plan",
+        "modes/review-mode.md": "Review",
     }
 
 
 def test_a_shared_stem_takes_the_segments_that_tell_the_paths_apart() -> None:
-    assert qualifiers(["guides/alpha/notes.md", "guides/beta/notes.md"]) == {
+    assert member_headings(
+        ["guides/alpha/notes.md", "guides/beta/notes.md"], "guides"
+    ) == {
         "guides/alpha/notes.md": "Alpha Notes",
         "guides/beta/notes.md": "Beta Notes",
     }
@@ -120,7 +121,7 @@ def test_a_shared_stem_takes_the_segments_that_tell_the_paths_apart() -> None:
 def test_the_segments_every_path_shares_are_dropped_before_the_run_is_measured() -> (
     None
 ):
-    assert qualifiers(["a/b/one.md", "a/b/c/one.md"]) == {
+    assert member_headings(["a/b/one.md", "a/b/c/one.md"], "b") == {
         "a/b/one.md": "One",
         "a/b/c/one.md": "C One",
     }
@@ -262,3 +263,73 @@ def test_no_two_members_of_one_group_reach_one_destination() -> None:
     ]
     assert len(reached) == len(documents)
     assert len(set(reached)) == len(documents)
+
+
+@pytest.mark.parametrize("preamble", ["", "Read this first.\n\n"])
+@pytest.mark.parametrize("first", ["Body.\n", "### Draft\n\nBody.\n", ""])
+@pytest.mark.parametrize("second", ["### Draft\n\nOther body.\n", ""])
+def test_every_pooled_contributor_has_its_own_heading_and_destination(
+    preamble: str, first: str, second: str
+) -> None:
+    one = group_of(
+        "rules",
+        2,
+        {
+            "rules/agents.md": preamble + "## Style\n\n" + first,
+            "rules/common.md": preamble + "## Style\n\n" + second,
+        },
+    )
+    variants = [
+        heading.text
+        for heading in one.record.headings
+        if isinstance(heading, Generated) and heading.kind == VARIANT_HEADING
+    ]
+    assert variants == ["Agents", "Common"]
+    assert answering(one, "rules/agents.md") == "Agents"
+    assert answering(one, "rules/common.md") == "Common"
+    assert len(set(one.entries)) == 2
+
+
+def test_a_sole_contributor_keeps_its_subheading_arrangement() -> None:
+    one = group_of("rules", 2, {"rules/agents.md": "## Style\n\n### Draft\n\nBody.\n"})
+    assert one.parts == ("# Rules", "## Style\n", "### Draft\n", "Body.\n")
+
+
+@pytest.mark.parametrize(
+    ("named", "documents", "expected"),
+    [
+        (
+            "g",
+            {
+                "g/a/notes.md": "First.\n\n## Alone\n\nOnly.\n",
+                "g/b/notes.md": "Second.\n\n## Findings\n\nSecond finding.\n",
+                "g/c/other.md": "Third.\n\n## Findings\n\nThird finding.\n",
+            },
+            ["B Notes", "C Other"],
+        ),
+        (
+            "modes",
+            {
+                "modes/plan-mode.md": "First.\n\n## Procedure\n\nPlan.\n",
+                "modes/review-mode.md": "Second.\n\n## Procedure\n\nReview.\n",
+            },
+            ["Plan", "Review"],
+        ),
+    ],
+)
+def test_variant_names_match_the_overview_across_the_whole_group(
+    named: str, documents: Mapping[str, str], expected: list[str]
+) -> None:
+    one = group_of(named, 2, documents)
+    overview = {
+        heading.answers[0][0]: heading.text
+        for heading in one.record.headings
+        if isinstance(heading, Generated) and heading.kind == MEMBER_OVERVIEW
+    }
+    variants = [
+        heading
+        for heading in one.record.headings
+        if isinstance(heading, Generated) and heading.kind == VARIANT_HEADING
+    ]
+    assert [heading.text for heading in variants] == expected
+    assert all(heading.text == overview[heading.answers[0][0]] for heading in variants)

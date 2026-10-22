@@ -2,7 +2,7 @@ This bundle was built for [Entry](#entry); everything else is material it refere
 
 # Entry
 
-A name two documents carry is reached as [the planning procedure](#plan-mode) and as [the review procedure](#review-mode).
+A name two documents carry is reached as [the planning procedure](#plan) and as [the review procedure](#review).
 
 A name one document carries is reached as [the planning operations](#operations).
 
@@ -10,11 +10,11 @@ A name one document carries is reached as [the planning operations](#operations)
 
 ## Procedure
 
-### Plan Mode
+### Plan
 
 Walk the plan from the goal down.
 
-### Review Mode
+### Review
 
 Walk the plan from the goal up.
 

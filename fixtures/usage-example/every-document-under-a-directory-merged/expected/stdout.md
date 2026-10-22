@@ -16,7 +16,9 @@ An epic's task delivery findings, integration readiness and completion state.
 
 ## Operations
 
-### *Populate* Epic Issue Body
+### Epic Issue Body
+
+#### *Populate* Epic Issue Body
 
 One epic body and its local validation findings.
 
@@ -28,7 +30,7 @@ One epic body and its local validation findings.
 3. Pass the draft, initiative context and output file to [Validate Epic Body](#validate-epic-body).
 4. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
-### *Record* Epic Delivery
+#### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -38,17 +40,19 @@ One epic body with supplied delivery matches and completed rows recorded.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-### *Validate* Epic Body
+#### *Validate* Epic Body
 
 The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records and output file.
 
-1. Check the current body against the local [Fields](#fields), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
+1. Check the current body against the local [Fields](#epic-issue-body-2), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
 2. Include any epic criterion no task row delivers in the findings.
 3. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-### *Inspect* Epic Delivery
+### Epic
+
+#### *Inspect* Epic Delivery
 
 The delivery findings for one epic from supplied evidence.
 
@@ -59,7 +63,9 @@ The delivery findings for one epic from supplied evidence.
 
 ## Fields
 
-### Template
+### Epic Issue Body
+
+#### Template
 
 ````markdown
 ## Overview
@@ -72,7 +78,7 @@ The delivery findings for one epic from supplied evidence.
 | --- | --- | --- | --- | --- | --- |
 ````
 
-### Work Breakdown
+#### Work Breakdown
 
 The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
@@ -85,7 +91,7 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Depends on.**
   A task row names the rows it depends on, never an epic. It names the row producing each output it consumes, and where the task consumes from every row of an epic that is what establishes the whole-epic reach.
 
-### Task Delivery
+#### Task Delivery
 
 - **Task ids.**
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes.
@@ -98,11 +104,13 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
 
-### Delivery State
+### Epic
+
+#### Delivery State
 
 The epic is identified by its repository and issue number. Its state contains task delivery findings, criterion verification and ticks, open questions, expected delivery bases and their merges, and the revisions supporting the evidence. Integration readiness and completion are separate results, each with its unresolved conditions. An epic may be ready to integrate while one or more bases await merging.
 
-### Delivery Findings
+#### Delivery Findings
 
 | Line | What it names |
 | --- | --- |
@@ -119,7 +127,9 @@ An unmet row links a merged pull request while a covered criterion remains untic
 
 ## Commands
 
-### Sync Epic
+### Epic Issue Body
+
+#### Sync Epic
 
 Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
 
@@ -139,7 +149,9 @@ work-tracker sync '<epic-json-file>' --prs '<pull-request-records-file>' --links
 work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --fix fixed-943.md
 ```
 
-### Match Pull Requests
+### Epic
+
+#### Match Pull Requests
 
 Reports an epic's delivery state against the pull requests that name it.
 

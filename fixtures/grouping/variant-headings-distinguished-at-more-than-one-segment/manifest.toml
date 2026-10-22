@@ -17,5 +17,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Findings"
-resolved = "findings"
+reference = "Alpha Notes"
+resolved = "alpha-notes"
