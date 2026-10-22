@@ -13,6 +13,7 @@ A heading an author wrote and a filesystem path a run names are not the compiler
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The implementation plan for this unit |
+| [validation.md](validation.md) | The checks this unit ran, the revision they ran against and what each observed |
 
 ## Links
 
