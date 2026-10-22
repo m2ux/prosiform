@@ -16,4 +16,4 @@ Full make check passed with the epic worktree build selected through PROSIFORM_B
 
 The four new regression cases failed before implementation and pass with the correction. The corpus fixture confirms A Plan and B Plan in both overview and variant headings and distinct entry destinations. Members in one directory retain Plan and Plan Mode when further qualification is unavailable.
 
-Remote CI pending at a35b38c. PR #198 remains draft.
+Full GitHub Checks passed at a35b38ce0ccbd9f82dc7f0eaded9094fc7125f0f: https://github.com/m2ux/prosiform/actions/runs/39741381058. PR #198 remains draft.
