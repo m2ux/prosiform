@@ -15,6 +15,8 @@ The implementation extends `src/prosiform/grouping.py` on `i01/e02/w04-a-pooled-
 | [W04](w04.md) | Contributor headings and destination validation |
 | [W06](w06.md) | Consistent member names throughout a group |
 | [Progress](progress.md) | Delivery checklist |
+| [Validation](validation.md) | Tested revisions, criteria observations and review |
+| [Changes](changes.md) | Applied and held plan changes, debt and arising issues |
 
 ## Links
 
