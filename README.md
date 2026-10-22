@@ -1,7 +1,6 @@
 # 🧩 Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![CI: GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-grey.svg)](https://github.com/m2ux/prosiform/actions/workflows/checks.yml?query=branch%3Amain)
 [![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
