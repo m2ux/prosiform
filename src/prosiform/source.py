@@ -6,10 +6,9 @@ frontmatter block, which is metadata for whatever reads the file. Neither
 is content, and both would otherwise be published as body. The scan below
 removes them before anything parses the document.
 
-The scan is deterministic and reads nothing it removes. It parses no
-YAML, interprets no metadata and executes nothing: it compares two
-physical lines against two literals, and the narrowness of that
-comparison is the whole of the policy. An indented delimiter, a delimiter
+The scan recognizes delimiters by exact physical-line comparison and
+decodes the enclosed YAML into immutable conversion settings. An indented
+delimiter, a delimiter
 carrying a trailing space, a TOML `+++` fence, JSON metadata, and a `---`
 under a blank line are each a line the comparison rejects, so each is
 body the bundle carries. A document meaning to open on a horizontal rule
@@ -96,6 +95,14 @@ from dataclasses import dataclass
 
 from markdown_it.token import Token
 
+from prosiform.limits import FILE_BYTES, NESTING
+from prosiform.metadata import (
+    INVALID_CONVERSION_METADATA,
+    INVALID_FRONTMATTER,
+    Conversion,
+)
+from prosiform.metadata import decode as decode_metadata
+
 ENCODING = "utf-8"
 MARK = "﻿"
 DIGEST = "sha256"
@@ -117,6 +124,8 @@ NESTED_SECTION_TARGET = "E_NESTED_SECTION_TARGET"
 AMBIGUOUS_SOURCE_HEADING = "E_AMBIGUOUS_SOURCE_HEADING"
 
 CODES = (
+    INVALID_FRONTMATTER,
+    INVALID_CONVERSION_METADATA,
     UNTERMINATED_FRONTMATTER,
     NESTED_SECTION_TARGET,
     AMBIGUOUS_SOURCE_HEADING,
@@ -176,6 +185,7 @@ class Source:
 
     text: str
     first_line: int = 1
+    conversion: Conversion = Conversion()
 
     def line(self, at: int | None) -> int | None:
         """The line of the original file one line of this content occupies."""
@@ -196,6 +206,7 @@ class Capture:
 
     identity: str
     digest: str
+    chain: tuple[str, ...] = ()
 
 
 def hashed(data: bytes) -> str:
@@ -236,7 +247,13 @@ def decode(data: bytes) -> str:
     return data.decode(ENCODING)
 
 
-def content(text: str) -> Source:
+def content(
+    text: str,
+    *,
+    file: str = "",
+    max_bytes: int = FILE_BYTES.default,
+    max_depth: int = NESTING.default,
+) -> Source:
     """One source's content, its leading transport metadata removed.
 
     Exactly one byte-order mark is removed, and a second is content. The
@@ -245,13 +262,27 @@ def content(text: str) -> Source:
     line equal to one of `CLOSERS`, and the opener, the metadata, the
     closer and the closer's terminator go together.
     """
+    raw = text.encode(ENCODING)
     body = text.removeprefix(MARK)
     physical = lines(body)
     if not physical or bare(physical[0]) != OPENER:
-        return Source(body)
+        conversion = decode_metadata(
+            raw, file=file, span=None, max_bytes=max_bytes, max_depth=max_depth
+        )
+        return Source(body, conversion=conversion)
+    start = len((text[: len(text) - len(body)] + physical[0]).encode(ENCODING))
+    end = start
     for index, line in enumerate(physical[1:], start=1):
         if bare(line) in CLOSERS:
-            return Source("".join(physical[index + 1 :]), index + 2)
+            conversion = decode_metadata(
+                raw,
+                file=file,
+                span=(start, end),
+                max_bytes=max_bytes,
+                max_depth=max_depth,
+            )
+            return Source("".join(physical[index + 1 :]), index + 2, conversion)
+        end += len(line.encode(ENCODING))
     raise Unterminated(1)
 
 
