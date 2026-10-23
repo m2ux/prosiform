@@ -370,8 +370,7 @@ def parser() -> Parser:
         "-o",
         dest="output",
         metavar="FILE",
-        default=STANDARD_OUTPUT,
-        help="atomic validated output to FILE; default or -: stdout",
+        help="atomic validated output to FILE; -: stdout; default: derived filename",
     )
     grammar.add_argument(
         "-c",
@@ -851,8 +850,9 @@ def selection(
     links what the caller asked for, so only the heading an entry
     resolved to stays identifiable. A whole document an entry selected
     and nothing else named is the selection `None`, whose entry is the
-    file heading; a whole document only a dependency selected enters
-    the entry line not at all.
+    file heading. A whole document an entry selected beside named
+    sections keeps that file heading as an entry as well. A whole
+    document only a dependency selected enters the entry line not at all.
 
     A fragment the document does not yield is a reference that reached
     a document and no section of it, so its diagnostic names that
@@ -910,7 +910,7 @@ def selection(
     if whole:
         if not named and entered:
             return None
-        return Selection(tuple(regions(tokens)), tuple(named))
+        return Selection(tuple(regions(tokens)), tuple(named), document=entered)
     return Selection(
         tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
     )
@@ -1595,6 +1595,27 @@ def publish_file(text: str, destination: Path) -> None:
         ) from refused
 
 
+def derived_output(
+    read: Mapping[str, Source],
+    referrer: Reference | None,
+    requested: Sequence[Reference],
+) -> str:
+    """The basename of one normalized entry, relative to its captured root."""
+    selections = {
+        (one.path or (referrer.path if referrer else ""), one.fragment)
+        for one in requested
+    }
+    if len(selections) != 1:
+        raise usage_failure(
+            "multiple distinct selections require an explicit -o destination"
+        )
+    path, fragment = next(iter(selections))
+    name = str(Path(read[path].display).with_suffix("")).replace(os.sep, "_")
+    if fragment is not None:
+        name += f"__{fragment}"
+    return f"{name}.bundle.md"
+
+
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
     grammar = parser()
@@ -1634,12 +1655,13 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    if options.output != STANDARD_OUTPUT:
-        destination = Path(options.output).resolve()
+    output = options.output
+    if output is None:
+        output = derived_output(read, referring, requested)
+    if output != STANDARD_OUTPUT:
+        destination = Path(output).resolve()
         if destination in sources(root, read):
-            raise usage_failure(
-                f"the output path {options.output!r} names an input source"
-            )
+            raise usage_failure(f"the output path {output!r} names an input source")
     bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
@@ -1661,10 +1683,10 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             )
         )
     if not options.check:
-        if options.output == STANDARD_OUTPUT:
+        if output == STANDARD_OUTPUT:
             publish(bundled, stdout)
         else:
-            publish_file(bundled, Path(options.output).resolve())
+            publish_file(bundled, destination)
     for reference, target in named:
         reporter.emit(
             Diagnostic(

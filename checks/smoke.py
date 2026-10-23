@@ -199,7 +199,7 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
     what = f"{COMMAND} {entry}"
-    run = invoke(environment, elsewhere, entry)
+    run = invoke(environment, elsewhere, "-o", "-", entry)
     succeeded(run, what)
     if run.stdout != BUNDLE:
         raise Failed(
@@ -211,6 +211,36 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
             f"{what} reports another entry destination\n"
             f"expected {REPORT!r}\nproduced {run.stderr!r}"
         )
+
+
+def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
+    """Derived files, combined selections and validation through the installed CLI."""
+    entry = os.path.relpath(sources / ENTRY, elsewhere)
+    for reference, name in (
+        (entry, "guide.bundle.md"),
+        (entry + "#guide", "guide__guide.bundle.md"),
+    ):
+        run = invoke(environment, elsewhere, reference)
+        succeeded(run, reference)
+        destination = elsewhere / name
+        if run.stdout or destination.read_text() != BUNDLE:
+            raise Failed("derived output differs from the installed bundle")
+        destination.unlink()
+    run = invoke(environment, elsewhere, "-c", entry)
+    succeeded(run, "check mode")
+    if (elsewhere / "guide.bundle.md").exists() or run.stdout:
+        raise Failed("check mode published a bundle")
+    run = invoke(environment, elsewhere, entry, entry + "#guide")
+    if run.returncode != 2 or run.stdout:
+        raise Failed("combined selections need an explicit destination")
+    destination = elsewhere / "guide.bundle.md"
+    destination.mkdir()
+    run = invoke(environment, elsewhere, entry)
+    if run.returncode != 3 or run.stdout or not destination.is_dir():
+        raise Failed("derived output does not preserve an unwritable destination")
+    destination.rmdir()
+    if list(elsewhere.glob(".guide.bundle.md.*")):
+        raise Failed("failed publication leaves temporary output")
 
 
 def ships_glossary(environment: Path) -> Path:
@@ -250,6 +280,7 @@ def smoke(workspace: Path) -> None:
     print(f"ok   version      {version(environment, elsewhere)}")
 
     bundles(environment, elsewhere, sources)
+    publishes(environment, elsewhere, sources)
     print(f"ok   bundled      {ENTRY} from {sources}, run from {elsewhere}")
     refused = invoke(environment, elsewhere, "-r", str(sources), ENTRY)
     if refused.returncode != 2:

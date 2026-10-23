@@ -48,7 +48,7 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. Each command writes a validated Markdown bundle to standard output.
+Run these from the repository root. One entry writes its bundle to an entry-derived filename in the working directory. Pass `-o -` to write that bundle to standard output.
 
 ### Bundle a Source and its Dependencies
 

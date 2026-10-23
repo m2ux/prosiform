@@ -57,7 +57,7 @@ def command(*arguments: str) -> list[str]:
     """
     found = shutil.which(ENTRY_POINT)
     assert found is not None, f"{ENTRY_POINT} is not on the path of this environment"
-    return [found, *arguments]
+    return [found, "-o", "-", *arguments]
 
 
 def test_a_bundle_within_the_transport_limit_is_delivered() -> None:

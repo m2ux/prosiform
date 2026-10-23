@@ -120,11 +120,11 @@ class Run:
 def invoke(
     *arguments: str, stdout: IO[str] | None = None, cwd: Path | None = None
 ) -> Run:
-    """One run of the command against captured streams."""
+    """One run requesting stdout, with any supplied output option taking precedence."""
     out = StringIO() if stdout is None else stdout
     err = StringIO()
     with chdir(Path.cwd() if cwd is None else cwd):
-        status = main(list(arguments), out, err)
+        status = main(["-o", "-", *arguments], out, err)
     written = out.getvalue() if isinstance(out, StringIO) else ""
     return Run(status, written, err.getvalue())
 
@@ -427,10 +427,10 @@ def test_an_output_path_naming_no_input_source_is_accepted(
     assert run.status == SUCCESS
 
 
-def test_standard_output_is_the_default_output_destination(root: Path) -> None:
-    assert invoke("-o", "-", "guide.md", cwd=root).status == (
-        invoke("guide.md", cwd=root).status
-    )
+def test_standard_output_is_an_explicit_output_destination(root: Path) -> None:
+    run = invoke("-o", "-", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stdout.startswith("This bundle was built for")
 
 
 def test_a_validation_only_run_publishes_nothing(root: Path) -> None:

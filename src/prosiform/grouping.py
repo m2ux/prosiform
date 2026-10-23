@@ -257,10 +257,15 @@ def prepared(
         if assigned is None
         else rewrite(physical, tokens, chosen, assigned, path, defined, root)
     )
-    targets: tuple[Target, ...] = (
-        ((path, None),)
+    named_targets = (
+        ()
         if selected is None
         else tuple((path, named[id(token)]) for token in selected.named)
+    )
+    targets: tuple[Target, ...] = (
+        ((path, None), *named_targets)
+        if selected is None or selected.document
+        else named_targets
     )
     member = Member(
         path,

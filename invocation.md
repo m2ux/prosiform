@@ -15,7 +15,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | --- | --- |
 | `REF` | document, document#fragment, or #fragment with -f; paths from cwd |
 | `-f DOC` | working-directory-relative document for fragment-only references |
-| `-o FILE` | atomic validated output to FILE; default or -: stdout |
+| `-o FILE` | atomic validated output to FILE; -: stdout; default: derived filename |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
 | `-x {source-changed,internal}` | inject a conformance run fault no source tree expresses; default none |
@@ -76,7 +76,9 @@ Metadata errors return exit status `1`: `E_INVALID_FRONTMATTER` identifies inval
 
 ## Output
 
-Stdout contains a bundle, an informational response, or nothing. Bundles open with entry-point links:
+One normalized entry publishes a file in the working directory. The name is that entry's path relative to its effective root, without the Markdown suffix, with each separator written as `_`, then `.bundle.md`. A section inserts `__` and the fragment before that suffix. Distinct selections require an explicit `-o` destination. `-o FILE` names an exact file and `-o -` selects stdout.
+
+Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. Bundles open with entry-point links:
 
 ```markdown
 This bundle was built for [Plan](#plan); everything else is material it references.

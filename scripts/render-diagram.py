@@ -306,7 +306,7 @@ def main():
         parser.error("The entry document must be under --cwd")
     if options.section:
         entry += "#" + options.section
-    arguments = []
+    arguments = ["-o", "-"]
     if options.max_output_bytes is not None:
         arguments.extend(["-O", str(options.max_output_bytes)])
     arguments.append(entry)
