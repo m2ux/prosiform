@@ -31,7 +31,7 @@ The official Agent Skills specification was read on 2026-10-23. Its `metadata` f
 - **Proposed design:** explicit group membership, paired group/depth fields, equal depths within each group, individual grouping when fields are absent, operational controls on the CLI.
 - **Proposed simplification:** remove global grouping flags and directory inference; no backward-compatibility path.
 - **User direction:** plan a new epic. Continue directly to the epic; proposal #216 remains unplaced.
-- **Tracker home:** new epic I01 E06 under Field Refinement #20. The existing initiative is extended only for this requirement. Priority 4 is recommended after Section Composition at 5; user confirmation is pending.
+- **Tracker home:** new epic I01 E06 under Field Refinement #20. The existing initiative is extended only for this requirement. The user requested that it run next: priority 6, ahead of Section Composition at 5.
 
 ## Related Work
 
@@ -51,5 +51,9 @@ Read the repository's issues across all states before selecting proposal prefix 
 - [x] Draft the design, implementation sequence and verification matrix.
 - [x] Resolve proposal workflow through the user's request for a new epic.
 - [x] Draft and validate the epic and its five work items.
-- [ ] Confirm epic priority and publish the reviewed breakdown.
+- [x] Confirm epic priority and publish the reviewed breakdown.
 - [x] Commit and push this planning record.
+
+## Epic Publication
+
+The user selected next-run scheduling. Epic #218 is I01 E06 with priority 6; Section Composition retains priority 5. The parent initiative gains AC12 and the new epic row. Specification Freeze #23 becomes I01 E07 and its final task consumes E06 W05 before tagging. Draft discussion PR #217 remains open for review; implementation has not started.

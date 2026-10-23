@@ -4,7 +4,7 @@
 
 Each source owns its structural conversion settings. The current structural option is grouping (`-g SLUG:DEPTH`). Source roots, entry selection, referrer context, output destination, diagnostic mode, validation mode, fault injection and budgets remain invocation parameters.
 
-The proposed contract below is a design recommendation grounded in the user's per-file decision. The user requested a new Field Refinement epic. Its task files and epic body define delivery; priority confirmation is pending.
+The proposed contract below is a design recommendation grounded in the user's per-file decision. The user requested a new Field Refinement epic. Its task files and epic body define delivery; priority 6 schedules it ahead of Section Composition at 5.
 
 ## Metadata Contract
 
