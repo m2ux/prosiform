@@ -450,6 +450,8 @@ def run_fixture(fixture: Path) -> Result:
         invoked_from = working if named is None else (working / named).resolve()
         argv = [
             *build_under_test(),
+            "-o",
+            "-",
             "-d",
             "json",
             *requested,

@@ -270,6 +270,8 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
+        "-o",
+        "-",
         "-d",
         "json",
         "guide.md#alpha",
@@ -426,6 +428,8 @@ def test_a_fixture_naming_no_root_is_run_with_none(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
+        "-o",
+        "-",
         "-d",
         "json",
         "guide.md",
@@ -809,7 +813,7 @@ def test_the_run_receives_the_fault_the_manifest_names(
         "source-changed",
         "guide.md",
     ]
-    assert written[0] == "-d"
+    assert written[:2] == ["-o", "-"]
 
 
 def test_a_run_meeting_no_fault_asks_for_none(

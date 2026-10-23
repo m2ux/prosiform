@@ -686,7 +686,7 @@ def group(
     wrapper = Generated(title, 1, FILENAME_WRAPPER, tuple(resolving))
     emitting_headings: list[Emitted] = [wrapper]
     recorded: list[Part] = []
-    entries = [0] if selected is None else []
+    entries = [0] if selected is None or selected.document else []
     chosen = [token for token in regions(tokens) if id(token) in emitting]
     needed = required(tokens, emitting) - (set() if titled is None else {id(titled)})
     written = (
@@ -718,7 +718,7 @@ def group(
         if id(token) not in emitting:
             continue
         if token is absorbing:
-            if id(token) in naming:
+            if id(token) in naming and 0 not in entries:
                 entries.append(0)
             continue
         carried = carried_headings(tokens, token)

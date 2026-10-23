@@ -4,7 +4,7 @@ The Python implementation of prosiform, checked against the behavioural contract
 
 ### Command line
 
-Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes responses and bundles to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
+Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes a bundle to an entry-derived file unless `-o` selects stdout or another path, writes informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
 
 ### Agent delivery
 
