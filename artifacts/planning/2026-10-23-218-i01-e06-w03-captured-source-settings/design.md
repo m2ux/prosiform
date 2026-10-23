@@ -87,6 +87,8 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
+The installed Python package exposes `pf` as its executable *entry point*.
+
 Expose `pf` as the sole executable, with case-sensitive short flags, bundled Markdown on stdout and diagnostics on stderr. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
