@@ -113,6 +113,18 @@ pf -r example/work-tracker modes/plan-mode.md
 
 The artifact files declare group `artifacts`, and the mode file declares `modes`, each at depth `"2"` in its frontmatter. Each linked file supplies its own settings.
 
+For example, both artifact files begin with this declaration:
+
+```yaml
+---
+metadata:
+  prosiform-group: artifacts
+  prosiform-group-depth: "2"
+---
+```
+
+Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
+
 The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) includes an `Overview` because each artifact's introductory prose needs a section:
 
 ```markdown

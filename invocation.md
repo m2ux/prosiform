@@ -50,6 +50,7 @@ Each file declares its own group and source heading depth in leading YAML frontm
 ```yaml
 ---
 metadata:
+  author: example-team
   prosiform-group: rules
   prosiform-group-depth: "2"
 ---
@@ -57,7 +58,13 @@ metadata:
 
 Both fields are strings and occur together. Depth is `"1"` through `"6"`. The group name is a nonblank, printable single-line string containing neither `:` nor `/`; its exact spelling identifies the group. A file without these fields keeps its individual group. Linked files use their own declarations, including when only a section is selected. Group names are independent of directories and discover no additional files.
 
-Contributing files declaring the same group must agree on depth. A conflict reports both declarations and publishes nothing. Deferred-only files are validated but contribute no group membership. Other skill metadata remains outside the Markdown body.
+The frontmatter is one YAML 1.2 Core mapping between leading `---` lines, with an optional byte-order mark before the opening line. Its top-level keys are strings; `metadata`, when present, maps strings to strings. Keep standard skill fields such as `name` and `description` at the top level. Other metadata keys, such as `author` above, are accepted. The `prosiform-` prefix is reserved: unknown fields fail validation. Quote numeric-looking strings, including the depth; an unquoted `2` is a number and fails validation.
+
+Duplicate keys, aliases, merge keys and custom tags are invalid throughout the frontmatter. Frontmatter bytes count toward the source byte budgets, and YAML collections obey `-N` independently of Markdown containers. Frontmatter supplies no rendered content, links or headings.
+
+Contributing files declaring the same group must agree on depth. A conflict reports both declarations and publishes nothing. Deferred-only files are validated but contribute no group membership. Each selected destination supplies its settings once, whether reached directly, by fragment or through several callers; declarations do not propagate to siblings or dependencies.
+
+Metadata errors return exit status `1`: `E_INVALID_FRONTMATTER` identifies invalid YAML, `E_INVALID_CONVERSION_METADATA` identifies invalid fields, and `E_GROUP_DEPTH_CONFLICT` identifies conflicting contributing declarations. Diagnostics locate the original source; JSON diagnostics include `location` and, for conflicts, `related` locations. Existing output files remain intact on failure.
 
 ## Bundling rules
 
@@ -72,7 +79,7 @@ Contributing files declaring the same group must agree on depth. A conflict repo
 Stdout contains a bundle, an informational response, or nothing. Bundles open with entry-point links:
 
 ```markdown
-This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan](#plan); everything else is material it references.
 ```
 
 Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.
