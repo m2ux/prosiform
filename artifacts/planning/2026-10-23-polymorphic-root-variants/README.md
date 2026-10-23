@@ -25,5 +25,6 @@ The rule is planned here and the implementation is deferred. Document Metadata s
 | Resource | Link |
 | --- | --- |
 | Initiative | [Field Refinement](https://github.com/m2ux/prosiform/issues/20) |
+| Epic | [Inherited Roots](https://github.com/m2ux/prosiform/issues/233) |
 | Delivered root contract | [Document Metadata](https://github.com/m2ux/prosiform/issues/218) |
 | Board | [Board 18](https://github.com/users/m2ux/projects/18) |
