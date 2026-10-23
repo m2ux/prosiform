@@ -1,0 +1,57 @@
+## Overview
+
+The freeze is what ends the refinement stage and gives a production build something fixed to implement. Every ledger entry is resolved or explicitly deferred, a check refuses the freeze while one is neither, and the design and corpus take one tagged revision that a later build names as its target.
+
+## Problem
+
+A specification still accumulating changes cannot be implemented against, and a stage with no deferral path cannot end.
+
+- **An open finding and a settled contract cannot both hold.**
+  A corpus that still changes gives a second implementation no revision it can be said to satisfy.
+
+- **An unused tool reports no problems.**
+  A condition counting only recorded findings is satisfied by a ledger nobody wrote in, so it holds on the first day of the stage with the specification exactly as unexamined as when it started.
+
+- **One awkward finding can hold the stage open indefinitely.**
+  Without a deferral path, a single unresolved entry blocks the freeze regardless of its weight.
+
+- **A revision with no name cannot be targeted.**
+  A build that follows the branch tip follows later refinement rather than the specification it was reviewed against.
+
+- **A silently dropped entry reappears later.**
+  An entry closed without a reason is met again by whoever next encounters the behaviour.
+
+## Proposal
+
+- **Deferral is a decision with a reason.**
+  An entry still open at the freeze names what is deferred and why. It stays in the ledger for the stage that takes it rather than being closed.
+
+- **A check gates the tag.**
+  The freeze is refused while any entry is neither resolved nor deferred, so the tag cannot be applied over an unexamined ledger.
+
+- **An empty ledger is not a settled contract.**
+  The freeze is also refused until every source in the declared exposure set has a recorded bundling run, so a specification cannot be called settled because nobody exercised it.
+
+- **One tagged revision covers design and corpus.**
+  Both take the same revision, so the contract and the fixtures that bind it cannot be targeted separately.
+
+- **A later revision is adopted by decision.**
+  A production build names the tag it targets, and moving to a later one is recorded rather than inherited.
+
+## Work Breakdown
+
+| Task | Description | Coverage | Depends on | Joins | Done |
+| --- | --- | --- | --- | --- | --- |
+| [W01](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i01-e04/w01.md) | Deferral decisions for the remaining entries | AC1 | [E01:W03](https://github.com/m2ux/prosiform/issues/22) | | |
+| [W02](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i01-e04/w02.md) | Freeze check and the tagged revision | AC2, AC3, AC4 | W01, [E00:W03](https://github.com/m2ux/prosiform/issues/21), [E02:W04](https://github.com/m2ux/prosiform/issues/195), [E03:W10](https://github.com/m2ux/prosiform/issues/187), [E04:W10](https://github.com/m2ux/prosiform/issues/215), [E06:W08](https://github.com/m2ux/prosiform/issues/218) | | |
+
+## Acceptance Criteria
+
+- [ ] **AC1.** Each ledger entry still open at the freeze carries a recorded deferral naming what is deferred and why, as the status summary shows.
+- [ ] **AC2.** The freeze check refuses a tag while any entry is neither resolved nor deferred, as its tests show.
+- [ ] **AC3.** The design and the corpus carry one tagged revision, as the tag shows.
+- [ ] **AC4.** The freeze check refuses a tag until each source in the declared exposure set carries a recorded bundling run, as its tests show.
+
+## References
+
+- **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) — the design this epic settles, the planning decisions, and the work item for each row above.
