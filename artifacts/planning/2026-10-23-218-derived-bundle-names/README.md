@@ -32,7 +32,7 @@ Planning extension to epic #218. The user confirmed `pf <file>`: root metadata r
 
 - [x] Inspect current delivery and accepted decisions.
 - [x] Validate root and naming extension with related handoffs.
-- [ ] Publish the final plan, discussion and board state.
+- [x] Publish the final plan, discussion and board state.
 
 ## Metadata Compatibility
 
