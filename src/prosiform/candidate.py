@@ -444,12 +444,14 @@ def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
     named: list[tuple[str, str]] = []
     for one in groups:
         path = one.record.path
-        named.append((f"the heading for {path!r}", path))
-        for at in range(1, len(one.parts)):
-            if at > len(one.record.parts):
+        offset = 1 if one.wrapped else 0
+        if one.wrapped:
+            named.append((f"the heading for {path!r}", path))
+        for at in range(offset, len(one.parts)):
+            if at - offset >= len(one.record.parts):
                 named.append((f"the region at position {at} of {path!r}", path))
                 continue
-            part = one.record.parts[at - 1]
+            part = one.record.parts[at - offset]
             if isinstance(part, Range):
                 named.append(
                     (
@@ -526,7 +528,9 @@ def structure(
 
     The bundle is its entry line, then for each group the filename
     heading and one region for each part the group records: a selected
-    source range, or a structural ancestor. A candidate holding fewer
+    source range, or a structural ancestor. A group the parent's title
+    opens records that title among its parts and has no filename heading
+    ahead of them. A candidate holding fewer
     regions than the provenance claims has dropped one; a candidate
     holding more carries content no part accounts for. The filename
     wrapper is paired separately from the parts, so it cannot stand in
@@ -534,7 +538,9 @@ def structure(
     ancestor it is, so a heading-only part cannot stand in for a
     selected one either.
     """
-    expected = 1 + sum(1 + len(one.record.parts) for one in groups)
+    expected = 1 + sum(
+        (1 if one.wrapped else 0) + len(one.record.parts) for one in groups
+    )
     if len(spans) != expected:
         short = len(spans) < expected
         raise Invalid(
@@ -550,14 +556,15 @@ def structure(
     paired: list[tuple[Record, Part, Token]] = []
     at = 1
     for one in groups:
-        opening = spans[at]
-        if opening.type != HEADING_OPEN or level(opening) != 1:
-            raise Invalid(
-                GROUP_ISOLATION,
-                f"the group for {one.record.path!r} opens on a {opening.type!r} "
-                f"rather than on its own heading",
-            )
-        at += 1
+        if one.wrapped:
+            opening = spans[at]
+            if opening.type != HEADING_OPEN or level(opening) != 1:
+                raise Invalid(
+                    GROUP_ISOLATION,
+                    f"the group for {one.record.path!r} opens on a {opening.type!r} "
+                    f"rather than on its own heading",
+                )
+            at += 1
         for part in one.record.parts:
             span = spans[at]
             if isinstance(part, Ancestor | Generated) and (
@@ -833,7 +840,10 @@ def levels(record: Record) -> None:
                 f"the heading {one.text!r} of {record.path!r} is emitted at level "
                 f"{one.level}, which is beyond H{MAX_LEVEL}",
             )
-        if one.level == 1:
+        if one.level == 1 and any(
+            isinstance(heading, Generated) and heading.level == 1
+            for heading in record.headings
+        ):
             raise Invalid(
                 GROUP_ISOLATION,
                 f"the heading {one.text!r} of {record.path!r} is emitted at the "

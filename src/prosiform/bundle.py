@@ -80,9 +80,11 @@ heading stays the Setext heading its source wrote.
 Each link in selected content that the bundle compiled is rewritten to
 the destination of the target it resolved to, through the map the
 bundle's own headings produce. A whole-document reference takes the
-destination of that file's heading, a fragment takes the destination of
-the heading it named, and a fragment-only link resolves inside its own
-source first and then takes that heading's destination. A destination
+destination of that file's heading, except the parent — the first entry
+document — whose whole-document reference takes the destination of its
+first H2, wherever the bundle placed that heading. A fragment takes the
+destination of the heading it named, and a fragment-only link resolves
+inside its own source first and then takes that heading's destination. A destination
 is scoped to the whole bundle, so a reference from one group to another
 is spelled as one inside a group is. A mark goes with the rewrite,
 because a reader of the bundle has no use for authoring syntax.
@@ -99,7 +101,7 @@ one heading and resolves to another.
 
 import re
 from collections.abc import Collection, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import PurePosixPath
 
 from markdown_it.token import Token
@@ -217,8 +219,10 @@ class Group:
     The group is held as the parts it emits — its file heading, then one
     part for each selected source region — rather than as the Markdown
     those parts join into, because the separation between two of them is
-    the bundle's own and the bundle states it in one place. The text the
-    group publishes is those parts with one blank line between each.
+    the bundle's own and the bundle states it in one place. A group the
+    parent's own title opens has no file heading ahead of those regions.
+    The text the group publishes is those parts with one blank line
+    between each.
 
     The headings the group emits and the source fragment each answers to
     are read from that record, so the group states them once. The first
@@ -232,6 +236,7 @@ class Group:
     entries: tuple[int, ...]
     record: Record
     order: str
+    wrapped: bool = True
 
     @property
     def text(self) -> str:
@@ -411,6 +416,14 @@ def target(
     if deferred is None:
         return None
     return rebased(deferred, destination)
+
+
+def carries_title(tokens: Sequence[Token]) -> bool:
+    """Whether the document carries an H1 at its own level."""
+    return any(
+        level(opening) == 1 and any(token is opening for token in regions(tokens))
+        for opening, _inline in headings(tokens)
+    )
 
 
 def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
@@ -629,11 +642,17 @@ def group(
     assigned: dict[tuple[str, str | None], str] | None = None,
     root: str = "",
     display: str | None = None,
+    situate: bool = False,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
-    A selection of None is the whole document, which the file heading
-    itself is the entry to. A selection of sections emits the regions it
+    The parent keeps its H1 and the content above its first H2 at the
+    levels the author wrote, and its whole-document entry is that first
+    H2.
+
+    A selection of None is the whole document. The file heading is the
+    entry to it, and the parent's first H2 is the entry to the parent.
+    A selection of sections emits the regions it
     names and nothing else, and each heading an entry reference resolved
     to is the entry to the destination that heading takes.
 
@@ -669,6 +688,7 @@ def group(
     included, so the bundle carries the uses and none of the
     declarations behind them.
     """
+    situate = situate and carries_title(tokens)
     title = heading_text(path if display is None else display)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
@@ -683,18 +703,26 @@ def group(
         set() if selected is None else {id(token) for token in selected.named}
     )
     titled = absorbed(tokens, title)
-    absorbing = titled if titled is not None and id(titled) in emitting else None
-    by = 0 if absorbing is not None else SHIFT
-    emitted = [f"{ATX} {escaped(title)}"]
+    absorbing = (
+        None
+        if situate
+        else titled
+        if titled is not None and id(titled) in emitting
+        else None
+    )
+    by = 0 if situate or absorbing is not None else SHIFT
+    emitted = [] if situate else [f"{ATX} {escaped(title)}"]
     text = shown_text(tokens)
     named = source_fragments(tokens)
-    resolving: list[Target] = [(path, None)]
-    if absorbing is not None:
-        resolving.append((path, named[id(absorbing)]))
-    wrapper = Generated(title, 1, FILENAME_WRAPPER, tuple(resolving))
-    emitting_headings: list[Emitted] = [wrapper]
+    emitting_headings: list[Emitted] = []
     recorded: list[Part] = []
-    entries = [0] if selected is None or selected.document else []
+    entries = [] if situate else ([0] if selected is None or selected.document else [])
+    if not situate:
+        resolving: list[Target] = [(path, None)]
+        if absorbing is not None:
+            resolving.append((path, named[id(absorbing)]))
+        wrapper = Generated(title, 1, FILENAME_WRAPPER, tuple(resolving))
+        emitting_headings.append(wrapper)
     chosen = [token for token in regions(tokens) if id(token) in emitting]
     needed = required(tokens, emitting) - (set() if titled is None else {id(titled)})
     written = (
@@ -762,11 +790,50 @@ def group(
             )
         )
         emitted.append(region(written, tokens, token, by, removed))
+    if situate and (selected is None or selected.document):
+        roots = {
+            token.map[0] + 1
+            for token in regions(tokens)
+            if token.type == HEADING_OPEN
+            and level(token) == 2
+            and token.map is not None
+        }
+        at = next(
+            (
+                index
+                for index, heading in enumerate(emitting_headings)
+                if isinstance(heading, Carried)
+                and any(
+                    origin.path == path and origin.line in roots
+                    for origin in heading.origins
+                )
+            ),
+            None,
+        )
+        if at is None:
+            at = next(
+                (
+                    index
+                    for index, heading in enumerate(emitting_headings)
+                    if isinstance(heading, Carried)
+                    and any(origin.path == path for origin in heading.origins)
+                ),
+                None,
+            )
+        if at is not None:
+            heading = emitting_headings[at]
+            emitting_headings[at] = replace(
+                heading, answers=(*heading.answers, (path, None))
+            )
+            if at in entries:
+                entries.remove(at)
+            entries.insert(0, at)
     return Group(
         tuple(emitted),
         tuple(entries),
         Record(path, None, tuple(emitting_headings), tuple(recorded)),
         path,
+        wrapped=not situate,
     )
 
 

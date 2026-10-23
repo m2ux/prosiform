@@ -845,10 +845,12 @@ def selection(
     An entry reference is one the caller named, and the entry line
     links what the caller asked for, so only the heading an entry
     resolved to stays identifiable. A whole document an entry selected
-    and nothing else named is the selection `None`, whose entry is the
-    file heading. A whole document an entry selected beside named
-    sections keeps that file heading as an entry as well. A whole
-    document only a dependency selected enters the entry line not at all.
+    and nothing else named is the selection `None`. The parent, the
+    first entry document, is entered at its first H2; every other such
+    document is entered at its file heading. A whole document an entry
+    selected beside named sections keeps that heading as an entry as
+    well. A whole document only a dependency selected enters the entry
+    line not at all.
 
     A fragment the document does not yield is a reference that reached
     a document and no section of it, so its diagnostic names that
@@ -1310,6 +1312,13 @@ def unambiguous(
             seen[title] = path
 
 
+def parent_document(entries: Collection[Reference]) -> str | None:
+    """The first entry document, which opens the bundle on its own title."""
+    if not isinstance(entries, Sequence) or not entries:
+        return None
+    return entries[0].path or None
+
+
 def assembled(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -1325,8 +1334,10 @@ def assembled(
     other document joins the merged group its slug names, which carries
     its members in root-relative path order. The groups are ordered by
     root-relative path, a merged group taking the first of its
-    members', so one selection always bundles to the same bytes.
+    members', so one selection always bundles to the same bytes. The
+    group that carries the parent leads.
     """
+    parent = parent_document(entries)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
     for path in sorted(
@@ -1349,6 +1360,7 @@ def assembled(
                     assigned,
                     read[path].root,
                     read[path].display or path,
+                    path == parent,
                 )
             )
     for named, paths in merging.items():
@@ -1368,18 +1380,26 @@ def assembled(
                             assigned,
                             depth,
                             read[path].root,
+                            path == parent,
                         )
                         for path in paths
                     ],
                     {path: read[path].display for path in paths},
+                    parent,
                 )
             )
-    return sorted(
+    ordered = sorted(
         groups,
         key=lambda one: min(
             (read[p].display, read[p].identity or p)
             for p in set(one.record.paths()) | {one.order}
         ),
+    )
+    if parent is None:
+        return ordered
+    return sorted(
+        ordered,
+        key=lambda one: parent not in set(one.record.paths()) | {one.order},
     )
 
 
