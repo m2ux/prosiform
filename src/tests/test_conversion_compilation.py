@@ -29,7 +29,7 @@ def test_linked_destination_owns_its_settings(
     assert "[Target](#run-1)" in run.stdout
     assert run.stdout.count("Target content.") == 1
     assert "Not discovered." not in run.stdout
-    assert "prosiform-group" not in run.stdout
+    assert "group" not in run.stdout
 
 
 def test_diamond_cycle_and_unannotated_sibling_keep_source_ownership(
@@ -104,15 +104,15 @@ def test_conflicting_depths_are_stable_and_atomic(
     if form == "json":
         diagnostic = forward.diagnostics()[0]
         assert diagnostic["code"] == "E_GROUP_DEPTH_CONFLICT"
-        assert diagnostic["location"] == {"file": "a.md", "line": 4, "column": 26}
+        assert diagnostic["location"] == {"file": "a.md", "line": 4, "column": 16}
         assert diagnostic["related"][0] == {
             "file": "b.md",
             "line": 4,
-            "column": 26,
-            "message": "metadata.prosiform-group-depth for group 'shared' is 3",
+            "column": 16,
+            "message": "prosiform.group-depth for group 'shared' is 3",
         }
     else:
-        assert "a.md:4:26" in forward.stderr and "b.md:4:26" in forward.stderr
+        assert "a.md:4:16" in forward.stderr and "b.md:4:16" in forward.stderr
 
 
 @pytest.mark.parametrize(

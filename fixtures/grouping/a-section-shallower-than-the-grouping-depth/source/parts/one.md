@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "parts"
-  prosiform-group-depth: "3"
+prosiform:
+  group: "parts"
+  group-depth: 3
 ---
 # One
 

@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "g"
-  prosiform-group-depth: "2"
+prosiform:
+  group: "g"
+  group-depth: 2
 ---
 First preamble.
 

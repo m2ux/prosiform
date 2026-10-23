@@ -1,6 +1,6 @@
 ---
-metadata:
-  prosiform-group: "notes"
-  prosiform-group-depth: "2"
+prosiform:
+  group: "notes"
+  group-depth: 2
 ---
 # Bare

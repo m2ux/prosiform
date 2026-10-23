@@ -30,8 +30,8 @@ from prosiform.diagnostics import ERROR, Diagnostic, Location, RelatedLocation
 INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
-GROUP = "prosiform-group"
-DEPTH = "prosiform-group-depth"
+GROUP = "group"
+DEPTH = "group-depth"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
     "null": re.compile(r"(?:~|null|Null|NULL|)"),
@@ -65,8 +65,10 @@ class _MarkedScanner(Scanner):
 
 @dataclass(frozen=True)
 class Conversion:
-    """Immutable paired settings and their original value locations."""
+    """Immutable source settings and their original value locations."""
 
+    root: str | None = None
+    root_location: Location | None = None
     group: str | None = None
     depth: int | None = None
     group_location: Location | None = None
@@ -309,14 +311,14 @@ def decode(
                 "frontmatter root keys must be strings",
                 key.location,
             )
-        if key.value == "metadata":
+        if key.value == "prosiform":
             metadata = value
     if metadata is None:
         return Conversion()
     if metadata.kind != "map":
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "metadata must be a string mapping",
+            "prosiform must be a mapping",
             metadata.location,
         )
     fields: dict[str, _Node] = {}
@@ -324,26 +326,45 @@ def decode(
         if key.kind != "str":
             raise _fail(
                 INVALID_CONVERSION_METADATA,
-                "metadata keys must be strings",
+                "prosiform keys must be strings",
                 key.location,
             )
-        name = "metadata." + key.value
-        if key.value.startswith("prosiform-") and key.value not in (GROUP, DEPTH):
+        name = "prosiform." + key.value
+        if key.value not in ("root", GROUP, DEPTH):
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
-        if value.kind != "str":
+        if key.value != DEPTH and value.kind != "str":
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"{name} must be a string", value.location
             )
         fields[key.value] = value
+    declared_root = fields.get("root")
+    if declared_root is not None and (
+        not declared_root.value
+        or declared_root.value.startswith(("/", "~"))
+        or re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", declared_root.value)
+        or re.search(r"\$|%[A-Za-z_][A-Za-z0-9_]*%", declared_root.value)
+        or any(
+            char == "\\" or ord(char) < 32 or 127 <= ord(char) <= 159
+            for char in declared_root.value
+        )
+    ):
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            "prosiform.root must be a nonempty relative directory path "
+            "without controls, backslashes or expansion",
+            declared_root.location,
+        )
+    root_value = declared_root.value if declared_root is not None else None
+    root_location = declared_root.location if declared_root is not None else None
     if GROUP not in fields and DEPTH not in fields:
-        return Conversion()
+        return Conversion(root=root_value, root_location=root_location)
     if GROUP not in fields or DEPTH not in fields:
         present = GROUP if GROUP in fields else DEPTH
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"metadata.{present} requires its paired field",
+            f"prosiform.{present} requires its paired field",
             fields[present].location,
         )
     group, depth = fields[GROUP], fields[DEPTH]
@@ -357,14 +378,26 @@ def decode(
     ):
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "metadata.prosiform-group must be printable, single-line and nonblank, "
+            "prosiform.group must be printable, single-line and nonblank, "
             "without ':' or '/'",
             group.location,
         )
-    if not re.fullmatch("[1-6]", depth.value):
+    numeric_depth = (
+        _scalar(depth.value, PREFIX + "int", True, depth.location)[1]
+        if depth.kind == "int"
+        else None
+    )
+    if not isinstance(numeric_depth, Decimal) or not 1 <= numeric_depth <= 6:
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "metadata.prosiform-group-depth must be a string digit from 1 through 6",
+            "prosiform.group-depth must be an integer from 1 through 6",
             depth.location,
         )
-    return Conversion(group.value, int(depth.value), group.location, depth.location)
+    return Conversion(
+        root=root_value,
+        root_location=root_location,
+        group=group.value,
+        depth=int(numeric_depth),
+        group_location=group.location,
+        depth_location=depth.location,
+    )

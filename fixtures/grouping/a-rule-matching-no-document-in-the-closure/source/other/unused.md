@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "other"
-  prosiform-group-depth: "2"
+prosiform:
+  group: "other"
+  group-depth: 2
 ---
 # Unused
 

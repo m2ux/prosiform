@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "modes"
-  prosiform-group-depth: "2"
+prosiform:
+  group: "modes"
+  group-depth: 2
 ---
 Review preamble.
 

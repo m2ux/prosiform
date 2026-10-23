@@ -1393,7 +1393,7 @@ def group_depths(
                     INPUT_FAILURE,
                     Diagnostic(
                         ERROR,
-                        f"metadata.prosiform-group-depth for group {name!r} "
+                        f"prosiform.group-depth for group {name!r} "
                         f"is {first.depth}; "
                         f"another member declares {current.depth}",
                         code=GROUP_DEPTH_CONFLICT,
@@ -1403,7 +1403,7 @@ def group_depths(
                                 location.file,
                                 location.line,
                                 location.column,
-                                "metadata.prosiform-group-depth for group "
+                                "prosiform.group-depth for group "
                                 f"{name!r} is {current.depth}",
                             ),
                         ),

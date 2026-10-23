@@ -34,7 +34,7 @@ Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 pf -r my-skill -o skill-bundle.md procedure.md rules/common.md
 ```
 
-The Common and Agents files each declare group `rules` and depth `"1"` in their [conversion metadata](invocation.md#conversion-metadata).
+The Common and Agents files each declare group `rules` and depth `1` in their [conversion metadata](invocation.md#conversion-metadata).
 
 ![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
