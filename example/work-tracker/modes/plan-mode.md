@@ -11,20 +11,20 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 ## Procedure
 
 1. **Populate the epics.**
-   Run [Populate Epic Issue Body](artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
+   Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
    - Return each epic draft and its format results to the review step.
 2. **Publish.**
    - Save the epics in dependency order, each carrying its confirmed priority label.
    - Replace every temporary link in the initiative and epic bodies with the saved issue identity.
-   - Call [Validate Epic Body](artifacts/epic-issue-body.md#validate-epic-body) with the saved initiative context.
+   - Call [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) with the saved initiative context.
    - Resolve findings.
    - Save the corrected bodies.
 3. **Record delivered work.**
    When work has landed:
-   - Run [Record Epic Delivery](artifacts/epic-issue-body.md#record-epic-delivery) with the epic's current evidence.
-   - Resolve each line of the returned [Delivery Findings](artifacts/epic.md#delivery-findings).
+   - Run [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic's current evidence.
+   - Resolve each line of the returned [Delivery Findings](../artifacts/epic.md#delivery-findings).
    - Return the saved delivery state or blockers.
 4. **Verify outcomes met**
    - Ensure each of the [Outcomes](#outcomes) is met.
