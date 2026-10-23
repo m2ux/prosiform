@@ -16,6 +16,7 @@ W03 connects the bounded metadata decoder to captured source reads for epic #218
 ## Artifacts
 
 - [Work item](w03.md)
+- [Delivered source contract](design.md) — full conformance snapshot for the W03 runtime, combining the established grouping interface with validated captured metadata. The build pins this snapshot by commit; the W01 contract remains the complete epic's target.
 
 ## Progress
 
