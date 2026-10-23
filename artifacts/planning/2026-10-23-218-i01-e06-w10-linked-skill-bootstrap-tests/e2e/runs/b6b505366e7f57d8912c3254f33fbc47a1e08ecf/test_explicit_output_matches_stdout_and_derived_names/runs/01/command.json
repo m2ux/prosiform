@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/tmp/pf-bootstrap-install-239l6c6g/environment/bin/pf",
+    "-d",
+    "json",
+    "-o",
+    "-",
+    "../skills/pf-bootstrap-specimen/modes/assemble.md"
+  ],
+  "cwd": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-10-23-218-i01-e06-w10-linked-skill-bootstrap-tests/e2e/runs/b6b505366e7f57d8912c3254f33fbc47a1e08ecf/test_explicit_output_matches_stdout_and_derived_names/workspace/run",
+  "cwd_record": "test_explicit_output_matches_stdout_and_derived_names/workspace/run",
+  "exit_status": 0,
+  "source_commit": "b6b505366e7f57d8912c3254f33fbc47a1e08ecf"
+}

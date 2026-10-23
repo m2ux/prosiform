@@ -1,0 +1,1 @@
+{"severity": "error", "message": "prosiform.group-depth for group 'leaves' is 2; another member declares 3", "code": "E_GROUP_DEPTH_CONFLICT", "remedy": "use one depth for every contributing group member", "location": {"file": "leaf.md", "line": 4, "column": 16}, "related": [{"file": "tail.md", "line": 4, "column": 16, "message": "prosiform.group-depth for group 'leaves' is 3"}]}

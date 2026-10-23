@@ -1,0 +1,1 @@
+{"severity": "warning", "message": "the entry reference 'Steps' resolves to the destination 'steps', which the bundle's entry line links it to", "code": "W_ENTRY_DESTINATION", "reference": "Steps", "resolved": "steps"}
