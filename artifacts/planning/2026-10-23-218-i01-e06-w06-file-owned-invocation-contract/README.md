@@ -21,3 +21,4 @@ The normative contract establishes AC13 before the decoder and resolver implemen
 | Resource | Link |
 | --- | --- |
 | Epic | https://github.com/m2ux/prosiform/issues/218 |
+| Task pull request | https://github.com/m2ux/prosiform/pull/226 |

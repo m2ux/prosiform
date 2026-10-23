@@ -48,3 +48,7 @@ The task branch contains one changed documentation file. Historical planning and
 ## Delivery Boundary
 
 The task PR targets `i01/e06/engineering`. W06 has no standalone task issue and therefore requires no task Development link. Merge waits on confirmation that the repository's **Auto-close issues with merged linked pull requests** setting is disabled, as required by the work-planner Issue artifact. API inspection does not expose this setting; `allow_auto_merge` is unrelated. The epic review remains draft.
+
+PR [#226](https://github.com/m2ux/prosiform/pull/226) is open at exact head `977e4ebeaedca77d28ce4bf271768b8205e4ab28`; repeated API reads report `mergeable: true`, `mergeable_state: clean` and the intended base. Exact-head check runs and commit statuses are empty; GitHub reports combined status `pending` for the empty status set. No CI pass is claimed. Target protection returns 404 (unprotected) and active branch rules are empty. Reviews are empty. The passing Test Plan records the documentation review and hygiene checks above.
+
+The epic's W06 row now links PR #226. A fresh-body surgical update preserved all other text, and API readback matched the intended body exactly. W06 and AC13 remain unticked pending merge. Full delivery synchronization requires readable actual Development relations, unavailable through this session's tools; body links do not substitute for them. Task Merge and successor epic review creation have not run because no merge is confirmed.
