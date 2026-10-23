@@ -19,8 +19,6 @@ The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md
 
 ## Procedure
 
-The main path meets [Outcomes](#outcomes).
-
 1. **Populate the epics.**
    Run [Populate Epic Issue Body](artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
    - Register each returned file in the planning record.
@@ -37,6 +35,8 @@ The main path meets [Outcomes](#outcomes).
    - Run [Record Epic Delivery](artifacts/epic-issue-body.md#record-epic-delivery) with the epic's current evidence.
    - Resolve each line of the returned [Delivery Findings](artifacts/epic.md#delivery-findings).
    - Return the saved delivery state or blockers.
+4. **Verify outcomes met**
+   - Ensure each of the [Outcomes](#outcomes) is met.
 
 ## Outcomes
 
