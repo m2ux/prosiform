@@ -32,3 +32,7 @@ This record scopes the refactor, records its source evidence and proposes an imp
 | Metadata Convention | [Agent Skills Specification](https://agentskills.io/specification#metadata-field) |
 | Epic | [#218 — I01 E06 Document Metadata](https://github.com/m2ux/prosiform/issues/218) |
 | Discussion | [Draft PR #217](https://github.com/m2ux/prosiform/pull/217) |
+
+## Invocation Extension
+
+[File-owned roots and bundle names](../2026-10-23-218-derived-bundle-names/README.md) records W06–W10, root inheritance and file-only invocation.

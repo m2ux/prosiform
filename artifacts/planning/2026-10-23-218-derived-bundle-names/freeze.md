@@ -43,7 +43,7 @@ A specification still accumulating changes cannot be implemented against, and a 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i01-e04/w01.md) | Deferral decisions for the remaining entries | AC1 | [E01:W03](https://github.com/m2ux/prosiform/issues/22) | | |
-| [W02](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i01-e04/w02.md) | Freeze check and the tagged revision | AC2, AC3, AC4 | W01, [E00:W03](https://github.com/m2ux/prosiform/issues/21), [E02:W04](https://github.com/m2ux/prosiform/issues/195), [E03:W10](https://github.com/m2ux/prosiform/issues/187), [E04:W10](https://github.com/m2ux/prosiform/issues/215), [E06:W08](https://github.com/m2ux/prosiform/issues/218) | | |
+| [W02](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1/i01-e04/w02.md) | Freeze check and the tagged revision | AC2, AC3, AC4 | W01, [E00:W03](https://github.com/m2ux/prosiform/issues/21), [E02:W04](https://github.com/m2ux/prosiform/issues/195), [E03:W10](https://github.com/m2ux/prosiform/issues/187), [E04:W10](https://github.com/m2ux/prosiform/issues/215), [E06:W10](https://github.com/m2ux/prosiform/issues/218) | | |
 
 ## Acceptance Criteria
 
