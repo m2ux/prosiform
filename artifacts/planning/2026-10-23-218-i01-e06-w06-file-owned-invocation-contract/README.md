@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-W06 defines file-only invocation, inherited roots and automatic output filenames for Prosiform epic I01:E06.
+W06 defines file-only invocation, top-level frontmatter, working-directory root defaults and automatic output filenames for Prosiform epic I01:E06.
 
 The normative contract establishes AC13 before the decoder and resolver implementation tasks begin. W05 is merged; the user confirmed continued delivery of I01:E06.
 
