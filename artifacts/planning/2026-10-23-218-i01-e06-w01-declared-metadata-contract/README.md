@@ -27,7 +27,7 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 - Prerequisites: the initiative row has no prerequisite epic; W01 has no task dependency; no open questions or reservation were present at selection.
 - Queue: E06 is the sole next epic. Findings Ledger and Section Composition move to Backlog under the confirmed priority-6 choice.
 - Branch evidence: the contract's owning branch and work item explicitly identify engineering. The workspace's `config/branches` lists only main and workspace, so the delivery calculator resolves the unit but omits its engineering base. The supplied base follows the actual component owner; no unrelated branch registry edit is part of this task.
-- Repository auto-close setting: user confirmation pending before delivery merge or Development-link creation.
+- Repository auto-close setting: the user confirms automatic closure of linked issues on pull-request merge is disabled.
 
 ## Progress
 
@@ -35,7 +35,8 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 - [x] Reserve and dispatch the task.
 - [x] Implement and review the contract.
 - [x] Validate and publish the delivery PR.
-- [ ] Merge and record delivery when repository prerequisites hold.
+- [x] Merge W01 and record its verified AC1 delivery.
+- [ ] Link draft epic review #220 to epic #218 through the Development sidebar.
 
 ## Links
 
@@ -43,4 +44,5 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 | --- | --- |
 | Epic | [#218](https://github.com/m2ux/prosiform/issues/218) |
 | Task Pull Request | [#219](https://github.com/m2ux/prosiform/pull/219) |
+| Draft Epic Review | [#220](https://github.com/m2ux/prosiform/pull/220) |
 | Board | [Bundling](https://github.com/users/m2ux/projects/18) |
