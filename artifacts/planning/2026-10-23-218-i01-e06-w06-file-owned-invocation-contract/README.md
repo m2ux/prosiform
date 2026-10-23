@@ -13,6 +13,8 @@ The normative contract establishes AC13 before the decoder and resolver implemen
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w06.md) | Component, scope and validation obligations |
+| [Invocation contract review](validation.md) | Reviewed revision, AC13 evidence, name matrix and delivery boundary |
+| [Delivery changes](changes.md) | Plan-change list, debt classification and remaining delivery work |
 
 ## Links
 
