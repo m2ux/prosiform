@@ -16,6 +16,8 @@ W04 applies captured metadata to compilation for epic #218. Coverage: AC8 destin
 ## Artifacts
 
 - [Work item](w04.md)
+- [Validation](validation.md)
+- [Plan changes](changes.md)
 - [Compilation contract](design.md) — the complete W01 target contract with the installed entry point stated inline; this delivery pins its published revision for strict conformance checks.
 
 ## Progress
