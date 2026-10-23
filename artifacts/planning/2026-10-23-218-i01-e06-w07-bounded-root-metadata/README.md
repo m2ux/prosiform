@@ -15,9 +15,12 @@ The decoder establishes the metadata model consumed by per-file root resolution.
 | [Work item](w07.md) | Component, scope and validation obligations |
 | [Validation](validation.md) | Revision, criterion coverage, review and plan changes |
 | [Full checks](full-check.log) | Complete project-check output |
+| [Merged tests](merged-tests.log) | Criterion tests on the merged epic-base revision |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | https://github.com/m2ux/prosiform/issues/218 |
+| Task PR | https://github.com/m2ux/prosiform/pull/228 |
+| Runtime review | https://github.com/m2ux/prosiform/pull/222 |
