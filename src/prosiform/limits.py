@@ -62,7 +62,8 @@ NESTING = Budget(
     "-N",
     "max_nesting",
     64,
-    "levels of container nesting and, independently, YAML collection nesting in one source",
+    "levels of container nesting and, independently, "
+    "YAML collection nesting in one source",
 )
 EXPANSION_DEPTH = Budget(
     "-E", "max_expansion_depth", 8, "link hops from the nearest entry reference"
