@@ -27,7 +27,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | `-O N` | bytes of the complete bundle; positive decimal integer, default 262144 |
 | `-T N` | distinct document and section targets discovered; positive decimal integer, default 4096 |
 | `-L N` | authored link and image occurrences in selected content; positive decimal integer, default 32768 |
-| `-N N` | levels of container nesting in one source; positive decimal integer, default 64 |
+| `-N N` | levels of container nesting and, independently, YAML collection nesting in one source; positive decimal integer, default 64 |
 | `-E N` | link hops from the nearest entry reference; positive decimal integer, default 8 |
 | `-C` | list this build's error and warning codes |
 | `-v` | tool version and profile identifier |
@@ -48,11 +48,11 @@ pf -r example/work-tracker -c modes/plan-mode.md
 
 ## Bundling rules
 
-- **Sources:** valid UTF-8; strip one leading byte-order mark and one leading frontmatter block; parse as `skill-markdown-v1`.
+- **Sources:** valid UTF-8; validate leading frontmatter as bounded YAML 1.2 Core and retain each file's conversion metadata; parse the body after one leading byte-order mark and frontmatter block as `skill-markdown-v1`.
 - **Closure:** entries select whole documents or named sections. Follow local Markdown links under `-r`, relative to their source document, until no new dependencies remain. Compiled links target bundle headings. Outside-root links stay authored and contribute nothing.
 - **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless `-g` merges it. Merged groups use title-cased directory headings. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
 - **Deferred links:** link text starting with `¬` requires an existing document/section but adds no content through that link. Preserve text, marker and following spaces; emit a root-relative destination for a separate run.
-- **Invalid input:** invalid UTF-8, unterminated frontmatter, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
+- **Invalid input:** invalid UTF-8, unterminated or invalid frontmatter, invalid conversion metadata, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
 
 ## Output
 

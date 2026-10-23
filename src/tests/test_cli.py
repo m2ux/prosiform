@@ -75,12 +75,14 @@ from prosiform.cli import (
 )
 from prosiform.closure import resolve
 from prosiform.limits import (
-    CODES as LIMITS_CODES,
-)
-from prosiform.limits import (
+    BUDGETS,
     FILES,
     NESTING,
     RESOURCE_LIMIT,
+    Limits,
+)
+from prosiform.limits import (
+    CODES as LIMITS_CODES,
 )
 from prosiform.profile import (
     CODES as PROFILE_CODES,
@@ -869,7 +871,9 @@ def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
 
 def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
     (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\n# Guide\r\n")
-    read = read_document(root, resolve("guide.md")).source
+    read = read_document(
+        root, resolve("guide.md"), Limits({b: b.default for b in BUDGETS})
+    ).source
     assert read.text == "# Guide\r\n"
     assert read.first_line == 4
 
@@ -1778,18 +1782,20 @@ def test_an_error_the_contract_does_not_name_is_an_internal_error_as_text(
 
 def captured_for(root: Path, path: str) -> dict[str, Capture]:
     """What one source was when it was read, as discovery captures it."""
-    return {path: Capture(canonical(root, path), hashed(read_source(root, path)))}
+    return {
+        path: Capture(canonical(root, path), hashed(read_source(root, path)), (path,))
+    }
 
 
 def test_a_source_nothing_wrote_passes_the_recheck(root: Path) -> None:
-    recheck(root, captured_for(root, "guide.md"), {})
+    recheck(root, captured_for(root, "guide.md"))
 
 
 def test_a_source_written_after_the_read_fails_the_recheck(root: Path) -> None:
     captured = captured_for(root, "guide.md")
     (root / "guide.md").write_text("# Guide\n\nA line the run never read.\n")
     with pytest.raises(Failure) as raised:
-        recheck(root, captured, {"guide.md": ("guide.md",)})
+        recheck(root, captured)
     assert raised.value.diagnostic.code == SOURCE_CHANGED
     assert raised.value.status == INPUT_FAILURE
 
@@ -1798,7 +1804,7 @@ def test_a_source_removed_after_the_read_fails_the_recheck(root: Path) -> None:
     captured = captured_for(root, "guide.md")
     (root / "guide.md").unlink()
     with pytest.raises(Failure) as raised:
-        recheck(root, captured, {"guide.md": ("guide.md",)})
+        recheck(root, captured)
     assert raised.value.diagnostic.code == SOURCE_CHANGED
 
 
@@ -1812,7 +1818,7 @@ def test_a_source_resolving_elsewhere_fails_the_recheck(tmp_path: Path) -> None:
     (tmp_path / "now").unlink()
     os.symlink(tmp_path / "two", tmp_path / "now")
     with pytest.raises(Failure) as raised:
-        recheck(root, captured, {"guide.md": ("guide.md",)})
+        recheck(root, captured)
     assert raised.value.diagnostic.code == SOURCE_CHANGED
     assert str(tmp_path / "two" / "guide.md") in raised.value.diagnostic.message
 

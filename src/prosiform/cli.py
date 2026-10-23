@@ -240,6 +240,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
+from prosiform.metadata import InvalidMetadata
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -757,7 +758,9 @@ def canonical(root: Path, path: str) -> str:
     return os.path.realpath(root / path)
 
 
-def read_document(root: Path, found: Reference) -> Opened:
+def read_document(
+    root: Path, found: Reference, limits: Limits, total: int = 0
+) -> Opened:
     """One document's content, read under the allowed source root.
 
     A refusal is worded for the reference that asked for the document
@@ -815,6 +818,11 @@ def read_document(root: Path, found: Reference) -> Opened:
             chain=chain,
         ) from absent
     try:
+        limits.hold(FILE_BYTES, len(data))
+        limits.hold(INPUT_BYTES, total + len(data))
+    except Crossed as crossed:
+        raise unindexable(crossed, name, chain) from crossed
+    try:
         text = decode(data)
     except UnicodeDecodeError as undecodable:
         raise input_failure(
@@ -827,9 +835,22 @@ def read_document(root: Path, found: Reference) -> Opened:
             source=name,
             chain=chain,
         ) from undecodable
-    captured = Capture(canonical(root, name), hashed(data))
+    captured = Capture(canonical(root, name), hashed(data), chain)
     try:
-        return Opened(content(text), len(data), captured)
+        return Opened(
+            content(
+                text,
+                file=name,
+                max_bytes=limits.of(FILE_BYTES),
+                max_depth=limits.of(NESTING),
+            ),
+            len(data),
+            captured,
+        )
+    except InvalidMetadata as invalid:
+        raise Failure(
+            INPUT_FAILURE, replace(invalid.diagnostic, reference=reference, chain=chain)
+        ) from invalid
     except Unterminated as unclosed:
         raise input_failure(
             f"{written} {reference!r} names a document whose frontmatter "
@@ -939,9 +960,7 @@ def unsafe(boundary: Unsafe, chain: Sequence[str]) -> Failure:
     )
 
 
-def recheck(
-    root: Path, captured: dict[str, Capture], chains: dict[str, tuple[str, ...]]
-) -> None:
+def recheck(root: Path, captured: dict[str, Capture]) -> None:
     """Hold every source the run read to still being the source it read.
 
     Each source is read again and compared against the canonical path
@@ -964,20 +983,20 @@ def recheck(
             raise changed(
                 path,
                 f"is no longer a document the allowed source root yields: {unreadable}",
-                chains.get(path, ()),
+                was.chain,
             ) from unreadable
         now = canonical(root, path)
         if now != was.identity:
             raise changed(
                 path,
                 f"resolves to {now!r} rather than {was.identity!r}",
-                chains.get(path, ()),
+                was.chain,
             )
         if hashed(data) != was.digest:
             raise changed(
                 path,
                 "holds content other than the bytes the run read",
-                chains.get(path, ()),
+                was.chain,
             )
 
 
@@ -1310,11 +1329,11 @@ def traverse(
         for one in frontier:
             if not one.path or one.path in read:
                 continue
-            opened = read_document(root, one)
+            limits.hold(FILES, len(read) + 1)
+            opened = read_document(root, one, limits, total)
             source = opened.source
             environment: dict[str, Any] = {}
             try:
-                limits.hold(FILE_BYTES, opened.size)
                 tokens = parse(source.text, limits.of(NESTING), environment)
                 limits.hold(NESTING, nesting(tokens))
             except Crossed as crossed:
@@ -1322,7 +1341,6 @@ def traverse(
             except Suppressed as suppressed:
                 raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
-            limits.hold(INPUT_BYTES, total)
             generated(one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
@@ -1330,7 +1348,6 @@ def traverse(
             defined[one.path] = definitions(
                 environment.get(REFERENCES, {}), lines(source.text)
             )
-            limits.hold(FILES, len(read))
         discovered: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
             chosen = selection(path, parsed[path], selecting, requested)
@@ -1355,14 +1372,28 @@ def traverse(
         found.extend(discovered)
         frontier = discovered
     for one in deferred.values():
-        confirm(root, limits, parsed, one)
+        if one.path not in read:
+            limits.hold(FILES, len(read) + 1)
+            opened = read_document(root, one, limits, total)
+            try:
+                tokens = parse(opened.source.text, limits.of(NESTING), {})
+                limits.hold(NESTING, nesting(tokens))
+            except Crossed as crossed:
+                raise unindexable(crossed, one.path, one.chain) from crossed
+            except Suppressed as suppressed:
+                raise declined(
+                    suppressed, one.path, opened.source, one.chain
+                ) from suppressed
+            total += opened.size
+            read[one.path] = opened.source
+            captured[one.path] = opened.capture
+            parsed[one.path] = tokens
+        confirm(parsed[one.path], one)
     return read, parsed, defined, captured, found
 
 
 def confirm(
-    root: Path,
-    limits: Limits,
-    parsed: Mapping[str, list[Token]],
+    tokens: Sequence[Token],
     one: Reference,
 ) -> None:
     """Hold one deferred reference to naming a document and a heading that exist.
@@ -1380,20 +1411,9 @@ def confirm(
     the run compiling the link decides; this run says only that the
     target is there to be found.
 
-    A document the bundle already carries is confirmed from the tokens
-    that carried it, so a deferral naming it costs no second read. A
-    document nothing else named is read for this confirmation alone:
-    its content reaches no group, and the nesting budget holds over the
-    parse because a source this run cannot index is a source it cannot
-    answer for.
+    The caller supplies the cached index from the source's captured read.
+    A deferred-only source contributes no content to a group.
     """
-    tokens = parsed.get(one.path)
-    if tokens is None:
-        opened = read_document(root, one)
-        try:
-            tokens = parse(opened.source.text, limits.of(NESTING), {})
-        except Crossed as crossed:
-            raise unindexable(crossed, one.path, one.chain) from crossed
     if one.fragment is None:
         return
     if any(heading.fragment == one.fragment for heading in index(tokens)):
@@ -1807,7 +1827,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     )
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
-    recheck(root, captured, reaching(contributing(referring, found)))
+    recheck(root, captured)
     if options.fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
     try:

@@ -1,0 +1,20 @@
+description = "A duplicate YAML key fails before the source contributes Markdown."
+
+clauses = [
+  "Frontmatter policy",
+  "Metadata failures",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+root = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_FRONTMATTER"
+reference = "guide.md"
