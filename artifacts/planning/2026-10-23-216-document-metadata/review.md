@@ -16,7 +16,7 @@ Every epic criterion has exactly one delivering row. Every row covers at most th
 
 The epic's local format check reports zero fixes, metadata changes or content decisions. The local graph passes with no unresolved dependencies, numbering findings or independent task pairs. Its longest chain is W01 → W02 → W03 → W04 → W05, five steps. Joins is empty because every pair is ordered by that chain.
 
-Section Composition E04 W01 and Document Metadata E06 W01 both amend the canonical design. Their compiler tasks also overlap by directory containment even though the dependency tool compares exact component strings. Recommend priority 4 for E06 after E04 at 5; this is scheduling separation, not a claim that the metadata contract consumes the composition feature.
+Section Composition E04 W01 and Document Metadata E06 W01 both amend the canonical design. Their compiler tasks also overlap by directory containment even though the dependency tool compares exact component strings. The user selected priority 6 for E06 before E04 at 5; this is scheduling separation, not a claim that the metadata contract consumes the composition feature.
 
 No whole-epic prerequisite is inferred merely from shared files. The contract can be specified against current main. At delivery, reconcile the current base with any landed composition changes and preserve its source context and deferral contract. A missing implementation behavior required by a chosen base is an integration finding, not authority to broaden this epic.
 
@@ -24,7 +24,7 @@ The initiative-wide graph has inherited findings: missing component declarations
 
 ## Freeze Handoff
 
-The freeze's final task must consume this epic's final verification output before tagging the contract. The proposed update adds E06 W05 to that task's dependencies. Because its current E05 identity precedes E06 and no fetched pull request names it, the proposed freeze identity is E07. Preserve its issue number #23, existing criteria, work-item links and other dependencies. No other epic is renumbered. This is a required handoff for the new source-language contract, not delivery of the freeze itself.
+The freeze's final task must consume this epic's final verification output before tagging the contract. The update adds E06 W05 to that task's dependencies. Because its current E05 identity precedes E06 and no fetched pull request names it, the freeze identity is E07. Preserve its issue number #23, existing criteria, work-item links and other dependencies. No other epic is renumbered. This is a required handoff for the new source-language contract, not delivery of the freeze itself.
 
 ## Review Findings Resolved in the Draft
 
@@ -33,7 +33,7 @@ The freeze's final task must consume this epic's final verification output befor
 - **Legacy parsing:** The contract explicitly changes arbitrary discarded frontmatter into validated YAML; the work items require matching fixtures and diagnostics.
 - **Deferred contribution:** A normally opened deferred target receives local metadata validation, but only contributing documents participate in group-depth conflicts.
 - **Consumer drift:** The implementation task updates immediately affected invocation and corpus checks; the final task audits wider author guidance and representative sources.
-- **Publication:** Priority confirmation remains pending. All implementation criteria remain unticked; this review validates planning, not compiler behavior.
+- **Publication:** Priority 6 is confirmed for the next run. All implementation criteria remain unticked; this review validates planning, not compiler behavior.
 
 ## Planning Validation
 
@@ -41,4 +41,4 @@ The freeze's final task must consume this epic's final verification output befor
 - New epic dependency graph: pass, five-step chain, no independent pairs.
 - Initiative graph: inherited findings retained as described above; no unrelated repair is included.
 - Source requirements: proposal #216 and the Agent Skills metadata convention are covered by the trace. The existing normative design is the amendment target, not a claim that it already specifies metadata conversion.
-- Tracker publication and saved-body verification: pending priority confirmation.
+- Tracker publication: epic #218 at priority 6, parent #20 updated, and freeze #23 linked to the final metadata task. Saved-body verification accompanies publication.

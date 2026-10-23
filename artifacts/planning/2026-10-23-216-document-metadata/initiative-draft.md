@@ -68,7 +68,7 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 | [E02](https://github.com/m2ux/prosiform/issues/195) | Merged Groups | AC3 | | ✓ |
 | [E03](https://github.com/m2ux/prosiform/issues/187) | Carried Debt | AC10 | | |
 | [E04](https://github.com/m2ux/prosiform/issues/215) | Section Composition | AC3, AC11 | | |
-| [E06](EPIC_URL) | Document Metadata | AC3, AC12 | | |
+| [E06](https://github.com/m2ux/prosiform/issues/218) | Document Metadata | AC3, AC12 | | |
 | [E07](https://github.com/m2ux/prosiform/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
 
 ## Acceptance Criteria
