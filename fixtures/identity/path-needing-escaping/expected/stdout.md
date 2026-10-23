@@ -1,4 +1,4 @@
-This bundle was built for [Notes/\[draft\](page.md)](#notesdraftpagemd); everything else is material it references.
+Follow [Notes/\[draft\](page.md)](#notesdraftpagemd). The rest of this bundle is material that procedure references.
 
 # Notes/\[draft\](page.md)
 

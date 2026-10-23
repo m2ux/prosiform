@@ -1,4 +1,4 @@
-This bundle was built for [Record Epic Delivery](#record-epic-delivery) and [Delivery Findings](#delivery-findings); everything else is material it references.
+Follow [Record Epic Delivery](#record-epic-delivery) and [Delivery Findings](#delivery-findings). The rest of this bundle is material those procedures reference.
 
 # Artifacts
 

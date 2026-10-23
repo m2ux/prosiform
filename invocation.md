@@ -80,10 +80,10 @@ One normalized entry publishes a file in the working directory. The name is that
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
 
-Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. Bundles open with entry-point links:
+Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. A bundle opens by telling the agent to follow the selected entries:
 
 ```markdown
-This bundle was built for [Plan](#plan); everything else is material it references.
+Follow [Plan](#plan). The rest of this bundle is material that procedure references.
 ```
 
 Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.

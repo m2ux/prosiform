@@ -23,8 +23,8 @@ from prosiform.delivery import ENCODING, Delivery, Outcome, deliver, received
 LIMIT = 4_096
 
 BUNDLE = (
-    "This bundle was built for [Guide](#guide); everything else is material "
-    "it references.\n"
+    "Follow [Guide](#guide). "
+    "The rest of this bundle is material that procedure references.\n"
     "\n"
     "# Guide\n"
     "\n"

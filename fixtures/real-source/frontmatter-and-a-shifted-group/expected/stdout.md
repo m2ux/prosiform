@@ -1,4 +1,4 @@
-This bundle was built for [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill); everything else is material it references.
+Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The rest of this bundle is material that procedure references.
 
 # Gitnexus-Impact-Analysis/SKILL
 

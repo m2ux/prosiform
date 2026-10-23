@@ -1,4 +1,4 @@
-This bundle was built for [One](#one) and [Two](#two); everything else is material it references.
+Follow [One](#one) and [Two](#two). The rest of this bundle is material those procedures reference.
 
 # Guide
 

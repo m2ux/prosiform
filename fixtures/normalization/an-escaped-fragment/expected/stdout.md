@@ -1,4 +1,4 @@
-This bundle was built for [Run It](#run-it); everything else is material it references.
+Follow [Run It](#run-it). The rest of this bundle is material that procedure references.
 
 # Guide
 

@@ -1,4 +1,4 @@
-This bundle was built for [A Plan](#a-plan) and [B Plan](#b-plan); everything else is material it references.
+Follow [A Plan](#a-plan) and [B Plan](#b-plan). The rest of this bundle is material those procedures reference.
 
 # Modes
 

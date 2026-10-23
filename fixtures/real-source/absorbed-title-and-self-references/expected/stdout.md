@@ -1,4 +1,4 @@
-This bundle was built for [Artifacts/Repository-Labels](#artifactsrepository-labels); everything else is material it references.
+Follow [Artifacts/Repository-Labels](#artifactsrepository-labels). The rest of this bundle is material that procedure references.
 
 # Artifacts/Repository-Labels
 

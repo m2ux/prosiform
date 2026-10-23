@@ -1,4 +1,4 @@
-This bundle was built for [Notes%23draft](#notes23draft); everything else is material it references.
+Follow [Notes%23draft](#notes23draft). The rest of this bundle is material that procedure references.
 
 # Notes%23draft
 

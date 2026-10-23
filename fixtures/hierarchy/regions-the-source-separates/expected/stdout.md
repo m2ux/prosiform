@@ -1,4 +1,4 @@
-This bundle was built for [Alpha](#alpha) and [Gamma](#gamma); everything else is material it references.
+Follow [Alpha](#alpha) and [Gamma](#gamma). The rest of this bundle is material those procedures reference.
 
 # Guide
 

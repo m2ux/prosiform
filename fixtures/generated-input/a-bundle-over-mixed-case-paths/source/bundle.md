@@ -1,4 +1,4 @@
-This bundle was built for [Docs/Guide](#docsguide); everything else is material it references.
+Follow [Docs/Guide](#docsguide). The rest of this bundle is material that procedure references.
 
 # Docs/Guide
 

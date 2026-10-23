@@ -1,4 +1,4 @@
-This bundle was built for [A Notes](#a-notes), [B Notes](#b-notes) and [C Other](#c-other); everything else is material it references.
+Follow [A Notes](#a-notes), [B Notes](#b-notes) and [C Other](#c-other). The rest of this bundle is material those procedures reference.
 
 # G
 

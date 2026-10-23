@@ -33,7 +33,7 @@ pf modes/plan-mode.md
 The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens with:
 
 ```markdown
-This bundle was built for [Plan](#plan); everything else is material it references.
+Follow [Plan](#plan). The rest of this bundle is material that procedure references.
 ```
 
 Its planning procedure contains:
@@ -83,7 +83,7 @@ pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins:
 
 ```markdown
-This bundle was built for [Record Epic Delivery](#record-epic-delivery); everything else is material it references.
+Follow [Record Epic Delivery](#record-epic-delivery). The rest of this bundle is material that procedure references.
 
 # Artifacts
 

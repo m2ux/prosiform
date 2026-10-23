@@ -1,4 +1,4 @@
-This bundle was built for [Bare](#bare) and [Kept](#kept); everything else is material it references.
+Follow [Bare](#bare) and [Kept](#kept). The rest of this bundle is material those procedures reference.
 
 # Notes
 

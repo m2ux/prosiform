@@ -1,4 +1,4 @@
-This bundle was built for [Middle](#middle); everything else is material it references.
+Follow [Middle](#middle). The rest of this bundle is material that procedure references.
 
 # Guide
 

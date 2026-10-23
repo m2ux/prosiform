@@ -69,8 +69,8 @@ SOURCE = (
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
 BUNDLE = (
-    "This bundle was built for [Guide](#guide); everything else is material "
-    "it references.\n"
+    "Follow [Guide](#guide). "
+    "The rest of this bundle is material that procedure references.\n"
     "\n"
     "# Guide\n"
     "\n"

@@ -1,4 +1,4 @@
-This bundle was built for [Entry-Point](#entry-point); everything else is material it references.
+Follow [Entry-Point](#entry-point). The rest of this bundle is material that procedure references.
 
 # Entry-Point
 

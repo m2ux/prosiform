@@ -1,4 +1,4 @@
-This bundle was built for [Zulu](#zulu); everything else is material it references.
+Follow [Zulu](#zulu). The rest of this bundle is material that procedure references.
 
 # Alpha
 

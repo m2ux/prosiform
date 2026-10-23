@@ -1,4 +1,4 @@
-This bundle was built for [Article](#article), [Café-Münster](#café-münster-1), [Notes](#notes-2), [The-Code-Span-And-Bold-Text](#the-code-span-and-bold-text-1) and [Whats-New-V10](#whats-new-v10-1); everything else is material it references.
+Follow [Article](#article), [Café-Münster](#café-münster-1), [Notes](#notes-2), [The-Code-Span-And-Bold-Text](#the-code-span-and-bold-text-1) and [Whats-New-V10](#whats-new-v10-1). The rest of this bundle is material those procedures reference.
 
 # Article
 

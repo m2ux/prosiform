@@ -118,14 +118,16 @@ def test_a_path_ending_in_a_number_sign_keeps_it_in_its_file_heading() -> None:
 
 def test_the_entry_line_names_one_reference_and_its_destination() -> None:
     assert entry_line([("guide", "guide")]) == (
-        "This bundle was built for [guide](#guide); "
-        "everything else is material it references."
+        "Follow [guide](#guide). "
+        "The rest of this bundle is material that procedure references."
     )
 
 
 def test_the_entry_line_names_every_reference_the_run_was_given() -> None:
-    line = entry_line([("a", "a"), ("b", "b"), ("c", "c")])
-    assert line.startswith("This bundle was built for [a](#a), [b](#b) and [c](#c);")
+    assert entry_line([("a", "a"), ("b", "b"), ("c", "c")]) == (
+        "Follow [a](#a), [b](#b) and [c](#c). "
+        "The rest of this bundle is material those procedures reference."
+    )
 
 
 def test_the_entry_line_escapes_the_text_of_the_heading_it_names() -> None:

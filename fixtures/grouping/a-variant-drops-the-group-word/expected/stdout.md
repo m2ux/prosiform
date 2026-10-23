@@ -1,4 +1,4 @@
-This bundle was built for [Plan](#plan) and [Review](#review); everything else is material it references.
+Follow [Plan](#plan) and [Review](#review). The rest of this bundle is material those procedures reference.
 
 # Modes
 

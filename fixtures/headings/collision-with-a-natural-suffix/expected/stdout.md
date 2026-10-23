@@ -1,4 +1,4 @@
-This bundle was built for [Article](#article) and [Run](#run-4); everything else is material it references.
+Follow [Article](#article) and [Run](#run-4). The rest of this bundle is material those procedures reference.
 
 # Article
 

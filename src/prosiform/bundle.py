@@ -152,8 +152,10 @@ HEADING_OPEN = "heading_open"
 
 ANCHOR = "#"
 
-ENTRY_OPENING = "This bundle was built for "
-ENTRY_CLOSING = "; everything else is material it references."
+ENTRY_OPENING = "Follow "
+ENTRY_ONE = ". The rest of this bundle is material that procedure references."
+ENTRY_MANY = ". The rest of this bundle is material those procedures reference."
+ENTRY_CLOSINGS = (ENTRY_ONE, ENTRY_MANY)
 ENTRY_JOIN = ", "
 ENTRY_LAST = " and "
 
@@ -291,15 +293,21 @@ def escaped(text: str) -> str:
     return OPENER.sub(r"\\\1", text)
 
 
-def entry_line(named: Sequence[tuple[str, str]]) -> str:
-    """The bundle's opening line: each entry reference, linked to its destination.
+def is_entry_line(content: str) -> bool:
+    """Whether one paragraph is the opening instruction a bundle publishes."""
+    return content.startswith(ENTRY_OPENING) and content.endswith(ENTRY_CLOSINGS)
 
-    It states what the bundle was built for and nothing more. It carries
-    no execution verb, because an entry reference names a document rather
-    than a procedure the tool can recognize as one.
+
+def entry_line(named: Sequence[tuple[str, str]]) -> str:
+    """The bundle's opening line: follow each named entry.
+
+    The line tells the agent to follow the entries the caller selected.
+    One entry is that procedure. Several entries are those procedures.
+    The rest of the bundle is material the named procedures reference.
     """
     links = [f"[{escaped(text)}]({ANCHOR}{target})" for text, target in named]
-    return f"{ENTRY_OPENING}{listed(links)}{ENTRY_CLOSING}"
+    closing = ENTRY_ONE if len(named) == 1 else ENTRY_MANY
+    return f"{ENTRY_OPENING}{listed(links)}{closing}"
 
 
 def listed(items: Sequence[str]) -> str:
