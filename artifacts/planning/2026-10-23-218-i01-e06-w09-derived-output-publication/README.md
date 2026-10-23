@@ -1,6 +1,6 @@
 # Derived Output Publication — October 2026
 
-> Delivery · Created 2026-10-23
+> Delivery · Created 2026-10-23 · Revised 2026-10-23
 
 ## Executive Summary
 
@@ -13,7 +13,7 @@ The work extends the CLI on `i01/e06/w09-derived-output-publication`, based on `
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w09.md) | Implementation scope and required tests |
-| [Progress](progress.md) | Delivery checklist and prerequisite verification |
+| [Progress](progress.md) | Delivery checklist, test evidence and the plan-change list |
 
 ## Links
 
