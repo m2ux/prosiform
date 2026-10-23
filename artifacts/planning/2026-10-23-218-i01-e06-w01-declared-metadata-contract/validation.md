@@ -4,7 +4,7 @@
 
 The criterion is epic #218 AC1: the normative design defines per-file conversion metadata and its failure behavior, observed through contract review. The reviewed component is `artifacts/planning/2026-10-17-prosiform-v1/design.md` on `i01/e06/w01-declared-metadata-contract`.
 
-Candidate SHA-256: `d0677eaca3cc972c6eabbb79ed53e8c7d102b4e000ab2ba2aa7fe5992b878367`. Compiler baseline: `cd3d8e635b8db500ceb7230b26209bdd37f637da`. The candidate is contract prose; no compiler behavior is claimed. The baseline remains the fixture oracle until the decoder, source-reader and compilation tasks implement this contract.
+Candidate commit: `91eecd4c89bcd461806b5d70806714dde48bcd54`, published in [PR #219](https://github.com/m2ux/prosiform/pull/219). Candidate SHA-256: `d0677eaca3cc972c6eabbb79ed53e8c7d102b4e000ab2ba2aa7fe5992b878367`. Compiler baseline: `cd3d8e635b8db500ceb7230b26209bdd37f637da`. The candidate is contract prose; no compiler behavior is claimed. The baseline remains the fixture oracle until the decoder, source-reader and compilation tasks implement this contract.
 
 ## Requirement Trace
 

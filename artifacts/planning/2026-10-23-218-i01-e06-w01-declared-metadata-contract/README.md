@@ -34,7 +34,7 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 - [x] Confirm queue, task scope and prerequisites.
 - [x] Reserve and dispatch the task.
 - [x] Implement and review the contract.
-- [ ] Validate and publish the delivery PR.
+- [x] Validate and publish the delivery PR.
 - [ ] Merge and record delivery when repository prerequisites hold.
 
 ## Links
@@ -42,4 +42,5 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 | Resource | Link |
 | --- | --- |
 | Epic | [#218](https://github.com/m2ux/prosiform/issues/218) |
+| Task Pull Request | [#219](https://github.com/m2ux/prosiform/pull/219) |
 | Board | [Bundling](https://github.com/users/m2ux/projects/18) |
