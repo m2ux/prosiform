@@ -1,8 +1,8 @@
 """The bundle: one file group for each contributing source, under one entry line.
 
-A group is a source document unless a grouping rule names the directory
-it sits under, in which case it joins the merged group `grouping`
-assembles. A file group is headed by one generated H1 whose visible
+A group is a source document unless its conversion metadata names the
+merged group that `grouping` assembles. A file group is headed by one
+generated H1 whose visible
 text is the document's normalized root-relative path with the Markdown
 extension removed, in title case: each word of the path is capitalized
 and every separator the path carries is kept, so the heading names the
@@ -342,6 +342,7 @@ def rewrite(
     assigned: dict[tuple[str, str | None], str],
     path: str,
     defined: Mapping[str, Definition],
+    root: str = "",
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -366,7 +367,7 @@ def rewrite(
         if inline.map is None or (not found and not defined):
             continue
         start, end = inline.map
-        targets = [target(path, one, opening, assigned) for one, opening in found]
+        targets = [target(path, one, opening, assigned, root) for one, opening in found]
         written[start:end] = rewritten(written[start:end], inline, targets, defined)
     return written
 
@@ -376,6 +377,7 @@ def target(
     destination: str,
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
+    root: str = "",
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -394,10 +396,10 @@ def target(
     Markdown document, is text the bundle carries and takes no
     destination, whether or not its author marked it.
     """
-    found = bundled(path, destination, opening)
+    found = bundled(path, destination, opening, root)
     if found is not None:
         return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
-    deferred = deferring(path, destination, opening)
+    deferred = deferring(path, destination, opening, root)
     if deferred is None:
         return None
     return rebased(deferred, destination)
@@ -617,6 +619,8 @@ def group(
     defined: Mapping[str, Definition] | None = None,
     selected: Selection | None = None,
     assigned: dict[tuple[str, str | None], str] | None = None,
+    root: str = "",
+    display: str | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -657,7 +661,7 @@ def group(
     included, so the bundle carries the uses and none of the
     declarations behind them.
     """
-    title = heading_text(path)
+    title = heading_text(path if display is None else display)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])
@@ -682,13 +686,13 @@ def group(
     wrapper = Generated(title, 1, FILENAME_WRAPPER, tuple(resolving))
     emitting_headings: list[Emitted] = [wrapper]
     recorded: list[Part] = []
-    entries = [0] if selected is None else []
+    entries = [0] if selected is None or selected.document else []
     chosen = [token for token in regions(tokens) if id(token) in emitting]
     needed = required(tokens, emitting) - (set() if titled is None else {id(titled)})
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, environment)
+        else rewrite(physical, tokens, chosen, assigned, path, environment, root)
     )
     for token in regions(tokens):
         if id(token) in needed:
@@ -714,7 +718,7 @@ def group(
         if id(token) not in emitting:
             continue
         if token is absorbing:
-            if id(token) in naming:
+            if id(token) in naming and 0 not in entries:
                 entries.append(0)
             continue
         carried = carried_headings(tokens, token)

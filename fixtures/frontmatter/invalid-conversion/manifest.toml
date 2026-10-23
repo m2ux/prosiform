@@ -1,0 +1,20 @@
+description = "A conversion depth must be a string in the metadata mapping."
+
+clauses = [
+  "Conversion metadata",
+  "Metadata failures",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+reference = "guide.md"

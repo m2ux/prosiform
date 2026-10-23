@@ -3,7 +3,7 @@
 Compile local Markdown entries and their dependencies into one validated bundle.
 
 ```text
-pf -r DIR [OPTIONS] REF [REF ...]
+pf [OPTIONS] REF [REF ...]
 ```
 
 ## Options
@@ -13,11 +13,9 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 
 | Option | Effect |
 | --- | --- |
-| `REF` | root-relative document, document#fragment, or #fragment with -f |
-| `-r DIR` | required source root; relative to working directory |
-| `-f DOC` | root-relative document for fragment-only references |
-| `-o FILE` | atomic validated output to FILE; default or -: stdout |
-| `-g SLUG:DEPTH` | merge documents under directories named SLUG at heading DEPTH (1–6); repeatable, once per slug |
+| `REF` | document, document#fragment, or #fragment with -f; paths from cwd |
+| `-f DOC` | working-directory-relative document for fragment-only references |
+| `-o FILE` | atomic validated output to FILE; -: stdout; default: derived filename |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
 | `-x {source-changed,internal}` | inject a conformance run fault no source tree expresses; default none |
@@ -27,7 +25,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | `-O N` | bytes of the complete bundle; positive decimal integer, default 262144 |
 | `-T N` | distinct document and section targets discovered; positive decimal integer, default 4096 |
 | `-L N` | authored link and image occurrences in selected content; positive decimal integer, default 32768 |
-| `-N N` | levels of container nesting in one source; positive decimal integer, default 64 |
+| `-N N` | levels of container nesting and, independently, YAML collection nesting in one source; positive decimal integer, default 64 |
 | `-E N` | link hops from the nearest entry reference; positive decimal integer, default 8 |
 | `-C` | list this build's error and warning codes |
 | `-v` | tool version and profile identifier |
@@ -38,28 +36,54 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 Run from the repository root; [worked examples](example/README.md) show input and output.
 
 ```bash
-pf -r example/work-tracker modes/plan-mode.md
-pf -r example/work-tracker 'artifacts/epic.md#delivery-findings'
-pf -r example/work-tracker \
-  -g artifacts:2 -g modes:2 \
-  modes/plan-mode.md
-pf -r example/work-tracker -c modes/plan-mode.md
+cd example/work-tracker
+pf modes/plan-mode.md
+pf 'artifacts/epic.md#delivery-findings'
+pf -o context.md modes/plan-mode.md
+pf -c modes/plan-mode.md
 ```
+
+## Conversion metadata
+
+Each file declares its own group and source heading depth in leading YAML frontmatter:
+
+```yaml
+---
+author: example-team
+prosiform:
+  group: rules
+  group-depth: 2
+---
+```
+
+Group and group-depth occur together. Group is a string; group-depth is a YAML Core integer from `1` through `6`, excluding booleans, floats and strings. The group name is a nonblank, printable single-line string containing neither `:` nor `/`; its exact spelling identifies the group. A file without these fields keeps its individual group. Linked files use their own declarations, including when only a section is selected. Group names are independent of directories and discover no additional files.
+
+Frontmatter starts on the first physical line with exactly `---` and closes at the next line exactly `---` or `...`; an optional byte-order mark may precede the opener. A leading blank line makes the following content part of the body. The block is empty or contains one YAML 1.2 Core mapping. Its top-level keys are strings; `prosiform`, when present, is a mapping with string keys. Keep standard skill fields such as `name` and `description` at the top level; ordinary Markdown requires neither field nor a `SKILL.md` filename. The only keys in `prosiform` are `root`, `group` and `group-depth`; unknown keys fail validation. Unrelated fields, including `metadata`, have no conversion meaning. An optional `root` is a nonempty relative directory-path string using forward slashes; controls, absolute or drive paths, URLs, home shortcuts and environment expansion fail validation. The captured value retains its spelling and original location. An explicit root resolves from the declaring file's directory. Every absent root uses the working directory captured at invocation start. Root is independent of group and group-depth. Positional files and `-f` resolve from that same working directory, with bounded parent-directory bootstrap permitted. The `-r` option is invalid usage.
+
+Duplicate keys, aliases, merge keys and custom tags are invalid throughout the frontmatter. Frontmatter bytes count toward the source byte budgets, and YAML collections obey `-N` independently of Markdown containers. Frontmatter supplies no rendered content, links or headings.
+
+Contributing files declaring the same group must agree on depth. A conflict reports both declarations and publishes nothing. Deferred-only files are validated but contribute no group membership. Each selected destination supplies its settings once, whether reached directly, by fragment or through several callers; declarations do not propagate to siblings or dependencies.
+
+Metadata errors return exit status `1`: `E_INVALID_FRONTMATTER` identifies invalid YAML, `E_INVALID_CONVERSION_METADATA` identifies invalid fields, and `E_GROUP_DEPTH_CONFLICT` identifies conflicting contributing declarations. Diagnostics locate the original source; JSON diagnostics include `location` and, for conflicts, `related` locations. Existing output files remain intact on failure.
 
 ## Bundling rules
 
-- **Sources:** valid UTF-8; strip one leading byte-order mark and one leading frontmatter block; parse as `skill-markdown-v1`.
-- **Closure:** entries select whole documents or named sections. Follow local Markdown links under `-r`, relative to their source document, until no new dependencies remain. Compiled links target bundle headings. Outside-root links stay authored and contribute nothing.
-- **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless `-g` merges it. Merged groups use title-cased directory headings. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
-- **Deferred links:** link text starting with `¬` requires an existing document/section but adds no content through that link. Preserve text, marker and following spaces; emit a root-relative destination for a separate run.
-- **Invalid input:** invalid UTF-8, unterminated frontmatter, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
+- **Sources:** valid UTF-8; validate leading frontmatter as bounded YAML 1.2 Core and retain each file's conversion metadata; parse the body after one leading byte-order mark and frontmatter block as `skill-markdown-v1`.
+- **Closure:** entries select whole documents or named sections. Follow local Markdown links from each authoring source's effective root, until no new dependencies remain. Compiled links target bundle headings. Outside-root links stay authored and contribute nothing.
+- **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless its metadata declares a group. Merged groups use title-cased declared names. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
+- **Deferred links:** link text starting with `¬` requires an existing document/section but adds no content through that link. Preserve text, marker and following spaces; emit a URI-escaped working-directory-relative destination for a separate run.
+- **Invalid input:** invalid UTF-8, unterminated or invalid frontmatter, invalid conversion metadata, conflicting group depths, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
 
 ## Output
 
-Stdout contains a bundle, an informational response, or nothing. Bundles open with entry-point links:
+One normalized entry publishes a file in the working directory. The name is that entry's path relative to its effective root, without the Markdown suffix, with each separator written as `_`, then `.bundle.md`. A section inserts `__` and the fragment before that suffix. Distinct selections require an explicit `-o` destination. `-o FILE` names an exact file and `-o -` selects stdout.
+
+File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
+
+Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. Bundles open with entry-point links:
 
 ```markdown
-This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan](#plan); everything else is material it references.
 ```
 
 Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.

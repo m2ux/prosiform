@@ -1,160 +1,10 @@
-"""The pf command: its options, its two streams and its exit statuses.
+"""Compile captured Markdown sources with file-owned dependency roots.
 
-One invocation names an allowed source root and one or more entry
-references, and returns a status naming the category of its outcome.
-Standard output carries exactly one thing per run: the bundle a compiling
-run publishes, or the response an informational run returns, or nothing at
-all. Diagnostics go to standard error in the format the run asked for, so
-a caller reads a result from the status and an explanation from a stream
-that never carries the bundle. An informational run names no source root
-and returns one of three responses: the usage `-h` shows, the version
-and profile `-v` names, and the error and warning codes `-C`
-reports, which are the codes each part of this build declares rather than
-a list written out a second time.
-
-The command checks the form of every option before it looks for anything
-an option names, so an invalid command line is reported as invalid usage
-rather than as a fault in a tree it may not even have described correctly.
-
-Every entry reference normalizes to a path identity before anything is
-opened: its components split before any escape is decoded, each escape is
-validated and decoded exactly once, and `.` and `..` normalize against
-the allowed source root. A reference the root cannot contain — one
-walking above it, a root-relative or absolute path, a drive path, or a
-scheme or authority naming no local document — fails rather than being
-opened, and a query, an invalid escape, a control character or a
-backslash separator is a command line the grammar does not admit.
-
-The allowed source root is canonicalized once, and every source is read by
-descending its normalized path from that directory without following a
-link, so the root confines what a run opens rather than what a run spells.
-A path reaching a source through a symbolic link below the root fails,
-whatever that link points at.
-
-Every entry document the run names is read as bytes, required to be valid
-UTF-8, stripped of the transport metadata it carries ahead of its content
-and parsed under the declared profile, and selected content carrying a
-construct that profile refuses fails as the refusal it is. Every location
-a diagnostic reports is the location in the file the author holds,
-whatever the strip removed ahead of it.
-
-Validation follows the selection rather than the file. A whole document is
-parsed to index it, because heading enumeration, the definitions selected
-uses resolve against, the ambiguity of a requested fragment and what a
-document opens on are facts about the file; but link resolution,
-the profile's refusals and the authored-occurrence budget
-are held over the regions the run selected, so a defect in a section
-nobody asked for decides no outcome. A section closure later reaches is
-selected content like any other, and its defects are then its run's.
-
-A parsing-safety budget is the exception the contract draws: it is held
-over the complete opened source, because a parser indexes a whole file
-however narrow the requested section is. Crossing one is reported as an
-inability to index that source rather than as a dependency on whatever
-construct crossed it, since the run reached for no such dependency.
-
-A dependency is a reference that resolves to a Markdown document under
-the allowed source root, and the run resolves one against the document
-carrying it, reads it and bundles it. Every other reference is text the
-bundle carries as its author wrote it: a local Markdown link resolving
-outside the root is not resolved further, the document it names is not
-opened, and it stays as authored. A reference carrying a scheme or an
-authority and one naming a file outside the profile's suffixes are text
-by the same rule, and an apparent link inside a code span or a code
-block is an example rather than a reference. Position is therefore what
-the run follows, and the content a run reads for references is the
-content it selected. Traversal repeats over what each round adds until
-no round adds anything, so a reference graph with a cycle reaches a
-fixed point carrying each reachable region once.
-
-The only thing the run bundles is a local Markdown document, so a
-resource is carried as the author wrote it wherever it resolves, the
-allowed source root included. An image names a resource whatever file
-it points at.
-
-A reference is classified by the identity it resolves to rather than by
-the text it was written as, and that identity is read from the target
-alone. A link naming the section it sits in, an including ancestor of
-it, or the whole document that section sits in, resolves to the
-destination already present and expands nothing; one naming another
-section of the same document names a second identity and carries it. A
-destination is held against the identity a reference resolves to, so
-where the link was written, and the region a run consolidated it into,
-leave it as it was.
-
-Each reference the run compiled is rewritten to the destination the
-bundle gave the target it resolved to, and a mark goes with the
-rewrite; a reference the run did not compile keeps every byte its
-author wrote, a mark included. A
-destination belongs to the bundle rather than to a group, so the map
-holding one is known only once every group exists: the groups are
-built to learn the headings the bundle emits, and built again through
-the map those headings produce. The candidate is then read back and
-its headings compared with that map, so a bundle is published only
-where each destination it carries resolves to exactly one heading in
-it.
-
-Each budget the profile declares is counted as the design states and
-fails the compilation at the first boundary it crosses, with nothing
-truncated and no bundle published. One code reports every crossing and
-the message names the budget and the figure that crossed it.
-
-A reference with no fragment, or with an empty one, selects the whole
-document. A reference carrying a nonempty fragment selects the section
-that fragment names, which runs to the next document-level heading of
-equal or higher level; a fragment alone selects from the document
-`-f` names. Each document a run selects from carries every region
-the run's references selected from it into one group of the bundle: its
-own file group, or the merged group a grouping rule puts it in with the
-other documents under a directory of that slug. The groups are ordered
-by root-relative path, a merged group taking the first of its members'.
-A fragment naming
-a heading a container carries names no section and fails as an
-unsupported target; one naming no heading of its document names
-nothing, and fails as the reference to a missing target it is.
-
-A source opening with the bundle entry declaration is refused as output
-offered as input. The first block must be a document-level paragraph with
-the declaration's opening and closing prose and at least one link, all
-links targeting nonempty local fragments. Authored headings name no output;
-code and quoted declarations are examples. Detection reads the complete
-source after transport metadata is stripped, whatever section is selected.
-
-Every source is captured at discovery as the canonical path its read
-arrived at and a hash of the bytes it held, and the whole set is
-rechecked once the candidate is built and before anything publishes. A
-source that changed, disappeared or resolved elsewhere fails the run,
-which publishes nothing and asks for a retry. The recheck is change
-detection between the two reads: a source can be written again after
-it, and a hash taken over one file at a time supplies no atomicity
-across the set, so a run needing strict reproducibility bundles from a
-snapshot made immutable outside this tool.
-
-Two of the outcomes the contract declares are facts about the run rather
-than about any document it reads, so a source tree and an invocation
-state neither: a source that changes during compilation, and a run that
-fails in itself. `-x NAME` is how a conformance run reaches them.
-`source-changed` writes other bytes to each source the run read, between
-discovery and the recheck, so the recheck meets a source that is no
-longer the source the run read; `internal` fails the run in itself once
-the candidate is built and before anything publishes. The detection and
-the reporting are the run's own either way, which is what the outcome
-is about. A run asking for no fault performs none.
-
-The bundle is published once the whole candidate is built. A
-validation-only run publishes nothing, to either stream or to a named
-file; a run naming an output file writes it atomically, through a
-neighbouring temporary file renamed into place, so a reader of that path
-sees the previous bytes or the whole bundle and never a partial one.
-
-An output path naming a source the run read is refused. The comparison
-is made over the completed closure, which is where the full set of
-paths a run read is known, so a document the run reached as a
-dependency is a document the run will not write over. Each source is
-located at its root-relative path under the canonicalized root and
-never through a symbolic link, because the read follows no link and a
-resolution would name a file the run never opened.
-"""
+Positional files resolve from the invocation working directory. Each source
+uses its explicit file-relative root, or the invocation directory when absent.
+Bounded no-follow capture retains bytes, metadata and filesystem identities;
+publication rechecks every captured source and bound directory. Discovery,
+rewriting and candidate validation use the same per-source resolution context."""
 
 import argparse
 import os
@@ -165,7 +15,7 @@ from collections.abc import Collection, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import IO, Any, NoReturn
 
 from markdown_it.token import Token
@@ -175,7 +25,11 @@ from prosiform.access import (
     Absent,
     Symlinked,
     Unreadable,
+    directory,
     read_source,
+)
+from prosiform.access import (
+    opened as open_source,
 )
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
@@ -220,9 +74,10 @@ from prosiform.diagnostics import (
     TEXT,
     WARNING,
     Diagnostic,
+    RelatedLocation,
     Reporter,
 )
-from prosiform.grouping import merged, prepared
+from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
     EXPANSION_DEPTH,
@@ -240,6 +95,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
+from prosiform.metadata import InvalidMetadata
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -293,23 +149,20 @@ INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
 
-MIN_DEPTH = 1
-MAX_DEPTH = 6
-
 GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
-INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
+GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
+SOURCE_ACCESS = "E_SOURCE_ACCESS"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
 SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
-EMPTY_GROUP_RULE = "W_EMPTY_GROUP_RULE"
 ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
@@ -318,17 +171,17 @@ CODES = tuple(
         {
             GENERATED_INPUT,
             INVALID_ENCODING,
-            INVALID_GROUP_RULE,
+            GROUP_DEPTH_CONFLICT,
             INVALID_USAGE,
             PUBLICATION_FAILED,
             ROOT_NOT_FOUND,
             SOURCE_CHANGED,
+            SOURCE_ACCESS,
             SOURCE_OUTSIDE_ROOT,
             SOURCE_SYMLINK,
             TARGET_NOT_FOUND,
             UNEXPECTED_INTERNAL_ERROR,
             UNSUPPORTED_ENTRY_SUFFIX,
-            EMPTY_GROUP_RULE,
             ENTRY_DESTINATION,
             RESOURCE_PORTABILITY,
             *BUNDLE_CODES,
@@ -344,7 +197,6 @@ SOURCE_CHANGED_FAULT = "source-changed"
 INTERNAL_FAULT = "internal"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT)
 
-GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DECIMAL = re.compile(r"^[0-9]+$")
 
 EXIT_STATUSES = """exit statuses:
@@ -370,10 +222,7 @@ def usage_failure(
 ) -> Failure:
     """A command line the contract's grammar does not admit.
 
-    Every such fault leads a caller to one remedy, so they share one
-    code. A grouping rule is the exception the contract itself draws: its
-    code names a defect in the rule's value, which the same code reports
-    as an input failure when the slug names no directory.
+    Every such fault leads a caller to one remedy, so they share one code.
     """
     return Failure(
         USAGE_FAILURE,
@@ -503,7 +352,7 @@ def parser() -> Parser:
     grammar = Parser(
         prog=NAME,
         add_help=False,
-        usage=f"{NAME} -r DIR [OPTIONS] REF [REF ...]",
+        usage=f"{NAME} [OPTIONS] REF [REF ...]",
         description=(
             "Bundle the local Markdown closure of one or more entry references "
             "into one validated document."
@@ -512,32 +361,16 @@ def parser() -> Parser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     grammar.add_argument(
-        "-r",
-        dest="root",
-        metavar="DIR",
-        help="required source root; relative to working directory",
-    )
-    grammar.add_argument(
         "-f",
         dest="referrer",
         metavar="DOC",
-        help="root-relative document for fragment-only references",
+        help="working-directory-relative document for fragment-only references",
     )
     grammar.add_argument(
         "-o",
         dest="output",
         metavar="FILE",
-        default=STANDARD_OUTPUT,
-        help="atomic validated output to FILE; default or -: stdout",
-    )
-    grammar.add_argument(
-        "-g",
-        dest="group",
-        metavar="SLUG:DEPTH",
-        action="append",
-        default=[],
-        help="merge documents under directories named SLUG at heading DEPTH "
-        "(1–6); repeatable, once per slug",
+        help="atomic validated output to FILE; -: stdout; default: derived filename",
     )
     grammar.add_argument(
         "-c",
@@ -590,7 +423,7 @@ def parser() -> Parser:
         "references",
         metavar="REF",
         nargs="*",
-        help="root-relative document, document#fragment, or #fragment with -f",
+        help="document, document#fragment, or #fragment with -f; paths from cwd",
     )
     return grammar
 
@@ -621,58 +454,10 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     return selected
 
 
-def rule(declaration: str) -> tuple[str, int]:
-    """One grouping rule, as the slug and depth it declares."""
-    written = GROUP_RULE.match(declaration)
-    if written is None:
-        raise usage_failure(
-            f"the grouping rule {declaration!r} is not a directory slug and a "
-            f"depth separated by a colon",
-            code=INVALID_GROUP_RULE,
-        )
-    slug, depth = written.group(1), int(written.group(2))
-    if not MIN_DEPTH <= depth <= MAX_DEPTH:
-        raise usage_failure(
-            f"the grouping rule {declaration!r} names depth {depth}, which is "
-            f"outside {MIN_DEPTH} through {MAX_DEPTH}",
-            code=INVALID_GROUP_RULE,
-        )
-    return slug, depth
-
-
-def rules(declarations: Sequence[str]) -> dict[str, int]:
-    """Every grouping rule in force, each slug named once."""
-    inforce: dict[str, int] = {}
-    for declaration in declarations:
-        slug, depth = rule(declaration)
-        if slug in inforce:
-            raise usage_failure(
-                f"the grouping rule {declaration!r} names {slug!r}, which "
-                f"another rule already names",
-                code=INVALID_GROUP_RULE,
-            )
-        inforce[slug] = depth
-    return inforce
-
-
 def entry(text: str) -> Reference:
-    """One entry reference, normalized to the document identity it names.
-
-    An entry names a document under the allowed source root, so a
-    reference the root cannot contain fails here rather than being
-    opened. A scheme and an authority name no local document at all,
-    which is the one form the resolution sequence classifies rather than
-    refuses: inside a source such a reference is text the bundle
-    carries, and on the command line it names nothing to bundle.
-
-    This is the one place the root's confinement is a refusal. The root
-    binds what the caller asks the run to carry out, and a reference an
-    author wrote inside a source is that author citing material the
-    bundle does not carry, so discovery leaves it as text and nothing
-    downstream of here raises the code again.
-    """
+    """Normalize a positional reference with bounded relative-parent bootstrap."""
     try:
-        found = resolve(text)
+        found = resolve(text, allow_parent=True)
     except Malformed as malformed:
         raise usage_failure(
             f"the entry reference {text!r} {malformed}", reference=text
@@ -710,18 +495,8 @@ def entered(
 
 
 def sources(root: Path, read: Collection[str]) -> set[Path]:
-    """Where every source the run read sits, under the allowed source root.
-
-    A source is located by joining its root-relative path to the
-    canonicalized root and by nothing further. The read descends that
-    path one segment at a time and follows no link, so each segment
-    names the directory entry the walk opened and the join is already
-    the file the bytes came from. A resolution through a symbolic link
-    would instead name a file the run never read, and a comparison
-    against that file answers a question about the link rather than
-    about the source.
-    """
-    return {root / path for path in read}
+    """Canonical paths of every captured source, including deferred targets."""
+    return {Path(os.path.normpath(root / path)) for path in read}
 
 
 def location(name: str, at: int | None) -> str:
@@ -746,41 +521,15 @@ class Opened:
     capture: Capture
 
 
-def canonical(root: Path, path: str) -> str:
-    """Where one root-relative source path resolves on the filesystem.
+def read_document(
+    root: Path, found: Reference, limits: Limits, total: int = 0
+) -> Opened:
+    """Capture bounded bytes, typed settings and no-follow source/root identities.
 
-    The allowed source root is canonicalized once and the read follows
-    no link, so the path a discovery resolves is the file whose bytes
-    the run holds. A later resolution naming somewhere else says the
-    source now resolves elsewhere.
-    """
-    return os.path.realpath(root / path)
-
-
-def read_document(root: Path, found: Reference) -> Opened:
-    """One document's content, read under the allowed source root.
-
-    A refusal is worded for the reference that asked for the document
-    and located where that reference is written, so a run says which
-    link it could not follow and which document carries it.
-
-    The read descends the normalized path from the canonicalized root one
-    segment at a time and follows no link, so a reference reaching a
-    source through a symbolic link below the root fails rather than
-    arriving at whatever that link points at.
-
-    What arrives here is a path a normalization produced, which the root
-    can hold: one that walks above its base raises before a path is
-    returned, and the entry reference carrying it is refused where
-    entries are read. The refusals below are therefore the faults a read
-    meets. A walk declining a segment of such a path is this tool's own
-    invariant breaking, which the declared internal-error status reports.
-
-    The bytes are read without newline translation, so a CRLF source
-    reaches the scan spelled as the file spells it, and they are decoded
-    strictly, so a source that is not valid UTF-8 fails here as the source
-    defect it is rather than reaching the command's generic handler.
-    """
+    Metadata resolves only after the source has been captured within the byte
+    and nesting limits. An explicit root is walked from its declaring directory;
+    absence binds the invocation working directory. Diagnostics retain physical
+    coordinates and the referring chain."""
     reference, name = found.original, found.path
     written = "the entry reference" if found.origin is None else "the reference"
     chain = found.chain
@@ -794,7 +543,13 @@ def read_document(root: Path, found: Reference) -> Opened:
             chain=chain,
         )
     try:
-        data = read_source(root, name)
+        observed: list[tuple[str, int, int]] = []
+        data = read_source(
+            root,
+            found.walk or name,
+            limit=min(limits.of(FILE_BYTES), limits.of(INPUT_BYTES) - total),
+            observed=observed,
+        )
     except Symlinked as linked:
         raise input_failure(
             f"{written} {reference!r} reaches its source through {linked}, "
@@ -814,6 +569,20 @@ def read_document(root: Path, found: Reference) -> Opened:
             source=found.origin,
             chain=chain,
         ) from absent
+    except OSError as error:
+        raise input_failure(
+            str(error),
+            code=SOURCE_ACCESS,
+            remedy="check source permissions",
+            reference=reference,
+            source=found.origin,
+            chain=chain,
+        ) from error
+    try:
+        limits.hold(FILE_BYTES, len(data))
+        limits.hold(INPUT_BYTES, total + len(data))
+    except Crossed as crossed:
+        raise unindexable(crossed, name, chain) from crossed
     try:
         text = decode(data)
     except UnicodeDecodeError as undecodable:
@@ -827,9 +596,58 @@ def read_document(root: Path, found: Reference) -> Opened:
             source=name,
             chain=chain,
         ) from undecodable
-    captured = Capture(canonical(root, name), hashed(data))
+    captured = Capture(
+        observed[-1][0],
+        hashed(data),
+        chain,
+        found.walk or name,
+        tuple(observed[:-1]),
+        (observed[-1][1], observed[-1][2]),
+        len(data),
+    )
     try:
-        return Opened(content(text), len(data), captured)
+        source = content(
+            text,
+            file=name,
+            max_bytes=limits.of(FILE_BYTES),
+            max_depth=limits.of(NESTING),
+        )
+        declared = source.conversion.root
+        root_walk = str(Path(name).parent / declared) if declared is not None else "."
+        try:
+            rooted = directory(root, root_walk)
+        except (Unreadable, OSError) as error:
+            code = (
+                SOURCE_SYMLINK
+                if isinstance(error, Symlinked)
+                else ROOT_NOT_FOUND
+                if isinstance(error, Absent)
+                else SOURCE_ACCESS
+            )
+            raise Failure(
+                INPUT_FAILURE,
+                Diagnostic(
+                    ERROR,
+                    str(error),
+                    code,
+                    location=source.conversion.root_location,
+                    reference=reference,
+                    chain=chain,
+                ),
+            ) from error
+        effective = os.path.relpath(rooted[-1][0], root)
+        source = replace(
+            source,
+            root="" if effective == "." else effective,
+            display=os.path.relpath(root / name, rooted[-1][0]),
+            identity=captured.identity,
+        )
+        captured = replace(captured, directories=(*captured.directories, *rooted))
+        return Opened(source, len(data), captured)
+    except InvalidMetadata as invalid:
+        raise Failure(
+            INPUT_FAILURE, replace(invalid.diagnostic, reference=reference, chain=chain)
+        ) from invalid
     except Unterminated as unclosed:
         raise input_failure(
             f"{written} {reference!r} names a document whose frontmatter "
@@ -939,46 +757,25 @@ def unsafe(boundary: Unsafe, chain: Sequence[str]) -> Failure:
     )
 
 
-def recheck(
-    root: Path, captured: dict[str, Capture], chains: dict[str, tuple[str, ...]]
-) -> None:
-    """Hold every source the run read to still being the source it read.
-
-    Each source is read again and compared against the canonical path
-    it resolved to and the hash of the bytes it held. A source that
-    changed, disappeared or resolved elsewhere fails the run, and the
-    remedy is to run it again.
-
-    This is change detection. It establishes that a source differs from
-    what discovery read, between that read and this one, and nothing
-    beyond: a source can be written again after the comparison, and a
-    hash taken over one file at a time states nothing about the set of
-    them together. A run needing strict reproducibility bundles from a
-    source snapshot made immutable outside this tool.
-    """
+def recheck(root: Path, captured: dict[str, Capture]) -> None:
+    """Verify captured bytes and filesystem identities before publication."""
     for path in sorted(captured):
         was = captured[path]
         try:
-            data = read_source(root, path)
-        except Unreadable as unreadable:
-            raise changed(
-                path,
-                f"is no longer a document the allowed source root yields: {unreadable}",
-                chains.get(path, ()),
-            ) from unreadable
-        now = canonical(root, path)
-        if now != was.identity:
-            raise changed(
-                path,
-                f"resolves to {now!r} rather than {was.identity!r}",
-                chains.get(path, ()),
+            for name, device, inode in was.directories:
+                checked = directory(root, os.path.relpath(name, root))[-1]
+                if checked[1:] != (device, inode):
+                    raise changed(path, "bound directory identity changed", was.chain)
+            observed: list[tuple[str, int, int]] = []
+            data = read_source(
+                root, was.walk or path, limit=was.size, observed=observed
             )
+        except (Unreadable, OSError) as error:
+            raise changed(path, str(error), was.chain) from error
+        if observed[-1][1:] != was.file_identity:
+            raise changed(path, "source identity changed", was.chain)
         if hashed(data) != was.digest:
-            raise changed(
-                path,
-                "holds content other than the bytes the run read",
-                chains.get(path, ()),
-            )
+            raise changed(path, "source bytes changed", was.chain)
 
 
 class Faulted(Exception):
@@ -998,14 +795,6 @@ def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
     for path in sorted(captured):
         with (root / path).open("ab") as handle:
             handle.write(b"\n")
-
-
-def directories(root: Path) -> set[str]:
-    """The name of every directory under the allowed source root."""
-    found: set[str] = set()
-    for _, below, _ in os.walk(root):
-        found.update(below)
-    return found
 
 
 def contributing(
@@ -1061,8 +850,9 @@ def selection(
     links what the caller asked for, so only the heading an entry
     resolved to stays identifiable. A whole document an entry selected
     and nothing else named is the selection `None`, whose entry is the
-    file heading; a whole document only a dependency selected enters
-    the entry line not at all.
+    file heading. A whole document an entry selected beside named
+    sections keeps that file heading as an entry as well. A whole
+    document only a dependency selected enters the entry line not at all.
 
     A fragment the document does not yield is a reference that reached
     a document and no section of it, so its diagnostic names that
@@ -1120,7 +910,7 @@ def selection(
     if whole:
         if not named and entered:
             return None
-        return Selection(tuple(regions(tokens)), tuple(named))
+        return Selection(tuple(regions(tokens)), tuple(named), document=entered)
     return Selection(
         tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
     )
@@ -1180,7 +970,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination)
+            found = inside(path, use.destination, source.root)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1230,11 +1020,31 @@ def withheld(
     for use in uses(tokens, selected):
         if use.resource:
             continue
-        found = deferring(path, use.destination, use.opening)
+        found = deferring(path, use.destination, use.opening, source.root)
         if found is None:
             continue
         at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
+
+
+def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
+    """Every referring route must retain no-follow access to a cached identity."""
+    if one.path not in captured:
+        return
+    observed: list[tuple[str, int, int]] = []
+    try:
+        os.close(open_source(root, one.walk or one.path, observed))
+    except (Unreadable, OSError) as error:
+        code = SOURCE_SYMLINK if isinstance(error, Symlinked) else SOURCE_ACCESS
+        raise input_failure(
+            str(error),
+            code=code,
+            remedy="check the referring path",
+            reference=one.original,
+            chain=one.chain,
+        ) from error
+    if observed[-1][1:] != captured[one.path].file_identity:
+        raise changed(one.path, "source identity changed", one.chain)
 
 
 def traverse(
@@ -1308,13 +1118,14 @@ def traverse(
     while frontier:
         hop += 1
         for one in frontier:
+            verify_cached(root, one, captured)
             if not one.path or one.path in read:
                 continue
-            opened = read_document(root, one)
+            limits.hold(FILES, len(read) + 1)
+            opened = read_document(root, one, limits, total)
             source = opened.source
             environment: dict[str, Any] = {}
             try:
-                limits.hold(FILE_BYTES, opened.size)
                 tokens = parse(source.text, limits.of(NESTING), environment)
                 limits.hold(NESTING, nesting(tokens))
             except Crossed as crossed:
@@ -1322,7 +1133,6 @@ def traverse(
             except Suppressed as suppressed:
                 raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
-            limits.hold(INPUT_BYTES, total)
             generated(one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
@@ -1330,7 +1140,6 @@ def traverse(
             defined[one.path] = definitions(
                 environment.get(REFERENCES, {}), lines(source.text)
             )
-            limits.hold(FILES, len(read))
         discovered: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
             chosen = selection(path, parsed[path], selecting, requested)
@@ -1344,8 +1153,10 @@ def traverse(
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
             for one in withheld(path, read[path], parsed[path], chosen, reached):
+                verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
             for one in required(path, read[path], parsed[path], chosen, reached):
+                verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
                     continue
                 limits.hold(EXPANSION_DEPTH, hop)
@@ -1355,14 +1166,28 @@ def traverse(
         found.extend(discovered)
         frontier = discovered
     for one in deferred.values():
-        confirm(root, limits, parsed, one)
+        if one.path not in read:
+            limits.hold(FILES, len(read) + 1)
+            opened = read_document(root, one, limits, total)
+            try:
+                tokens = parse(opened.source.text, limits.of(NESTING), {})
+                limits.hold(NESTING, nesting(tokens))
+            except Crossed as crossed:
+                raise unindexable(crossed, one.path, one.chain) from crossed
+            except Suppressed as suppressed:
+                raise declined(
+                    suppressed, one.path, opened.source, one.chain
+                ) from suppressed
+            total += opened.size
+            read[one.path] = opened.source
+            captured[one.path] = opened.capture
+            parsed[one.path] = tokens
+        confirm(parsed[one.path], one)
     return read, parsed, defined, captured, found
 
 
 def confirm(
-    root: Path,
-    limits: Limits,
-    parsed: Mapping[str, list[Token]],
+    tokens: Sequence[Token],
     one: Reference,
 ) -> None:
     """Hold one deferred reference to naming a document and a heading that exist.
@@ -1380,20 +1205,9 @@ def confirm(
     the run compiling the link decides; this run says only that the
     target is there to be found.
 
-    A document the bundle already carries is confirmed from the tokens
-    that carried it, so a deferral naming it costs no second read. A
-    document nothing else named is read for this confirmation alone:
-    its content reaches no group, and the nesting budget holds over the
-    parse because a source this run cannot index is a source it cannot
-    answer for.
+    The caller supplies the cached index from the source's captured read.
+    A deferred-only source contributes no content to a group.
     """
-    tokens = parsed.get(one.path)
-    if tokens is None:
-        opened = read_document(root, one)
-        try:
-            tokens = parse(opened.source.text, limits.of(NESTING), {})
-        except Crossed as crossed:
-            raise unindexable(crossed, one.path, one.chain) from crossed
     if one.fragment is None:
         return
     if any(heading.fragment == one.fragment for heading in index(tokens)):
@@ -1409,55 +1223,66 @@ def confirm(
     )
 
 
-def membership(path: str, inforce: Mapping[str, int]) -> str | None:
-    """The slug of the group one document belongs to, where a rule names one.
-
-    A document belongs to the group whose slug matches the deepest
-    directory segment of its path, so a rule naming an inner directory
-    takes precedence over one naming a directory above it. A document
-    no rule matches keeps its own file group.
-    """
-    return next(
-        (
-            segment
-            for segment in reversed(PurePosixPath(path).parts[:-1])
-            if segment in inforce
-        ),
-        None,
-    )
-
-
-def idle(
-    inforce: Mapping[str, int], selected: Mapping[str, Sequence[Reference]]
-) -> list[str]:
-    """Each grouping rule in force that arranges no document, in declaration order.
-
-    A rule is read against the closure rather than against the source
-    tree: a directory holding documents the traversal never reached
-    arranges as little as an empty one. Membership is the arrangement's
-    own rule, so a rule an inner one out-ranks on every document it
-    could have taken is idle, because the group it names carries none
-    of them.
-    """
-    arranging = {membership(path, inforce) for path in selected}
-    return [slug for slug in inforce if slug not in arranging]
+def group_depths(
+    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
+) -> dict[str, int]:
+    """Consistent depths for named groups, ordered by identity and source path."""
+    members: dict[str, list[str]] = {}
+    for path in sorted(
+        selected, key=lambda p: (read[p].display, read[p].identity or p)
+    ):
+        name = read[path].conversion.group
+        if name is not None:
+            members.setdefault(name, []).append(path)
+    depths: dict[str, int] = {}
+    for name in sorted(members):
+        first = read[members[name][0]].conversion
+        assert first.depth is not None and first.depth_location is not None
+        depths[name] = first.depth
+        for path in members[name][1:]:
+            current = read[path].conversion
+            if current.depth != first.depth:
+                location = current.depth_location
+                assert location is not None
+                raise Failure(
+                    INPUT_FAILURE,
+                    Diagnostic(
+                        ERROR,
+                        f"prosiform.group-depth for group {name!r} "
+                        f"is {first.depth}; "
+                        f"another member declares {current.depth}",
+                        code=GROUP_DEPTH_CONFLICT,
+                        location=first.depth_location,
+                        related=(
+                            RelatedLocation(
+                                location.file,
+                                location.line,
+                                location.column,
+                                "prosiform.group-depth for group "
+                                f"{name!r} is {current.depth}",
+                            ),
+                        ),
+                        remedy="use one depth for every contributing group member",
+                    ),
+                )
+    return depths
 
 
 def unambiguous(
-    selected: dict[str, list[Reference]], inforce: Mapping[str, int]
+    selected: dict[str, list[Reference]], read: Mapping[str, Source]
 ) -> None:
     """Hold each file heading to naming one source, as a reader must read it.
 
-    A merged group is headed by its directory slug rather than by a
+    A merged group is headed by its declared name rather than by a
     path, so a member of one heads no file group and two members
     sharing a title are told apart by the names the arrangement gives
     them.
     """
     headed: dict[str, str] = {}
     for path, selecting in selected.items():
-        if membership(path, inforce) is not None:
+        if read[path].conversion.group is not None:
             continue
-        title = heading_text(path)
+        title = heading_text(read[path].display or path).casefold()
         if title in headed:
             raise input_failure(
                 f"{path!r} and {headed[title]!r} both head a file group {title!r}, "
@@ -1468,6 +1293,25 @@ def unambiguous(
                 chain=selecting[0].chain,
             )
         headed[title] = path
+    members: dict[str, list[str]] = {}
+    for path in selected:
+        name = read[path].conversion.group
+        if name is not None:
+            members.setdefault(name, []).append(path)
+    for name, paths in members.items():
+        displays = {path: read[path].display or path for path in paths}
+        names = member_headings(list(displays.values()), name)
+        seen: dict[str, str] = {}
+        for path in paths:
+            title = names[displays[path]].casefold()
+            if title in seen:
+                raise input_failure(
+                    f"{path!r} and {seen[title]!r} share member heading {title!r}",
+                    code=AMBIGUOUS_FILE_GROUP,
+                    remedy="use distinguishable member paths",
+                    reference=path,
+                )
+            seen[title] = path
 
 
 def assembled(
@@ -1481,7 +1325,7 @@ def assembled(
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
-    A document no grouping rule names is its own file group. Every
+    A document without conversion settings is its own file group. Every
     other document joins the merged group its slug names, which carries
     its members in root-relative path order. The groups are ordered by
     root-relative path, a merged group taking the first of its
@@ -1489,8 +1333,11 @@ def assembled(
     """
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path, selecting in selected.items():
-        named = membership(path, inforce)
+    for path in sorted(
+        selected, key=lambda p: (read[p].display, read[p].identity or p)
+    ):
+        selecting = selected[path]
+        named = read[path].conversion.group
         if named is not None:
             merging.setdefault(named, []).append(path)
             continue
@@ -1504,6 +1351,8 @@ def assembled(
                     defined[path],
                     selection(path, tokens, selecting, entries),
                     assigned,
+                    read[path].root,
+                    read[path].display or path,
                 )
             )
     for named, paths in merging.items():
@@ -1522,12 +1371,20 @@ def assembled(
                             selection(path, parsed[path], selected[path], entries),
                             assigned,
                             depth,
+                            read[path].root,
                         )
                         for path in paths
                     ],
+                    {path: read[path].display for path in paths},
                 )
             )
-    return sorted(groups, key=lambda one: one.order)
+    return sorted(
+        groups,
+        key=lambda one: min(
+            (read[p].display, read[p].identity or p)
+            for p in set(one.record.paths()) | {one.order}
+        ),
+    )
 
 
 @contextmanager
@@ -1598,7 +1455,6 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-    inforce: Mapping[str, int],
 ) -> tuple[str, list[tuple[str, str]]]:
     """The complete bundle candidate, and the entry destinations it opens on.
 
@@ -1624,7 +1480,8 @@ def compose(
     as the input failure it is.
     """
     selected = contributing(referrer, found)
-    unambiguous(selected, inforce)
+    inforce = group_depths(read, selected)
+    unambiguous(selected, read)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
@@ -1738,6 +1595,27 @@ def publish_file(text: str, destination: Path) -> None:
         ) from refused
 
 
+def derived_output(
+    read: Mapping[str, Source],
+    referrer: Reference | None,
+    requested: Sequence[Reference],
+) -> str:
+    """The basename of one normalized entry, relative to its captured root."""
+    selections = {
+        (one.path or (referrer.path if referrer else ""), one.fragment)
+        for one in requested
+    }
+    if len(selections) != 1:
+        raise usage_failure(
+            "multiple distinct selections require an explicit -o destination"
+        )
+    path, fragment = next(iter(selections))
+    name = str(Path(read[path].display).with_suffix("")).replace(os.sep, "_")
+    if fragment is not None:
+        name += f"__{fragment}"
+    return f"{name}.bundle.md"
+
+
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
     grammar = parser()
@@ -1753,8 +1631,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         publish("".join(f"{code}\n" for code in CODES), stdout)
         return SUCCESS
 
-    if options.root is None:
-        raise usage_failure("-r is required and names the allowed source root")
     if not options.references:
         raise usage_failure("at least one entry reference is required")
     requested = [entry(reference) for reference in options.references]
@@ -1765,29 +1641,12 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                     f"the fragment-only reference {one.original!r} needs -f to "
                     f"name the document it resolves against"
                 )
-    inforce = rules(options.group)
 
-    root = Path(options.root).resolve()
+    root = Path.cwd().resolve()
     referring = entry(options.referrer) if options.referrer else None
     if referring is not None:
         referring = replace(referring, chain=(identity(referring),))
     requested = entered(referring, requested)
-
-    if not root.is_dir():
-        raise input_failure(
-            f"the allowed source root {options.root!r} names no directory",
-            code=ROOT_NOT_FOUND,
-            remedy="name a directory that exists",
-        )
-    present = directories(root)
-    for slug in inforce:
-        if slug not in present:
-            raise input_failure(
-                f"the grouping rule for {slug!r} names no directory under the "
-                f"allowed source root",
-                code=INVALID_GROUP_RULE,
-                remedy="name a directory the source root carries",
-            )
 
     limits = budgets(options)
     try:
@@ -1796,18 +1655,17 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    if options.output != STANDARD_OUTPUT:
-        destination = Path(options.output).resolve()
+    output = options.output
+    if output is None:
+        output = derived_output(read, referring, requested)
+    if output != STANDARD_OUTPUT:
+        destination = Path(output).resolve()
         if destination in sources(root, read):
-            raise usage_failure(
-                f"the output path {options.output!r} names an input source"
-            )
-    bundled, named = compose(
-        read, parsed, defined, referring, requested, found, limits, inforce
-    )
+            raise usage_failure(f"the output path {output!r} names an input source")
+    bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
-    recheck(root, captured, reaching(contributing(referring, found)))
+    recheck(root, captured)
     if options.fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
     try:
@@ -1825,19 +1683,10 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             )
         )
     if not options.check:
-        if options.output == STANDARD_OUTPUT:
+        if output == STANDARD_OUTPUT:
             publish(bundled, stdout)
         else:
-            publish_file(bundled, Path(options.output).resolve())
-    for slug in idle(inforce, contributing(referring, found)):
-        reporter.emit(
-            Diagnostic(
-                WARNING,
-                f"the grouping rule for {slug!r} arranges nothing, because the "
-                f"closure carries no document under a directory of that slug",
-                code=EMPTY_GROUP_RULE,
-            )
-        )
+            publish_file(bundled, destination)
     for reference, target in named:
         reporter.emit(
             Diagnostic(

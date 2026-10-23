@@ -8,8 +8,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "rules:1", "rules/agents.md", "rules/common.md"]
+cwd = "source"
+arguments = ["rules/agents.md", "rules/common.md"]
 
 [expected]
 exit_status = 0

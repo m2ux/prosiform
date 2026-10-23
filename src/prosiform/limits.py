@@ -58,7 +58,13 @@ LINKS = Budget(
     32_768,
     "authored link and image occurrences in selected content",
 )
-NESTING = Budget("-N", "max_nesting", 64, "levels of container nesting in one source")
+NESTING = Budget(
+    "-N",
+    "max_nesting",
+    64,
+    "levels of container nesting and, independently, "
+    "YAML collection nesting in one source",
+)
 EXPANSION_DEPTH = Budget(
     "-E", "max_expansion_depth", 8, "link hops from the nearest entry reference"
 )

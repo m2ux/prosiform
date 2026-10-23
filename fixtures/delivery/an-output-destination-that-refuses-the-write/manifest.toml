@@ -6,7 +6,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-o", "no-such-directory/bundle.md", "guide.md"]
 
 [expected]

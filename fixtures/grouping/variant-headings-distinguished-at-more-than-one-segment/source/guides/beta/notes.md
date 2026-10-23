@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "guides"
+  group-depth: 2
+---
 # Notes
 
 ## Findings

@@ -53,11 +53,10 @@ def test_a_symbolic_directory_link_is_refused_at_that_segment(root: Path) -> Non
         read_source(root, "away/secret.md")
 
 
-def test_a_root_that_is_itself_a_link_is_the_caller_s_own_spelling(
-    root: Path, tmp_path: Path
-) -> None:
+def test_a_root_that_is_itself_a_link_is_refused(root: Path, tmp_path: Path) -> None:
     os.symlink(root, tmp_path / "aliased-root")
-    assert read_source(tmp_path / "aliased-root", "guide.md") == GUIDE.encode()
+    with pytest.raises(OSError):
+        read_source(tmp_path / "aliased-root", "guide.md")
 
 
 def test_a_hard_link_is_a_document_the_root_holds(root: Path) -> None:
@@ -65,16 +64,13 @@ def test_a_hard_link_is_a_document_the_root_holds(root: Path) -> None:
     assert read_source(root, "hard.md") == GUIDE.encode()
 
 
-def test_a_parent_segment_is_refused_rather_than_descended(root: Path) -> None:
-    with pytest.raises(Outside):
-        read_source(root, "../outside/secret.md")
+def test_a_parent_segment_is_walked_without_following_links(root: Path) -> None:
+    assert read_source(root, "../outside/secret.md") == b"# Secret\n"
 
 
-def test_a_current_segment_and_an_empty_one_are_refused(root: Path) -> None:
-    with pytest.raises(Outside):
-        read_source(root, "./guide.md")
-    with pytest.raises(Outside):
-        read_source(root, "docs//note.md")
+def test_current_and_empty_segments_preserve_identity(root: Path) -> None:
+    assert read_source(root, "./guide.md") == GUIDE.encode()
+    assert read_source(root, "docs//note.md") == GUIDE.encode()
 
 
 def test_an_absolute_path_is_refused_as_an_empty_leading_segment(root: Path) -> None:

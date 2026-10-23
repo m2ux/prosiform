@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "modes"
+  group-depth: 2
+---
 # Plan Mode
 
 Scopes the solution before any work starts.

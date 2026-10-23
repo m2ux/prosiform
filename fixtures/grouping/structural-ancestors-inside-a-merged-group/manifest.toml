@@ -8,8 +8,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "modes:2", "modes/plan-mode.md#detail"]
+cwd = "source"
+arguments = ["modes/plan-mode.md#detail"]
 
 [expected]
 exit_status = 0

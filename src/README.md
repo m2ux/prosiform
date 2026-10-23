@@ -4,7 +4,7 @@ The Python implementation of prosiform, checked against the behavioural contract
 
 ### Command line
 
-Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes responses and bundles to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
+Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes a bundle to an entry-derived file unless `-o` selects stdout or another path, writes informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
 
 ### Agent delivery
 
@@ -36,8 +36,11 @@ uv sync --frozen
 | --- | --- | --- |
 | Python | `>=3.13` | Required Python version; also used in continuous integration. |
 | [`markdown-it-py`](https://pypi.org/project/markdown-it-py/) | `==4.2.0` | Markdown parser for the `skill-markdown-v1` profile. |
+| [`ruamel.yaml`](https://yaml.dev/doc/ruamel.yaml/) | `==0.18.16` | Safe event parsing for bounded YAML metadata decoding. |
 
 The parser uses the `commonmark` preset with core `table` and `strikethrough` rules enabled. Typographic substitution is off, task-list markers remain text, and raw HTML produces tokens the build can reject. No parser plugin is required. `mdurl` is a transitive dependency of `markdown-it-py`.
+
+The metadata decoder consumes the pure Python YAML event stream, checks collection depth before building nodes, and applies YAML 1.2 Core scalar resolution. Node identities keep tag-aware key equality, including collection keys. Aliases, custom tags and merge keys fail before construction. The decoder accepts a byte span from a captured source; source-reader integration supplies that span.
 
 ## Packaging
 

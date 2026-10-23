@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["entry.md"]
 
 [expected]
@@ -17,7 +17,7 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_TARGET_NOT_FOUND"
-reference = "other.md#nowhere"
+reference = "docs/other.md#nowhere"
 resolved = "docs/other.md"
 source = "docs/notes.md:5"
 chain = ["entry.md", "docs/notes.md#detail", "docs/other.md#nowhere"]

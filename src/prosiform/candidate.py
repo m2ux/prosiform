@@ -293,6 +293,7 @@ def intended(
     at: int,
     children: Sequence[Token],
     targets: Mapping[tuple[str, str | None], str],
+    root: str = "",
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
@@ -320,9 +321,9 @@ def intended(
     if one.kind != LINK:
         return one
     opening = opening_text(children, at)
-    found = bundled(path, one.destination, opening)
+    found = bundled(path, one.destination, opening, root)
     if found is None:
-        deferred = deferring(path, one.destination, opening)
+        deferred = deferring(path, one.destination, opening, root)
         if deferred is None:
             return one
         return Use(
@@ -591,7 +592,9 @@ def above(tokens: Sequence[Token]) -> dict[int, tuple[int, ...]]:
     }
 
 
-def absorbing(record: Record, path: str, tokens: Sequence[Token]) -> set[int]:
+def absorbing(
+    record: Record, path: str, tokens: Sequence[Token], display: str | None = None
+) -> set[int]:
     """The source line of the heading the group names in one source's place.
 
     A file group's heading names the document's title, and a merged
@@ -600,7 +603,11 @@ def absorbing(record: Record, path: str, tokens: Sequence[Token]) -> set[int]:
     by that heading and the title is no structural ancestor. The line
     is what the outline check reads it as emitted at.
     """
-    named = heading_text(path) if record.merged is None else PurePosixPath(path).stem
+    named = (
+        heading_text(path if display is None else display)
+        if record.merged is None
+        else PurePosixPath(path).stem
+    )
     found = absorbed(tokens, named)
     if found is None or found.map is None:
         return set()
@@ -616,7 +623,11 @@ def sourced(one: Part) -> str | None:
     return None
 
 
-def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
+def placement(
+    record: Record,
+    parsed: Mapping[str, Sequence[Token]],
+    read: Mapping[str, Source] | None = None,
+) -> None:
     """Hold one group's parts to the outline their source gave them.
 
     Each part the group emits is placed by the chain of eligible
@@ -626,7 +637,7 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
     ancestor. A chain member the group emits nowhere is an outline the
     candidate reconstructs differently from the one its author wrote.
 
-    A merged group arranges its members by the grouping rules rather
+    A merged group arranges its members by their conversion settings rather
     than by any one source's order, and a heading several documents
     contribute one text to is emitted once for all of them, so the
     chain is read against every source line the group's headings
@@ -647,7 +658,14 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
     for path in record.paths():
         tokens = parsed[path]
         chains = above(tokens)
-        emitted_at: set[int | None] = set(absorbing(record, path, tokens))
+        emitted_at: set[int | None] = set(
+            absorbing(
+                record,
+                path,
+                tokens,
+                (read[path].display or path) if read is not None else None,
+            )
+        )
         if record.merged is not None:
             emitted_at |= answered.get(path, set())
         for one in record.parts:
@@ -710,7 +728,7 @@ def coverage(groups: Sequence[Group]) -> None:
     counting occurrences of a string decides nothing here.
 
     The ranges are read by source rather than by group, because a
-    grouping rule arranges one document's regions among another's and
+    declared group arranges one document's regions among another's and
     two regions of one source overlap wherever they are emitted.
     """
     carried: dict[str, list[tuple[int, int]]] = {}
@@ -967,6 +985,7 @@ def references(
     source: Side,
     published: Side,
     targets: Mapping[tuple[str, str | None], str],
+    root: str = "",
 ) -> None:
     """Hold one region's link and image uses to the uses its source wrote.
 
@@ -976,7 +995,7 @@ def references(
     preserve.
     """
     expected = [
-        intended(path, one, at, children, targets)
+        intended(path, one, at, children, targets, root)
         for inline in inlines(source.tokens, [source.span])
         for children, at, one in uses(inline)
     ]
@@ -1071,7 +1090,7 @@ def validate(
     coverage(groups)
     for one in groups:
         levels(one.record)
-        placement(one.record, parsed)
+        placement(one.record, parsed, read)
     environment: dict[str, Any] = {}
     tokens = parse(bundled, budget, environment)
     physical = lines(bundled)
@@ -1095,5 +1114,5 @@ def validate(
             located(parsed[carried.path], carried.lines),
         )
         published = Side(tokens, physical, span)
-        references(carried.path, source, published, targets)
+        references(carried.path, source, published, targets, read[carried.path].root)
         preserved(carried.path, carried.removed, source, published)

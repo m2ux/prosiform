@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "modes"
+  group-depth: 2
+---
 # Plan Mode
 
 Scopes the solution before any work starts.
@@ -12,4 +17,4 @@ Each step is named here.
 
 #### Detail
 
-Name the goal, then the work that meets it, reading [Review Mode](review-mode.md) as you go.
+Name the goal, then the work that meets it, reading [Review Mode](modes/review-mode.md) as you go.

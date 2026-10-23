@@ -1,0 +1,15 @@
+description = "Contributing members of one group declare conflicting depths."
+
+clauses = ["Grouping", "Metadata failures", "Validation and failure contract — Publication"]
+
+[invocation]
+cwd = "source"
+arguments = ["a.md", "b.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_GROUP_DEPTH_CONFLICT"

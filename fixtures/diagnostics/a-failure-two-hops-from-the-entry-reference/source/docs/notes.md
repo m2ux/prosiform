@@ -2,4 +2,4 @@
 
 ## Detail
 
-The detail requires [the other document](other.md#nowhere).
+The detail requires [the other document](docs/other.md#nowhere).

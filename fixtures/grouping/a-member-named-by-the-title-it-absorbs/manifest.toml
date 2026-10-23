@@ -8,8 +8,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "notes:2", "entry.md"]
+cwd = "source"
+arguments = ["entry.md"]
 
 [expected]
 exit_status = 0

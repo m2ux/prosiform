@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "parts"
+  group-depth: 3
+---
 # Two
 
 ## Context

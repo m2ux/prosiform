@@ -17,12 +17,12 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 | Term | Definition |
 | --- | --- |
-| **root** | The directory confining all source access. A path resolving outside it fails. |
-| **source document** | One local Markdown file under the root, recognized by its `.md` or `.markdown` suffix. |
+| **root** | A source's dependency base and confinement directory. An explicit declaration resolves from that source's directory; absence uses the invocation working directory. |
+| **source document** | One captured local Markdown file, recognized by its `.md` or `.markdown` suffix. |
 | **section** | A document-level heading and its subsections, ending before the next heading of equal or higher level. The smallest unit a reference can select. |
 | **region** | A contiguous span of a source document selected for inclusion: a whole document, or a section. |
 | **preamble** | Content above a source document's first heading. It belongs to no section, so only a whole-document selection carries it. |
-| **frontmatter** | A leading delimited metadata block, stripped from every included document and never traversed. |
+| **frontmatter** | A leading delimited YAML block, validated and retained as source metadata, excluded from Markdown content and dependency discovery. |
 
 ## References
 
@@ -30,10 +30,9 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | --- | --- |
 | **reference** | An authored Markdown link to a local document or section. |
 | **entry reference** | A reference supplied as an argument. Traversal starts at each one. |
-| **entry point** | The routing document a caller reads to choose an entry reference. It is not an argument, so it is never bundled. |
 | **target** | The document or section a reference resolves to, after path and fragment normalization. |
 | **dependency** | A target a reference resolves to under the allowed source root, where its author has not deferred it. It is resolved, bundled and rewritten; a reference resolving outside the root cites the document it names and creates none. |
-| **deferral** | An author's statement that a reference is compiled in a run of its own rather than this one, written as a `¬` opening the link's text. The target is required to exist and is carried nowhere; the bundle emits the link's text with its mark exactly as authored, and its destination is the target's path from the root. |
+| **deferral** | An author's statement that a reference is compiled in a run of its own rather than this one, written as a `¬` opening the link's text. The target is required to exist and is carried nowhere; the bundle emits the link's text with its mark exactly as authored, and its destination is the target's URI-escaped path from the invocation working directory. |
 | **closure** | The transitive closure of the reference relation over the entry references: every target reachable by following the references selected content carries under the root. |
 | **expansion depth** | Link hops from the nearest entry reference to a target, along its shortest path. |
 | **resource** | A reference the bundle carries as text rather than opening: an image whatever file it names, a remote address, any other link naming no local Markdown document. It is emitted as authored and never opened, rebased or resolved. |
@@ -45,9 +44,9 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **selection** | The set of regions chosen for inclusion. |
 | **consolidation** | Replacing overlapping selections with their union, so each region appears exactly once however many references reach it. |
 | **structural ancestor** | A heading emitted with no body, to preserve the outline of a partial selection. Not a dependency, and not a substitute for selecting the section it names. |
-| **group** | A top-level division of the bundle. By default one source document; a grouping rule makes it one merged directory. |
-| **grouping rule** | `SLUG:DEPTH`. Every document under a directory named `SLUG` is merged at source heading level `DEPTH`, beneath one heading carrying the slug in title case. Repeatable, once per slug. |
-| **member** | A source document a grouping rule claims. |
+| **group** | A top-level division of the bundle: one source document, or contributing documents declaring the same group identity and depth in their metadata. |
+| **grouping rule** | A source document's paired metadata fields declaring its group identity and grouping depth. |
+| **member** | A contributing source document whose metadata declares a named group. |
 | **variant** | One of several same-named sections a merged group draws from different documents. Emitted once as a shared heading, with one subheading per source document. |
 | **overview** | The section a merged group gathers its member subheadings beneath, where it also emits merged sections. |
 | **title case** | The spelling every heading the bundle generates carries: each word of the name capitalized, every separator the name carries kept. It changes letters and not structure, and it reaches what the compiler writes and nothing else. |
@@ -78,7 +77,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | --- | --- |
 | **compositor** | A compositor sets type. It arranges; it resolves nothing. |
 | **scaffold** | Scaffolding is removed when building finishes. A structural ancestor is permanent in the bundle. |
-| **cohort** | Imported from demography, and earns nothing a grouping rule and a group do not already say. |
+| **cohort** | Imported from demography, and earns nothing group membership does not already say. |
 | **branch** | Collides with the version-control sense. A same-named section from another document is a variant. |
 | **anchor** | The bundle emits no anchor elements. A destination names a heading; it is not an element. |
 | **include** | Suggests textual substitution at a point. Selection, consolidation and grouping decide what appears and where. |

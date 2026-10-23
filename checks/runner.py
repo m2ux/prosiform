@@ -14,12 +14,9 @@ implementation of the contract. There is no default build and no
 fallback: an absent configuration raises `BuildNotConfigured`, so a
 fixture is never reported as holding against a build that never ran.
 
-The runner supplies the allowed source root the manifest names and asks
-for diagnostics as data, which the contract's command line spells
-`-r DIR` and `-d json`. A manifest writes neither, so a
-diagnostic's code is compared as a value rather than as prose. A manifest
-naming no root declares a run supplied none, which is how the command line
-the contract refuses for naming no allowed source root is stated.
+The runner uses the working directory the manifest names and asks
+for diagnostics as data through `-d json`. A manifest omits that option, so a
+diagnostic's code is compared as a value rather than as prose.
 
 A difference names the expectation it belongs to and locates itself within
 it. Standard output declared as bytes is compared as bytes and located by
@@ -449,13 +446,12 @@ def run_fixture(fixture: Path) -> Result:
     requested = ["-x", declared] if declared is not None else []
     allowed = build_timeout()
     with worked(fixture, declared) as working:
-        named = invocation.get("root")
-        allowed_root = (
-            ["-r", str((working / named).resolve())] if named is not None else []
-        )
+        named = invocation.get("cwd")
+        invoked_from = working if named is None else (working / named).resolve()
         argv = [
             *build_under_test(),
-            *allowed_root,
+            "-o",
+            "-",
             "-d",
             "json",
             *requested,
@@ -464,7 +460,7 @@ def run_fixture(fixture: Path) -> Result:
         try:
             completed = subprocess.run(
                 argv,
-                cwd=working,
+                cwd=invoked_from,
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 timeout=allowed,

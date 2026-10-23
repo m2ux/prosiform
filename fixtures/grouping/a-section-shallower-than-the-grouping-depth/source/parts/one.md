@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "parts"
+  group-depth: 3
+---
 # One
 
 What the first part opens on.

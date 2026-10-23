@@ -11,7 +11,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["notes.md", "guide.md"]
 
 [expected]

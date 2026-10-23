@@ -1,3 +1,7 @@
+---
+prosiform:
+  root: "../.."
+---
 # Style
 
 Keep examples short.

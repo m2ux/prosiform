@@ -11,8 +11,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "modes:2", "modes/plan-mode.md", "modes/review-mode.md"]
+cwd = "source"
+arguments = ["modes/plan-mode.md", "modes/review-mode.md"]
 
 [expected]
 exit_status = 0

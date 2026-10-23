@@ -1,15 +1,9 @@
-description = "A command line naming no allowed source root is refused as invalid usage, since nothing says which tree the run may read, and the message names the option that says it."
+description = "The root option is invalid CLI usage."
 
-clauses = [
-  "CLI contract — -r DIR, required allowed source root",
-  "CLI contract, a missing -r",
-  "CLI contract, a command line the grammar does not admit",
-  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
-  "CLI contract, one code for the form of the command line, and the message says which fault it was",
-]
+clauses = ["CLI contract", "Exit status and JSON diagnostics"]
 
 [invocation]
-arguments = ["guide.md"]
+arguments = ["-r", "source", "guide.md"]
 
 [expected]
 exit_status = 2

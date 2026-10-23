@@ -1,12 +1,12 @@
 description = "An allowed source root naming no directory fails as the input failure it is, and the run publishes nothing."
 
 clauses = [
-  "CLI contract, a -r naming no directory fails with E_ROOT_NOT_FOUND",
+  "Metadata failures",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety or resource-limit failure",
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guide.md"]
 
 [expected]

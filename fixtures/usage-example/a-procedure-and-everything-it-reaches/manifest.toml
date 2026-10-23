@@ -12,7 +12,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["modes/plan-mode.md"]
 
 [expected]
@@ -22,5 +22,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Modes/Plan-Mode"
-resolved = "modesplan-mode"
+reference = "Plan"
+resolved = "plan"

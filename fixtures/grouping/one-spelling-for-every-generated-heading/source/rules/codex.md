@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "rules"
+  group-depth: 2
+---
 # Codex
 
 The rules one harness reads.

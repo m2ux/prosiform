@@ -1,20 +1,17 @@
-description = "An entry reference whose parent segments walk above the allowed source root is refused rather than opened, so a document outside the root is never read."
+description = "A relative parent entry uses bounded bootstrap capture and retains its canonical source identity."
 
-clauses = [
-  "Resolution sequence — step 7",
-  "Resolution sequence — A normalized path outside the root",
-  "Validation and failure contract — Safety, the allowed source root enforced",
-]
+clauses = ["Reference normalization and path identity", "No-symlink source policy"]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["../outside.md"]
 
 [expected]
-exit_status = 1
+exit_status = 0
 stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
-severity = "error"
-code = "E_SOURCE_OUTSIDE_ROOT"
-reference = "../outside.md"
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "../Outside"
+resolved = "outside"

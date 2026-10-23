@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "modes"
+  group-depth: 2
+---
 # Plan Mode
 
 Scopes the solution before any work starts.
@@ -6,7 +11,7 @@ Scopes the solution before any work starts.
 
 ### Draft
 
-Write the first pass, reading it back as [Review Mode](review-mode.md) states.
+Write the first pass, reading it back as [Review Mode](modes/review-mode.md) states.
 
 ### Review
 

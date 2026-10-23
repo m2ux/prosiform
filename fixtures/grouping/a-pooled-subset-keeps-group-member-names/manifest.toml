@@ -9,8 +9,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "g:2", "g/a/notes.md", "g/b/notes.md", "g/c/other.md"]
+cwd = "source"
+arguments = ["g/a/notes.md", "g/b/notes.md", "g/c/other.md"]
 
 [expected]
 exit_status = 0

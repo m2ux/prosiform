@@ -1,4 +1,4 @@
-description = "A grouping rule naming a directory the sources sit under merges every document beneath it, and the run reports the entry references and destinations its bundle's entry line carries. Each entry names a whole document, and each resolves to the subsection naming that member rather than to a file heading."
+description = "The source files declare membership of one merged group, and the run reports the entry references and destinations its bundle's entry line carries. Each entry names a whole document, and each resolves to the subsection naming that member rather than to a file heading."
 
 clauses = [
   "Agent delivery contract — Entry destinations",
@@ -8,8 +8,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "docs:1", "docs/notes.md", "docs/guide.md"]
+cwd = "source"
+arguments = ["docs/notes.md", "docs/guide.md"]
 
 [expected]
 exit_status = 0

@@ -55,7 +55,8 @@ test:
 mkdir -p /tmp/closure
 git archive acac858 skills/work-planner skills/guidelines.md | tar -x -C /tmp/closure
 sed -i 's|(SKILL.md#command-conventions)|(SKILL.md)|' /tmp/closure/skills/work-planner/guidelines.md
-<build> -r /tmp/closure/skills work-planner/modes/plan-mode.md
+cd /tmp/closure/skills
+<build> work-planner/modes/plan-mode.md
 ```
 
 The run is refused, so the figure is read off the refusal: `limits.Crossed` carries the

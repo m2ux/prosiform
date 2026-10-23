@@ -1,4 +1,4 @@
-description = "Every heading one bundle generates carries one title casing: a hyphenated file heading keeps its hyphen and capitalizes each part of the name, a nested one keeps its separator and capitalizes each segment, and a merged group's heading is its directory slug capitalized as it always was."
+description = "Every heading one bundle generates carries one title casing: a hyphenated file heading keeps its hyphen and capitalizes each part of the name, a nested one keeps its separator and capitalizes each segment, and a merged group's heading is its declared name capitalized."
 
 clauses = [
   "Input and output contract — Generated headings",
@@ -8,8 +8,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-g", "rules:2", "entry-point.md"]
+cwd = "source"
+arguments = ["entry-point.md"]
 
 [expected]
 exit_status = 0

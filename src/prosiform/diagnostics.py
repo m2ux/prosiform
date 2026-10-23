@@ -44,6 +44,22 @@ CHAIN = "chain"
 
 
 @dataclass(frozen=True)
+class Location:
+    """An original physical source coordinate."""
+
+    file: str
+    line: int
+    column: int
+
+
+@dataclass(frozen=True)
+class RelatedLocation(Location):
+    """A further coordinate explaining the primary diagnostic."""
+
+    message: str
+
+
+@dataclass(frozen=True)
 class Diagnostic:
     """One message a run emits to standard error."""
 
@@ -55,6 +71,8 @@ class Diagnostic:
     source: str | None = None
     chain: tuple[str, ...] | None = None
     remedy: str | None = None
+    location: Location | None = None
+    related: tuple[RelatedLocation, ...] | None = None
 
     def fields(self) -> dict[str, Any]:
         """The fields this diagnostic carries, in declaration order.
@@ -68,6 +86,8 @@ class Diagnostic:
         }
         if self.chain is not None:
             carried[CHAIN] = list(self.chain)
+        if self.related is not None:
+            carried["related"] = [asdict(item) for item in self.related]
         return carried
 
     def as_text(self) -> str:
@@ -76,11 +96,20 @@ class Diagnostic:
         heading = carried.pop("code")
         message = carried.pop("message")
         carried.pop("severity")
+        carried.pop("location", None)
+        carried.pop("related", None)
         lines = [f"{heading}: {message}"]
         lines += [
             f"{INDENT}{name}: {HOP.join(value) if name == CHAIN else value}"
             for name, value in carried.items()
         ]
+        if self.location is not None:
+            at = self.location
+            lines.append(f"{INDENT}location: {at.file}:{at.line}:{at.column}")
+        for at in self.related or ():
+            lines.append(
+                f"{INDENT}related: {at.file}:{at.line}:{at.column}: {at.message}"
+            )
         return "\n".join(lines)
 
     def as_json(self) -> str:

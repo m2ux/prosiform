@@ -49,6 +49,8 @@ from pathlib import Path
 
 from documents import ROOT, documents, strip_code_fences, strip_literal
 
+from prosiform.source import content
+
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
 INLINE_LINK = re.compile(r"\]\(\s*<?([^()<>\s]+)>?\s*(?:\"[^\"]*\")?\s*\)")
@@ -185,14 +187,15 @@ def git_path_exists(ref: str, path: str) -> bool:
     return result.returncode == 0
 
 
-def resolve_local(document: Path, target: str) -> str | None:
+def resolve_local(document: Path, target: str, base: Path | None = None) -> str | None:
     path_part, _, fragment = target.partition("#")
     if not path_part:
         if fragment and fragment not in fragments_of(document.read_text()):
             return f"no heading in {document.name} generates #{fragment}"
         return None
 
-    resolved = (document.parent / path_part).resolve()
+    origin = document.parent if base is None else base
+    resolved = (origin / path_part).resolve()
     if not resolved.exists():
         return f"{path_part} does not exist"
     if fragment and resolved.suffix in (".md", ".markdown"):
@@ -390,7 +393,10 @@ def check(document: Path, online: bool) -> tuple[list[str], list[str]]:
     """
     failures: list[str] = []
     unanswered: list[str] = []
-    for target in references(document.read_text()):
+    text = document.read_text()
+    declaration = content(text).conversion.root
+    base = document.parent / declaration if declaration is not None else None
+    for target in references(text):
         reason: Outcome
         if is_repository_tree_url(target):
             reason = resolve_repository_url(target)
@@ -405,7 +411,7 @@ def check(document: Path, online: bool) -> tuple[list[str], list[str]]:
             failures.append(f"{target} — reference carries an unsupported scheme")
             continue
         else:
-            reason = resolve_local(document, target)
+            reason = resolve_local(document, target, base)
             kind = "local"
         if isinstance(reason, Unreachable):
             unanswered.append(f"{target} — {reason.reason}")

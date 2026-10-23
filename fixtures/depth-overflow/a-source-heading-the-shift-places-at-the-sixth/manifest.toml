@@ -1,4 +1,4 @@
-description = "A source heading the group's shift places at the sixth level publishes, so the depth the contract refuses is the seventh and the sixth is reached rather than approached; the tree is the overflowing one less its deepest heading."
+description = "A source heading the group's shift places at the sixth level publishes, so the depth the contract refuses is the seventh and the sixth is reached rather than approached; the tree is the overflowing one less its last heading."
 
 clauses = [
   "File-scoped hierarchy — Depth overflow",
@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guide.md"]
 
 [expected]

@@ -1,3 +1,7 @@
+---
+prosiform:
+  root: "../.."
+---
 # introduction stays
 
 Read this first.

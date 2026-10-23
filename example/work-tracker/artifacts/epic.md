@@ -1,3 +1,9 @@
+---
+prosiform:
+  root: ".."
+  group: "artifacts"
+  group-depth: 2
+---
 # Epic
 
 An epic's task delivery findings, integration readiness and completion state.

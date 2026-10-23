@@ -1,3 +1,8 @@
+---
+prosiform:
+  group: "references"
+  group-depth: 1
+---
 # Conventions
 
 The conventions this other document keeps.

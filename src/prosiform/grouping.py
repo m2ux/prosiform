@@ -1,10 +1,9 @@
 """The merged group: one part of the source tree arranged by heading rather than file.
 
-A grouping rule names a directory slug and a source heading level, and
-every document under any directory of that slug is merged at that level,
-beneath one heading carrying the slug in title case. A document no rule
-names keeps its own file group, so one bundle can carry both
-arrangements.
+Each contributing document declares its group name and source heading
+level in conversion metadata. Members of the same group merge at that
+level beneath its title-cased name. A document without conversion
+settings keeps its individual file group.
 
 A merged group emits its slug as an H1, a subsection naming each member
 and holding what that member carries above the grouping depth, and then
@@ -55,7 +54,7 @@ rather than as one more of the group's own sections. Where the group
 emits no merged section they are its whole structure and sit directly
 beneath its heading.
 
-Grouping is decided before ancestry. The rules fix each document's
+Grouping is decided before ancestry. Conversion metadata fixes each document's
 membership, its grouping depth and the shift each of its contributions
 takes, and the chain of eligible ancestors is then read inside that
 arrangement: above the grouping depth the group's own structure supplies
@@ -128,9 +127,9 @@ def titled(text: str) -> str:
 def states(heading: str, word: str) -> bool:
     """Whether a group's heading already states one word of a member's stem.
 
-    A directory slug names a kind and its members are of that kind, so
+    A group name can state a kind shared by its members, so
     `modes` states `Mode`. Both sides are slugged, so the capitalization
-    a filesystem carries decides nothing, and the plural the directory
+    a filesystem carries decides nothing, and the plural the group
     is named with is the one spelling a slug does not reconcile.
     """
     one, other = slug(heading), slug(word)
@@ -185,7 +184,7 @@ class Item:
 
 @dataclass
 class Member:
-    """One document a grouping rule merges, read as the arrangement needs it."""
+    """One document conversion metadata groups, read as the arrangement needs it."""
 
     path: str
     tokens: Sequence[Token]
@@ -221,6 +220,7 @@ def prepared(
     selected: Selection | None,
     assigned: dict[tuple[str, str | None], str] | None,
     depth: int,
+    root: str = "",
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -255,12 +255,17 @@ def prepared(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, defined)
+        else rewrite(physical, tokens, chosen, assigned, path, defined, root)
     )
-    targets: tuple[Target, ...] = (
-        ((path, None),)
+    named_targets = (
+        ()
         if selected is None
         else tuple((path, named[id(token)]) for token in selected.named)
+    )
+    targets: tuple[Target, ...] = (
+        ((path, None), *named_targets)
+        if selected is None or selected.document
+        else named_targets
     )
     member = Member(
         path,
@@ -406,6 +411,7 @@ def merged(
     named: str,
     depth: int,
     members: Sequence[Member],
+    displays: Mapping[str, str] | None = None,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
@@ -418,7 +424,9 @@ def merged(
     into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
     into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
-    headings = member_headings([member.path for member in members], named)
+    displays = {m.path: m.path for m in members} if displays is None else displays
+    names = member_headings([displays[m.path] for m in members], named)
+    headings = {m.path: names[displays[m.path]] for m in members}
     overview(into, headings, depth, members, bool(pooled))
     sections(into, depth, pooled, headings)
     for member in members:

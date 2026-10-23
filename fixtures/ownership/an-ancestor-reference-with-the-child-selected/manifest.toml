@@ -1,4 +1,4 @@
-description = "A nested section selected on its own carries a link naming the including ancestor, which expands the closure to that ancestor once and resolves to the destination it was given."
+description = "A nested section selected on its own carries a link naming the including ancestor, which expands the closure to that ancestor once and resolves to its assigned destination."
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Link position",
@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["manual.md#step"]
 
 [expected]

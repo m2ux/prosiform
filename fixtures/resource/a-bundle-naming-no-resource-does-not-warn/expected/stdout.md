@@ -5,7 +5,7 @@ This bundle was built for [Guide](#guide); everything else is material it refere
 The command reads a relative path:
 
 ```console
-$ pf -r . docs/pics/plan.png
+$ pf docs/pics/plan.png
 ```
 
 The [specification](https://example.com/spec.pdf) carries a scheme, so

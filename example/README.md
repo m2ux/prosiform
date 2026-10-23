@@ -2,7 +2,7 @@
 
 These examples use [work-tracker](work-tracker/SKILL.md), a skill with a routing document, a planning procedure, and linked artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
 
-Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files.
+Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. An entry's `prosiform.root`, when present, is a directory path relative to that file.
 
 ## Bundle a procedure and its dependencies
 
@@ -15,16 +15,17 @@ The [planning procedure](work-tracker/modes/plan-mode.md) links two prerequisite
 
 Read these files first.
 
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Epic](../artifacts/epic.md)
+- [Epic Issue Body](artifacts/epic-issue-body.md)
+- [Epic](artifacts/epic.md)
 
-The caller reached this mode through the routing document [¬ SKILL.md](../SKILL.md), which this procedure defers to a run of its own.
+The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 ```
 
 ### Command
 
 ```bash
-pf -r example/work-tracker modes/plan-mode.md
+cd example/work-tracker
+pf modes/plan-mode.md
 ```
 
 ### Output
@@ -32,7 +33,7 @@ pf -r example/work-tracker modes/plan-mode.md
 The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens with:
 
 ```markdown
-This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan](#plan); everything else is material it references.
 ```
 
 Its planning procedure contains:
@@ -42,8 +43,8 @@ Its planning procedure contains:
 
 Read these files first.
 
-- [Epic Issue Body](#artifactsepic-issue-body)
-- [Epic](#artifactsepic)
+- [Epic Issue Body](#epic-issue-body)
+- [Epic](#epic)
 
 The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 ```
@@ -67,14 +68,14 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
 ### Command
 
 ```bash
-pf -r example/work-tracker \
-  -f artifacts/epic-issue-body.md '#record-epic-delivery'
+cd example/work-tracker
+pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 ```
 
 ### Output
@@ -84,11 +85,11 @@ The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referrin
 ```markdown
 This bundle was built for [Record Epic Delivery](#record-epic-delivery); everything else is material it references.
 
-# Artifacts/Epic-Issue-Body
+# Artifacts
 
-### Operations
+## Operations
 
-#### *Record* Epic Delivery
+### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -99,17 +100,32 @@ One epic body with supplied delivery matches and completed rows recorded.
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
-The selection retains its structural ancestor, shifts the selected heading down one level, and rewrites links to bundle fragments. The rest of the bundle contains the sections those links reach.
+The selection retains its structural ancestor, places the selected heading beneath its declared group, and rewrites links to bundle fragments. The rest of the bundle contains the sections those links reach.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml).
 
-## Merge directories
+## Declare groups per file
 
 ### Above-depth prose
 
 ```bash
-pf -r example/work-tracker -g artifacts:2 -g modes:2 modes/plan-mode.md
+cd example/work-tracker
+pf modes/plan-mode.md
 ```
+
+The artifact files declare group `artifacts`, and the mode file declares `modes`, each at depth `2` in its frontmatter. Each linked file supplies its own settings.
+
+For example, both artifact files begin with this declaration:
+
+```yaml
+---
+prosiform:
+  group: artifacts
+  group-depth: 2
+---
+```
+
+Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
 The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) includes an `Overview` because each artifact's introductory prose needs a section:
 
@@ -138,7 +154,8 @@ An epic's task delivery findings, integration readiness and completion state.
 The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated member headings name each contribution directly beneath `Rules`:
 
 ```bash
-pf -r example/my-skill -g rules:1 procedure.md rules/common.md
+cd example/my-skill
+pf -o - procedure.md rules/common.md
 ```
 
 The grouped portion is:
@@ -172,7 +189,7 @@ Every case below uses the same [source tree](work-tracker/SKILL.md). Each manife
 | Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) |
 | Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
-| Merge directories with `-g` | [Manifest](../fixtures/usage-example/every-document-under-a-directory-merged/manifest.toml) | [Bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) |
+| Compile declared groups | [Manifest](../fixtures/usage-example/every-document-under-a-directory-merged/manifest.toml) | [Bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) |
 | Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
 
 ## Source and validation

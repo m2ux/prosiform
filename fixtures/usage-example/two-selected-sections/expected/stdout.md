@@ -1,10 +1,10 @@
 This bundle was built for [Record Epic Delivery](#record-epic-delivery) and [Delivery Findings](#delivery-findings); everything else is material it references.
 
-# Artifacts/Epic-Issue-Body
+# Artifacts
 
-### Operations
+## Operations
 
-#### *Record* Epic Delivery
+### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -14,7 +14,9 @@ One epic body with supplied delivery matches and completed rows recorded.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-### Fields
+## Fields
+
+### Epic Issue Body
 
 #### Work Breakdown
 
@@ -42,9 +44,26 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
 
-### Commands
+### Epic
 
-#### Sync Epic
+#### Delivery Findings
+
+| Line | What it names |
+| --- | --- |
+| Conflict | Tasks that share a pull request and do not name each other in Joins. A row linked to a pull request whose title names another epic. |
+| Unmatched | A merged pull request that names the epic and that no row links. |
+| In flight | An open pull request that names the epic and that no row links. A pull request whose head is an epic base is not a task match. |
+| Unmerged | An epic base its pull requests target that has not merged into its long-lived branch, once every task is delivered and every criterion is ticked. A draft pull request is named draft. |
+| Uncited | A linked pull request whose task has its own issue and does not link it, or a review pull request that does not link the epic's issue. |
+| Unplaced | A task issue of this epic whose id is not a row. |
+| Open questions | The epic's Open Questions section remains. |
+| Ticked early | A criterion ticked while a delivering row is not delivered. |
+
+An unmet row links a merged pull request while a covered criterion remains unticked. A linked pull request naming another epic is a conflict and delivers its linked task once merged. A missing linked pull request leaves the supplied evidence incomplete.
+
+## Commands
+
+### Sync Epic
 
 Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
 
@@ -63,22 +82,3 @@ work-tracker sync '<epic-json-file>' --prs '<pull-request-records-file>' --links
 ```bash
 work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --fix fixed-943.md
 ```
-
-# Artifacts/Epic
-
-### Fields
-
-#### Delivery Findings
-
-| Line | What it names |
-| --- | --- |
-| Conflict | Tasks that share a pull request and do not name each other in Joins. A row linked to a pull request whose title names another epic. |
-| Unmatched | A merged pull request that names the epic and that no row links. |
-| In flight | An open pull request that names the epic and that no row links. A pull request whose head is an epic base is not a task match. |
-| Unmerged | An epic base its pull requests target that has not merged into its long-lived branch, once every task is delivered and every criterion is ticked. A draft pull request is named draft. |
-| Uncited | A linked pull request whose task has its own issue and does not link it, or a review pull request that does not link the epic's issue. |
-| Unplaced | A task issue of this epic whose id is not a row. |
-| Open questions | The epic's Open Questions section remains. |
-| Ticked early | A criterion ticked while a delivering row is not delivered. |
-
-An unmet row links a merged pull request while a covered criterion remains unticked. A linked pull request naming another epic is a conflict and delivers its linked task once merged. A missing linked pull request leaves the supplied evidence incomplete.

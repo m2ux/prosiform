@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-c", "-o", "bundle.md", "guide.md"]
 
 [expected]

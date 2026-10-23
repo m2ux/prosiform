@@ -6,13 +6,13 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-h"]
 
 [expected]
 exit_status = 0
 stdout_contains = [
-  "pf -r DIR [OPTIONS] REF [REF ...]",
+  "pf [OPTIONS] REF [REF ...]",
   "default 256",
   "compilation, validation, or informational",
   "dependency, policy, safety, or resource-limit failure",

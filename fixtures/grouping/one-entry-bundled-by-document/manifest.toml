@@ -1,4 +1,4 @@
-description = "One entry bundled with no grouping rule in force puts each contributing document in a file group of its own, headed by its root-relative path. It is the arrangement the same entry under a grouping rule is compared with: the content selected and the entry destination reported are the same, and where each section sits is not."
+description = "One entry with no conversion metadata puts each contributing document in a file group of its own, headed by its root-relative path. It is the arrangement the same entry with declared group membership is compared with: the content selected and the entry destination reported are the same, and where each section sits is not."
 
 clauses = [
   "Grouping",
@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["modes/plan-mode.md#operations"]
 
 [expected]

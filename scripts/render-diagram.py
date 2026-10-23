@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import argparse
 import hashlib
 import html
@@ -246,16 +247,9 @@ def main():
         "document", type=Path, help="Markdown entry document, such as SKILL.md"
     )
     parser.add_argument(
-        "--root",
+        "--cwd",
         type=Path,
-        help="Allowed source root; defaults to the document directory",
-    )
-    parser.add_argument(
-        "--group",
-        action="append",
-        default=[],
-        metavar="SLUG:DEPTH",
-        help="Grouping rule; repeat for distinct slugs",
+        help="Invocation working directory; defaults to the document directory",
     )
     parser.add_argument("--section", help="Select a fragment of the entry document")
     for panel in ("input", "compiled"):
@@ -305,29 +299,27 @@ def main():
     if git("rev-parse", "refs/heads/" + branch_name) != revision:
         parser.error("Compiler branch must point to the checked-out commit")
     document = options.document.absolute()
-    root = (options.root or document.parent).absolute()
+    root = (options.cwd or document.parent).absolute()
     try:
         entry = document.relative_to(root).as_posix()
     except ValueError:
-        parser.error("The entry document must be under --root")
+        parser.error("The entry document must be under --cwd")
     if options.section:
         entry += "#" + options.section
-    arguments = ["-r", str(root)]
+    arguments = ["-o", "-"]
     if options.max_output_bytes is not None:
         arguments.extend(["-O", str(options.max_output_bytes)])
-    for group in options.group:
-        arguments.extend(["-g", group])
     arguments.append(entry)
     captured = {}
     read_source = cli.read_source
 
-    def record(source_root, path):
-        data = read_source(source_root, path)
+    def record(source_root, path, **kwargs):
+        data = read_source(source_root, path, **kwargs)
         captured[path] = data
         return data
 
     stdout, stderr = io.StringIO(), io.StringIO()
-    with patch.object(cli, "read_source", side_effect=record):
+    with contextlib.chdir(root), patch.object(cli, "read_source", side_effect=record):
         status = cli.main(arguments, stdout=stdout, stderr=stderr)
     body, diagnostics = stdout.getvalue(), stderr.getvalue()
     inputs = {
