@@ -4,7 +4,7 @@
 
 Each source owns its structural conversion settings. The current structural option is grouping (`-g SLUG:DEPTH`). Source roots, entry selection, referrer context, output destination, diagnostic mode, validation mode, fault injection and budgets remain invocation parameters.
 
-The proposed contract below is a design recommendation grounded in the user's per-file decision. Tracker placement and the delivery breakdown await completion of the proposal workflow.
+The proposed contract below is a design recommendation grounded in the user's per-file decision. The user requested a new Field Refinement epic. Its task files and epic body define delivery; priority confirmation is pending.
 
 ## Metadata Contract
 
@@ -64,7 +64,7 @@ Malformed or inconsistent source metadata receives exit `1`, structured source c
 
 ## Delivery Sequence
 
-These are proposed implementation units, not published task identities. Each unit carries its own tests and documentation. Delivery integrates the contract and compiler through their existing owning branches; the metadata feature becomes the public interface only when its complete acceptance set passes.
+These are architectural stages; the epic table splits them into component-scoped task identities. Each unit carries its own tests and documentation. Delivery integrates the contract and compiler through their existing owning branches; the metadata feature becomes the public interface only when its complete acceptance set passes.
 
 | Unit | Deliverable | Prerequisite | Verification |
 | --- | --- | --- | --- |

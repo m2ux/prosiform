@@ -30,8 +30,8 @@ The official Agent Skills specification was read on 2026-10-23. Its `metadata` f
 - **Requested scope:** plan the refactor using work-planner; implementation is not requested.
 - **Proposed design:** explicit group membership, paired group/depth fields, equal depths within each group, individual grouping when fields are absent, operational controls on the CLI.
 - **Proposed simplification:** remove global grouping flags and directory inference; no backward-compatibility path.
-- **Pending workflow decision:** place proposal #216 on Proposals or leave it unplaced before continuing tracker planning.
-- **Pending tracker decision:** select the refactor's home after the proposal workflow completes. Existing Field Refinement #20 is a plausible home; no initiative has been created or modified.
+- **User direction:** plan a new epic. Continue directly to the epic; proposal #216 remains unplaced.
+- **Tracker home:** new epic I01 E06 under Field Refinement #20. The existing initiative is extended only for this requirement. Priority 4 is recommended after Section Composition at 5; user confirmation is pending.
 
 ## Related Work
 
@@ -49,6 +49,7 @@ Read the repository's issues across all states before selecting proposal prefix 
 - [x] Inspect the current compiler, metadata convention and related issues.
 - [x] Validate and publish the scoped proposal.
 - [x] Draft the design, implementation sequence and verification matrix.
-- [ ] Complete proposal placement decision.
-- [ ] Resolve tracker home and publish the reviewed breakdown.
+- [x] Resolve proposal workflow through the user's request for a new epic.
+- [x] Draft and validate the epic and its five work items.
+- [ ] Confirm epic priority and publish the reviewed breakdown.
 - [x] Commit and push this planning record.
