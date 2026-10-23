@@ -14,6 +14,7 @@ The audit is on `i01/e06/w11-file-only-authoring-audit`, based on `i01/e06/main`
 | --- | --- |
 | [Work item](w11.md) | Implementation scope and required tests |
 | [Audit](audit.md) | Instruction, command, root, hyphen, handoff, corpus and full-check evidence |
+| [Change list](changes.md) | Plan changes this delivery applied and held |
 
 ## Links
 
@@ -22,3 +23,4 @@ The audit is on `i01/e06/w11-file-only-authoring-audit`, based on `i01/e06/main`
 | Epic | [Document Metadata](https://github.com/m2ux/prosiform/issues/218) |
 | Board | [Board 18](https://github.com/users/m2ux/projects/18) |
 | Handoff | [Authoring handoff](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/authoring-handoff.md) |
+| Pull request | [232](https://github.com/m2ux/prosiform/pull/232) |
