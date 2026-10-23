@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "modes"
+  prosiform-group-depth: "2"
+---
 # Plan Mode
 
 Scopes the solution before any work starts.

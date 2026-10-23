@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "rules"
+  prosiform-group-depth: "1"
+---
 Select rules for your harness:
 
 - If you are Codex, compile [¬ Codex](codex.md).

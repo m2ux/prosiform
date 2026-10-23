@@ -1,4 +1,4 @@
-description = "One entry bundled under a grouping rule selects the content the same entry selects without one: one group headed by the directory slug in title case, an Overview section carrying the member that has a preamble, and a variant for each contributor to a pooled section. The entry resolves to the variant naming its document."
+description = "One entry with declared group membership selects its content into one group headed by the declared name in title case, an Overview section carrying the member that has a preamble, and a variant for each contributor to a pooled section. The entry resolves to the variant naming its document."
 
 clauses = [
   "Grouping",
@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["-g", "modes:2", "modes/plan-mode.md#operations"]
+arguments = ["modes/plan-mode.md#operations"]
 
 [expected]
 exit_status = 0

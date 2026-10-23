@@ -1,4 +1,4 @@
-description = "A document no grouping rule names keeps its own file group, headed by its root-relative path, beside the merged group the rule produces. One bundle therefore carries both arrangements, and the groups are ordered by root-relative path with the merged one taking the first of its members'."
+description = "A document without conversion metadata keeps its own file group, headed by its root-relative path, beside the explicitly declared merged group. One bundle therefore carries both arrangements, and the groups are ordered by root-relative path with the merged one taking the first of its members'."
 
 clauses = [
   "Grouping — Group membership",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["-g", "modes:2", "entry.md"]
+arguments = ["entry.md"]
 
 [expected]
 exit_status = 0

@@ -270,9 +270,11 @@ An error decides a failing run.
 | `E_AMBIGUOUS_FILE_GROUP` | File-scoped hierarchy — two documents whose paths differ only by Markdown extension. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_GENERATED_INPUT` | Generated input policy — a source opening with the bundle entry declaration. |
+| `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
+| `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
-| `E_INVALID_GROUP_RULE` | Grouping — a depth outside 1 through 6, an unknown slug, or a repeated slug. |
+| `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML, duplicate keys, or an invalid root. |
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
@@ -294,7 +296,6 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 
 | Code | Declared by |
 | --- | --- |
-| `W_EMPTY_GROUP_RULE` | Grouping — a rule whose directories contribute no document to the closure. |
 | `W_ENTRY_DESTINATION` | Agent delivery contract, Entry destinations — one entry reference and the destination it resolved to, reported so a caller can act on it as data. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 

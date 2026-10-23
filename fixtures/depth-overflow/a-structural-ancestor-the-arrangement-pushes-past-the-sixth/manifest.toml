@@ -9,12 +9,7 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = [
-  "-g",
-  "references:1",
-  "references/alpha.md#the-sixth",
-  "references/beta.md#standards",
-]
+arguments = ["references/alpha.md#the-sixth", "references/beta.md#standards"]
 
 [expected]
 exit_status = 1

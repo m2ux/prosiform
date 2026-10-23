@@ -7,7 +7,7 @@
 Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync --frozen --no-dev` to install the compiler. From the repository root, use that environment's Python:
 
 ```bash
-/path/to/prosiform/src/.venv/bin/python scripts/render-diagram.py /path/to/my-skill/SKILL.md --group rules:2 --output /tmp/skill-diagram
+/path/to/prosiform/src/.venv/bin/python scripts/render-diagram.py /path/to/my-skill/SKILL.md --output /tmp/skill-diagram
 ```
 
 | Argument | Purpose |
@@ -15,7 +15,6 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | `document` | Entry Markdown file, such as `SKILL.md`. |
 | `--output PREFIX` | Required output path prefix. Existing files with this prefix are overwritten. |
 | `--root DIR` | Allowed source root; defaults to the entry document's directory. |
-| `--group SLUG:DEPTH` | Grouping rule; repeat for distinct slugs. |
 | `--section FRAGMENT` | Bundle one section of the entry document. |
 | `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
 | `--compact` | Retain headings and links; omit other body content in both image panels. |
@@ -24,7 +23,7 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | `--branch NAME` | Compiler branch; required for a detached checkout. Must point to its current commit. |
 | `--revision SHA` | Require an exact compiler commit. |
 
-Call the tool again for another document or grouping arrangement, using a different output prefix.
+Grouping comes from each source file's [conversion metadata](../invocation.md#conversion-metadata). Call the tool again for another entry, using a different output prefix.
 
 For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Other prose and code examples are omitted without placeholders. Exact stdout and diagnostics remain complete.
 

@@ -1,14 +1,24 @@
-This bundle was built for [Modes/Plan-Mode](#modesplan-mode); everything else is material it references.
+This bundle was built for [Plan](#plan); everything else is material it references.
 
-# Artifacts/Epic-Issue-Body
+# Artifacts
+
+## Overview
+
+### Epic Issue Body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
-The delivery lines this body records are defined in [Epic](#artifactsepic).
+The delivery lines this body records are defined in [Epic](#epic).
+
+### Epic
+
+An epic's task delivery findings, integration readiness and completion state.
 
 ## Operations
 
-### *Populate* Epic Issue Body
+### Epic Issue Body
+
+#### *Populate* Epic Issue Body
 
 One epic body and its local validation findings.
 
@@ -20,7 +30,7 @@ One epic body and its local validation findings.
 3. Pass the draft, initiative context and output file to [Validate Epic Body](#validate-epic-body).
 4. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
-### *Record* Epic Delivery
+#### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -30,19 +40,32 @@ One epic body with supplied delivery matches and completed rows recorded.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-### *Validate* Epic Body
+#### *Validate* Epic Body
 
 The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records and output file.
 
-1. Check the current body against the local [Fields](#fields), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
+1. Check the current body against the local [Fields](#epic-issue-body-2), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
 2. Include any epic criterion no task row delivers in the findings.
 3. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
+### Epic
+
+#### *Inspect* Epic Delivery
+
+The delivery findings for one epic from supplied evidence.
+
+**Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
+
+1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
+2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
+
 ## Fields
 
-### Template
+### Epic Issue Body
+
+#### Template
 
 ````markdown
 ## Overview
@@ -55,7 +78,7 @@ The body's local format and field findings.
 | --- | --- | --- | --- | --- | --- |
 ````
 
-### Work Breakdown
+#### Work Breakdown
 
 The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
@@ -68,7 +91,7 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Depends on.**
   A task row names the rows it depends on, never an epic. It names the row producing each output it consumes, and where the task consumes from every row of an epic that is what establishes the whole-epic reach.
 
-### Task Delivery
+#### Task Delivery
 
 - **Task ids.**
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes.
@@ -81,9 +104,32 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
 
+### Epic
+
+#### Delivery State
+
+The epic is identified by its repository and issue number. Its state contains task delivery findings, criterion verification and ticks, open questions, expected delivery bases and their merges, and the revisions supporting the evidence. Integration readiness and completion are separate results, each with its unresolved conditions. An epic may be ready to integrate while one or more bases await merging.
+
+#### Delivery Findings
+
+| Line | What it names |
+| --- | --- |
+| Conflict | Tasks that share a pull request and do not name each other in Joins. A row linked to a pull request whose title names another epic. |
+| Unmatched | A merged pull request that names the epic and that no row links. |
+| In flight | An open pull request that names the epic and that no row links. A pull request whose head is an epic base is not a task match. |
+| Unmerged | An epic base its pull requests target that has not merged into its long-lived branch, once every task is delivered and every criterion is ticked. A draft pull request is named draft. |
+| Uncited | A linked pull request whose task has its own issue and does not link it, or a review pull request that does not link the epic's issue. |
+| Unplaced | A task issue of this epic whose id is not a row. |
+| Open questions | The epic's Open Questions section remains. |
+| Ticked early | A criterion ticked while a delivering row is not delivered. |
+
+An unmet row links a merged pull request while a covered criterion remains unticked. A linked pull request naming another epic is a conflict and delivers its linked task once merged. A missing linked pull request leaves the supplied evidence incomplete.
+
 ## Commands
 
-### Sync Epic
+### Epic Issue Body
+
+#### Sync Epic
 
 Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
 
@@ -103,45 +149,9 @@ work-tracker sync '<epic-json-file>' --prs '<pull-request-records-file>' --links
 work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --fix fixed-943.md
 ```
 
-# Artifacts/Epic
+### Epic
 
-An epic's task delivery findings, integration readiness and completion state.
-
-## Operations
-
-### *Inspect* Epic Delivery
-
-The delivery findings for one epic from supplied evidence.
-
-**Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
-
-1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
-2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
-
-## Fields
-
-### Delivery State
-
-The epic is identified by its repository and issue number. Its state contains task delivery findings, criterion verification and ticks, open questions, expected delivery bases and their merges, and the revisions supporting the evidence. Integration readiness and completion are separate results, each with its unresolved conditions. An epic may be ready to integrate while one or more bases await merging.
-
-### Delivery Findings
-
-| Line | What it names |
-| --- | --- |
-| Conflict | Tasks that share a pull request and do not name each other in Joins. A row linked to a pull request whose title names another epic. |
-| Unmatched | A merged pull request that names the epic and that no row links. |
-| In flight | An open pull request that names the epic and that no row links. A pull request whose head is an epic base is not a task match. |
-| Unmerged | An epic base its pull requests target that has not merged into its long-lived branch, once every task is delivered and every criterion is ticked. A draft pull request is named draft. |
-| Uncited | A linked pull request whose task has its own issue and does not link it, or a review pull request that does not link the epic's issue. |
-| Unplaced | A task issue of this epic whose id is not a row. |
-| Open questions | The epic's Open Questions section remains. |
-| Ticked early | A criterion ticked while a delivering row is not delivered. |
-
-An unmet row links a merged pull request while a covered criterion remains unticked. A linked pull request naming another epic is a conflict and delivers its linked task once merged. A missing linked pull request leaves the supplied evidence incomplete.
-
-## Commands
-
-### Match Pull Requests
+#### Match Pull Requests
 
 Reports an epic's delivery state against the pull requests that name it.
 
@@ -159,7 +169,11 @@ work-tracker match '<epic-json-file>' --prs '<pull-request-records-file>' --link
 work-tracker match issue-943.json --prs prs.json --links links.json
 ```
 
-# Modes/Plan-Mode
+# Modes
+
+## Overview
+
+### Plan
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
@@ -167,8 +181,8 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 
 Read these files first.
 
-- [Epic Issue Body](#artifactsepic-issue-body)
-- [Epic](#artifactsepic)
+- [Epic Issue Body](#epic-issue-body)
+- [Epic](#epic)
 
 The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 

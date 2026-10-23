@@ -17,7 +17,6 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | `-r DIR` | required source root; relative to working directory |
 | `-f DOC` | root-relative document for fragment-only references |
 | `-o FILE` | atomic validated output to FILE; default or -: stdout |
-| `-g SLUG:DEPTH` | merge documents under directories named SLUG at heading DEPTH (1–6); repeatable, once per slug |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
 | `-x {source-changed,internal}` | inject a conformance run fault no source tree expresses; default none |
@@ -40,19 +39,33 @@ Run from the repository root; [worked examples](example/README.md) show input an
 ```bash
 pf -r example/work-tracker modes/plan-mode.md
 pf -r example/work-tracker 'artifacts/epic.md#delivery-findings'
-pf -r example/work-tracker \
-  -g artifacts:2 -g modes:2 \
-  modes/plan-mode.md
+pf -r example/work-tracker -o context.md modes/plan-mode.md
 pf -r example/work-tracker -c modes/plan-mode.md
 ```
+
+## Conversion metadata
+
+Each file declares its own group and source heading depth in leading YAML frontmatter:
+
+```yaml
+---
+metadata:
+  prosiform-group: rules
+  prosiform-group-depth: "2"
+---
+```
+
+Both fields are strings and occur together. Depth is `"1"` through `"6"`. The group name is a nonblank, printable single-line string containing neither `:` nor `/`; its exact spelling identifies the group. A file without these fields keeps its individual group. Linked files use their own declarations, including when only a section is selected. Group names are independent of directories and discover no additional files.
+
+Contributing files declaring the same group must agree on depth. A conflict reports both declarations and publishes nothing. Deferred-only files are validated but contribute no group membership. Other skill metadata remains outside the Markdown body.
 
 ## Bundling rules
 
 - **Sources:** valid UTF-8; validate leading frontmatter as bounded YAML 1.2 Core and retain each file's conversion metadata; parse the body after one leading byte-order mark and frontmatter block as `skill-markdown-v1`.
 - **Closure:** entries select whole documents or named sections. Follow local Markdown links under `-r`, relative to their source document, until no new dependencies remain. Compiled links target bundle headings. Outside-root links stay authored and contribute nothing.
-- **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless `-g` merges it. Merged groups use title-cased directory headings. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
+- **Groups:** each contributing document uses its title-cased root-relative path as its group heading unless its metadata declares a group. Merged groups use title-cased declared names. Member subsections contain content above grouping depth, under `Overview` when merged sections also occur at grouping depth, otherwise directly under the group. Members have distinct destinations and shortest-distinguishing-path, title-cased headings. Authored headings and filesystem paths retain their spelling.
 - **Deferred links:** link text starting with `¬` requires an existing document/section but adds no content through that link. Preserve text, marker and following spaces; emit a root-relative destination for a separate run.
-- **Invalid input:** invalid UTF-8, unterminated or invalid frontmatter, invalid conversion metadata, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
+- **Invalid input:** invalid UTF-8, unterminated or invalid frontmatter, invalid conversion metadata, conflicting group depths, raw HTML, unsupported dependency/section-naming constructs, document paths differing only by Markdown extension, or missing in-root documents/sections (deferred targets included) return `1` with the defect and source location.
 
 ## Output
 

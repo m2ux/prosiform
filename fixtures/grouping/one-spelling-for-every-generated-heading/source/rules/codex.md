@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "rules"
+  prosiform-group-depth: "2"
+---
 # Codex
 
 The rules one harness reads.

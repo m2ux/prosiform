@@ -1,4 +1,4 @@
-description = "A grouping rule whose directories contribute no document to the closure is no error: it arranges nothing, and the run reports it on standard error and publishes the bundle the closure makes without it."
+description = "A source outside the closure declares a group without contributing a member or a warning."
 
 clauses = [
   "Grouping",
@@ -6,15 +6,11 @@ clauses = [
 
 [invocation]
 root = "source"
-arguments = ["-g", "other:2", "docs/guide.md"]
+arguments = ["docs/guide.md"]
 
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_EMPTY_GROUP_RULE"
 
 [[expected.diagnostics]]
 severity = "warning"

@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "modes"
+  prosiform-group-depth: "2"
+---
 # Review Mode
 
 Reads a plan back against the goal it states.

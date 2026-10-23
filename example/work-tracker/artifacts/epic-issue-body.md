@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "artifacts"
+  prosiform-group-depth: "2"
+---
 # Epic Issue Body
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.

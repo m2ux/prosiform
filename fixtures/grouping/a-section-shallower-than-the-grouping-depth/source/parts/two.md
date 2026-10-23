@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "parts"
+  prosiform-group-depth: "3"
+---
 # Two
 
 ## Context
