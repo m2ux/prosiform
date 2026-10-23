@@ -16,14 +16,14 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 
 ## Input and output contract
 
-- **Entry references:** Accept one or more local document or document-plus-fragment *references* and an explicit allowed source *root*. An *entry reference* names the procedure to be carried out, not the routing document the caller read to find it; a routing document reaches the bundle only if something selected links to it.
+- **Entry references:** Accept one or more local document or document-plus-fragment *references*, resolved from the invocation working directory. Each source owns its allowed dependency *root* through `prosiform.root`; an absent root uses the invocation working directory. An *entry reference* names the procedure to be carried out, not the routing document the caller read to find it; a routing document reaches the bundle only if something selected links to it.
 - **Whole documents:** A reference without a fragment, or with an empty fragment, selects the full document body, including its *preamble*, subject to *frontmatter* stripping and the documented syntax transformations below.
 - **Sections:** A nonempty fragment selects an eligible document-level heading and its subsections, ending before the next document-level heading of equal or higher level. A source heading is the only thing that names a *section*.
 - **Recursive bundling:** Traverse supported Markdown links within selected content until every reachable local Markdown *target* has been resolved and included.
 - **Continuous Markdown:** Emit one bundle Markdown document with one generated H1 per *group* and rewritten links resolving to internal destinations. Do not add per-section metadata envelopes or an enclosing code fence.
 - **Generated headings:** A heading the bundle generates — a file heading, a merged group's heading, a member subsection heading and a variant heading alike — is emitted in *title case*: each word of the name is capitalized and the name's own structure is kept. The convention changes letters and not structure, so a file heading, which is a path, keeps its slashes and its hyphens and capitalizes each part of a hyphenated word, while a name a group derives from a declared group slug or a document stem is those words joined by spaces and is capitalized as it is derived. The convention covers what the compiler writes and nothing else: a heading an author wrote is emitted as they spelled it, and a filesystem path a run names — a diagnostic's reference, a deferred link's destination — carries the spelling the filesystem holds.
 - **Groups:** A group is one top-level division of the bundle. By default it is one *source document*, headed by its normalized root-relative path with the Markdown extension removed; a *grouping rule* declared in per-file metadata joins contributing documents under their declared *slug*. Emit each selected *region* once. Keep source order among selected content and required heading-only ancestors within a document's group, and within each contribution a document makes to a merged one.
-- **Dependency order:** Order groups by their least contributing root-relative source path, and members within a group by root-relative path. Discovery order and argument order never decide the arrangement, so one selection always bundles to the same bytes. Per-file grouping declarations determine where a section sits.
+- **Dependency order:** Order sources by their own effective-root-relative path, breaking ties by canonical absolute path, compared lexically with forward-slash separators. Order groups by their least contributing source in this order, and members within a group by this order. This source order also governs declaration conflicts. Discovery order and argument order never decide the arrangement. Equal displayed file or member names remain subject to the existing ambiguity checks; differing roots do not promise unique headings. Per-file grouping declarations determine where a section sits.
 - **Entry line:** Open the bundle with a generated preamble naming each entry reference and linking to the destination it resolved to.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
 
@@ -87,17 +87,16 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
-Expose `pf` as the sole executable, with case-sensitive short flags, bundled Markdown on stdout and diagnostics on stderr. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+Expose `pf` as the sole executable, with case-sensitive short operational flags and diagnostics on stderr. One normalized entry writes a derived bundle filename in the invocation working directory; `-o -` sends the bundle to stdout. Help and version responses use stdout. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
-pf -r DIR [OPTIONS] REF [REF ...]
+pf [OPTIONS] REF [REF ...]
 ```
 
 | Option | Behavior |
 | --- | --- |
-| `-r DIR` | Required allowed source root; resolve relative configuration paths from the process working directory. |
-| `-f DOC` | Root-relative referring document for fragment-only positional references. Positional references naming a file remain root-relative. |
-| `-o FILE` | Atomically publish validated output to a file, resolved from the process working directory; default or `-` means stdout. A path naming an input source is refused. |
+| `-f DOC` | Referring document for fragment-only positional references, resolved from the invocation working directory. File-naming positional references also use that working directory. |
+| `-o FILE` | Exact output destination relative to the invocation working directory, or `-` for stdout. Required for multiple distinct normalized entries. A path naming any captured source is refused. |
 | `-c` | Discover, bundle, and validate without emitting or publishing the bundle. |
 | `-d text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
 | `-v` | Report tool version and profile identifier. |
@@ -107,42 +106,62 @@ Each resource budget adds one option of its own, declared with its default and i
 
 `-c` accepts `-o FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
-A command line the grammar above does not admit is refused with `E_INVALID_USAGE`. A missing `-r`, no entry reference, an option the contract does not declare, an option value outside the set its row names, a fragment-only reference with no `-f`, and an output path naming an input source are all one defect — the command line's own form — and they lead a caller to one remedy, so they take one code and the message says which fault it was. A `-r` naming no directory is well formed and names a root that is not there: it fails with `E_ROOT_NOT_FOUND` as the input failure it is.
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: no entry reference, an undeclared option (including `-r` and `-g`), an invalid option value, a fragment-only entry without `-f`, multiple distinct normalized entries without `-o`, or an output destination overlapping any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation, including the explicit destination requirement for combined entries, and publishes nothing.
 
 ### Usage examples
 
 ```bash
-# A procedure and everything it reaches. The routing document the caller
-# read to find it, SKILL.md, is not an entry reference and is not bundled.
-pf -r example/work-tracker modes/plan-mode.md
+# Each source declares the root for its outgoing Markdown references.
+pf work-planner/modes/align-mode.md
+pf 'work-planner/modes/align-mode.md#prerequisites'
 
-# Each contributing document declares its own grouping in frontmatter.
-pf -r example/work-tracker \
-  modes/plan-mode.md
-
-# Multiple selected targets.
-pf -r example/work-tracker \
-  'artifacts/epic-issue-body.md#record-epic-delivery' \
-  'artifacts/epic.md#delivery-findings'
+# Distinct selections share one explicit destination.
+pf -o combined.bundle.md work-planner/SKILL.md \
+  'work-planner/modes/align-mode.md#prerequisites'
 
 # A referring document supplies context for a bare fragment only.
-pf -r example/work-tracker \
-  -f artifacts/epic-issue-body.md \
-  '#record-epic-delivery'
+pf -f work-planner/modes/align-mode.md '#prerequisites'
 
 # Full compilation and validation, without publication.
-pf -r example/work-tracker -c \
-  'artifacts/epic-issue-body.md#record-epic-delivery'
+pf -c 'work-planner/modes/align-mode.md#prerequisites'
+pf -o - work-planner/modes/align-mode.md
 ```
 
-Each example runs against `example/work-tracker`, a tree this repository carries, and the corpus executes it under `fixtures/usage-example/`, so an example that stops being a valid invocation fails a run. Missing references produce the specified diagnostics.
+For these examples, `work-planner/modes/align-mode.md` declares the following frontmatter and contains an eligible `prerequisites` heading. `work-planner/SKILL.md` declares root `"."`. The examples specify the file-owned invocation contract; runtime conformance must execute them against an identified candidate and specimen tree.
+
+```yaml
+---
+prosiform:
+  root: ".."
+  group: modes
+  group-depth: 2
+---
+```
+
+### Automatic output names
+
+Count distinct explicit selections after canonical file and fragment resolution. Repeated equivalent references count once; absent and empty fragments share whole-document identity. Distinct sections of one file, or a whole document and one of its sections, remain distinct entries even when coverage consolidates them.
+
+For one entry, take its path relative to its own effective root, remove the recognized Markdown extension, preserve spelling and replace each path separator with `_`. For a section, append `__` and its resolved source fragment identifier. Append `.bundle.md` and publish in the invocation working directory. A fragment-only entry derives its filename from the file supplied by `-f`. Linked roots and group names never rename an entry's output.
+
+| Entry and own root | Automatic filename |
+| --- | --- |
+| `work-planner/modes/align-mode.md`, root `".."` | `modes_align-mode.bundle.md` |
+| Same file, fragment `prerequisites` | `modes_align-mode__prerequisites.bundle.md` |
+| `work-planner/SKILL.md`, root `"."` | `SKILL.bundle.md` |
+| `work-planner/artifacts/epic.markdown`, root `".."` | `artifacts_epic.bundle.md` |
+| `work-planner/guide.md`, root `"../library"` | `.._work-planner_guide.bundle.md` |
+| Equivalent references `guide.md` and `./guide.md#`, absent root | `guide.bundle.md` |
+| `guide.md#one` and `guide.md#two` | Explicit `-o` required |
+
+Retain parent segments when an entry lies outside its declared root, then flatten their separators: they become filename text, never output traversal. Literal underscores remain literal. Recommend hyphens in authored file and directory names to reduce ambiguity; this does not guarantee collision freedom for arbitrary paths, roots or case-insensitive filesystems. No encoding, hashing, shortening or collision registry is applied to automatic names. Filesystem name or length failures use `E_PUBLICATION_FAILED`. Automatic and explicit file destinations share captured-source overlap checks, candidate validation and atomic replacement; stdout delivery uses `-o -`.
 
 ## Explicitly linked source structure
 
 Common rules, file-level prerequisites, and shared SKILL.md instructions will be refactored into addressable sections. Operations must link to the sections that govern them, so the tool can obtain the required context through explicit links.
 
 - **Generic bundling:** Do not infer prerequisite semantics from file names or section names. Do not automatically import all of SKILL.md or ancestor body content; a heading-only *structural ancestor* supplies structure, not additional governing instructions.
-- **Explicit dependencies:** A reference resolving under the allowed root is part of the recursive dependency graph unless its author defers it, and one resolving outside it cites material the bundle does not carry. Position states the intent, and the root is what the author controls: material a skill must carry sits under its root, material it only names sits outside, and a skill stays bundleable with its own directory as the root however widely its prose refers. A *deferral* states that the material is reached in a run of its own rather than in this one.
+- **Explicit dependencies:** A path-bearing reference resolving under its authoring source's effective root is part of the recursive dependency graph unless its author defers it, and one resolving outside it cites material the bundle does not carry. Position states the intent, and the root is what the author controls: material a source must carry sits under that source's root and material it only names sits outside. Fragment-only links identify the source itself. A *deferral* states that the material is reached in a run of its own rather than in this one.
 - **Reading versus execution:** Inclusion makes material available; it does not authorize executing every included procedure. Execution verbs and call boundaries remain part of the authored instructions.
 
 ## Section extraction and output hierarchy
@@ -160,7 +179,7 @@ Only headings that are direct children of the document are selectable section ro
 
 Emit exactly one document-level H1 for each contributing source file, using its normalized root-relative path with the Markdown extension removed, in *title case*. Escape the path as literal heading text so punctuation in it cannot create links, images, or inline HTML.
 
-All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents with the same basename in different directories remain distinguishable by their root-relative paths. Two documents whose paths differ only by Markdown extension, or only by the capitalization of their letters, produce two file headings a reader cannot tell apart, and fail with `E_AMBIGUOUS_FILE_GROUP`.
+All content from that source belongs beneath its file heading. The output has no additional master heading above these file groups; source documents are named by their own effective-root-relative paths. Distinct documents whose effective-root-relative paths are identical, differ only by Markdown extension, or differ only by capitalization produce indistinguishable file headings and fail with `E_AMBIGUOUS_FILE_GROUP`.
 
 - **Absorbed title:** The file heading absorbs a source's first heading when that heading is the document's only H1 and its slug equals the slug of the final segment of the file heading's path. Both sides are slugged, so the capitalization and spacing a filesystem carries decide nothing: a document named `My Note.md` whose title is `My Note` is absorbed, as one named `my-note.md` is. An absorbed title is not emitted and contributes no destination segment, because the file heading already names it. A reference to it resolves to the file heading's own destination, so a document's self-reference to its title reaches the heading a reader sees carrying that text.
 - **Group shift:** Every emitted source heading in a file group moves down exactly one level: H1 becomes H2, H2 becomes H3, and so on. A group whose title was absorbed keeps its source levels, the file heading having taken the level the shift makes room for. Preserve visible heading text and relative depth; do not renormalize selected roots independently.
@@ -177,12 +196,12 @@ The hierarchy guarantee is the original selected source outline beneath one addi
 A group is the unit the bundle is organized into. A source without conversion fields keeps its individual file group. A source declaring the paired fields in [Conversion metadata](#conversion-metadata) joins the named group at its declared source heading depth.
 
 - **Group membership:** Membership is explicit and independent of directories. Only documents contributing selected content or its required generated identity to the *closure* join a group. A declaration discovers no files; unannotated siblings keep individual groups. Group identity is the exact declared string, with no trimming or case folding, and is distinct from an individual file group's identity even when their displayed headings coincide.
-- **Consistent depth:** All contributing members of one group declare the same depth. Sort declarations by root-relative source path; compare the first member with the first later member whose depth differs. Fail with `E_GROUP_DEPTH_CONFLICT`, identifying the group and both declarations at their depth values. Deferred-only targets participate in local metadata validation, but contribute no membership or cross-file conflict.
+- **Consistent depth:** All contributing members of one group declare the same depth. Sort declarations by deterministic source order; compare the first member with the first later member whose depth differs. Fail with `E_GROUP_DEPTH_CONFLICT`, identifying the group and both declarations at their depth values. Deferred-only targets participate in local metadata validation, but contribute no membership or cross-file conflict.
 - **Group structure:** A group emits one H1 carrying its slug, then one H2 for each distinct source heading text at its depth, each holding every *member* document's contribution. A source heading at the grouping depth becomes that H2; the level below becomes H3, and so on.
 - **Verbatim names:** A merged heading keeps its source text. Nothing is prefixed, qualified or renamed where the text occurs once in its group.
 - **Document-keyed sections:** A merged section contributed by more than one document splits into *variants*: one variant heading per contributor, with that document's text, list items and subheadings beneath it. Each item stays with its document throughout the section. Contributions may contain body text, subheadings or the section heading alone. A section with one contributing document retains that document's arrangement.
 - **Variants by document:** Where two or more documents contribute one heading text at the grouping depth, that text is emitted once and each document's content hangs beneath its variant heading. Each member's name is measured once against every member of the group: the shortest distinguishing run of its root-relative path, in title case, after dropping shared leading segments and a trailing word the group's heading already states. Qualification compares the final displayed names after title casing, separator normalization and removal of the group word, retaining further path segments until those names distinguish the members. If every available segment is present and removing the group word still joins names, the complete names retain that word. The same name serves its overview subsection and every variant, including sections contributed by only a subset of the group. Each document's grouping-depth heading is replaced by the shared one, and its content shifts one level to sit under its variant heading.
-- **Residual ambiguity:** Qualification separates documents, not headings within one. Two headings of one document colliding in one group is the source ambiguity the heading rules already refuse. Anything still coinciding, such as a generated group heading matching a section name elsewhere, takes the renderer's ordinal as any repeat does.
+- **Residual ambiguity:** If complete member paths still yield indistinguishable displayed names, fail with `E_AMBIGUOUS_FILE_GROUP`, identifying both canonical sources. Qualification separates documents, not headings within one. Two headings of one document colliding in one group is the source ambiguity the heading rules already refuse. Other repeated headings, such as a generated group heading matching a section name elsewhere, take the renderer's ordinal as any repeat does.
 - **Group naming:** A group's heading is its declared slug in title case, so `artifacts` is emitted as `Artifacts`. Heading escaping, anchor allocation and member-name qualification apply even when that slug names no directory.
 - **Document content above the grouping depth:** A group carries each member's selected content above the grouping depth — its preamble, and the body of any section shallower than that depth with its outline beneath — under one subsection naming that document. That subsection's heading is the shortest run of the member's root-relative path which distinguishes it from the group's other members, in title case, measured after dropping the leading segments they all share, less a trailing word the group's own heading already states: `artifacts/epic-issue-body.md` contributes `Epic Issue Body` under `Artifacts`, and `guides/alpha/notes.md` beside `guides/beta/notes.md` contributes `Alpha Notes`. That is the run a variant heading is shortened to, so one bundle states a member's name one way wherever a reader meets it. A member's own H1 is absorbed by that subsection heading when its slug equals the stem, as a file heading absorbs the title it carries. That heading is where a whole-document reference to the member resolves, and where a reference to the title it absorbed resolves with it. A preamble reaches the bundle only through a whole-document selection, since it belongs to no section.
 - **A heading for every member:** A member takes that subsection where it carries selected content above the grouping depth, where the heading absorbs its own H1, and where the arrangement emits nothing else from it at all — the last two cases emitting the heading alone — so every member the group merges is named by a heading the bundle carries and a title is absorbed only into a heading the bundle emits. A member whose selected content all sits at the grouping depth takes no subsection: the merged sections it contributes to name it, and a whole-document reference to it resolves to the first heading the group emits from it that no other member shares — the variant heading naming that document where its contribution is pooled with another member's, and the merged heading itself where the text it contributes occurs once in the group. No two members of one group therefore reach one destination, and a reference the run resolves into a merged group names a destination the bundle has, whatever the member contributes.
@@ -240,7 +259,7 @@ Resolve fragments against the original complete source document before mapping t
 - **One document:** The bundle is one document, so a destination is scoped to the whole bundle rather than to a file group. A section whose slug is unique in the bundle needs no qualification, and a reference from one file group to another is spelled the same way as a reference within one.
 - **Ordinal assignment:** Walk the emitted headings in bundle order — file headings, structural ancestors, selected source headings and the headings a retained container carries alike, because a renderer indexes every heading the bundle emits and numbers the rest from a count that holds them all. The first heading to carry a slug takes that slug; each later one takes the slug and its ordinal, counting from one and passing over an ordinal something already carries, so a heading whose own text ends in one does not collide with it. This is the renderer's own rule, reproduced so the two agree.
 - **Document destinations:** A whole-document reference resolves to the destination of that file's heading. The presence of a file heading does not mean the whole document was included, and a whole-document reference still requires full-body inclusion under the established transformation rules.
-- **Internal links:** Rewrite each compiled link to the destination of the target it resolved to, using the same map that produced it, whether the link names another file or a fragment of its own. A reference this run compiled is a reference the bundle carries, so every one of them has a destination; a reference resolving outside the root is emitted as the author wrote it, and a deferred one carries its mark and a root-relative destination, both under the link classification rules.
+- **Internal links:** Rewrite each compiled link to the destination of the target it resolved to, using the same map that produced it, whether the link names another file or a fragment of its own. A reference this run compiled is a reference the bundle carries, so every one of them has a destination; a reference resolving outside the root is emitted as the author wrote it, and a deferred one carries its mark and an invocation-working-directory-relative destination, both under the link classification rules.
 - **Visible headings:** Preserve selected source heading text while shifting levels by the group's shift. Nothing is inserted at a destination; the heading and its position in the outline are what the destination names.
 - **Uniqueness:** Each destination occurs once in the bundle and each rewritten link resolves to exactly one of them. The ordinal makes this true by construction and validation establishes it, rather than leaving it to the chance that no two headings coincide.
 
@@ -261,7 +280,7 @@ This bundle was built for [Plan Mode](#plan-mode); everything else is material i
 ```
 
 - **Link text:** The visible text of the heading the destination names, so what the line says and what the reader finds agree. Under a grouping rule that is the subsection naming the member, or the variant heading naming it where it takes no subsection, which is a name the caller cannot derive from the reference it supplied.
-- **Order:** Several entries are named in bundle order — the groups in root-relative path order, and inside one group the headings in source order — followed by the closing statement. Each name is separated from the next by a comma and the last from the one before it by `and`. The order is the bundle's rather than the command line's, so one selection opens on one line however its entry references were written, and a reader meets the names in the order the document that follows carries them.
+- **Order:** Several entries are named in bundle order — groups and members follow deterministic source order, and headings within one source follow source order — followed by the closing statement. Each name is separated from the next by a comma and the last from the one before it by `and`. The order is the bundle's rather than the command line's, so one selection opens on one line however its entry references were written, and a reader meets the names in the order the document that follows carries them.
 - **No execution verb:** The line states what the bundle was built for. It does not instruct the agent to carry anything out, because the tool does not know whether an entry names a procedure, and execution verbs belong to the authored instructions.
 - **Generated structure:** The line is recorded with the group, file and variant headings as generated structure, not as selected content, so it counts toward no source's coverage. Its links are ordinary internal references and are validated as such.
 - **Reading scope at the point of use:** A bundle can hold several documents' procedures. The line is where the bundle says which one it was built for, so the distinction between the material to act on and the material it references survives into the document the agent actually reads.
@@ -299,8 +318,8 @@ Definition removal is an allowed non-rendered-syntax transformation. Fail if the
 
 Bundling is a compile-and-validate process rather than streaming concatenation. No success output is published until the complete candidate has been constructed and validated.
 
-1. Resolve entry references and allowed source paths.
-2. Read and parse each distinct source file once during discovery, capturing its identity and content hash and excluding leading frontmatter from bundled content.
+1. Capture the invocation working directory and normalize explicit entry references for bounded bootstrap access.
+2. Capture each distinct canonical source once under byte and parsing limits, retain its identity, content hash and immutable per-source settings, bind its effective root, and exclude leading frontmatter from bundled content.
 3. Index source headings, links, definitions, and eligible section boundaries.
 4. Discover the recursive dependency graph and expand included source coverage to a fixed point.
 5. Consolidate selections, group them by source file, and derive required heading-only ancestors. Check shifted heading depths and assign each emitted heading its destination in bundle order, without treating structural ancestors as new dependencies.
@@ -347,15 +366,16 @@ Parse the recognized block from the same captured bytes used for source identity
 
 ### Conversion metadata
 
-The Agent Skills `metadata` extension carries string-valued conversion fields:
+The top-level `prosiform` mapping carries source-owned settings. This is a Prosiform frontmatter extension; strict Agent Skills schema compatibility is not required:
 
 ```yaml
 ---
 name: artifact-rules
 description: Rules for authoring artifacts.
-metadata:
-  prosiform-group: artifacts
-  prosiform-group-depth: "2"
+prosiform:
+  root: ".."
+  group: artifacts
+  group-depth: 2
 ---
 ```
 
@@ -363,16 +383,17 @@ Ordinary Markdown needs neither `name`, `description`, nor a `SKILL.md` filename
 
 | Field | Accepted value | Meaning |
 | --- | --- | --- |
-| `metadata.prosiform-group` | A single-line printable string with at least one non-whitespace character, containing neither `:` nor `/`. | Exact identity of the group this source joins. |
-| `metadata.prosiform-group-depth` | A string containing exactly one ASCII decimal digit from `1` through `6`. | Source heading depth for this member's merged sections. |
+| `prosiform.root` | Nonempty relative directory-path string, using forward slashes and containing no NUL, control characters, home shortcuts, environment expansion, scheme, authority, absolute or drive path. Literal `.` and `..` segments are allowed. | Resolve from the declaring file's directory; the result is this source's dependency base and confinement boundary. |
+| `prosiform.group` | A single-line printable string with at least one non-whitespace character, containing neither `:` nor `/`. | Exact identity of the group this source joins. |
+| `prosiform.group-depth` | YAML Core integer from 1 through 6, excluding booleans, floats and strings. | Source heading depth for this member's merged sections. |
 
-The fields are present together or absent together. Absent fields, absent frontmatter, an empty block, and an empty metadata mapping leave the source in its individual file group. A present `metadata` value must be a mapping whose keys and values are strings; null, scalar and sequence values fail. Unknown keys beginning `prosiform-` fail; other metadata keys are accepted as strings without conversion meaning. A numeric YAML depth such as `2` fails; quoting it as `"2"` supplies a string. No schema version, inherited profile or command argument string is interpreted.
+Group and group-depth are present together or absent together; root is independent of that pair. Absent grouping fields leave the source in its individual file group. Every absent root uses the working directory captured at invocation start, including linked sources. Absent frontmatter, an empty block or an absent or empty `prosiform` mapping uses both defaults. A present `prosiform` must be a mapping with string keys; null, scalar and sequence values fail. Its only keys are `root`, `group` and `group-depth`; unknown keys fail. Unrelated frontmatter fields, including `metadata`, have no conversion meaning. No schema version, inherited profile or command argument string is interpreted. Root paths are filesystem strings, not URI references: neither percent decoding nor shell expansion applies.
 
-- **YAML grammar:** Accept one YAML 1.2 document using the Core schema. An empty or comments-only block is absent metadata; an explicit null root fails. A nonempty root must be a mapping. Reject duplicate keys in every mapping, custom tags, aliases and merge keys (`<<`), including in unrelated fields. Root and metadata mapping keys must be strings. Elsewhere, safe Core keys and nested collections remain valid; duplicate keys use YAML node equality (tag and canonical value), so boolean and integer keys remain distinct. Printable group characters follow YAML printable characters except line breaks and control characters; spaces within and around a nonblank name are significant. Malformed YAML fails even without conversion keys.
+- **YAML grammar:** Accept one YAML 1.2 document using the Core schema. An empty or comments-only block is absent metadata; an explicit null document root fails. A nonempty document root must be a mapping. Reject duplicate keys in every mapping, custom tags, aliases and merge keys (`<<`), including in unrelated fields. Document-root and `prosiform` mapping keys must be strings. Elsewhere, safe Core keys and nested collections remain valid; duplicate keys use YAML node equality (tag and canonical value), so boolean and integer keys remain distinct. Printable group characters follow YAML printable characters except line breaks and control characters; spaces within and around a nonblank name are significant. Malformed YAML fails even without conversion keys.
 - **Bounded parsing:** Use a pinned established safe YAML parser, with documented scalar typing, duplicate detection, source marks and resource behavior verified by fixtures. Enforce raw source-byte limits before decoding and YAML collection nesting before constructing nested values. For `-N`, a root mapping or sequence has depth 1, each contained mapping or sequence adds 1, and scalars add 0. YAML depth and Markdown container depth are measured independently against the same limit; exceeding either fails with `E_RESOURCE_LIMIT`. Do not expand aliases or construct custom tagged objects.
-- **Source ownership:** Decode one immutable conversion value per captured source. Direct entries, fragment-only entries with a referrer, ordinary links and transitive links all use the destination source's value. A fragment retains that value even when its frontmatter lies outside the selected region. Callers and sibling files supply no settings. Repeated reachability, overlapping fragments and ordinary cycles retain one value and the existing selection union.
+- **Source ownership:** Decode one immutable conversion value, including the effective root, per captured canonical source. Direct entries, fragment-only entries with a referrer, ordinary links and transitive links all use that source's own settings for its content and outgoing references. A fragment retains that value even when its frontmatter lies outside the selected region. A shared source reached through different parents has the same effective root: its explicit file-relative declaration or the invocation working directory. Repeated reachability, overlapping fragments and ordinary cycles retain one capture and the existing selection union.
 - **Selection boundary:** Validate syntax and local fields whenever the normal reader opens a source. Aggregate group declarations only after closure selection. Deferred-only targets contribute no content or membership; later activation uses their own settings. External, outside-root and non-Markdown references retain their classification and are not fetched for metadata. Candidate validation uses the same per-source grouping decisions as rendering.
-- **Operational interface:** Roots, entries, referrer context, output destination, diagnostics, check mode, fault injection and resource budgets remain invocation parameters. Structural settings come only from source metadata. The unsupported `-g` option receives invalid CLI usage, exit 2.
+- **Operational interface:** Entries, referrer context, output destination, diagnostics, check mode, fault injection and resource budgets are invocation parameters. Root and structural settings come only from source metadata. The unsupported `-r` and `-g` options receive invalid CLI usage, exit 2.
 
 ### Metadata failures
 
@@ -381,23 +402,29 @@ Metadata input failures exit 1, fail check mode, publish no stdout bundle, and p
 | Diagnostic | Defect |
 | --- | --- |
 | `E_INVALID_FRONTMATTER` | Invalid YAML, nonmapping or explicit-null root, duplicate keys, non-string root keys, custom tags, aliases or merge keys. |
-| `E_INVALID_CONVERSION_METADATA` | Invalid metadata mapping, non-string metadata keys or values, an absent paired field, unknown reserved field, invalid group slug or invalid depth. |
+| `E_INVALID_CONVERSION_METADATA` | Invalid `prosiform` mapping, non-string keys, an absent paired grouping field, unknown setting, invalid group slug, invalid integer depth, or malformed root value/type. |
 | `E_GROUP_DEPTH_CONFLICT` | Contributing sources declare different depths for the same exact group identity. |
+| `E_ROOT_NOT_FOUND` | A well-formed explicit root resolves to a missing path or a path that is not a directory. |
+| `E_SOURCE_SYMLINK` | A bootstrap source, declared root or dependency access traverses a symlink forbidden by the no-follow policy. |
+| `E_SOURCE_OUTSIDE_ROOT` | An unsupported positional path form or an attempted source access escapes its bound access root. An authored outside-root citation is emitted without opening it. |
+| `E_TARGET_NOT_FOUND` | A permitted Markdown target is missing or is not a regular source file, or its requested heading is missing. |
+| `E_SOURCE_ACCESS` | A source or root cannot be opened or read due to an access or filesystem error other than the specific missing, symlink or confinement defects above. |
+| `E_SOURCE_CHANGED` | Captured source bytes, identity or bound root identity change or disappear before publication. |
 
-Unterminated recognized blocks use `E_UNTERMINATED_FRONTMATTER`; byte and nesting limits use `E_RESOURCE_LIMIT`. Metadata diagnostics carry a JSON `location` object with `file`, `line` and `column`: the file is the root-relative source path, lines are one-based physical lines, and columns are one-based Unicode code-point positions, counting a tab and a leading BOM as one position each. CRLF is one line ending. For a group conflict, the primary location is the first declaration in root-relative path order and `related` is an array with the other declaration's `file`, `line`, `column` and `message`. Each message names the field, group and declared depth. Duplicate-key diagnostics likewise carry the first occurrence as a related location and the duplicate as primary. Omit `related` when there is no related location. Text diagnostics render the same coordinates and both locations where present. Ordering and messages are independent of discovery order.
+Unterminated recognized blocks use `E_UNTERMINATED_FRONTMATTER`; byte and nesting limits use `E_RESOURCE_LIMIT`. Metadata diagnostics carry a JSON `location` object with `file`, `line` and `column`: `file` is the canonical source path relative to the invocation working directory, retaining parent segments when needed. Inclusion chains use the same unambiguous coordinate system across roots. Lines are one-based physical lines, and columns are one-based Unicode code-point positions, counting a tab and a leading BOM as one position each. CRLF is one line ending. For a group conflict, the primary location is the first declaration in deterministic source order and `related` is an array with the other declaration's `file`, `line`, `column` and `message`. Each message names the field, group and declared depth. Duplicate-key diagnostics likewise carry the first occurrence as a related location and the duplicate as primary. Omit `related` when there is no related location. Text diagnostics render the same coordinates and both locations where present. Root validation points to its declaring value; a bootstrap access failure identifies its positional reference when no physical location is available. Ordering and messages are independent of discovery order.
 
 ## Link classification and resource handling
 
-A reference is a dependency when it carries no scheme and no authority, resolves to a Markdown file under the allowed root, and its author has not deferred it. Everything else is text the bundle carries unchanged. Where a reference resolves is what decides, and a deferral is the one thing an author writes to say otherwise: material the bundle must carry sits under the root, material it only names sits outside, and material reached in a run of its own is marked.
+A reference is a dependency when its author has not deferred it and it either names a fragment in its captured source or carries no scheme and no authority and resolves to a Markdown file under its authoring source's effective root. Fragment-only references retain their source identity even outside that source's own root. Other references are text the bundle carries under the rules below. Path-bearing dependencies sit under the authoring source's root, outside-root paths cite material, and a deferral marks material reached in a run of its own.
 
 The tool guarantees internal resolution for a dependency and claims nothing about anything else.
 
-- **Local Markdown document links under the root:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve relative paths from the originating source document, never from whichever document happened to discover it.
+- **Local Markdown document links under the root:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve path-bearing references from the originating source's effective root, independent of the source that discovered it.
 - **The deferral mark:** A link whose text opens with `¬`, as in `[¬ Record Epic Delivery](epic-issue-body.md#record-epic-delivery)`, is not compiled by this run. The character is ordinary text to the profile, so deferring adds no construct the grammar must recognize and a renderer that knows nothing of this tool displays the link. The mark is content rather than authoring syntax: the bundle carries it exactly as written, including the spaces or tabs following it, because an agent reading the bundle compiles what it marks in a run of its own.
-- **A deferred link's destination:** Rebase it to the target's path from the allowed source root, the spelling the filesystem holds, so the run that compiles it later needs nothing but that root. A deferred link is never rewritten to a bundle destination, even where another reference carried its target into the bundle: what one author deferred cannot be changed by another author's reference.
+- **A deferred link's destination:** Rebase it to the target's path relative to the captured invocation working directory, preserving filesystem spelling and URI-escaping path characters such as literal `%`, `#`, `?` and spaces. Retain the resolved fragment when present. This spelling can be passed directly to `pf` from that same working directory, including for a fragment-only deferred link whose source lies outside its own root. A later invocation from another directory must adjust the path. A deferred link is never rewritten to a bundle destination, even where another reference carried its target into the bundle: what one author deferred cannot be changed by another author's reference.
 - **A deferred link's target:** Required to exist. The normal source reader confirms the document and any requested heading, validating its local metadata and file-wide safety properties. This reference selects no content, discovers no outgoing dependencies and contributes no group membership. A deferral an agent will follow is one that can succeed.
 - **Local Markdown links resolving outside the root:** Emit as authored. The reference is not resolved, the document it names is not opened, and the link is not rewritten. A reference leaving the root is the author's statement that the bundle cites this rather than carries it, so it is text and not a failure, and a mark on one changes nothing that was going to happen to it.
-- **Fragment-only links:** Resolve against the original source document's heading index, then follow the same bundling and rewriting rules, deferral included. A fragment names content in the document it is written in, which is under the root whenever that document is.
+- **Fragment-only links:** Resolve against the original source document's heading index, then follow the same bundling and rewriting rules, deferral included. A fragment names content in its captured source regardless of whether that source lies inside its own effective root.
 - **A target that resolves to nothing:** A reference under the root naming no document, or a fragment naming no heading in the document it resolves to, fails with `E_TARGET_NOT_FOUND`, whether it is compiled or deferred. Position states that the bundle is responsible for it, so a reference that cannot be followed is a defect rather than text.
 - **Everything else:** A reference carrying a scheme or an authority is not a local document reference. Emit it as authored and never open, fetch or interpret it. No scheme is permitted or refused, because which scheme it carries decides nothing: carrying one at all is what puts the reference outside the tool's interest.
 - **Resources:** A resource is a reference that is not a local Markdown document, and an image whatever it points at: image syntax embeds rather than links, so a document named that way is no more bundleable than a picture. Emit every resource as authored wherever it resolves, under the root included, and warn once that the bundle names one.
@@ -406,21 +433,29 @@ The tool guarantees internal resolution for a dependency and claims nothing abou
 
 ## Reference normalization and path identity
 
-Require an explicit allowed source root and canonicalize that root once. Command-line document paths are relative to the root; links inside sources are relative to their originating document's directory.
+Capture the canonical invocation working directory once. Resolve positional file references and `-f DOC` from it, allowing relative parent segments. A fragment-only positional reference requires `-f DOC`; file-naming references are independent of that option.
 
-The root is the caller's confinement boundary, not a claim about how the sources are organized. It must contain every document the entry references reach: a collection that shares material with a sibling collection is rooted above both, since a reference leaving the root fails whether or not its author meant it. A refused reference therefore says the root is too narrow at least as often as it says the link is wrong, and the diagnostic names the resolved path so the caller can tell which.
+Each source's explicit `prosiform.root` resolves from that source's containing directory. Every absent root uses the captured invocation working directory, including linked sources. This effective root is the base and confinement boundary for all path-bearing local Markdown references authored in that source, including deferred links. A target's own root applies to its outgoing references once its bytes have been captured. Different valid roots are permitted; they require no global agreement. Fragment-only references identify the captured source itself, even when that source lies outside its declared root.
 
-A fragment-only command-line reference requires `-f DOC`; otherwise it fails. File-naming positional references remain root-relative even when `-f` is present. A fragment-only source link uses its source document automatically.
+An explicit root may name a sibling library that does not contain its declaring source. The declaration authorizes dependencies within that directory; it does not require the declaring source to be moved there. A normalized authored path outside its source's effective root remains an unopened citation. Selecting an entry authorizes bounded capture of that file without requiring it to lie beneath the dependency root its bytes declare.
+
+### Bounded bootstrap capture
+
+Normalize each explicit file reference before opening it. Bind access to the canonical invocation directory for descendants, or a verified no-follow parent directory for a relative entry using parent segments. Verify traversed components before canonicalization can hide symlinks. This bootstrap grant opens only the named regular Markdown source, not its dependencies. Root declarations are read from these captured bytes under the same raw per-file and aggregate byte limits, UTF-8 rules, YAML collection-depth limit and physical coordinate mapping used for ordinary sources. Do not perform an unbounded preliminary read to discover a root.
+
+Retain canonical source identity, bytes, content hash, immutable settings and the effective-root identity together. Resolve and open an explicit root by a no-follow directory walk from the declaring file's bound directory, including allowed parent traversal. Bind every dependency access to the effective root of the source that authored its link. Reaching the same canonical source through another parent validates that access against the new referring source's root, then reuses the capture; neither first-discovery parent nor an incoming root supplies that source's settings. Canonical normalized paths identify sources; distinct hard-linked paths remain distinct source identities.
+
+Retain the bound access context for every capture and root and recheck full-file content and identities before publication. Mutation, deletion or replacement of a source or bound root fails with `E_SOURCE_CHANGED`; no successful bundle or partial file is published. Bootstrap capture counts toward all source limits and output-overlap checks, including deferred-only targets. Safe access and capture are required in check mode too.
 
 ### Resolution sequence
 
 1. For authored Markdown links, obtain the destination from the parser with Markdown escapes and entities interpreted once. CLI reference arguments enter directly as URI-reference strings.
 2. Split URI components before percent-decoding so encoded `#` and `?` remain filename characters rather than becoming delimiters.
-3. Emit any reference carrying a scheme or an authority as authored, and resolve no further.
+3. Emit source-authored references carrying a scheme or an authority as authored, and resolve no further. Positional references of either shape fail with `E_SOURCE_OUTSIDE_ROOT`.
 4. Reject any query component on local Markdown document references, including an explicitly empty query.
 5. Strictly validate percent escapes and decode path and fragment exactly once as UTF-8. Look up the decoded source fragment exactly; do not lowercase or re-slug it.
 6. Reject NULs, control characters, decoded path separators originating from escapes, and remaining backslash separators. Local paths use forward slashes in v1.
-7. Normalize `.` and `..` relative to the proper reference base. Permit normalized internal `..`. A normalized path outside the allowed root leaves the reference a mention, which an entry reference cannot be and a reference inside a source is.
+7. Normalize `.` and `..` relative to the proper reference base: invocation working directory for positional files, authoring source's effective root for path-bearing source links. A normalized source link outside that root is a citation; a relative positional parent path uses bounded bootstrap capture. Fragment-only source links use their captured document directly.
 8. Enforce no-symlink source access and require a supported regular Markdown file.
 9. Treat absent and empty fragments as whole-document references; otherwise resolve to the canonical eligible section identity.
 
@@ -434,14 +469,15 @@ Do not apply additional Unicode normalization to filesystem names beyond what th
 | `guide.md?view=raw#run` | Fail: unsupported local Markdown query. |
 | `notes%23draft.md#run` | Section `run` in literal filename `notes#draft.md`. |
 | `notes%2523draft.md#run` | Section `run` in literal filename `notes%23draft.md`; no second decoding. |
-| `sub/../guide.md#run` | Normalize to `guide.md#run` when confined to the root. |
-| A normalized path outside the root | An entry reference fails with `E_SOURCE_OUTSIDE_ROOT`; a reference inside a source is emitted as authored. |
+| `sub/../guide.md#run` | Normalize to `guide.md#run` against the reference's own base. |
+| `../guide.md` positionally | Capture the file relative to invocation working directory with bounded no-follow access. |
+| A source link normalized outside its author's root | Emit as authored without opening the target, deferred mark included. |
 
-A schemeless reference that is not a relative path names a local document positionally rather than from its own document: a root-relative path beginning with `/`, a filesystem absolute path, and a platform-specific drive path each do so. An entry reference of that shape fails explicitly, so a caller's intended entry is not dropped in silence; one inside a source resolves no dependency and is emitted as authored, like any other reference that does not resolve under the root. This restriction applies to document references, not to the configuration path naming the allowed source root.
+A path beginning with `/`, a filesystem absolute path, a platform-specific drive path, a scheme or an authority is unsupported as an entry and fails with `E_SOURCE_OUTSIDE_ROOT`. Inside a source those references are emitted as authored without opening a dependency. Explicit root values follow their separate relative-directory schema; they are not document references.
 
 ### No-symlink source policy
 
-Reject Markdown source paths containing symlinks below the canonical source root with `E_SOURCE_SYMLINK`. Do not let dependency bases vary according to which logical alias was discovered first.
+Reject symlinks in every traversed component of bootstrap source, explicit root and dependency access with `E_SOURCE_SYMLINK`. The invocation working directory is canonicalized once; every subsequent walk is bound to its captured directory or a verified directory derived from it. Do not let dependency bases vary according to which logical alias was discovered first.
 
 Use rooted, no-follow access or equivalent safeguards, not merely a pre-open string check. Platforms unable to enforce the policy must fail or declare a narrower supported environment rather than silently weakening root confinement.
 
@@ -537,7 +573,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
 - **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting, title absorption, heading shifts and necessary Setext conversion, the generated entry line, generated group, variant and member headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
-- **Safety:** Enforce the allowed source root and configured resource limits. Never execute included commands, and never open a reference the tool did not resolve as a local Markdown dependency.
+- **Safety:** Enforce bounded bootstrap access, each referring source's effective root and configured resource limits. Never execute included commands, and never open a reference the tool did not resolve as a local Markdown dependency.
 - **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation. An output destination that refuses the write, a detected broken pipe among them, fails with `E_PUBLICATION_FAILED`.
 
 ### Post-compilation invariants
@@ -606,7 +642,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **Coverage:** Child-first then parent inclusion; whole-document inclusion discovered late; shared dependencies; multi-file cycles; different entry argument orders.
 - **Destinations:** A unique bundled heading taking a bare slug, repeated bundled headings taking ordinals in bundle order, a source fragment ambiguous within one document refused, two documents whose paths differ only by Markdown extension refused, same-basename paths in different directories, and a file group whose filename heading does not imply whole-document inclusion.
 - **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
-- **Deferral:** A marked reference under the root contributing nothing to the bundle, the mark and the bytes following it published as authored, a fragment-only reference deferred the same way, a deferred link standing unrewritten where another reference carried its target, a deferred reference naming no document and one naming no heading each refused, and a deferred link published with its target's path from the root.
+- **Deferral:** A marked reference under the root contributing nothing to the bundle, the mark and the bytes following it published as authored, a fragment-only reference deferred the same way, a deferred link standing unrewritten where another reference carried its target, a deferred reference naming no document and one naming no heading each refused, and a deferred link published with its target's URI-escaped path from the invocation working directory.
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; a nested path and a hyphenated name emitted in title case beside a merged group's heading; a heading an author wrote and a deferred link's path keeping the spelling their source gave them; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
@@ -627,7 +663,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **File-wide safety:** Excessive parsing depth in an unselected sibling can fail with a file-indexing resource diagnostic, while an ordinary unselected broken link does not.
 - **Profile:** Task markers protected from definitions, disabled typographic rewriting, Markdown suffix classification, and explicit rejection of unsupported selected dependency constructs.
 - **Frontmatter:** Optional BOM, exact opening/closing delimiters, `...` termination, leading-blank-line distinction, malformed delimiters, and missing closers.
-- **CLI:** Rejection of `-g` with `E_INVALID_USAGE` and exit 2; retained operational flags; root versus `-f` resolution, `-c` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
+- **CLI:** Rejection of `-r` and `-g` with `E_INVALID_USAGE` and exit 2; retained operational flags; working-directory resolution for positional files and `-f`, `-c` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
 - **Limits:** Every limit fails at the first exceeded boundary without truncation; zero/negative overrides fail; parser nesting cannot silently fall back to different syntax.
 
 ### Metadata conformance cases
@@ -637,17 +673,35 @@ Before broad implementation, create small fixtures with exact expected bundles o
 | Per-file ownership | Direct entry, ordinary link, transitive dependency, fragment-only entry with referrer, and section fragment of one annotated source; entry settings do not affect a linked source. |
 | Explicit grouping | Unannotated sibling; same group across unrelated directories; duplicate basenames; group/section heading collision; matching depths; conflicting depths with deterministic locations under reversed discovery and entry order. |
 | Stable selection | Diamond dependency, overlapping fragments and ordinary cycle; deferred-only target, later activation, and a target reached through both deferred and ordinary links. |
-| Accepted YAML | Absent, empty and comments-only block; empty root or metadata mapping; unrelated skill fields; quoted depth; BOM and CRLF; both closing delimiters. |
-| Rejected metadata | Malformed YAML; scalar, sequence or explicit-null root; invalid metadata mapping and values; missing paired field; unknown reserved key; blank/control-containing or colon/slash group; numeric, multidigit, nondecimal and out-of-range depths. |
+| Accepted YAML | Absent, empty and comments-only block; empty document-root or `prosiform` mapping; unrelated skill fields; integer depth; BOM and CRLF; both closing delimiters. |
+| Rejected metadata | Malformed YAML; scalar, sequence or explicit-null root; invalid `prosiform` mapping and values; missing paired field; unknown key; blank/control-containing or colon/slash group; string, float, boolean and out-of-range depths; empty, non-string or unsupported root paths. |
 | Safe YAML | Duplicate keys at root and nested levels with both coordinates; custom tags, aliases, merge keys; collection depth at and beyond the limit; raw source-byte boundary and source-change capture. |
 | Body separation | Apparent Markdown headings, links and definitions in metadata produce no dependencies or rendered bytes; body YAML fences remain literal; physical diagnostic coordinates include metadata and BOM. |
 | Preserved assembly | Overview and variant arrangements, shortest distinguishing member names, heading overflow, ambiguous source slugs, anchor collisions and document/section rewrites retain their defined outcomes. |
 | Atomic failure | Invalid metadata and conflicting groups under stdout, file output and check mode, with an existing output file preserved; text and JSON carry both conflict locations. |
 | Public interface | Help and invocation table agree on operational options; structural option rejection; representative metadata corpus and installed-wheel smoke against the identified candidate. |
 
+### File-owned invocation conformance cases
+
+| Outcome | Required fixtures |
+| --- | --- |
+| Root defaults | Entry and linked file without a root, with the invocation working directory different from both containing directories; both resolve outgoing paths from the invocation directory. |
+| Explicit roots | `"."`, `".."`, nested and sibling-library roots; different roots on explicit entries; target root independent of the referring file; a declared library root outside its declaring source. |
+| Shared identity | Diamond dependencies and cycles across different roots; reversed entry and discovery order; one capture and effective root per canonical source; distinct paths sharing an inode remain distinct. |
+| Root safety | Empty/non-string/absolute/drive/URL/home/environment root values; missing and non-directory roots; unreadable roots and sources; source and root symlinks; confined internal parent traversal and outside-root citations. |
+| Bootstrap limits | Positional entry and `-f` capture enforce raw per-file, aggregate and YAML nesting limits before following links; entry mutation during capture; source and root identity changes before publication. |
+| Self references | Fragment-only links and deferred fragments in a file outside its own declared root; deferred target validated but its outgoing dependencies unopened. |
+| Multi-root identity | Two physical sources with the same own-root-relative path; stable source sorting and conflict locations; unambiguous diagnostics and inclusion chains; ambiguous displayed file/member names refused. |
+| Derived filenames | Whole-file, `.markdown`, mixed-case suffix, section, empty fragment, equivalent duplicate references and `-f`; literal underscores, spaces, Unicode and parent segments; linked roots and groups do not rename the entry. |
+| Combined selection | Multiple files, distinct sections of one file, and whole-file plus section selections require explicit `-o`, including in check mode; file destination and `-o -` each produce one bundle. |
+| Publication | Automatic output in invocation working directory; exact `-o` destination; existing output preserved on failure; overlap with any captured source, including deferred-only targets; filename/length failure; atomic replacement, check mode and clean stdout/stderr. |
+| Deferred handoff | URI-escaped cwd-relative destination, including parent segments and literal delimiters, can be invoked from the same working directory with `pf`; outside-root citations and unopened resources retain authored bytes. |
+
+Runtime delivery updates each consumer in the layer that changes its behavior: settings schema consumers with the decoder, root/referrer entry fixtures and CLI consumers with the resolver, and stdout-dependent consumers with automatic output publication. This includes installed-wheel smoke commands and diagram renderer invocations. Compare compiled content independently of invocation and output location against baseline `93fe6b354a85e244f64e33af700a55aab4f26044`; entry-root annotations preserve body bytes and deliberately update physical-location expectations. Authoring guidance teaches per-source roots, full setting names and hyphen-preferred paths. These are required conformance checks, not claims that the current runtime has passed them.
+
 ## Implementation verification and residual policy detail
 
-- **Source-language handoff:** The tagged contract includes YAML 1.2 Core frontmatter, per-source conversion ownership, metadata diagnostics and the structural CLI surface. Freeze evidence records the Python baseline revision, explicit contributing-member annotations and resulting fixture bytes; the Rust build consumes that same tagged contract and corpus. Contract review alone establishes no compiler conformance.
+- **Source-language handoff:** The tagged contract includes YAML 1.2 Core frontmatter, per-source root and conversion ownership, metadata and source-access diagnostics, normalized output naming and the operational CLI surface. Freeze evidence records the Python baseline revision, explicit contributing-member annotations and resulting fixture bytes; the Rust build consumes that same tagged contract and corpus. Contract review alone establishes no compiler conformance.
 - **Source-range adapter:** Rust and the first parser candidate are selected, but range fidelity, complete occurrence coverage, observable reference-resolution suppression, and nested-edit handling must be proven after implementation is authorized.
 - **Dependency pins:** Choose an appropriate Rust slugging component and exact tested dependency versions; compatibility fixtures, not assumptions about upstream behavior, establish the supported profile.
 - **Calibration:** Revisit numerical defaults only with measured fixture and real-skill data. The approved initial limits are not performance claims.
