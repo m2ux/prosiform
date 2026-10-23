@@ -36,7 +36,7 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 - [x] Implement and review the contract.
 - [x] Validate and publish the delivery PR.
 - [x] Merge W01 and record its verified AC1 delivery.
-- [ ] Link draft epic review #220 to epic #218 through the Development sidebar.
+- [x] Link draft epic review #220 to epic #218 through GitHub's Development relation.
 
 ## Links
 
