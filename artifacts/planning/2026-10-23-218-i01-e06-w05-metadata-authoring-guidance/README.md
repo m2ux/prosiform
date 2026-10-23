@@ -16,9 +16,15 @@ W05 of epic #218 completes the author-facing documentation and representative co
 ## Artifacts
 
 - [Work item](w05.md)
+- [Validation](validation.md)
+- [Baseline audit](baseline-audit.py)
+- [Comparison report](baseline-comparisons.json)
+- [Full check log](full-check.log)
+- [Installed-wheel result](installed-wheel.log)
+- [Plan changes](changes.md)
 
 ## Progress
 
 - [x] Verify dependency and reserve W05.
-- [ ] Complete documentation and corpus audit.
+- [x] Complete documentation and corpus audit.
 - [ ] Publish, validate, merge and record delivery.
