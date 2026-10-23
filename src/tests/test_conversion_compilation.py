@@ -23,7 +23,7 @@ def test_linked_destination_owns_its_settings(
         conversion("target", 2) + "# B\n\n## Run\n\nTarget content.\n",
     )
     written(tmp_path, "other/sibling.md", "# Sibling\n\nNot discovered.\n")
-    run = invoke("-r", str(tmp_path), *references)
+    run = invoke(*references, cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert "# Entry\n" in run.stdout and "# Target\n" in run.stdout
     assert "[Target](#run-1)" in run.stdout
@@ -51,7 +51,7 @@ def test_diamond_cycle_and_unannotated_sibling_keep_source_ownership(
         "nested/c.md",
         conversion("shared", 2) + "# C\n\n## Run\n\n[A](../a.md#run)\n\nUnique body.\n",
     )
-    run = invoke("-r", str(tmp_path), "entry.md")
+    run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.stdout.count("Unique body.") == 1
     assert (
@@ -74,7 +74,7 @@ def test_deferred_only_metadata_does_not_join_or_conflict(
         + ("[Now](b.md)\n" if active else ""),
     )
     written(tmp_path, "b.md", conversion("shared", 3) + "# B\n\nLater content.\n")
-    run = invoke("-r", str(tmp_path), "-d", "json", "a.md")
+    run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == (1 if active else 0), run.stderr
     if active:
         assert run.diagnostics()[0]["code"] == "E_GROUP_DEPTH_CONFLICT"
@@ -95,8 +95,8 @@ def test_conflicting_depths_are_stable_and_atomic(
     options = [] if mode == "stdout" else ["-o", str(output)]
     if mode == "check":
         options.append("-c")
-    forward = invoke("-r", str(tmp_path), "-d", form, *options, "a.md", "b.md")
-    reverse = invoke("-r", str(tmp_path), "-d", form, *options, "b.md", "a.md")
+    forward = invoke("-d", form, *options, "a.md", "b.md", cwd=tmp_path)
+    reverse = invoke("-d", form, *options, "b.md", "a.md", cwd=tmp_path)
     assert forward.status == reverse.status == 1
     assert forward.stdout == reverse.stdout == ""
     assert forward.stderr == reverse.stderr
@@ -123,7 +123,7 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
         written(
             tmp_path, path, conversion(group, 2) + "# Notes\n\n## Run\n\n" + text + "\n"
         )
-    run = invoke("-r", str(tmp_path), "x/notes.md", "y/notes.md")
+    run = invoke("x/notes.md", "y/notes.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert "### X Notes\n" in run.stdout and "### Y Notes\n" in run.stdout
     assert "First." in run.stdout and "Second." in run.stdout
@@ -132,7 +132,7 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
 def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> None:
     written(tmp_path, "a.md", conversion("same", 2) + "# A\n\n[Other](same.md)\n")
     written(tmp_path, "same.md", "# Same\n\nSeparate file.\n")
-    run = invoke("-r", str(tmp_path), "a.md")
+    run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.stdout.count("# Same\n") == 2
     assert "[Other](#same-1)" in run.stdout
@@ -141,14 +141,14 @@ def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> No
 def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
     for name, group in [("a", "rules"), ("b", "Rules"), ("c", " rules ")]:
         written(tmp_path, name + ".md", conversion(group, 2) + "# " + name + "\n")
-    run = invoke("-r", str(tmp_path), "a.md", "b.md", "c.md")
+    run = invoke("a.md", "b.md", "c.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.stdout.count("# Rules\n") == 3
 
 
 @pytest.mark.parametrize("option", ["-g", "-grules:2", "--group"])
 def test_structural_cli_arguments_are_usage_errors(tmp_path: Path, option: str) -> None:
-    run = invoke("-r", str(tmp_path), "-d", "json", option, "rules:2", "a.md")
+    run = invoke("-d", "json", option, "rules:2", "a.md", cwd=tmp_path)
     assert run.status == 2
     assert run.stdout == ""
     assert run.diagnostics()[0]["code"] == "E_INVALID_USAGE"

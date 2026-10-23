@@ -149,11 +149,11 @@ def test_a_link_text_with_no_mark_is_not_deferred() -> None:
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
-    assert inside("docs/guide.md", "other.md").path == "docs/other.md"
+    assert inside("docs/guide.md", "other.md", "docs").path == "docs/other.md"
 
 
 def test_a_link_walking_out_of_its_own_directory_normalizes_against_it() -> None:
-    assert inside("docs/guide.md", "../notes.md").path == "notes.md"
+    assert inside("docs/guide.md", "notes.md").path == "notes.md"
 
 
 def test_a_link_above_the_root_names_a_document_the_root_cannot_contain() -> None:
@@ -191,7 +191,7 @@ def test_two_spellings_of_one_section_share_an_identity() -> None:
 def test_a_reference_resolving_under_the_root_is_a_dependency() -> None:
     found = bundled("docs/guide.md", "rules.md#alpha", "the rules")
     assert found is not None
-    assert (found.path, found.fragment) == ("docs/rules.md", "alpha")
+    assert (found.path, found.fragment) == ("rules.md", "alpha")
 
 
 def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
@@ -233,7 +233,7 @@ def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
 
 
 def test_a_marked_reference_under_the_root_is_a_deferred_target() -> None:
-    found = deferring("docs/guide.md", "../rules.md", "¬ the rules")
+    found = deferring("docs/guide.md", "rules.md", "¬ the rules")
     assert found is not None
     assert found.path == "rules.md"
 
@@ -263,8 +263,8 @@ def test_a_mark_on_a_reference_the_run_carries_none_of_defers_nothing(
 @pytest.mark.parametrize(
     ("document", "destination", "expected"),
     [
-        ("topic/guide.md", "../shared/rules.md", "shared/rules.md"),
-        ("topic/guide.md", "../shared/rules.md#here", "shared/rules.md#here"),
+        ("topic/guide.md", "shared/rules.md", "shared/rules.md"),
+        ("topic/guide.md", "shared/rules.md#here", "shared/rules.md#here"),
         ("guide.md", "#beta", "guide.md#beta"),
         ("guide.md", "rules.md#", "rules.md#"),
         ("guide.md", "notes%23draft.md#run", "notes%23draft.md#run"),

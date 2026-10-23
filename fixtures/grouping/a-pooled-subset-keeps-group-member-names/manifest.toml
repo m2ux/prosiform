@@ -9,7 +9,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["g/a/notes.md", "g/b/notes.md", "g/c/other.md"]
 
 [expected]

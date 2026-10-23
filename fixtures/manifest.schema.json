@@ -5,7 +5,12 @@
   "description": "The declaration of one corpus fixture: the source tree it bundles, the invocation to run against that tree, and the standard output, exit status and diagnostics the run must produce. A runner decides the fixture's result from this declaration and the fixture's files alone. Nothing here names an implementation, a module or a language. The manifest is written as TOML and validated against this document after parsing, because TOML's value model is a subset of JSON's.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["description", "clauses", "invocation", "expected"],
+  "required": [
+    "description",
+    "clauses",
+    "invocation",
+    "expected"
+  ],
   "properties": {
     "description": {
       "description": "What this fixture establishes, in one sentence.",
@@ -16,12 +21,23 @@
       "description": "The design clauses this fixture encodes, each named by its heading and the rule under it, so every clause can be mapped to the fixtures that cover it.",
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "minLength": 1 }
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
-    "awaiting": { "$ref": "#/$defs/awaiting" },
-    "fault": { "$ref": "#/$defs/fault" },
-    "invocation": { "$ref": "#/$defs/invocation" },
-    "expected": { "$ref": "#/$defs/expected" }
+    "awaiting": {
+      "$ref": "#/$defs/awaiting"
+    },
+    "fault": {
+      "$ref": "#/$defs/fault"
+    },
+    "invocation": {
+      "$ref": "#/$defs/invocation"
+    },
+    "expected": {
+      "$ref": "#/$defs/expected"
+    }
   },
   "$defs": {
     "awaiting": {
@@ -31,23 +47,31 @@
     },
     "fault": {
       "description": "The fault the run performs on itself, which the runner asks for as the contract's `-x NAME`. Two of the outcomes the contract declares are facts about the run rather than about any document it reads, so no source tree states them: `source-changed` writes other bytes to each source the run read, once discovery has read them and before the recheck before publication, and `internal` fails the run in itself once the candidate is built and before anything publishes. The fault changes the tree the fixture holds, so a fixture declaring one runs in a copy of itself. A fixture declaring none declares a run that meets no fault.",
-      "enum": ["source-changed", "internal"]
+      "enum": [
+        "source-changed",
+        "internal"
+      ]
     },
     "invocation": {
-      "description": "The run to perform. The runner supplies the build under test from its own configuration, resolves the source tree named here to an absolute path and passes it as the allowed source root, and asks for diagnostics as data so a code can be compared rather than prose.",
+      "description": "Working directory and arguments for the configured build, with JSON diagnostics supplied by the runner.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["arguments"],
+      "required": [
+        "arguments"
+      ],
       "properties": {
-        "root": {
-          "description": "The fixture-relative directory holding the source tree. It is the allowed source root the run is confined to. A fixture whose expected diagnostics name E_ROOT_NOT_FOUND declares a run that cannot find this root, so there the path is one the fixture must not hold; every other fixture naming one holds it as a directory. Omitted, it declares a run supplied no allowed source root at all, which is the command line the contract refuses for naming none.",
-          "$ref": "#/$defs/fixturePath"
-        },
         "arguments": {
-          "description": "The arguments of the invocation, in order. The allowed source root and the diagnostic format are supplied by the runner and are not written here.",
+          "description": "Command arguments, in order. The runner supplies JSON diagnostics.",
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "minLength": 1 }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "cwd": {
+          "description": "Existing fixture-relative working directory for the invocation. Omitted, the fixture directory is used.",
+          "$ref": "#/$defs/fixturePath"
         }
       }
     },
@@ -55,16 +79,33 @@
       "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared. Standard output is declared one way or the other: as the bytes the run must reproduce, or as the text it must carry where those bytes belong to one build. A run that must also leave the filesystem alone names each path it must not create.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["exit_status", "diagnostics"],
+      "required": [
+        "exit_status",
+        "diagnostics"
+      ],
       "oneOf": [
-        { "required": ["stdout"] },
-        { "required": ["stdout_contains"] }
+        {
+          "required": [
+            "stdout"
+          ]
+        },
+        {
+          "required": [
+            "stdout_contains"
+          ]
+        }
       ],
       "properties": {
         "exit_status": {
           "description": "The process exit status, one of the five categories the contract declares: 0 success, 1 input, dependency, policy, safety or resource-limit failure, 2 invalid usage, 3 publication or delivery failure, 4 unexpected internal error.",
           "type": "integer",
-          "enum": [0, 1, 2, 3, 4]
+          "enum": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
         },
         "stdout": {
           "description": "The fixture-relative path to the bytes standard output must carry. A run that publishes no bundle names a file holding nothing.",
@@ -77,14 +118,18 @@
         "diagnostics": {
           "description": "The diagnostics the run must emit on standard error, in order. A run emitting none declares an empty list.",
           "type": "array",
-          "items": { "$ref": "#/$defs/diagnostic" }
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
         },
         "absent": {
           "description": "The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A stream comparison cannot reach a file, so the absence is declared rather than inferred. A fixture that already holds one of these paths declares nothing about its run and is malformed. A fixture whose run creates no file names none.",
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "$ref": "#/$defs/fixturePath" }
+          "items": {
+            "$ref": "#/$defs/fixturePath"
+          }
         }
       }
     },
@@ -92,27 +137,57 @@
       "description": "One message the run emits to standard error. Its severity and its code name it together, and the severity decides which catalogue the code is drawn from: an error decides a failing run and a warning accompanies a successful one, so neither catalogue admits the other's codes.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["severity", "code"],
+      "required": [
+        "severity",
+        "code"
+      ],
       "allOf": [
         {
           "if": {
-            "properties": { "severity": { "const": "error" } },
-            "required": ["severity"]
+            "properties": {
+              "severity": {
+                "const": "error"
+              }
+            },
+            "required": [
+              "severity"
+            ]
           },
-          "then": { "properties": { "code": { "$ref": "#/$defs/errorCode" } } }
+          "then": {
+            "properties": {
+              "code": {
+                "$ref": "#/$defs/errorCode"
+              }
+            }
+          }
         },
         {
           "if": {
-            "properties": { "severity": { "const": "warning" } },
-            "required": ["severity"]
+            "properties": {
+              "severity": {
+                "const": "warning"
+              }
+            },
+            "required": [
+              "severity"
+            ]
           },
-          "then": { "properties": { "code": { "$ref": "#/$defs/warningCode" } } }
+          "then": {
+            "properties": {
+              "code": {
+                "$ref": "#/$defs/warningCode"
+              }
+            }
+          }
         }
       ],
       "properties": {
         "severity": {
           "description": "Whether the message fails the run or accompanies it.",
-          "enum": ["error", "warning"]
+          "enum": [
+            "error",
+            "warning"
+          ]
         },
         "code": {
           "description": "The stable code naming this diagnostic, from the catalogue its severity selects.",
@@ -154,14 +229,19 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "type": "string", "minLength": 1 }
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "fixturePath": {
       "description": "A path inside the fixture directory: forward slashes, no leading slash, and no parent segment, so a fixture reaches nothing outside itself.",
       "type": "string",
       "minLength": 1,
       "pattern": "^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$",
-      "not": { "pattern": "(^|/)\\.\\.(/|$)" }
+      "not": {
+        "pattern": "(^|/)\\.\\.(/|$)"
+      }
     },
     "errorCode": {
       "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
@@ -181,6 +261,7 @@
         "E_RAW_HTML",
         "E_RESOURCE_LIMIT",
         "E_ROOT_NOT_FOUND",
+        "E_SOURCE_ACCESS",
         "E_SOURCE_CHANGED",
         "E_SOURCE_OUTSIDE_ROOT",
         "E_SOURCE_SYMLINK",

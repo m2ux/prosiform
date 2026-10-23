@@ -9,7 +9,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = [
   "artifacts/epic-issue-body.md#record-epic-delivery",
   "artifacts/epic.md#delivery-findings",

@@ -1,7 +1,7 @@
 # 🧩 Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/d26ae99b7e989f0978d20f7d9bdc098c16319797/artifacts/planning/2026-10-23-218-i01-e06-w04-per-file-compilation-settings/design.md)
+[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/6e5c691/artifacts/planning/2026-10-23-218-i01-e06-w08-per-file-root-resolution/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
@@ -31,7 +31,7 @@ Leaving retrieval to the agent costs:
 Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
-pf -r my-skill -o skill-bundle.md procedure.md rules/common.md
+pf -o skill-bundle.md my-skill/procedure.md my-skill/rules/common.md
 ```
 
 The Common and Agents files each declare group `rules` and depth `1` in their [conversion metadata](invocation.md#conversion-metadata).
@@ -53,11 +53,11 @@ Run these from the repository root. Each command writes a validated Markdown bun
 ### Bundle a Source and its Dependencies
 
 ```bash
-pf -r example/work-tracker modes/plan-mode.md
+pf example/work-tracker/modes/plan-mode.md
 ```
 
 ### Compile a Selected Section
 
 ```bash
-pf -r example/work-tracker 'artifacts/epic.md#delivery-findings'
+pf 'example/work-tracker/artifacts/epic.md#delivery-findings'
 ```

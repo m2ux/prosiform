@@ -9,7 +9,8 @@
 # nothing. The corpus, invocation, conformance and independence checks reach
 # the build under test through the corpus runner, and the last two read the
 # corpus through the manifest reader beside it, which reads `jsonschema` from
-# that same group, so the four run through it; the smoke, layout, table, link and
+# that same group, so the four run through it. The link check reads source
+# metadata through that environment. The smoke, layout, table and
 # vocabulary checks depend on the standard library alone and run under
 # `python3` directly.
 #
@@ -76,7 +77,7 @@ tables:
 	python3 checks/tables.py
 
 links:
-	python3 checks/links.py --online
+	$(UV_RUN) python checks/links.py --online
 
 vocabulary:
 	python3 checks/vocabulary.py

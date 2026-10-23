@@ -3,11 +3,11 @@ description = "A marked reference naming material above the allowed source root 
 clauses = [
   "Link classification and resource handling — Local Markdown links resolving outside the root",
   "Explicitly linked source structure — Explicit dependencies",
-  "Resolution sequence — A normalized path outside the root",
+  "Resolution sequence — step 7",
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guide.md"]
 
 [expected]

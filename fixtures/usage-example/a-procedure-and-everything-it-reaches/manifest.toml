@@ -12,7 +12,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["modes/plan-mode.md"]
 
 [expected]

@@ -9,4 +9,4 @@ Name the harness.
 
 ## Tools
 
-List what it may call, then read [Common](common.md).
+List what it may call, then read [Common](rules/common.md).

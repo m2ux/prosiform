@@ -8,8 +8,8 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
-arguments = ["-o", "source/guide.md", "guide.md"]
+cwd = "source"
+arguments = ["-o", "guide.md", "guide.md"]
 
 [expected]
 exit_status = 2
@@ -18,4 +18,4 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["source/guide.md"]
+message_contains = ["guide.md"]

@@ -24,7 +24,8 @@ The caller reached this mode through the routing document [¬ SKILL.md](../SKILL
 ### Command
 
 ```bash
-pf -r example/work-tracker modes/plan-mode.md
+cd example/work-tracker
+pf modes/plan-mode.md
 ```
 
 ### Output
@@ -67,13 +68,14 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
 ### Command
 
 ```bash
-pf -r example/work-tracker \
+cd example/work-tracker
+pf \
   -f artifacts/epic-issue-body.md '#record-epic-delivery'
 ```
 
@@ -108,10 +110,11 @@ The selection retains its structural ancestor, places the selected heading benea
 ### Above-depth prose
 
 ```bash
-pf -r example/work-tracker modes/plan-mode.md
+cd example/work-tracker
+pf modes/plan-mode.md
 ```
 
-The artifact files declare group `artifacts`, and the mode file declares `modes`, each at depth `"2"` in its frontmatter. Each linked file supplies its own settings.
+The artifact files declare group `artifacts`, and the mode file declares `modes`, each at depth `2` in its frontmatter. Each linked file supplies its own settings.
 
 For example, both artifact files begin with this declaration:
 
@@ -152,7 +155,8 @@ An epic's task delivery findings, integration readiness and completion state.
 The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated member headings name each contribution directly beneath `Rules`:
 
 ```bash
-pf -r example/my-skill procedure.md rules/common.md
+cd example/my-skill
+pf procedure.md rules/common.md
 ```
 
 The grouped portion is:

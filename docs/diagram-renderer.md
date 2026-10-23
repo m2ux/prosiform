@@ -14,7 +14,7 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | --- | --- |
 | `document` | Entry Markdown file, such as `SKILL.md`. |
 | `--output PREFIX` | Required output path prefix. Existing files with this prefix are overwritten. |
-| `--root DIR` | Allowed source root; defaults to the entry document's directory. |
+| `--cwd DIR` | Invocation working directory; defaults to the entry document's directory. |
 | `--section FRAGMENT` | Bundle one section of the entry document. |
 | `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
 | `--compact` | Retain headings and links; omit other body content in both image panels. |

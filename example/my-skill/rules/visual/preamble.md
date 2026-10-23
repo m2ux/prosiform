@@ -1,3 +1,7 @@
+---
+prosiform:
+  root: "../.."
+---
 Read the context first.
 
 # Style

@@ -16,7 +16,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["gitnexus-impact-analysis/SKILL.md"]
 
 [expected]

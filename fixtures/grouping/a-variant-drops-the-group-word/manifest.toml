@@ -9,7 +9,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["modes/plan-mode.md", "modes/review-mode.md"]
 
 [expected]

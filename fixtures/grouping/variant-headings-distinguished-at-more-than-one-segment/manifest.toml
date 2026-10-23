@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guides/alpha/notes.md#findings"]
 
 [expected]

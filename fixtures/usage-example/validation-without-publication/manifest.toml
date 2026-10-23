@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-c", "artifacts/epic-issue-body.md#record-epic-delivery"]
 
 [expected]

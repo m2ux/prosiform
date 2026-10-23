@@ -342,6 +342,7 @@ def rewrite(
     assigned: dict[tuple[str, str | None], str],
     path: str,
     defined: Mapping[str, Definition],
+    root: str = "",
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -366,7 +367,7 @@ def rewrite(
         if inline.map is None or (not found and not defined):
             continue
         start, end = inline.map
-        targets = [target(path, one, opening, assigned) for one, opening in found]
+        targets = [target(path, one, opening, assigned, root) for one, opening in found]
         written[start:end] = rewritten(written[start:end], inline, targets, defined)
     return written
 
@@ -376,6 +377,7 @@ def target(
     destination: str,
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
+    root: str = "",
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -394,10 +396,10 @@ def target(
     Markdown document, is text the bundle carries and takes no
     destination, whether or not its author marked it.
     """
-    found = bundled(path, destination, opening)
+    found = bundled(path, destination, opening, root)
     if found is not None:
         return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
-    deferred = deferring(path, destination, opening)
+    deferred = deferring(path, destination, opening, root)
     if deferred is None:
         return None
     return rebased(deferred, destination)
@@ -617,6 +619,8 @@ def group(
     defined: Mapping[str, Definition] | None = None,
     selected: Selection | None = None,
     assigned: dict[tuple[str, str | None], str] | None = None,
+    root: str = "",
+    display: str | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -657,7 +661,7 @@ def group(
     included, so the bundle carries the uses and none of the
     declarations behind them.
     """
-    title = heading_text(path)
+    title = heading_text(path if display is None else display)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])
@@ -688,7 +692,7 @@ def group(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, environment)
+        else rewrite(physical, tokens, chosen, assigned, path, environment, root)
     )
     for token in regions(tokens):
         if id(token) in needed:

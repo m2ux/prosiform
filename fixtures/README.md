@@ -58,7 +58,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guide.md"]
 
 [expected]
@@ -77,7 +77,7 @@ chain = ["guide.md", "../outside.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, named as [The clause form](#the-clause-form) states, so every clause maps to the fixtures that cover it. |
-| `invocation.root` | Optional. The source tree, fixture-relative. The runner resolves it and passes it as the allowed source root. A fixture declaring `E_ROOT_NOT_FOUND` names a path it does not hold; every other fixture naming one names a directory it does. A fixture naming none declares a run supplied no allowed source root. |
+| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. Source metadata supplies dependency roots. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.stdout` | The fixture-relative file holding the bytes standard output must carry. A run publishing no bundle names an empty file. |
@@ -87,7 +87,7 @@ chain = ["guide.md", "../outside.md"]
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
 | `fault` | Optional. The fault the run performs on itself, `source-changed` or `internal`, which the runner asks for as `-x NAME`. A fixture declaring none declares a run that meets no fault. |
 
-The runner supplies the allowed source root the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
+The runner uses the working directory the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language.
 
 ## The clause form
 
@@ -117,7 +117,7 @@ A run's working directory is the fixture's own, so a path an invocation writes l
 
 ```toml
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-c", "-o", "bundle.md", "guide.md"]
 
 [expected]
@@ -129,45 +129,9 @@ absent = ["bundle.md"]
 
 A fixture that already holds a path it declares absent is malformed and is refused before the build is invoked, because a declaration the directory contradicts before the run states nothing about the run.
 
-## A root the run cannot find
+## Root declarations
 
-The contract declares an outcome for an allowed source root naming no directory: the command line is well formed and the root is not there, so the run fails with `E_ROOT_NOT_FOUND` and exit status 1. A fixture states it by declaring that diagnostic and carrying no source tree:
-
-```toml
-[invocation]
-root = "source"
-arguments = ["guide.md"]
-
-[expected]
-exit_status = 1
-stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "error"
-code = "E_ROOT_NOT_FOUND"
-```
-
-The declared diagnostic is the whole of the declaration, so nothing beside `invocation.root` repeats it. A fixture declaring that code is held to a root it does not hold, and one declaring any other outcome to a root that is a directory it does: either contradiction is malformed and is refused before the build is invoked, as a path declared absent is.
-
-## A run with no allowed source root
-
-The contract requires `-r`, so a command line naming none is refused for its own form: `E_INVALID_USAGE` and exit status 2. The runner supplies the root a manifest names, so a manifest naming none declares that invocation:
-
-```toml
-[invocation]
-arguments = ["guide.md"]
-
-[expected]
-exit_status = 2
-stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "error"
-code = "E_INVALID_USAGE"
-message_contains = ["-r"]
-```
-
-The invocation a manifest declares is the whole invocation, so a fixture states a run supplied nothing as readily as it states one supplied a tree. Such a fixture carries no source tree, because the run reaches no tree to read.
+A source declares an explicit dependency root in its leading prosiform mapping. Missing directories fail with E_ROOT_NOT_FOUND. The invocation working directory must exist; absent roots in source metadata use that directory. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
 
 ## Text an output carries
 
@@ -175,7 +139,7 @@ Some of what a run writes is the build's own. A version string is the clearest c
 
 ```toml
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-v"]
 
 [expected]
@@ -201,7 +165,7 @@ The contract gathers six faults under the code, and each is a fixture, so what t
 
 | Fault | Fixture |
 | --- | --- |
-| A missing `-r` | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
+| The retired `-r` option | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
 | No entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
@@ -230,7 +194,7 @@ Two of the outcomes the contract declares are facts about the run rather than ab
 fault = "source-changed"
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guide.md"]
 
 [expected]
@@ -315,7 +279,7 @@ export PROSIFORM_BUILD=prosiform
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner appends `-r`, the fixture's source tree resolved to an absolute path, `-d json`, and `-x` where the manifest names one, to that command, and then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner uses `invocation.cwd`, appends `-d json` and `-x` where the manifest names a fault, then the manifest's `arguments`. The run's standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

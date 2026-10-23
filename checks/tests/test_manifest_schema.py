@@ -50,7 +50,7 @@ def complete() -> dict[str, Any]:
     return {
         "description": "A reference outside the allowed source root fails.",
         "clauses": ["Reference normalization and path identity"],
-        "invocation": {"root": "source", "arguments": ["guide.md"]},
+        "invocation": {"cwd": "source", "arguments": ["guide.md"]},
         "expected": {
             "exit_status": 1,
             "stdout": "expected/stdout.md",
@@ -72,7 +72,7 @@ def succeeding() -> dict[str, Any]:
         "description": "A bundle carrying a resource reference warns on its "
         "portability and succeeds.",
         "clauses": ["Resources are text"],
-        "invocation": {"root": "source", "arguments": ["guide.md"]},
+        "invocation": {"cwd": "source", "arguments": ["guide.md"]},
         "expected": {
             "exit_status": 0,
             "stdout": "expected/stdout.md",
@@ -100,7 +100,7 @@ def test_a_complete_manifest_validates() -> None:
 
 def test_a_manifest_naming_no_source_tree_validates() -> None:
     """A run supplied no allowed source root is a run a manifest declares."""
-    manifest = without("invocation", "root")
+    manifest = without("invocation", "cwd")
     manifest["expected"]["exit_status"] = 2
     manifest["expected"]["diagnostics"] = [
         {

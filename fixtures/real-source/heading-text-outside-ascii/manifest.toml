@@ -15,7 +15,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["gitnexus-cli/SKILL.md"]
 
 [expected]

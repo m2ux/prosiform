@@ -125,7 +125,7 @@ def write_fixture(
         lines.extend([f"fault = {json.dumps(fault)}", ""])
     lines.append("[invocation]")
     if root is not None:
-        lines.append(f"root = {json.dumps(root)}")
+        lines.append(f"cwd = {json.dumps(root)}")
     lines.extend(
         [
             f"arguments = [{declared}]",
@@ -270,8 +270,6 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
-        "-r",
-        str((fixture / "source").resolve()),
         "-d",
         "json",
         "guide.md#alpha",
@@ -339,7 +337,7 @@ def test_a_path_the_run_creates_names_the_expectation(
         arguments=("-c", "-o", "bundle.md", "guide.md"),
         absent=("bundle.md",),
     )
-    configure(monkeypatch, publishing("bundle.md", "# Guide\n"))
+    configure(monkeypatch, publishing("../bundle.md", "# Guide\n"))
     result = run_fixture(fixture)
     assert not result.passed
     detail = detail_of(result, ABSENT)
@@ -356,7 +354,7 @@ def test_a_path_the_run_creates_is_removed(
         arguments=("-c", "-o", "bundle.md", "guide.md"),
         absent=("bundle.md",),
     )
-    configure(monkeypatch, publishing("bundle.md", "# Guide\n"))
+    configure(monkeypatch, publishing("../bundle.md", "# Guide\n"))
     assert not run_fixture(fixture).passed
     assert not (fixture / "bundle.md").exists()
 
@@ -389,6 +387,7 @@ def test_a_fixture_declaring_an_absent_root_is_decided_from_its_manifest(
         exit_status=1,
         diagnostics=(ROOT_NOT_FOUND,),
         source=False,
+        root=None,
     )
     configure(
         monkeypatch, replaying(tmp_path, b"", diagnostic_lines(ROOT_NOT_FOUND), 1)
@@ -396,25 +395,6 @@ def test_a_fixture_declaring_an_absent_root_is_decided_from_its_manifest(
     result = run_fixture(fixture)
     assert result.passed, result.report()
     assert not (fixture / "source").exists()
-
-
-def test_a_fixture_declaring_an_absent_root_it_holds_is_refused(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """A root the fixture carries contradicts the outcome the manifest declares."""
-    fixture = write_fixture(
-        tmp_path / "fixture",
-        exit_status=1,
-        diagnostics=(ROOT_NOT_FOUND,),
-        source=False,
-    )
-    (fixture / "source").mkdir()
-    record = tmp_path / "argv"
-    configure(monkeypatch, recording(record))
-    result = run_fixture(fixture)
-    assert not result.passed
-    assert "source is a path the fixture holds" in detail_of(result, MANIFEST)
-    assert not record.exists()
 
 
 def test_a_fixture_naming_a_root_it_does_not_hold_is_refused(
@@ -829,7 +809,7 @@ def test_the_run_receives_the_fault_the_manifest_names(
         "source-changed",
         "guide.md",
     ]
-    assert written[0] == "-r"
+    assert written[0] == "-d"
 
 
 def test_a_run_meeting_no_fault_asks_for_none(
@@ -847,7 +827,7 @@ def test_a_fixture_declaring_a_fault_runs_in_a_copy_of_itself(
 ) -> None:
     """A fault writes to the tree it runs over, and the fixture is left as it was."""
     fixture = write_fixture(tmp_path / "fixture", fault="source-changed")
-    configure(monkeypatch, publishing("source/guide.md", "other bytes"))
+    configure(monkeypatch, publishing("guide.md", "other bytes"))
     result = run_fixture(fixture)
     assert result.passed, result.report()
     assert (fixture / "source" / "guide.md").read_bytes() == b"# Guide\n"
@@ -859,9 +839,11 @@ def test_a_fault_points_the_run_at_the_copy(
     """The allowed source root the run is given is the copy's, not the fixture's."""
     fixture = write_fixture(tmp_path / "fixture", fault="internal")
     record = tmp_path / "argv"
-    configure(monkeypatch, recording(record))
+    configure(
+        monkeypatch, shlex.join(["/bin/sh", "-c", f"pwd > {shlex.quote(str(record))}"])
+    )
     run_fixture(fixture)
     written = record.read_text(encoding="utf-8").splitlines()
-    given = Path(written[written.index("-r") + 1])
+    given = Path(written[0])
     assert given.name == "source"
     assert given != (fixture / "source").resolve()

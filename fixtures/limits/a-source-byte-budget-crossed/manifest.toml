@@ -5,7 +5,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["-B", "16", "alpha.md"]
 
 [expected]

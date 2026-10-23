@@ -1,3 +1,7 @@
+---
+prosiform:
+  root: "."
+---
 # Publish a page
 
 Compile these documents:
