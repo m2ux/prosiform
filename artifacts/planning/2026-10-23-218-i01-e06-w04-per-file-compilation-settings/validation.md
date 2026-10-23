@@ -29,3 +29,7 @@ Conformance reports 22 clauses without a fixture and three installation claims t
 ## Remote Checks
 
 Pass: [Checks on the exact head](https://github.com/m2ux/prosiform/actions/runs/39915942493/job/120289433013) completed successfully. The target `i01/e06/main` has no branch protection or active rules; the task has no required human approval. No protection setting changes or bypasses are used.
+
+## Delivery
+
+PR #224 merged the exact tested head into `i01/e06/main` at `4bb6f261475340f0ea2338c7107c88c942c878fe`. W04 and AC8–AC10 are recorded complete. Draft review #222 contains references to the actual runtime task merges #221, #223 and #224. Reviews #220 and #222 remain Development-linked to epic #218; their complete link snapshots have no additional pages. The task has no separate issue or Development link. Repository automatic issue closure remains disabled as confirmed for this session.

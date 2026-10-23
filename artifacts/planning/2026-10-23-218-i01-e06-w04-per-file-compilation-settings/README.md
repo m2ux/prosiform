@@ -24,4 +24,8 @@ W04 applies captured metadata to compilation for epic #218. Coverage: AC8 destin
 
 - [x] Verify W03 delivery and reserve W04.
 - [x] Implement and validate metadata-driven compilation.
-- [ ] Publish, merge and record W04 delivery.
+- [x] Publish, merge and record W04 delivery.
+
+## Result
+
+[PR #224](https://github.com/m2ux/prosiform/pull/224) merged into `i01/e06/main` at `4bb6f261475340f0ea2338c7107c88c942c878fe`. The tested head is `f139b253ab954bb2f2241a8d3d428e03600b35da`. AC8–AC10 are verified and W04 is Done. Draft runtime review #222 includes the delivered behavior and all three merged runtime tasks. Epic #218 remains open and In Progress; W05 is the remaining task.
