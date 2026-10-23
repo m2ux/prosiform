@@ -1,4 +1,4 @@
-This bundle was built for [Field-Guide](#field-guide); everything else is material it references.
+Follow [Field-Guide](#field-guide). The rest of this bundle is material that procedure references.
 
 # Field-Guide
 

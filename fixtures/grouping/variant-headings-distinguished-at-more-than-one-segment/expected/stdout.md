@@ -1,4 +1,4 @@
-This bundle was built for [Alpha Notes](#alpha-notes); everything else is material it references.
+Follow [Alpha Notes](#alpha-notes). The rest of this bundle is material that procedure references.
 
 # Guides
 

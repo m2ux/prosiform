@@ -1,4 +1,4 @@
-This bundle was built for [References/Design-Flow](#referencesdesign-flow); everything else is material it references.
+Follow [References/Design-Flow](#referencesdesign-flow). The rest of this bundle is material that procedure references.
 
 # References/Design-Flow
 

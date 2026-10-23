@@ -1,4 +1,4 @@
-This bundle was built for [Guide](#guide) and [Notes](#notes); everything else is material it references.
+Follow [Guide](#guide) and [Notes](#notes). The rest of this bundle is material those procedures reference.
 
 # Docs
 

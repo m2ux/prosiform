@@ -337,7 +337,7 @@ def test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection(
     written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
     run = invoke("notes/bare.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("This bundle was built for [Bare](#bare);")
+    assert run.stdout.startswith("Follow [Bare](#bare).")
 
 
 def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
@@ -350,7 +350,7 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
     )
     run = invoke("notes/second.md#second", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("This bundle was built for [Second](#second);")
+    assert run.stdout.startswith("Follow [Second](#second).")
 
 
 def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
@@ -430,7 +430,7 @@ def test_an_output_path_naming_no_input_source_is_accepted(
 def test_standard_output_is_an_explicit_output_destination(root: Path) -> None:
     run = invoke("-o", "-", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("This bundle was built for")
+    assert run.stdout.startswith("Follow ")
 
 
 def test_a_validation_only_run_publishes_nothing(root: Path) -> None:
@@ -767,8 +767,8 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     assert run.status == SUCCESS
     assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
     assert run.stdout == (
-        "This bundle was built for [Guide](#guide); "
-        "everything else is material it references.\n"
+        "Follow [Guide](#guide). "
+        "The rest of this bundle is material that procedure references.\n"
         "\n# Guide\n\n## Run\n\nDo it.\n"
     )
 
@@ -903,7 +903,7 @@ def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     run = invoke("guide.md#run", cwd=root)
     assert run.status == SUCCESS
     assert run.stdout == (
-        "This bundle was built for [Run](#run); everything else is material it "
+        "Follow [Run](#run). The rest of this bundle is material that procedure "
         "references.\n\n# Guide\n\n### Run\n\nDo it.\n"
     )
 
@@ -945,8 +945,9 @@ def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> N
     assert run.status == SUCCESS
     assert run.stdout == ""
     assert destination.read_text() == (
-        "This bundle was built for [Guide](#guide); "
-        "everything else is material it references.\n\n# Guide\n\nBody.\n"
+        "Follow [Guide](#guide). "
+        "The rest of this bundle is material that procedure references.\n"
+        "\n# Guide\n\nBody.\n"
     )
 
 
@@ -1841,15 +1842,16 @@ def test_actual_bundle_reuse_is_refused(
         "~~~markdown\n{declaration}\n~~~\n",
         "> {declaration}\n\n# Notes\n",
         "# Notes\n\n{declaration}\n",
-        "This bundle was built for prose; everything else is material it references.\n",
-        "This bundle was built for [Notes](https://example.com); "
-        "everything else is material it references.\n",
+        "Follow prose. "
+        "The rest of this bundle is material that procedure references.\n",
+        "Follow [Notes](https://example.com). "
+        "The rest of this bundle is material that procedure references.\n",
     ],
 )
 def test_authored_declaration_examples_bundle(tmp_path: Path, text: str) -> None:
     declaration = (
-        "This bundle was built for [Notes](#notes); "
-        "everything else is material it references."
+        "Follow [Notes](#notes). "
+        "The rest of this bundle is material that procedure references."
     )
     (tmp_path / "notes.md").write_text(text.format(declaration=declaration))
     result = invoke("notes.md", cwd=tmp_path)
@@ -1859,8 +1861,8 @@ def test_authored_declaration_examples_bundle(tmp_path: Path, text: str) -> None
 def test_generated_input_reports_location_after_frontmatter(tmp_path: Path) -> None:
     (tmp_path / "bundle.md").write_text(
         "---\ntitle: Bundle\n---\n\n"
-        "This bundle was built for [Notes](#notes); "
-        "everything else is material it references.\n"
+        "Follow [Notes](#notes). "
+        "The rest of this bundle is material that procedure references.\n"
         "\n# Notes\n\n## Findings\n\nContent.\n"
     )
     result = invoke("-d", "json", "bundle.md#findings", cwd=tmp_path)

@@ -87,10 +87,10 @@ def card(x, y, width, title, body, output=False):
 
 
 def split_entry_points(stdout):
+    from prosiform.bundle import is_entry_line
+
     paragraph, separator, body = stdout.partition("\n\n")
-    if paragraph.startswith("This bundle was built for ") and paragraph.endswith(
-        "everything else is material it references."
-    ):
+    if is_entry_line(paragraph):
         return paragraph, body if separator else ""
     return "", stdout
 

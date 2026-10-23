@@ -1,4 +1,4 @@
-This bundle was built for [../Outside](#outside); everything else is material it references.
+Follow [../Outside](#outside). The rest of this bundle is material that procedure references.
 
 # ../Outside
 

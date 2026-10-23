@@ -1,4 +1,4 @@
-This bundle was built for [Run](#run); everything else is material it references.
+Follow [Run](#run). The rest of this bundle is material that procedure references.
 
 # Notes\#draft
 

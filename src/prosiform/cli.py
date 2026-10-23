@@ -33,8 +33,6 @@ from prosiform.access import (
 )
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
-    ENTRY_CLOSING,
-    ENTRY_OPENING,
     HEADING_DEPTH_OVERFLOW,
     MAX_LEVEL,
     Group,
@@ -43,6 +41,7 @@ from prosiform.bundle import (
     entry_line,
     group,
     heading_text,
+    is_entry_line,
 )
 from prosiform.bundle import (
     CODES as BUNDLE_CODES,
@@ -700,10 +699,7 @@ def generated(
     first = tokens[1]
     if first.type != "inline" or first.map is None:
         return
-    if not (
-        first.content.startswith(ENTRY_OPENING)
-        and first.content.endswith(ENTRY_CLOSING)
-    ):
+    if not is_entry_line(first.content):
         return
     links = [token for token in first.children or () if token.type == "link_open"]
     if not links or any(

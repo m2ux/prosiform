@@ -1,4 +1,4 @@
-This bundle was built for [Templates/Integration-Review](#templatesintegration-review); everything else is material it references.
+Follow [Templates/Integration-Review](#templatesintegration-review). The rest of this bundle is material that procedure references.
 
 # Templates/Integration-Review
 

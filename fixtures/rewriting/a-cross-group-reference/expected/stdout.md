@@ -1,4 +1,4 @@
-This bundle was built for [One/Guide](#oneguide); everything else is material it references.
+Follow [One/Guide](#oneguide). The rest of this bundle is material that procedure references.
 
 # One/Guide
 

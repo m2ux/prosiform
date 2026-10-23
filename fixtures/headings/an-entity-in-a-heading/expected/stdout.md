@@ -1,4 +1,4 @@
-This bundle was built for [Article](#article) and [Café](#café-1); everything else is material it references.
+Follow [Article](#article) and [Café](#café-1). The rest of this bundle is material those procedures reference.
 
 # Article
 

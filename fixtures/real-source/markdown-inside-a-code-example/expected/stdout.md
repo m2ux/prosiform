@@ -1,4 +1,4 @@
-This bundle was built for [Artifacts/Architecture-Overview](#artifactsarchitecture-overview); everything else is material it references.
+Follow [Artifacts/Architecture-Overview](#artifactsarchitecture-overview). The rest of this bundle is material that procedure references.
 
 # Artifacts/Architecture-Overview
 

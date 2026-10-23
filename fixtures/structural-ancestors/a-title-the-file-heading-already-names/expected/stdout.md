@@ -1,4 +1,4 @@
-This bundle was built for [Procedure](#procedure); everything else is material it references.
+Follow [Procedure](#procedure). The rest of this bundle is material that procedure references.
 
 # Guide
 

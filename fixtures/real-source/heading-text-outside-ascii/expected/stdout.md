@@ -1,4 +1,4 @@
-This bundle was built for [Gitnexus-Cli/SKILL](#gitnexus-cliskill); everything else is material it references.
+Follow [Gitnexus-Cli/SKILL](#gitnexus-cliskill). The rest of this bundle is material that procedure references.
 
 # Gitnexus-Cli/SKILL
 

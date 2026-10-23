@@ -1,4 +1,4 @@
-This bundle was built for [Run It](#run-it) and [Stop](#stop); everything else is material it references.
+Follow [Run It](#run-it) and [Stop](#stop). The rest of this bundle is material those procedures reference.
 
 # Guide
 

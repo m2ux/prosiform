@@ -1,4 +1,4 @@
-This bundle was built for [Stop](#stop); everything else is material it references.
+Follow [Stop](#stop). The rest of this bundle is material that procedure references.
 
 # Guide
 

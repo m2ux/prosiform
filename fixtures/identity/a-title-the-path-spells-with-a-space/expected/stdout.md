@@ -1,4 +1,4 @@
-This bundle was built for [My Note](#my-note); everything else is material it references.
+Follow [My Note](#my-note). The rest of this bundle is material that procedure references.
 
 # My Note
 

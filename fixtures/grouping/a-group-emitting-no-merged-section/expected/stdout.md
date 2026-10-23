@@ -1,4 +1,4 @@
-This bundle was built for [Agents](#agents) and [Common](#common); everything else is material it references.
+Follow [Agents](#agents) and [Common](#common). The rest of this bundle is material those procedures reference.
 
 # Rules
 

@@ -1,4 +1,4 @@
-This bundle was built for [Topic/Guide](#topicguide); everything else is material it references.
+Follow [Topic/Guide](#topicguide). The rest of this bundle is material that procedure references.
 
 # Topic/Guide
 

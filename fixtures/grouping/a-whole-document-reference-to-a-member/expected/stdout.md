@@ -1,4 +1,4 @@
-This bundle was built for [Entry](#entry); everything else is material it references.
+Follow [Entry](#entry). The rest of this bundle is material that procedure references.
 
 # Entry
 

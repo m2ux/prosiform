@@ -1,4 +1,4 @@
-This bundle was built for [Detail](#detail); everything else is material it references.
+Follow [Detail](#detail). The rest of this bundle is material that procedure references.
 
 # Notes
 

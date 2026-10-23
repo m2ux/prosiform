@@ -1,4 +1,4 @@
-This bundle was built for [Notes/Bare](#notesbare) and [Notes/Kept](#noteskept); everything else is material it references.
+Follow [Notes/Bare](#notesbare) and [Notes/Kept](#noteskept). The rest of this bundle is material those procedures reference.
 
 # Notes/Bare
 
