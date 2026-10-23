@@ -13,7 +13,7 @@ share: a sentence repeated in two sections is two ranges, so repeated
 identical prose is not duplication and a count of occurrences is not a
 coverage test. A *generated* record names a heading the bundle wrote
 itself — the filename wrapper, and the group, overview and variant
-headings a grouping rule produces — which carries no source range and so
+headings a metadata-declared group produces — which carries no source range and so
 can never stand in for selected body content a group failed to emit. A
 *structural ancestor* names a heading the bundle emits to place a
 selected section in the outline its author gave it: it answers to a
@@ -103,7 +103,7 @@ class Generated:
     heading's fragment as well as to the document, because a reference
     naming the absorbed title resolves to the wrapper's own destination.
     The subsection naming a member answers the same way under a
-    grouping rule, and a variant heading answers to the heading of the document
+    declared grouping, and a variant heading answers to the heading of the document
     it names. The heading is still generated structure: what it answers
     names what resolves to it, not a region of body content it carries.
     """
@@ -173,8 +173,8 @@ class Record:
     """One group's provenance: what it carried, and what it generated.
 
     The path is the group's identity: a source document for a file
-    group, and the directory slug for a merged one. The depth is the
-    source heading level a grouping rule merges its members at, and is
+    group, and the declared group name for a merged one. The depth is the
+    source heading level the group members declare, and is
     nothing for a file group, so the record states which of the two
     arrangements produced it.
 

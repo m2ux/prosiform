@@ -105,8 +105,8 @@ that fragment names, which runs to the next document-level heading of
 equal or higher level; a fragment alone selects from the document
 `-f` names. Each document a run selects from carries every region
 the run's references selected from it into one group of the bundle: its
-own file group, or the merged group a grouping rule puts it in with the
-other documents under a directory of that slug. The groups are ordered
+own file group, or the merged group its conversion metadata names.
+The groups are ordered
 by root-relative path, a merged group taking the first of its members'.
 A fragment naming
 a heading a container carries names no section and fails as an
@@ -165,7 +165,7 @@ from collections.abc import Collection, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import IO, Any, NoReturn
 
 from markdown_it.token import Token
@@ -220,6 +220,7 @@ from prosiform.diagnostics import (
     TEXT,
     WARNING,
     Diagnostic,
+    RelatedLocation,
     Reporter,
 )
 from prosiform.grouping import merged, prepared
@@ -294,12 +295,9 @@ INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
 
-MIN_DEPTH = 1
-MAX_DEPTH = 6
-
 GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
-INVALID_GROUP_RULE = "E_INVALID_GROUP_RULE"
+GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
@@ -310,7 +308,6 @@ TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
-EMPTY_GROUP_RULE = "W_EMPTY_GROUP_RULE"
 ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
@@ -319,7 +316,7 @@ CODES = tuple(
         {
             GENERATED_INPUT,
             INVALID_ENCODING,
-            INVALID_GROUP_RULE,
+            GROUP_DEPTH_CONFLICT,
             INVALID_USAGE,
             PUBLICATION_FAILED,
             ROOT_NOT_FOUND,
@@ -329,7 +326,6 @@ CODES = tuple(
             TARGET_NOT_FOUND,
             UNEXPECTED_INTERNAL_ERROR,
             UNSUPPORTED_ENTRY_SUFFIX,
-            EMPTY_GROUP_RULE,
             ENTRY_DESTINATION,
             RESOURCE_PORTABILITY,
             *BUNDLE_CODES,
@@ -345,7 +341,6 @@ SOURCE_CHANGED_FAULT = "source-changed"
 INTERNAL_FAULT = "internal"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT)
 
-GROUP_RULE = re.compile(r"^([^:/]+):([0-9]+)$")
 DECIMAL = re.compile(r"^[0-9]+$")
 
 EXIT_STATUSES = """exit statuses:
@@ -371,10 +366,7 @@ def usage_failure(
 ) -> Failure:
     """A command line the contract's grammar does not admit.
 
-    Every such fault leads a caller to one remedy, so they share one
-    code. A grouping rule is the exception the contract itself draws: its
-    code names a defect in the rule's value, which the same code reports
-    as an input failure when the slug names no directory.
+    Every such fault leads a caller to one remedy, so they share one code.
     """
     return Failure(
         USAGE_FAILURE,
@@ -532,15 +524,6 @@ def parser() -> Parser:
         help="atomic validated output to FILE; default or -: stdout",
     )
     grammar.add_argument(
-        "-g",
-        dest="group",
-        metavar="SLUG:DEPTH",
-        action="append",
-        default=[],
-        help="merge documents under directories named SLUG at heading DEPTH "
-        "(1–6); repeatable, once per slug",
-    )
-    grammar.add_argument(
         "-c",
         dest="check",
         action="store_true",
@@ -620,40 +603,6 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
                     selected = value
             break
     return selected
-
-
-def rule(declaration: str) -> tuple[str, int]:
-    """One grouping rule, as the slug and depth it declares."""
-    written = GROUP_RULE.match(declaration)
-    if written is None:
-        raise usage_failure(
-            f"the grouping rule {declaration!r} is not a directory slug and a "
-            f"depth separated by a colon",
-            code=INVALID_GROUP_RULE,
-        )
-    slug, depth = written.group(1), int(written.group(2))
-    if not MIN_DEPTH <= depth <= MAX_DEPTH:
-        raise usage_failure(
-            f"the grouping rule {declaration!r} names depth {depth}, which is "
-            f"outside {MIN_DEPTH} through {MAX_DEPTH}",
-            code=INVALID_GROUP_RULE,
-        )
-    return slug, depth
-
-
-def rules(declarations: Sequence[str]) -> dict[str, int]:
-    """Every grouping rule in force, each slug named once."""
-    inforce: dict[str, int] = {}
-    for declaration in declarations:
-        slug, depth = rule(declaration)
-        if slug in inforce:
-            raise usage_failure(
-                f"the grouping rule {declaration!r} names {slug!r}, which "
-                f"another rule already names",
-                code=INVALID_GROUP_RULE,
-            )
-        inforce[slug] = depth
-    return inforce
 
 
 def entry(text: str) -> Reference:
@@ -1017,14 +966,6 @@ def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
     for path in sorted(captured):
         with (root / path).open("ab") as handle:
             handle.write(b"\n")
-
-
-def directories(root: Path) -> set[str]:
-    """The name of every directory under the allowed source root."""
-    found: set[str] = set()
-    for _, below, _ in os.walk(root):
-        found.update(below)
-    return found
 
 
 def contributing(
@@ -1429,53 +1370,62 @@ def confirm(
     )
 
 
-def membership(path: str, inforce: Mapping[str, int]) -> str | None:
-    """The slug of the group one document belongs to, where a rule names one.
-
-    A document belongs to the group whose slug matches the deepest
-    directory segment of its path, so a rule naming an inner directory
-    takes precedence over one naming a directory above it. A document
-    no rule matches keeps its own file group.
-    """
-    return next(
-        (
-            segment
-            for segment in reversed(PurePosixPath(path).parts[:-1])
-            if segment in inforce
-        ),
-        None,
-    )
-
-
-def idle(
-    inforce: Mapping[str, int], selected: Mapping[str, Sequence[Reference]]
-) -> list[str]:
-    """Each grouping rule in force that arranges no document, in declaration order.
-
-    A rule is read against the closure rather than against the source
-    tree: a directory holding documents the traversal never reached
-    arranges as little as an empty one. Membership is the arrangement's
-    own rule, so a rule an inner one out-ranks on every document it
-    could have taken is idle, because the group it names carries none
-    of them.
-    """
-    arranging = {membership(path, inforce) for path in selected}
-    return [slug for slug in inforce if slug not in arranging]
+def group_depths(
+    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
+) -> dict[str, int]:
+    """Consistent depths for named groups, ordered by identity and source path."""
+    members: dict[str, list[str]] = {}
+    for path in sorted(selected):
+        name = read[path].conversion.group
+        if name is not None:
+            members.setdefault(name, []).append(path)
+    depths: dict[str, int] = {}
+    for name in sorted(members):
+        first = read[members[name][0]].conversion
+        assert first.depth is not None and first.depth_location is not None
+        depths[name] = first.depth
+        for path in members[name][1:]:
+            current = read[path].conversion
+            if current.depth != first.depth:
+                location = current.depth_location
+                assert location is not None
+                raise Failure(
+                    INPUT_FAILURE,
+                    Diagnostic(
+                        ERROR,
+                        f"metadata.prosiform-group-depth for group {name!r} "
+                        f"is {first.depth}; "
+                        f"another member declares {current.depth}",
+                        code=GROUP_DEPTH_CONFLICT,
+                        location=first.depth_location,
+                        related=(
+                            RelatedLocation(
+                                location.file,
+                                location.line,
+                                location.column,
+                                "metadata.prosiform-group-depth for group "
+                                f"{name!r} is {current.depth}",
+                            ),
+                        ),
+                        remedy="use one depth for every contributing group member",
+                    ),
+                )
+    return depths
 
 
 def unambiguous(
-    selected: dict[str, list[Reference]], inforce: Mapping[str, int]
+    selected: dict[str, list[Reference]], read: Mapping[str, Source]
 ) -> None:
     """Hold each file heading to naming one source, as a reader must read it.
 
-    A merged group is headed by its directory slug rather than by a
+    A merged group is headed by its declared name rather than by a
     path, so a member of one heads no file group and two members
     sharing a title are told apart by the names the arrangement gives
     them.
     """
     headed: dict[str, str] = {}
     for path, selecting in selected.items():
-        if membership(path, inforce) is not None:
+        if read[path].conversion.group is not None:
             continue
         title = heading_text(path)
         if title in headed:
@@ -1501,7 +1451,7 @@ def assembled(
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
-    A document no grouping rule names is its own file group. Every
+    A document without conversion settings is its own file group. Every
     other document joins the merged group its slug names, which carries
     its members in root-relative path order. The groups are ordered by
     root-relative path, a merged group taking the first of its
@@ -1510,7 +1460,7 @@ def assembled(
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
     for path, selecting in selected.items():
-        named = membership(path, inforce)
+        named = read[path].conversion.group
         if named is not None:
             merging.setdefault(named, []).append(path)
             continue
@@ -1618,7 +1568,6 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-    inforce: Mapping[str, int],
 ) -> tuple[str, list[tuple[str, str]]]:
     """The complete bundle candidate, and the entry destinations it opens on.
 
@@ -1644,7 +1593,8 @@ def compose(
     as the input failure it is.
     """
     selected = contributing(referrer, found)
-    unambiguous(selected, inforce)
+    inforce = group_depths(read, selected)
+    unambiguous(selected, read)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
@@ -1785,7 +1735,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                     f"the fragment-only reference {one.original!r} needs -f to "
                     f"name the document it resolves against"
                 )
-    inforce = rules(options.group)
 
     root = Path(options.root).resolve()
     referring = entry(options.referrer) if options.referrer else None
@@ -1799,16 +1748,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             code=ROOT_NOT_FOUND,
             remedy="name a directory that exists",
         )
-    present = directories(root)
-    for slug in inforce:
-        if slug not in present:
-            raise input_failure(
-                f"the grouping rule for {slug!r} names no directory under the "
-                f"allowed source root",
-                code=INVALID_GROUP_RULE,
-                remedy="name a directory the source root carries",
-            )
-
     limits = budgets(options)
     try:
         read, parsed, defined, captured, found = traverse(
@@ -1822,9 +1761,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             raise usage_failure(
                 f"the output path {options.output!r} names an input source"
             )
-    bundled, named = compose(
-        read, parsed, defined, referring, requested, found, limits, inforce
-    )
+    bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
@@ -1849,15 +1786,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             publish(bundled, stdout)
         else:
             publish_file(bundled, Path(options.output).resolve())
-    for slug in idle(inforce, contributing(referring, found)):
-        reporter.emit(
-            Diagnostic(
-                WARNING,
-                f"the grouping rule for {slug!r} arranges nothing, because the "
-                f"closure carries no document under a directory of that slug",
-                code=EMPTY_GROUP_RULE,
-            )
-        )
     for reference, target in named:
         reporter.emit(
             Diagnostic(

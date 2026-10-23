@@ -1,8 +1,8 @@
 """The bundle: one file group for each contributing source, under one entry line.
 
-A group is a source document unless a grouping rule names the directory
-it sits under, in which case it joins the merged group `grouping`
-assembles. A file group is headed by one generated H1 whose visible
+A group is a source document unless its conversion metadata names the
+merged group that `grouping` assembles. A file group is headed by one
+generated H1 whose visible
 text is the document's normalized root-relative path with the Markdown
 extension removed, in title case: each word of the path is capitalized
 and every separator the path carries is kept, so the heading names the

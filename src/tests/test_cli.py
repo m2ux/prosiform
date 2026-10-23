@@ -46,13 +46,12 @@ from prosiform.candidate import (
 )
 from prosiform.cli import (
     CODES,
-    EMPTY_GROUP_RULE,
     ENTRY_DESTINATION,
     GENERATED_INPUT,
+    GROUP_DEPTH_CONFLICT,
     INPUT_FAILURE,
     INTERNAL_ERROR,
     INVALID_ENCODING,
-    INVALID_GROUP_RULE,
     INVALID_USAGE,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
@@ -170,8 +169,8 @@ def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
 def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
     declared = {
         GENERATED_INPUT,
+        GROUP_DEPTH_CONFLICT,
         INVALID_ENCODING,
-        INVALID_GROUP_RULE,
         INVALID_USAGE,
         PUBLICATION_FAILED,
         ROOT_NOT_FOUND,
@@ -181,7 +180,6 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         TARGET_NOT_FOUND,
         UNEXPECTED_INTERNAL_ERROR,
         UNSUPPORTED_ENTRY_SUFFIX,
-        EMPTY_GROUP_RULE,
         ENTRY_DESTINATION,
         RESOURCE_PORTABILITY,
     }
@@ -280,8 +278,6 @@ def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:
         "guide.md",
         "-o",
         str(root.parent / "bundle.md"),
-        "-g",
-        "docs:2",
         "-c",
         "-d",
         "json",
@@ -326,123 +322,11 @@ def test_a_fragment_only_reference_selects_from_the_referring_document(
     )
 
 
-@pytest.mark.parametrize("depth", ["0", "7", "9", "60"])
-def test_a_grouping_depth_outside_one_through_six_is_invalid_usage(
-    root: Path, depth: str
-) -> None:
-    run = invoke(
-        "-r",
-        str(root),
-        "-d",
-        "json",
-        "-g",
-        f"docs:{depth}",
-        "guide.md",
-    )
-    assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_GROUP_RULE]
-
-
-@pytest.mark.parametrize("depth", ["1", "6"])
-def test_a_grouping_depth_at_the_boundary_is_accepted(root: Path, depth: str) -> None:
-    run = invoke("-r", str(root), "-g", f"docs:{depth}", "guide.md")
-    assert run.status == SUCCESS
-
-
-@pytest.mark.parametrize("declaration", ["docs", "docs:", ":2", "docs:two", "a/b:2"])
-def test_a_malformed_grouping_rule_is_invalid_usage(
-    root: Path, declaration: str
-) -> None:
-    run = invoke("-r", str(root), "-d", "json", "-g", declaration, "guide.md")
-    assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_GROUP_RULE]
-
-
-def test_a_slug_named_by_two_grouping_rules_is_invalid_usage(root: Path) -> None:
-    run = invoke(
-        "-r",
-        str(root),
-        "-d",
-        "json",
-        "-g",
-        "docs:2",
-        "-g",
-        "docs:3",
-        "guide.md",
-    )
-    assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_GROUP_RULE]
-
-
-def test_a_grouping_slug_naming_no_directory_is_an_input_failure(root: Path) -> None:
-    run = invoke("-r", str(root), "-d", "json", "-g", "notes:2", "guide.md")
-    assert run.status == INPUT_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_GROUP_RULE]
-
-
-def test_a_grouping_rule_the_closure_leaves_idle_is_reported_as_arranging_nothing(
-    root: Path,
-) -> None:
-    run = invoke("-r", str(root), "-d", "json", "-g", "docs:2", "guide.md")
-    assert run.status == SUCCESS
-    assert [one["code"] for one in run.diagnostics()] == [
-        EMPTY_GROUP_RULE,
-        ENTRY_DESTINATION,
-    ]
-    warned = run.diagnostics()[0]
-    assert warned["severity"] == "warning"
-    assert "'docs'" in warned["message"]
-
-
-def test_a_grouping_rule_the_closure_carries_a_document_under_arranges_it(
-    root: Path,
-) -> None:
-    written(root, "docs/note.md", "# Note\n\n## Run\n\nDo it.\n")
-    run = invoke(
-        "-r",
-        str(root),
-        "-d",
-        "json",
-        "-g",
-        "docs:2",
-        "docs/note.md",
-    )
-    assert run.status == SUCCESS
-    assert EMPTY_GROUP_RULE not in [one["code"] for one in run.diagnostics()]
-
-
-def test_each_idle_grouping_rule_is_reported_and_an_arranging_one_is_not(
-    root: Path,
-) -> None:
-    written(root, "notes/kept.md", "# Kept\n\n## Run\n\nDo it.\n")
-    written(root, "other/unused.md", "# Unused\n")
-    run = invoke(
-        "-r",
-        str(root),
-        "-d",
-        "json",
-        "-g",
-        "docs:2",
-        "-g",
-        "notes:2",
-        "-g",
-        "other:2",
-        "notes/kept.md",
-    )
-    assert run.status == SUCCESS
-    warned = [
-        one["message"] for one in run.diagnostics() if one["code"] == EMPTY_GROUP_RULE
-    ]
-    assert len(warned) == 2
-    assert "'docs'" in warned[0]
-    assert "'other'" in warned[1]
-
-
 def test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection(
     root: Path,
 ) -> None:
-    written(root, "notes/bare.md", "# Bare\n")
-    run = invoke("-r", str(root), "-g", "notes:2", "notes/bare.md")
+    written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
+    run = invoke("-r", str(root), "notes/bare.md")
     assert run.status == SUCCESS
     assert run.stdout.startswith("This bundle was built for [Bare](#bare);")
 
@@ -450,8 +334,12 @@ def test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection(
 def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
     root: Path,
 ) -> None:
-    written(root, "notes/second.md", "# Second\n\n## Outcomes\n\nText.\n")
-    run = invoke("-r", str(root), "-g", "notes:2", "notes/second.md#second")
+    written(
+        root,
+        "notes/second.md",
+        conversion("notes", 2) + "# Second\n\n## Outcomes\n\nText.\n",
+    )
+    run = invoke("-r", str(root), "notes/second.md#second")
     assert run.status == SUCCESS
     assert run.stdout.startswith("This bundle was built for [Second](#second);")
 
@@ -459,9 +347,9 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
 def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
     root: Path,
 ) -> None:
-    written(root, "notes/bare.md", "# Bare\n")
+    written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
     written(root, "guide.md", "# Guide\n\nSee [Bare](notes/bare.md).\n")
-    run = invoke("-r", str(root), "-g", "notes:2", "guide.md")
+    run = invoke("-r", str(root), "guide.md")
     assert run.status == SUCCESS
     assert "See [Bare](#bare)." in run.stdout
 
@@ -474,7 +362,7 @@ def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -
 
 
 def test_a_usage_failure_is_reported_before_an_input_failure(tmp_path: Path) -> None:
-    run = invoke("-r", str(tmp_path / "absent"), "-g", "docs:9", "guide.md")
+    run = invoke("-r", str(tmp_path / "absent"), "--unknown", "docs:9", "guide.md")
     assert run.status == USAGE_FAILURE
 
 
@@ -574,7 +462,7 @@ def test_a_refused_write_is_a_publication_failure() -> None:
 
 
 def test_a_failing_run_writes_its_diagnostics_as_data(root: Path) -> None:
-    run = invoke("-r", str(root), "-d", "json", "-g", "x", "g.md")
+    run = invoke("-r", str(root), "-d", "json", "--unknown", "x", "g.md")
     assert run.stdout == ""
     assert len(run.diagnostics()) == 1
     assert set(run.diagnostics()[0]) <= {
@@ -588,9 +476,20 @@ def test_a_failing_run_writes_its_diagnostics_as_data(root: Path) -> None:
 
 
 def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
-    run = invoke("-r", str(root), "-g", "docs:9", "guide.md")
+    run = invoke("-r", str(root), "--unknown", "docs:9", "guide.md")
     assert run.stdout == ""
-    assert run.stderr.startswith(f"{INVALID_GROUP_RULE}: ")
+    assert run.stderr.startswith(f"{INVALID_USAGE}: ")
+
+
+def conversion(group: str, depth: int) -> str:
+    """One source's complete conversion metadata."""
+    return (
+        "---\nmetadata:\n  prosiform-group: "
+        + json.dumps(group)
+        + "\n  prosiform-group-depth: "
+        + json.dumps(str(depth))
+        + "\n---\n"
+    )
 
 
 def written(root: Path, name: str, text: str) -> None:
@@ -639,7 +538,7 @@ def test_a_document_a_dependency_reached_reports_the_route_to_it(root: Path) -> 
 
 
 def test_a_usage_failure_reaching_no_document_carries_no_chain(root: Path) -> None:
-    run = invoke("-r", str(root), "-d", "json", "-g", "x", "g.md")
+    run = invoke("-r", str(root), "-d", "json", "--unknown", "x", "g.md")
     assert run.status == USAGE_FAILURE
     assert "chain" not in run.diagnostics()[0]
 
@@ -1003,21 +902,21 @@ def test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name(
     written(
         root,
         "references/alpha.md",
-        "# Conventions\n\n## Standards\n\n### Formatting\n\n#### Headings\n\n"
+        conversion("references", 1)
+        + "# Conventions\n\n## Standards\n\n### Formatting\n\n#### Headings\n\n"
         "##### Levels\n\n###### The Sixth\n\nThe note the sixth level carries.\n",
     )
     written(
         root,
         "references/beta.md",
-        "# Conventions\n\n## Standards\n\nWhat this document holds to.\n",
+        conversion("references", 1)
+        + "# Conventions\n\n## Standards\n\nWhat this document holds to.\n",
     )
     run = invoke(
         "-r",
         str(root),
         "-d",
         "json",
-        "-g",
-        "references:1",
         "references/alpha.md#the-sixth",
         "references/beta.md#standards",
     )
@@ -2017,8 +1916,9 @@ def test_actual_bundle_reuse_is_refused(
     source = tmp_path / folder / "gUiDe.md"
     source.parent.mkdir()
     source.write_text("# Guide\n\n## Install\n\nContent.\n")
-    grouping = ("-g", f"{folder}:2") if merged else ()
-    first = invoke("-r", str(tmp_path), *grouping, f"{folder}/gUiDe.md")
+    if merged:
+        source.write_text(conversion(folder, 2) + source.read_text())
+    first = invoke("-r", str(tmp_path), f"{folder}/gUiDe.md")
     assert first.status == SUCCESS
     (tmp_path / "bundle.md").write_text(first.stdout)
     second = invoke("-r", str(tmp_path), "-d", "json", "bundle.md")
