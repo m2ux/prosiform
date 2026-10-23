@@ -13,9 +13,11 @@ none
 2 E06:W03 - Captured source settings
 3 E06:W04 - Per-file compilation settings
 4 E06:W05 - Metadata authoring guidance
-5 E06:W06 - Derived output contract
-6 E06:W07 - Derived output publication
-7 E06:W08 - Output naming authoring audit
+5 E06:W06 - File-owned invocation contract
+6 E06:W07 - Bounded root metadata
+7 E06:W08 - Per-file root resolution
+8 E06:W09 - Derived output publication
+9 E06:W10 - File-only authoring audit
 
 --- component contention: rows of different epics extending one component
 none
@@ -23,6 +25,6 @@ none
 --- epic priority (epics sharing a number start together)
 1 E06
 
---- longest chains: 1, each of 8 steps
-on every chain: E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08
-E06:W01 -> E06:W02 -> E06:W03 -> E06:W04 -> E06:W05 -> E06:W06 -> E06:W07 -> E06:W08
+--- longest chains: 1, each of 10 steps
+on every chain: E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10
+E06:W01 -> E06:W02 -> E06:W03 -> E06:W04 -> E06:W05 -> E06:W06 -> E06:W07 -> E06:W08 -> E06:W09 -> E06:W10

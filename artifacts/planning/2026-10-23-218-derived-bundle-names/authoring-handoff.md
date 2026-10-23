@@ -22,7 +22,8 @@ Markdown that renders correctly can still omit required context or fail when com
 - Authored documents preserve the requested content and destination conventions without imposing agent-skill structure on ordinary Markdown.
 - The agent reports the tested entries, compiler identity and results, distinguishing successful compilation from unverified compatibility.
 
-- The skill advises hyphens rather than underscores in file and directory names and uses the declared entry-derived bundle filenames; combined selections supply an explicit output destination.
+- A missing root inherits the linking parent root; a direct entry defaults to its containing directory. Entries and linked files can declare their own link-resolution roots through `metadata.prosiform-root`, resolved relative to the file, so the agent can invoke `pf <file>` and resolve library references from the declaring file's root.
+- The skill advises hyphens rather than underscores in file and directory names and predicts entry-derived bundle filenames; combined selections supply an explicit output destination.
 
 ## Non-Goals
 
@@ -37,4 +38,4 @@ Markdown that renders correctly can still omit required context or fail when com
 - **R1.** [Skill guidelines](https://github.com/m2ux/workflow-server/blob/workspace/skills/guidelines.md) — The requested conventions for the skill's own files.
 - **R2.** [Prosiform authoring skill plan](https://github.com/m2ux/prosiform/blob/bcdbe4b0fea4cd256f15d80d0f51c1b7f707af31/artifacts/planning/2026-10-22-prosiform-author-skill/plan.md) — The scoped design, compatibility coverage and implementation acceptance checks.
 - **R3.** [Prosiform invocation](https://github.com/m2ux/prosiform/blob/ea82c8bb03acb2f3c3ca64f6003005d4bf53ebd6/invocation.md) — Entry references, deferred links, validation and exit statuses.
-- **R4.** [Derived bundle naming plan](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/design.md) — naming and authoring requirements delivered by epic #218 before this skill consumes them.
+- **R4.** [File-owned invocation plan](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/design.md) — root metadata, automatic naming and authoring requirements delivered by epic #218 before this skill consumes them.

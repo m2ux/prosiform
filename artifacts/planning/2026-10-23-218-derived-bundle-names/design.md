@@ -1,35 +1,61 @@
-# Derived Bundle Names
+# File-Owned Root And Bundle Names
 
-## Confirmed Rules
+## Command And Metadata
 
-- Derive a single entry's output basename from its normalized source path relative to the declared root. Exclude the root directory name, remove the recognized Markdown extension, preserve spelling and replace path separators with underscores. Append `.bundle.md`.
-- For a section entry, append `__` and the resolved fragment identifier before `.bundle.md`. A fragment-only entry uses the document supplied by `-f`.
-- Several entry files produce one combined bundle and require an explicit output filename. Several distinct selections from one file also require an explicit destination because neither one source name nor one fragment describes that bundle. Repeated equivalent references count as one normalized selection.
-- Authoring guidance recommends hyphens rather than underscores in file and directory names. Literal underscores remain literal; no percent encoding, hashing, collision registry or rejection of otherwise valid Markdown names is introduced.
+The normal command is `pf work-planner/modes/align-mode.md`. The positional file path is resolved from the working directory. No root or output option is required.
 
-| Root | Entry | Derived basename |
+For that entry, the leading frontmatter includes:
+
+```yaml
+---
+metadata:
+  prosiform-root: ".."
+  prosiform-group: modes
+  prosiform-group-depth: "2"
+---
+```
+
+`metadata.prosiform-root` is a nonempty relative directory-path string, interpreted from the containing Markdown file's directory. Here `..` identifies `work-planner`. A file in the root directory declares `"."`. The root field is independent of the optional paired group/depth fields. Absolute paths, home shortcuts, environment expansion and URL interpretations are outside the schema.
+
+The field belongs to each source file. Its resolved directory is the base for local Markdown paths authored in that file, including deferred targets. A linked file can declare a different root, such as a library directory. An absent declaration inherits the linking parent's effective root. A direct entry without a declaration uses its containing directory. There is no `-r` option or global-root agreement requirement. Fragment-only links still identify headings in their own source document.
+
+## Derived Names
+
+- Derive one normalized entry's basename from its source path relative to the declared root. Exclude the root's directory name, remove the recognized Markdown extension, preserve spelling and replace path separators with underscores. Append `.bundle.md`.
+- For a section entry, append `__` and the resolved fragment identifier before `.bundle.md`. A fragment-only reference uses the file supplied by `-f`; that file path is resolved from the working directory and supplies the root declaration.
+- Several distinct entries produce one combined bundle and require an explicit output destination. This also applies to multiple distinct sections of one file. Repeated equivalent references count as one normalized selection; an empty fragment uses the existing whole-document identity.
+- Write automatic output in the working directory. Explicit `-o FILE` selects an exact destination; `-o -` selects stdout, including combined selections. Check mode publishes nothing. Informational responses use stdout.
+- Recommend hyphens rather than underscores in file and directory names. Literal underscores remain literal; no percent encoding, hashing, collision registry or rejection of otherwise valid Markdown names is introduced.
+
+| Command | Resolved root | Output |
 | --- | --- | --- |
-| work-planner | modes/align-mode.md | modes_align-mode.bundle.md |
-| work-planner | modes/align-mode.md#prerequisites | modes_align-mode__prerequisites.bundle.md |
-| work-planner | SKILL.md | SKILL.bundle.md |
-| work-planner | artifacts/epic.markdown | artifacts_epic.bundle.md |
+| `pf work-planner/modes/align-mode.md` | work-planner | modes_align-mode.bundle.md |
+| `pf work-planner/modes/align-mode.md#prerequisites` | work-planner | modes_align-mode__prerequisites.bundle.md |
+| `pf work-planner/SKILL.md` with root `"."` | work-planner | SKILL.bundle.md |
+| `pf work-planner/artifacts/epic.markdown` with root `".."` | work-planner | artifacts_epic.bundle.md |
 
-## Automatic Output Policy
+The selected entry's path relative to its own effective root determines the filename; linked files' roots and conversion group names do not rename it. A declared library root need not contain its authoring file: retain parent segments in the relative path before flattening separators, so they become filename text rather than directory traversal. Underscore guidance reduces collisions but does not guarantee uniqueness across arbitrary source paths, roots or case-insensitive filesystems. Existing atomic replacement behavior remains; filesystem length failures are reported, not silently shortened.
 
-A single normalized entry writes its derived filename in the invocation's current working directory. Explicit `-o FILE` selects an exact destination; `-o -` selects stdout, including combined selections. Check mode validates without creating or replacing output. Help, version and diagnostic-code listing write their informational responses to stdout.
+## Capture And Resolution
 
-The user confirmed automatic naming: `-r` is the only required option for a single positional entry. An output argument is unnecessary in the ordinary case. Example: `pf -r work-planner modes/align-mode.md` writes `modes_align-mode.bundle.md` in the working directory.
+Use the same per-source captured metadata model for root, group and depth. The root value resolves relative to its declaring file's directory. Every path-bearing local Markdown reference resolves from that source's effective root; opening its target then reads the target's own metadata for its outgoing links. Explicit entries may have different roots and still produce one combined bundle when an explicit destination is supplied.
 
-## Compiler Boundaries
+Capture the positional entry under existing byte, aggregate and YAML nesting limits before following references. Store the effective per-source root with the captured source and preserve original locations, immutable metadata, rooted no-follow access and full-file consistency checks. Bind each dependency access to the root of the source that authored the link. The existing outside-root classification applies against that source's effective root, rather than a shared invocation root. A file may intentionally point its relative links into a library by declaring that library as its root.
 
-The CLI owns output naming. Linked dependencies' paths and conversion metadata do not rename the entry's output. Resolve references using existing root confinement and fragment identity before deriving a name; use the selected source's original filename, never generated group headings. Empty fragments resolve as whole-document selections under existing rules.
+Canonical physical identity controls source-byte capture. Effective roots belong to traversal context: a shared file with no declaration can inherit different roots through different parents. Resolution caches must include that context; W06 defines deterministic deduplication and cycle behavior for these cases before W08 implements it. Explicit declarations resolve identically regardless of the caller. Preserve fragment-only self references, deferred-target validation and resources that the compiler does not open. Diagnostics and link chains must identify the actual source even when files sit under different declared roots.
 
-The derived name joins the confirmed output directory and enters the existing publication path. Input/output overlap checks include captured deferred sources. Check mode, byte budgets, candidate validation and source consistency checks precede atomic replacement. A failed run creates no partial destination and preserves existing output. Retain established output replacement behavior; underscore advice is not a guarantee of globally unique filenames across arbitrary paths, roots or case-insensitive filesystems. Length and filesystem failures use the publication-failure boundary rather than silently shortening names.
+Check mode, captured-source/output overlap, limits, candidate validation and atomic publication retain their safeguards. Invalid roots and confinement failures receive stable contract diagnostics before implementation; differing valid roots are not a conflict. A source change after capture fails before publication.
 
-## Consumers And Verification
+## Delivery Layers And Consumers
 
-The runtime unit updates directly affected CLI tests, corpus invocation defaults, installed-wheel smoke, command tables and consumers such as the diagram renderer. Consumers requiring stdout select it explicitly. This is part of the behavior change, not deferred compatibility work.
+First define the contract, then extend the bounded metadata value, then implement per-source root resolution, then automatic output naming, then audit authoring and the corpus. Each runtime unit updates its own immediately affected consumers and tests, so every intermediate delivered build works end to end.
 
-Freeze the runtime baseline at `93fe6b354a85e244f64e33af700a55aab4f26044`. Compare compiled content bytes independently of destination naming; only the publication destination changes. Retain the existing per-file metadata and group-depth behavior.
+The root-resolution unit migrates active entry fixtures and CLI consumers away from `-r`, including `-f` file resolution, installed-wheel smoke and diagram renderer invocations. The output unit migrates stdout-dependent consumers to explicit `-o -`. A caller can compile a section using `pf file.md#fragment`; source-authored Markdown paths use the declaring file's effective root.
 
-The final audit checks active invocation documentation, worked examples and the authoring guidance handoff to proposal #208. Implementing a new authoring skill remains outside this extension. Historical captures retain their recorded commands. Normative changes precede the implementation and the final specification freeze consumes the updated audit.
+Freeze runtime content expectations at `93fe6b354a85e244f64e33af700a55aab4f26044`. Compare bundle content independently of the invocation and output destination. Annotating fixture entry roots must preserve body content and update physical-location expectations deliberately. Include absent/invalid roots, relative parent traversal, symlink refusal, different library roots, repeated physical targets, cycles, entry mutation during capture, raw byte limits and atomic failure cases.
+
+The final audit checks all active guidance and representative sources. Authoring proposal #208 must teach per-file root declarations for intended standalone entries and linked library files and recommend hyphens instead of underscores. Implementing the authoring skill remains separate. The specification freeze consumes this extension's final audit. Contract PR #220 is merged; new contract work uses a successor review. Runtime PR #222 remains draft and is refreshed from actual subsequent task merges.
+
+## Metadata Compatibility
+
+The user confirmed strict [Agent Skills metadata compatibility](https://agentskills.io/specification#metadata-field): prefixed string fields under `metadata`, including `prosiform-root`, `prosiform-group` and `prosiform-group-depth`. Root inheritance applies only when the field is absent; malformed or empty values fail validation.

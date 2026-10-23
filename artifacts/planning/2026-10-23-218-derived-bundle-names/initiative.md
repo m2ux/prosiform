@@ -59,8 +59,8 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 - **Source files own structural conversion settings.**
   Each contributing file supplies its settings through skill-compatible metadata, independent of the caller that selects it.
 
-- **Entry selections identify bundle files.**
-  Root-relative source paths and section fragments supply deterministic output names; combined selections use an explicit destination.
+- **Entry files define their invocation.**
+  A file declares its root and determines its bundle filename, so ordinary compilation needs only `pf <file>`.
 
 ## Work Breakdown
 
@@ -91,7 +91,7 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 
 - [ ] **AC12.** Linked sources retain their declared structural intent across supported entry and dependency selections, as the metadata conformance corpus demonstrates.
 
-- [ ] **AC13.** Bundle output names identify their selected source paths and sections, as the output-naming conformance suite demonstrates.
+- [ ] **AC13.** File-owned metadata supports file-only invocation, as the root-resolution and output-identity conformance suite demonstrates.
 
 ## Non-Goals
 
@@ -111,4 +111,4 @@ The behavioural contract has been written and reviewed, and nothing has yet bund
 - **R4.** **Source.** [Section Composition: Unicode Links Compose Content Within the Containing Section](https://github.com/m2ux/prosiform/issues/214) — the originating requirements for the section-composition extension.
 
 - **R5.** **Source.** [Document Metadata: Per-File Settings Govern Linked Compilation](https://github.com/m2ux/prosiform/issues/216) — originating requirements for per-file conversion metadata.
-- **R6.** **Source.** [Output naming decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/design.md) — the confirmed entry-path and fragment naming requirements.
+- **R6.** **Source.** [File-owned invocation decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/design.md) — confirmed metadata root and entry-derived output requirements.

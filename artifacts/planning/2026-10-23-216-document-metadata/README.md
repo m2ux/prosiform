@@ -13,7 +13,6 @@ This record scopes the refactor, records its source evidence and proposes an imp
 | Artifact | What it holds |
 | --- | --- |
 | [Design](design.md) | Proposed metadata contract, compiler boundaries and verification |
-| [Discussion](discussion.md) | Planning review scope and confirmed scheduling choice |
 | [Epic](epic.md) | Acceptance criteria and task dependency table |
 | [Initiative Update](initiative-draft.md) | Scoped parent criteria and epic row with published issue links |
 | [Freeze Handoff](freeze-draft.md) | Final contract tag dependency with published issue links |
@@ -33,3 +32,7 @@ This record scopes the refactor, records its source evidence and proposes an imp
 | Metadata Convention | [Agent Skills Specification](https://agentskills.io/specification#metadata-field) |
 | Epic | [#218 — I01 E06 Document Metadata](https://github.com/m2ux/prosiform/issues/218) |
 | Discussion | [Draft PR #217](https://github.com/m2ux/prosiform/pull/217) |
+
+## Invocation Extension
+
+[File-owned roots and bundle names](../2026-10-23-218-derived-bundle-names/README.md) records W06–W10, root inheritance and file-only invocation.
