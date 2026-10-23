@@ -161,6 +161,22 @@ def test_a_link_above_the_root_names_a_document_the_root_cannot_contain() -> Non
         inside("guide.md", "../outside.md")
 
 
+def test_a_parent_step_resolves_from_the_file_and_stays_inside_its_root() -> None:
+    found = inside("modes/plan-mode.md", "../artifacts/epic.md", "")
+    assert found.path == "artifacts/epic.md"
+    assert found.walk == "modes/../artifacts/epic.md"
+
+
+def test_a_parent_step_from_the_working_directory_stays_inside_a_parent_root() -> None:
+    found = inside("plan-mode.md", "../artifacts/epic.md", "..")
+    assert found.path == "../artifacts/epic.md"
+
+
+def test_a_parent_step_above_the_declared_root_is_refused() -> None:
+    with pytest.raises(OutsideRoot):
+        inside("plan-mode.md", "../../secret.md", "..")
+
+
 def test_a_fragment_alone_names_a_section_of_the_document_carrying_it() -> None:
     found = inside("docs/guide.md", "#run-it")
     assert (found.path, found.fragment) == ("docs/guide.md", "run-it")

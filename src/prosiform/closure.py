@@ -261,12 +261,53 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
     )
 
 
+def qualified(path: str) -> bool:
+    """Whether a link already names the steps from the file that writes it.
+
+    A parent segment is the path a reader of that file follows. The
+    allowed source root is the boundary around the result, not a prefix
+    on the link.
+    """
+    return PARENT in path.split(SEPARATOR)
+
+
+def covers(root: str, path: str) -> bool:
+    """Whether one working-directory-relative path sits inside the source root."""
+    anchor = "/anchor/cwd"
+    held = posixpath.normpath(posixpath.join(anchor, root or CURRENT))
+    named = posixpath.normpath(posixpath.join(anchor, path))
+    return posixpath.commonpath((held, named)) == held
+
+
 def inside(document: str, text: str, root: str = "") -> Reference:
-    """Resolve source links from their root and fragments from their source."""
+    """Resolve a link from the file that carries it, within the source root.
+
+    A link with a parent segment is the path a reader follows from the
+    file, so it is resolved from that file's directory and the root is
+    not applied to it. The root still bounds the result: a path that
+    lands outside it names nothing the root can contain. Every other
+    link is resolved from the root. A fragment with no path names a
+    section of the document that carries it.
+    """
+    raw = components(text).path
+    if raw and qualified(raw):
+        base = posixpath.dirname(document)
+        found = resolve(text, base, allow_parent=True)
+        if found.external:
+            return found
+        if not covers(root, found.path):
+            raise OutsideRoot(
+                "normalizes above the allowed source root, which cannot contain "
+                "the document it names"
+            )
+        walk = found.walk or found.path
+        if base:
+            walk = posixpath.join(base, walk)
+        return replace(found, walk=walk)
     found = resolve(text)
     if found.external:
         return found
-    if components(text).path:
+    if raw:
         return replace(
             found,
             path=posixpath.normpath(posixpath.join(root, found.path)),

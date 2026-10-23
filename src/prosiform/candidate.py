@@ -70,6 +70,7 @@ from prosiform.bundle import (
     ancestry,
     blank,
     carried_headings,
+    entry_slot,
     heading_text,
     openings,
 )
@@ -505,9 +506,13 @@ def boundaries(
     """
     named = parts(groups)
     started = {token.map[0] for token in spans if token.map is not None}
-    entry_end = spans[0].map[1] if spans and spans[0].map is not None else 1
+    slot = entry_slot(groups)
+    span = spans[slot] if spans else None
+    entry_lines = (
+        span.map[1] - span.map[0] if span is not None and span.map is not None else 1
+    )
     for at, (opens, (what, path)) in enumerate(
-        zip(openings(groups, entry_end), named, strict=True)
+        zip(openings(groups, entry_lines), named, strict=True)
     ):
         if opens in started or opens >= len(physical):
             continue
@@ -548,13 +553,15 @@ def structure(
             f"the candidate holds {len(spans)} region(s) against the {expected} "
             f"the provenance accounts for",
         )
-    if spans[0].type != PARAGRAPH_OPEN:
+    slot = entry_slot(groups)
+    if slot >= len(spans) or spans[slot].type != PARAGRAPH_OPEN:
+        found = spans[slot].type if slot < len(spans) else "nothing"
         raise Invalid(
             ENTRY_LINE_INTEGRITY,
-            f"the candidate opens on a {spans[0].type!r} rather than on its entry line",
+            f"the entry paragraph is a {found!r} rather than a paragraph",
         )
     paired: list[tuple[Record, Part, Token]] = []
-    at = 1
+    at = 0 if any(one.entry_at is not None for one in groups) else 1
     for one in groups:
         if one.wrapped:
             opening = spans[at]
@@ -565,7 +572,9 @@ def structure(
                     f"rather than on its own heading",
                 )
             at += 1
-        for part in one.record.parts:
+        for index, part in enumerate(one.record.parts):
+            if one.entry_at is not None and index == one.entry_at:
+                at += 1
             span = spans[at]
             if isinstance(part, Ancestor | Generated) and (
                 span.type != HEADING_OPEN or level(span) != part.level
@@ -577,6 +586,8 @@ def structure(
                     f"level {part.level}",
                 )
             paired.append((one.record, part, span))
+            at += 1
+        if one.entry_at is not None and one.entry_at == len(one.record.parts):
             at += 1
     return paired
 
@@ -917,6 +928,7 @@ def entry(
     referrer: Reference | None,
     requested: Collection[Reference],
     targets: Mapping[tuple[str, str | None], str],
+    groups: Sequence[Group],
 ) -> None:
     """Hold the entry line to naming every entry reference and no other.
 
@@ -939,7 +951,7 @@ def entry(
         expected.add(normalizeLink(f"{ANCHOR}{assigned}"))
     carried = {
         use.destination
-        for inline in inlines(tokens, [spans[0]])
+        for inline in inlines(tokens, [spans[entry_slot(groups)]])
         for _, _at, use in uses(inline)
     }
     if carried != expected:
@@ -1110,7 +1122,7 @@ def validate(
     leakage(environment)
     outline(tokens, groups)
     integrity(named(tokens, groups, assigned), targets)
-    entry(spans, tokens, referrer, requested, targets)
+    entry(spans, tokens, referrer, requested, targets, groups)
     for record, part, span in paired:
         if isinstance(part, Ancestor):
             structural(record, part, span, tokens)

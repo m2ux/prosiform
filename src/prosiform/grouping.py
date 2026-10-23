@@ -91,6 +91,7 @@ from prosiform.bundle import (
     carried_headings,
     emitted_text,
     escaped,
+    preamble_end,
     region,
     required,
     rewrite,
@@ -507,6 +508,7 @@ def merged(
     members: Sequence[Member],
     displays: Mapping[str, str] | None = None,
     parent: str | None = None,
+    headed: bool = True,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
@@ -522,7 +524,7 @@ def merged(
     if parent_member is not None and situated(parent_member, depth):
         situate(into, parent_member, depth)
         kept = True
-    else:
+    elif headed:
         title = titled(named)
         into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
         into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
@@ -556,7 +558,12 @@ def merged(
         entries,
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
         min(member.path for member in members),
-        wrapped=not kept,
+        wrapped=headed and not kept,
+        entry_at=(
+            preamble_end(into.parts, into.headings)
+            if kept and parent_member is not None
+            else None
+        ),
     )
 
 
@@ -740,14 +747,10 @@ def section(
         )
     by = SECTION_LEVEL - depth
     variants = len(contributing) > 1
-    answers = (
-        ()
-        if variants
-        else tuple(
-            (member.path, member.named[id(anchor)])
-            for member, anchor in contributing
-            if id(anchor) in member.emitting
-        )
+    answers = tuple(
+        (member.path, member.named[id(anchor)])
+        for member, anchor in contributing
+        if id(anchor) in member.emitting
     )
     merged_heading(into, text, SECTION_LEVEL, contributing, by, answers)
     if variants:
