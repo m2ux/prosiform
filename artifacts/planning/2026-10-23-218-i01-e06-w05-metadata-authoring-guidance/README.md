@@ -27,4 +27,8 @@ W05 of epic #218 completes the author-facing documentation and representative co
 
 - [x] Verify dependency and reserve W05.
 - [x] Complete documentation and corpus audit.
-- [ ] Publish, validate, merge and record delivery.
+- [x] Publish, validate, merge and record delivery.
+
+## Result
+
+[PR #225](https://github.com/m2ux/prosiform/pull/225) merged into `i01/e06/main` at `93fe6b354a85e244f64e33af700a55aab4f26044`. All five tasks and twelve criteria are complete. Epic #218 stands In Review on Bundling project 18; reviews #220 and #222 remain drafts pending user review. No plan changes or deferred defects arose.

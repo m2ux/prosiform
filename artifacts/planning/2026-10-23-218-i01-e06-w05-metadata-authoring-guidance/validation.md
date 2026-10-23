@@ -36,8 +36,8 @@ The planned authoring skill in issue #208 consumes this metadata contract; imple
 
 ## Remote Checks
 
-Pending publication of the task pull request and checks on the exact candidate head.
+Pass. [GitHub Checks](https://github.com/m2ux/prosiform/actions/runs/39917746280/job/120295255524) succeeded on exact head `ef1ce19dd93581320050130574ef570f83c0599f`. The epic target has no protection or active rules and no required approving review. The pull request was mergeable with a clean merge state. No protection change or bypass was used.
 
 ## Delivery
 
-Pending task merge and tracker readback. Epic reviews #220 and #222 remain drafts for the user's review.
+[PR #225](https://github.com/m2ux/prosiform/pull/225) merged the exact verified head into `i01/e06/main` at `93fe6b354a85e244f64e33af700a55aab4f26044`. The long-lived main target is already contained by the epic base. W05 is Done and AC11–AC12 are verified; all five tasks and twelve criteria are complete. Project 18 item 280601347 is confirmed In Review. The refreshed runtime review #222 cites all four merged runtime tasks and its published body matches the supplied file. Complete Development-link snapshots link reviews #220 and #222 to epic #218; every returned page is complete. The task has no separate issue or Development link. Automatic issue closure remains disabled as confirmed for this session. Both epic reviews remain drafts; epic #218 stays open pending integration.
