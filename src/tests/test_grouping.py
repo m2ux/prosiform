@@ -1,11 +1,10 @@
-"""Assert the names a merged group writes and the membership a rule decides.
+"""Assert the names a merged group writes for explicit members.
 
 The corpus declares what a grouped run publishes. These are the cases
 beneath it: the slug a group is headed by, the name a member's
 subsection carries, the members a group carries a subsection for and
 where those subsections sit, the run of a path a variant heading is
-shortened to, and the rule that decides which group a document belongs
-to.
+shortened to.
 """
 
 from collections.abc import Mapping
@@ -13,7 +12,6 @@ from collections.abc import Mapping
 import pytest
 
 from prosiform.bundle import Group
-from prosiform.cli import membership
 from prosiform.grouping import (
     member_headings,
     merged,
@@ -144,25 +142,6 @@ def test_the_segments_every_path_shares_are_dropped_before_the_run_is_measured()
         "a/b/one.md": "One",
         "a/b/c/one.md": "C One",
     }
-
-
-@pytest.mark.parametrize(
-    ("path", "expected"),
-    [
-        ("modes/plan-mode.md", "modes"),
-        ("guides/alpha/notes.md", "guides"),
-        ("entry.md", None),
-        ("other/note.md", None),
-    ],
-)
-def test_a_document_belongs_to_the_group_its_deepest_named_directory_heads(
-    path: str, expected: str | None
-) -> None:
-    assert membership(path, {"modes": 2, "guides": 2}) == expected
-
-
-def test_the_deepest_named_directory_decides_between_two_rules() -> None:
-    assert membership("artifacts/modes/one.md", {"artifacts": 2, "modes": 3}) == "modes"
 
 
 def test_a_member_the_group_emits_nothing_else_from_takes_a_subsection() -> None:

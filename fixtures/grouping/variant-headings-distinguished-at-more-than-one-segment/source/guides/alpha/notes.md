@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "guides"
+  prosiform-group-depth: "2"
+---
 # Notes
 
 ## Findings

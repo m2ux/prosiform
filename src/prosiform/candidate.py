@@ -626,7 +626,7 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
     ancestor. A chain member the group emits nowhere is an outline the
     candidate reconstructs differently from the one its author wrote.
 
-    A merged group arranges its members by the grouping rules rather
+    A merged group arranges its members by their conversion settings rather
     than by any one source's order, and a heading several documents
     contribute one text to is emitted once for all of them, so the
     chain is read against every source line the group's headings
@@ -710,7 +710,7 @@ def coverage(groups: Sequence[Group]) -> None:
     counting occurrences of a string decides nothing here.
 
     The ranges are read by source rather than by group, because a
-    grouping rule arranges one document's regions among another's and
+    declared group arranges one document's regions among another's and
     two regions of one source overlap wherever they are emitted.
     """
     carried: dict[str, list[tuple[int, int]]] = {}

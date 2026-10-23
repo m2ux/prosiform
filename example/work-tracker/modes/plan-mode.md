@@ -1,3 +1,8 @@
+---
+metadata:
+  prosiform-group: "modes"
+  prosiform-group-depth: "2"
+---
 # Plan Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.

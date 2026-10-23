@@ -250,13 +250,6 @@ def main():
         type=Path,
         help="Allowed source root; defaults to the document directory",
     )
-    parser.add_argument(
-        "--group",
-        action="append",
-        default=[],
-        metavar="SLUG:DEPTH",
-        help="Grouping rule; repeat for distinct slugs",
-    )
     parser.add_argument("--section", help="Select a fragment of the entry document")
     for panel in ("input", "compiled"):
         parser.add_argument(
@@ -315,8 +308,6 @@ def main():
     arguments = ["-r", str(root)]
     if options.max_output_bytes is not None:
         arguments.extend(["-O", str(options.max_output_bytes)])
-    for group in options.group:
-        arguments.extend(["-g", group])
     arguments.append(entry)
     captured = {}
     read_source = cli.read_source
