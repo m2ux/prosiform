@@ -260,3 +260,9 @@ def test_invalid_unicode_escape(payload: str) -> None:
 
 def test_escaped_null_in_unrelated_field() -> None:
     assert parse(r'other: "\0"') == Conversion()
+
+
+def test_out_of_range_escape_mark_survives_parser_cleanup() -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(r'other: "\U00110000"')
+    assert caught.value.diagnostic.location == Location("rules/a.md", 2, 11)

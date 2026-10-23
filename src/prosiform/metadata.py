@@ -10,9 +10,10 @@ from bisect import bisect_right
 from collections.abc import Hashable
 from dataclasses import dataclass, field
 from decimal import Decimal
+from typing import cast
 
 from ruamel.yaml import YAML
-from ruamel.yaml.error import MarkedYAMLError, YAMLError
+from ruamel.yaml.error import MarkedYAMLError, StreamMark, YAMLError
 from ruamel.yaml.events import (
     AliasEvent,
     CollectionEndEvent,
@@ -22,6 +23,7 @@ from ruamel.yaml.events import (
     ScalarEvent,
 )
 from ruamel.yaml.reader import ReaderError
+from ruamel.yaml.scanner import Scanner, ScannerError
 
 from prosiform.diagnostics import ERROR, Diagnostic, Location, RelatedLocation
 
@@ -40,6 +42,25 @@ PATTERNS = {
         r"|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN))"
     ),
 }
+
+
+class _MarkedScanner(Scanner):
+    """Preserve a malformed escape's mark before parser cleanup resets it."""
+
+    def scan_flow_scalar_non_spaces(
+        self, double: bool, start_mark: StreamMark
+    ) -> list[str]:
+        try:
+            return cast(
+                list[str], super().scan_flow_scalar_non_spaces(double, start_mark)
+            )
+        except ValueError as error:
+            raise ScannerError(
+                "while scanning a scalar",
+                start_mark,
+                "invalid Unicode scalar escape",
+                self.reader.get_mark(),
+            ) from error
 
 
 @dataclass(frozen=True)
@@ -196,6 +217,7 @@ def decode(
             root = node
 
     parser = YAML(typ="safe", pure=True)
+    parser.Scanner = _MarkedScanner
     parser.version = (1, 2)
     try:
         for event in parser.parse(text):
@@ -270,10 +292,6 @@ def decode(
     except ReaderError as error:
         raise _fail(
             INVALID_FRONTMATTER, "invalid YAML character", at(error.position)
-        ) from error
-    except ValueError as error:
-        raise _fail(
-            INVALID_FRONTMATTER, "invalid YAML scalar escape", at(parser.reader.index)
         ) from error
     except YAMLError as error:
         raise _fail(INVALID_FRONTMATTER, "invalid YAML", at(0)) from error
