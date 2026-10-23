@@ -220,6 +220,7 @@ def prepared(
     selected: Selection | None,
     assigned: dict[tuple[str, str | None], str] | None,
     depth: int,
+    root: str = "",
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -254,7 +255,7 @@ def prepared(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, defined)
+        else rewrite(physical, tokens, chosen, assigned, path, defined, root)
     )
     targets: tuple[Target, ...] = (
         ((path, None),)
@@ -405,6 +406,7 @@ def merged(
     named: str,
     depth: int,
     members: Sequence[Member],
+    displays: Mapping[str, str] | None = None,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
@@ -417,7 +419,9 @@ def merged(
     into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
     into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
-    headings = member_headings([member.path for member in members], named)
+    displays = {m.path: m.path for m in members} if displays is None else displays
+    names = member_headings([displays[m.path] for m in members], named)
+    headings = {m.path: names[displays[m.path]] for m in members}
     overview(into, headings, depth, members, bool(pooled))
     sections(into, depth, pooled, headings)
     for member in members:

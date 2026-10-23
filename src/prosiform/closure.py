@@ -67,6 +67,7 @@ reference that names nothing resolvable is; the command says which code
 and which exit status that refusal returns.
 """
 
+import posixpath
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
@@ -143,6 +144,7 @@ class Reference:
     external: bool = False
     origin: str | None = None
     chain: tuple[str, ...] = ()
+    walk: str | None = None
 
 
 def identity(reference: Reference, base: str = "") -> str:
@@ -248,7 +250,7 @@ def segment(written: str) -> str:
     return decoding
 
 
-def normalized(base: str, segments: Sequence[str]) -> str:
+def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -> str:
     """One reference's path, normalized against the directory it is written in.
 
     A `.` names the directory it sits in and a `..` names the one above,
@@ -262,6 +264,9 @@ def normalized(base: str, segments: Sequence[str]) -> str:
             continue
         if part != PARENT:
             walked.append(part)
+            continue
+        if allow_parent and (not walked or walked[-1] == PARENT):
+            walked.append(PARENT)
             continue
         if not walked:
             raise OutsideRoot(
@@ -286,7 +291,7 @@ def marked(opening: str) -> bool:
     return opening.startswith(MARK)
 
 
-def resolve(text: str, base: str = "") -> Reference:
+def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:
     """One reference as the document and the section it names.
 
     The base is the root-relative directory the reference is written
@@ -317,17 +322,20 @@ def resolve(text: str, base: str = "") -> Reference:
             f"spells {written.path!r} with a backslash, which separates no local "
             f"path the profile reads"
         )
-    path = normalized(base, [segment(part) for part in written.path.split(SEPARATOR)])
+    parts = [segment(part) for part in written.path.split(SEPARATOR)]
+    path = normalized(base, parts, allow_parent)
+    walk = "/".join(parts) if written.path else None
     if written.fragment is None or not written.fragment:
-        return Reference(text, path)
+        return Reference(text, path, walk=walk)
     return Reference(
         text,
         path,
         admissible(decoded(written.fragment, FRAGMENT_PART), FRAGMENT_PART),
+        walk=walk,
     )
 
 
-def inside(document: str, text: str) -> Reference:
+def inside(document: str, text: str, root: str = "") -> Reference:
     """One reference a source carries, as the document and the section it names.
 
     A link is written relative to the document carrying it, so its base
@@ -337,13 +345,19 @@ def inside(document: str, text: str) -> Reference:
     cannot say, so the document itself is the path such a reference
     normalizes to.
     """
-    found = resolve(text, document.rpartition(SEPARATOR)[0])
-    if components(text).path:
+    found = resolve(text)
+    if found.external:
         return found
-    return replace(found, path=document)
+    if components(text).path:
+        return replace(
+            found,
+            path=posixpath.normpath(posixpath.join(root, found.path)),
+            walk=posixpath.join(root, found.walk or found.path),
+        )
+    return replace(found, path=document, walk=document)
 
 
-def bundled(document: str, text: str, opening: str) -> Reference | None:
+def bundled(document: str, text: str, opening: str, root: str = "") -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
     A dependency carries no scheme and no authority, normalizes under
@@ -370,10 +384,12 @@ def bundled(document: str, text: str, opening: str) -> Reference | None:
     """
     if marked(opening):
         return None
-    return resolvable(document, text)
+    return resolvable(document, text, root)
 
 
-def deferring(document: str, text: str, opening: str) -> Reference | None:
+def deferring(
+    document: str, text: str, opening: str, root: str = ""
+) -> Reference | None:
     """The target one deferred link names, where the run is responsible for it.
 
     A deferral withholds a compilation position would have granted, so
@@ -396,10 +412,10 @@ def deferring(document: str, text: str, opening: str) -> Reference | None:
     """
     if not marked(opening):
         return None
-    return resolvable(document, text)
+    return resolvable(document, text, root)
 
 
-def resolvable(document: str, text: str) -> Reference | None:
+def resolvable(document: str, text: str, root: str = "") -> Reference | None:
     """The target one link names, where it resolves under the root to a document.
 
     Such a reference carries no scheme and no authority, normalizes
@@ -414,7 +430,7 @@ def resolvable(document: str, text: str) -> Reference | None:
     caller reading the mark.
     """
     try:
-        found = inside(document, text)
+        found = inside(document, text, root)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):

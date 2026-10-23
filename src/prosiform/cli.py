@@ -175,7 +175,11 @@ from prosiform.access import (
     Absent,
     Symlinked,
     Unreadable,
+    directory,
     read_source,
+)
+from prosiform.access import (
+    opened as open_source,
 )
 from prosiform.bundle import (
     AMBIGUOUS_FILE_GROUP,
@@ -302,6 +306,7 @@ INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
+SOURCE_ACCESS = "E_SOURCE_ACCESS"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
 SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
@@ -321,6 +326,7 @@ CODES = tuple(
             PUBLICATION_FAILED,
             ROOT_NOT_FOUND,
             SOURCE_CHANGED,
+            SOURCE_ACCESS,
             SOURCE_OUTSIDE_ROOT,
             SOURCE_SYMLINK,
             TARGET_NOT_FOUND,
@@ -496,7 +502,7 @@ def parser() -> Parser:
     grammar = Parser(
         prog=NAME,
         add_help=False,
-        usage=f"{NAME} -r DIR [OPTIONS] REF [REF ...]",
+        usage=f"{NAME} [OPTIONS] REF [REF ...]",
         description=(
             "Bundle the local Markdown closure of one or more entry references "
             "into one validated document."
@@ -505,16 +511,10 @@ def parser() -> Parser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     grammar.add_argument(
-        "-r",
-        dest="root",
-        metavar="DIR",
-        help="required source root; relative to working directory",
-    )
-    grammar.add_argument(
         "-f",
         dest="referrer",
         metavar="DOC",
-        help="root-relative document for fragment-only references",
+        help="working-directory-relative document for fragment-only references",
     )
     grammar.add_argument(
         "-o",
@@ -574,7 +574,7 @@ def parser() -> Parser:
         "references",
         metavar="REF",
         nargs="*",
-        help="root-relative document, document#fragment, or #fragment with -f",
+        help="document, document#fragment, or #fragment with -f; paths from cwd",
     )
     return grammar
 
@@ -622,7 +622,7 @@ def entry(text: str) -> Reference:
     downstream of here raises the code again.
     """
     try:
-        found = resolve(text)
+        found = resolve(text, allow_parent=True)
     except Malformed as malformed:
         raise usage_failure(
             f"the entry reference {text!r} {malformed}", reference=text
@@ -671,7 +671,7 @@ def sources(root: Path, read: Collection[str]) -> set[Path]:
     against that file answers a question about the link rather than
     about the source.
     """
-    return {root / path for path in read}
+    return {Path(os.path.normpath(root / path)) for path in read}
 
 
 def location(name: str, at: int | None) -> str:
@@ -746,7 +746,13 @@ def read_document(
             chain=chain,
         )
     try:
-        data = read_source(root, name)
+        observed: list[tuple[str, int, int]] = []
+        data = read_source(
+            root,
+            found.walk or name,
+            limit=min(limits.of(FILE_BYTES), limits.of(INPUT_BYTES) - total),
+            observed=observed,
+        )
     except Symlinked as linked:
         raise input_failure(
             f"{written} {reference!r} reaches its source through {linked}, "
@@ -766,6 +772,15 @@ def read_document(
             source=found.origin,
             chain=chain,
         ) from absent
+    except OSError as error:
+        raise input_failure(
+            str(error),
+            code=SOURCE_ACCESS,
+            remedy="check source permissions",
+            reference=reference,
+            source=found.origin,
+            chain=chain,
+        ) from error
     try:
         limits.hold(FILE_BYTES, len(data))
         limits.hold(INPUT_BYTES, total + len(data))
@@ -784,18 +799,53 @@ def read_document(
             source=name,
             chain=chain,
         ) from undecodable
-    captured = Capture(canonical(root, name), hashed(data), chain)
+    captured = Capture(
+        str(root / name),
+        hashed(data),
+        chain,
+        found.walk or name,
+        tuple(observed[:-1]),
+        (observed[-1][1], observed[-1][2]),
+        len(data),
+    )
     try:
-        return Opened(
-            content(
-                text,
-                file=name,
-                max_bytes=limits.of(FILE_BYTES),
-                max_depth=limits.of(NESTING),
-            ),
-            len(data),
-            captured,
+        source = content(
+            text,
+            file=name,
+            max_bytes=limits.of(FILE_BYTES),
+            max_depth=limits.of(NESTING),
         )
+        declared = source.conversion.root
+        root_walk = str(Path(name).parent / declared) if declared is not None else "."
+        try:
+            rooted = directory(root, root_walk)
+        except (Unreadable, OSError) as error:
+            code = (
+                SOURCE_SYMLINK
+                if isinstance(error, Symlinked)
+                else ROOT_NOT_FOUND
+                if isinstance(error, Absent)
+                else SOURCE_ACCESS
+            )
+            raise Failure(
+                INPUT_FAILURE,
+                Diagnostic(
+                    ERROR,
+                    str(error),
+                    code,
+                    location=source.conversion.root_location,
+                    reference=reference,
+                    chain=chain,
+                ),
+            ) from error
+        effective = os.path.relpath(rooted[-1][0], root)
+        source = replace(
+            source,
+            root="" if effective == "." else effective,
+            display=os.path.relpath(root / name, rooted[-1][0]),
+        )
+        captured = replace(captured, directories=(*captured.directories, *rooted))
+        return Opened(source, len(data), captured)
     except InvalidMetadata as invalid:
         raise Failure(
             INPUT_FAILURE, replace(invalid.diagnostic, reference=reference, chain=chain)
@@ -927,26 +977,20 @@ def recheck(root: Path, captured: dict[str, Capture]) -> None:
     for path in sorted(captured):
         was = captured[path]
         try:
-            data = read_source(root, path)
-        except Unreadable as unreadable:
-            raise changed(
-                path,
-                f"is no longer a document the allowed source root yields: {unreadable}",
-                was.chain,
-            ) from unreadable
-        now = canonical(root, path)
-        if now != was.identity:
-            raise changed(
-                path,
-                f"resolves to {now!r} rather than {was.identity!r}",
-                was.chain,
+            for name, device, inode in was.directories:
+                checked = directory(root, os.path.relpath(name, root))[-1]
+                if checked[1:] != (device, inode):
+                    raise changed(path, "bound directory identity changed", was.chain)
+            observed: list[tuple[str, int, int]] = []
+            data = read_source(
+                root, was.walk or path, limit=was.size, observed=observed
             )
+        except (Unreadable, OSError) as error:
+            raise changed(path, str(error), was.chain) from error
+        if was.file_identity is not None and observed[-1][1:] != was.file_identity:
+            raise changed(path, "source identity changed", was.chain)
         if hashed(data) != was.digest:
-            raise changed(
-                path,
-                "holds content other than the bytes the run read",
-                was.chain,
-            )
+            raise changed(path, "source bytes changed", was.chain)
 
 
 class Faulted(Exception):
@@ -1140,7 +1184,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination)
+            found = inside(path, use.destination, source.root)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1190,11 +1234,31 @@ def withheld(
     for use in uses(tokens, selected):
         if use.resource:
             continue
-        found = deferring(path, use.destination, use.opening)
+        found = deferring(path, use.destination, use.opening, source.root)
         if found is None:
             continue
         at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
+
+
+def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
+    """Every referring route must retain no-follow access to a cached identity."""
+    if one.path not in captured:
+        return
+    observed: list[tuple[str, int, int]] = []
+    try:
+        os.close(open_source(root, one.walk or one.path, observed))
+    except (Unreadable, OSError) as error:
+        code = SOURCE_SYMLINK if isinstance(error, Symlinked) else SOURCE_ACCESS
+        raise input_failure(
+            str(error),
+            code=code,
+            remedy="check the referring path",
+            reference=one.original,
+            chain=one.chain,
+        ) from error
+    if observed[-1][1:] != captured[one.path].file_identity:
+        raise changed(one.path, "source identity changed", one.chain)
 
 
 def traverse(
@@ -1302,8 +1366,10 @@ def traverse(
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
             for one in withheld(path, read[path], parsed[path], chosen, reached):
+                verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
             for one in required(path, read[path], parsed[path], chosen, reached):
+                verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
                     continue
                 limits.hold(EXPANSION_DEPTH, hop)
@@ -1375,7 +1441,7 @@ def group_depths(
 ) -> dict[str, int]:
     """Consistent depths for named groups, ordered by identity and source path."""
     members: dict[str, list[str]] = {}
-    for path in sorted(selected):
+    for path in sorted(selected, key=lambda p: (read[p].display, p)):
         name = read[path].conversion.group
         if name is not None:
             members.setdefault(name, []).append(path)
@@ -1427,7 +1493,7 @@ def unambiguous(
     for path, selecting in selected.items():
         if read[path].conversion.group is not None:
             continue
-        title = heading_text(path)
+        title = heading_text(read[path].display or path).casefold()
         if title in headed:
             raise input_failure(
                 f"{path!r} and {headed[title]!r} both head a file group {title!r}, "
@@ -1459,7 +1525,8 @@ def assembled(
     """
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path, selecting in selected.items():
+    for path in sorted(selected, key=lambda p: (read[p].display, p)):
+        selecting = selected[path]
         named = read[path].conversion.group
         if named is not None:
             merging.setdefault(named, []).append(path)
@@ -1474,6 +1541,8 @@ def assembled(
                     defined[path],
                     selection(path, tokens, selecting, entries),
                     assigned,
+                    read[path].root,
+                    read[path].display or path,
                 )
             )
     for named, paths in merging.items():
@@ -1492,12 +1561,19 @@ def assembled(
                             selection(path, parsed[path], selected[path], entries),
                             assigned,
                             depth,
+                            read[path].root,
                         )
                         for path in paths
                     ],
+                    {path: read[path].display for path in paths},
                 )
             )
-    return sorted(groups, key=lambda one: one.order)
+    return sorted(
+        groups,
+        key=lambda one: min(
+            (read[p].display, p) for p in set(one.record.paths()) | {one.order}
+        ),
+    )
 
 
 @contextmanager
@@ -1723,8 +1799,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         publish("".join(f"{code}\n" for code in CODES), stdout)
         return SUCCESS
 
-    if options.root is None:
-        raise usage_failure("-r is required and names the allowed source root")
     if not options.references:
         raise usage_failure("at least one entry reference is required")
     requested = [entry(reference) for reference in options.references]
@@ -1736,18 +1810,12 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                     f"name the document it resolves against"
                 )
 
-    root = Path(options.root).resolve()
+    root = Path.cwd().resolve()
     referring = entry(options.referrer) if options.referrer else None
     if referring is not None:
         referring = replace(referring, chain=(identity(referring),))
     requested = entered(referring, requested)
 
-    if not root.is_dir():
-        raise input_failure(
-            f"the allowed source root {options.root!r} names no directory",
-            code=ROOT_NOT_FOUND,
-            remedy="name a directory that exists",
-        )
     limits = budgets(options)
     try:
         read, parsed, defined, captured, found = traverse(

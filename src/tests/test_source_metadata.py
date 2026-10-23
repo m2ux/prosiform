@@ -2,6 +2,7 @@
 
 from dataclasses import FrozenInstanceError
 from pathlib import Path
+from typing import Any
 
 import pytest
 from test_cli import invoke
@@ -46,6 +47,7 @@ def test_settings_are_per_source_and_not_inherited() -> None:
 
 def test_root_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
     path = tmp_path / "a.md"
+    (tmp_path.parent / "library").mkdir(exist_ok=True)
     raw = b"---\nprosiform:\n  root: ../library\n---\n# A\n"
     path.write_bytes(raw)
     opened = cli.read_document(
@@ -91,7 +93,7 @@ def test_metadata_is_not_a_markdown_dependency(tmp_path: Path) -> None:
         '---\ndescription: "# Hidden [!missing](missing.md)"\n'
         'metadata: {owner: "[!missing](missing.md)"}\n---\n# A\n\nBody.\n'
     )
-    run = invoke("-r", str(tmp_path), "a.md")
+    run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Hidden" not in run.stdout
     assert "missing" not in run.stdout
@@ -107,7 +109,7 @@ def test_metadata_error_preserves_output_and_coordinates(
     )
     output = tmp_path / "out.md"
     output.write_text("existing\n")
-    run = invoke("-r", str(tmp_path), "-d", diagnostics, "-o", str(output), "a.md")
+    run = invoke("-d", diagnostics, "-o", str(output), "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.stdout == ""
     assert output.read_text() == "existing\n"
@@ -124,7 +126,7 @@ def test_raw_byte_budget_precedes_yaml_and_encoding(
     tmp_path: Path, option: str
 ) -> None:
     (tmp_path / "a.md").write_bytes(b"---\na: [\n---\n\xff")
-    run = invoke("-r", str(tmp_path), "-d", "json", option, "3", "a.md")
+    run = invoke("-d", "json", option, "3", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert option in run.diagnostics()[0]["message"]
@@ -132,7 +134,7 @@ def test_raw_byte_budget_precedes_yaml_and_encoding(
 
 def test_yaml_collection_depth_is_bounded(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text("---\na: {b: {c: value}}\n---\n# A\n")
-    run = invoke("-r", str(tmp_path), "-d", "json", "-N", "2", "a.md")
+    run = invoke("-d", "json", "-N", "2", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert run.diagnostics()[0]["location"]["line"] == 2
@@ -148,12 +150,12 @@ def test_deferred_source_is_captured_once_and_contributes_nothing(
     original = read_source
     reads: list[str] = []
 
-    def read(root: Path, name: str) -> bytes:
+    def read(root: Path, name: str, **kwargs: Any) -> bytes:
         reads.append(name)
-        return original(root, name)
+        return original(root, name, **kwargs)
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("-r", str(tmp_path), "-F", "2", "a.md")
+    run = invoke("-F", "2", "a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Hidden." not in run.stdout
     # One discovery read and one publication recheck for each captured source.
@@ -169,7 +171,7 @@ def test_deferred_source_counts_towards_raw_budgets(
     (tmp_path / "a.md").write_text(a)
     (tmp_path / "b.md").write_text("---\nname: " + "x" * 100 + "\n---\n# B\n")
     bound = "1" if option == "-F" else str(len(a.encode()) + 1)
-    run = invoke("-r", str(tmp_path), "-d", "json", option, bound, "a.md")
+    run = invoke("-d", "json", option, bound, "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert option in run.diagnostics()[0]["message"]
@@ -178,7 +180,7 @@ def test_deferred_source_counts_towards_raw_budgets(
 def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text("# A\n\n[¬B](b.md)\n")
     (tmp_path / "b.md").write_text("---\na: [\n---\n# B\n")
-    run = invoke("-r", str(tmp_path), "-d", "json", "a.md")
+    run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.stdout == ""
     assert run.diagnostics()[0]["code"] == "E_INVALID_FRONTMATTER"
@@ -192,16 +194,16 @@ def test_deferred_metadata_change_is_rechecked_with_its_chain(
     (tmp_path / "b.md").write_text("---\n" + settings("one") + "---\n# B\n")
     reads = 0
 
-    def read(root: Path, name: str) -> bytes:
+    def read(root: Path, name: str, **kwargs: Any) -> bytes:
         nonlocal reads
         if name == "b.md":
             reads += 1
             if reads == 2:
                 (root / name).write_text("---\n" + settings("two") + "---\n# B\n")
-        return read_source(root, name)
+        return read_source(root, name, **kwargs)
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("-r", str(tmp_path), "-d", "json", "a.md")
+    run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.stdout == ""
     diagnostic = run.diagnostics()[0]
