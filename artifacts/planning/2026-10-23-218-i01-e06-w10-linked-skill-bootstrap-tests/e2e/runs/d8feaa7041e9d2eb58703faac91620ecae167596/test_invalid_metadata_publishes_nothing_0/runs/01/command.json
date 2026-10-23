@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/tmp/pf-bootstrap-install-gv7t3a19/environment/bin/pf",
+    "-d",
+    "json",
+    "-o",
+    "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-10-23-218-i01-e06-w10-linked-skill-bootstrap-tests/e2e/runs/d8feaa7041e9d2eb58703faac91620ecae167596/test_invalid_metadata_publishes_nothing_0/workspace/run/invalid.md",
+    "../skills/pf-bootstrap-specimen/modes/defaults.md"
+  ],
+  "cwd": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-10-23-218-i01-e06-w10-linked-skill-bootstrap-tests/e2e/runs/d8feaa7041e9d2eb58703faac91620ecae167596/test_invalid_metadata_publishes_nothing_0/workspace/run",
+  "cwd_record": "test_invalid_metadata_publishes_nothing_0/workspace/run",
+  "exit_status": 1,
+  "source_commit": "d8feaa7041e9d2eb58703faac91620ecae167596"
+}

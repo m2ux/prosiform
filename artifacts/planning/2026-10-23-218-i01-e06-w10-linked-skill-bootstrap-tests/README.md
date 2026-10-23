@@ -6,7 +6,7 @@
 
 This record holds delivery of an installed-command suite that bundles three or more targets linked from a skill entry, each with its own source settings. The suite keeps every run's sources, command, compiler revision, diagnostics and bundle where a later reader can inspect them.
 
-The suite lives on `i01/e06/w10-linked-skill-bootstrap-tests`, based on `i01/e06/main`. The published run is source commit `b6b505366e7f57d8912c3254f33fbc47a1e08ecf`, installed from the wheel and checked with the project's full verification.
+The suite lives on `i01/e06/w10-linked-skill-bootstrap-tests`, based on `i01/e06/main`. The published run is source commit `d8feaa7041e9d2eb58703faac91620ecae167596`, installed from the wheel and checked with the project's full verification.
 
 ## Artifacts
 
@@ -14,8 +14,8 @@ The suite lives on `i01/e06/w10-linked-skill-bootstrap-tests`, based on `i01/e06
 | --- | --- |
 | [Work item](w10.md) | Implementation scope and required tests |
 | [Run guide](e2e/README.md) | How to read the retained installed-command runs |
-| [Artifact inventory](e2e/runs/b6b505366e7f57d8912c3254f33fbc47a1e08ecf/inventory.md) | Links from each run to its sources, command, diagnostics and bundle |
-| [Compiler identity](e2e/runs/b6b505366e7f57d8912c3254f33fbc47a1e08ecf/compiler.json) | Wheel, version response and source commit for that run |
+| [Artifact inventory](e2e/runs/d8feaa7041e9d2eb58703faac91620ecae167596/inventory.md) | Links from each run to its sources, command, diagnostics and bundle |
+| [Compiler identity](e2e/runs/d8feaa7041e9d2eb58703faac91620ecae167596/compiler.json) | Wheel, version response and source commit for that run |
 
 ## Links
 
