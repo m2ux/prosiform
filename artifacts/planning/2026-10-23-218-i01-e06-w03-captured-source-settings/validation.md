@@ -16,7 +16,7 @@ Final result: exit 0 on the task head above. All checks pass: dependency lock, l
 
 ## GitHub Checks
 
-Remote CI result pending. Merge requires the exact head's passing checks, current target requirements and current review state.
+[GitHub Checks](https://github.com/m2ux/prosiform/actions/runs/39905625131/job/120256792619) completed successfully on exact head `65eaabda7238536694b4e7d9289329e6736f07ca`. Target `i01/e06/main` has no branch protection (404) and no active rules (`[]`). No approving review is required. The epic base is current with `origin/main`; the task PR is clean and non-draft. Repository automatic issue closure is confirmed disabled for this session.
 
 ## Scope
 
