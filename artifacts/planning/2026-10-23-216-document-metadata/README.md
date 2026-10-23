@@ -13,6 +13,7 @@ This record scopes the refactor, records its source evidence and proposes an imp
 | Artifact | What it holds |
 | --- | --- |
 | [Design](design.md) | Proposed metadata contract, compiler boundaries and verification |
+| [Discussion](discussion.md) | Planning review scope and pending scheduling choice |
 | [Epic Draft](epic.md) | Acceptance criteria and task dependency table |
 | [Initiative Update](initiative-draft.md) | Scoped parent criteria and epic row awaiting issue identity |
 | [Freeze Handoff](freeze-draft.md) | Final contract tag dependency awaiting issue identity |
