@@ -27,3 +27,11 @@ Independent review ran fifteen additional adversarial cases, all passing after c
 ## Plan changes
 
 No task or epic scope changes. The main implementation base is distinct from W01's engineering contract base; both draft reviews remain open until epic completion.
+
+## Merged revision verification
+
+PR [#221](https://github.com/m2ux/prosiform/pull/221) merged exact head 482741dd5bbe196351ac05c7921151b187abfad2 into i01/e06/main as 5375a66c6335ef45fb8e0dfe70c4f6579147d51c. Fresh target protection returned not protected, active rules were empty, and reviews were empty. The [remote Checks run](https://github.com/m2ux/prosiform/actions/runs/39904611362) completed successfully before merge.
+
+At merged revision 5375a66, the named metadata instrument ran again in the epic-base worktree: all 80 tests pass. AC2, AC3 and AC4 are verified on this revision and recorded complete; W02 is Done.
+
+Draft [#222](https://github.com/m2ux/prosiform/pull/222) presents the Python epic base to main. Its Development relation to epic #218 was created with addCloseIssueReferences and read back with complete pagination. Draft #220 retains the engineering contract review. Epic #218 remains open and In Progress. W03 is next; it has not been started in this delivery session.

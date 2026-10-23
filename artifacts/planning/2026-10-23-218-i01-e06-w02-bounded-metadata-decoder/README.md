@@ -21,4 +21,10 @@ W02 delivers the immutable conversion settings and bounded YAML decoder for epic
 
 - [x] Confirm W01 delivery and reserve W02.
 - [x] Implement and validate the metadata decoder.
-- [ ] Publish, merge and record W02 delivery.
+- [x] Publish, merge and record W02 delivery.
+
+## Delivery result
+
+- [Task PR #221](https://github.com/m2ux/prosiform/pull/221) merged into i01/e06/main at 5375a66.
+- [Draft review #222](https://github.com/m2ux/prosiform/pull/222) targets main and is Development-linked to epic #218.
+- W02 and AC2–AC4 are complete. No deferred debt or scope changes.
