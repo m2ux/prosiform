@@ -116,7 +116,7 @@ def install_command(workspace: Path) -> tuple[Path, dict[str, str], str]:
     python = (PROJECT / ".python-version").read_text(encoding="utf-8").strip()
     run_uv("venv", "--python", python, str(environment))
     interpreter = environment / "bin" / "python"
-    run_uv("pip", "install", "--offline", "--python", str(interpreter), str(built[0]))
+    run_uv("pip", "install", "--python", str(interpreter), str(built[0]))
     found = shutil.which(COMMAND, path=str(environment / "bin"))
     if found is None:
         pytest.fail("the installed environment names no pf command")
