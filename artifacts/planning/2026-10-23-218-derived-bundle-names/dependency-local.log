@@ -17,7 +17,8 @@ none
 6 E06:W07 - Bounded root metadata
 7 E06:W08 - Per-file root resolution
 8 E06:W09 - Derived output publication
-9 E06:W10 - File-only authoring audit
+9 E06:W10 - Linked skill bootstrap tests
+10 E06:W11 - File-only authoring audit
 
 --- component contention: rows of different epics extending one component
 none
@@ -25,6 +26,6 @@ none
 --- epic priority (epics sharing a number start together)
 1 E06
 
---- longest chains: 1, each of 10 steps
-on every chain: E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10
-E06:W01 -> E06:W02 -> E06:W03 -> E06:W04 -> E06:W05 -> E06:W06 -> E06:W07 -> E06:W08 -> E06:W09 -> E06:W10
+--- longest chains: 1, each of 11 steps
+on every chain: E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10, E06:W11
+E06:W01 -> E06:W02 -> E06:W03 -> E06:W04 -> E06:W05 -> E06:W06 -> E06:W07 -> E06:W08 -> E06:W09 -> E06:W10 -> E06:W11

@@ -25,6 +25,8 @@ Each Markdown file carries the structural settings used when Prosiform compiles 
   Remove structural CLI flags and global directory-rule machinery. The `pf` command uses short flags for entries, explicit output overrides, diagnostics and resource limits; each source supplies the root for its own links.
 - **Verify each implementation unit.**
   Tests and immediately affected consumers accompany the behavior they verify. The final authoring audit supplies corpus-wide evidence.
+- **Exercise skill bootstrap through linked documents.**
+  The agent reads SKILL.md directly and invokes pf separately on three or more contained links. Generated source stacks and resulting bundles remain in planning as inspectable reference examples.
 - **Bound the refactor.**
   Nested-folder layout, Unicode call-site composition, authoring-skill implementation and the Rust compiler implementation remain separate work.
 
@@ -48,7 +50,8 @@ Each Markdown file carries the structural settings used when Prosiform compiles 
 | [W07](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/w07.md) | Bounded root metadata | AC19, AC23 | W06 | | |
 | [W08](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/w08.md) | Per-file root resolution | AC20, AC21, AC22 | W07 | | |
 | [W09](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/w09.md) | Derived output publication | AC14, AC15, AC16 | W08 | | |
-| [W10](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/w10.md) | File-only authoring audit | AC17, AC18 | W09 | | |
+| [W10](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/w10.md) | Linked skill bootstrap tests | AC24, AC25 | W09 | | |
+| [W11](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/w11.md) | File-only authoring audit | AC17, AC18 | W10 | | |
 
 ## Acceptance Criteria
 
@@ -77,6 +80,9 @@ Each Markdown file carries the structural settings used when Prosiform compiles 
 - [ ] **AC22.** The installed CLI rejects the retired root option, as -r rejection tests show.
 
 - [ ] **AC23.** The metadata decoder accepts exactly the declared top-level `prosiform` schema, as positive and negative schema tests show.
+
+- [ ] **AC24.** An installed-command end-to-end suite independently bundles at least three targets linked from a directly read skill entry point, as linked-stack tests with divergent source roots and grouping settings show.
+- [ ] **AC25.** Each end-to-end run retains inspectable inputs and outputs in its published planning record, as the artifact inventory linking source trees, commands, compiler revision, diagnostics and resulting bundles shows.
 
 ## References
 

@@ -7,7 +7,7 @@ Planning extension to epic #218. The user confirmed `pf <file>`: root metadata r
 | Artifact | Purpose |
 | --- | --- |
 | [Design](design.md) | Accepted command, root metadata, naming and safety boundaries |
-| [Epic](epic.md) | Preserved completed work and five follow-on tasks |
+| [Epic](epic.md) | Preserved completed work and six follow-on tasks |
 | [Initiative](initiative.md) | Parent goal and coverage extension |
 | [Freeze](freeze.md) | Final audit dependency |
 | [Authoring handoff](authoring-handoff.md) | Root and naming requirements for the planned skill |
@@ -15,8 +15,10 @@ Planning extension to epic #218. The user confirmed `pf <file>`: root metadata r
 | [W07](w07.md) | Bounded root metadata |
 | [W08](w08.md) | Per-file root resolution |
 | [W09](w09.md) | Derived output publication |
-| [W10](w10.md) | File-only authoring audit |
+| [W10](w10.md) | Linked skill bootstrap tests and preserved examples |
+| [W11](w11.md) | File-only authoring audit |
 | [Review](review.md) | Goal trace, dependency and validation findings |
+| [End-to-end artifacts](e2e/README.md) | Bootstrap skill, executable prototype, scenario matrix and retained runs |
 | [Reconciliation](reconciliation.md) | Confirmed frontmatter and default-root decisions |
 
 ## Decisions
@@ -26,7 +28,7 @@ Planning extension to epic #218. The user confirmed `pf <file>`: root metadata r
 - Output: `modes_align-mode.bundle.md` in the working directory; a section adds `__fragment`.
 - Multiple distinct selections require an explicit combined destination. Explicit file/stdout output overrides remain available.
 - Source paths should use hyphens rather than underscores. No escaping scheme is added.
-- Completed tasks W01–W05 and criteria AC1–AC12 stay complete. New work is W06–W10, with AC13–AC23.
+- Completed tasks W01–W05 and criteria AC1–AC12 stay complete. New work is W06–W11, with AC13–AC25.
 - Epic #218 remains priority 6 and returns to In Progress. Runtime review #222 remains draft; contract #220 is merged, and new contract work needs a successor review.
 
 ## Progress
