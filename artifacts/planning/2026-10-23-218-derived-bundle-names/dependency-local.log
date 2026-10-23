@@ -1,0 +1,28 @@
+--- problems
+none
+
+--- joins: eligible pairs named in neither Joins nor a record
+none
+
+--- advisory: numbering against start order
+none
+
+--- levels (0 = can start now)
+0 E06:W01 - Declared metadata contract
+1 E06:W02 - Bounded metadata decoder
+2 E06:W03 - Captured source settings
+3 E06:W04 - Per-file compilation settings
+4 E06:W05 - Metadata authoring guidance
+5 E06:W06 - Derived output contract
+6 E06:W07 - Derived output publication
+7 E06:W08 - Output naming authoring audit
+
+--- component contention: rows of different epics extending one component
+none
+
+--- epic priority (epics sharing a number start together)
+1 E06
+
+--- longest chains: 1, each of 8 steps
+on every chain: E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08
+E06:W01 -> E06:W02 -> E06:W03 -> E06:W04 -> E06:W05 -> E06:W06 -> E06:W07 -> E06:W08
