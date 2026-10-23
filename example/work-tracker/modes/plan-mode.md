@@ -8,15 +8,6 @@ prosiform:
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
-## Prerequisites
-
-Read these files first.
-
-- [Epic Issue Body](artifacts/epic-issue-body.md)
-- [Epic](artifacts/epic.md)
-
-The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
-
 ## Procedure
 
 1. **Populate the epics.**
