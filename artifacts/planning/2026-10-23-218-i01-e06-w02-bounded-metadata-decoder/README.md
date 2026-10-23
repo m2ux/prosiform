@@ -15,9 +15,10 @@ W02 delivers the immutable conversion settings and bounded YAML decoder for epic
 ## Artifacts
 
 - [Work item](w02.md)
+- [Validation](validation.md)
 
 ## Progress
 
 - [x] Confirm W01 delivery and reserve W02.
-- [ ] Implement and validate the metadata decoder.
+- [x] Implement and validate the metadata decoder.
 - [ ] Publish, merge and record W02 delivery.
