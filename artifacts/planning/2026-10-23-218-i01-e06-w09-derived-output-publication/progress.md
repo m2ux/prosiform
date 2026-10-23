@@ -2,7 +2,7 @@
 
 - [x] Confirm board queue and prerequisite delivery.
 - [x] Implement and verify derived output publication.
-- [ ] Publish and merge the task pull request; record epic delivery.
+- [x] Publish and merge the task pull request; record epic delivery.
 
 ## Prerequisite Verification
 
@@ -49,6 +49,10 @@ One `os.replace` publishes the derived file. A refused replace and a validation 
 ### T9 Full check
 
 `make check` passed: lock, lint, format, mypy, 1025 pytest tests, 614 harness tests, corpus, smoke, layout, tables, links (51 documents), vocabulary, invocation (27 statements), conformance and independence.
+
+## Delivery
+
+[Pull request 230](https://github.com/m2ux/prosiform/pull/230) merged into `i01/e06/main` as `e1225559a4236c64efc17051f45791d45dde15dc`. That merge's tree is the tested tree of `ff10886de3bb4aa3f91454ad8b2fb5b53eb2e6f2`. AC14, AC15 and AC16 are ticked, and W09 is Done on issue 218. Review 222 cites the merge and remains a draft. W10 and W11 remain open.
 
 ## Change List
 

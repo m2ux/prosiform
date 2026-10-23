@@ -20,4 +20,5 @@ The work extends the CLI on `i01/e06/w09-derived-output-publication`, based on `
 | Resource | Link |
 | --- | --- |
 | Epic | [Document Metadata](https://github.com/m2ux/prosiform/issues/218) |
+| Pull request | [230](https://github.com/m2ux/prosiform/pull/230) |
 | Board | [Board 18](https://github.com/users/m2ux/projects/18) |
