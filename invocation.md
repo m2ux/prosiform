@@ -49,16 +49,16 @@ Each file declares its own group and source heading depth in leading YAML frontm
 
 ```yaml
 ---
-metadata:
-  author: example-team
-  prosiform-group: rules
-  prosiform-group-depth: "2"
+author: example-team
+prosiform:
+  group: rules
+  group-depth: 2
 ---
 ```
 
-Both fields are strings and occur together. Depth is `"1"` through `"6"`. The group name is a nonblank, printable single-line string containing neither `:` nor `/`; its exact spelling identifies the group. A file without these fields keeps its individual group. Linked files use their own declarations, including when only a section is selected. Group names are independent of directories and discover no additional files.
+Group and group-depth occur together. Group is a string; group-depth is a YAML Core integer from `1` through `6`, excluding booleans, floats and strings. The group name is a nonblank, printable single-line string containing neither `:` nor `/`; its exact spelling identifies the group. A file without these fields keeps its individual group. Linked files use their own declarations, including when only a section is selected. Group names are independent of directories and discover no additional files.
 
-Frontmatter starts on the first physical line with exactly `---` and closes at the next line exactly `---` or `...`; an optional byte-order mark may precede the opener. A leading blank line makes the following content part of the body. The block is empty or contains one YAML 1.2 Core mapping. Its top-level keys are strings; `metadata`, when present, maps strings to strings. Keep standard skill fields such as `name` and `description` at the top level; ordinary Markdown requires neither field nor a `SKILL.md` filename. Other metadata keys, such as `author` above, are accepted. The `prosiform-` prefix is reserved: unknown fields fail validation. Quote numeric-looking strings, including the depth; an unquoted `2` is a number and fails validation.
+Frontmatter starts on the first physical line with exactly `---` and closes at the next line exactly `---` or `...`; an optional byte-order mark may precede the opener. A leading blank line makes the following content part of the body. The block is empty or contains one YAML 1.2 Core mapping. Its top-level keys are strings; `prosiform`, when present, is a mapping with string keys. Keep standard skill fields such as `name` and `description` at the top level; ordinary Markdown requires neither field nor a `SKILL.md` filename. The only keys in `prosiform` are `root`, `group` and `group-depth`; unknown keys fail validation. Unrelated fields, including `metadata`, have no conversion meaning. An optional `root` is a nonempty relative directory-path string using forward slashes; controls, absolute or drive paths, URLs, home shortcuts and environment expansion fail validation. The captured value retains its spelling and original location.
 
 Duplicate keys, aliases, merge keys and custom tags are invalid throughout the frontmatter. Frontmatter bytes count toward the source byte budgets, and YAML collections obey `-N` independently of Markdown containers. Frontmatter supplies no rendered content, links or headings.
 

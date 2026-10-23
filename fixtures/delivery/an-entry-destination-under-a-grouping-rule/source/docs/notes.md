@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "docs"
-  prosiform-group-depth: "1"
+prosiform:
+  group: "docs"
+  group-depth: 1
 ---
 # Notes
 

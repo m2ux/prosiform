@@ -484,10 +484,10 @@ def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
 def conversion(group: str, depth: int) -> str:
     """One source's complete conversion metadata."""
     return (
-        "---\nmetadata:\n  prosiform-group: "
+        "---\nprosiform:\n  group: "
         + json.dumps(group)
-        + "\n  prosiform-group-depth: "
-        + json.dumps(str(depth))
+        + "\n  group-depth: "
+        + str(depth)
         + "\n---\n"
     )
 

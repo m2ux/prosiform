@@ -16,7 +16,7 @@ from prosiform.source import content, hashed
 
 
 def settings(group: str) -> str:
-    return f'metadata:\n  prosiform-group: {group}\n  prosiform-group-depth: "2"\n'
+    return f"prosiform:\n  group: {group}\n  group-depth: 2\n"
 
 
 @pytest.mark.parametrize("ending", ["\n", "\r\n"])
@@ -33,7 +33,7 @@ def test_settings_and_body_share_physical_coordinates(
     assert source.line(1) == 6
     assert source.conversion.group == "règles"
     assert source.conversion.depth == 2
-    assert source.conversion.group_location == Location("rules/a.md", 3, 20)
+    assert source.conversion.group_location == Location("rules/a.md", 3, 10)
     with pytest.raises(FrozenInstanceError):
         source.conversion.group = "other"  # type: ignore[misc]
 
@@ -42,6 +42,23 @@ def test_settings_are_per_source_and_not_inherited() -> None:
     assert content("---\n" + settings("one") + "---\n").conversion.group == "one"
     assert content("---\n" + settings("two") + "---\n").conversion.group == "two"
     assert content("# Plain\n").conversion.group is None
+
+
+def test_root_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
+    path = tmp_path / "a.md"
+    raw = b"---\nprosiform:\n  root: ../library\n---\n# A\n"
+    path.write_bytes(raw)
+    opened = cli.read_document(
+        tmp_path, resolve("a.md"), Limits({b: b.default for b in BUDGETS})
+    )
+    path.write_bytes(raw.replace(b"../library", b"../other"))
+    assert opened.source.conversion.root == "../library"
+    assert opened.source.conversion.root_location == Location("a.md", 3, 9)
+    assert opened.capture.digest == hashed(raw)
+    assert content("# Linked\n").conversion.root is None
+    with pytest.raises(cli.Failure) as caught:
+        cli.recheck(tmp_path, {"a.md": opened.capture})
+    assert caught.value.diagnostic.code == cli.SOURCE_CHANGED
 
 
 def test_duplicate_key_reports_original_locations() -> None:
@@ -85,7 +102,9 @@ def test_metadata_is_not_a_markdown_dependency(tmp_path: Path) -> None:
 def test_metadata_error_preserves_output_and_coordinates(
     tmp_path: Path, diagnostics: str
 ) -> None:
-    (tmp_path / "a.md").write_bytes(b"\xef\xbb\xbf---\r\nmetadata: 7\r\n...\r\n# A\r\n")
+    (tmp_path / "a.md").write_bytes(
+        b"\xef\xbb\xbf---\r\nprosiform: 7\r\n...\r\n# A\r\n"
+    )
     output = tmp_path / "out.md"
     output.write_text("existing\n")
     run = invoke("-r", str(tmp_path), "-d", diagnostics, "-o", str(output), "a.md")
@@ -95,9 +114,9 @@ def test_metadata_error_preserves_output_and_coordinates(
     if diagnostics == "json":
         diagnostic = run.diagnostics()[0]
         assert diagnostic["code"] == "E_INVALID_CONVERSION_METADATA"
-        assert diagnostic["location"] == {"file": "a.md", "line": 2, "column": 11}
+        assert diagnostic["location"] == {"file": "a.md", "line": 2, "column": 12}
     else:
-        assert "location: a.md:2:11" in run.stderr
+        assert "location: a.md:2:12" in run.stderr
 
 
 @pytest.mark.parametrize("option", ["-B", "-I"])

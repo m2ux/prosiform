@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "rules"
-  prosiform-group-depth: "2"
+prosiform:
+  group: "rules"
+  group-depth: 2
 ---
 ## Style
 

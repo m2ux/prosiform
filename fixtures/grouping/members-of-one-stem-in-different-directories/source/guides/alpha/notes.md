@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "guides"
-  prosiform-group-depth: "2"
+prosiform:
+  group: "guides"
+  group-depth: 2
 ---
 What the first run recorded before its sections.
 

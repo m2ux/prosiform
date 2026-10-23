@@ -1,7 +1,7 @@
 ---
-metadata:
-  prosiform-group: "rules"
-  prosiform-group-depth: "1"
+prosiform:
+  group: "rules"
+  group-depth: 1
 ---
 Select rules for your harness:
 

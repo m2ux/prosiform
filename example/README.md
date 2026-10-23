@@ -117,9 +117,9 @@ For example, both artifact files begin with this declaration:
 
 ```yaml
 ---
-metadata:
-  prosiform-group: artifacts
-  prosiform-group-depth: "2"
+prosiform:
+  group: artifacts
+  group-depth: 2
 ---
 ```
 
