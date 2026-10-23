@@ -37,12 +37,13 @@ omitted where qualification still distinguishes the displayed names. It
 carries the member's content above the grouping depth. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
-to the member resolves. A member whose H1 the heading absorbs takes a
-subsection, as does one the arrangement emits nothing else from, so the
-group names every member it merges; such a subsection is the heading
-alone. A member whose content all sits at the grouping depth is named by
-the merged sections it contributes to, and a reference to it resolves to
-the first heading the group emits from it that no other member shares:
+to a member other than the parent resolves. A member whose H1 the
+heading absorbs takes a subsection, as does one the arrangement emits
+nothing else from, so the group names every member it merges; such a
+subsection is the heading alone. A member whose content all sits at the
+grouping depth is named by the merged sections it contributes to, and a
+reference to it resolves to the first heading the group emits from it
+that no other member shares:
 the variant heading naming the document where its contribution carries a
 heading text another member contributes too, and the merged heading
 itself where that text occurs once in the group. No two members of one
@@ -53,6 +54,16 @@ emits merged sections, so a member's preamble is read as that member's
 rather than as one more of the group's own sections. Where the group
 emits no merged section they are its whole structure and sit directly
 beneath its heading.
+
+The parent is the first entry document. Where that document is a member
+and carries a title, the title and the content above the grouping depth
+open the group at the levels the author wrote, and the whole-document
+entry resolves to the parent's first H2 at the destination the bundle
+assigned that heading. The sections the parent carries at the grouping
+depth follow in the parent's order, with the parent's own contribution
+first where several members share one section. A section only another
+member contributes follows those, and the other members' subsections
+sit in the overview after them.
 
 Grouping is decided before ancestry. Conversion metadata fixes each document's
 membership, its grouping depth and the shift each of its contributions
@@ -80,6 +91,7 @@ from prosiform.bundle import (
     carried_headings,
     emitted_text,
     escaped,
+    preamble_end,
     region,
     required,
     rewrite,
@@ -221,6 +233,7 @@ def prepared(
     assigned: dict[tuple[str, str | None], str] | None,
     depth: int,
     root: str = "",
+    keep_title: bool = False,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -228,7 +241,8 @@ def prepared(
     are read here, as they are for a file group. The title the member's
     overview subsection names is absorbed where the member's own H1
     carries it, and is no structural ancestor either way, because the
-    subsection stands in its place.
+    subsection stands in its place. The parent keeps its title, so
+    nothing absorbs it.
     """
     removed = {
         at for one in defined.values() for at in range(one.lines[0], one.lines[1])
@@ -242,7 +256,9 @@ def prepared(
     named = source_fragments(tokens)
     titled_token = absorbed(tokens, PurePosixPath(path).stem)
     absorbing = (
-        titled_token
+        None
+        if keep_title
+        else titled_token
         if titled_token is not None
         and depth > level(titled_token)
         and id(titled_token) in emitting
@@ -407,28 +423,124 @@ def under(member: Member, anchor: Token, depth: int) -> list[Item]:
     ]
 
 
+def above_depth(member: Member, depth: int) -> list[Item]:
+    """The items of one member that sit above the grouping depth, in source order."""
+    return [
+        one
+        for one in member.items
+        if (found := anchored(member, one.token, depth)) is None or level(found) < depth
+    ]
+
+
+def situated(member: Member, depth: int) -> bool:
+    """Whether the parent's own H1 can open the group."""
+    return any(
+        one.token.type == HEADING_OPEN and level(one.token) == 1
+        for one in above_depth(member, depth)
+    )
+
+
+def situate(into: Assembly, member: Member, depth: int) -> None:
+    """The parent's title and preamble, at the levels the author wrote."""
+    for one in above_depth(member, depth):
+        into.region(member, one.token, 0)
+
+
+def arranged(
+    depth: int,
+    parent: Member | None,
+    pooled: Sequence[tuple[str, list[tuple[Member, Token]]]],
+) -> list[tuple[str, list[tuple[Member, Token]]]]:
+    """Parent sections in parent order, then sections another member adds."""
+    if parent is None:
+        return list(pooled)
+    order: list[str] = []
+    for one in parent.items:
+        anchor = anchored(parent, one.token, depth)
+        if anchor is None or level(anchor) != depth:
+            continue
+        text = single_line(parent.text[id(anchor)])
+        if text not in order:
+            order.append(text)
+    by = dict(pooled)
+    leading = [(text, by[text]) for text in order if text in by]
+    seen = set(order)
+    return leading + [(text, contrib) for text, contrib in pooled if text not in seen]
+
+
+def direct(into: Assembly, member: Member) -> None:
+    """Point the parent's whole-document entry at its first H2.
+
+    The heading is the one the bundle emitted for that source heading,
+    so the destination is wherever the merge placed it.
+    """
+    token = next(
+        (
+            one.token
+            for one in member.items
+            if not one.ancestor
+            and one.token.type == HEADING_OPEN
+            and level(one.token) == 2
+            and one.token.map is not None
+        ),
+        None,
+    )
+    if token is None or token.map is None:
+        return
+    line = token.map[0] + 1
+    fragment = member.named[id(token)]
+    for at, heading in enumerate(into.headings):
+        if not isinstance(heading, Carried):
+            continue
+        if any(
+            origin.path == member.path
+            and origin.line == line
+            and origin.fragment == fragment
+            for origin in heading.origins
+        ):
+            into.answer(at, (member.path, None))
+            return
+
+
 def merged(
     named: str,
     depth: int,
     members: Sequence[Member],
     displays: Mapping[str, str] | None = None,
+    parent: str | None = None,
+    headed: bool = True,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
     The members are in root-relative path order, which is the order
     every arrangement below reads them in, so one selection always
-    bundles to the same bytes.
+    bundles to the same bytes. The parent opens the group on its own
+    title where it carries one, and its sections precede every section
+    the merge adds.
     """
     into = Assembly()
-    title = titled(named)
-    into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
-    into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
+    parent_member = next((one for one in members if one.path == parent), None)
+    kept = False
+    if parent_member is not None and situated(parent_member, depth):
+        situate(into, parent_member, depth)
+        kept = True
+    elif headed:
+        title = titled(named)
+        into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
+        into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
     displays = {m.path: m.path for m in members} if displays is None else displays
     names = member_headings([displays[m.path] for m in members], named)
     headings = {m.path: names[displays[m.path]] for m in members}
-    overview(into, headings, depth, members, bool(pooled))
-    sections(into, depth, pooled, headings)
+    order = arranged(depth, parent_member, pooled)
+    if not kept:
+        overview(into, headings, depth, members, bool(pooled), parent)
+    sections(into, depth, order, headings, parent)
+    if kept:
+        others = [one for one in members if one is not parent_member]
+        overview(into, headings, depth, others, bool(pooled), parent)
+    if parent_member is not None:
+        direct(into, parent_member)
     for member in members:
         contributed(into, member)
     reached: dict[Target, int] = {}
@@ -446,6 +558,12 @@ def merged(
         entries,
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
         min(member.path for member in members),
+        wrapped=headed and not kept,
+        entry_at=(
+            preamble_end(into.parts, into.headings)
+            if kept and parent_member is not None
+            else None
+        ),
     )
 
 
@@ -517,6 +635,7 @@ def overview(
     depth: int,
     members: Sequence[Member],
     pooled: bool,
+    parent: str | None = None,
 ) -> None:
     """The subsection each member is named by, and the `Overview` carrying them.
 
@@ -562,7 +681,9 @@ def overview(
     for member in members:
         if not named_here[member.path]:
             continue
-        answers: list[Target] = [(member.path, None)]
+        answers: list[Target] = []
+        if member.path != parent:
+            answers.append((member.path, None))
         if member.absorbing is not None:
             answers.append((member.path, member.named[id(member.absorbing)]))
         text, recorded = generated_part(
@@ -601,10 +722,11 @@ def sections(
     depth: int,
     pooled: Sequence[tuple[str, list[tuple[Member, Token]]]],
     headings: Mapping[str, str],
+    parent: str | None = None,
 ) -> None:
     """One H2 for each distinct source heading text at the grouping depth."""
     for text, contributing in pooled:
-        section(into, depth, text, contributing, headings)
+        section(into, depth, text, contributing, headings, parent)
 
 
 def section(
@@ -613,18 +735,22 @@ def section(
     text: str,
     contributing: Sequence[tuple[Member, Token]],
     headings: Mapping[str, str],
+    parent: str | None = None,
 ) -> None:
-    """One merged section: its heading, then the content its members contribute."""
+    """One merged section: its heading, then the content its members contribute.
+
+    The parent's contribution leads a section several members share.
+    """
+    if parent is not None:
+        contributing = tuple(
+            sorted(contributing, key=lambda pair: pair[0].path != parent)
+        )
     by = SECTION_LEVEL - depth
     variants = len(contributing) > 1
-    answers = (
-        ()
-        if variants
-        else tuple(
-            (member.path, member.named[id(anchor)])
-            for member, anchor in contributing
-            if id(anchor) in member.emitting
-        )
+    answers = tuple(
+        (member.path, member.named[id(anchor)])
+        for member, anchor in contributing
+        if id(anchor) in member.emitting
     )
     merged_heading(into, text, SECTION_LEVEL, contributing, by, answers)
     if variants:

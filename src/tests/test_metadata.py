@@ -354,6 +354,21 @@ def test_reserved_mapping_has_exact_keys(key: str) -> None:
     assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
 
 
+def test_group_heading_false_is_recorded() -> None:
+    found = parse("prosiform: {group: artifacts, group-depth: 2, group-heading: false}")
+    assert found.heading is False
+
+
+def test_an_absent_group_heading_means_the_heading_is_present() -> None:
+    assert parse("prosiform: {group: artifacts, group-depth: 2}").heading is None
+
+
+def test_group_heading_requires_the_group_fields() -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform: {group-heading: false}")
+    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+
+
 def test_root_mapping_nesting_budget() -> None:
     assert parse("prosiform: {root: ..}", depth=2).root == ".."
     with pytest.raises(InvalidMetadata) as caught:

@@ -119,7 +119,7 @@ def test_a_path_ending_in_a_number_sign_keeps_it_in_its_file_heading() -> None:
 def test_the_entry_line_names_one_reference_and_its_destination() -> None:
     assert entry_line([("guide", "guide")]) == (
         "Follow [guide](#guide). "
-        "The rest of this bundle is material that procedure references."
+        "The other sections are material that procedure references."
     )
 
 

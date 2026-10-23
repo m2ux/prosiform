@@ -694,12 +694,20 @@ def generated(
     declaration with the same form is detected as well. Parsing keeps code
     and quoted examples outside the document-level declaration.
     """
-    if len(tokens) < 3 or tokens[0].type != "paragraph_open":
-        return
-    first = tokens[1]
-    if first.type != "inline" or first.map is None:
-        return
-    if not is_entry_line(first.content):
+    first = next(
+        (
+            token
+            for region in regions(tokens)
+            if region.type == "paragraph_open" and region.map is not None
+            for token in tokens
+            if token.type == "inline"
+            and token.map is not None
+            and token.map[0] == region.map[0]
+            and is_entry_line(token.content)
+        ),
+        None,
+    )
+    if first is None or first.map is None:
         return
     links = [token for token in first.children or () if token.type == "link_open"]
     if not links or any(
@@ -845,10 +853,12 @@ def selection(
     An entry reference is one the caller named, and the entry line
     links what the caller asked for, so only the heading an entry
     resolved to stays identifiable. A whole document an entry selected
-    and nothing else named is the selection `None`, whose entry is the
-    file heading. A whole document an entry selected beside named
-    sections keeps that file heading as an entry as well. A whole
-    document only a dependency selected enters the entry line not at all.
+    and nothing else named is the selection `None`. The parent, the
+    first entry document, is entered at its first H2; every other such
+    document is entered at its file heading. A whole document an entry
+    selected beside named sections keeps that heading as an entry as
+    well. A whole document only a dependency selected enters the entry
+    line not at all.
 
     A fragment the document does not yield is a reference that reached
     a document and no section of it, so its diagnostic names that
@@ -1237,6 +1247,32 @@ def group_depths(
         depths[name] = first.depth
         for path in members[name][1:]:
             current = read[path].conversion
+            if (current.heading is False) != (first.heading is False):
+                location = current.heading_location or current.depth_location
+                assert location is not None and first.depth_location is not None
+                raise Failure(
+                    INPUT_FAILURE,
+                    Diagnostic(
+                        ERROR,
+                        f"prosiform.group-heading for group {name!r} "
+                        f"is {str(first.heading is not False).lower()}; "
+                        f"another member declares "
+                        f"{str(current.heading is not False).lower()}",
+                        code=GROUP_DEPTH_CONFLICT,
+                        location=first.heading_location or first.depth_location,
+                        related=(
+                            RelatedLocation(
+                                location.file,
+                                location.line,
+                                location.column,
+                                f"prosiform.group-heading for group {name!r} is "
+                                f"{str(current.heading is not False).lower()}",
+                            ),
+                        ),
+                        remedy="declare group-heading the same way on every "
+                        "member of the group",
+                    ),
+                )
             if current.depth != first.depth:
                 location = current.depth_location
                 assert location is not None
@@ -1310,6 +1346,13 @@ def unambiguous(
             seen[title] = path
 
 
+def parent_document(entries: Collection[Reference]) -> str | None:
+    """The first entry document, which opens the bundle on its own title."""
+    if not isinstance(entries, Sequence) or not entries:
+        return None
+    return entries[0].path or None
+
+
 def assembled(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -1325,8 +1368,10 @@ def assembled(
     other document joins the merged group its slug names, which carries
     its members in root-relative path order. The groups are ordered by
     root-relative path, a merged group taking the first of its
-    members', so one selection always bundles to the same bytes.
+    members', so one selection always bundles to the same bytes. The
+    group that carries the parent leads.
     """
+    parent = parent_document(entries)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
     for path in sorted(
@@ -1349,6 +1394,7 @@ def assembled(
                     assigned,
                     read[path].root,
                     read[path].display or path,
+                    path == parent,
                 )
             )
     for named, paths in merging.items():
@@ -1368,18 +1414,27 @@ def assembled(
                             assigned,
                             depth,
                             read[path].root,
+                            path == parent,
                         )
                         for path in paths
                     ],
                     {path: read[path].display for path in paths},
+                    parent,
+                    read[paths[0]].conversion.heading is not False,
                 )
             )
-    return sorted(
+    ordered = sorted(
         groups,
         key=lambda one: min(
             (read[p].display, read[p].identity or p)
             for p in set(one.record.paths()) | {one.order}
         ),
+    )
+    if parent is None:
+        return ordered
+    return sorted(
+        ordered,
+        key=lambda one: parent not in set(one.record.paths()) | {one.order},
     )
 
 

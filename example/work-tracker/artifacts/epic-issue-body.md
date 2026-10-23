@@ -3,6 +3,7 @@ prosiform:
   root: ".."
   group: "artifacts"
   group-depth: 2
+  group-heading: false
 ---
 # Epic Issue Body
 
