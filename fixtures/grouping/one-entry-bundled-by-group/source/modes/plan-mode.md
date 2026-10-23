@@ -11,7 +11,7 @@ Scopes the solution before any work starts.
 
 ### Draft
 
-Write the first pass, reading it back as [Review Mode](review-mode.md) states.
+Write the first pass, reading it back as [Review Mode](modes/review-mode.md) states.
 
 ### Review
 

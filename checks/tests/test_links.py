@@ -36,6 +36,20 @@ import links
 import pytest
 
 
+def test_declared_root_and_fragment_self_reference(tmp_path: Path) -> None:
+    author = tmp_path / "author"
+    library = tmp_path / "library"
+    author.mkdir()
+    library.mkdir()
+    document = author / "entry.md"
+    document.write_text(
+        "---\nprosiform:\n  root: ../library\n---\n"
+        "# Entry\n\n[Self](#entry) and [Target](target.md#target).\n"
+    )
+    (library / "target.md").write_text("# Target\n")
+    assert links.check(document, online=False) == ([], [])
+
+
 class Answers:
     """The statuses one address returns, in order, and the requests it saw.
 

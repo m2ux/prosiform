@@ -7,7 +7,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["rules/agents.md", "rules/common.md"]
 
 [expected]

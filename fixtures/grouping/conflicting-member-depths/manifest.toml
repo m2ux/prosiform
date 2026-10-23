@@ -3,7 +3,7 @@ description = "Contributing members of one group declare conflicting depths."
 clauses = ["Grouping", "Metadata failures", "Validation and failure contract — Publication"]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["a.md", "b.md"]
 
 [expected]

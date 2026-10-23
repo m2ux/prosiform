@@ -8,7 +8,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["#a-section"]
 
 [expected]

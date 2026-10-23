@@ -64,7 +64,7 @@ def write_fixture(
             "]",
             "",
             "[invocation]",
-            'root = "source"',
+            'cwd = "source"',
             'arguments = ["guide.md"]',
             "",
             "[expected]",

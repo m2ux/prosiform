@@ -1,3 +1,7 @@
+---
+prosiform:
+  root: "."
+---
 # Visual validation examples
 
 The extra documents in `rules/visual/`, `checks/visual/`, `guides/`, and `quick-start.md` exercise [#194](https://github.com/m2ux/prosiform/issues/194) and [#195](https://github.com/m2ux/prosiform/issues/195). They are selected explicitly; the README skill example does not reach them.

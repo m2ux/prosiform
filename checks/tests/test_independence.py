@@ -114,7 +114,7 @@ def manifest(description: str, clause: str = "Block boundaries") -> dict[str, An
     return {
         "description": description,
         "clauses": [clause],
-        "invocation": {"root": "source", "arguments": ["guide.md"]},
+        "invocation": {"cwd": "source", "arguments": ["guide.md"]},
         "expected": {
             "exit_status": 0,
             "stdout": "expected/stdout.md",
@@ -130,7 +130,7 @@ def as_toml(declared: dict[str, Any]) -> str:
     lines.append("clauses = [")
     lines += [f"  {json.dumps(name)}," for name in declared["clauses"]]
     lines += ["]", ""]
-    lines += ["[invocation]", f"root = {json.dumps(invocation['root'])}"]
+    lines += ["[invocation]", f"cwd = {json.dumps(invocation['cwd'])}"]
     lines += [f"arguments = {json.dumps(invocation['arguments'])}", ""]
     lines += [
         "[expected]",
@@ -305,7 +305,7 @@ def test_the_tree_a_declaration_names_is_not_read_as_words(
     tmp_path: Path, stated: set[str]
 ) -> None:
     declared = manifest("Two emitted regions and one blank line between them.")
-    declared["invocation"]["root"] = "rustsource"
+    declared["invocation"]["cwd"] = "rustsource"
     declared["invocation"]["arguments"] = ["modules/guide.md#alpha"]
     corpus = fixture(tmp_path / "fixtures", "a-boundary", declared)
     assert corpus_references(corpus, stated) == []

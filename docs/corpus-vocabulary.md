@@ -11,6 +11,8 @@ The words a sentence needs that the design has no occasion to write.
 | Word | What it does |
 | --- | --- |
 | **able** | capable of the thing named. |
+| **repository** | the versioned source tree used by a check. |
+| **schemeless** | a reference without a URI scheme. |
 | **await** | to stand ready for a thing not yet done. |
 | **across** | spanning something, such as two lines. |
 | **alongside** | beside, of two things emitted together. |

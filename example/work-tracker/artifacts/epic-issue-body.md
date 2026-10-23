@@ -1,5 +1,6 @@
 ---
 prosiform:
+  root: ".."
   group: "artifacts"
   group-depth: 2
 ---
@@ -7,7 +8,7 @@ prosiform:
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
-The delivery lines this body records are defined in [Epic](epic.md).
+The delivery lines this body records are defined in [Epic](artifacts/epic.md).
 
 ## Operations
 
@@ -31,7 +32,7 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 ### *Validate* Epic Body
 

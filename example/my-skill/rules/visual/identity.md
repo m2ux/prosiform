@@ -1,3 +1,7 @@
+---
+prosiform:
+  root: "../.."
+---
 # Identity
 
 This member keeps its own identity.

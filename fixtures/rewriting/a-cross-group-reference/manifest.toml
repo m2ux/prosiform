@@ -9,7 +9,7 @@ clauses = [
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["one/guide.md"]
 
 [expected]

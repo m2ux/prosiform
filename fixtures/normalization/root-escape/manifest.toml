@@ -3,12 +3,12 @@ description = "A reference inside a source normalizing to a path outside the all
 clauses = [
   "Link classification and resource handling — Local Markdown links resolving outside the root",
   "Resolution sequence — step 7",
-  "Resolution sequence — A normalized path outside the root",
+  "Resolution sequence — step 7",
   "Compile before publishing — step 1, allowed source paths resolved against the root",
 ]
 
 [invocation]
-root = "source"
+cwd = "source"
 arguments = ["guide.md"]
 
 [expected]

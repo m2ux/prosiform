@@ -1,4 +1,8 @@
 ---
+prosiform:
+  root: "."
+---
+---
 name: work-tracker
 description: >-
   Plans engineering work as tracker issues: initiatives, epics, and the tasks

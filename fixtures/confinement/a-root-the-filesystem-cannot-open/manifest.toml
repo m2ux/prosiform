@@ -1,0 +1,15 @@
+description = "A root path the filesystem cannot open fails as source access without publishing a bundle."
+
+clauses = ["Metadata failures"]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_ACCESS"
