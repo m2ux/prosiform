@@ -12,7 +12,7 @@ The harness suite passes 615 tests. Independent CLI probes also pass: malformed 
 
 Command: `PROSIFORM_BUILD='uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i01/e06/w03-captured-source-settings/src --frozen pf' make check`.
 
-Final result pending. The first full run exposed the snapshot's missing glossary term; the source contract retains that installation term and the final run checks it again. No check is disabled or weakened.
+Final result: exit 0 on the task head above. All checks pass: dependency lock, lint, formatting, types, 903 implementation tests, 615 harness tests, 254 corpus fixtures, installed-command smoke, layout, tables, online links, vocabulary, invocation, conformance and independence. Conformance reports zero undeclared runtime codes, zero declared codes absent from the runtime and zero fixture declarations naming no clause. The first full run exposed the snapshot's missing glossary term; the source contract retains that installation term. The invocation check also required the help text to state the independent YAML nesting budget. No check is disabled or weakened.
 
 ## GitHub Checks
 
