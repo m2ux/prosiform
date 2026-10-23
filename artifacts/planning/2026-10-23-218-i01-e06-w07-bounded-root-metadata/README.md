@@ -13,6 +13,8 @@ The decoder establishes the metadata model consumed by per-file root resolution.
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w07.md) | Component, scope and validation obligations |
+| [Validation](validation.md) | Revision, criterion coverage, review and plan changes |
+| [Full checks](full-check.log) | Complete project-check output |
 
 ## Links
 
