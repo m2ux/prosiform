@@ -20,7 +20,7 @@ Run from the task worktree: `uv run --project src --frozen python PATH/installed
 
 ## Repository Checks
 
-The local check sequence passes lint, formatting, types, 905 implementation tests, 611 harness tests, all 252 corpus fixtures, installed-wheel smoke, layout, command tables, online links, vocabulary, invocation, conformance and independence. A final complete `make check` run is in progress on the recorded revision; its result is recorded before merge.
+Pass. A complete `make check` run on the recorded revision exits 0: lint, formatting, types, 905 implementation tests, 611 harness tests, all 252 corpus fixtures, installed-wheel smoke, layout, command tables, online links, vocabulary, invocation, conformance and independence. The build command is `PROSIFORM_BUILD='uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i01/e06/w04-per-file-compilation-settings/src --frozen pf'`.
 
 Equivalent annotated grouping fixtures retain their expected output bytes. Three shared usage-example outputs intentionally reflect the groups now declared by their shared source files. The grouped usage-example output itself is byte-identical. Four fixture descriptions use the final contract vocabulary, and the glossary defines its metadata grouping rule.
 
@@ -28,4 +28,4 @@ Conformance reports 22 clauses without a fixture and three installation claims t
 
 ## Remote Checks
 
-Pending: [Checks on the exact head](https://github.com/m2ux/prosiform/actions/runs/39915942493/job/120289433013). Merge requires success and refreshed target requirements.
+Pass: [Checks on the exact head](https://github.com/m2ux/prosiform/actions/runs/39915942493/job/120289433013) completed successfully. The target `i01/e06/main` has no branch protection or active rules; the task has no required human approval. No protection setting changes or bypasses are used.
