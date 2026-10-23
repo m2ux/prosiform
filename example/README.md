@@ -2,7 +2,7 @@
 
 These examples use [work-tracker](work-tracker/SKILL.md), a skill with a routing document, a planning procedure, and linked artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
 
-Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files.
+Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. An entry's `prosiform.root`, when present, is a directory path relative to that file.
 
 ## Bundle a procedure and its dependencies
 
@@ -15,10 +15,10 @@ The [planning procedure](work-tracker/modes/plan-mode.md) links two prerequisite
 
 Read these files first.
 
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Epic](../artifacts/epic.md)
+- [Epic Issue Body](artifacts/epic-issue-body.md)
+- [Epic](artifacts/epic.md)
 
-The caller reached this mode through the routing document [¬ SKILL.md](../SKILL.md), which this procedure defers to a run of its own.
+The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 ```
 
 ### Command
@@ -75,8 +75,7 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 ```bash
 cd example/work-tracker
-pf \
-  -f artifacts/epic-issue-body.md '#record-epic-delivery'
+pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 ```
 
 ### Output
@@ -156,7 +155,7 @@ The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated
 
 ```bash
 cd example/my-skill
-pf procedure.md rules/common.md
+pf -o - procedure.md rules/common.md
 ```
 
 The grouped portion is:

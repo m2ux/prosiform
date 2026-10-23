@@ -27,12 +27,13 @@ Four things are compared:
   line from the help output.
 - **The profile identifier.** The command reports it beside its version,
   and the documented invocation names it.
-- **The statements the contract requires of the documented invocation.**
-  That a failed run stops the work, that reading the sources instead is
-  unsupported, and which platforms the build supports. These are prose
-  rather than a surface the command exposes, so each is held to the
-  sentence that states it; the check keeps the statement from being
-  dropped, and the review that lands it is what holds it true.
+- **The statements the documented invocation carries.**
+  A failed run publishes nothing, reading the sources is unsupported,
+  the supported environment is POSIX, support rests on no-follow access,
+  and file and directory names use hyphens rather than underscores.
+  These are prose rather than a surface the command exposes, so each is
+  held to the sentence that states it; the check keeps the statement
+  from being dropped, and the review that lands it is what holds it true.
 
 Tables are located by their headers and required statements are checked
 throughout the invocation guide.
@@ -82,6 +83,10 @@ STATEMENTS = (
     (
         "the support rests on no-follow access",
         "rests on rooted, no-follow source access",
+    ),
+    (
+        "hyphens rather than underscores in source paths",
+        "File and directory names use hyphens rather than underscores",
     ),
 )
 

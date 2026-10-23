@@ -78,6 +78,8 @@ Metadata errors return exit status `1`: `E_INVALID_FRONTMATTER` identifies inval
 
 One normalized entry publishes a file in the working directory. The name is that entry's path relative to its effective root, without the Markdown suffix, with each separator written as `_`, then `.bundle.md`. A section inserts `__` and the fragment before that suffix. Distinct selections require an explicit `-o` destination. `-o FILE` names an exact file and `-o -` selects stdout.
 
+File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
+
 Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. Bundles open with entry-point links:
 
 ```markdown

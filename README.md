@@ -31,7 +31,7 @@ Leaving retrieval to the agent costs:
 Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
-pf -o skill-bundle.md my-skill/procedure.md my-skill/rules/common.md
+pf -o skill-bundle.md example/my-skill/procedure.md example/my-skill/rules/common.md
 ```
 
 The Common and Agents files each declare group `rules` and depth `1` in their [conversion metadata](invocation.md#conversion-metadata).
@@ -48,7 +48,7 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. One entry writes its bundle to an entry-derived filename in the working directory. Pass `-o -` to write that bundle to standard output.
+Run these from the repository root. One entry writes its bundle to an entry-derived filename in the working directory. Pass `-o -` to write that bundle to standard output. File and directory names use hyphens rather than underscores.
 
 ### Bundle a Source and its Dependencies
 
