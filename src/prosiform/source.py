@@ -188,6 +188,7 @@ class Source:
     conversion: Conversion = Conversion()
     root: str = ""
     display: str = ""
+    identity: str = ""
 
     def line(self, at: int | None) -> int | None:
         """The line of the original file one line of this content occupies."""
@@ -208,11 +209,11 @@ class Capture:
 
     identity: str
     digest: str
-    chain: tuple[str, ...] = ()
-    walk: str = ""
-    directories: tuple[tuple[str, int, int], ...] = ()
-    file_identity: tuple[int, int] | None = None
-    size: int = 0
+    chain: tuple[str, ...]
+    walk: str
+    directories: tuple[tuple[str, int, int], ...]
+    file_identity: tuple[int, int]
+    size: int
 
 
 def hashed(data: bytes) -> str:

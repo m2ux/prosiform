@@ -1,71 +1,9 @@
-"""A reference's path identity: the document it names and the section inside it.
+"""Normalize references under a source-owned dependency base.
 
-A link string is not a path. Percent escapes, an encoded delimiter, a
-query and a relative segment each change which file a reference names, so
-two references are the same dependency, or a reference is one the profile
-resolves at all, only after the sequence below has run over both. Every
-later stage compares what this module returned rather than the text an
-author wrote, because a comparison of the written text answers a
-different question.
-
-The sequence is the design's, step for step, and its order is the whole
-of its correctness.
-
-- **The components split before anything is decoded.** The fragment opens
-  at the first number sign and the query at the first question mark
-  before it, read in the authored text, so `notes%23draft.md` names one
-  filename carrying a number sign rather than a document and a section.
-- **A scheme or an authority ends the sequence.** Such a reference is not
-  a local document. It is classified and returned, never opened, fetched
-  or interpreted, and which scheme it carries decides nothing.
-- **A query is refused**, an explicitly empty one included. A local
-  Markdown document is a file, and a file takes no query.
-- **Each path segment and the fragment decode exactly once**, as UTF-8,
-  with every escape required to be a percent and two hexadecimal digits.
-  A segment decodes alone, so an escape can never produce a delimiter:
-  a decoded separator is a character in a name no root holds, which the
-  next step refuses, rather than a separator the normalization would act
-  on.
-- **A NUL, a control character and a separator are refused**, whether the
-  separator was decoded from an escape or written as a backslash. Local
-  paths are spelled with forward slashes.
-- **`.` and `..` normalize against the base** the reference is written
-  relative to, and a path that walks above that base names a document the
-  allowed root cannot contain.
-- **An absent fragment and an empty one are one whole-document
-  reference**, and a fragment that is present is looked up as the exact
-  text it decoded to.
-
-A reference is a dependency when it resolves to a Markdown file under
-the allowed source root, and text the bundle carries unchanged when it
-resolves outside it. Where the target sits is what decides, and the root
-is the lever the author holds: material a document must carry sits under
-it, material it only names sits outside. One mark overrides that in a
-single direction: a link whose text opens with it is deferred, so this
-run does not compile what position would have carried, and the bundle
-holds the link for a run that will. The run stays responsible for a
-reference under the root either way: a deferred one names a target that
-must exist, and the destination the bundle publishes for it names that
-target from the root, so the later run needs nothing else. The module
-says what a reference names, whether the bundle compiles what it names
-and what a deferred link is published with; it is the command that
-opens a dependency and leaves a mention alone.
-
-A link inside a source is written relative to the document carrying
-it, and a fragment alone names a section of that same document. Both
-bases come from the document the link was written in rather than from
-the one that discovered it, so a document names the same dependency
-however the run reached it.
-
-A drive letter is read before a scheme, because `C:` is spelled as both.
-A drive path names a local document the root cannot contain, and reading
-it as a scheme would emit it as authored.
-
-The module reaches no filesystem, holds no parser and writes no
-diagnostic. It says what a reference names and what kind of refusal a
-reference that names nothing resolvable is; the command says which code
-and which exit status that refusal returns.
-"""
+URI components split before decoding. Local path segments decode once.
+Authored links that escape their source root remain citations; positional
+references permit parent bootstrap. Canonical source identities are relative
+to the invocation working directory, independent of the discovering parent."""
 
 import posixpath
 import re
@@ -251,13 +189,7 @@ def segment(written: str) -> str:
 
 
 def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -> str:
-    """One reference's path, normalized against the directory it is written in.
-
-    A `.` names the directory it sits in and a `..` names the one above,
-    so the walk below holds the segments a path arrives at. An internal
-    `..` the base absorbs is ordinary; one that walks above the base
-    names a document outside the allowed source root.
-    """
+    """Normalize segments, permitting leading parents for positional references."""
     walked = [part for part in base.split(SEPARATOR) if part]
     for part in segments:
         if part in ("", CURRENT):
@@ -292,13 +224,7 @@ def marked(opening: str) -> bool:
 
 
 def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:
-    """One reference as the document and the section it names.
-
-    The base is the root-relative directory the reference is written
-    relative to: the allowed source root itself for a command-line
-    reference, and the referring document's own directory for a link
-    inside a source.
-    """
+    """Decode a reference and normalize its path, retaining the authored access walk."""
     written = components(text)
     if DRIVE.match(written.path) is not None:
         raise OutsideRoot(
@@ -336,15 +262,7 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
 
 
 def inside(document: str, text: str, root: str = "") -> Reference:
-    """One reference a source carries, as the document and the section it names.
-
-    A link is written relative to the document carrying it, so its base
-    is that document's own directory and never the directory of
-    whichever document discovered the link. A fragment alone names a
-    section of the document it is written in, which the directory
-    cannot say, so the document itself is the path such a reference
-    normalizes to.
-    """
+    """Resolve source links from their root and fragments from their source."""
     found = resolve(text)
     if found.external:
         return found
@@ -439,24 +357,7 @@ def resolvable(document: str, text: str, root: str = "") -> Reference | None:
 
 
 def rebased(found: Reference, text: str) -> str:
-    """One deferred link's destination: its target's path from the allowed source root.
-
-    The path is the one the reference normalized to, carrying the
-    spelling the filesystem holds, so a run holding nothing but the
-    root follows the link the bundle hands it. The authored
-    spelling cannot serve: it is written relative to the source
-    document carrying the link, and the bundle records no such
-    directory for a reference it did not compile.
-
-    Each segment is escaped as it is written, so a path the resolution
-    sequence decodes once is the path the filesystem carries. A name
-    holding a number sign reaches the later run as that name rather
-    than as a document and a section of one.
-
-    The fragment is the author's own, carried after the path as they
-    spelled it, because the run that compiles the link looks it up in
-    the target document's index and this run changes no lookup.
-    """
+    """URI-escape a deferred target's canonical working-directory-relative path."""
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
     fragment = components(text).fragment
     if fragment is None:

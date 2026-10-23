@@ -842,6 +842,7 @@ def test_groups_are_ordered_by_root_relative_path(root: Path) -> None:
 
 def test_one_document_named_twice_is_one_group(root: Path) -> None:
     written(root, "guide.md", "# Guide\n")
+    (root / "sub").mkdir()
     run = invoke("guide.md", "sub/../guide.md", cwd=root)
     assert run.stdout.count("# Guide\n") == 1
 

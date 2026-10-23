@@ -1,160 +1,10 @@
-"""The pf command: its options, its two streams and its exit statuses.
+"""Compile captured Markdown sources with file-owned dependency roots.
 
-One invocation names an allowed source root and one or more entry
-references, and returns a status naming the category of its outcome.
-Standard output carries exactly one thing per run: the bundle a compiling
-run publishes, or the response an informational run returns, or nothing at
-all. Diagnostics go to standard error in the format the run asked for, so
-a caller reads a result from the status and an explanation from a stream
-that never carries the bundle. An informational run names no source root
-and returns one of three responses: the usage `-h` shows, the version
-and profile `-v` names, and the error and warning codes `-C`
-reports, which are the codes each part of this build declares rather than
-a list written out a second time.
-
-The command checks the form of every option before it looks for anything
-an option names, so an invalid command line is reported as invalid usage
-rather than as a fault in a tree it may not even have described correctly.
-
-Every entry reference normalizes to a path identity before anything is
-opened: its components split before any escape is decoded, each escape is
-validated and decoded exactly once, and `.` and `..` normalize against
-the allowed source root. A reference the root cannot contain — one
-walking above it, a root-relative or absolute path, a drive path, or a
-scheme or authority naming no local document — fails rather than being
-opened, and a query, an invalid escape, a control character or a
-backslash separator is a command line the grammar does not admit.
-
-The allowed source root is canonicalized once, and every source is read by
-descending its normalized path from that directory without following a
-link, so the root confines what a run opens rather than what a run spells.
-A path reaching a source through a symbolic link below the root fails,
-whatever that link points at.
-
-Every entry document the run names is read as bytes, required to be valid
-UTF-8, stripped of the transport metadata it carries ahead of its content
-and parsed under the declared profile, and selected content carrying a
-construct that profile refuses fails as the refusal it is. Every location
-a diagnostic reports is the location in the file the author holds,
-whatever the strip removed ahead of it.
-
-Validation follows the selection rather than the file. A whole document is
-parsed to index it, because heading enumeration, the definitions selected
-uses resolve against, the ambiguity of a requested fragment and what a
-document opens on are facts about the file; but link resolution,
-the profile's refusals and the authored-occurrence budget
-are held over the regions the run selected, so a defect in a section
-nobody asked for decides no outcome. A section closure later reaches is
-selected content like any other, and its defects are then its run's.
-
-A parsing-safety budget is the exception the contract draws: it is held
-over the complete opened source, because a parser indexes a whole file
-however narrow the requested section is. Crossing one is reported as an
-inability to index that source rather than as a dependency on whatever
-construct crossed it, since the run reached for no such dependency.
-
-A dependency is a reference that resolves to a Markdown document under
-the allowed source root, and the run resolves one against the document
-carrying it, reads it and bundles it. Every other reference is text the
-bundle carries as its author wrote it: a local Markdown link resolving
-outside the root is not resolved further, the document it names is not
-opened, and it stays as authored. A reference carrying a scheme or an
-authority and one naming a file outside the profile's suffixes are text
-by the same rule, and an apparent link inside a code span or a code
-block is an example rather than a reference. Position is therefore what
-the run follows, and the content a run reads for references is the
-content it selected. Traversal repeats over what each round adds until
-no round adds anything, so a reference graph with a cycle reaches a
-fixed point carrying each reachable region once.
-
-The only thing the run bundles is a local Markdown document, so a
-resource is carried as the author wrote it wherever it resolves, the
-allowed source root included. An image names a resource whatever file
-it points at.
-
-A reference is classified by the identity it resolves to rather than by
-the text it was written as, and that identity is read from the target
-alone. A link naming the section it sits in, an including ancestor of
-it, or the whole document that section sits in, resolves to the
-destination already present and expands nothing; one naming another
-section of the same document names a second identity and carries it. A
-destination is held against the identity a reference resolves to, so
-where the link was written, and the region a run consolidated it into,
-leave it as it was.
-
-Each reference the run compiled is rewritten to the destination the
-bundle gave the target it resolved to, and a mark goes with the
-rewrite; a reference the run did not compile keeps every byte its
-author wrote, a mark included. A
-destination belongs to the bundle rather than to a group, so the map
-holding one is known only once every group exists: the groups are
-built to learn the headings the bundle emits, and built again through
-the map those headings produce. The candidate is then read back and
-its headings compared with that map, so a bundle is published only
-where each destination it carries resolves to exactly one heading in
-it.
-
-Each budget the profile declares is counted as the design states and
-fails the compilation at the first boundary it crosses, with nothing
-truncated and no bundle published. One code reports every crossing and
-the message names the budget and the figure that crossed it.
-
-A reference with no fragment, or with an empty one, selects the whole
-document. A reference carrying a nonempty fragment selects the section
-that fragment names, which runs to the next document-level heading of
-equal or higher level; a fragment alone selects from the document
-`-f` names. Each document a run selects from carries every region
-the run's references selected from it into one group of the bundle: its
-own file group, or the merged group its conversion metadata names.
-The groups are ordered
-by root-relative path, a merged group taking the first of its members'.
-A fragment naming
-a heading a container carries names no section and fails as an
-unsupported target; one naming no heading of its document names
-nothing, and fails as the reference to a missing target it is.
-
-A source opening with the bundle entry declaration is refused as output
-offered as input. The first block must be a document-level paragraph with
-the declaration's opening and closing prose and at least one link, all
-links targeting nonempty local fragments. Authored headings name no output;
-code and quoted declarations are examples. Detection reads the complete
-source after transport metadata is stripped, whatever section is selected.
-
-Every source is captured at discovery as the canonical path its read
-arrived at and a hash of the bytes it held, and the whole set is
-rechecked once the candidate is built and before anything publishes. A
-source that changed, disappeared or resolved elsewhere fails the run,
-which publishes nothing and asks for a retry. The recheck is change
-detection between the two reads: a source can be written again after
-it, and a hash taken over one file at a time supplies no atomicity
-across the set, so a run needing strict reproducibility bundles from a
-snapshot made immutable outside this tool.
-
-Two of the outcomes the contract declares are facts about the run rather
-than about any document it reads, so a source tree and an invocation
-state neither: a source that changes during compilation, and a run that
-fails in itself. `-x NAME` is how a conformance run reaches them.
-`source-changed` writes other bytes to each source the run read, between
-discovery and the recheck, so the recheck meets a source that is no
-longer the source the run read; `internal` fails the run in itself once
-the candidate is built and before anything publishes. The detection and
-the reporting are the run's own either way, which is what the outcome
-is about. A run asking for no fault performs none.
-
-The bundle is published once the whole candidate is built. A
-validation-only run publishes nothing, to either stream or to a named
-file; a run naming an output file writes it atomically, through a
-neighbouring temporary file renamed into place, so a reader of that path
-sees the previous bytes or the whole bundle and never a partial one.
-
-An output path naming a source the run read is refused. The comparison
-is made over the completed closure, which is where the full set of
-paths a run read is known, so a document the run reached as a
-dependency is a document the run will not write over. Each source is
-located at its root-relative path under the canonicalized root and
-never through a symbolic link, because the read follows no link and a
-resolution would name a file the run never opened.
-"""
+Positional files resolve from the invocation working directory. Each source
+uses its explicit file-relative root, or the invocation directory when absent.
+Bounded no-follow capture retains bytes, metadata and filesystem identities;
+publication rechecks every captured source and bound directory. Discovery,
+rewriting and candidate validation use the same per-source resolution context."""
 
 import argparse
 import os
@@ -227,7 +77,7 @@ from prosiform.diagnostics import (
     RelatedLocation,
     Reporter,
 )
-from prosiform.grouping import merged, prepared
+from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
     EXPANSION_DEPTH,
@@ -606,21 +456,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
 
 
 def entry(text: str) -> Reference:
-    """One entry reference, normalized to the document identity it names.
-
-    An entry names a document under the allowed source root, so a
-    reference the root cannot contain fails here rather than being
-    opened. A scheme and an authority name no local document at all,
-    which is the one form the resolution sequence classifies rather than
-    refuses: inside a source such a reference is text the bundle
-    carries, and on the command line it names nothing to bundle.
-
-    This is the one place the root's confinement is a refusal. The root
-    binds what the caller asks the run to carry out, and a reference an
-    author wrote inside a source is that author citing material the
-    bundle does not carry, so discovery leaves it as text and nothing
-    downstream of here raises the code again.
-    """
+    """Normalize a positional reference with bounded relative-parent bootstrap."""
     try:
         found = resolve(text, allow_parent=True)
     except Malformed as malformed:
@@ -660,17 +496,7 @@ def entered(
 
 
 def sources(root: Path, read: Collection[str]) -> set[Path]:
-    """Where every source the run read sits, under the allowed source root.
-
-    A source is located by joining its root-relative path to the
-    canonicalized root and by nothing further. The read descends that
-    path one segment at a time and follows no link, so each segment
-    names the directory entry the walk opened and the join is already
-    the file the bytes came from. A resolution through a symbolic link
-    would instead name a file the run never read, and a comparison
-    against that file answers a question about the link rather than
-    about the source.
-    """
+    """Canonical paths of every captured source, including deferred targets."""
     return {Path(os.path.normpath(root / path)) for path in read}
 
 
@@ -696,43 +522,15 @@ class Opened:
     capture: Capture
 
 
-def canonical(root: Path, path: str) -> str:
-    """Where one root-relative source path resolves on the filesystem.
-
-    The allowed source root is canonicalized once and the read follows
-    no link, so the path a discovery resolves is the file whose bytes
-    the run holds. A later resolution naming somewhere else says the
-    source now resolves elsewhere.
-    """
-    return os.path.realpath(root / path)
-
-
 def read_document(
     root: Path, found: Reference, limits: Limits, total: int = 0
 ) -> Opened:
-    """One document's content, read under the allowed source root.
+    """Capture bounded bytes, typed settings and no-follow source/root identities.
 
-    A refusal is worded for the reference that asked for the document
-    and located where that reference is written, so a run says which
-    link it could not follow and which document carries it.
-
-    The read descends the normalized path from the canonicalized root one
-    segment at a time and follows no link, so a reference reaching a
-    source through a symbolic link below the root fails rather than
-    arriving at whatever that link points at.
-
-    What arrives here is a path a normalization produced, which the root
-    can hold: one that walks above its base raises before a path is
-    returned, and the entry reference carrying it is refused where
-    entries are read. The refusals below are therefore the faults a read
-    meets. A walk declining a segment of such a path is this tool's own
-    invariant breaking, which the declared internal-error status reports.
-
-    The bytes are read without newline translation, so a CRLF source
-    reaches the scan spelled as the file spells it, and they are decoded
-    strictly, so a source that is not valid UTF-8 fails here as the source
-    defect it is rather than reaching the command's generic handler.
-    """
+    Metadata resolves only after the source has been captured within the byte
+    and nesting limits. An explicit root is walked from its declaring directory;
+    absence binds the invocation working directory. Diagnostics retain physical
+    coordinates and the referring chain."""
     reference, name = found.original, found.path
     written = "the entry reference" if found.origin is None else "the reference"
     chain = found.chain
@@ -800,7 +598,7 @@ def read_document(
             chain=chain,
         ) from undecodable
     captured = Capture(
-        str(root / name),
+        observed[-1][0],
         hashed(data),
         chain,
         found.walk or name,
@@ -843,6 +641,7 @@ def read_document(
             source,
             root="" if effective == "." else effective,
             display=os.path.relpath(root / name, rooted[-1][0]),
+            identity=captured.identity,
         )
         captured = replace(captured, directories=(*captured.directories, *rooted))
         return Opened(source, len(data), captured)
@@ -960,20 +759,7 @@ def unsafe(boundary: Unsafe, chain: Sequence[str]) -> Failure:
 
 
 def recheck(root: Path, captured: dict[str, Capture]) -> None:
-    """Hold every source the run read to still being the source it read.
-
-    Each source is read again and compared against the canonical path
-    it resolved to and the hash of the bytes it held. A source that
-    changed, disappeared or resolved elsewhere fails the run, and the
-    remedy is to run it again.
-
-    This is change detection. It establishes that a source differs from
-    what discovery read, between that read and this one, and nothing
-    beyond: a source can be written again after the comparison, and a
-    hash taken over one file at a time states nothing about the set of
-    them together. A run needing strict reproducibility bundles from a
-    source snapshot made immutable outside this tool.
-    """
+    """Verify captured bytes and filesystem identities before publication."""
     for path in sorted(captured):
         was = captured[path]
         try:
@@ -987,7 +773,7 @@ def recheck(root: Path, captured: dict[str, Capture]) -> None:
             )
         except (Unreadable, OSError) as error:
             raise changed(path, str(error), was.chain) from error
-        if was.file_identity is not None and observed[-1][1:] != was.file_identity:
+        if observed[-1][1:] != was.file_identity:
             raise changed(path, "source identity changed", was.chain)
         if hashed(data) != was.digest:
             raise changed(path, "source bytes changed", was.chain)
@@ -1332,6 +1118,7 @@ def traverse(
     while frontier:
         hop += 1
         for one in frontier:
+            verify_cached(root, one, captured)
             if not one.path or one.path in read:
                 continue
             limits.hold(FILES, len(read) + 1)
@@ -1441,7 +1228,9 @@ def group_depths(
 ) -> dict[str, int]:
     """Consistent depths for named groups, ordered by identity and source path."""
     members: dict[str, list[str]] = {}
-    for path in sorted(selected, key=lambda p: (read[p].display, p)):
+    for path in sorted(
+        selected, key=lambda p: (read[p].display, read[p].identity or p)
+    ):
         name = read[path].conversion.group
         if name is not None:
             members.setdefault(name, []).append(path)
@@ -1504,6 +1293,25 @@ def unambiguous(
                 chain=selecting[0].chain,
             )
         headed[title] = path
+    members: dict[str, list[str]] = {}
+    for path in selected:
+        name = read[path].conversion.group
+        if name is not None:
+            members.setdefault(name, []).append(path)
+    for name, paths in members.items():
+        displays = {path: read[path].display or path for path in paths}
+        names = member_headings(list(displays.values()), name)
+        seen: dict[str, str] = {}
+        for path in paths:
+            title = names[displays[path]].casefold()
+            if title in seen:
+                raise input_failure(
+                    f"{path!r} and {seen[title]!r} share member heading {title!r}",
+                    code=AMBIGUOUS_FILE_GROUP,
+                    remedy="use distinguishable member paths",
+                    reference=path,
+                )
+            seen[title] = path
 
 
 def assembled(
@@ -1525,7 +1333,9 @@ def assembled(
     """
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path in sorted(selected, key=lambda p: (read[p].display, p)):
+    for path in sorted(
+        selected, key=lambda p: (read[p].display, read[p].identity or p)
+    ):
         selecting = selected[path]
         named = read[path].conversion.group
         if named is not None:
@@ -1571,7 +1381,8 @@ def assembled(
     return sorted(
         groups,
         key=lambda one: min(
-            (read[p].display, p) for p in set(one.record.paths()) | {one.order}
+            (read[p].display, read[p].identity or p)
+            for p in set(one.record.paths()) | {one.order}
         ),
     )
 

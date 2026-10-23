@@ -179,3 +179,34 @@ def test_raw_limit_stops_before_complete_read(
 def test_root_option_is_invalid_usage(tmp_path: Path) -> None:
     run = invoke("-r", ".", "a.md", cwd=tmp_path)
     assert run.status == 2
+
+
+def test_equal_member_names_across_roots_are_ambiguous(tmp_path: Path) -> None:
+    for folder in ("one", "two"):
+        written(
+            tmp_path,
+            f"{folder}/same.md",
+            "---\nprosiform: {root: ., group: rules, group-depth: 2}\n---\n"
+            "# Same\n\n## Run\n\nContent.\n",
+        )
+    run = invoke("-d", "json", "one/same.md", "two/same.md", cwd=tmp_path)
+    assert run.status == 1
+    assert run.diagnostics()[0]["code"] == AMBIGUOUS_FILE_GROUP
+
+
+@pytest.mark.parametrize("linked", [False, True])
+def test_a_cached_target_still_verifies_each_access_route(
+    tmp_path: Path, linked: bool
+) -> None:
+    written(tmp_path, "b.md", "# B\n")
+    (tmp_path / "real").mkdir()
+    (tmp_path / "alias").symlink_to("real", target_is_directory=True)
+    if linked:
+        written(tmp_path, "a.md", "# A\n\n[B](b.md) [Alias](alias/../b.md)\n")
+        entries = ["b.md", "a.md"]
+    else:
+        entries = ["b.md", "alias/../b.md"]
+    run = invoke("-d", "json", *entries, cwd=tmp_path)
+    assert run.status == 1
+    assert run.stdout == ""
+    assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
