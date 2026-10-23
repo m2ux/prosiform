@@ -13,6 +13,9 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 | Artifact | What it holds |
 | --- | --- |
 | [Work Item](w01.md) | Scope, component and validation obligations |
+| [Contract Review](validation.md) | Requirement trace, matrix coverage, diagnostics and exact candidate checks |
+| [Contract Check](contract-check.py) | Reproducible local candidate checks using pinned baseline helpers |
+| [Change List](changes.md) | Bounded refinements and remaining delivery prerequisite |
 
 ## Delivery Context
 
@@ -29,8 +32,8 @@ The user requested delivery of the next unit after prioritizing this epic. W01 i
 ## Progress
 
 - [x] Confirm queue, task scope and prerequisites.
-- [ ] Reserve and dispatch the task.
-- [ ] Implement and review the contract.
+- [x] Reserve and dispatch the task.
+- [x] Implement and review the contract.
 - [ ] Validate and publish the delivery PR.
 - [ ] Merge and record delivery when repository prerequisites hold.
 
