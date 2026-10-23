@@ -24,9 +24,9 @@ Nested files that belong with a parent write a directory climb in `prosiform.roo
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| [W01](w01.md) | Resolve omitted roots from the reaching parent | AC1, AC2, AC3 | [E06:W08](https://github.com/m2ux/prosiform/issues/218) | | |
-| [W02](w02.md) | Render one variant for each root | AC4, AC5, AC6 | W01 | | |
-| [W03](w03.md) | State the inherited root contract | AC7, AC8 | W02, [E06:W11](https://github.com/m2ux/prosiform/issues/218) | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-polymorphic-root-variants/w01.md) | Resolve omitted roots from the reaching parent | AC1, AC2, AC3 | [E06:W08](https://github.com/m2ux/prosiform/issues/218) | | |
+| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-polymorphic-root-variants/w02.md) | Render one variant for each root | AC4, AC5, AC6 | W01 | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-polymorphic-root-variants/w03.md) | State the inherited root contract | AC7, AC8 | W02, [E06:W11](https://github.com/m2ux/prosiform/issues/218) | | |
 
 ## Acceptance Criteria
 
