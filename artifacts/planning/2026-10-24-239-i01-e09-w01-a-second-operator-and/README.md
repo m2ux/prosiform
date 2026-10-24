@@ -13,6 +13,7 @@ The work is on `i01/e09/w01-a-second-operator-and`, based on `i01/e09/main`. It 
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w01.md) | Implementation scope and required tests |
+| [Implementation evidence](implementation.md) | Where each criterion is shown, the code chosen for the two-operator refusal, and the check results |
 
 ## Links
 
