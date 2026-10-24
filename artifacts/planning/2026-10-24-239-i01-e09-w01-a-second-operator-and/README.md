@@ -14,6 +14,8 @@ The work is on `i01/e09/w01-a-second-operator-and`, based on `i01/e09/main`. It 
 | --- | --- |
 | [Work item](w01.md) | Implementation scope and required tests |
 | [Implementation evidence](implementation.md) | Where each criterion is shown, the code chosen for the two-operator refusal, and the check results |
+| [Validation](validation.md) | The delivery run's criterion-by-criterion account, review and delivery result |
+| [Full checks](full-check.log) | Complete validation run at the task head |
 
 ## Links
 
