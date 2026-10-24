@@ -2,6 +2,8 @@
 name: work-planner
 description: >-
   Plans and maintains agent-engineering work on GitHub: proposals, initiatives, epics, tasks and theme boards. Use to propose work or scope a problem; plan or break down work; raise, restructure, align or renumber an initiative or epic; check issue format, criteria, dependencies or delivery; fold review findings into issues; sync completed work and close what is finished; advance a board, decide what moves to ready or what to pick up next; deliver board work or dispatch ready tasks; explain a pull request, write its architecture overview or diagram its changes; hoist, triage or find a home for orphan issues; produce a standup or Slack status update; or revise the work-planner skill itself.
+prosiform:
+  dispatch: A marked link is compiled by the reading agent and handed to a sub-agent, which is the run its material belongs to.
 ---
 
 # Work Planner
