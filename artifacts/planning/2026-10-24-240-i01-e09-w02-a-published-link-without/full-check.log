@@ -1,5 +1,5 @@
 cd src && uv lock --check
-Resolved 24 packages in 0.76ms
+Resolved 24 packages in 0.97ms
 uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks
 [1;32mAll checks passed![0m
 uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks
@@ -23,7 +23,7 @@ cd src && uv run --frozen pytest
 ........................................................................ [ 92%]
 ........................................................................ [ 98%]
 .............                                                            [100%]
-1093 passed in 3.58s
+1093 passed in 3.61s
 uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests
 ........................................................................ [ 11%]
 ........................................................................ [ 23%]
@@ -34,7 +34,7 @@ uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir 
 ........................................................................ [ 80%]
 ........................................................................ [ 92%]
 ..................................................                       [100%]
-626 passed in 9.47s
+626 passed in 7.99s
 uv run --project src --frozen python checks/corpus.py
 absorbed-title/a-reference-naming-a-title-no-heading-absorbed: pass
 absorbed-title/a-reference-naming-an-absorbed-title: pass
@@ -299,10 +299,10 @@ validation-scope/the-sibling-once-closure-includes-it: pass
 corpus check: 260 fixture(s), 260 pass, 0 fail, 0 awaited, 0 unexpected pass
 python3 checks/smoke.py
 ok   wheel        prosiform-0.9.0-py3-none-any.whl
-ok   installed    /tmp/pf-smoke-bqnpd655/environment
-ok   resolved     pf — /tmp/pf-smoke-bqnpd655/environment/bin/pf, outside the repository
+ok   installed    /tmp/pf-smoke-q6s2ucy5/environment
+ok   resolved     pf — /tmp/pf-smoke-q6s2ucy5/environment/bin/pf, outside the repository
 ok   version      pf 0.9.0 (skill-markdown-v1)
-ok   bundled      guide.md from /tmp/pf-smoke-bqnpd655/sources, run from /tmp/pf-smoke-bqnpd655/elsewhere
+ok   bundled      guide.md from /tmp/pf-smoke-q6s2ucy5/sources, run from /tmp/pf-smoke-q6s2ucy5/elsewhere
 ok   root option  invalid CLI usage
 ok   glossary     glossary.md, shipped
 

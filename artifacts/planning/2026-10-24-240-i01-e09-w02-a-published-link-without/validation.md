@@ -14,6 +14,8 @@ The strip is read from the deferral operator alone, which is what the seven `dis
 
 A third guard is the group of references the bundle rebased no destination for. A marked resource, a marked citation above the root, and a marked reference naming no Markdown document each publish every byte their author wrote, mark included. Only a withheld link under the root has its destination rebased, so only that one's mark is redundant. `resource/a-marked-resource-is-emitted-as-authored` and `citation/a-marked-reference-above-the-root` are unchanged by this unit and pass.
 
+Both guards were checked by breaking the rule rather than by reading it. Widening `unmarked` from the deferral operator to any operator fails `a-declared-dispatch-text-opens-the-bundle`, `a-dispatched-destination-named-from-the-root`, `a-dispatched-reference-is-not-compiled` and `a-metadata-field-carries-no-dispatch`, so the seven dispatch fixtures are what holds the strip to `¬`. The rule was restored and the run repeated before the branch was published.
+
 A heading carrying a deferred link is read the same way, because the heading's published text is what a renderer slugs. An ancestor title that carried a deferred link is now emitted without the mark and recorded without it, and the fragment a reference resolves against stays the slug of the authored text, so a reference into such a heading still resolves.
 
 ## Classification
