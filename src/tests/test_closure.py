@@ -19,12 +19,16 @@ from prosiform.closure import (
     Malformed,
     OutsideRoot,
     bundled,
-    deferring,
+    conflicting,
+    deferred,
+    dispatched,
     identity,
     inside,
-    marked,
+    operators,
     rebased,
     resolve,
+    withholding,
+    withholding_target,
 )
 
 
@@ -136,16 +140,47 @@ def test_a_backslash_separator_is_refused() -> None:
         resolve("sub\\guide.md")
 
 
-def test_a_link_text_opening_with_the_mark_is_deferred() -> None:
-    assert marked("¬ Record Epic Delivery")
+def test_a_link_text_opening_with_the_deferral_mark_is_deferred() -> None:
+    assert deferred("¬ Record Epic Delivery")
 
 
 def test_a_link_text_carrying_the_mark_elsewhere_is_not_deferred() -> None:
-    assert not marked("the ¬ operator")
+    assert not deferred("the ¬ operator")
 
 
 def test_a_link_text_with_no_mark_is_not_deferred() -> None:
-    assert not marked("Record Epic Delivery")
+    assert not deferred("Record Epic Delivery")
+
+
+def test_a_link_text_opening_with_the_dispatch_mark_is_dispatched() -> None:
+    assert dispatched("» Record Epic Delivery")
+
+
+def test_a_link_text_carrying_the_dispatch_mark_elsewhere_is_not_dispatched() -> None:
+    assert not dispatched("the » operator")
+
+
+def test_a_dispatch_mark_is_no_deferral_and_the_two_marks_are_told_apart() -> None:
+    assert not deferred("» the rules")
+    assert not dispatched("¬ the rules")
+
+
+def test_both_marks_opening_one_text_conflict_however_they_are_spaced() -> None:
+    assert conflicting("¬ » the rules")
+    assert conflicting("»¬ the rules")
+    assert conflicting("¬  »the rules")
+
+
+def test_one_operator_alone_does_not_conflict() -> None:
+    assert not conflicting("¬ the rules")
+    assert not conflicting("» the rules")
+    assert not conflicting("¬ and » the rules")
+
+
+def test_operators_are_each_operator_one_text_opens_with() -> None:
+    assert operators("¬ » the rules") == ("¬", "»")
+    assert operators("» the rules") == ("»",)
+    assert operators("the ¬ rules") == ()
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
@@ -216,8 +251,9 @@ def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
     assert (found.path, found.fragment) == ("docs/guide.md", "alpha")
 
 
-def test_a_marked_reference_under_the_root_is_no_dependency() -> None:
+def test_a_withheld_reference_under_the_root_is_no_dependency() -> None:
     assert bundled("guide.md", "rules.md", "¬ the rules") is None
+    assert bundled("guide.md", "rules.md", "» the rules") is None
 
 
 def test_the_same_reference_unmarked_is_a_dependency() -> None:
@@ -226,7 +262,7 @@ def test_the_same_reference_unmarked_is_a_dependency() -> None:
     assert found.path == "rules.md"
 
 
-def test_a_mark_written_inside_a_link_text_defers_nothing() -> None:
+def test_a_mark_written_inside_a_link_text_withholds_nothing() -> None:
     assert bundled("guide.md", "rules.md", "the ¬ operator") is not None
 
 
@@ -248,14 +284,17 @@ def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
     assert bundled("guide.md", destination, "the rules") is None
 
 
-def test_a_marked_reference_under_the_root_is_a_deferred_target() -> None:
-    found = deferring("docs/guide.md", "rules.md", "¬ the rules")
+@pytest.mark.parametrize("opening", ["¬ the rules", "» the rules"])
+def test_a_withheld_reference_under_the_root_is_a_withheld_target(
+    opening: str,
+) -> None:
+    found = withholding_target("docs/guide.md", "rules.md", opening)
     assert found is not None
     assert found.path == "rules.md"
 
 
-def test_an_unmarked_reference_defers_nothing() -> None:
-    assert deferring("guide.md", "rules.md", "the rules") is None
+def test_an_unmarked_reference_withholds_nothing() -> None:
+    assert withholding_target("guide.md", "rules.md", "the rules") is None
 
 
 @pytest.mark.parametrize(
@@ -270,10 +309,11 @@ def test_an_unmarked_reference_defers_nothing() -> None:
         "rules.md?view=raw",
     ],
 )
-def test_a_mark_on_a_reference_the_run_carries_none_of_defers_nothing(
+def test_a_mark_on_a_reference_the_run_carries_none_of_withholds_nothing(
     destination: str,
 ) -> None:
-    assert deferring("guide.md", destination, "¬ the rules") is None
+    assert withholding_target("guide.md", destination, "¬ the rules") is None
+    assert withholding_target("guide.md", destination, "» the rules") is None
 
 
 @pytest.mark.parametrize(
@@ -286,9 +326,10 @@ def test_a_mark_on_a_reference_the_run_carries_none_of_defers_nothing(
         ("guide.md", "notes%23draft.md#run", "notes%23draft.md#run"),
     ],
 )
-def test_a_deferred_destination_names_its_target_from_the_root(
-    document: str, destination: str, expected: str
+@pytest.mark.parametrize("opening", ["¬ the rules", "» the rules"])
+def test_a_withheld_destination_names_its_target_from_the_root(
+    document: str, destination: str, expected: str, opening: str
 ) -> None:
-    found = deferring(document, destination, "¬ the rules")
+    found = withholding_target(document, destination, opening)
     assert found is not None
     assert rebased(found, destination) == expected

@@ -33,6 +33,7 @@ RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 DEPTH = "group-depth"
 HEADING = "group-heading"
+DISPATCH = "dispatch"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
     "null": re.compile(r"(?:~|null|Null|NULL|)"),
@@ -73,9 +74,11 @@ class Conversion:
     group: str | None = None
     depth: int | None = None
     heading: bool | None = None
+    dispatch: str | None = None
     group_location: Location | None = None
     depth_location: Location | None = None
     heading_location: Location | None = None
+    dispatch_location: Location | None = None
 
 
 class InvalidMetadata(Exception):
@@ -171,6 +174,34 @@ def _finite_float(value: str) -> tuple[str, int]:
     significant = digits.rstrip("0")
     power += len(digits) - len(significant) - len(fraction)
     return (("-" if negative else "") + significant, power)
+
+
+def declared_dispatch(declared: _Node | None) -> _Node | None:
+    """One declared dispatch text, held to the shape the key admits.
+
+    The text states what a dispatch mark means for that skill, in the
+    skill's own words, so it is a single line of printable characters
+    with at least one of them not blank. The compiler reads no structure
+    in it: what it holds is the author's sentence, published after the
+    entry sentence so a reader meets the rule and the entries as one
+    instruction.
+    """
+    if declared is None:
+        return None
+    if not declared.value.strip() or any(
+        char in ":/\u0085\u2028\u2029"
+        or ord(char) < 32
+        or 127 <= ord(char) <= 159
+        or 0xD800 <= ord(char) <= 0xDFFF
+        or ord(char) in (0xFFFE, 0xFFFF)
+        for char in declared.value
+    ):
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            "prosiform.dispatch must be printable, single-line and nonblank",
+            declared.location,
+        )
+    return declared
 
 
 def decode(
@@ -333,7 +364,7 @@ def decode(
                 key.location,
             )
         name = "prosiform." + key.value
-        if key.value not in ("root", GROUP, DEPTH, HEADING):
+        if key.value not in ("root", GROUP, DEPTH, HEADING, DISPATCH):
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
@@ -370,6 +401,7 @@ def decode(
         )
     root_value = declared_root.value if declared_root is not None else None
     root_location = declared_root.location if declared_root is not None else None
+    dispatch = declared_dispatch(fields.get(DISPATCH))
     if GROUP not in fields and DEPTH not in fields:
         if HEADING in fields:
             raise _fail(
@@ -378,7 +410,12 @@ def decode(
                 "prosiform.group-depth",
                 fields[HEADING].location,
             )
-        return Conversion(root=root_value, root_location=root_location)
+        return Conversion(
+            root=root_value,
+            root_location=root_location,
+            dispatch=None if dispatch is None else dispatch.value,
+            dispatch_location=None if dispatch is None else dispatch.location,
+        )
     if GROUP not in fields or DEPTH not in fields:
         present = GROUP if GROUP in fields else DEPTH
         raise _fail(
@@ -424,9 +461,11 @@ def decode(
         group=group.value,
         depth=int(numeric_depth),
         heading=heading,
+        dispatch=None if dispatch is None else dispatch.value,
         group_location=group.location,
         depth_location=depth.location,
         heading_location=(
             declared_heading.location if declared_heading is not None else None
         ),
+        dispatch_location=None if dispatch is None else dispatch.location,
     )

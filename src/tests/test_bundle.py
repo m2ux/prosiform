@@ -19,6 +19,7 @@ from prosiform.bundle import (
     escaped,
     group,
     heading_text,
+    is_entry_line,
     openings,
     title_cased,
 )
@@ -132,6 +133,42 @@ def test_the_entry_line_names_every_reference_the_run_was_given() -> None:
 
 def test_the_entry_line_escapes_the_text_of_the_heading_it_names() -> None:
     assert "[plan\\_\\[v2\\]](#plan_v2)" in entry_line([("plan_[v2]", "plan_v2")])
+
+
+def test_a_declared_dispatch_text_follows_the_entry_sentence() -> None:
+    sentence = entry_line([("guide", "guide")])
+    assert entry_line([("guide", "guide")], "Each mark is the sub-agent's.") == (
+        f"{sentence} Each mark is the sub-agent's."
+    )
+
+
+def test_a_declared_dispatch_text_follows_the_sentence_for_any_entry_count() -> None:
+    named = [("a", "a"), ("b", "b")]
+    assert entry_line(named, "One rule.") == f"{entry_line(named)} One rule."
+
+
+def test_an_absent_dispatch_text_leaves_the_entry_sentence_alone() -> None:
+    assert entry_line([("guide", "guide")]) == entry_line([("guide", "guide")], None)
+
+
+def test_a_dispatch_text_is_escaped_as_literal_text() -> None:
+    assert "a \\[v2\\] rule" in entry_line([("g", "g")], "a [v2] rule")
+
+
+def test_the_entry_line_is_recognized_wherever_its_sentence_is_published() -> None:
+    assert is_entry_line(entry_line([("guide", "guide")]))
+    assert is_entry_line(entry_line([("guide", "guide")], "One rule."))
+
+
+def test_a_paragraph_that_does_not_carry_the_entry_sentence_is_no_entry_line() -> None:
+    assert not is_entry_line("Follow the guide.")
+    assert not is_entry_line("Read [guide](#guide).")
+
+
+def test_a_dispatch_text_reaches_the_bundle_as_one_paragraph_where_the_sentence_is() -> None:
+    carried = grouped("note.md", "Body.\n")
+    line = entry_line([("Note", "note")], "One rule.")
+    assert f"{line}\n" in assemble(line, [carried])
 
 
 def test_a_group_opens_on_its_file_heading() -> None:
