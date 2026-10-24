@@ -6,4 +6,6 @@ None.
 
 ## Held
 
-- **Re-prioritisation — task row W02 on #242.** The row stays held for this record. No session is dispatched for it while the parallel entry-line fix rewrites the nine expected stdout files it must regenerate, so the hold is the current plan rather than a defect. The row is released when the user says so, and the work then starts from the epic base that carries the fix.
+None.
+
+The row was held from 2026-10-24 while the parallel entry-line fix rewrote the nine expected stdout files this unit regenerates. That fix landed on `main` as pull request #244, so the hold is released and the work starts from the epic base that carries it.

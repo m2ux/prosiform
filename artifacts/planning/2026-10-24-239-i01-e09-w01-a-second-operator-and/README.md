@@ -13,7 +13,8 @@ The work is on `i01/e09/w01-a-second-operator-and`, based on `i01/e09/main`. It 
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w01.md) | Implementation scope and required tests |
-| [Validation](validation.md) | Criterion evidence, review, plan changes and delivery result |
+| [Implementation evidence](implementation.md) | Where each criterion is shown, the code chosen for the two-operator refusal, and the check results |
+| [Validation](validation.md) | The delivery run's criterion-by-criterion account, review and delivery result |
 | [Full checks](full-check.log) | Complete validation run at the task head |
 
 ## Links
