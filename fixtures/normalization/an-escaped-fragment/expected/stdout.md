@@ -1,4 +1,4 @@
-Follow [Run It](#run-it). The rest of this bundle is material that procedure references.
+Follow [Run It](#run-it). The other sections are material that procedure references.
 
 # Guide
 

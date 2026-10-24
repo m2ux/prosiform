@@ -1,4 +1,4 @@
-Follow [Agents](#agents) and [Common](#common). The rest of this bundle is material those procedures reference.
+Follow [Style](#style) and [Common](#common). The other sections are material those procedures reference.
 
 # Rules
 

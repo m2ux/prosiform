@@ -156,6 +156,15 @@ NOTE = """# Note
 The note says so.
 """
 
+HEADED = """# Note
+
+The note says so.
+
+## Detail
+
+The detail the note holds.
+"""
+
 RULES = """# Rules
 
 Each rule the quoted procedure names.
@@ -299,8 +308,9 @@ def test_a_recorded_level_beyond_the_sixth_fails() -> None:
 
 
 def test_a_source_heading_recorded_at_the_group_level_fails() -> None:
-    one = built({"guide.md": GUIDE}, ["guide.md"])
-    one.groups = [promoted(one.groups[0])]
+    one = built({"guide.md": GUIDE, "note.md": HEADED}, ["guide.md"])
+    wrapped = next(each for each in one.groups if each.order != "guide.md")
+    one.groups = [promoted(wrapped) if each is wrapped else each for each in one.groups]
     assert refused(one).invariant == GROUP_ISOLATION
 
 
@@ -368,8 +378,9 @@ def doubled(one: Group) -> Group:
 
 
 def test_a_generated_record_carries_no_source_range() -> None:
-    one = built({"guide.md": GUIDE}, ["guide.md"])
-    wrapper = one.groups[0].record.headings[0]
+    one = built({"guide.md": GUIDE, "note.md": NOTE}, ["guide.md"])
+    wrapped = next(each for each in one.groups if each.order != "guide.md")
+    wrapper = wrapped.record.headings[0]
     assert isinstance(wrapper, Generated)
     assert not hasattr(wrapper, "origin")
 
@@ -384,12 +395,14 @@ def test_a_carried_record_names_the_source_heading_it_answers_to() -> None:
 
 def test_a_range_names_the_lines_of_its_source_it_occupies() -> None:
     one = built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"])
-    assert one.groups[0].record.ranges[0] == Range("guide.md", (2, 5), (4,))
+    quote = Range("guide.md", (2, 5), (4,))
+    assert quote in one.groups[0].record.ranges
 
 
 def test_a_definition_line_is_recorded_as_removed_rather_than_absent() -> None:
     one = built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"])
-    assert one.groups[0].record.ranges[0].kept() == [2, 3]
+    quote = next(one for one in one.groups[0].record.ranges if one.lines == (2, 5))
+    assert quote.kept() == [2, 3]
 
 
 UNTERMINATED = """# Guide

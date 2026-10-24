@@ -1,8 +1,8 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The settings live in docs/note.md, and the archived copy sits at
 ../secrets.md. A raw view of the first is spelled docs/note.md?view=raw.
 
 None of those is a link, so each is the text its author wrote.
+
+Follow [Guide](#guide). The other sections are material that procedure references.

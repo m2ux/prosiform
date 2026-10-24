@@ -1,6 +1,4 @@
-Follow [References/Design-Flow](#referencesdesign-flow). The rest of this bundle is material that procedure references.
-
-# References/Design-Flow
+# Design Flow
 
 How a definition is designed. A requirement becomes a function and an expected behaviour. Structure is synthesised from that behaviour. The behaviour the structure exposes is compared with the expected behaviour, and the structure can be reformulated.
 
@@ -40,6 +38,8 @@ flowchart LR
 | 8 | S → F | Function is reformulated |
 
 Teleological language and ontological language share no terms. There is no procedure that derives a structure from a purpose. Step 2 is a synthesis. Steps 6, 7, and 8 are the same synthesis run again when the comparison fails.
+
+Follow [Two Cycles](#two-cycles). The other sections are material that procedure references.
 
 ## Two Cycles
 

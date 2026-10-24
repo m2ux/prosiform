@@ -1,7 +1,5 @@
-Follow [Notes](#notes). The rest of this bundle is material that procedure references.
-
-# Notes
-
-## guide
+# guide
 
 Authored content.
+
+Follow [guide](#guide). The other sections are material that procedure references.

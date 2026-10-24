@@ -1,16 +1,8 @@
-Follow [Plan](#plan) and [Review](#review). The rest of this bundle is material those procedures reference.
-
-# Modes
-
-## Overview
-
-### Plan
+# Plan Mode
 
 Scopes the solution before any work starts.
 
-### Review
-
-Reads a plan back against the goal it states.
+Follow [Procedure](#procedure) and [Review](#review-4). The other sections are material those procedures reference.
 
 ## Procedure
 
@@ -57,3 +49,9 @@ Write the findings down.
 ## Outcomes
 
 A plan whose findings are recorded.
+
+## Overview
+
+### Review
+
+Reads a plan back against the goal it states.

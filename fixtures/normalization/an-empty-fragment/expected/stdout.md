@@ -1,8 +1,8 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The procedure requires [the notes](#notes) and nothing else.
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Notes
 

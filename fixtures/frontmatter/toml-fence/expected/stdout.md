@@ -1,12 +1,12 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
-# Guide
-
 +++
 title = "Guide"
 +++
 
+# Guide
+
 An opening paragraph, carried into the bundle as the source wrote it.
+
+Follow [Run](#run). The other sections are material that procedure references.
 
 ## Run
 

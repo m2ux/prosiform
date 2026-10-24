@@ -1,4 +1,8 @@
-Follow [Zulu](#zulu). The rest of this bundle is material that procedure references.
+# Zulu
+
+Zulu body, which needs [mike](#mike).
+
+Follow [Zulu](#zulu). The other sections are material that procedure references.
 
 # Alpha
 
@@ -7,7 +11,3 @@ Alpha body.
 # Mike
 
 Mike body, which needs [alpha](#alpha).
-
-# Zulu
-
-Zulu body, which needs [mike](#mike).

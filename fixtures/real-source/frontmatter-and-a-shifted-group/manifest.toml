@@ -26,5 +26,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Gitnexus-Impact-Analysis/SKILL"
-resolved = "gitnexus-impact-analysisskill"
+reference = "When to Use"
+resolved = "when-to-use"

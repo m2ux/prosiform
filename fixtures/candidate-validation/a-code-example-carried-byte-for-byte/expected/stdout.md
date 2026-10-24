@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 A worked example:
@@ -9,3 +7,5 @@ A worked example:
 
 and a blank line inside the fence
 ```
+
+Follow [Guide](#guide). The other sections are material that procedure references.

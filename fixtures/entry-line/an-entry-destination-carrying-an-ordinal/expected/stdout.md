@@ -1,4 +1,4 @@
-Follow [Step](#step) and [Step](#step-1). The rest of this bundle is material those procedures reference.
+Follow [Step](#step) and [Step](#step-1). The other sections are material those procedures reference.
 
 # Notes
 

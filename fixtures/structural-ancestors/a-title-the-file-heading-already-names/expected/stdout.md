@@ -1,4 +1,4 @@
-Follow [Procedure](#procedure). The rest of this bundle is material that procedure references.
+Follow [Procedure](#procedure). The other sections are material that procedure references.
 
 # Guide
 

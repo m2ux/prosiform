@@ -1,13 +1,13 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
+The Standing Order
+==================
 
-# Guide
+Follow [Run the marked procedure](#run-the-marked-procedure). The other sections are material that procedure references.
 
-## The Standing Order
-
-### Run the *marked* `procedure`
+Run the *marked* `procedure`
+----------------------------
 
 Carry the procedure out.
 
-### Stop
+## Stop
 
 Stop it.

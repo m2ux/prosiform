@@ -1,4 +1,4 @@
-Follow [Step](#step). The rest of this bundle is material that procedure references.
+Follow [Step](#step). The other sections are material that procedure references.
 
 # Manual
 

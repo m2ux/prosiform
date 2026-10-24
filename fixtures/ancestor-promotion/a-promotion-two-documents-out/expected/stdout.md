@@ -1,8 +1,4 @@
-Follow [Detail](#detail) and [Gamma](#gamma). The rest of this bundle is material those procedures reference.
-
-# First
-
-First body, which needs [the second note](#second).
+Follow [Detail](#detail) and [Gamma](#gamma). The other sections are material those procedures reference.
 
 # Guide
 
@@ -19,6 +15,10 @@ Detail body, which needs [the first note](#first).
 #### Gamma
 
 Gamma body.
+
+# First
+
+First body, which needs [the second note](#second).
 
 # Second
 

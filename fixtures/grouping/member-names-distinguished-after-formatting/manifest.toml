@@ -18,8 +18,8 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "A Plan"
-resolved = "a-plan"
+reference = "Procedure"
+resolved = "procedure"
 
 [[expected.diagnostics]]
 severity = "warning"

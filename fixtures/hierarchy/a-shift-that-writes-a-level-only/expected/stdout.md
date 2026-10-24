@@ -1,17 +1,16 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
+# The Standing Order
 
-# Guide
+Follow [Indented Three Spaces](#indented-three-spaces). The other sections are material that procedure references.
 
-## The Standing Order
-
-   ### Indented Three Spaces
+   ## Indented Three Spaces
 
 Body.
 
-### Closing Sequence ##
+## Closing Sequence ##
 
 Body.
 
-### Setext Closing \#
+Setext Closing #
+----------------
 
 Body.

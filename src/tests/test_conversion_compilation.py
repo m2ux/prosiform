@@ -25,7 +25,10 @@ def test_linked_destination_owns_its_settings(
     written(tmp_path, "other/sibling.md", "# Sibling\n\nNot discovered.\n")
     run = invoke(*references, cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert "# Entry\n" in run.stdout and "# Target\n" in run.stdout
+    # A parent selected whole keeps its own H1; one selected by fragment is
+    # entered beneath the group heading its declaration names.
+    parent = "# A\n" if "#" not in references[0] else "# Entry\n"
+    assert parent in run.stdout and "# Target\n" in run.stdout
     assert "[Target](#run-1)" in run.stdout
     assert run.stdout.count("Target content.") == 1
     assert "Not discovered." not in run.stdout
@@ -134,8 +137,12 @@ def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> No
     written(tmp_path, "same.md", "# Same\n\nSeparate file.\n")
     run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert run.stdout.count("# Same\n") == 2
-    assert "[Other](#same-1)" in run.stdout
+    # The parent emits its own H1 in place of the group heading its
+    # declaration names, so the separate file's heading is the one
+    # carrying that text and the link reaches it.
+    assert run.stdout.count("# Same\n") == 1
+    assert run.stdout.count("# A\n") == 1
+    assert "[Other](#same)" in run.stdout
 
 
 def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
@@ -143,7 +150,8 @@ def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
         written(tmp_path, name + ".md", conversion(group, 2) + "# " + name + "\n")
     run = invoke("a.md", "b.md", "c.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert run.stdout.count("# Rules\n") == 3
+    assert run.stdout.count("# Rules\n") == 2
+    assert "# a\n" in run.stdout
 
 
 @pytest.mark.parametrize("option", ["-g", "-grules:2", "--group"])

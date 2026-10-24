@@ -188,13 +188,24 @@ def git_path_exists(ref: str, path: str) -> bool:
 
 
 def resolve_local(document: Path, target: str, base: Path | None = None) -> str | None:
+    """One local reference, resolved as the build resolves it.
+
+    A link carrying a parent segment is the path a reader follows from the
+    file that writes it, so it resolves from that file's directory. Every
+    other link resolves from the declaring root, which is the file's own
+    directory where the file declares none.
+    """
     path_part, _, fragment = target.partition("#")
     if not path_part:
         if fragment and fragment not in fragments_of(document.read_text()):
             return f"no heading in {document.name} generates #{fragment}"
         return None
 
-    origin = document.parent if base is None else base
+    qualified = ".." in path_part.split("/")
+    if base is None or qualified:
+        origin = document.parent
+    else:
+        origin = base
     resolved = (origin / path_part).resolve()
     if not resolved.exists():
         return f"{path_part} does not exist"

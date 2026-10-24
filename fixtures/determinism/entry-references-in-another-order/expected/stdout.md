@@ -1,12 +1,4 @@
-Follow [Alpha](#alpha), [One](#one) and [Two](#two). The rest of this bundle is material those procedures reference.
-
-# Alpha
-
-Alpha body, which needs [zeta](#zeta).
-
-# Beta
-
-Beta body.
+Follow [One](#one), [Two](#two) and [Alpha](#alpha). The other sections are material those procedures reference.
 
 # Middle
 
@@ -17,6 +9,14 @@ One body, which needs [beta](#beta).
 ### Two
 
 Two body.
+
+# Alpha
+
+Alpha body, which needs [zeta](#zeta).
+
+# Beta
+
+Beta body.
 
 # Zeta
 

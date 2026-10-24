@@ -1,15 +1,13 @@
-Follow [Bare](#bare) and [Kept](#kept). The rest of this bundle is material those procedures reference.
+# Bare
 
-# Notes
-
-## Overview
-
-### Bare
-
-### Kept
-
-What this document states before its first section.
+Follow [Bare](#bare) and [Kept](#kept). The other sections are material those procedures reference.
 
 ## Findings
 
 The run held throughout.
+
+## Overview
+
+### Kept
+
+What this document states before its first section.

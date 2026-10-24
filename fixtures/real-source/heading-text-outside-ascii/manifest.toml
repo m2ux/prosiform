@@ -25,5 +25,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Gitnexus-Cli/SKILL"
-resolved = "gitnexus-cliskill"
+reference = "Commands"
+resolved = "commands"

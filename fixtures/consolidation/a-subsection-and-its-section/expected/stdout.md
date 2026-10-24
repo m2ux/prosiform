@@ -1,4 +1,4 @@
-Follow [Alpha](#alpha) and [Detail](#detail). The rest of this bundle is material those procedures reference.
+Follow [Alpha](#alpha) and [Detail](#detail). The other sections are material those procedures reference.
 
 # Guide
 

@@ -1,8 +1,8 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 A [picture ![of the [shared notes](#notes) it names](plan.png) of the rules](#rules).
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Notes
 

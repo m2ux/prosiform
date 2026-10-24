@@ -1,4 +1,4 @@
-Follow [Rules](#rules) and [Notes](#notes). The rest of this bundle is material those procedures reference.
+Follow [Rules](#rules) and [Notes](#notes). The other sections are material those procedures reference.
 
 # Guide
 

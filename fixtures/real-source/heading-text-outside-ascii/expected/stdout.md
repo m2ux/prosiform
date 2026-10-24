@@ -1,14 +1,12 @@
-Follow [Gitnexus-Cli/SKILL](#gitnexus-cliskill). The rest of this bundle is material that procedure references.
-
-# Gitnexus-Cli/SKILL
-
-## GitNexus CLI Commands
+# GitNexus CLI Commands
 
 All commands work via `npx` — no global install required.
 
-### Commands
+Follow [Commands](#commands). The other sections are material that procedure references.
 
-#### analyze — Build or refresh the index
+## Commands
+
+### analyze — Build or refresh the index
 
 ```bash
 npx gitnexus analyze
@@ -23,7 +21,7 @@ Run from the project root. This parses all source files, builds the knowledge gr
 
 **When to run:** First time in a project, after major code changes, or when `gitnexus://repo/{name}/context` reports the index is stale. In Claude Code, a PostToolUse hook runs `analyze` automatically after `git commit` and `git merge`, preserving embeddings if previously generated.
 
-#### status — Check index freshness
+### status — Check index freshness
 
 ```bash
 npx gitnexus status
@@ -31,7 +29,7 @@ npx gitnexus status
 
 Shows whether the current repo has a GitNexus index, when it was last updated, and symbol/relationship counts. Use this to check if re-indexing is needed.
 
-#### clean — Delete the index
+### clean — Delete the index
 
 ```bash
 npx gitnexus clean
@@ -44,7 +42,7 @@ Deletes the `.gitnexus/` directory and unregisters the repo from the global regi
 | `--force` | Skip confirmation prompt                          |
 | `--all`   | Clean all indexed repos, not just the current one |
 
-#### wiki — Generate documentation from the graph
+### wiki — Generate documentation from the graph
 
 ```bash
 npx gitnexus wiki
@@ -61,7 +59,7 @@ Generates repository documentation from the knowledge graph using an LLM. Requir
 | `--concurrency <n>` | Parallel LLM calls (default: 3)           |
 | `--gist`            | Publish wiki as a public GitHub Gist      |
 
-#### list — Show all indexed repos
+### list — Show all indexed repos
 
 ```bash
 npx gitnexus list
@@ -69,12 +67,12 @@ npx gitnexus list
 
 Lists all repositories registered in `~/.gitnexus/registry.json`. The MCP `list_repos` tool provides the same information.
 
-### After Indexing
+## After Indexing
 
 1. **Read `gitnexus://repo/{name}/context`** to verify the index loaded
 2. Use the other GitNexus skills (`exploring`, `debugging`, `impact-analysis`, `refactoring`) for your task
 
-### Troubleshooting
+## Troubleshooting
 
 - **"Not inside a git repository"**: Run from a directory inside a git repo
 - **Index is stale after re-analyzing**: Restart Claude Code to reload the MCP server

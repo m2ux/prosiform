@@ -1,11 +1,9 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
-
-## Guide
 
 An opening paragraph.
 
-## Appendix
+# Appendix
 
 A second heading at the document level.
+
+Follow [Guide](#guide). The other sections are material that procedure references.

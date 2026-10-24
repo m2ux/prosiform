@@ -1,10 +1,10 @@
-Follow [Entry](#entry). The rest of this bundle is material that procedure references.
-
 # Entry
 
 The work starts here.
 
 It runs through [Plan Mode](#plan) and then through [Review Mode](#review).
+
+Follow [Entry](#entry). The other sections are material that procedure references.
 
 # Modes
 

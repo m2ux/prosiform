@@ -1,11 +1,9 @@
-Follow [Docs/Guide](#docsguide). The rest of this bundle is material that procedure references.
-
-# Docs/Guide
-
-## Setting Up
+# Setting Up
 
 An opening paragraph.
 
-### Install
+Follow [Install](#install). The other sections are material that procedure references.
+
+## Install
 
 Install the tool.

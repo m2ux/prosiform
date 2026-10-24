@@ -1,4 +1,4 @@
-Follow [Article](#article) and [Café](#café-1). The rest of this bundle is material those procedures reference.
+Follow [Article](#article) and [Café](#café-1). The other sections are material those procedures reference.
 
 # Article
 

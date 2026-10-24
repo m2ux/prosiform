@@ -1,12 +1,4 @@
-Follow [Alpha](#alpha). The rest of this bundle is material that procedure references.
-
-# Detail
-
-Detail body, which needs [the whole guide](#guide).
-
-# Extra
-
-Extra body.
+Follow [Alpha](#alpha). The other sections are material that procedure references.
 
 # Guide
 
@@ -17,3 +9,11 @@ Alpha body, which needs [the detail](#detail).
 ## Beta
 
 Beta body, which needs [the extra](#extra).
+
+# Detail
+
+Detail body, which needs [the whole guide](#guide).
+
+# Extra
+
+Extra body.

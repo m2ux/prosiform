@@ -522,7 +522,7 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
                 "CHECKS_MARKER",
                 "ALPHA_SHARED_MARKER",
             ],
-            ["Procedures", "Rules", "Checks", "Shared", "Leaves"],
+            ["Rules", "Checks", "Shared", "Leaves"],
             [
                 "REVIEW_MARKER",
                 "DEFAULTS_MARKER",
@@ -532,12 +532,12 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         ),
         "Review": (
             ["REVIEW_MARKER", "BETA_RULES_MARKER", "BETA_SHARED_MARKER"],
-            ["Reviews", "Rules", "Shared", "Leaves"],
+            ["Rules", "Shared", "Leaves"],
             ["ASSEMBLE_MARKER", "DEFAULTS_MARKER", "ALPHA_RULES_MARKER"],
         ),
         "Defaults": (
             ["DEFAULTS_MARKER"],
-            ["Defaults", "Leaves"],
+            ["Leaves"],
             [
                 "ASSEMBLE_MARKER",
                 "REVIEW_MARKER",

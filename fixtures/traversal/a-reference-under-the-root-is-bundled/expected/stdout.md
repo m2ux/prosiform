@@ -1,10 +1,10 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The procedure requires [the shared rules](#rules) whole and
 [the review step](#review) in part. It mentions
 [the changelog](../changelog.md), which sits above the root.
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Process
 

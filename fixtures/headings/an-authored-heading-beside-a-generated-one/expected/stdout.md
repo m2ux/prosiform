@@ -1,12 +1,10 @@
-Follow [Field-Guide](#field-guide). The rest of this bundle is material that procedure references.
-
-# Field-Guide
-
-## the field guide
+# the field guide
 
 What the run reads before it starts.
 
-### a lower-case section
+Follow [a lower-case section](#a-lower-case-section). The other sections are material that procedure references.
+
+## a lower-case section
 
 The spelling its author wrote.
 

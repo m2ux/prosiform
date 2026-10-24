@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 A checklist, carrying the markers the source wrote.
@@ -9,3 +7,5 @@ A checklist, carrying the markers the source wrote.
 - [X] done as well
 
 Punctuation inviting substitution: "quoted", 'single', -- a dash, ... an ellipsis, (c).
+
+Follow [Guide](#guide). The other sections are material that procedure references.

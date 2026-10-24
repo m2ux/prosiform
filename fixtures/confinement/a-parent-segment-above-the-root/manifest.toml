@@ -13,5 +13,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "../Outside"
-resolved = "outside"
+reference = "Secret"
+resolved = "secret"

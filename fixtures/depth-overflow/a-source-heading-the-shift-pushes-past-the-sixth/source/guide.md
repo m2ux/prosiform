@@ -1,21 +1,3 @@
-# The Standing Order
+# Guide
 
-## Run
-
-Carry the procedure out.
-
-### Preparation
-
-What to have ready.
-
-#### The Checklist
-
-Each item, in order.
-
-##### A Single Item
-
-The item itself.
-
-###### The Smallest Note
-
-A note beneath the item.
+It follows [the standing order](order.md).

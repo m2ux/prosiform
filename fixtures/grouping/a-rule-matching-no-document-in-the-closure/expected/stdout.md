@@ -1,5 +1,5 @@
-Follow [Docs/Guide](#docsguide). The rest of this bundle is material that procedure references.
-
-# Docs/Guide
+# Guide
 
 Carry the procedure out.
+
+Follow [Guide](#guide). The other sections are material that procedure references.

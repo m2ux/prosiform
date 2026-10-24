@@ -1,4 +1,4 @@
-Follow [A Notes](#a-notes), [B Notes](#b-notes) and [C Other](#c-other). The rest of this bundle is material those procedures reference.
+Follow [Alone](#alone), [B Notes](#b-notes) and [C Other](#c-other). The other sections are material those procedures reference.
 
 # G
 

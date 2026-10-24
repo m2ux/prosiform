@@ -1,4 +1,4 @@
-Follow [Plan](#plan). The rest of this bundle is material that procedure references.
+Follow [Operations](#operations). The other sections are material that procedure references.
 
 # Modes
 

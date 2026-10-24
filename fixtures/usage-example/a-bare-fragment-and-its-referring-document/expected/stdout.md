@@ -1,6 +1,4 @@
-Follow [Record Epic Delivery](#record-epic-delivery). The rest of this bundle is material that procedure references.
-
-# Artifacts
+Follow [Record Epic Delivery](#record-epic-delivery). The other sections are material that procedure references.
 
 ## Operations
 

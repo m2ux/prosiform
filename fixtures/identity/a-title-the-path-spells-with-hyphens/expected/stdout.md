@@ -1,6 +1,6 @@
-Follow [Docs/My-Note](#docsmy-note). The rest of this bundle is material that procedure references.
+# My Note
 
-# Docs/My-Note
+Follow [Run](#run). The other sections are material that procedure references.
 
 ## Run
 

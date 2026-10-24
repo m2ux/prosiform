@@ -21,5 +21,5 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "References/Design-Flow"
-resolved = "referencesdesign-flow"
+reference = "Two Cycles"
+resolved = "two-cycles"
