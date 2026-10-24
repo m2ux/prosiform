@@ -1,4 +1,4 @@
-description = "A link whose text opens with the mark is not compiled: the document it names is not opened and contributes nothing, and the bundle carries the link's text with the mark exactly as its author wrote it."
+description = "A link whose text opens with the mark is not compiled: the document it names is not opened and contributes nothing, and the bundle carries the link's text with the mark and the blanks after it removed, because its destination already states the deferral."
 
 clauses = [
   "Link classification and resource handling — The deferral mark",

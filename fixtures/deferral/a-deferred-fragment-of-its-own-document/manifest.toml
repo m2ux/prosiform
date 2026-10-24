@@ -1,4 +1,4 @@
-description = "A fragment-only link carrying the mark is deferred like any other reference: the section it names is not carried into the bundle, and the link is published as its author wrote it."
+description = "A fragment-only link carrying the mark is deferred like any other reference: the section it names is not carried into the bundle, and the link is published with its text and the target's path from the invocation working directory, the mark and the blanks after it removed."
 
 clauses = [
   "Link classification and resource handling — Fragment-only links",

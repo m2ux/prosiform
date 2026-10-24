@@ -107,7 +107,7 @@ def test_a_definition_is_read_as_its_source_spelled_it(
     ("text", "assigned", "expected"),
     [
         ("[rules](rules.md)", ["#rules"], "[rules](#rules)"),
-        ("[¬ rules](../rules.md)", ["topic/rules.md"], "[¬ rules](topic/rules.md)"),
+        ("[¬ rules](../rules.md)", ["topic/rules.md"], "[rules](topic/rules.md)"),
         ("[¬rules](rules.md#a)", [None], "[¬rules](rules.md#a)"),
         (
             '[rules](rules.md "A title")',
@@ -134,7 +134,7 @@ def test_a_definition_is_read_as_its_source_spelled_it(
         (
             "![[¬ one](one.md)](a.png) and [two](two.md)",
             ["topic/one.md", "#two"],
-            "![[¬ one](topic/one.md)](a.png) and [two](#two)",
+            "![[one](topic/one.md)](a.png) and [two](#two)",
         ),
         ("nothing to rewrite", [], "nothing to rewrite"),
     ],
