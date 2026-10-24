@@ -18,11 +18,11 @@ Read these files first.
 - [Guidelines](../guidelines.md)
 - [Epic Issue Body](../artifacts/epic-issue-body.md)
 - [Planning Record](../artifacts/planning-record.md)
-- [Delivery Brief](../artifacts/delivery-brief.md)
+- [» Delivery Brief](../artifacts/delivery-brief.md)
 - [Plan Change](../artifacts/plan-change.md)
 - [Hoist Mode](hoist-mode.md)
 - [Initiative Issue Body](../artifacts/initiative-issue-body.md)
-- [Work Item](../artifacts/work-item.md)
+- [» Work Item](../artifacts/work-item.md)
 - [Pull Request Body](../artifacts/pull-request-body.md)
 - [Issue Body](../artifacts/issue-body.md)
 
@@ -107,13 +107,13 @@ The main path meets [Outcomes](#outcomes).
 The confirmed unit carried from its supplied brief through implementation and delivery.
 
 1. **Read the brief.**
-   Read the supplied [Delivery Brief](../artifacts/delivery-brief.md).
+   Read the supplied [» Delivery Brief](../artifacts/delivery-brief.md).
    - Use its confirmed unit, criteria, tests, selected branch and bases, worktree, planning-folder identity and change allowance.
    - Return missing context before starting.
 2. **Confirm the reservation.**
    Confirm the supplied reserved folder exists and its rows remain held for this session before changing its worktree.
 3. **Plan.**
-   Call [Populate Work Item](../artifacts/work-item.md#populate-work-item) for each task with its reserved file path, scope, design, component, criteria and test requirements from the confirmed delivery brief, so the component the plan was checked against is the one this file declares.
+   Call [» Populate Work Item](../artifacts/work-item.md#populate-work-item) for each task with its reserved file path, scope, design, component, criteria and test requirements from the confirmed delivery brief, so the component the plan was checked against is the one this file declares.
    - Add any further file the work needs, as [Layout](../artifacts/planning-record.md#layout) describes.
 4. **Link the work items.**
    Register each returned work-item file through [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record). The row retains its folder link while reserved.
