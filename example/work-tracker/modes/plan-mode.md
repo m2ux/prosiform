@@ -4,15 +4,11 @@ prosiform:
   group: "modes"
   group-depth: 2
 ---
+Material a marked link names is compiled by a sub-agent, as [the dispatch rule](../SKILL.md#dispatch) states.
+
 # Plan Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
-
-## Prerequisites
-
-Read these files first.
-
-- [Dispatch](../SKILL.md#dispatch)
 
 ## Procedure
 

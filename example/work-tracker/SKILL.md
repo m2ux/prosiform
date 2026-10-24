@@ -18,7 +18,7 @@ Work Tracker plans work as tracker issues and keeps the plan current until the w
 
 ## Dispatch
 
-A link whose text opens with `»` names material a sub-agent compiles. Each mode's Prerequisites link this section, so a bundle of that mode opens with the instruction.
+A link whose text opens with `»` names material a sub-agent compiles. Each mode links this section from its preamble, so a bundle of that mode carries it.
 
 ## Modes
 
