@@ -6,7 +6,7 @@
 
 Two tools keep the corpus honest after a behaviour change. Triage names each stale fixture under the category its difference falls in, so a change accepts the drift it intended rather than every fixture a red run touched. Restatement writes exactly two things and refuses a fixture whose run failed in itself.
 
-This record carries the planning for [W13](w13.md) and [W14](w14.md) under [E03 Carried Debt](https://github.com/m2ux/prosiform/issues/187). The work is raised as [#243](https://github.com/m2ux/prosiform/issues/243), which states W13's criteria and keeps the evidence both rows came from.
+This record carries the planning for [W13](w13.md) and [W14](w14.md) under [E03 Repository Checks](https://github.com/m2ux/prosiform/issues/187). The work is raised as [#243](https://github.com/m2ux/prosiform/issues/243), which states W13's criteria and keeps the evidence both rows came from.
 
 ## Artifacts
 
@@ -45,6 +45,6 @@ W13 and W14 both write under `checks/`, and W14 reads the categories W13 declare
 | Resource | Link |
 | --- | --- |
 | Issue | [#243](https://github.com/m2ux/prosiform/issues/243) |
-| Epic | [E03 Carried Debt](https://github.com/m2ux/prosiform/issues/187) |
+| Epic | [E03 Repository Checks](https://github.com/m2ux/prosiform/issues/187) |
 | Initiative | [Field Refinement](https://github.com/m2ux/prosiform/issues/20) |
 | Preserved tools | [Corpus drift tools](../2026-10-24-corpus-drift-tools/README.md) |
