@@ -13,6 +13,7 @@ The work is on `i01/e09/w03-the-skill-states-what`, based on `i01/e09/workspace`
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w03.md) | Implementation scope and required tests |
+| [Implementation evidence](implementation.md) | Where each criterion is shown, the AC1 gap and its cause, and the check results |
 
 ## Links
 
