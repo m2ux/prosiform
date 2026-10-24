@@ -91,6 +91,10 @@ Neither `# Delivery Brief` nor `# Work Item` — the H1 each artifact opens with
 
 This was checked on the headings rather than on the marks, as the brief requires. The four targets reach the bundle as two groups — `advance-mode.md`, `hoist-mode.md`, `sync-mode.md`, `understand-mode.md` are compiled, and the two marked artifacts are not.
 
+**A caveat the heading count does not show by itself.** Under both reachable invocations no artifact or protocol compiles at all. A mode's `../artifacts/...` links name a parent segment that leaves the run's root, which makes each a citation rather than a dependency: 186 artifact citations and 13 protocol citations against 16 compiled fragment destinations, and the only H1 headings are the five modes. The two marked targets therefore contribute nothing whether marked or not.
+
+So AC3 holds as its wording requires, and it holds vacuously — the heading evidence cannot tell a marked link from an unmarked one, because no artifact reaches the bundle by either route. A measurement that would discriminate needs a bundle whose root includes `artifacts/`, and no invocation of this build produces one from `modes/`: a root at the skill makes the modes' sibling links unresolvable, and a root below it excludes the artifacts. The mark changes no heading in any shape this branch can produce, which is consistent with AC3 and is not a test of it.
+
 ### AC4 — the shared check is unchanged
 
 ```text
