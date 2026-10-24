@@ -34,7 +34,7 @@ Each finding carries one disposition:
 
 **What it cost.** 186 fixtures were red at once. Regenerating all of them was the obvious move and was wrong for at least four: two depth-overflow fixtures exercising a shift the parent no longer receives, one generated-input fixture whose own input was stale, and one self-reference fixture that was crashing.
 
-**The change.** A stated rule: **a red corpus run is triaged before it is restated, and a fixture whose run failed in itself is never restated.** The category each fixture falls in decides whether a human reads it. This belongs in the workspace instructions rather than a single skill, because it governs any session touching the corpus.
+**The change.** A stated rule: **a red corpus run is triaged before it is restated, and a fixture whose run failed in itself is never restated.** The category each fixture falls in decides whether a human reads it. The maintainer runs these tools directly rather than a dispatched session, so the rule belongs in the tool's own docstring and in the workspace instructions for any session that reaches the corpus, rather than in a skill that a session must first load.
 
 ## F4: `root` has three jobs and no stated scope
 
