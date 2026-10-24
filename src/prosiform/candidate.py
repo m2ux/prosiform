@@ -70,11 +70,12 @@ from prosiform.bundle import (
     ancestry,
     blank,
     carried_headings,
+    emitted_visible,
     entry_slot,
     heading_text,
     openings,
 )
-from prosiform.closure import Reference, bundled, rebased, withholding_target
+from prosiform.closure import Reference, bundled, rebased, unmarked, withholding_target
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     Ancestor,
@@ -238,8 +239,8 @@ def alternative(image: Token) -> str:
     written there is compared as the use it is, so the text left to
     compare here is what surrounds it. A link's visible text is
     therefore read out of this run and read back on that link's own
-    comparison, which is where a mark the rewrite drops is accounted
-    for.
+    comparison, which is where a deferral mark the emission drops is
+    accounted for.
     """
     children = image.children or []
     carried = []
@@ -305,10 +306,15 @@ def intended(
     gives it.
 
     A withheld link under the allowed source root carries its target's
-    path from that root, so what it shows is its author's text and
-    where it points is the destination the bundle rebased. A link
-    resolving nowhere the bundle is responsible for is published as
-    authored like any other mention.
+    path from that root, so where it points is the destination the
+    bundle rebased. A link resolving nowhere the bundle is responsible
+    for is published as authored like any other mention.
+
+    What a withheld link shows is its author's text with a deferral mark
+    taken off: the destination already states the deferral, so the mark
+    is authoring syntax. A dispatch keeps its mark, which states who
+    compiles the material, and a reference the bundle rebased nothing
+    for keeps its text whole.
 
     Whether the bundle compiled the link is read from the text the
     link's content opens with, as discovery and emission read it, so a
@@ -329,7 +335,7 @@ def intended(
             return one
         return Use(
             one.kind,
-            one.text,
+            unmarked(one.text),
             one.title,
             normalizeLink(rebased(withheld, one.destination)),
         )
@@ -1042,16 +1048,20 @@ def references(
 
 
 def preserved(
-    path: str, removed: Collection[int], source: Side, published: Side
+    path: str,
+    removed: Collection[int],
+    source: Side,
+    published: Side,
+    root: str = "",
 ) -> None:
     """Hold one region's untouched bytes and code examples to its source.
 
     The lines the bundle does not edit are compared as the bytes they
     are, the code examples as the parser read them, and the text each
-    inline token shows as a reader reads it, the mark a rewrite drops
-    taken off the source side where the link carrying it is one the
-    bundle compiled. Together they are the content of the region:
-    nothing in it is reformatted or repaired.
+    inline token shows as a reader reads it, the deferral mark the
+    emission drops taken off the source side where the link carrying it
+    is one the bundle rebased a destination for. Together they are the
+    content of the region: nothing in it is reformatted or repaired.
     """
     wrote = body(source.physical, source.tokens, source.span, removed)
     carries = body(published.physical, published.tokens, published.span)
@@ -1080,11 +1090,11 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if visible(one) != visible(each):
+        if emitted_visible(path, one, root) != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{visible(one)!r} and the candidate shows "
+                f"{emitted_visible(path, one, root)!r} and the candidate shows "
                 f"{visible(each)!r}",
             )
 
@@ -1137,4 +1147,10 @@ def validate(
         )
         published = Side(tokens, physical, span)
         references(carried.path, source, published, targets, read[carried.path].root)
-        preserved(carried.path, carried.removed, source, published)
+        preserved(
+            carried.path,
+            carried.removed,
+            source,
+            published,
+            read[carried.path].root,
+        )

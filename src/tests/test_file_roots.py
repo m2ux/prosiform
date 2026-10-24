@@ -100,7 +100,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "[¬Later](library/b%20%25%23%3F.md)" in run.stdout
+    assert "[Later](library/b%20%25%23%3F.md)" in run.stdout
     assert "Hidden." not in run.stdout
 
 

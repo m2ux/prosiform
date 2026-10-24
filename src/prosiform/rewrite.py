@@ -53,10 +53,14 @@ carries are counted against the uses the parser read from the same
 token, and a count that disagrees is content the run resolved and
 cannot edit, which is an internal fault rather than a bundle.
 
-A mark survives the rewrite. The mark defers a compilation, so a link
-carrying one is a link the bundle compiles none of, and its label is the
-author's text like any other label: every byte of it reaches the bundle,
-because an agent reading the bundle is what reads the mark next.
+A mark survives the rewrite where it states who compiles the material. A
+dispatch operator is the one thing in the bundle saying the material
+belongs to another agent, so its label reaches the bundle as the author
+wrote it. A deferral states when, which the destination already says, so
+its mark and the blanks following it are dropped from the label it opens.
+A link the bundle took no destination for carries its own text whichever
+operator it opens with: a reference leaving the root, one naming no
+Markdown document and one naming a resource are text as they were.
 """
 
 import re
@@ -68,6 +72,7 @@ from typing import Any
 from markdown_it.common.utils import normalizeReference
 from markdown_it.token import Token
 
+from prosiform.closure import unmarked
 from prosiform.profile import MARKER, MARKER_LABELS
 from prosiform.source import (
     HREF,
@@ -519,13 +524,22 @@ def published(held: Definition, destination: str | None) -> str:
     return f"{TARGET_OPEN}{target}{title}{TARGET_CLOSE}"
 
 
-def edits(one: Use, destination: str | None) -> list[tuple[int, int, str]]:
+def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int, str]]:
     """The spans one use's emission replaces, and what it writes at each.
 
-    A use's label is the author's and stays as written, so the span a
-    use edits is its destination alone and no two spans one text
-    produces overlap. A use the bundle assigned no destination is
-    published with the bytes its author wrote.
+    A use's label is the author's, so the span a use edits is its
+    destination alone and no two spans one text produces overlap. A use
+    the bundle assigned no destination is published with the bytes its
+    author wrote.
+
+    The one exception is a withheld link's deferral mark, which is
+    authoring syntax rather than content: the bundle took a destination
+    for that link and the destination states the deferral, so the mark
+    and the blanks following it go. The edit reaches the prefix of the
+    label, which no nested use opens on, so it still overlaps nothing.
+    A dispatch keeps its mark, and so does a reference the bundle took
+    no destination for, because nothing about those states who compiles
+    the material except the mark itself.
 
     The destination arrives whole. Where a link points is the bundle's
     question, and this writes the answer, so a fragment of the bundle
@@ -536,6 +550,8 @@ def edits(one: Use, destination: str | None) -> list[tuple[int, int, str]]:
         found.append((*one.target, published(one.definition, destination)))
     elif destination is not None:
         found.append((*one.target, destination))
+    if destination is not None and (kept := unmarked(label)) != label:
+        found.append((one.label[0], one.label[0] + len(label) - len(kept), ""))
     return found
 
 
@@ -590,9 +606,14 @@ def rewritten(
             f"emission can edit in place"
         )
     targets = dict(zip((id(one) for one in links), assigned, strict=True))
+    labels = {id(one): text[one.label[0] : one.label[1]] for one in links}
     written = text
     bounds = list(accumulate(len(line) for line in physical))
-    applied = [edit for one in found for edit in edits(one, targets.get(id(one)))]
+    applied = [
+        edit
+        for one in found
+        for edit in edits(one, targets.get(id(one)), labels.get(id(one), ""))
+    ]
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
         bounds = [moved(at, start, end, len(replacement)) for at in bounds]

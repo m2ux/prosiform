@@ -83,7 +83,7 @@ def test_deferred_only_metadata_does_not_join_or_conflict(
         assert run.diagnostics()[0]["code"] == "E_GROUP_DEPTH_CONFLICT"
     else:
         assert "Later content." not in run.stdout
-        assert "[¬ Later](b.md)" in run.stdout
+        assert "[Later](b.md)" in run.stdout
 
 
 @pytest.mark.parametrize("mode", ["stdout", "file", "check"])

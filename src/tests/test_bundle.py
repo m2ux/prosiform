@@ -468,11 +468,11 @@ def test_an_ancestor_title_is_emitted_as_literal_text() -> None:
     assert carried.record.ancestors()[0].text == "A & the note b"
 
 
-def test_an_ancestor_title_keeps_the_mark_a_link_it_carries_was_deferred_by() -> None:
+def test_an_ancestor_title_drops_the_mark_a_link_it_carries_was_deferred_by() -> None:
     text = "## A [¬the note](note.md) heading\n\n### One\n\nOne body.\n"
     carried = selecting("guide.md", text, "one")
-    assert carried.parts[1] == "### A ¬the note heading"
-    assert carried.record.ancestors()[0].text == "A ¬the note heading"
+    assert carried.parts[1] == "### A the note heading"
+    assert carried.record.ancestors()[0].text == "A the note heading"
 
 
 def test_an_ancestor_record_names_its_source_heading_and_original_level() -> None:

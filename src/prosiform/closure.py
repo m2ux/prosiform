@@ -7,7 +7,11 @@ to the invocation working directory, independent of the discovering parent.
 
 Two operators open a link's text, and each withholds the compilation the
 other withholds: one states when the material is compiled, the other who
-compiles it."""
+compiles it. Only the dispatch states what its destination does not: a
+withheld link's destination is the target's path, which no compiled link
+carries, so the deferral is stated there and its mark is authoring
+syntax. A dispatch has no such destination to tell a reader who compiles
+the material, so its mark is content and the bundle publishes it."""
 
 import posixpath
 import re
@@ -269,14 +273,41 @@ def withholding(opening: str) -> bool:
     The operators open the link text, which is ordinary text to the
     profile, so marking a link adds no construct the grammar has to
     recognize and a renderer knowing nothing of this tool shows the
-    link. A mark is content as well as instruction: the bundle publishes
-    it where the author wrote it, because an agent reading the bundle is
-    what reads it next.
+    link.
 
     Which of the two marks reaches the bundle is a separate decision for
-    each, read through `operators`.
+    each, read through `operators`: a dispatch states who compiles the
+    material, which only the mark can tell a reader, while a deferral
+    states when, which the destination already states.
     """
     return bool(operators(opening))
+
+
+def unmarked(text: str) -> str:
+    """One link's text as the bundle publishes it, with a deferral mark taken off.
+
+    A deferral states when the material is compiled, and its destination
+    states that already, so the mark that states it is authoring syntax
+    rather than content. The mark goes with the blanks written around
+    it, which are its spacing.
+
+    Text opening with no deferral mark is the author's prose and is
+    returned as written. A dispatch's mark states who compiles the
+    material, which its destination does not, so it stays.
+
+    The caller decides whether a link's destination states a deferral:
+    a reference outside the root and one naming a resource carry their
+    own text, mark included, because nothing rebased them.
+    """
+    at = 0
+    while at < len(text) and text[at] in BLANKS:
+        at += 1
+    if at == len(text) or text[at] != DEFERRAL_MARK:
+        return text
+    at += 1
+    while at < len(text) and text[at] in BLANKS:
+        at += 1
+    return text[at:]
 
 
 def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:

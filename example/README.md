@@ -46,10 +46,10 @@ Read these files first.
 - [Epic Issue Body](#epic-issue-body)
 - [Epic](#epic)
 
-The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
+The caller reached this mode through the routing document [SKILL.md](SKILL.md), which this procedure defers to a run of its own.
 ```
 
-The two prerequisites appear in the bundle, and their links point to bundle headings. The deferred link keeps its `¬` marker and uses the root-relative path `SKILL.md`; that document is excluded.
+The two prerequisites appear in the bundle, and their links point to bundle headings. The deferred link drops its `¬` marker and uses the root-relative path `SKILL.md`; that document is excluded, and the published path alone states the deferral.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
@@ -167,8 +167,8 @@ The grouped portion is:
 
 Select rules for your harness:
 
-- If you are Codex, compile [¬ Codex](rules/codex.md).
-- If you are Claude, compile [¬ Claude](rules/claude.md).
+- If you are Codex, compile [Codex](rules/codex.md).
+- If you are Claude, compile [Claude](rules/claude.md).
 
 ## Common
 

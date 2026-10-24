@@ -1193,26 +1193,24 @@ def test_a_marked_reference_under_the_root_is_not_compiled(root: Path) -> None:
     assert "Every rule the procedure requires." not in run.stdout
 
 
-def test_a_deferred_link_carries_the_mark_its_author_wrote(root: Path) -> None:
+def test_a_deferred_link_publishes_its_text_without_the_mark(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [\u00ac the rules](rules.md)." in run.stdout
+    assert "See [the rules](rules.md)." in run.stdout
 
 
 @pytest.mark.parametrize(
     "written_as",
     ["[\u00acthe rules](rules.md)", "[\u00ac\tthe rules](rules.md)"],
 )
-def test_the_bytes_between_the_mark_and_the_text_are_carried(
-    root: Path, written_as: str
-) -> None:
+def test_the_blanks_after_the_mark_go_with_it(root: Path, written_as: str) -> None:
     written(root, "guide.md", f"# Guide\n\nSee {written_as}.\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert written_as in run.stdout
+    assert "See [the rules](rules.md)." in run.stdout
 
 
 def test_a_deferral_stands_where_another_reference_carried_its_target(
@@ -1228,7 +1226,7 @@ def test_a_deferral_stands_where_another_reference_carried_its_target(
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "# Rules" in run.stdout
-    assert "See [\u00ac the rules](rules.md)" in run.stdout
+    assert "See [the rules](rules.md)" in run.stdout
     assert "It requires [the rules](#rules)" in run.stdout
 
 
@@ -1363,7 +1361,7 @@ def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> 
     )
     run = invoke("guide.md#alpha", cwd=root)
     assert run.status == SUCCESS
-    assert "See [\u00ac B](guide.md#beta)." in run.stdout
+    assert "See [B](guide.md#beta)." in run.stdout
     assert "Body." not in run.stdout
 
 
@@ -1404,7 +1402,7 @@ def test_a_deferred_destination_is_the_target_path_from_the_root(root: Path) -> 
     written(root, "shared/rules.md", "# Rules\n\n## Here\n\nEvery rule.\n")
     run = invoke("topic/guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [\u00ac the rules](shared/rules.md#here)." in run.stdout
+    assert "See [the rules](shared/rules.md#here)." in run.stdout
 
 
 def test_a_document_only_a_deferral_names_contributes_nothing(root: Path) -> None:
@@ -1425,7 +1423,7 @@ def test_a_heading_a_container_carries_confirms_a_deferral(root: Path) -> None:
     written(root, "rules.md", "# Rules\n\n- item\n\n  ## Inner\n\n  Every rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [\u00ac the rules](rules.md#inner)." in run.stdout
+    assert "See [the rules](rules.md#inner)." in run.stdout
 
 
 def test_a_link_to_the_section_carrying_it_resolves_to_that_section(

@@ -106,7 +106,7 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
-from prosiform.closure import bundled, rebased, withholding_target
+from prosiform.closure import bundled, rebased, unmarked, withholding_target
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -122,7 +122,10 @@ from prosiform.provenance import (
 )
 from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
+    HREF,
     LINE_FEED,
+    LINK_OPEN,
+    TEXT,
     Selection,
     bare,
     headings,
@@ -131,6 +134,7 @@ from prosiform.source import (
     lines,
     opening_markers,
     regions,
+    shown,
     slug,
     visible,
 )
@@ -348,23 +352,58 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
-def shown_text(tokens: Sequence[Token]) -> dict[int, str]:
+def emitted_visible(path: str, inline: Token, root: str = "") -> str:
+    """The text one inline token shows once the bundle has rewritten its links.
+
+    A heading can carry a link, and one the run withholds a compilation
+    of publishes without its deferral mark. What the heading shows is
+    therefore what the renderer slugs, so the destination the heading
+    takes names the heading a reader finds.
+
+    A link the bundle took no destination for shows the text its author
+    wrote. That covers a markup or resource reference under the root, a
+    reference leaving the root, a dispatch, and a deferral whose target
+    lies outside the root, because only a withheld link under the root
+    has its destination rebased to state the deferral.
+    """
+    children = inline.children or []
+    carried: list[str] = []
+    for at, child in enumerate(children):
+        before = children[at - 1] if at else None
+        if child.type == TEXT and before is not None and before.type == LINK_OPEN:
+            target = withholding_target(
+                path, str(before.attrGet(HREF) or ""), child.content, root
+            )
+            carried.append(
+                unmarked(child.content) if target is not None else child.content
+            )
+            continue
+        carried.append(shown(child))
+    return "".join(carried)
+
+
+def shown_text(path: str, tokens: Sequence[Token], root: str = "") -> dict[int, str]:
     """The visible text of each heading token, keyed by the token's identity.
 
-    A rewrite edits the destination a link opens and nothing a heading
-    shows, so the text the bundle emits for a heading is the text its
-    author wrote.
+    The text is the one the bundle emits for that heading, which is the
+    text its author wrote with a deferral mark taken off, so the
+    destination the heading takes names what a reader finds.
     """
-    return {id(opening): visible(inline) for opening, inline in headings(tokens)}
+    return {
+        id(opening): emitted_visible(path, inline, root)
+        for opening, inline in headings(tokens)
+    }
 
 
 def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
     """The source fragment each heading token answers to, keyed by its identity.
 
-    A source fragment is the slug of the text the author wrote, which
-    is what a reference into that document resolved against and what a
-    reader of the bundle finds, because the heading reaches the bundle
-    as it was written.
+    A source fragment is the slug of the text the author wrote, which is
+    what a reference into that document resolved against. It is read
+    from the authored text and not from the published one, because a
+    reference naming this heading carries the fragment the author's text
+    produces: a heading whose deferral mark is dropped on emission is
+    still reached by the fragment its source spelling slugs to.
     """
     return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
 
@@ -735,7 +774,7 @@ def group(
     )
     by = 0 if situate or absorbing is not None else SHIFT
     emitted = [] if situate else [f"{ATX} {escaped(title)}"]
-    text = shown_text(tokens)
+    text = shown_text(path, tokens, root)
     named = source_fragments(tokens)
     emitting_headings: list[Emitted] = []
     recorded: list[Part] = []
