@@ -1,8 +1,6 @@
-Material a marked link names is compiled by a sub-agent, as [the dispatch rule](#dispatch) states.
-
 # Plan Mode
 
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands. Uses the [dispatch](#dispatch) rule.
 
 Follow [Procedure](#procedure). The other sections are material that procedure references. Compile the marked link and hand it to a sub-agent.
 
