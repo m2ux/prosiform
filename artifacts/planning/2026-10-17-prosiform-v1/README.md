@@ -90,6 +90,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E00:W01](i01-e00/w01.md) | The implementation plan for ledger format and triage states |
 | [I01:E00:W02](i01-e00/w02.md) | The implementation plan for fixture capture from a recorded entry |
 | [I01:E00:W03](i01-e00/w03.md) | The implementation plan for run record and the declared exposure set |
+| [I01:E01:W00](i01-e01/w00.md) | The implementation plan for the stated emission the corpus expects |
 | [I01:E01:W01](i01-e01/w01.md) | The implementation plan for revision order and its citation record |
 | [I01:E01:W02](i01-e01/w02.md) | The implementation plan for traceability refreshed on each revision |
 | [I01:E01:W03](i01-e01/w03.md) | The implementation plan for open-finding summary from the ledger |
