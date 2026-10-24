@@ -1,3 +1,6 @@
 # Python bytecode, written wherever a module is imported.
 __pycache__/
 *.py[cod]
+
+# Compiled bundles, written wherever pf is run.
+*.bundle.md
