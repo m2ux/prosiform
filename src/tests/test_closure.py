@@ -27,7 +27,6 @@ from prosiform.closure import (
     operators,
     rebased,
     resolve,
-    withholding,
     withholding_target,
 )
 

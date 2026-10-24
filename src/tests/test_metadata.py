@@ -427,6 +427,7 @@ def test_an_unknown_key_still_fails_beside_an_admitted_dispatch_text() -> None:
 
 def test_metadata_has_no_conversion_meaning_beside_a_dispatch_text() -> None:
     assert parse("metadata: {dispatch: One rule.}") == Conversion()
-    assert parse("prosiform: {dispatch: One rule.}\nmetadata: {dispatch: Other.}").dispatch == (
-        "One rule."
+    assert (
+        parse("prosiform: {dispatch: One rule.}\nmetadata: {dispatch: Other.}").dispatch
+        == "One rule."
     )

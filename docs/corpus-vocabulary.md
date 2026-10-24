@@ -161,6 +161,7 @@ The words a declaration and a report entry use to say what they are doing.
 | **declaration** | what a manifest states about the contract. |
 | **determinism** | one input producing one output, whatever the order of the arguments. |
 | **derivation** | a form made from another word rather than inflected from it. |
+| **disagree** | to state a value other than the one another source states. |
 | **disk** | the storage an installed build is written to. |
 | **documentation** | the documents this repository owns. |
 | **host** | the machine a build is installed on. |

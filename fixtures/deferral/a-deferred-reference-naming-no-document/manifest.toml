@@ -1,7 +1,7 @@
 description = "A deferred reference resolving under the allowed source root that names no document fails with E_TARGET_NOT_FOUND and publishes nothing, so a deferral an agent will follow is one that can succeed."
 
 clauses = [
-  "Link classification and resource handling — A deferred link's target",
+  "Link classification and resource handling — A withheld link's target",
   "Link classification and resource handling — A target that resolves to nothing",
   "Validation and failure contract — Publication",
 ]

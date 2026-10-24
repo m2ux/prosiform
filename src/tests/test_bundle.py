@@ -165,7 +165,7 @@ def test_a_paragraph_that_does_not_carry_the_entry_sentence_is_no_entry_line() -
     assert not is_entry_line("Read [guide](#guide).")
 
 
-def test_a_dispatch_text_reaches_the_bundle_as_one_paragraph_where_the_sentence_is() -> None:
+def test_a_dispatch_text_reaches_the_bundle_where_the_sentence_is() -> None:
     carried = grouped("note.md", "Body.\n")
     line = entry_line([("Note", "note")], "One rule.")
     assert f"{line}\n" in assemble(line, [carried])

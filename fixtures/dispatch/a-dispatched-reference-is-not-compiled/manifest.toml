@@ -1,0 +1,22 @@
+description = "A link whose text opens with the dispatch mark is not compiled: the document it names is not opened and contributes nothing, and the bundle carries the link's text with its mark exactly as its author wrote it."
+
+clauses = [
+  "Link classification and resource handling — The dispatch operator",
+  "Link classification and resource handling — A withheld link's target",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Guide"
+resolved = "guide"

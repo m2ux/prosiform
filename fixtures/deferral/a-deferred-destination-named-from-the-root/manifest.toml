@@ -1,8 +1,8 @@
 description = "A deferred link's destination is its target's path from the allowed source root rather than the path its author wrote, so an agent holding the bundle and the root follows it with nothing else, and the document it names contributes no heading and no content."
 
 clauses = [
-  "Link classification and resource handling — A deferred link's destination",
-  "Link classification and resource handling — A deferred link's target",
+  "Link classification and resource handling — A withheld link's destination",
+  "Link classification and resource handling — A withheld link's target",
   "Bundle destinations — Internal links",
 ]
 

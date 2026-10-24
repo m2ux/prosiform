@@ -1,0 +1,21 @@
+description = "A dispatched link's destination is its target's URI-escaped path from the invocation working directory rather than the path its author wrote, with the fragment the link resolved retained, so an agent holding the bundle follows the rule the dispatched run compiles under."
+
+clauses = [
+  "Link classification and resource handling — A withheld link's destination",
+  "Link classification and resource handling — A withheld link's target",
+  "Bundle destinations — Internal links",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["topic/guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Guide"
+resolved = "guide"

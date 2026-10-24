@@ -1260,18 +1260,16 @@ def test_a_dispatch_mark_on_a_resource_is_a_resource_still(root: Path) -> None:
 def test_a_declared_dispatch_text_opens_the_bundle_after_the_entry_sentence(
     root: Path,
 ) -> None:
+    declaration = "---\nprosiform:\n  dispatch: Each mark is the sub-agent's.\n---\n"
     written(
         root,
         "guide.md",
-        "---\nprosiform:\n  dispatch: Each marked link is settled by the sub-agent.\n---\n"
-        "# Guide\n\nSee [\u00bb the rules](rules.md).\n",
+        f"{declaration}# Guide\n\nSee [\u00bb the rules](rules.md).\n",
     )
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert (
-        "references. Each marked link is settled by the sub-agent.\n" in run.stdout
-    )
+    assert "references. Each mark is the sub-agent's.\n" in run.stdout
 
 
 def test_no_declared_dispatch_text_leaves_the_entry_line_as_it_was(root: Path) -> None:
@@ -1283,10 +1281,11 @@ def test_no_declared_dispatch_text_leaves_the_entry_line_as_it_was(root: Path) -
 
 
 def test_every_contributing_source_agrees_on_the_dispatch_text(root: Path) -> None:
+    declaration = "---\nprosiform:\n  dispatch: One rule.\n---\n"
     written(
         root,
         "guide.md",
-        "---\nprosiform:\n  dispatch: One rule.\n---\n# Guide\n\nRead [the rules](rules.md).\n",
+        f"{declaration}# Guide\n\nRead [the rules](rules.md).\n",
     )
     written(
         root,
@@ -1344,10 +1343,11 @@ def test_an_unknown_prosiform_key_still_fails(root: Path) -> None:
 
 
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
+    declaration = "---\nmetadata:\n  dispatch: One rule.\n---\n"
     written(
         root,
         "guide.md",
-        "---\nmetadata:\n  dispatch: One rule.\n---\n# Guide\n\nSee [\u00bb rules](rules.md).\n",
+        f"{declaration}# Guide\n\nSee [\u00bb rules](rules.md).\n",
     )
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)

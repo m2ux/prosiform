@@ -1284,7 +1284,9 @@ def dispatch_text(
     """
     declaring = [
         path
-        for path in sorted(selected, key=lambda p: (read[p].display, read[p].identity or p))
+        for path in sorted(
+            selected, key=lambda p: (read[p].display, read[p].identity or p)
+        )
         if read[path].conversion.dispatch is not None
     ]
     if not declaring:
