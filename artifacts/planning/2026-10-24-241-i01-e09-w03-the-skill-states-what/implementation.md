@@ -152,3 +152,21 @@ No plan change was applied and none was held. This unit changed two skill docume
 ## Incomplete
 
 **AC1** is met as a declaration and unmet as a bundle outcome under the brief's stated invocation. The missing route from a mode to the entry document is not this unit's component; it is left recorded rather than patched, because the fix is a structural change to how the skill's documents reference one another and that decision belongs to the user.
+
+The pull request therefore stays open. Its Test Plan records the criterion as `✗` against this measurement rather than as met.
+
+## Routes Measured for the Entry Document
+
+Each was tried on this branch and none puts the declared text in a mode bundle's opening line under the documented invocation:
+
+| Route | Result |
+| --- | --- |
+| `pf -o - deliver-mode.md` from `modes/` | Entry sentence alone; `SKILL.md` not a contributing source |
+| `-f ../SKILL.md` as the referrer | Same bytes, no declared text |
+| Unmarked prerequisite link to `../SKILL.md#conventions` | Bundle grows 41 bytes; no declared text |
+| `../SKILL.md` as a second entry reference | `E_TARGET_NOT_FOUND` on `modes/propose-mode.md` |
+| `pf -o - SKILL.md` with the skill as root | `E_TARGET_NOT_FOUND` on `sync-mode.md` |
+| `prosiform: {root: ".."}` on the mode | `E_TARGET_NOT_FOUND` on `advance-mode.md`; a root resolves the declaring file's own links, not its siblings' |
+
+`root` shifts the base a file's own links resolve from, so declaring it on a mode re-points that mode's sibling `advance-mode.md`-style links and leaves the artifacts unreachable. It is not a route to the entry document.
+
