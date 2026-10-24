@@ -13,7 +13,8 @@ The work is on `i01/e09/w02-a-published-link-without`, based on `i01/e09/main`. 
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w02.md) | Implementation scope and required tests |
-| [Change list](changes.md) | Plan changes this hold applied, and what it waits on |
+| [Validation](validation.md) | Criterion evidence, review, plan changes and delivery result |
+| [Full checks](full-check.log) | Complete validation run at the task head |
 
 ## Links
 
