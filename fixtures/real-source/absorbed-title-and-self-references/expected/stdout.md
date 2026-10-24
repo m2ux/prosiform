@@ -1,8 +1,8 @@
-Follow [Artifacts/Repository-Labels](#artifactsrepository-labels). The rest of this bundle is material that procedure references.
-
-# Artifacts/Repository-Labels
+# Repository Labels
 
 The labels available for issue metadata in one repository.
+
+Follow [Operations](#operations). The other sections are material that procedure references.
 
 ## Operations
 

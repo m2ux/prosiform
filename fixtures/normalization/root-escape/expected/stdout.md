@@ -1,5 +1,5 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The procedure requires [the outside document](../outside.md).
+
+Follow [Guide](#guide). The other sections are material that procedure references.

@@ -1,4 +1,4 @@
-Follow [Alpha Notes](#alpha-notes). The rest of this bundle is material that procedure references.
+Follow [Findings](#findings). The other sections are material that procedure references.
 
 # Guides
 

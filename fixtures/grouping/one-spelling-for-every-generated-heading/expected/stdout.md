@@ -1,10 +1,10 @@
-Follow [Entry-Point](#entry-point). The rest of this bundle is material that procedure references.
-
-# Entry-Point
+# Entry Point
 
 The work starts here.
 
 It reads the [Field Notes](#guidesfield-notes), the [Common Rules](#common) and the [Codex Rules](#codex).
+
+Follow [Entry Point](#entry-point). The other sections are material that procedure references.
 
 # Guides/Field-Notes
 

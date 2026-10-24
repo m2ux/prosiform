@@ -1,22 +1,12 @@
-Follow [One](#one) and [Two](#two). The rest of this bundle is material those procedures reference.
-
-# Parts
-
-## Overview
-
-### One
+# One
 
 What the first part opens on.
 
-#### Context
+Follow [Context](#context) and [Two](#two-1). The other sections are material those procedures reference.
+
+## Context
 
 Why the first part exists.
-
-### Two
-
-#### Context
-
-What the second part assumes.
 
 ## Steps
 
@@ -27,3 +17,11 @@ Carry the first part out.
 ### Two
 
 Carry the second part out.
+
+## Overview
+
+### Two
+
+#### Context
+
+What the second part assumes.

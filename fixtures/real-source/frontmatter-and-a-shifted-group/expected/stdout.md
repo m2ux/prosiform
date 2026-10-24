@@ -1,10 +1,8 @@
-Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The rest of this bundle is material that procedure references.
+# Impact Analysis with GitNexus
 
-# Gitnexus-Impact-Analysis/SKILL
+Follow [When to Use](#when-to-use). The other sections are material that procedure references.
 
-## Impact Analysis with GitNexus
-
-### When to Use
+## When to Use
 
 - "Is it safe to change this function?"
 - "What will break if I modify X?"
@@ -13,7 +11,7 @@ Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The res
 - Before making non-trivial code changes
 - Before committing — to understand what your changes affect
 
-### Workflow
+## Workflow
 
 ```
 1. gitnexus_impact({target: "X", direction: "upstream"})  → What depends on this
@@ -24,7 +22,7 @@ Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The res
 
 > If "Index is stale" → run `npx gitnexus analyze` in terminal.
 
-### Checklist
+## Checklist
 
 ```
 - [ ] gitnexus_impact({target, direction: "upstream"}) to find dependents
@@ -35,7 +33,7 @@ Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The res
 - [ ] Assess risk level and report to user
 ```
 
-### Understanding Output
+## Understanding Output
 
 | Depth | Risk Level       | Meaning                  |
 | ----- | ---------------- | ------------------------ |
@@ -43,7 +41,7 @@ Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The res
 | d=2   | LIKELY AFFECTED  | Indirect dependencies    |
 | d=3   | MAY NEED TESTING | Transitive effects       |
 
-### Risk Assessment
+## Risk Assessment
 
 | Affected                       | Risk     |
 | ------------------------------ | -------- |
@@ -52,7 +50,7 @@ Follow [Gitnexus-Impact-Analysis/SKILL](#gitnexus-impact-analysisskill). The res
 | >15 symbols or many processes  | HIGH     |
 | Critical path (auth, payments) | CRITICAL |
 
-### Tools
+## Tools
 
 **gitnexus_impact** — the primary tool for symbol blast radius:
 
@@ -82,7 +80,7 @@ gitnexus_detect_changes({scope: "staged"})
 → Risk: MEDIUM
 ```
 
-### Example: "What breaks if I change validateUser?"
+## Example: "What breaks if I change validateUser?"
 
 ```
 1. gitnexus_impact({target: "validateUser", direction: "upstream"})

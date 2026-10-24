@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 A code span naming `[[page]]` is prose about a wiki link rather than one.
@@ -15,3 +13,5 @@ A paragraph mentioning {#custom-id} names no section.
 ```
 
 A regular expression `[^abc]` matches one character.
+
+Follow [Guide](#guide). The other sections are material that procedure references.

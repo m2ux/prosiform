@@ -1,4 +1,4 @@
-Follow [One](#one) and [Two](#two). The rest of this bundle is material those procedures reference.
+Follow [One](#one) and [Two](#two). The other sections are material those procedures reference.
 
 # Guide
 

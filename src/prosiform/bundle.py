@@ -688,7 +688,9 @@ def group(
     included, so the bundle carries the uses and none of the
     declarations behind them.
     """
-    situate = situate and carries_title(tokens) and (selected is None or selected.document)
+    situate = (
+        situate and carries_title(tokens) and (selected is None or selected.document)
+    )
     title = heading_text(path if display is None else display)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {

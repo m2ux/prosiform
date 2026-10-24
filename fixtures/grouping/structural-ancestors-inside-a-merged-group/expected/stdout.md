@@ -1,4 +1,4 @@
-Follow [Detail](#detail). The rest of this bundle is material that procedure references.
+Follow [Detail](#detail). The other sections are material that procedure references.
 
 # Modes
 

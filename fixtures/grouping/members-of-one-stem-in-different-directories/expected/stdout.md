@@ -1,8 +1,8 @@
-Follow [Entry](#entry). The rest of this bundle is material that procedure references.
-
 # Entry
 
 Both runs are recorded: [Alpha](#alpha-notes) and [Beta](#beta-notes).
+
+Follow [Entry](#entry). The other sections are material that procedure references.
 
 # Guides
 

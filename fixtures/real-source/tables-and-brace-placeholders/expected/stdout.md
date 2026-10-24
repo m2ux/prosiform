@@ -1,6 +1,6 @@
-Follow [Templates/Integration-Review](#templatesintegration-review). The rest of this bundle is material that procedure references.
+# Integration Review
 
-# Templates/Integration-Review
+Follow [Verdict](#verdict). The other sections are material that procedure references.
 
 ## Verdict
 

@@ -1850,8 +1850,7 @@ def test_actual_bundle_reuse_is_refused(
     [
         "~~~markdown\n{declaration}\n~~~\n",
         "> {declaration}\n\n# Notes\n",
-        "Follow prose. "
-        "The other sections are material that procedure references.\n",
+        "Follow prose. The other sections are material that procedure references.\n",
         "Follow [Notes](https://example.com). "
         "The other sections are material that procedure references.\n",
     ],

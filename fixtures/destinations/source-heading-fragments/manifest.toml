@@ -26,14 +26,14 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Article"
-resolved = "article"
+reference = "What's new: v1.0!"
+resolved = "whats-new-v10"
 
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Caf\u00e9-M\u00fcnster"
-resolved = "caf\u00e9-m\u00fcnster-1"
+reference = "Café-Münster"
+resolved = "café-münster-1"
 
 [[expected.diagnostics]]
 severity = "warning"

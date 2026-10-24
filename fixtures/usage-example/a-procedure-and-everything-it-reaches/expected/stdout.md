@@ -1,24 +1,42 @@
-Follow [Plan](#plan). The rest of this bundle is material that procedure references.
+# Plan Mode
 
-# Artifacts
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
-## Overview
+Follow [Procedure](#procedure). The other sections are material that procedure references.
 
-### Epic Issue Body
+## Procedure
 
-Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
+1. **Populate the epics.**
+   Run [Populate Epic Issue Body](#populate-epic-issue-body) for each epic and each new task row.
+   - Register each returned file in the planning record.
+   - Resolve Open Questions before work starts.
+   - Return each epic draft and its format results to the review step.
+2. **Publish.**
+   - Save the epics in dependency order, each carrying its confirmed priority label.
+   - Replace every temporary link in the initiative and epic bodies with the saved issue identity.
+   - Call [Validate Epic Body](#validate-epic-body) with the saved initiative context.
+   - Resolve findings.
+   - Save the corrected bodies.
+3. **Record delivered work.**
+   When work has landed:
+   - Run [Record Epic Delivery](#record-epic-delivery) with the epic's current evidence.
+   - Resolve each line of the returned [Delivery Findings](#delivery-findings).
+   - Return the saved delivery state or blockers.
+4. **Verify outcomes met**
+   - Ensure each of the [Outcomes](#outcomes) is met.
 
-The delivery lines this body records are defined in [Epic](#epic).
+## Outcomes
 
-### Epic
-
-An epic's task delivery findings, integration readiness and completion state.
+- **A scoped initiative.**
+  The user has an initiative scoped to the proposal they named, or to a proposal raised for that problem.
+- **A goal made true.**
+  Each clause of the goal the user confirmed is made true by the initiative's criteria, and the epics the initiative lists are the work that delivers those criteria.
+- **Review before creation.**
+  Findings on that initiative are folded in before any of its issues are created.
 
 ## Operations
 
-### Epic Issue Body
-
-#### *Populate* Epic Issue Body
+### *Populate* Epic Issue Body
 
 One epic body and its local validation findings.
 
@@ -30,7 +48,7 @@ One epic body and its local validation findings.
 3. Pass the draft, initiative context and output file to [Validate Epic Body](#validate-epic-body).
 4. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
-#### *Record* Epic Delivery
+### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -40,26 +58,15 @@ One epic body with supplied delivery matches and completed rows recorded.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-#### *Validate* Epic Body
+### *Validate* Epic Body
 
 The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records and output file.
 
-1. Check the current body against the local [Fields](#epic-issue-body-2), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
+1. Check the current body against the local [Fields](#fields), supplying initiative JSON as `--initiative` and pull requests as `--prs`.
 2. Include any epic criterion no task row delivers in the findings.
 3. Return the corrected body, mechanical diff and unresolved findings for the caller.
-
-### Epic
-
-#### *Inspect* Epic Delivery
-
-The delivery findings for one epic from supplied evidence.
-
-**Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
-
-1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
-2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
 ## Fields
 
@@ -106,10 +113,6 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
 ### Epic
 
-#### Delivery State
-
-The epic is identified by its repository and issue number. Its state contains task delivery findings, criterion verification and ticks, open questions, expected delivery bases and their merges, and the revisions supporting the evidence. Integration readiness and completion are separate results, each with its unresolved conditions. An epic may be ready to integrate while one or more bases await merging.
-
 #### Delivery Findings
 
 | Line | What it names |
@@ -127,9 +130,7 @@ An unmet row links a merged pull request while a covered criterion remains untic
 
 ## Commands
 
-### Epic Issue Body
-
-#### Sync Epic
+### Sync Epic
 
 Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
 
@@ -148,70 +149,3 @@ work-tracker sync '<epic-json-file>' --prs '<pull-request-records-file>' --links
 ```bash
 work-tracker sync issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --fix fixed-943.md
 ```
-
-### Epic
-
-#### Match Pull Requests
-
-Reports an epic's delivery state against the pull requests that name it.
-
-**Inputs:** Epic JSON, pull request records and complete issue-link snapshot.
-
-- Results follow [Delivery Findings](#delivery-findings).
-
-```bash
-work-tracker match '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
-```
-
-**Example:**
-
-```bash
-work-tracker match issue-943.json --prs prs.json --links links.json
-```
-
-# Modes
-
-## Overview
-
-### Plan
-
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
-
-## Prerequisites
-
-Read these files first.
-
-- [Epic Issue Body](#epic-issue-body)
-- [Epic](#epic)
-
-The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
-
-## Procedure
-
-The main path meets [Outcomes](#outcomes).
-
-1. **Populate the epics.**
-   Run [Populate Epic Issue Body](#populate-epic-issue-body) for each epic and each new task row.
-   - Register each returned file in the planning record.
-   - Resolve Open Questions before work starts.
-   - Return each epic draft and its format results to the review step.
-2. **Publish.**
-   - Save the epics in dependency order, each carrying its confirmed priority label.
-   - Replace every temporary link in the initiative and epic bodies with the saved issue identity.
-   - Call [Validate Epic Body](#validate-epic-body) with the saved initiative context.
-   - Resolve findings.
-   - Save the corrected bodies.
-3. **Record delivered work.**
-   When work has landed:
-   - Run [Record Epic Delivery](#record-epic-delivery) with the epic's current evidence.
-   - Resolve each line of the returned [Delivery Findings](#delivery-findings).
-   - Return the saved delivery state or blockers.
-
-## Outcomes
-
-- **A scoped initiative.**
-  The user has an initiative scoped to the proposal they named, or to a proposal raised for that problem.
-- **A goal made true.**
-  Each clause of the goal the user confirmed is made true by the initiative's criteria, and the epics the initiative lists are the work that delivers those criteria.
-- **Review before creation.**
-  Findings on that initiative are folded in before any of its issues are created.

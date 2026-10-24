@@ -1,4 +1,4 @@
-Follow [Run It](#run-it) and [Stop](#stop). The rest of this bundle is material those procedures reference.
+Follow [Run It](#run-it) and [Stop](#stop). The other sections are material those procedures reference.
 
 # Guide
 

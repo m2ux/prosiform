@@ -62,8 +62,9 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     assert forward.stdout.index("# A\n") < forward.stdout.index("# B\n")
     assert reverse.stdout.index("# B\n") < reverse.stdout.index("# A\n")
     assert "First target." in forward.stdout and "Second target." in forward.stdout
-    assert forward.stdout[forward.stdout.index("# One/X") :] == (
-        reverse.stdout[reverse.stdout.index("# One/X") :]
+    assert (
+        forward.stdout[forward.stdout.index("# One/X") :]
+        == (reverse.stdout[reverse.stdout.index("# One/X") :])
     )
 
 

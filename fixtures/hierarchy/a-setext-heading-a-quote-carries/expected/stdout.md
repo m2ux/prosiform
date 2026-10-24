@@ -1,12 +1,11 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
+# The Standing Order
 
-# Guide
+Follow [Run](#run). The other sections are material that procedure references.
 
-## The Standing Order
+## Run
 
-### Run
-
-> ### Quoted
+> Quoted
+> ------
 >
 > A Setext heading a blockquote carries.
 

@@ -23,5 +23,5 @@ resolved = "article"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Caf\u00e9"
-resolved = "caf\u00e9-1"
+reference = "Café"
+resolved = "café-1"

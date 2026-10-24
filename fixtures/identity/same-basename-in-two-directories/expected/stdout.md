@@ -1,9 +1,9 @@
-Follow [Docs/Note](#docsnote) and [Notes/Note](#notesnote). The rest of this bundle is material those procedures reference.
+# Note
+
+The note the notes directory carries.
+
+Follow [Note](#note) and [Docs/Note](#docsnote). The other sections are material those procedures reference.
 
 # Docs/Note
 
 The note the documentation directory carries.
-
-# Notes/Note
-
-The note the notes directory carries.

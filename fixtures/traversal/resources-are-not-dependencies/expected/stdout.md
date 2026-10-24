@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 ![The architecture](https://example.com/architecture.png) illustrates the
@@ -10,6 +8,8 @@ traversed.
 
 The procedure requires [the shared rules](#rules), which the bundle
 carries.
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Rules
 

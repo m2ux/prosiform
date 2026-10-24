@@ -1,10 +1,10 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 > The quoted procedure names [the shared rules](#rules).
 
 The guide carries nothing else.
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Rules
 

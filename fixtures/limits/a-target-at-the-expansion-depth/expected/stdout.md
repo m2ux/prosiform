@@ -1,8 +1,8 @@
-Follow [Alpha](#alpha). The rest of this bundle is material that procedure references.
-
 # Alpha
 
 Alpha requires [beta](#beta).
+
+Follow [Alpha](#alpha). The other sections are material that procedure references.
 
 # Beta
 

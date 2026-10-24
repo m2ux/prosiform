@@ -1,8 +1,8 @@
-Follow [Article](#article) and [Run](#run-2). The rest of this bundle is material those procedures reference.
-
 # Article
 
 An opening paragraph, above the headings the fixture measures.
+
+Follow [Article](#article) and [Run](#run-2). The other sections are material those procedures reference.
 
 > ## Run
 >

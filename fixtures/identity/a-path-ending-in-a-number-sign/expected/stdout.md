@@ -1,4 +1,4 @@
-Follow [Notes/Draft \#](#notesdraft-). The rest of this bundle is material that procedure references.
+Follow [Notes/Draft \#](#notesdraft-). The other sections are material that procedure references.
 
 # Notes/Draft \#
 

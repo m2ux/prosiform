@@ -17,6 +17,6 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_HEADING_DEPTH_OVERFLOW"
-reference = "guide.md"
-source = "guide.md"
-chain = ["guide.md"]
+reference = "order.md"
+source = "order.md"
+chain = ["guide.md", "order.md"]

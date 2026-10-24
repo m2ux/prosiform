@@ -3,7 +3,7 @@
 A bundle opens with an entry declaration and a file heading:
 
 ```text
-Follow [Notes](#notes). The rest of this bundle is material that procedure references.
+Follow [Notes](#notes). The other sections are material that procedure references.
 
 # Notes
 ```

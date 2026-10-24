@@ -1,4 +1,4 @@
-Follow [Notes/\[draft\](page.md)](#notesdraftpagemd). The rest of this bundle is material that procedure references.
+Follow [Notes/\[draft\](page.md)](#notesdraftpagemd). The other sections are material that procedure references.
 
 # Notes/\[draft\](page.md)
 

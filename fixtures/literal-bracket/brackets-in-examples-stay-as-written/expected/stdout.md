@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The guide names [the runner](#run) and shows `[runner]` as an example.
@@ -9,6 +7,8 @@ A [runner] use and its definition:
 
 [runner]: run.md
 ```
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Run
 

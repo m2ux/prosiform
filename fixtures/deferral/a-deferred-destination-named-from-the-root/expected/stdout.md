@@ -1,6 +1,6 @@
-Follow [Topic/Guide](#topicguide). The rest of this bundle is material that procedure references.
-
-# Topic/Guide
+# Guide
 
 The procedure defers [¬ the shared rules](shared/rules.md#every-rule)
 to a run of its own.
+
+Follow [Guide](#guide). The other sections are material that procedure references.

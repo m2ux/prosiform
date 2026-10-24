@@ -1,22 +1,20 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
+# The Standing Order
 
-# Guide
+Follow [Run](#run). The other sections are material that procedure references.
 
-## The Standing Order
+## Run
 
-### Run
-
-> #### Quoted
+> ### Quoted
 >
 > A heading a blockquote carries.
 >
-> > ##### Quoted Again
+> > #### Quoted Again
 > >
 > > A heading a nested blockquote carries.
 
 - An item above a heading.
 
-  #### In A List Item
+  ### In A List Item
 
   The body the item carries.
 

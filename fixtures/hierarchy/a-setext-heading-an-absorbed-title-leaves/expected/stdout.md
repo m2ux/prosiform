@@ -1,6 +1,7 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
+Guide
+=====
 
-# Guide
+Follow [Run](#run). The other sections are material that procedure references.
 
 Run
 ---

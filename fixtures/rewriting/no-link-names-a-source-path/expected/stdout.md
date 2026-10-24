@@ -1,10 +1,10 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The procedure requires [the shared rules](#rules) whole,
 [the review step](#review) in part, and
 [its own summary](#summary) at the end.
+
+Follow [Summary](#summary). The other sections are material that procedure references.
 
 ## Summary
 

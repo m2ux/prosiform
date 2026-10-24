@@ -1,8 +1,4 @@
-Follow [Detail](#detail) and [Gamma](#gamma). The rest of this bundle is material those procedures reference.
-
-# Appendix
-
-Appendix body.
+Follow [Detail](#detail) and [Gamma](#gamma). The other sections are material those procedures reference.
 
 # Guide
 
@@ -19,6 +15,10 @@ Detail body, which needs [the note](#note).
 #### Gamma
 
 Gamma body.
+
+# Appendix
+
+Appendix body.
 
 # Note
 

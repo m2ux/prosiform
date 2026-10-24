@@ -17,12 +17,6 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "warning"
 code = "W_ENTRY_DESTINATION"
-reference = "Alpha"
-resolved = "alpha"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
 reference = "One"
 resolved = "one"
 
@@ -31,3 +25,9 @@ severity = "warning"
 code = "W_ENTRY_DESTINATION"
 reference = "Two"
 resolved = "two"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Alpha"
+resolved = "alpha"

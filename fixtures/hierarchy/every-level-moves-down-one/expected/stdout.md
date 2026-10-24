@@ -1,27 +1,25 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
-# Guide
-
-## The Standing Order
+# The Standing Order
 
 An opening paragraph, above the first eligible heading.
 
-### Run
+Follow [Run](#run). The other sections are material that procedure references.
+
+## Run
 
 Carry the procedure out.
 
-#### Preparation
+### Preparation
 
 What to have ready.
 
-##### The Checklist
+#### The Checklist
 
 Each item, in order.
 
-###### A Single Item
+##### A Single Item
 
 The item itself.
 
-### Stop
+## Stop
 
 Stop it.

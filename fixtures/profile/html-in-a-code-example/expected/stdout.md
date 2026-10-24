@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 An HTML example inside a fence is content the bundle carries, not markup it emits.
@@ -12,3 +10,5 @@ An HTML example inside a fence is content the bundle carries, not markup it emit
 An indented example carries it too.
 
     <span>raw</span>
+
+Follow [Guide](#guide). The other sections are material that procedure references.

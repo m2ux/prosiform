@@ -1,6 +1,6 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
+
+Follow [The step the shared rules governs](#the-step-the-shared-rules-governs). The other sections are material that procedure references.
 
 ## The step [the shared rules](#rules) governs
 

@@ -1,11 +1,9 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
+Follow [Run](#run). The other sections are material that procedure references.
 
-# Guide
-
-### Run
+## Run
 
 Carry the procedure out.
 
-## Guide
+# Guide
 
 The title, below the heading the document opens on.

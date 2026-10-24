@@ -69,12 +69,12 @@ SOURCE = (
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
 BUNDLE = (
-    "Follow [Guide](#guide). "
-    "The other sections are material that procedure references.\n"
-    "\n"
     "# Guide\n"
     "\n"
     "The installed command bundles this document.\n"
+    "\n"
+    "Follow [Guide](#guide). "
+    "The other sections are material that procedure references.\n"
 )
 REPORT = (
     "W_ENTRY_DESTINATION: the entry reference 'Guide' resolves to the "
@@ -216,14 +216,22 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
 def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     """Derived files, combined selections and validation through the installed CLI."""
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    for reference, name in (
-        (entry, "guide.bundle.md"),
-        (entry + "#guide", "guide__guide.bundle.md"),
+    fragment = (
+        "Follow [Guide](#guide). "
+        "The other sections are material that procedure references.\n"
+        "\n"
+        "# Guide\n"
+        "\n"
+        "The installed command bundles this document.\n"
+    )
+    for reference, name, expected in (
+        (entry, "guide.bundle.md", BUNDLE),
+        (entry + "#guide", "guide__guide.bundle.md", fragment),
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
         destination = elsewhere / name
-        if run.stdout or destination.read_text() != BUNDLE:
+        if run.stdout or destination.read_text() != expected:
             raise Failed("derived output differs from the installed bundle")
         destination.unlink()
     run = invoke(environment, elsewhere, "-c", entry)

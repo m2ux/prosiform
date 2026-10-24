@@ -1,4 +1,4 @@
-Follow [A Plan](#a-plan) and [B Plan](#b-plan). The rest of this bundle is material those procedures reference.
+Follow [Procedure](#procedure) and [B Plan](#b-plan). The other sections are material those procedures reference.
 
 # Modes
 

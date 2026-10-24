@@ -1,10 +1,8 @@
-Follow [Guide](#guide) and [Notes/Note](#notesnote). The rest of this bundle is material those procedures reference.
-
-# Guide
-
-## Reading the guide
+# Reading the guide
 
 A document whose suffix is spelled in capitals.
+
+Follow [Reading the guide](#reading-the-guide) and [Notes/Note](#notesnote). The other sections are material those procedures reference.
 
 # Notes/Note
 

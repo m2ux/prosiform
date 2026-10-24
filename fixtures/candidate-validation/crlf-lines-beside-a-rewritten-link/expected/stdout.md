@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The procedure requires [the notes](#notes).
@@ -8,6 +6,8 @@ The procedure requires [the notes](#notes).
 a code example the source terminated with CRLF
 and the bundle carries as the source wrote it
 ```
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Notes
 

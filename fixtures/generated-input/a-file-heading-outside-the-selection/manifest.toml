@@ -16,5 +16,6 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_GENERATED_INPUT"
-reference = "Follow [Notes](#notes). The rest of this bundle is material that procedure references."
+reference = "Follow [Notes](#notes). The other sections are material that procedure references."
 source = "report.md:1"
+chain = ["report.md#findings"]

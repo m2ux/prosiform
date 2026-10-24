@@ -1,4 +1,4 @@
-Follow [Notes](#notes). The rest of this bundle is material that procedure references.
+Follow [Notes](#notes). The other sections are material that procedure references.
 
 # notes
 

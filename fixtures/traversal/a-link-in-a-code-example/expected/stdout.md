@@ -1,5 +1,3 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
 
 The procedure requires [the shared rules](#rules).
@@ -11,6 +9,8 @@ A dependency is written `[the draft](draft.md)` inline, and
 ```
 
 in a fenced example. Neither is a link, so neither names a dependency.
+
+Follow [Guide](#guide). The other sections are material that procedure references.
 
 # Rules
 

@@ -1,6 +1,10 @@
-Follow [Guide](#guide). The rest of this bundle is material that procedure references.
-
 # Guide
+
+It follows [the standing order](#order).
+
+Follow [Guide](#guide). The other sections are material that procedure references.
+
+# Order
 
 ## The Standing Order
 
