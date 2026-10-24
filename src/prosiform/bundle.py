@@ -106,7 +106,7 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
-from prosiform.closure import bundled, deferring, rebased
+from prosiform.closure import bundled, rebased, withholding_target
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -300,19 +300,40 @@ def escaped(text: str) -> str:
 
 
 def is_entry_line(content: str) -> bool:
-    """Whether one paragraph is the instruction to follow the named entries."""
-    return content.startswith(ENTRY_OPENING) and content.endswith(ENTRY_CLOSINGS)
+    """Whether one paragraph is the instruction to follow the named entries.
+
+    A declared dispatch text follows the entry sentence in the same
+    paragraph, so the sentence is read from where the paragraph opens
+    with it to a closing that ends the paragraph or precedes the space
+    the text after it is joined by.
+    """
+    if not content.startswith(ENTRY_OPENING):
+        return False
+    return any(
+        content.startswith(closing, at)
+        and (len(content) == at + len(closing) or content[at + len(closing)] == SPACE)
+        for closing in ENTRY_CLOSINGS
+        for at in range(len(ENTRY_OPENING), len(content))
+    )
 
 
-def entry_line(named: Sequence[tuple[str, str]]) -> str:
+def entry_line(named: Sequence[tuple[str, str]], dispatch: str | None = None) -> str:
     """The paragraph that tells the agent to follow each named entry.
 
     One entry is that procedure. Several entries are those procedures.
     The other sections are material the named procedures reference.
+
+    A declared dispatch text follows the entry sentence in the same
+    paragraph, so a reader meets the rule that says what a dispatched
+    link means and the entries it governs as one instruction. Absent,
+    the paragraph is the entry sentence alone.
     """
     links = [f"[{escaped(text)}]({ANCHOR}{target})" for text, target in named]
     closing = ENTRY_ONE if len(named) == 1 else ENTRY_MANY
-    return f"{ENTRY_OPENING}{listed(links)}{closing}"
+    sentence = f"{ENTRY_OPENING}{listed(links)}{closing}"
+    if dispatch is None:
+        return sentence
+    return f"{sentence} {escaped(dispatch)}"
 
 
 def listed(items: Sequence[str]) -> str:
@@ -398,11 +419,11 @@ def target(
     because the closure selected what the link named and the group
     emitting it recorded the target it answers to.
 
-    A deferred link under the allowed source root takes its target's
+    A withheld link under the allowed source root takes its target's
     path from that root, so the run that compiles it later needs
     nothing but the root to follow it. It is never rewritten to a
     bundle destination, even where another reference carried its target
-    into the bundle: what one author deferred cannot be changed by
+    into the bundle: what one author withheld cannot be changed by
     another author's reference.
 
     A link resolving outside the allowed source root, and one naming no
@@ -412,7 +433,7 @@ def target(
     found = bundled(path, destination, opening, root)
     if found is not None:
         return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
-    deferred = deferring(path, destination, opening, root)
+    deferred = withholding_target(path, destination, opening, root)
     if deferred is None:
         return None
     return rebased(deferred, destination)

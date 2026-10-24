@@ -1,0 +1,20 @@
+description = "A dispatch text under metadata carries no conversion meaning: the run succeeds and the bundle opens with the entry sentence alone, so the instruction is read from the prosiform mapping and nowhere else."
+
+clauses = [
+  "Conversion metadata — prosiform.dispatch",
+  "Conversion metadata — Unrelated fields have no conversion meaning",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_ENTRY_DESTINATION"
+reference = "Guide"
+resolved = "guide"

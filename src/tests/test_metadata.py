@@ -374,3 +374,60 @@ def test_root_mapping_nesting_budget() -> None:
     with pytest.raises(InvalidMetadata) as caught:
         parse("prosiform: {root: ..}", depth=1)
     assert caught.value.diagnostic.code == "E_RESOURCE_LIMIT"
+
+
+def test_a_dispatch_text_is_recorded_with_its_location() -> None:
+    found = parse('prosiform:\n  dispatch: "Each mark is the sub-agent\'s."\n')
+    assert found.dispatch == "Each mark is the sub-agent's."
+    assert found.dispatch_location == Location("rules/a.md", 3, 13)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "prosiform: {dispatch: 2}",
+        "prosiform: {dispatch: null}",
+        "prosiform: {dispatch: true}",
+        "prosiform: {dispatch: []}",
+        "prosiform: {dispatch: {}}",
+    ],
+)
+def test_a_dispatch_text_is_a_string(text: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(text)
+    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+
+
+@pytest.mark.parametrize(
+    "dispatch",
+    ["", "   ", "\t", "two\nlines", "a: b", "a/b", "a\x7fb", "a\u0085b", "a\u2028b"],
+)
+def test_a_dispatch_text_is_printable_single_line_and_nonblank(dispatch: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform: {dispatch: " + json.dumps(dispatch) + "}")
+    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+
+
+def test_a_dispatch_text_is_independent_of_the_group_pair() -> None:
+    found = parse("prosiform: {group: rules, group-depth: 2, dispatch: One rule.}")
+    assert (found.group, found.dispatch) == ("rules", "One rule.")
+    assert parse("prosiform: {dispatch: One rule.}").group is None
+
+
+def test_an_absent_dispatch_text_is_no_declaration() -> None:
+    assert parse("prosiform: {root: ..}").dispatch is None
+    assert parse("prosiform: {root: ..}").dispatch_location is None
+
+
+def test_an_unknown_key_still_fails_beside_an_admitted_dispatch_text() -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform: {dispatch: One rule., dispatched: x}")
+    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+
+
+def test_metadata_has_no_conversion_meaning_beside_a_dispatch_text() -> None:
+    assert parse("metadata: {dispatch: One rule.}") == Conversion()
+    assert (
+        parse("prosiform: {dispatch: One rule.}\nmetadata: {dispatch: Other.}").dispatch
+        == "One rule."
+    )

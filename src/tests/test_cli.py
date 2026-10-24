@@ -85,6 +85,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
+from prosiform.metadata import INVALID_CONVERSION_METADATA
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -1229,6 +1230,129 @@ def test_a_deferral_stands_where_another_reference_carried_its_target(
     assert "# Rules" in run.stdout
     assert "See [\u00ac the rules](rules.md)" in run.stdout
     assert "It requires [the rules](#rules)" in run.stdout
+
+
+def test_a_dispatched_reference_under_the_root_is_not_compiled(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00bb the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule the sub-agent requires.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "# Rules" not in run.stdout
+    assert "Every rule the sub-agent requires." not in run.stdout
+
+
+def test_a_dispatched_link_carries_the_mark_its_author_wrote(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00bb the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "See [\u00bb the rules](rules.md)." in run.stdout
+
+
+def test_a_dispatch_mark_on_a_resource_is_a_resource_still(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00bb the diagram](plan.png).\n")
+    (root / "plan.png").write_text("Never opened.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "[\u00bb the diagram](plan.png)" in run.stdout
+
+
+def test_a_declared_dispatch_text_opens_the_bundle_after_the_entry_sentence(
+    root: Path,
+) -> None:
+    declaration = "---\nprosiform:\n  dispatch: Each mark is the sub-agent's.\n---\n"
+    written(
+        root,
+        "guide.md",
+        f"{declaration}# Guide\n\nSee [\u00bb the rules](rules.md).\n",
+    )
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "references. Each mark is the sub-agent's.\n" in run.stdout
+
+
+def test_no_declared_dispatch_text_leaves_the_entry_line_as_it_was(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00bb the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "sub-agent" not in run.stdout.splitlines()[0]
+
+
+def test_every_contributing_source_agrees_on_the_dispatch_text(root: Path) -> None:
+    declaration = "---\nprosiform:\n  dispatch: One rule.\n---\n"
+    written(
+        root,
+        "guide.md",
+        f"{declaration}# Guide\n\nRead [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  dispatch: Another rule.\n---\n# Rules\n\nEvery rule.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    diagnostic = run.diagnostics()[0]
+    assert diagnostic["code"] == INVALID_CONVERSION_METADATA
+    assert diagnostic["location"]["file"] == "guide.md"
+    assert [one["file"] for one in diagnostic["related"]] == ["rules.md"]
+
+
+def test_the_same_dispatch_text_twice_is_one_instruction(root: Path) -> None:
+    declaration = "---\nprosiform:\n  dispatch: One rule.\n---\n"
+    written(root, "guide.md", f"{declaration}# Guide\n\nRead [the rules](rules.md).\n")
+    written(root, "rules.md", f"{declaration}# Rules\n\nEvery rule.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stdout.count("One rule.") == 1
+
+
+def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [\u00ac \u00bb the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    diagnostic = run.diagnostics()[0]
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["reference"] == "\u00ac \u00bb the rules"
+
+
+def test_a_link_opening_with_both_operators_is_refused_where_it_names_nothing(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [\u00bb \u00ac a picture](plan.png).\n")
+    (root / "plan.png").write_text("Never opened.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == UNSUPPORTED_CONSTRUCT
+
+
+def test_an_unknown_prosiform_key_still_fails(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "---\nprosiform:\n  dispatched: One rule.\n---\n# Guide\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.diagnostics()[0]["code"] == INVALID_CONVERSION_METADATA
+
+
+def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
+    declaration = "---\nmetadata:\n  dispatch: One rule.\n---\n"
+    written(
+        root,
+        "guide.md",
+        f"{declaration}# Guide\n\nSee [\u00bb rules](rules.md).\n",
+    )
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "One rule." not in run.stdout
 
 
 def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> None:

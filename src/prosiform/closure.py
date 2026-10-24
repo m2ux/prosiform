@@ -3,7 +3,11 @@
 URI components split before decoding. Local path segments decode once.
 Authored links that escape their source root remain citations; positional
 references permit parent bootstrap. Canonical source identities are relative
-to the invocation working directory, independent of the discovering parent."""
+to the invocation working directory, independent of the discovering parent.
+
+Two operators open a link's text, and each withholds the compilation the
+other withholds: one states when the material is compiled, the other who
+compiles it."""
 
 import posixpath
 import re
@@ -14,7 +18,10 @@ from urllib.parse import quote
 from prosiform.profile import is_markdown
 from prosiform.source import ENCODING
 
-MARK = "¬"
+DEFERRAL_MARK = "¬"
+DISPATCH_MARK = "»"
+
+BLANKS = " \t"
 
 FRAGMENT = "#"
 QUERY = "?"
@@ -35,6 +42,8 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
 PATH_PART = "path segment"
 FRAGMENT_PART = "fragment"
+
+OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK)
 
 
 class Unresolvable(Exception):
@@ -209,18 +218,65 @@ def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -
     return SEPARATOR.join(walked)
 
 
-def marked(opening: str) -> bool:
-    """Whether a link's author deferred it, by opening its text with the mark.
+def operators(opening: str) -> tuple[str, ...]:
+    """Each operator one link's text opens with, in the order it is written.
 
-    The mark opens the link text, so text the mark sits inside names a
-    document the way any prose does. It is ordinary text to the
-    profile, which is why it adds no construct the grammar has to
-    recognize and a renderer knowing nothing of this tool shows the
-    link. It is content as well as instruction: the bundle publishes it
-    where the author wrote it, because an agent reading the bundle is
-    what reads it next.
+    An operator opens the text, so text one sits inside names a document
+    the way any prose does. The blanks between two operators are the
+    spacing an operator is written with, so text opening with one and
+    then the other carries both.
     """
-    return opening.startswith(MARK)
+    found: list[str] = []
+    at = 0
+    while at < len(opening):
+        while at < len(opening) and opening[at] in BLANKS:
+            at += 1
+        if at == len(opening) or opening[at] not in OPERATORS:
+            break
+        found.append(opening[at])
+        at += 1
+    return tuple(found)
+
+
+def conflicting(opening: str) -> bool:
+    """Whether a link's text opens with both operators.
+
+    One compilation cannot wait for a later run and be dispatched by this
+    one, so a link stating both states two contradictory things and the
+    run says so rather than choosing.
+    """
+    return len(set(operators(opening))) > 1
+
+
+def deferred(opening: str) -> bool:
+    """Whether a link states that a later run compiles its material."""
+    return DEFERRAL_MARK in operators(opening)
+
+
+def dispatched(opening: str) -> bool:
+    """Whether a link states that a sub-agent compiles its material.
+
+    A dispatch and a deferral withhold the same compilation and differ in
+    what they say about it, so everything a deferral withholds a dispatch
+    withholds and the published mark is the only thing between them.
+    """
+    return DISPATCH_MARK in operators(opening)
+
+
+def withholding(opening: str) -> bool:
+    """Whether a link withholds its compilation from this run.
+
+    The operators open the link text, which is ordinary text to the
+    profile, so marking a link adds no construct the grammar has to
+    recognize and a renderer knowing nothing of this tool shows the
+    link. A mark is content as well as instruction: the bundle publishes
+    it where the author wrote it, because an agent reading the bundle is
+    what reads it next.
+
+    Which of the two marks reaches the bundle is a separate decision for
+    each, read through `operators`.
+    """
+    return bool(operators(opening))
 
 
 def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:
@@ -321,17 +377,17 @@ def bundled(document: str, text: str, opening: str, root: str = "") -> Reference
 
     A dependency carries no scheme and no authority, normalizes under
     the allowed source root, names a file the profile reads as Markdown,
-    and is not deferred. Everything else is text the bundle carries as
+    and is not withheld. Everything else is text the bundle carries as
     its author wrote it: a reference leaving the root cites material
     rather than requiring it, and a reference naming no Markdown
     document names nothing the bundle can carry.
 
     The opening is the literal text the link's content begins with,
-    which is where a deferral is written. A marked link is no
+    which is where an operator is written. A withheld link is no
     dependency: this run does not compile it, and the bundle carries it
-    for a run that will. Deferral is read from the link rather than
+    for a run that will. Withholding is read from the link rather than
     from its target, so a document another source carried into the
-    bundle leaves a link deferring it alone.
+    bundle leaves a link withholding it alone.
 
     Discovery, emission and candidate validation each ask this
     question, and each asks it of the document the link was written in,
@@ -341,35 +397,35 @@ def bundled(document: str, text: str, opening: str, root: str = "") -> Reference
     a reference again where it names a Markdown document, and reports
     the refusal it is.
     """
-    if marked(opening):
+    if withholding(opening):
         return None
     return resolvable(document, text, root)
 
 
-def deferring(
+def withholding_target(
     document: str, text: str, opening: str, root: str = ""
 ) -> Reference | None:
-    """The target one deferred link names, where the run is responsible for it.
+    """The target one withheld link names, where the run is responsible for it.
 
-    A deferral withholds a compilation position would have granted, so
+    Withholding withholds a compilation position would have granted, so
     what it withholds is a reference under the allowed source root
     naming a Markdown document, and that is the reference answered
     here. The run stays responsible for it: the target is required to
     exist, and the destination the bundle publishes names it from the
     root.
 
-    A mark on anything else changes nothing that was going to happen to
-    it. A reference leaving the root, one naming no Markdown document
-    and one whose form the grammar does not admit are text whether
-    their author marked them or not, so each is answered here as no
-    deferred target.
+    An operator on anything else changes nothing that was going to
+    happen to it. A reference leaving the root, one naming no Markdown
+    document and one whose form the grammar does not admit are text
+    whether their author marked them or not, so each is answered here
+    as no withheld target.
 
     This and `bundled` are the two halves of one rule, read from one
-    resolution: a reference under the root naming a Markdown document
-    is compiled by this run or deferred to a later one, and the mark is
-    the whole of the difference.
+    resolution: a reference under the root naming a Markdown document is
+    compiled by this run or withheld from it, and the operator is the
+    whole of the difference.
     """
-    if not marked(opening):
+    if not withholding(opening):
         return None
     return resolvable(document, text, root)
 
@@ -398,7 +454,12 @@ def resolvable(document: str, text: str, root: str = "") -> Reference | None:
 
 
 def rebased(found: Reference, text: str) -> str:
-    """URI-escape a deferred target's canonical working-directory-relative path."""
+    """URI-escape a withheld target's canonical working-directory-relative path.
+
+    A deferral and a dispatch publish the same destination: the path the
+    run that compiles the material follows from the root the bundle
+    names, with the fragment the link resolved retained.
+    """
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
     fragment = components(text).fragment
     if fragment is None:

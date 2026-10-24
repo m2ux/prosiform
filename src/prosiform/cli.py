@@ -55,17 +55,20 @@ from prosiform.candidate import (
     validate,
 )
 from prosiform.closure import (
+    DEFERRAL_MARK,
+    DISPATCH_MARK,
     DRIVE,
     Malformed,
     OutsideRoot,
     Reference,
     components,
-    deferring,
+    conflicting,
     external,
     identity,
     inside,
-    marked,
     resolve,
+    withholding,
+    withholding_target,
 )
 from prosiform.diagnostics import (
     ERROR,
@@ -94,7 +97,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import InvalidMetadata
+from prosiform.metadata import INVALID_CONVERSION_METADATA, InvalidMetadata
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -102,6 +105,7 @@ from prosiform.profile import (
     PARSER_REFERENCE_LIMIT,
     REFERENCES,
     SUFFIXES,
+    UNSUPPORTED_CONSTRUCT,
     Refusal,
     Suppressed,
     is_markdown,
@@ -939,12 +943,12 @@ def required(
     the question, so an author states what the bundle must carry by
     where the target sits.
 
-    A marked reference is deferred: the run yields no dependency for
-    it, so nothing it names is bundled through that reference, and the
-    link reaches the bundle with its mark for an agent to compile in a
-    run of its own. Its target is what `withheld` yields, because a
-    reference under the root is one the run stays responsible for
-    whether or not it carries what the reference names.
+    A withheld reference is not compiled: the run yields no dependency
+    for it, so nothing it names is bundled through that reference, and
+    the link reaches the bundle with its mark for the run that compiles
+    it. Its target is what `withheld` yields, because a reference under
+    the root is one the run stays responsible for whether or not it
+    carries what the reference names.
 
     A resource is no local Markdown document and an image is a
     resource whatever it points at, so neither is a dependency and both
@@ -992,9 +996,41 @@ def required(
             ) from malformed
         if found.external or not is_markdown(found.path):
             continue
-        if marked(use.opening):
+        if withholding(use.opening):
             continue
         yield replace(found, origin=at, chain=(*chain, identity(found)))
+
+
+def refusals_of_operators(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> None:
+    """Refuse a link whose text opens with both operators, naming the link.
+
+    One compilation cannot wait for a later run and be dispatched by this
+    one, so a link stating both states two contradictory things. It is a
+    source fault rather than a metadata fault: what the author wrote
+    admits two readings, and the run reports the link rather than
+    choosing between them.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource or not conflicting(use.opening):
+            continue
+        raise input_failure(
+            f"the link {use.opening!r} opens with both the deferral mark "
+            f"{DEFERRAL_MARK!r} and the dispatch mark {DISPATCH_MARK!r}, which "
+            f"state two different runs for one compilation",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy="open the link's text with the one operator that states who "
+            "compiles the material",
+            reference=use.opening,
+            source=location(path, source.line(use.line)),
+            chain=(*chain, use.destination),
+        )
 
 
 def withheld(
@@ -1004,14 +1040,14 @@ def withheld(
     chosen: Selection | None,
     chain: Sequence[str],
 ) -> Iterator[Reference]:
-    """Every target the selected content of one source defers.
+    """Every target the selected content of one source withholds.
 
-    A deferred reference under the allowed source root naming a
+    A withheld reference under the allowed source root naming a
     Markdown document is one this run does not carry and stays
-    responsible for, so its target is yielded here to be confirmed. A
-    mark on a reference leaving the root, or on one naming no Markdown
-    document, defers nothing that was going to happen, and those
-    references are text as they always were.
+    responsible for, so its target is yielded here to be confirmed. An
+    operator on a reference leaving the root, or on one naming no
+    Markdown document, withholds nothing that was going to happen, and
+    those references are text as they always were.
 
     What is yielded is a target and not a dependency. It joins no
     frontier, so the document is not bundled through this reference,
@@ -1026,7 +1062,7 @@ def withheld(
     for use in uses(tokens, selected):
         if use.resource:
             continue
-        found = deferring(path, use.destination, use.opening, source.root)
+        found = withholding_target(path, use.destination, use.opening, source.root)
         if found is None:
             continue
         at = location(path, source.line(use.line))
@@ -1158,6 +1194,7 @@ def traverse(
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
+            refusals_of_operators(path, read[path], parsed[path], chosen, reached)
             for one in withheld(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
@@ -1227,6 +1264,61 @@ def confirm(
         source=one.origin,
         chain=one.chain,
     )
+
+
+def dispatch_text(
+    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
+) -> str | None:
+    """The dispatch text the contributing sources agree on, in deterministic order.
+
+    Every contributing source that declares `prosiform.dispatch` states
+    what a dispatch mark means for that skill, and the bundle carries one
+    instruction, so each declaration is held to the first. A second value
+    is a disagreement rather than a choice, because an opening line whose
+    wording depended on which source was read first would make the
+    instruction a property of traversal order.
+
+    The first declaration is the one on the first source in the order the
+    bundle arranges its groups by, so the primary location and the
+    reported one are the same two however the sources were reached.
+    """
+    declaring = [
+        path
+        for path in sorted(
+            selected, key=lambda p: (read[p].display, read[p].identity or p)
+        )
+        if read[path].conversion.dispatch is not None
+    ]
+    if not declaring:
+        return None
+    first = read[declaring[0]].conversion
+    assert first.dispatch is not None and first.dispatch_location is not None
+    for path in declaring[1:]:
+        current = read[path].conversion
+        if current.dispatch == first.dispatch:
+            continue
+        location = current.dispatch_location
+        assert location is not None
+        raise Failure(
+            INPUT_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"prosiform.dispatch is {first.dispatch!r}; "
+                f"another source declares {current.dispatch!r}",
+                code=INVALID_CONVERSION_METADATA,
+                location=first.dispatch_location,
+                related=(
+                    RelatedLocation(
+                        location.file,
+                        location.line,
+                        location.column,
+                        f"prosiform.dispatch is {current.dispatch!r}",
+                    ),
+                ),
+                remedy="declare one dispatch text for every contributing source",
+            ),
+        )
+    return first.dispatch
 
 
 def group_depths(
@@ -1532,13 +1624,14 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
+    dispatch = dispatch_text(read, selected)
     unambiguous(selected, read)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
     groups = assembled(read, parsed, defined, selected, entries, targets, inforce)
     named = entries_named(groups, assigned)
-    bundled = assemble(entry_line(named), groups)
+    bundled = assemble(entry_line(named, dispatch), groups)
     try:
         validate(
             bundled,

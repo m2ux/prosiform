@@ -74,7 +74,7 @@ from prosiform.bundle import (
     heading_text,
     openings,
 )
-from prosiform.closure import Reference, bundled, deferring, rebased
+from prosiform.closure import Reference, bundled, rebased, withholding_target
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     Ancestor,
@@ -304,16 +304,16 @@ def intended(
     reference-style use at the inline form the definition it names
     gives it.
 
-    A deferred link under the allowed source root carries its target's
+    A withheld link under the allowed source root carries its target's
     path from that root, so what it shows is its author's text and
-    where it points is the destination the bundle rebased. A deferral
+    where it points is the destination the bundle rebased. A link
     resolving nowhere the bundle is responsible for is published as
     authored like any other mention.
 
     Whether the bundle compiled the link is read from the text the
     link's content opens with, as discovery and emission read it, so a
-    deferral the parser places inside a formatting event is the same
-    deferral to all three.
+    withheld link the parser places inside a formatting event is the
+    same withholding to all three.
 
     The run passed in is the one that carries the use, which is an
     image's alternative content where the use was written there, so
@@ -324,14 +324,14 @@ def intended(
     opening = opening_text(children, at)
     found = bundled(path, one.destination, opening, root)
     if found is None:
-        deferred = deferring(path, one.destination, opening, root)
-        if deferred is None:
+        withheld = withholding_target(path, one.destination, opening, root)
+        if withheld is None:
             return one
         return Use(
             one.kind,
             one.text,
             one.title,
-            normalizeLink(rebased(deferred, one.destination)),
+            normalizeLink(rebased(withheld, one.destination)),
         )
     assigned = targets.get((found.path, found.fragment))
     if assigned is None:
