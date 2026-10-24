@@ -11,6 +11,7 @@ The dispatch and deferral operators exist so a bundle hands material to a later 
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w04.md) | Implementation scope and required tests |
+| [Delivery evidence](evidence.md) | The rows, the routes, the sensitivities and the check results |
 
 ## Links
 
@@ -18,5 +19,6 @@ The dispatch and deferral operators exist so a bundle hands material to a later 
 | --- | --- |
 | Epic | [Dispatch Operator](https://github.com/m2ux/prosiform/issues/242) |
 | Task | [250](https://github.com/m2ux/prosiform/issues/250) |
+| Pull request | [#259](https://github.com/m2ux/prosiform/pull/259) |
 | Design | [Handoff round-trip design](../2026-10-24-handoff-round-trip/design.md) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
