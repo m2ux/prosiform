@@ -13,6 +13,8 @@ The work is on `i01/e09/w01-a-second-operator-and`, based on `i01/e09/main`. It 
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w01.md) | Implementation scope and required tests |
+| [Validation](validation.md) | Criterion evidence, review, plan changes and delivery result |
+| [Full checks](full-check.log) | Complete validation run at the task head |
 
 ## Links
 
