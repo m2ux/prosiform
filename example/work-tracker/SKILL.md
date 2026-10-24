@@ -5,6 +5,7 @@ description: >-
   that deliver them, kept current as the work lands.
 prosiform:
   root: "."
+  dispatch: Compile the marked link and hand it to a sub-agent.
 ---
 
 # Work Tracker
@@ -14,6 +15,10 @@ Work Tracker plans work as tracker issues and keeps the plan current until the w
 - **Initiative**  States a goal and lists its epics.
 - **Epic**  Lists its tasks in a Work Breakdown table.
 - **Task**  One pull request's worth of work.
+
+## Dispatch
+
+A link whose text opens with `»` names material a sub-agent compiles. Each mode's Prerequisites link this section, so a bundle of that mode opens with the instruction.
 
 ## Modes
 
