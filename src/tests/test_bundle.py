@@ -126,7 +126,7 @@ def test_the_entry_line_names_one_reference_and_its_destination() -> None:
 def test_the_entry_line_names_every_reference_the_run_was_given() -> None:
     assert entry_line([("a", "a"), ("b", "b"), ("c", "c")]) == (
         "Follow [a](#a), [b](#b) and [c](#c). "
-        "The rest of this bundle is material those procedures reference."
+        "The other sections are material those procedures reference."
     )
 
 

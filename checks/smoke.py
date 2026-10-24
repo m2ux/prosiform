@@ -70,7 +70,7 @@ SOURCE = (
 )
 BUNDLE = (
     "Follow [Guide](#guide). "
-    "The rest of this bundle is material that procedure references.\n"
+    "The other sections are material that procedure references.\n"
     "\n"
     "# Guide\n"
     "\n"

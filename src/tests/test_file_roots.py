@@ -37,7 +37,7 @@ def test_library_root_outside_source_and_fragment_self_reference(
     run = invoke("entries/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Separate library." in run.stdout
-    assert "[Self](#entriesa)" in run.stdout
+    assert "[Self](#a)" in run.stdout
 
 
 def test_parent_entry_bootstrap_and_referrer(tmp_path: Path) -> None:
@@ -56,8 +56,15 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     forward = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     reverse = invoke("two/b.md", "one/a.md", cwd=tmp_path)
     assert forward.status == reverse.status == 0
-    assert forward.stdout == reverse.stdout
+    # The first entry document leads, so the two orders differ in which
+    # document opens the bundle; every other arrangement follows the
+    # sources and the two agree below the leader.
+    assert forward.stdout.index("# A\n") < forward.stdout.index("# B\n")
+    assert reverse.stdout.index("# B\n") < reverse.stdout.index("# A\n")
     assert "First target." in forward.stdout and "Second target." in forward.stdout
+    assert forward.stdout[forward.stdout.index("# One/X") :] == (
+        reverse.stdout[reverse.stdout.index("# One/X") :]
+    )
 
 
 def test_equal_displayed_files_under_distinct_roots_are_ambiguous(

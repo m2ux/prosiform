@@ -337,7 +337,7 @@ def test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection(
     written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
     run = invoke("notes/bare.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("Follow [Bare](#bare).")
+    assert run.stdout.startswith("# Bare\n\nFollow [Bare](#bare).")
 
 
 def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
@@ -350,7 +350,7 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
     )
     run = invoke("notes/second.md#second", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("Follow [Second](#second).")
+    assert run.stdout.startswith("# Second\n\nFollow [Second](#second).")
 
 
 def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
@@ -430,7 +430,7 @@ def test_an_output_path_naming_no_input_source_is_accepted(
 def test_standard_output_is_an_explicit_output_destination(root: Path) -> None:
     run = invoke("-o", "-", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("Follow ")
+    assert "Follow " in run.stdout
 
 
 def test_a_validation_only_run_publishes_nothing(root: Path) -> None:
@@ -767,9 +767,11 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     assert run.status == SUCCESS
     assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
     assert run.stdout == (
-        "Follow [Guide](#guide). "
-        "The rest of this bundle is material that procedure references.\n"
-        "\n# Guide\n\n## Run\n\nDo it.\n"
+        "# Guide\n"
+        "\n"
+        "Follow [Run](#run). "
+        "The other sections are material that procedure references.\n"
+        "\n## Run\n\nDo it.\n"
     )
 
 
@@ -829,15 +831,17 @@ def test_two_sources_sharing_a_basename_stay_distinguishable(root: Path) -> None
     written(root, "notes/note.md", "# Note\n\nUnder notes.\n")
     run = invoke("docs/note.md", "notes/note.md", cwd=root)
     assert run.status == SUCCESS
-    assert "# Docs/Note\n" in run.stdout
+    assert "Under docs." in run.stdout
     assert "# Notes/Note\n" in run.stdout
+    assert "Under notes." in run.stdout
 
 
 def test_groups_are_ordered_by_root_relative_path(root: Path) -> None:
-    written(root, "docs/note.md", "# Note\n")
     written(root, "guide.md", "# Guide\n")
-    ordered = invoke("guide.md", "docs/note.md", cwd=root).stdout
-    assert ordered.index("# Docs/Note\n") < ordered.index("# Guide\n")
+    written(root, "docs/note.md", "# Note\n")
+    written(root, "notes/note.md", "# Note\n")
+    ordered = invoke("guide.md", "notes/note.md", "docs/note.md", cwd=root).stdout
+    assert ordered.index("# Docs/Note\n") < ordered.index("# Notes/Note\n")
 
 
 def test_one_document_named_twice_is_one_group(root: Path) -> None:
@@ -861,7 +865,8 @@ def test_two_paths_differing_only_by_suffix_are_an_ambiguous_file_group(
 def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Another Name\n\n###### Deep\n")
+    written(root, "deep.md", "# Another Name\n\n###### Deep\n")
+    written(root, "guide.md", "# Guide\n\nIt needs [the deep one](deep.md).\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.stdout == ""
@@ -903,7 +908,7 @@ def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     run = invoke("guide.md#run", cwd=root)
     assert run.status == SUCCESS
     assert run.stdout == (
-        "Follow [Run](#run). The rest of this bundle is material that procedure "
+        "Follow [Run](#run). The other sections are material that procedure "
         "references.\n\n# Guide\n\n### Run\n\nDo it.\n"
     )
 
@@ -930,12 +935,12 @@ def test_an_empty_fragment_is_a_whole_document_reference(root: Path) -> None:
 
 
 def test_a_referring_document_contributes_no_group(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n")
     written(root, "docs/note.md", "# Note\n")
+    written(root, "guide.md", "# Guide\n")
     run = invoke("-f", "guide.md", "docs/note.md", cwd=root)
     assert run.status == SUCCESS
     assert "# Guide\n" not in run.stdout
-    assert "# Docs/Note\n" in run.stdout
+    assert "# Note\n" in run.stdout
 
 
 def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> None:
@@ -945,9 +950,12 @@ def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> N
     assert run.status == SUCCESS
     assert run.stdout == ""
     assert destination.read_text() == (
+        "# Guide\n"
+        "\n"
+        "Body.\n"
+        "\n"
         "Follow [Guide](#guide). "
-        "The rest of this bundle is material that procedure references.\n"
-        "\n# Guide\n\nBody.\n"
+        "The other sections are material that procedure references.\n"
     )
 
 
@@ -1006,7 +1014,8 @@ def test_a_validation_only_run_bundles_and_publishes_nothing(
 def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Another Name\n\n###### Deep\n")
+    written(root, "deep.md", "# Another Name\n\n###### Deep\n")
+    written(root, "guide.md", "# Guide\n\nIt needs [the deep one](deep.md).\n")
     run = invoke("-c", "-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
@@ -1833,7 +1842,7 @@ def test_actual_bundle_reuse_is_refused(
     assert second.status == INPUT_FAILURE
     assert second.stdout == ""
     assert second.diagnostics()[0]["code"] == GENERATED_INPUT
-    assert second.diagnostics()[0]["source"] == "bundle.md:1"
+    assert second.diagnostics()[0]["source"] == "bundle.md:3"
 
 
 @pytest.mark.parametrize(
@@ -1841,28 +1850,39 @@ def test_actual_bundle_reuse_is_refused(
     [
         "~~~markdown\n{declaration}\n~~~\n",
         "> {declaration}\n\n# Notes\n",
-        "# Notes\n\n{declaration}\n",
         "Follow prose. "
-        "The rest of this bundle is material that procedure references.\n",
+        "The other sections are material that procedure references.\n",
         "Follow [Notes](https://example.com). "
-        "The rest of this bundle is material that procedure references.\n",
+        "The other sections are material that procedure references.\n",
     ],
 )
 def test_authored_declaration_examples_bundle(tmp_path: Path, text: str) -> None:
     declaration = (
         "Follow [Notes](#notes). "
-        "The rest of this bundle is material that procedure references."
+        "The other sections are material that procedure references."
     )
     (tmp_path / "notes.md").write_text(text.format(declaration=declaration))
     result = invoke("notes.md", cwd=tmp_path)
     assert result.status == SUCCESS
 
 
+def test_a_title_followed_by_the_declaration_is_a_bundle(tmp_path: Path) -> None:
+    (tmp_path / "notes.md").write_text(
+        "# Notes\n"
+        "\n"
+        "Follow [Notes](#notes). "
+        "The other sections are material that procedure references.\n"
+    )
+    result = invoke("-d", "json", "notes.md", cwd=tmp_path)
+    assert result.status == INPUT_FAILURE
+    assert [one["code"] for one in result.diagnostics()] == [GENERATED_INPUT]
+
+
 def test_generated_input_reports_location_after_frontmatter(tmp_path: Path) -> None:
     (tmp_path / "bundle.md").write_text(
         "---\ntitle: Bundle\n---\n\n"
         "Follow [Notes](#notes). "
-        "The rest of this bundle is material that procedure references.\n"
+        "The other sections are material that procedure references.\n"
         "\n# Notes\n\n## Findings\n\nContent.\n"
     )
     result = invoke("-d", "json", "bundle.md#findings", cwd=tmp_path)

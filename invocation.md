@@ -83,7 +83,7 @@ File and directory names use hyphens rather than underscores. A path separator i
 Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. A bundle opens by telling the agent to follow the selected entries:
 
 ```markdown
-Follow [Plan](#plan). The rest of this bundle is material that procedure references.
+Follow [Plan](#plan). The other sections are material that procedure references.
 ```
 
 Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.

@@ -507,7 +507,7 @@ def boundaries(
     named = parts(groups)
     started = {token.map[0] for token in spans if token.map is not None}
     slot = entry_slot(groups)
-    span = spans[slot] if spans else None
+    span = spans[slot] if slot < len(spans) else None
     entry_lines = (
         span.map[1] - span.map[0] if span is not None and span.map is not None else 1
     )
