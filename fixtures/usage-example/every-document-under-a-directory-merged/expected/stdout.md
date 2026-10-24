@@ -1,14 +1,10 @@
+Material a marked link names is compiled by a sub-agent, as [the dispatch rule](#dispatch) states.
+
 # Plan Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
-Follow [Prerequisites](#prerequisites). The other sections are material that procedure references. Compile the marked link and hand it to a sub-agent.
-
-## Prerequisites
-
-Read these files first.
-
-- [Dispatch](#dispatch)
+Follow [Procedure](#procedure). The other sections are material that procedure references. Compile the marked link and hand it to a sub-agent.
 
 ## Procedure
 
@@ -46,7 +42,7 @@ Read these files first.
 
 ### Dispatch
 
-A link whose text opens with `»` names material a sub-agent compiles. Each mode's Prerequisites link this section, so a bundle of that mode opens with the instruction.
+A link whose text opens with `»` names material a sub-agent compiles. Each mode links this section from its preamble, so a bundle of that mode carries it.
 
 ## Operations
 

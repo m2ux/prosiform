@@ -331,6 +331,5 @@ def test_a_published_bundle_offered_as_input_is_refused(tree: Tree) -> None:
     reference = errors[0]["reference"]
     assert reference.startswith(ENTRY), reference
     occupied = lines.index(reference) + 1
-    assert lines[0].startswith("# "), lines[0]
     assert occupied > 1, occupied
     assert errors[0]["source"] == f"bundle.md:{occupied}", errors[0]["source"]
