@@ -202,7 +202,7 @@ otherwise lose a document, and no body does.
 | Item | Classification | Disposition |
 | --- | --- | --- |
 | `deliver-mode` crosses the default `-E 8` at nine hops | non-trivial | Deferred to #263 as its W04 |
-| 108 authored `.md` links survive in the mode bundles | non-trivial | Already planned: #258's W04 owns the rewrite |
+| 428 authored `.md` links survive across the ten mode bundles | non-trivial | Already planned: #258's W04 owns the rewrite |
 
 The hop item is deferred rather than fixed here because the choice is between
 raising the budget for the example and restoring an edge the example's own
