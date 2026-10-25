@@ -8,11 +8,15 @@ The example now carries thirty artifact files, ten modes, six protocols and one 
 
 The declarations are the difference between a tree that looks like a skill and a bundle that reads like one. Without them a run has a filesystem path and no instruction about what belongs together, so each mode's bundle arrives as a sequence of documents in whatever order its links reached them.
 
+Thirty-seven files receive a declaration and twelve do not. Every mode's bundle shrank by between one byte and eighty-three, because a group heading and a member's own H1 give way to merged section headings. No mode's bundle lost a line of content: setting compiled link targets aside, each bundle's body text is identical before and after.
+
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
 | [Work Item](w03.md) | Scope, component and validation obligations |
+| [Declarations](declarations.md) | The group, depth and heading declared on each folder, with the count of files receiving it |
+| [Validation](validation.md) | AC4's key set and AC5's headings, each mode's byte count before and after, the checks, and the debt this row finds |
 
 ## Delivery Context
 
