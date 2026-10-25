@@ -36,7 +36,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 Run from the repository root; [worked examples](example/README.md) show input and output.
 
 ```bash
-cd example/work-tracker
+cd example/work-planner
 pf modes/plan-mode.md
 pf 'artifacts/epic.md#delivery-findings'
 pf -o context.md modes/plan-mode.md
