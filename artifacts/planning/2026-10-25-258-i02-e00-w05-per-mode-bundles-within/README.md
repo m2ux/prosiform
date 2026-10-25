@@ -4,11 +4,11 @@
 
 ## Executive Summary
 
-W04's one-root fix brought the example's own `guidelines.md` into scope, so seven of the ten mode bundles now carry its 23,900 bytes whole. The largest bundle sits at 94% of the 262,144-byte budget. This row defers each in-root guidelines link, so a mode's bundle carries its procedure and the artifacts it runs without the guidance document riding along.
+W04's one-root fix brought the example's own `guidelines.md` into scope, so seven of the ten mode bundles now carry guidance text. Six carry its H1 and the `### Modes` section, 4,323 bytes each; `revise-mode` carries its text whole, 23,797 bytes. The largest bundle sits at 94% of the 262,144-byte budget. This row defers each in-root guidelines link, so a mode's bundle carries its procedure and the artifacts it runs without the guidance document riding along.
 
-Both criteria land together here. AC7's budget condition is already met on the base — all ten modes compile inside 262,144 — and this row keeps it met while AC8's deferral removes 23,900 bytes from each affected bundle.
+Both criteria land together here. AC7's budget condition is already met on the base — all ten modes compile inside 262,144 — and this row keeps it met while AC8's deferral removes the guidance text from all seven affected bundles. The ten bundles fall from 1,284,909 bytes to 1,215,638.
 
-One finding is recorded rather than fixed: `revise-mode` falls to 3,482 bytes once its guideline links are deferred, because every in-root link it writes points at guidance. That is the marker working as designed and a design signal about the mode's own references.
+One finding is recorded rather than fixed: `revise-mode` falls to 3,482 bytes once its guideline links are deferred, because all four in-root links it writes point at guidance and its only other links are same-file anchors. That is the marker working as designed and a design signal about the mode's own references.
 
 ## Artifacts
 
