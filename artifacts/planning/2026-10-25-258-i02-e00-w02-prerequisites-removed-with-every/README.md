@@ -8,11 +8,14 @@ Thirty-five files under `example/work-planner` open with a Prerequisites section
 
 The row is the second of the example migration, and it follows the copy because the copy is what put the sections there. Its failure mode is silent: a section removed carelessly takes a link with it, and a bundle of that mode then carries an unresolved reference the run did not follow. The comparison before and after is therefore the row's instrument, not the absence of the heading alone.
 
+No body needed a link placed: all 108 list links that compiled are still matched by a compiling link in the file's own Procedure, Operations or Fields, and the 72 that named a document outside the file's root were citations no bundle carried. What the removal does change is each mode's bundle size, because a whole-document list link had selected every section of the document and the body's link selects one operation. One mode, `deliver-mode`, reaches an operation one hop deeper as a result and needs `-E 9`.
+
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
 | [Work Item](w02.md) | Scope, component and validation obligations |
+| [Validation](validation.md) | AC2's search, AC3's before and after comparison, each mode's bundle, the checks, and the debt this row finds |
 
 ## Delivery Context
 
