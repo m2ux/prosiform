@@ -159,10 +159,13 @@ it is larger than this row and is recorded as W03 on #263.
 | `w01.md`'s root rule corrected to the per-file root the build needs | Folded work | Applied |
 | `w01.md`'s Review row now compares content, not count alone | Folded work | Applied |
 | `example/guidelines.md` added so the shared-guidelines links resolve | Folded work | Applied |
+| #258 returned to In Progress on board 18 | Folded work | Applied |
 | #258 moved to Done on board 18 | Folded work | Held — six rows remain undelivered |
 
-The board move is held because the epic is not complete: W02 to W07 are
-undelivered and AC2 to AC10 unticked. The row's own delivery does not close its
-epic, so the board cell follows the epic's state rather than this row's.
+The board correction is applied because the epic read `Ready` while a task row
+had merged into its base, which is not what `Ready` states. Done is held because
+the epic is not complete: W02 to W07 are undelivered and AC2 to AC10 unticked.
+The row's own delivery does not close its epic, so the board cell follows the
+epic's state rather than this row's.
 
 
