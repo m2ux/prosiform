@@ -35,3 +35,11 @@ The debt epic takes the highest number so the epics in flight are planned and de
 The field-refinement initiative's remaining epics are neither closed nor moved. They keep their issues, their rows and their numbers, and the demonstration initiative's boundary is what defers them. Moving them would renumber two tables for no delivery benefit, and an epic closed without delivery would read as complete.
 
 The one edge that breaks is the specification-freeze epic's task, which names the final row of the migration epic as a prerequisite. That reference is to an epic leaving the initiative, so it is recorded as a cross-initiative dependency rather than rewritten.
+
+## D7 — The review of the epic's integration pull request
+
+A review of [#272](https://github.com/m2ux/prosiform/pull/272) against the migration epic's ten criteria found every one held, with three findings the criteria did not catch.
+
+- **AC6 and AC8 are scoped to the example's own tree.** Eight links, four in `guidelines.md` and four in `modes/revise-mode.md`, name the shared skill guidelines at `example/guidelines.md`, outside `example/work-planner`, and are not deferred. The copy is held to the skill's bytes, so those links cannot be rewritten. The user chose to reword both criteria to name `example/work-planner` rather than change the tree.
+- **The usage fixtures' descriptions are held to their bundles.** Two manifests describe output their re-recorded bundles do not hold, and two fixtures share one invocation. The user chose a further row on the migration epic, W08, carrying AC11 and AC12.
+- **Removing `example/work-tracker` belongs to the debt epic.** Its W06 and W07 already repoint the root README's usage commands and the round-trip suite. The deletion is that epic's W08, depending on both, rather than a row on the migration epic that would plan the same work twice.
