@@ -68,7 +68,7 @@ The default-budget refusal is not a resolution failure. The closure is whole and
 
 Measured here, `modes/plan-mode.md` bundles to 135139 bytes, inside the default budget.
 
-`W_ENTRY_DESTINATION` fires because each file's own opening sentence links a heading that the bundle's entry line also links. It is a warning, not a refusal, and it fires on 48 of the 49 files, `requirements-characteristics.md` being the one with no entry sentence. Row W07's prose pass is where the entry sentence is read.
+`W_ENTRY_DESTINATION` fires because each file's own opening sentence links a heading that the bundle's entry line also links. It is a warning, not a refusal, and it fires on 48 of the 49 files. `SKILL.md` is the one without it, because its budget error is raised before the warning is reached; that same warning is the one it emits once `-O` is raised, as the table above records. Row W07's prose pass is where the entry sentence is read.
 
 ## Checks
 
