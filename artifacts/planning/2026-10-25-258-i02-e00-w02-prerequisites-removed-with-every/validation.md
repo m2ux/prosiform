@@ -100,6 +100,10 @@ the removal and after it.
 
 No file's own bundle loses a document its list named.
 
+The count above reads the closure of each file on its own. A mode's bundle is the
+stronger measurement, because a mode reaches documents through the modes it calls,
+and the table under "The Finding" records what the removal changes for those.
+
 ## Bundle Output
 
 Each mode is a whole-document entry. A bundle's authored `.md` links are the
@@ -197,8 +201,8 @@ otherwise lose a document, and no body does.
 
 | Item | Classification | Disposition |
 | --- | --- | --- |
-| `deliver-mode` crosses the default `-E 8` at nine hops | non-trivial | Deferred to #263 |
-| 108 authored `.md` links survive in the mode bundles | non-trivial | Already planned: W04 owns the rewrite |
+| `deliver-mode` crosses the default `-E 8` at nine hops | non-trivial | Deferred to #263 as its W04 |
+| 108 authored `.md` links survive in the mode bundles | non-trivial | Already planned: #258's W04 owns the rewrite |
 
 The hop item is deferred rather than fixed here because the choice is between
 raising the budget for the example and restoring an edge the example's own
@@ -206,11 +210,19 @@ guidelines would not ask for, and that decision belongs to the row that states
 what a per-mode bundle is. Its fix makes a bundle of every mode compile at the
 default hop budget.
 
+```text
+| W04 | A per-mode bundle inside the default hop budget | AC4 | | | |
+- [ ] **AC4.** A bundle of every mode under `example/work-planner` compiles at the default `-E` budget, as each mode's bundle exit status shows.
+```
+
 ## Plan Changes
 
 | Change | Kind | Applied or held |
 | --- | --- | --- |
-| W02's row on #258 links the merged pull request | Task delivery | Applied |
+| W02's row on #258 links the merged pull request #265 | Task delivery | Applied |
 | AC2 and AC3 on #258 ticked | Criterion evidence | Applied |
-| The hop-depth item deferred to #263 | Task creation | Applied |
-| #258 moved to Done on board 18 | Folded work | Held — four rows remain undelivered |
+| W04 and AC4 added to #263 with R4, deferred from this row | Task creation | Applied |
+| `w02.md`'s Problem and Proposal corrected to the edge a bundle follows | Folded work | Applied |
+| `w02.md`'s Test row kept as written, the bundle check it names now measured | Folded work | Applied |
+| #258 stays In Progress on board 18 | Board state | Applied |
+| #258 moved to Done on board 18 | Folded work | Held — five rows remain undelivered |
