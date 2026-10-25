@@ -6,15 +6,6 @@ prosiform:
 
 Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue Body](issue-body.md)
-- [Pull Request](pull-request.md)
-- [Epic](epic.md)
-- [Issue](issue.md)
-
 ## Operations
 
 ### *Populate* Epic Issue Body

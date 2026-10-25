@@ -6,13 +6,6 @@ prosiform:
 
 The instructions and context supplied to one delivery session.
 
-## Prerequisites
-
-Read these files first.
-
-- [Pull Request Body](pull-request-body.md)
-- [Plan Change](plan-change.md)
-
 ## Operations
 
 ### *Populate* Delivery Brief

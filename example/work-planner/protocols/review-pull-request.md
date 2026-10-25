@@ -6,14 +6,6 @@ prosiform:
 
 The draft pull request and body that present one epic base's delivered changes for review.
 
-## Prerequisites
-
-Read these files first.
-
-- [Pull Request](../artifacts/pull-request.md)
-- [Pull Request Body](../artifacts/pull-request-body.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-
 ## Procedure
 
 1. **Find.**

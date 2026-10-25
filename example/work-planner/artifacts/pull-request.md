@@ -6,13 +6,6 @@ prosiform:
 
 A pull request's identity, head and base, issue links, review state and merge result. Its populated body is an input.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](issue.md)
-- [Delivery Branches](delivery-branches.md)
-
 ## Operations
 
 ### *Merge* Delivery Pull Request

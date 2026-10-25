@@ -6,28 +6,6 @@ prosiform:
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
-## Prerequisites
-
-Read these files first.
-
-- [Propose Mode](propose-mode.md)
-- [Guidelines](../guidelines.md)
-- [Planning Record](../artifacts/planning-record.md)
-- [Pull Request Body](../artifacts/pull-request-body.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Issue](../artifacts/issue.md)
-- [Initiative Issue Body](../artifacts/initiative-issue-body.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Work Item](../artifacts/work-item.md)
-- [Repository Labels](../artifacts/repository-labels.md)
-- [Issue Body](../artifacts/issue-body.md)
-- [Epic](../artifacts/epic.md)
-- [Delivery Branches](../artifacts/delivery-branches.md)
-- [Sync Mode](sync-mode.md)
-- [Review Finding](../artifacts/review-finding.md)
-- [Goal Trace](../artifacts/goal-trace.md)
-- [Dependency Graph](../artifacts/dependency-graph.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

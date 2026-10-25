@@ -6,15 +6,6 @@ prosiform:
 
 Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
 
-## Prerequisites
-
-Read these files first.
-
-- [Proposal Body](../artifacts/proposal-body.md)
-- [Repository Labels](../artifacts/repository-labels.md)
-- [Issue](../artifacts/issue.md)
-- [Board](../artifacts/board.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

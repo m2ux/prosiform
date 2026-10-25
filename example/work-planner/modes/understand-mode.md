@@ -6,12 +6,6 @@ prosiform:
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 
-## Prerequisites
-
-Read these files first.
-
-- [Change Overview](../protocols/change-overview.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

@@ -6,17 +6,6 @@ prosiform:
 
 Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](../artifacts/issue.md)
-- [Placement](../artifacts/placement.md)
-- [Plan Change](../artifacts/plan-change.md)
-- [Guidelines](../guidelines.md)
-- [Issue Body](../artifacts/issue-body.md)
-- [Dependency Graph](../artifacts/dependency-graph.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

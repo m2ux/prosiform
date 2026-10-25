@@ -6,13 +6,6 @@ prosiform:
 
 The pull request records and issue links that establish what an initiative's epics have delivered, with the per-epic findings that evidence yields.
 
-## Prerequisites
-
-Read these files first.
-
-- [Pull Request](pull-request.md)
-- [Epic](epic.md)
-
 ## Operations
 
 ### *Read* Delivery Evidence

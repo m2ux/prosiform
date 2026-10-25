@@ -6,13 +6,6 @@ prosiform:
 
 Populates one task body.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue Body](issue-body.md)
-- [Epic Issue Body](epic-issue-body.md)
-
 ## Operations
 
 ### *Populate* Task Body

@@ -6,18 +6,6 @@ prosiform:
 
 A proposed destination and disposition for one orphan's work.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](issue.md)
-- [Issue Body](issue-body.md)
-- [Epic Issue Body](epic-issue-body.md)
-- [Initiative Issue Body](initiative-issue-body.md)
-- [Task Body](task-body.md)
-- [Standalone Body](standalone-body.md)
-- [Dependency Graph](dependency-graph.md)
-
 ## Operations
 
 ### *Draft* Issue Placement

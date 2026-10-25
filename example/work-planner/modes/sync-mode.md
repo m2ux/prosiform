@@ -6,27 +6,6 @@ prosiform:
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](../artifacts/issue.md)
-- [Issue Body](../artifacts/issue-body.md)
-- [Acceptance Criteria](../artifacts/acceptance-criteria.md)
-- [Task Body](../artifacts/task-body.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Delivery Evidence](../artifacts/delivery-evidence.md)
-- [Epic](../artifacts/epic.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Initiative Issue Body](../artifacts/initiative-issue-body.md)
-- [Board](../artifacts/board.md)
-- [Understand Mode](understand-mode.md)
-- [Board Delivery](../artifacts/board-delivery.md)
-- [Issue Closure](../protocols/issue-closure.md)
-- [Review Pull Request](../protocols/review-pull-request.md)
-- [Epic Integration](../protocols/epic-integration.md)
-- [Plan Change](../artifacts/plan-change.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).
