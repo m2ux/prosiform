@@ -6,7 +6,7 @@
 
 The merged base compiles every mode at the default budget except `deliver-mode`, but the bundles it produces are smaller than the documents they name. A mode's Procedure links `../artifacts/board.md#select-project-board` and the artifact's text never arrives: each file's declared root points at its own folder, so the example directory is never one root and the link resolves outside it. This row gives the tree one effective root and writes every in-root link from that directory.
 
-The measurement is unambiguous. `advance-mode`'s bundle contains 9 of the example's 49 documents; under one root it contains 27. Across the ten modes, 285 authored links name an in-root document whose content the bundle does not carry. The corrected configuration leaves none, compiles all ten modes at `-E 8`, and keeps every bundle inside the 262,144-byte budget.
+The measurement is unambiguous. `advance-mode`'s bundle contains 9 of the example's 49 documents and leaves 78 authored in-root links naming content it does not carry; under one root its closure reads all 49 and leaves none. Across the ten modes, 285 authored links name an in-root document whose content the bundle does not carry. The corrected configuration leaves none, compiles all ten modes at `-E 8`, and keeps every bundle inside the 262,144-byte budget.
 
 ## Artifacts
 
@@ -22,6 +22,7 @@ The measurement is unambiguous. `advance-mode`'s bundle contains 9 of the exampl
 - Worktree: `.worktrees/i02-e00-w04`.
 - Component: `example/work-planner/`.
 - Prerequisite: W03, delivered by [#266](https://github.com/m2ux/prosiform/pull/266).
+- Delivered by: [#267](https://github.com/m2ux/prosiform/pull/267), merged into `i02/e00/main` at `820b5cb6`.
 - Repository auto-close setting: confirmed disabled for `m2ux/prosiform`.
 
 ## Governing rule
@@ -39,4 +40,5 @@ The root declaration is resolved from the declaring file's folder, so one direct
 | Epic | [I02:E00 Example Migration](https://github.com/m2ux/prosiform/issues/258) |
 | Initiative | [I02 MVP Demonstration](https://github.com/m2ux/prosiform/issues/261) |
 | Preceding row | [W03 pull request #266](https://github.com/m2ux/prosiform/pull/266) |
+| This row's pull request | [#267](https://github.com/m2ux/prosiform/pull/267) |
 | Board | [Board 18](https://github.com/users/m2ux/projects/18) |
