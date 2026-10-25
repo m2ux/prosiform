@@ -1,6 +1,6 @@
 ---
 prosiform:
-  root: "."
+  root: ".."
   group: "artifacts"
   group-depth: 2
   group-heading: false
@@ -76,13 +76,13 @@ The saved format corrections for one issue and any unresolved content findings.
 1. Run [Validate Issue Body](#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
    - Return an unreadable source as a blocker before editing.
 2. Review the returned diff.
-   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](issue.md#save-tracker-issue), without asking.
+   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](artifacts/issue.md#save-tracker-issue), without asking.
    - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
 3. Resolve a non-mechanical finding confined to this body.
    - Obtain the user's decision.
    - Run [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
    - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
-4. Run [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
+4. Run [Read Tracker Issue](artifacts/issue.md#read-tracker-issue) for the saved issue.
    - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
    - Return the saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
@@ -136,7 +136,7 @@ An acceptance criterion meets these. A kind adds its own under its Acceptance Cr
 - States an end state, not an activity.
 - Names or implies the instrument that observes it: a test, a guard, a command or a measure.
 - Is unambiguous, so two readers agree on whether it holds.
-- Meets [Requirement Characteristics](../references/requirement-characteristics.md).
+- Meets [Requirement Characteristics](references/requirement-characteristics.md).
 - **One invariant.**
   Each criterion states a single condition that holds or does not. One joining several is split, and the Coverage cells cite the new ones. A condition over a list of subjects is one condition.
 
