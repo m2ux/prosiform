@@ -18,6 +18,7 @@ The example as it stands is a four-file reduction of a skill its users write, so
 | [Demonstration Ground draft](e01.md) | The epic supplying the tagged revision and the published command |
 | [Deferred Debt draft](e02.md) | The epic holding what the delivery defers |
 | [Published](published.md) | The issues created, and the edits made to the issues that carried the work before |
+| [Advance](advance.md) | The priority-label correction and the queue the board settled on |
 
 ## Open Questions
 
