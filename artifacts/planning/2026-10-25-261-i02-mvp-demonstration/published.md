@@ -33,3 +33,14 @@ An initiative titled *Production Compiler: The Contract Delivered in Rust* held 
 | Resource | Link |
 | --- | --- |
 | Board the issues are placed on | [Board 18](https://github.com/users/m2ux/projects/18) |
+
+## The sync that followed
+
+The first sync of I02 found nothing delivered: no pull request in `m2ux/prosiform` carries the `[I02]` or `[I02:E0n]` prefix, so every epic keeps its rows open and every criterion unticked. The board computation reported one change, which was applied:
+
+- **Removed #238 from board 18.** That issue is closed and not completed, and the epic and initiative bodies cite it, so the board held an item for work its successor subsumed.
+
+The board recomputed to *current* afterwards. All four items stand at Backlog with no assignee, which is the state the delivery rules give unpublished work: an epic with no open pull request keeps Ready or Backlog, and an issue in Backlog carries no assignee. Moving them to Ready is a queue decision, which a sync leaves undecided.
+
+The sync exposed one omission in the planning run that preceded it. The confirmed epic priority map put E00 at 2, and #258 was created before that number was confirmed and never received the label. It now carries `priority: 2`, so the three epics state the order the map fixed.
+
