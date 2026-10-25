@@ -104,7 +104,7 @@ The selection retains its structural ancestor and rewrites the links the operati
 
 ```bash
 cd example/work-planner
-pf modes/plan-mode.md
+pf modes/hoist-mode.md
 ```
 
 Every artifact file declares group `artifacts` at depth `2`, with the group's own heading suppressed. A mode file declares its root and no group.
@@ -128,16 +128,24 @@ The [expected bundle](../fixtures/usage-example/every-document-under-a-directory
 ```markdown
 ## Overview
 
-### Planning Record
+### Epic Issue Body
 
-A planning record is a folder. README.md is its entry point: it answers what the work is, and links to every other artifact the plan produces. Each artifact is the home of its own content. The progress of the work is the theme's project board.
+Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
 
 ## Operations
 
-### Acceptance Criteria
+### Dependency Graph
 ```
 
-`group-heading: false` omits the group's own heading, so each member is named by its H3 rather than a document title. Only a member reached as a whole document contributes prose above the grouping depth, which is why `Planning Record` is the member `Overview` holds.
+`group-heading: false` omits the group's own heading, so each member is named by its H3 rather than a document title. Only a member reached as a whole document contributes prose above the grouping depth, which is why `Epic Issue Body` is the member `Overview` holds.
+
+The [requirement characteristics](work-planner/references/requirement-characteristics.md) document declares group `references` at depth `1` and keeps the group's heading, so the same bundle opens that group with its name in title case and merges the member's H1 beneath it:
+
+```markdown
+# References
+
+## Requirement Characteristics
+```
 
 ### Named members beneath the group
 
