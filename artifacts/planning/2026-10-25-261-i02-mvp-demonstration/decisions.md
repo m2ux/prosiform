@@ -43,3 +43,11 @@ A review of [#272](https://github.com/m2ux/prosiform/pull/272) against the migra
 - **AC6 and AC8 are scoped to the example's own tree.** Eight links, four in `guidelines.md` and four in `modes/revise-mode.md`, name the shared skill guidelines at `example/guidelines.md`, outside `example/work-planner`, and are not deferred. The copy is held to the skill's bytes, so those links cannot be rewritten. The user chose to reword both criteria to name `example/work-planner` rather than change the tree.
 - **The usage fixtures' descriptions are held to their bundles.** Two manifests describe output their re-recorded bundles do not hold, and two fixtures share one invocation. The user chose a further row on the migration epic, W08, carrying AC11 and AC12.
 - **Removing `example/work-tracker` belongs to the debt epic.** Its W06 and W07 already repoint the root README's usage commands and the round-trip suite. The deletion is that epic's W08, depending on both, rather than a row on the migration epic that would plan the same work twice.
+
+## D8 — The parent arrangement is ratified, not reverted
+
+W08's delivery found that an entry document which is itself a titled group member opens its group with its own title and preamble, leads with its own sections, and puts the other members' subsections in an Overview after them. [#236](https://github.com/m2ux/prosiform/pull/236) built that arrangement deliberately, and `src/prosiform/grouping.py` documents it, but the design's Grouping clauses, `invocation.md` and `docs/glossary.md` still state the layout it replaced. Two grouping fixtures' descriptions contradict their expected output, and no fixture pins a titled entry member of a `group-heading: false` group.
+
+The user chose to ratify the build in the contract on the debt epic, as its W10 (the contract text) and W11 (the fixtures citing it), rather than revert the build or record the drift alone.
+
+The same review's merged-group fixture keeps a name stating directory-wide membership, which per-file declarations no longer give. Its rename is the debt epic's W09. W09 and W10 share no file, so neither joins the other.
