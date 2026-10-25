@@ -120,7 +120,7 @@ One row on #263. No row for the trivial item.
 
 | Change | Kind | Applied or held |
 | --- | --- | --- |
-| W05's row on #258 links the merged pull request | Task delivery | Applied |
+| W05's row on #258 links the merged pull request [#268](https://github.com/m2ux/prosiform/pull/268) | Task delivery | Applied |
 | AC7 and AC8 on #258 ticked | Criterion evidence | Applied |
 | `README.md`'s "23,900 bytes whole in seven bundles" corrected: six carry 4,323 bytes and `revise-mode` carries 23,797 | Folded work | Applied |
 | `w05.md`'s "23,900 of those bytes are guidance" and "carry its text whole" corrected the same way | Folded work | Applied |
@@ -128,7 +128,7 @@ One row on #263. No row for the trivial item.
 | The seven-file set named: `standup-mode.md` and `sync-mode.md` write none, `protocols/epic-integration.md` does | Folded work | Applied |
 | #258 stays In Progress on board 18 | Board state | Applied |
 | #258 moved to Done on board 18 | Folded work | Held — two rows remain undelivered |
-| A row on #263 for the `revise-mode` reference gap | Task creation | Applied |
+| A row on #263 for the `revise-mode` reference gap: W05, "A mode whose only references are guidance carries its own artifacts", with AC5 stating the criterion its fix makes true | Task creation | Applied |
 
 ## Merge
 
