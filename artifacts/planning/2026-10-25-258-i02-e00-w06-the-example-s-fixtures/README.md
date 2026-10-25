@@ -6,7 +6,7 @@
 
 The corpus passes 260 of 260 fixtures, and five of them source a tree the migration replaced. The usage-example family links `example/work-tracker`, the four-file reduction the example migration set out to grow, so a green corpus says the superseded tree still bundles rather than that the new one does. This row repoints those five fixtures at `example/work-planner` and re-records the bundles their invocations emit.
 
-Tested before planning: four of the five invocations compile against the new tree at exit 0 with one `W_ENTRY_DESTINATION` warning, and the fifth declares no entry argument and fails as invalid usage, so its manifest needs the arguments its invocation names.
+Tested before planning: all five invocations compile against the new tree at exit 0. Four emit one `W_ENTRY_DESTINATION` warning; `two-selected-sections` emits two, one per selected section, and its manifest already declares the two section references its description names.
 
 ## Artifacts
 
