@@ -94,7 +94,7 @@ None was added. The fixtures that read the example are row W06's work, because t
 
 ## Environment
 
-`scripts/sbx` cannot create a user namespace on this host, reporting `bwrap: No permissions to create a new namespace`. The project's Python ran directly, without the wrapper. `gh`, `git push` and `make links` ran with full host permissions because each reaches the network.
+`scripts/sbx` runs the project's Python under bubblewrap, and it fails when the shell invoking it is already sandboxed, reporting `bwrap: No permissions to create a new namespace`: bubblewrap cannot create its nested user namespace there. The host allows it, so the wrapper is used from a shell with full host permissions. `gh`, `git push` and `make links` run with full host permissions because each reaches the network.
 
 ## The Prescribed Root Rule
 
@@ -139,7 +139,7 @@ A file declaring `"."` cannot contain a sibling folder, so a parent-segment link
 | The skill's `git show` copy needs a document it does not carry | trivial | Fixed here: `example/guidelines.md` |
 | Forty-eight `W_ENTRY_DESTINATION` warnings, one per file | trivial | Held for row W07's prose pass, which reads the entry sentence |
 | The whole-skill bundle exceeds the default budget | non-trivial | Already planned: rows W05 and W06 record per-mode bundles |
-| `scripts/sbx` cannot create a user namespace | blocking-in-environment | Worked around by running the project's Python directly |
+| `scripts/sbx` refuses a nested user namespace | trivial | Fixed here: the wrapper runs from a shell with full host permissions |
 
 The root item is deferred rather than fixed in place because a fix belongs to the
 build, not to this example. `closure.py` resolves a bare link from the declaring
