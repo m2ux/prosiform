@@ -46,7 +46,7 @@ The main path meets [Outcomes](#outcomes).
    - Run [Task Merge](protocols/task-merge.md) for each confirmed merge result, with the selected board identity.
 6. **Confirm.**
    Show each `unit` line, with its tasks, coverage, record folder, branch, base and worktree, and each `hold` line with the record it links and whether a session is still running.
-   - Confirm the units to dispatch and the rows to release as one [Interview](guidelines.md#modes). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
+   - Confirm the units to dispatch and the rows to release as one [¬ Interview](guidelines.md#modes). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
    - This mode reads no clock and reclaims nothing on its own, so a row the user leaves stays held.
    - For each released row:
      - Run [Release Task Rows](artifacts/epic-issue-body.md#release-task-rows).

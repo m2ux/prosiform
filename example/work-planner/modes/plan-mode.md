@@ -43,7 +43,7 @@ The main path meets [Outcomes](#outcomes).
    - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
    - An acceptance criterion is created only once it meets [Initiative Acceptance Criteria](artifacts/initiative-issue-body.md#initiative-acceptance-criteria).
 6. **Publish.**
-   Put the proposed [Epic Priority](artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [Interview](guidelines.md#modes), the proposal the recommended answer.
+   Put the proposed [Epic Priority](artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [¬ Interview](guidelines.md#modes), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
    - Call [Ensure Repository Labels](artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
    - For a new initiative:

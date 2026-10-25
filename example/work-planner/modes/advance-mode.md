@@ -37,7 +37,7 @@ The main path meets [Outcomes](#outcomes).
    Decide only from an `order` or `ask` line in [Report Lines](artifacts/board-queue.md#report-lines), each of which is a re-prioritisation.
    - Run [Check Plan Change Autonomy](artifacts/plan-change.md#check-plan-change-autonomy) for each line, with the allowance the caller supplied.
      - An automatic line takes its [recommended decision](artifacts/board-queue.md#recommended-decisions), recorded through [Record Plan Change](artifacts/plan-change.md#record-plan-change).
-     - A held line, and an automatic one the recommendation leaves without an answer, is settled as [Held Change](artifacts/plan-change.md#held-change) states, following the interview rules in the [guidelines](guidelines.md#modes) where it reaches the user.
+     - A held line, and an automatic one the recommendation leaves without an answer, is settled as [Held Change](artifacts/plan-change.md#held-change) states, following the interview rules in the [¬ guidelines](guidelines.md#modes) where it reaches the user.
      - A line this mode records rather than asks leaves the queue pending, which the write step reads as incomplete.
    - For `order`, the answer is the [parallel work map](artifacts/board-queue.md#priority-sets): a positive integer on each listed initiative, or none left unordered.
    - For `ask`:
