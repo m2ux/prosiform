@@ -1,6 +1,9 @@
 ---
 prosiform:
   root: "."
+  group: "artifacts"
+  group-depth: 2
+  group-heading: false
 ---
 # Acceptance Criteria
 

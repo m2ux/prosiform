@@ -1,6 +1,8 @@
 ---
 prosiform:
   root: "."
+  group: "protocols"
+  group-depth: 1
 ---
 # Epic Integration
 
