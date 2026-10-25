@@ -217,10 +217,21 @@ properties of the tree rather than defects, and neither blocks a criterion.
 
 | Change | Kind | Applied or held |
 | --- | --- | --- |
-| W03's row on #258 links the merged pull request | Task delivery | Applied |
+| W03's row on #258 links the merged pull request [#266](https://github.com/m2ux/prosiform/pull/266) | Task delivery | Applied |
 | AC4 and AC5 on #258 ticked | Criterion evidence | Applied |
 | `declarations.md` added to the record as the declaration table | Folded work | Applied |
 | `README.md`'s Artifacts table names the declaration and validation artifacts | Folded work | Applied |
-| `w03.md`'s Proposal read against the bundle, which its Test row measures | Folded work | Applied |
+| `w03.md`'s Test row states what depth two means in a bundle | Folded work | Applied |
 | #258 stays In Progress on board 18 | Board state | Applied |
 | #258 moved to Done on board 18 | Folded work | Held — four rows remain undelivered |
+| A row on #263 for the hop depth | Task creation | Not needed — W02 raised it as #263's W04, with AC4 already stating what its fix makes true |
+
+## Merge
+
+| Fact | Value |
+| --- | --- |
+| Pull request | [#266](https://github.com/m2ux/prosiform/pull/266) |
+| Merge commit | `1e2dc068a7e971ac0a7208d7a3466f76c07fbe00` |
+| Method | merge commit |
+| Epic base after | `1e2dc068`, four rows undelivered |
+| Check | `Checks` completed `success` on the head commit `0671572e` |

@@ -24,6 +24,7 @@ Thirty-seven files receive a declaration and twelve do not. Every mode's bundle 
 - Task branch: `i02/e00/w03-a-group-declared-per`, cut from epic base `i02/e00/main` at `dab65c4c`.
 - Worktree: `.worktrees/i02-e00-w03`.
 - Component: `example/work-planner/`.
+- Delivered by: [#266](https://github.com/m2ux/prosiform/pull/266), merged into `i02/e00/main` at `1e2dc068`.
 - Prerequisite: W02, delivered by [#265](https://github.com/m2ux/prosiform/pull/265).
 - Repository auto-close setting: confirmed disabled for `m2ux/prosiform`.
 
@@ -38,4 +39,5 @@ Thirty-seven files receive a declaration and twelve do not. Every mode's bundle 
 | Epic | [I02:E00 Example Migration](https://github.com/m2ux/prosiform/issues/258) |
 | Initiative | [I02 MVP Demonstration](https://github.com/m2ux/prosiform/issues/261) |
 | Preceding row | [W02 pull request #265](https://github.com/m2ux/prosiform/pull/265) |
+| This row's pull request | [#266](https://github.com/m2ux/prosiform/pull/266) |
 | Board | [Board 18](https://github.com/users/m2ux/projects/18) |
