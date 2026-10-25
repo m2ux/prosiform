@@ -85,7 +85,7 @@ Each column reads against the criterion:
 - **No `Artifacts` heading appears in any bundle.** The ten rows report absent.
   The column also records the same word as an authored section: `## Artifacts`
   at depth 2 in `revise-mode`, whose bundle carries `guidelines.md` whole, and
-  `#### Artifacts` at depth 4 in the six bundles that reach the planning
+  `#### Artifacts` at depth 4 in the seven bundles that reach the planning
   record's own `Artifacts` field. A document's section named Artifacts is not a
   group heading, and its depth follows the document's own arrangement. Where an
   artifact member's H1 was `# Artifacts/Architecture-Overview` before, the text
@@ -128,17 +128,19 @@ the reference merge into theirs.
 | `sync-mode` | 57490 | 57469 | −21 | 10 | 8 |
 | `understand-mode` | 44041 | 44020 | −21 | 9 | 8 |
 
-The Closure column is the number of documents the run reads, and the last column
-counts those that merged into a group: `align-mode` reads 19 artifacts and the
-reference. The remainder of each closure is the ungrouped material — the mode
-itself, the modes it runs and the guidelines — which the declarations leave as
-document groups named by their root-relative path.
+The Closure column is the number of distinct documents the run reads, and the
+last column counts those that merged into a group: `align-mode` reads 19
+artifacts and the reference, 20 in all. The remainder of each closure is the
+ungrouped material — the mode itself, the modes it runs and the guidelines —
+which the declarations leave as document groups named by their root-relative
+path.
 
-Every bundle shrank, because a group heading, a member's own H1 and the blank
-lines around them are replaced by merged section headings. No content left any
-bundle: after compiled link targets are set aside, the body lines of every mode's
-bundle are identical before and after, at 789 lines for `advance-mode` through
-1815 for `deliver-mode`.
+Every bundle shrank, because a member's own H1 and the blank lines around it give
+way to merged section headings. A depth-1 group loses each member's H1 and gains
+one group heading, which is why the protocols and the reference save little. No
+content left any bundle: after compiled link targets are set aside, the body
+lines of every mode's bundle are identical before and after, at 789 lines for
+`advance-mode` through 1815 for `deliver-mode`.
 
 `deliver-mode` is bundled at `-E 9`; at the default `-E 8` it is refused with
 `E_RESOURCE_LIMIT` at nine link hops, which is the finding W02 recorded and #263
@@ -149,17 +151,22 @@ before and after with the same diagnostic, and the 162095-byte figure is the
 ### Compiled links
 
 Every compiled in-bundle link in every mode resolves to a heading the bundle
-emits, apart from one target per bundle: `#test-plan`, which appears inside the
-pull request body's template as `[Test Plan](#test-plan)` and is a placeholder in
-authored template text rather than a link the run compiled. The count of that
-target is the same before and after in every mode.
+emits, apart from the target `#test-plan` in each of the six bundles that compile
+it. That target appears inside the pull request body's template as
+`[Test Plan](#test-plan)` and is a placeholder in authored template text rather
+than a destination the run resolves. The six are `advance-mode`, `deliver-mode`,
+`plan-mode`, `standup-mode`, `sync-mode` and `understand-mode`; `align-mode`,
+`hoist-mode`, `propose-mode` and `revise-mode` report no unresolved target.
+`revise-mode` carries the same text inside a four-backtick template fence, where
+the parser reads it as code rather than a link. The count of that target is the
+same before and after in every mode.
 
 ## Checks
 
 | Command | Result | Notes |
 | --- | --- | --- |
 | `make links` | pass | `--online`, every reference in 101 documents resolved |
-| `make layout` | pass | `docs/` 10, `fixtures/` 964, `src/` 39 |
+| `make layout` | pass | 3 trees present: `docs/` 10, `fixtures/` 964, `src/` 39 |
 | `make tables` | pass | 16 commands, 8 declarations |
 | `make vocabulary` | pass | 38 terms across 24 sources |
 | `make test` | pass | 1099 passed |
