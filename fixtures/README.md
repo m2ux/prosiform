@@ -44,7 +44,7 @@ A document joins the family when its closure is itself: no local Markdown docume
 
 The `usage-example/` family runs the invocations the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) publishes as its usage examples, so an example that stops being a valid invocation fails a run rather than going quietly stale.
 
-Each of its fixtures reaches [`example/work-tracker/`](../example/README.md) through a `source` symbolic link, because the design and the corpus must name one tree: a copy per fixture would let the published invocation and the invocation under test drift apart. The tree is the repository's own example material, maintained with the contract, rather than a source written for one clause.
+Each of its fixtures reaches [`example/work-planner/`](../example/work-planner/SKILL.md) through a `source` symbolic link, because the design and the corpus must name one tree: a copy per fixture would let the published invocation and the invocation under test drift apart. The tree is the repository's own example material, maintained with the contract, rather than a source written for one clause.
 
 ## The manifest
 
