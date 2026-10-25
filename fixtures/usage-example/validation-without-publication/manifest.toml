@@ -1,4 +1,4 @@
-description = "The usage example that compiles and validates without publishing reaches the same closure and emits nothing on standard output."
+description = "The usage example that compiles and validates a selected section without publishing it reaches that section's closure and emits nothing on standard output."
 
 clauses = [
   "Usage examples",
