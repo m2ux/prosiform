@@ -11,6 +11,7 @@ Two of the five usage-example fixtures describe output their re-recorded bundles
 | Artifact | What it holds |
 | --- | --- |
 | [Work Item](w08.md) | Scope, component and validation obligations |
+| [Validation](validation.md) | Check results, the AC11 invocation comparison and the AC12 description inspection |
 
 ## Delivery Context
 
