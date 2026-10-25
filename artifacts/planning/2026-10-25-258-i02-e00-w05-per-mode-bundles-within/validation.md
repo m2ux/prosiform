@@ -134,8 +134,8 @@ One row on #263. No row for the trivial item.
 
 | Fact | Value |
 | --- | --- |
-| Pull request | pending |
-| Merge commit | pending |
+| Pull request | [#268](https://github.com/m2ux/prosiform/pull/268) |
+| Merge commit | `3a623c9cb721fbf9012726621cce91d49804e0e6` |
 | Method | merge commit |
-| Epic base after | pending |
-| Check | pending |
+| Epic base after | `3a623c9c`, two rows undelivered |
+| Check | `Checks` completed `pass` in 1m15s |
