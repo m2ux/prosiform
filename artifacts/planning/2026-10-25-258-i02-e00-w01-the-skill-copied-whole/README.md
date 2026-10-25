@@ -13,6 +13,7 @@ The row exists because a four-file tree cannot show a protocol, a grouped folder
 | Artifact | What it holds |
 | --- | --- |
 | [Work Item](w01.md) | Scope, component and validation obligations |
+| [Validation](validation.md) | File counts, copy fidelity, the declared roots, the bundle output, and every check run |
 
 ## Delivery Context
 
@@ -30,3 +31,5 @@ The row exists because a four-file tree cannot show a protocol, a grouped folder
 | Epic | [I02:E00 Example Migration](https://github.com/m2ux/prosiform/issues/258) |
 | Initiative | [I02 MVP Demonstration](https://github.com/m2ux/prosiform/issues/261) |
 | Board | [Board 18](https://github.com/users/m2ux/projects/18) |
+| Pull request | [#264 The Skill Copied Whole as the Example](https://github.com/m2ux/prosiform/pull/264) |
+| Deferred debt | [#263 I02:E02 Deferred Debt](https://github.com/m2ux/prosiform/issues/263) |
