@@ -6,15 +6,6 @@ prosiform:
 
 The membership, status and assignee changes that record delivery on one board.
 
-## Prerequisites
-
-Read these files first.
-
-- [Board Queue](board-queue.md)
-- [Board](board.md)
-- [Issue](issue.md)
-- [Pull Request](pull-request.md)
-
 ## Operations
 
 ### *Plan* Board Changes

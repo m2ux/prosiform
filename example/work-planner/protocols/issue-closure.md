@@ -6,16 +6,6 @@ prosiform:
 
 Fresh closure evidence assembled across an issue and its linked pull requests, and the closure it permits.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](../artifacts/issue.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Delivery Branches](../artifacts/delivery-branches.md)
-- [Epic](../artifacts/epic.md)
-- [Initiative](../artifacts/initiative.md)
-
 ## Procedure
 
 1. **Issue.**

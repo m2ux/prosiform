@@ -6,13 +6,6 @@ prosiform:
 
 The local plan for one task's work.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue Body](issue-body.md)
-- [Pull Request Body](pull-request-body.md)
-
 ## Operations
 
 ### *Populate* Work Item

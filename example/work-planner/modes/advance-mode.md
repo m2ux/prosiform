@@ -6,19 +6,6 @@ prosiform:
 
 Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery.
 
-## Prerequisites
-
-Read these files first.
-
-- [Board](../artifacts/board.md)
-- [Sync Mode](sync-mode.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Board Queue](../artifacts/board-queue.md)
-- [Issue](../artifacts/issue.md)
-- [Repository Labels](../artifacts/repository-labels.md)
-- [Plan Change](../artifacts/plan-change.md)
-- [Guidelines](../guidelines.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

@@ -8,28 +8,6 @@ Brings one or more existing proposal, initiative, epic, task, and standalone iss
 
 Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](../artifacts/issue.md)
-- [Initiative Issue Body](../artifacts/initiative-issue-body.md)
-- [Proposal Body](../artifacts/proposal-body.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Issue Body](../artifacts/issue-body.md)
-- [Acceptance Criteria](../artifacts/acceptance-criteria.md)
-- [Task Body](../artifacts/task-body.md)
-- [Standalone Body](../artifacts/standalone-body.md)
-- [Goal Trace](../artifacts/goal-trace.md)
-- [Review Finding](../artifacts/review-finding.md)
-- [Dependency Graph](../artifacts/dependency-graph.md)
-- [Requirement Characteristics](../references/requirement-characteristics.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Delivery Evidence](../artifacts/delivery-evidence.md)
-- [Initiative](../artifacts/initiative.md)
-- [Epic](../artifacts/epic.md)
-- [Delivery Branches](../artifacts/delivery-branches.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

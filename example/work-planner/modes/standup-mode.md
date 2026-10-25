@@ -6,18 +6,6 @@ prosiform:
 
 Summarises a project board as a standup, in Slack markup for pasting into a channel: a paragraph for management on what the window accomplished, then what completed, what is in progress, and what is next. The board's Status is the source, so the summary is as current as the board.
 
-## Prerequisites
-
-Read these files first.
-
-- [Board](../artifacts/board.md)
-- [Sync Mode](sync-mode.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Standup Report](../artifacts/standup-report.md)
-- [Issue](../artifacts/issue.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Issue Body](../artifacts/issue-body.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

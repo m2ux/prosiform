@@ -6,18 +6,6 @@ prosiform:
 
 One epic base merged into its long-lived branch, on current branch, epic and pull-request evidence.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](../artifacts/issue.md)
-- [Review Pull Request](review-pull-request.md)
-- [Change Overview](change-overview.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Delivery Branches](../artifacts/delivery-branches.md)
-- [Epic](../artifacts/epic.md)
-- [Guidelines](../guidelines.md)
-
 ## Procedure
 
 1. **Prepare the evidence.**

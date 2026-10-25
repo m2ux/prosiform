@@ -6,13 +6,6 @@ prosiform:
 
 Changes the skill itself: SKILL.md, its modes, artifacts, references and scripts.
 
-## Prerequisites
-
-Read these files first.
-
-- [Skill Guidelines](../../guidelines.md)
-- [Guidelines](../guidelines.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

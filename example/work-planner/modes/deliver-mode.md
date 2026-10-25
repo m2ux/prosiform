@@ -6,30 +6,6 @@ prosiform:
 
 Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, stands a completed epic in review on the board, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds.
 
-## Prerequisites
-
-Read these files first.
-
-- [Board](../artifacts/board.md)
-- [Advance Mode](advance-mode.md)
-- [Pull Request](../artifacts/pull-request.md)
-- [Delivery Evidence](../artifacts/delivery-evidence.md)
-- [Epic](../artifacts/epic.md)
-- [Delivery Branches](../artifacts/delivery-branches.md)
-- [Delivery Plan](../artifacts/delivery-plan.md)
-- [Issue](../artifacts/issue.md)
-- [Task Merge](../protocols/task-merge.md)
-- [Guidelines](../guidelines.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Planning Record](../artifacts/planning-record.md)
-- [Delivery Brief](../artifacts/delivery-brief.md)
-- [Plan Change](../artifacts/plan-change.md)
-- [Hoist Mode](hoist-mode.md)
-- [Initiative Issue Body](../artifacts/initiative-issue-body.md)
-- [Work Item](../artifacts/work-item.md)
-- [Pull Request Body](../artifacts/pull-request-body.md)
-- [Issue Body](../artifacts/issue-body.md)
-
 ## Procedure
 
 The main path meets [Outcomes](#outcomes).

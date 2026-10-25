@@ -6,12 +6,6 @@ prosiform:
 
 The queue for one theme board: initiative priority sets, status and assignee changes, pending decisions, waiting work and next epics.
 
-## Prerequisites
-
-Read these files first.
-
-- [Epic Issue Body](epic-issue-body.md)
-
 ## Operations
 
 ### *Plan* Board Queue

@@ -6,12 +6,6 @@ prosiform:
 
 Populates one pull request body from its change, review scope and validation evidence.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue Body](issue-body.md)
-
 ## Operations
 
 ### *Populate* Pull Request Body

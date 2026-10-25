@@ -6,16 +6,6 @@ prosiform:
 
 The task and epic bodies brought to what one pull request's delivery establishes.
 
-## Prerequisites
-
-Read these files first.
-
-- [Task Body](../artifacts/task-body.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Epic](../artifacts/epic.md)
-- [Acceptance Criteria](../artifacts/acceptance-criteria.md)
-- [Issue](../artifacts/issue.md)
-
 ## Procedure
 
 1. **Task issues.**

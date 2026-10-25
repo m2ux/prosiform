@@ -6,13 +6,6 @@ prosiform:
 
 The available units, held rows, blocked work and merge candidates for one board.
 
-## Prerequisites
-
-Read these files first.
-
-- [Epic Issue Body](epic-issue-body.md)
-- [Delivery Branches](delivery-branches.md)
-
 ## Operations
 
 ### *Plan* Available Work

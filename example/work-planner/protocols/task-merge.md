@@ -6,19 +6,6 @@ prosiform:
 
 What the task, epic, board and initiative records become after one confirmed task merge.
 
-## Prerequisites
-
-Read these files first.
-
-- [Delivery Evidence](../artifacts/delivery-evidence.md)
-- [Board Delivery](../artifacts/board-delivery.md)
-- [Issue Delivery](issue-delivery.md)
-- [Issue Closure](issue-closure.md)
-- [Review Pull Request](review-pull-request.md)
-- [Epic Integration](epic-integration.md)
-- [Epic Issue Body](../artifacts/epic-issue-body.md)
-- [Initiative Issue Body](../artifacts/initiative-issue-body.md)
-
 ## Procedure
 
 1. **Read and record.**

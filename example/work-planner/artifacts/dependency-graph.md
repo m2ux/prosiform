@@ -6,15 +6,6 @@ prosiform:
 
 The task edges an initiative's epics declare, and the row numbers that graph permits.
 
-## Prerequisites
-
-Read these files first.
-
-- [Issue](issue.md)
-- [Initiative Issue Body](initiative-issue-body.md)
-- [Work Item](work-item.md)
-- [Plan Change](plan-change.md)
-
 ## Operations
 
 ### *Check* Dependencies and Numbering
