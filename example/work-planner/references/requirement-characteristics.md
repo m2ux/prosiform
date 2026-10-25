@@ -1,6 +1,8 @@
 ---
 prosiform:
   root: ".."
+  group: "references"
+  group-depth: 1
 ---
 # Requirement Characteristics
 
