@@ -8,6 +8,8 @@ prosiform:
 
 One epic base merged into its long-lived branch, on current branch, epic and pull-request evidence.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Prepare the review.**

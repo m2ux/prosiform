@@ -8,6 +8,8 @@ prosiform:
 
 Fresh closure evidence assembled across an issue and its linked pull requests, and the closure it permits.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Issue.**

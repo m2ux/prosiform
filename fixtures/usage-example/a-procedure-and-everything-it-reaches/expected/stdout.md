@@ -2800,6 +2800,8 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
 
 A reviewed initiative and its epics saved to the tracker, linked to one another, format-checked and recorded in the planning record.
 
+Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventions](#conventions).
+
 ### Procedure
 
 1. **Number the initiative.**
@@ -2827,6 +2829,8 @@ A reviewed initiative and its epics saved to the tracker, linked to one another,
 ## Delivery Base Preparation
 
 The epic bases a set of epics needs, created once their prerequisites hold, and the open delivery pull requests pointed at them.
+
+Follow the [Procedure](#procedure-3), adhering to [Rules](#rules) and [Conventions](#conventions).
 
 ### Procedure
 

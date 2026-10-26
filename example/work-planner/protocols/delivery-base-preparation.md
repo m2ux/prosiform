@@ -8,6 +8,8 @@ prosiform:
 
 The epic bases a set of epics needs, created once their prerequisites hold, and the open delivery pull requests pointed at them.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Confirm prerequisites.**

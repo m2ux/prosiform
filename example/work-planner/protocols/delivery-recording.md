@@ -8,6 +8,8 @@ prosiform:
 
 The task and epic records brought to the delivery an initiative's pull requests establish, with the findings that delivery leaves routed.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Read the evidence.**

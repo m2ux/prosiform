@@ -8,6 +8,8 @@ prosiform:
 
 The task and epic bodies brought to what an epic's merged pull requests establish, one pull request or several.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Task issues.**

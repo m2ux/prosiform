@@ -130,6 +130,8 @@ Read this before adding or changing a protocol.
   A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
 - **Entered whole.**
   One file holds one protocol. A caller follows the file; it does not link a step. A sequence worth following on its own is its own protocol.
+- **Preamble.**
+  The paragraphs after the title state what the protocol changes, and a paragraph of its own follows them: `Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).`
 - **Procedure.**
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**

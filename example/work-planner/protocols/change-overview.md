@@ -8,6 +8,8 @@ prosiform:
 
 The published architecture overview, planning record and pull request link that explain one pull request's change.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Prepare the evidence.**

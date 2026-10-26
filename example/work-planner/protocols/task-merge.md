@@ -8,6 +8,8 @@ prosiform:
 
 What the task, epic, board and initiative records become after one task pull request merges.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Merge.**

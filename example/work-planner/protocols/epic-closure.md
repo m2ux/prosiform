@@ -8,6 +8,8 @@ prosiform:
 
 An epic whose delivery is recorded carried through review and integration of its bases to its closure, with its initiative's delivery recorded.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Open the review.**
