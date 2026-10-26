@@ -160,10 +160,11 @@ The current issue, its saved body and discussion.
 
 One populated body and its metadata, written to the tracker.
 
-**Inputs:** Repository, optional existing issue number, populated body file, title and existing labels for creation; selected body or metadata changes for an existing issue. Optional comment file.
+**Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
 
 1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
-2. Return a missing-label result when an assignment names a label the repository does not contain.
+2. Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
+   - Return an unknown label definition to the caller before any write.
 3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
 4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
 5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
@@ -178,7 +179,8 @@ Verified completion of an issue and its linked delivery.
 
 1. Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
 2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
-   - Confirm GitHub's **Auto-close issues with merged linked pull requests** setting is disabled before any delivery pull request is linked or merged. An enabled or unknown setting blocks those actions until configuration is confirmed. Changing repository settings requires explicit authorization.
+   - Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
+   - Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
    - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
 3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
 4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.

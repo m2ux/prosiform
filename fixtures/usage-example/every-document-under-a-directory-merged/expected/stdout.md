@@ -107,10 +107,11 @@ The current issue, its saved body and discussion.
 
 One populated body and its metadata, written to the tracker.
 
-**Inputs:** Repository, optional existing issue number, populated body file, title and existing labels for creation; selected body or metadata changes for an existing issue. Optional comment file.
+**Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
 
 1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
-2. Return a missing-label result when an assignment names a label the repository does not contain.
+2. Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
+   - Return an unknown label definition to the caller before any write.
 3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
 4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
 5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
@@ -896,6 +897,43 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
+```
+
+## Repository Labels
+
+### Operations
+
+#### *Ensure* Repository Labels
+
+The required label definitions available for issue publication.
+
+**Inputs:** Repository and required label names, colours and descriptions.
+
+1. Run [List Labels](#list-labels) for the repository.
+2. Compare the returned labels with the supplied required names.
+3. Run [Create Label](#create-label) for each absent required definition.
+4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+
+### Commands
+
+#### List Labels
+
+Lists the labels that exist in the repository.
+
+**Inputs:** Repository.
+
+```bash
+gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
+```
+
+#### Create Label
+
+Creates the label specified by its name, colour and description.
+
+**Inputs:** Repository, label name, colour and description.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
 ```
 
 ## Epic Issue Body
