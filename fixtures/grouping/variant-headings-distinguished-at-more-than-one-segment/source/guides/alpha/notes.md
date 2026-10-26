@@ -13,4 +13,4 @@ The first run held throughout.
 
 ### Detail
 
-Each step was recorded as it ran, beside [the second run](guides/beta/notes.md).
+Each step was recorded as it ran, beside [the second run](../beta/notes.md).

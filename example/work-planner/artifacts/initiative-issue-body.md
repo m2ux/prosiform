@@ -18,7 +18,7 @@ One initiative body and its local validation findings.
 **Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
 
 1. Populate the body through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-2. Follow [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits).
+2. Follow [Check Round of Edits](issue-body.md#check-round-of-edits).
 3. Return the populated body and its local format findings to the caller.
 
 ### *Draft* Initiative Issue Body
@@ -31,15 +31,15 @@ One initiative body, scoped to one proposal.
    - That file must be the source for every later edit.
    - All populated fields must meet [Fields](#fields).
 2. Derive the Problem and Non-Goals from the proposal this initiative is scoped to.
-   - The Problem must meet [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal).
+   - The Problem must meet [Problem and Proposal](issue-body.md#problem-and-proposal).
    - Each Non-Goal must meet [Non-Goals](#non-goals).
 3. Write the acceptance criteria before the Work Breakdown, so each row's Coverage can cite them.
    - Each criterion must come from a confirmed clause and meet [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
    - The criteria must come from the requirements sources the proposal references. Where the proposal references none, they must come from the proposal's body alone.
-4. Populate the shared table through [Write Issue Table](../artifacts/issue-body.md#write-issue-table).
+4. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table).
 5. Fill the initiative-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown).
-   - An item a test cannot observe must stay named as [Coverage Reports](../artifacts/issue-body.md#coverage-reports) define.
+   - An item a test cannot observe must stay named as [Coverage Reports](issue-body.md#coverage-reports) define.
 
 ### *Record* Initiative Delivery
 
@@ -48,7 +48,7 @@ One initiative body with its epic delivery recorded.
 **Inputs:** Initiative JSON, every linked epic's current JSON and optional output body file.
 
 1. Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
-2. Return the body and [Delivery Findings](../artifacts/initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](../artifacts/initiative.md#delivery-state).
+2. Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
 ### *Record* Initiative Criteria
 
@@ -65,7 +65,7 @@ The body's local format and field findings.
 
 **Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
 
-1. Call [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying each linked epic as `--epic`.
+1. Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying each linked epic as `--epic`.
 2. Use its current title for the initiative row.
 3. Include excluded names in Problem and Proposal and criterion/source departures in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
@@ -131,11 +131,11 @@ The requirements evidence used to validate an initiative's criteria.
 
 ### Problem
 
-- A Problem meets [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal).
+- A Problem meets [Problem and Proposal](issue-body.md#problem-and-proposal).
 
 ### Proposal
 
-- A Proposal states the design, as [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal) defines.
+- A Proposal states the design, as [Problem and Proposal](issue-body.md#problem-and-proposal) defines.
 - A Proposal names no epic, task, or acceptance criterion of its own initiative.
 
 ### Work Breakdown
@@ -148,11 +148,11 @@ The columns are `Epic | Description | Coverage | Depends on | Done`. The table h
 - Depends on names epics only. A cell that names a task fails. Name a prerequisite epic only when every task or joined unit in the dependent epic requires every task in that prerequisite epic, directly or through its dependencies. The consumed output and the work producing it establish that requirement. Dependencies on selected tasks remain in the task tables. An edge another named whole-epic prerequisite already implies is omitted.
 - An initiative dependency that only some tasks need, or that requires only part of its prerequisite epic, is overbroad. The output and its producing tasks establish the edge.
 - An epic depending on a later epic is a backward reference.
-- Epic numbering meets [Numbering](../artifacts/issue-body.md#numbering).
+- Epic numbering meets [Numbering](issue-body.md#numbering).
 
 ### Initiative Acceptance Criteria
 
-An initiative criterion meets the [shared acceptance criteria](../artifacts/issue-body.md#shared-acceptance-criteria) and [Requirement Characteristics](../references/requirement-characteristics.md), and:
+An initiative criterion meets the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria) and [Requirement Characteristics](../references/requirement-characteristics.md), and:
 
 - **No counts.**
   An initiative criterion carries no counts or figures, which go stale: it measures against a named baseline or check ("against the baseline", "as the budget test measures it"). A figure stays only where it is the criterion's own target, such as a bound it holds to.
@@ -163,7 +163,7 @@ An initiative criterion meets the [shared acceptance criteria](../artifacts/issu
 - **Whole.**
   An initiative criterion states what the initiative achieves as a whole. One that restates a single epic's criterion is a duplicate: it is raised to what the epics achieve together, or left to the epic.
 - **Verified.**
-  - An initiative criterion ends by naming its instrument. Which instruments keep a criterion is [Verifiable](../artifacts/issue-body.md#verifiable).
+  - An initiative criterion ends by naming its instrument. Which instruments keep a criterion is [Verifiable](issue-body.md#verifiable).
   - An automated test is an end-to-end walk through the real server, a smoke run of an agent against a live server, a live check on a deployed host, or a guard, fixture suite or check that continuous integration runs. The walk, smoke run or live check is preferred where the criterion is about what a run does.
   - A named test that does not exist yet is work the plan holds: a task in the epic whose subject it tests, or a discrete test-infrastructure epic when the tests serve several criteria. That epic's row cites the criteria its tests verify.
 
@@ -201,7 +201,7 @@ A final epic of the initiative holds the debt that initiative's delivery defers.
 - **It takes the debt its own delivery defers.**
   Debt a unit of this epic finds in resolving its row becomes a further row of the epic, so the clear-up absorbs what fixing it uncovers.
 - **It delivers like any other epic.**
-  It takes its bases from the long-lived branches its rows change, carries the [corpus audit](../artifacts/epic-issue-body.md#corpus-audit) criterion where those rows change workflow definitions, and remains open until every delivery base has merged and its completion conditions hold.
+  It takes its bases from the long-lived branches its rows change, carries the [corpus audit](epic-issue-body.md#corpus-audit) criterion where those rows change workflow definitions, and remains open until every delivery base has merged and its completion conditions hold.
 - **The initiative stays open while it stands.**
   Its row is undelivered and its criterion unticked until the epic closes.
 
@@ -217,7 +217,7 @@ Reports an initiative's delivery state against its epics, and ticks Done on an e
 
 **Inputs:** Initiative JSON, every linked epic record and optional output body file.
 
-- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](../artifacts/initiative.md#delivery-state).
+- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](initiative.md#delivery-state).
 
 Pass every epic JSON file as a separate argument after `--epics`.
 

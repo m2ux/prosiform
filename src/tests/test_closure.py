@@ -187,7 +187,18 @@ def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> 
 
 
 def test_a_link_walking_out_of_its_own_directory_normalizes_against_it() -> None:
-    assert inside("docs/guide.md", "notes.md").path == "notes.md"
+    assert inside("docs/guide.md", "../notes.md").path == "notes.md"
+
+
+def test_a_link_resolves_from_its_file_whatever_root_bounds_it() -> None:
+    found = inside("docs/guide.md", "notes.md", "")
+    assert found.path == "docs/notes.md"
+    assert found.walk == "docs/notes.md"
+
+
+def test_a_root_bounds_a_link_without_being_the_base_it_resolves_from() -> None:
+    with pytest.raises(OutsideRoot):
+        inside("docs/guide.md", "../notes.md", "docs")
 
 
 def test_a_link_above_the_root_names_a_document_the_root_cannot_contain() -> None:
@@ -241,7 +252,7 @@ def test_two_spellings_of_one_section_share_an_identity() -> None:
 def test_a_reference_resolving_under_the_root_is_a_dependency() -> None:
     found = bundled("docs/guide.md", "rules.md#alpha", "the rules")
     assert found is not None
-    assert (found.path, found.fragment) == ("rules.md", "alpha")
+    assert (found.path, found.fragment) == ("docs/rules.md", "alpha")
 
 
 def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
@@ -289,7 +300,7 @@ def test_a_withheld_reference_under_the_root_is_a_withheld_target(
 ) -> None:
     found = withholding_target("docs/guide.md", "rules.md", opening)
     assert found is not None
-    assert found.path == "rules.md"
+    assert found.path == "docs/rules.md"
 
 
 def test_an_unmarked_reference_withholds_nothing() -> None:
@@ -318,8 +329,9 @@ def test_a_mark_on_a_reference_the_run_carries_none_of_withholds_nothing(
 @pytest.mark.parametrize(
     ("document", "destination", "expected"),
     [
-        ("topic/guide.md", "shared/rules.md", "shared/rules.md"),
-        ("topic/guide.md", "shared/rules.md#here", "shared/rules.md#here"),
+        ("topic/guide.md", "../shared/rules.md", "shared/rules.md"),
+        ("topic/guide.md", "../shared/rules.md#here", "shared/rules.md#here"),
+        ("topic/guide.md", "rules.md", "topic/rules.md"),
         ("guide.md", "#beta", "guide.md#beta"),
         ("guide.md", "rules.md#", "rules.md#"),
         ("guide.md", "notes%23draft.md#run", "notes%23draft.md#run"),

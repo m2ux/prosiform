@@ -18,9 +18,9 @@ One task body within its supplied epic context.
 **Inputs:** Task scope, epic context, design, criteria and output path.
 
 - Populate the body from the [Template](#template) at the supplied output path.
-  - The title must meet the shared [Titles](../artifacts/issue-body.md#titles) conditions.
-  - The Problem and Proposal must meet [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal).
-  - Acceptance criteria must meet the [shared acceptance criteria](../artifacts/issue-body.md#shared-acceptance-criteria).
+  - The title must meet the shared [Titles](issue-body.md#titles) conditions.
+  - The Problem and Proposal must meet [Problem and Proposal](issue-body.md#problem-and-proposal).
+  - Acceptance criteria must meet the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria).
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
 ### *Record* Task Delivery
@@ -74,12 +74,12 @@ One task body with its confirmed delivery and verified criteria recorded.
 
 ### Acceptance Criteria
 
-- A task criterion meets the [shared acceptance criteria](../artifacts/issue-body.md#shared-acceptance-criteria).
+- A task criterion meets the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria).
 
 ### Sections
 
-- A task has the [epic issue body](../artifacts/epic-issue-body.md)'s sections without the Work Breakdown table.
-- New task planning follows [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown). This body describes an existing issue kept as a task.
+- A task has the [epic issue body](epic-issue-body.md)'s sections without the Work Breakdown table.
+- New task planning follows [Work Breakdown](epic-issue-body.md#work-breakdown). This body describes an existing issue kept as a task.
 
 ## Commands
 

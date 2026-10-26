@@ -2,7 +2,7 @@
 
 These examples use [work-planner](work-planner/SKILL.md), a skill with a routing document, ten modes, six protocols and thirty artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
 
-Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. An entry's `prosiform.root`, when present, is a directory path relative to that file.
+Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. Each link resolves from the directory of the file that writes it, the path a reader follows. A file's `prosiform.root`, when present, is a directory path relative to that file, and bounds what its links reach.
 
 ## Bundle a procedure and its dependencies
 
@@ -41,7 +41,7 @@ Its publish step reads:
    - Call [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
-The two documents the step links arrive in the bundle, and their headings are destinations its links point at. The deferred link drops its `¬` marker and keeps the root-relative path `guidelines.md`; that document is excluded, and the published path alone states the deferral.
+The two documents the step links arrive in the bundle, and their headings are destinations its links point at. The deferred link drops its `¬` marker and names its target `guidelines.md`, the path from the invocation directory; that document is excluded, and the published path alone states the deferral.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
@@ -60,7 +60,7 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](../artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
 ### Command

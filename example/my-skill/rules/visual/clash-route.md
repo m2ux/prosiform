@@ -2,4 +2,4 @@
 prosiform:
   root: "../.."
 ---
-Read [Web common](rules/visual/web/common.md) and [API common](rules/visual/api/common.md).
+Read [Web common](web/common.md) and [API common](api/common.md).

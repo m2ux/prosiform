@@ -36,7 +36,9 @@ import links
 import pytest
 
 
-def test_declared_root_and_fragment_self_reference(tmp_path: Path) -> None:
+def test_a_link_resolves_from_its_file_whatever_root_it_declares(
+    tmp_path: Path,
+) -> None:
     author = tmp_path / "author"
     library = tmp_path / "library"
     author.mkdir()
@@ -44,10 +46,14 @@ def test_declared_root_and_fragment_self_reference(tmp_path: Path) -> None:
     document = author / "entry.md"
     document.write_text(
         "---\nprosiform:\n  root: ../library\n---\n"
-        "# Entry\n\n[Self](#entry) and [Target](target.md#target).\n"
+        "# Entry\n\n[Self](#entry) and [Target](../library/target.md#target)"
+        " and [Beside](target.md).\n"
     )
     (library / "target.md").write_text("# Target\n")
-    assert links.check(document, online=False) == ([], [])
+    assert links.check(document, online=False) == (
+        ["target.md — target.md does not exist"],
+        [],
+    )
 
 
 class Answers:

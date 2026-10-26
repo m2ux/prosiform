@@ -14,7 +14,7 @@ The main path meets [Outcomes](#outcomes).
    - When the user names a proposal, its associated issue body defines the problem scope.
    - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
    - When neither a proposal nor an existing initiative is named:
-     - Run [Propose Mode](../modes/propose-mode.md) with the user's goal.
+     - Run [Propose Mode](propose-mode.md) with the user's goal.
      - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
 2. **Prepare the planning record.**
    - For an initiative, epic or complex plan, call [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) with the record identity, folder and supplied evidence files.
@@ -86,7 +86,7 @@ The main path meets [Outcomes](#outcomes).
    - Repeat goal and ordering review on changed bodies before returning readiness.
 9. **Record delivered work.**
    When work has landed:
-   - Run [Sync Mode](../modes/sync-mode.md) for the affected initiative.
+   - Run [Sync Mode](sync-mode.md) for the affected initiative.
    - For an unplaced task issue:
      - Add its row through Populate Epic Issue Body.
      - Save that body.

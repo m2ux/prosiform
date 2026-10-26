@@ -19,11 +19,11 @@ One epic body and its local validation findings.
 
 1. Populate the body from the [Template](#template) at the supplied output path.
    - Every section must meet [Fields](#fields).
-   - Shared content must meet the common [body conditions](../artifacts/issue-body.md#fields).
-2. Populate the shared table through [Write Issue Table](../artifacts/issue-body.md#write-issue-table).
+   - Shared content must meet the common [body conditions](issue-body.md#fields).
+2. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table).
 3. Fill the epic-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown).
-4. Call [Build Body Snapshot](../artifacts/issue-body.md#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
+4. Call [Build Body Snapshot](issue-body.md#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
 5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
 6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
 7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
@@ -36,7 +36,7 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](../artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 ### *Record* Epic Criteria
 
@@ -73,7 +73,7 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
 
-1. Call [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+1. Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
 2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
@@ -105,8 +105,8 @@ The agreed disposition of criteria a delivered row left unmet.
    - On acceptance, call [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
    - Return an unanswered draft as pending without continuing to the reconcile step.
 3. Run [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
-   - Publish the returned body through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-   - Return the saved row and criterion disposition to the caller. Done follows [Tables](../artifacts/issue-body.md#tables).
+   - Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+   - Return the saved row and criterion disposition to the caller. Done follows [Tables](issue-body.md#tables).
 
 ## Fields
 
@@ -189,13 +189,13 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
   - A pair that does not is named in the planning record, with why.
   - An empty cell is a task that shares no pull request, and only once that record names every such pair.
 - **Numbering.**
-  Task numbering meets [Numbering](../artifacts/issue-body.md#numbering); a row whose id links a pull request is fixed.
+  Task numbering meets [Numbering](issue-body.md#numbering); a row whose id links a pull request is fixed.
 - **Reference form.**
   A table reference uses colons (`E01:W03`, `I05:E00:W02`), and every epic reference links to that epic's issue: `[E01:W03](…/issues/937)`. Prose uses a space (`E01 W03`).
 
 ### Acceptance Criteria
 
-An epic criterion meets the [shared acceptance criteria](../artifacts/issue-body.md#shared-acceptance-criteria). Contradictions between criteria in one epic are findings.
+An epic criterion meets the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria). Contradictions between criteria in one epic are findings.
 
 ### Open Questions
 
@@ -229,7 +229,7 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
   - A task issue belongs to one epic. Its title carries that epic's prefix.
   - When that epic's table has no row for its id, the issue is unplaced. Once the row exists, that epic's planning manages the issue.
   - The row links the pull request, not the issue.
-  - The pull request's Development field links the issue as [Issue Links](../artifacts/pull-request.md#issue-links) state.
+  - The pull request's Development field links the issue as [Issue Links](pull-request.md#issue-links) state.
   - A completed task issue has all criteria verified and every Development-linked pull request merged.
 - **Issues backing several tasks.**
   An issue backing several tasks, such as an investigation, is a reference: the epic cites it under References, no row id links it, and its title carries no agent-engineering prefix.
