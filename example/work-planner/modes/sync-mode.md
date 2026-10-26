@@ -18,7 +18,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
      - Return a remaining format failure as a blocker.
    - Apply [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository holding the issues, and pass the confirmed setting to every protocol this run follows.
 2. **Record delivery.**
-   Follow [Delivery Recording](../protocols/delivery-recording.md) with the selected repositories and initiative prefix, the fetched epic JSON and task issue records, the project checkout, named instruments, the confirmed setting, the allowance the caller supplied, the run's [change list](../artifacts/plan-change.md#change-list), and output body and comment files.
+   Follow [⇉ Delivery Recording](../protocols/delivery-recording.md) with the selected repositories and initiative prefix, the fetched epic JSON and task issue records, the project checkout, named instruments, the confirmed setting, the allowance the caller supplied, the run's [change list](../artifacts/plan-change.md#change-list), and output body and comment files.
    - Route what it returns:
      - **Unnamed deliveries.**
        - Put each [unnamed delivery](../artifacts/delivery-evidence.md#unnamed-deliveries) to the user as an [interview](../rules.md).
@@ -31,7 +31,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
      - **Conflicts and disagreements.**
        - Report each as unresolved with its pull request and row.
 3. **Close each epic.**
-   For each selected epic, follow [Epic Closure](../protocols/epic-closure.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its latest Delivery Findings, task issue records, confirmed matches and the task-merge records among the pull request records, the confirmed setting, and the criterion verification evidence Delivery Recording returned.
+   For each selected epic, follow [⇉ Epic Closure](../protocols/epic-closure.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its latest Delivery Findings, task issue records, confirmed matches and the task-merge records among the pull request records, the confirmed setting, and the criterion verification evidence Delivery Recording returned.
    - Report a draft awaiting the user's ready mark, a blocker and each remaining finding it returns as pending.
 4. **Close the initiative.**
    Follow [Issue Closure](../protocols/issue-closure.md) for the initiative with the confirmed setting, the criterion verification evidence Epic Closure returned for it and the project checkout.

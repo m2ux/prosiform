@@ -8,6 +8,8 @@ prosiform:
 
 One orphan's work saved in its confirmed destination, with the orphan rewritten or closed as its disposition states.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Populate the destination.**

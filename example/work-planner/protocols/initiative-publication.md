@@ -8,6 +8,8 @@ prosiform:
 
 A reviewed initiative and its epics saved to the tracker, linked to one another, format-checked and recorded in the planning record.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Number the initiative.**

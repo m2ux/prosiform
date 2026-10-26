@@ -67,7 +67,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 8. **Record delivery.**
    When no initiative or epic is selected, continue at step 10, Re-run.
    - Apply [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository holding the issues.
-   - Follow [Delivery Recording](../protocols/delivery-recording.md) with the selected repositories, initiative prefix, fetched epic JSON and task issue records, project checkout, named instruments, the confirmed setting, no allowance, the run's change list, and output body and comment files.
+   - Follow [⇉ Delivery Recording](../protocols/delivery-recording.md) with the selected repositories, initiative prefix, fetched epic JSON and task issue records, project checkout, named instruments, the confirmed setting, no allowance, the run's change list, and output body and comment files.
    - Put each pending or unresolved finding it returns to the user.
    - For an initiative being aligned:
      - Apply [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the current initiative JSON, every linked epic's current JSON and an output body file.

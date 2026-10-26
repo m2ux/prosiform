@@ -14,7 +14,7 @@ A planning record is a folder. README.md is its entry point: it answers what the
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path, supplied artifact files and links, and a commit message file when the caller asks to publish.
+**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
 1. Prepare the selected record:
    - For a new record:
@@ -28,6 +28,7 @@ One planning directory and its artifact inventory.
 2. Register the artifact files supplied by the caller, using their chosen names.
    - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts).
    - File content remains supplied by the caller; this operation does not author that artifact's content.
+   - Delete each artifact the caller names as removed, with its row.
 3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
 4. Return the folder path, and the publication result when it published.
 
@@ -109,7 +110,7 @@ Two paragraphs: the purpose of this work, and why it matters.
 
 ### Artifacts
 
-- One row for every artifact in the record other than README.md, added when the file is produced.
+- One row for every artifact in the record other than README.md, added when the file is produced and removed with it.
 - The link sits on the artifact's name. The row says what the artifact holds, and the artifact is the home of that content.
 - In an overview record, the architecture overview is the one row, and its pull request is under Links.
 

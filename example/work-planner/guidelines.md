@@ -43,7 +43,7 @@ These rules apply to mode procedures and artifact operations.
 - **Branch headers.**
   Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Each header is a bold label on its own line, with its instructions in child bullets. Mutually exclusive choices share one decision step. Place actions common to all branches after the branch group at the enclosing sequence level, including a shared return to the caller.
 - **Run-sets.**
-  A [run-set](bootstrap.md#symbols) is a `####` subsection under the operation, mode procedure or protocol procedure that links it, holding only one bulleted list whose every item is a call link. An item nested under another runs after it; an item that says "for each" runs once per item. Its use is reads.
+  A [run-set](bootstrap.md#symbols) is a `####` subsection under the operation, mode procedure or protocol procedure that links it, holding only one bulleted list whose every item is a call link. An item nested under another runs after it; an item that says "for each" runs once per item. Its items are reads, or dispatched work that writes no object another item writes.
 
 ## Prose
 
@@ -130,6 +130,8 @@ Read this before adding or changing a protocol.
   A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
 - **Entered whole.**
   One file holds one protocol. A caller follows the file; it does not link a step. A sequence worth following on its own is its own protocol.
+- **Preamble.**
+  The paragraphs after the title state what the protocol changes, and a paragraph of its own follows them: `Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).`
 - **Procedure.**
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**

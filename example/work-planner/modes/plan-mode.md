@@ -46,7 +46,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 6. **Publish.**
    Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [interview](../rules.md), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
-   - Follow [Initiative Publication](../protocols/initiative-publication.md) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed priority label among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
+   - Follow [Initiative Publication](../protocols/initiative-publication.md) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](../artifacts/board-queue.md#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
    - Put each blocker it returns to the user.
 7. **Keep the goal current.**
    When the goal, a criterion, a Problem, a Proposal or an epic changes:
@@ -57,13 +57,13 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - After each round, apply [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) to affected bodies.
    - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as step 4 does.
      - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
-     - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with each confirmed change as that epic's priority label, with its colour and description.
+     - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with each confirmed change as that epic's [priority label](../artifacts/board-queue.md#priority-sets), with its colour and description.
    - Apply Save Tracker Issue with each affected body, its title matching current numbers.
    - Keep local body files as the source for the next pass.
    - Apply Populate Work Item for each added or renamed task.
    - Apply Populate Pull Request Body with the discussion pull request's current body.
    - Apply Publish Pull Request with the discussion pull request's number and the returned body file.
-   - Apply Populate Planning Record with the record identity, folder path, each added, renamed or removed task's work-item file and a commit message file, asking it to publish.
+   - Apply Populate Planning Record with the record identity, folder path, each added or renamed task's work-item file, each removed task's work-item file as removed, and a commit message file, asking it to publish.
 8. **Prepare epic delivery.**
    Before any task starts:
    - Apply [Resolve Open Questions](../artifacts/issue-body.md#resolve-open-questions) for each affected issue with its identity, current JSON, its kind's template and field conditions, related context and an output body path.

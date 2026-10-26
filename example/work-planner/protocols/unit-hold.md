@@ -8,6 +8,8 @@ prosiform:
 
 One confirmed work unit's planning record, reserved epic rows and board status, in place before its session starts.
 
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).
+
 ## Procedure
 
 1. **Read the components.**
