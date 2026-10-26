@@ -53,7 +53,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **grouping rule** | A source document's paired metadata fields declaring its group identity and grouping depth. |
 | **member** | A contributing source document whose metadata declares a named group. |
 | **variant** | One of several same-named sections a merged group draws from different documents. Emitted once as a shared heading, with one subheading per source document. |
-| **overview** | The section a merged group gathers its member subheadings beneath, where it also emits merged sections. |
+| **overview** | The section a merged group gathers its member subheadings beneath, where it also emits merged sections. A titled entry member opens its group with its own title and preamble, its sections lead, and the other members' subheadings follow in the overview. |
 | **title case** | The spelling every heading the bundle generates carries: each word of the name capitalized, every separator the name carries kept. It changes letters and not structure, and it reaches what the compiler writes and nothing else. |
 
 ## Addressing
