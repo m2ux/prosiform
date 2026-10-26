@@ -8,7 +8,7 @@ A link whose text opens with a matching [symbol](#symbols) follows the usage ins
 
 ## Compile
 
-Compile a target file.
+Compile a target file. Run from this file's directory.
 
 ```bash
 pf -o <scratch>/<name>.bundle.md <destination>
