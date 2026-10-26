@@ -18,7 +18,12 @@ The copyable report and any missing-evidence findings.
 
 1. Require the complete issue-link snapshot.
 2. Run [Summarise Progress](#summarise-progress), passing items as `--items`, pull requests as `--prs`, links as `--links`, the selected start as `--since`, the filter as `--initiative` and every resolved initiative as `--initiatives`.
-3. If initiative references remain unresolved, return them for the caller to supply.
+3. For each unresolved initiative the summary names:
+   - Apply [Locate Initiative Issue](issue.md#locate-initiative-issue) with its repository and initiative prefix.
+   - Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the located issue's current JSON into a file under the output paths.
+   - Add the returned file to the resolved off-board initiative records.
+   - Run Summarise Progress again with every resolved initiative record, retaining the board items, pull requests, links, window start and filter.
+   - Repeat while an initiative remains that no read has failed. An unavailable initiative stays an unresolved finding, a gap in the report.
 4. Write the management paragraph from the rendered Initiatives and Completed sections.
    - It must meet [Management Paragraph](#management-paragraph).
 5. Run [Summarise Progress](#summarise-progress) with the same inputs and the paragraph file as `--summary`.
@@ -56,7 +61,7 @@ One plain-language paragraph describes what the window delivered as outcomes for
 
 ### Unresolved Evidence
 
-An unresolved initiative identifies its number and repository for the caller to fetch. An off-board dependency is blocked. An epic with unreadable Work Breakdown is summarised without tasks and returned as a finding. Unresolved lines are separate from the copyable report.
+An unresolved initiative identifies its number and repository. An off-board dependency is blocked. An epic with unreadable Work Breakdown is summarised without tasks and returned as a finding. Unresolved lines are separate from the copyable report.
 
 ## Commands
 
