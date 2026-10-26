@@ -38,16 +38,12 @@ One epic's board item at In Review, recording that its delivery is complete and 
 
 The board's status and assignees after its issues record delivery.
 
-**Inputs:** Saved initiative, epic and task identities, board identity, output directory, and the repositories the board's issues live in.
+**Inputs:** Saved initiative, epic and task identities, board identity and output directory.
 
-1. Read the issues, the board and its delivery records.
+1. Read the issues and the board's delivery evidence.
    - Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
-   - Apply [Read Board State](board.md#read-board-state) for the selected board.
-   - Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for its repositories.
-   - Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) for those records.
-   - Apply [Read Board Configuration](board.md#read-board-configuration) with the board and output paths.
-   - Apply [Read Board Assignee](board.md#read-board-assignee) for the assignment login.
-   - Pass these returned snapshots to Plan Board Changes.
+   - Apply [Read Board Delivery Evidence](delivery-evidence.md#read-board-delivery-evidence) with the board identity and output directory.
+   - Pass the returned issue records, board snapshot, pull request records and complete issue-link snapshot to Plan Board Changes.
 2. Apply [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
    - Fetch each unresolved issue.
    - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
@@ -56,7 +52,7 @@ The board's status and assignees after its issues record delivery.
    - If that item still shows the preceding status:
      - Repeat its write.
      - Repeat the same item read. The item list can lag a write.
-4. Fetch the issues and items again.
+4. Read the issues and the board's delivery evidence again, as step 1 does.
    - Apply [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
    - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
