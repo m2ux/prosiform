@@ -14,7 +14,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    Apply [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
    - Use its returned owner and board number for the following steps.
 2. **Advance.**
-   Run [Advance Mode](advance-mode.md) for the selected board, with the [allowance](../artifacts/plan-change.md#allowance) this run applies.
+   Follow [Advance Mode](advance-mode.md) for the selected board, with the [allowance](../artifacts/plan-change.md#allowance) this run applies.
    - Continue to the fetch step only after it returns a complete applied queue.
    - Report an unavailable dependency, and a queue decision it recorded rather than asked, before dispatch. An incomplete queue means no initiative is under way, so the run has no work to offer.
    - Carry the [change list](../artifacts/plan-change.md#change-list) it returns into the report step.
@@ -43,7 +43,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
 5. **Merge.**
    Apply [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for each `merge` line, with the project checkout.
-   - Run [Task Merge](../protocols/task-merge.md) for each confirmed merge result, with the selected board identity.
+   - Follow [Task Merge](../protocols/task-merge.md) for each confirmed merge result, with the selected board identity.
 6. **Confirm.**
    Show each `unit` line, with its tasks, coverage, record folder, branch, base and worktree, and each `hold` line with the record it links and whether a session is still running.
    - Confirm the units to dispatch and the rows to release as one [interview](../rules.md). Dispatch only the units the user confirms. No session starts until the user confirms the set of units.
@@ -73,10 +73,10 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Apply [Create Task Worktree](../artifacts/delivery-branches.md#create-task-worktree).
    - Apply [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, the component each of its rows declares, reserved folder, worktrees, test obligations, selected board identity, this run's allowance and [Run Delivery Session](#run-delivery-session) as the supplied execution procedure.
    - Resolve any returned gap before dispatch.
-   - The agent running this mode starts each unit through the sub-agent dispatch of the session it was called from, and that dispatch is the only way a unit's session starts.
+   - The agent following this mode starts each unit through the sub-agent dispatch of the session it was called from, and that dispatch is the only way a unit's session starts.
    - When that session provides no sub-agent dispatch, this mode reports that and stops before any unit begins.
    - The sub-agent works in the unit's worktree, reads the brief, and has the engineering worktree in reach for the planning record.
-   - Leave the dispatched session running its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
+   - Leave the dispatched session following its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
    - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as [Task Branches](../artifacts/delivery-branches.md#task-branches) defines.
 9. **Report.**
    Each pull request merged, and each left open by a conflict; each epic moved to In Review; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
@@ -119,7 +119,7 @@ The confirmed unit carried from its supplied brief through implementation and de
 8. **Merge.**
    Record check results with [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), following [Test Plan](../artifacts/pull-request-body.md#test-plan).
    - Apply [Merge Task Pull Requests](../artifacts/pull-request.md#merge-task-pull-requests) for the task pull request, with the unit's worktree as the project checkout.
-   - On a confirmed merge, run [Task Merge](../protocols/task-merge.md) with that merge result, the unit's current task and epic evidence, and the board identity the brief names.
+   - On a confirmed merge, follow [Task Merge](../protocols/task-merge.md) with that merge result, the unit's current task and epic evidence, and the board identity the brief names.
    - Resume the defer step when recording returns; a merge or recording blocker remains explicit.
 9. **Classify and defer the debt.**
    Classify the technical debt this unit's validation finds — running its tests, auditing the definitions it changed, reviewing its pull request — which decides where it is fixed.
@@ -132,13 +132,13 @@ The confirmed unit carried from its supplied brief through implementation and de
    - The session's own classification decides.
    - For each deferred item:
      - Create it as a standalone issue through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-     - Run [Hoist Mode](hoist-mode.md) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt).
+     - Follow [Hoist Mode](hoist-mode.md) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt).
      - Where the initiative has no such epic, the placement raises it as a new epic, carrying the criterion its initiative row covers.
      - Apply [Record Plan Change](../artifacts/plan-change.md#record-plan-change) with the placement it returns.
    - Resume the arising-issues step with each saved placement or reported blocker.
 10. **Arising issues.**
     Create each issue that arose during delivery as a standalone issue with [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), with no agent-engineering prefix.
-    - Run [Hoist Mode](hoist-mode.md) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.
+    - Follow [Hoist Mode](hoist-mode.md) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.
     - Apply [Record Plan Change](../artifacts/plan-change.md#record-plan-change) with each placement it applied and each it held.
 11. **Report the changes.**
     Register the session's [change list](../artifacts/plan-change.md#change-list) in its planning folder through [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record).

@@ -109,7 +109,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
       - Report a draft waiting for the user.
     - Fetch the pull requests again after merging.
     - Apply [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) again with the refreshed records and the same project checkout.
-    - [Issue Closure](../protocols/issue-closure.md) each epic the re-run reports closable.
+    - Follow [Issue Closure](../protocols/issue-closure.md) for each epic the re-run reports closable.
 11. **Sync the initiative.**
     Apply [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery), with the epic JSON fetched after closing. An epic row is delivered when its issue is closed as completed, and Done is ticked on it as [Work Breakdown](../artifacts/initiative-issue-body.md#work-breakdown) states.
     - For returned criteria ready to verify:
@@ -126,7 +126,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
     - Apply [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
+    - Follow [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
