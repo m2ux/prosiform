@@ -1224,6 +1224,7 @@ A marked source in References is a document the initiative's criteria answer to.
 
 - A criterion that misstates or contradicts a marked source fails the [Correct](#individual) characteristic.
 - A requirement a marked source states that no criterion makes true, and no Non-Goal excludes, is a gap.
+- A departure from a marked source is corrected in the criterion, unless a Non-Goal records it.
 - An epic is aligned against its initiative's marked sources, through the initiative criteria its row covers.
 - A marked source that cannot be read leaves its criteria unaligned until it is read.
 
