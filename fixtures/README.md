@@ -261,6 +261,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
 | `W_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatches returning to a target already on it. |
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
+| `W_DISPATCH_NOT_PROCEDURAL` | Link classification and resource handling, Dispatched procedures — a dispatched target whose selected content carries no numbered step. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.

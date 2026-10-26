@@ -1,7 +1,7 @@
 # Guide
 
-Hand the run to a sub-agent: [⇉ Run](#run).
+1. Hand the run to a sub-agent: [⇉ Run](#run).
 
 ## Run
 
-Hand planning to a sub-agent: [⇉ plan](plan.md).
+1. Hand planning to a sub-agent: [⇉ plan](plan.md).

@@ -1,3 +1,3 @@
 # Record
 
-Publish the record.
+1. Publish the record.

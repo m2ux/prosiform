@@ -1,0 +1,21 @@
+description = "A dispatched section of headings and bullets carries no numbered step for a sub-agent to follow, so the bundle publishes and the run warns, naming the link, where it is written and the section it names."
+
+clauses = [
+  "Link classification and resource handling — Dispatched procedures",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_DISPATCH_NOT_PROCEDURAL"
+reference = "plan.md#fields"
+resolved = "plan.md#fields"
+chain = ["guide.md", "plan.md#fields"]

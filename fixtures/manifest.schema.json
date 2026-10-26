@@ -277,6 +277,7 @@
         "W_COINCIDENT_HEADING",
         "W_DISPATCH_CYCLE",
         "W_DISPATCH_DEPTH",
+        "W_DISPATCH_NOT_PROCEDURAL",
         "W_RESOURCE_PORTABILITY"
       ]
     }
