@@ -6,7 +6,7 @@ prosiform:
 ---
 # Delivery Evidence
 
-The pull request records and issue links that establish what an initiative's epics have delivered, with the per-epic findings that evidence yields.
+The pull request records and issue links that establish what an initiative's epics or a board's issues have delivered, with the findings that evidence yields.
 
 ## Operations
 
@@ -24,10 +24,22 @@ The pull requests and issue links that establish current delivery.
    - Route the returned [Delivery Findings](epic.md#delivery-findings) to matching, verification or user decisions.
    - Fetch any linked pull request absent from the input with [Read Pull Request State](pull-request.md#read-pull-request-state).
    - Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
-3. Repair a title the user confirms delivers an epic it does not name, meeting [Named Delivery](#named-delivery).
-   - Apply [Publish Pull Request](pull-request.md#publish-pull-request) with the confirmed epic prefix and purpose.
-   - Repeat the fetch and match steps with the saved title before returning.
-4. Return the current pull request records, complete issue-link snapshot and per-epic findings to the caller, reporting incomplete evidence as a blocker.
+3. Name each pull request whose issue links reach an epic or one of its task issues and whose title omits that epic's reference as an [unnamed delivery](#unnamed-deliveries).
+4. Return the current pull request records, complete issue-link snapshot, per-epic findings and unnamed deliveries to the caller, reporting incomplete evidence as a blocker.
+
+### *Read* Board Delivery Evidence
+
+The board snapshot and pull request records that establish current delivery across one board.
+
+**Inputs:** Board owner and number, authenticated access, output paths and destination snapshot files.
+
+1. Apply [Read Board State](board.md#read-board-state) with the board owner and number for its items, Status field and repositories.
+2. Fetch the pull requests and their links.
+   - Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](board.md#repositories) Read Board State returned.
+   - Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) with those records.
+3. Apply [Read Board Configuration](board.md#read-board-configuration) with the board owner and number and output paths for the board fields.
+4. Apply [Read Board Assignee](board.md#read-board-assignee) for the assignee login.
+5. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
 
 ## Fields
 
@@ -37,10 +49,18 @@ The pull requests and issue links that establish current delivery.
   The complete set of Development links between those pull requests and the issues they deliver, read through the access that exposes them whole.
 - **Findings.** The per-epic [Delivery Findings](epic.md#delivery-findings) the evidence yields.
 
+### Board Snapshot
+
+The board items with their Status, the Status field, the board fields, the board's [repositories](board.md#repositories) and the assignee login, read together with the board's pull request records and issue-link snapshot.
+
+### Unnamed Deliveries
+
+A pull request whose issue links reach an epic or its task issues while its title omits that epic's reference. Each is named with the epic it reaches, for the user to confirm.
+
 ### Completeness
 
 Evidence is complete when every linked pull request the snapshot names has a record, including one absent from the initiative list. Incomplete evidence is a blocker, not a partial result.
 
 ### Named Delivery
 
-A pull request that delivers an epic carries that epic's reference in its title, as `[I07:E00] Purpose`. A delivery the user confirms whose title omits its epic is repaired before the evidence returns.
+A pull request that delivers an epic carries that epic's reference in its title, as `[I07:E00] Purpose`. A delivery the user confirms whose title omits its epic is repaired to carry that reference.
