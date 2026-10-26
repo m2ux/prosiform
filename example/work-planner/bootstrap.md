@@ -4,7 +4,9 @@ prosiform:
 ---
 # Instructions
 
-A link whose text opens with a symbol below is loaded through `pf`, *not* read as a file. Run `pf` from this file's directory.
+A link whose text opens with a symbol below is loaded through `pf`, *not* read as a file.
+
+## Parameters
 
 | Parameter | Value |
 | --- | --- |
@@ -12,9 +14,19 @@ A link whose text opens with a symbol below is loaded through `pf`, *not* read a
 | `<name>` | The destination's file name without its suffix. |
 | `<scratch>` | An existing working directory outside the repository. |
 
-| Symbol | Names | Run | Use of the bundle |
-| --- | --- | --- | --- |
-| `↳` | A Prosiform target | `pf -o <scratch>/<name>.bundle.md <destination>` | Read the whole bundle and follow the instructions in its preamble. |
-| `»` | A dispatched target | `pf -o <scratch>/<name>.bundle.md <destination>` | Hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. |
+## Load
 
-A sub-agent following a dispatched bundle dispatches nothing further. A non-zero exit stops the run and reports `pf`'s diagnostics.
+Run from this file's directory:
+
+```bash
+pf -o <scratch>/<name>.bundle.md <destination>
+```
+
+A non-zero exit stops the run and reports `pf`'s diagnostics.
+
+## Symbols
+
+| Symbol | Names | Use of the bundle |
+| --- | --- | --- |
+| `↳` | A Prosiform target | [Load](#load) it, then read the whole bundle and follow the instructions in its preamble. |
+| `»` | A dispatched target | [Load](#load) it, then hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A sub-agent following a dispatched bundle dispatches nothing further. |
