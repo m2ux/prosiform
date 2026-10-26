@@ -713,6 +713,9 @@ def section(
     """One merged section: its heading, then the content its members contribute.
 
     The parent's contribution leads a section several members share.
+    A reference to a contributor's heading resolves to the variant
+    heading naming that document where the section splits into variants,
+    and to the merged heading where one document contributes it.
     """
     if parent is not None:
         contributing = tuple(
@@ -725,7 +728,9 @@ def section(
         for member, anchor in contributing
         if id(anchor) in member.emitting
     )
-    merged_heading(into, text, SECTION_LEVEL, contributing, by, answers)
+    merged_heading(
+        into, text, SECTION_LEVEL, contributing, by, () if variants else answers
+    )
     if variants:
         for member, anchor in contributing:
             heading, recorded = generated_part(
