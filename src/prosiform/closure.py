@@ -1,4 +1,4 @@
-"""Normalize references under a source-owned dependency base.
+"""Normalize each reference from the file that writes it, within a source-owned root.
 
 URI components split before decoding. Local path segments decode once.
 Authored links that escape their source root remain citations; positional
@@ -73,8 +73,9 @@ class Reference:
 
     An external reference carries a scheme or an authority, names no
     local document, and holds the text it was authored as. Every other
-    reference holds the root-relative path it normalized to and the
-    section it names, which is absent for a whole-document reference.
+    reference holds the working-directory-relative path it normalized
+    to and the section it names, which is absent for a whole-document
+    reference.
 
     A reference a source carries also holds the location it is written
     at, which a diagnostic about it names, because the document that
