@@ -47,7 +47,7 @@ These rules apply to mode procedures and artifact operations.
   Artifact operation and command input declarations start with the bold label **Inputs:**. The input description uses normal text.
 
 - **One home per rule.**
-  A rule is stated once. Its home is the field or outcome it constrains, the procedure step it binds, or the Modes, Artifacts, or References section below. Operation inputs name the evidence that the caller must supply for those preconditions.
+  A rule is stated once. Its home is the field or outcome it constrains, the procedure step it binds, [Rules](rules.md) or [Conventions](conventions.md) when it binds every mode, or the Modes, Protocols, Artifacts, or References section below when it governs how that kind of file is written. Operation inputs name the evidence that the caller must supply for those preconditions.
 - **Terms.**  The scheme is agent-engineering: an agent-engineering prefix, title, issue or table.
 - **Examples.**
   A name, label, branch, path or board that belongs to one project is an example. The rule states what holds for every project.
@@ -111,15 +111,8 @@ Read this before adding or changing a mode.
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
   A new mode is a new file. An artifact is not edited to name it.
-- **Interview.**
-  A question the user must decide is put this way.
-  - A plain-language paragraph before the question gives the context the user needs to answer it.
-  - The question offers more than one choice. The recommended choice is marked on its option.
-  - Wait for the user's answer. An unanswered question stays pending. A recommendation or elapsed time supplies no answer.
-  - The user can select Other and specify a response beyond the options.
-  - Use the native tool for presenting the question when one is available.
 - **Step rules.**
-  A rule that binds one step sits in that step. A rule that binds every mode is added to this section.
+  A rule that binds one step sits in that step. A rule that binds every mode sits in [Rules](rules.md), or in [Conventions](conventions.md) when it is a skill-wide prerequisite.
 - **Sections.**
   Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
@@ -142,7 +135,7 @@ Read this before adding or changing a protocol.
 - **A new protocol.**
   A new protocol is a new file. An artifact is not edited to name it.
 - **Step rules.**
-  A rule that binds one step sits in that step. A rule that binds every protocol is added to this section.
+  A rule that binds one step sits in that step. A rule that binds every run of a protocol sits in [Rules](rules.md); a rule on how every protocol is written is added to this section.
 - **Sections.**
   Procedure, then Guidance when the file has an assistive statement that is not a step. Procedure is required. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
 
@@ -194,7 +187,7 @@ Read this before adding or changing an artifact.
 - **Detail.**
   A change keeps every existing condition. A shorter file is not a reason to drop one.
 - **Step rules.**
-  Put each action's preconditions and refusal conditions in its governing procedure step. Shared preconditions belong to a common procedure that callers invoke. Command specifications require the resulting evidence or authorization as inputs. A rule that binds every artifact is added to this section.
+  Put each action's preconditions and refusal conditions in its governing procedure step. Shared preconditions belong to a common procedure that callers invoke. Command specifications require the resulting evidence or authorization as inputs. A rule that binds every run of an artifact operation sits in [Rules](rules.md); a rule on how every artifact is written is added to this section.
 - **Sections.**
   Operations, Fields, then Guidance when it has an assistive statement that is not a step or a field condition, then Commands when the file has command specifications. Fields is required. An artifact has no Procedure, Outcomes or Rules section.
 

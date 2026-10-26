@@ -23,7 +23,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    Run [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each orphan's best option that changes the plan, with the allowance the caller supplied.
    - An automatic option is confirmed as it stands, and recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
    - A held option is settled as [Held Change](../artifacts/plan-change.md#held-change) states, leaving the orphan where it is.
-   - An option put to the user is offered as an [¬ Interview](../guidelines.md#modes). The grounding paragraph says what the orphan asks and where it fits.
+   - An option put to the user is offered as an [interview](../rules.md). The grounding paragraph says what the orphan asks and where it fits.
      - Leave is last.
      - Placing an orphan in another initiative's issue needs that answer as its approval.
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.

@@ -13,7 +13,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 1. **Read the guidelines.**
    Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md) whole before the first edit.
 2. **Understand the request.**
-   Interview the user, as an [¬ Interview](../guidelines.md#modes), until the change and its scope are clear.
+   Interview the user, putting each question as the [Rules](../rules.md) state, until the change and its scope are clear.
    - Find every file the change touches: the rule's home, each file that cites it, and any script, docstring or test that states it.
 3. **Work in a worktree.**
    Branch a worktree for the change.

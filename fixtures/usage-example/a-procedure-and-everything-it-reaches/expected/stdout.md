@@ -41,7 +41,7 @@ Follow [Procedure](#procedure). The other sections are material that procedure r
    - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
    - An acceptance criterion is created only once it meets [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
 6. **Publish.**
-   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [Interview](guidelines.md#modes), the proposal the recommended answer.
+   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
    - Call [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
    - For a new initiative:
@@ -3977,7 +3977,7 @@ One epic base merged into its long-lived branch, on current branch, epic and pul
    - Follow [Change Overview](#change-overview) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](#read-pull-request-state).
-   - Put a draft still awaiting its ready mark to the user as an [Interview](guidelines.md#modes), naming the epic standing in review on its board.
+   - Put a draft still awaiting its ready mark to the user as an [interview](#rules), naming the epic standing in review on its board.
    - Continue only on a pull request the user has marked ready, and leave a draft waiting for that decision.
    - Confirm its head is the epic base and its target is the corresponding long-lived branch.
 2. **Refresh and validate.**
@@ -4114,7 +4114,12 @@ The criteria of one issue, taken together, have these characteristics.
 # Rules
 
 - **Decisions.**
-  Ask one at a time, following the [interview rules](guidelines.md#modes). A decision the run's [allowance](#allowance) covers is taken with its recommended option rather than asked. Record each decision in the affected issues and, when there is one, the planning record.
+  A question the user must decide is put as an interview, one question at a time. A decision the run's [allowance](#allowance) covers is taken with its recommended option rather than asked. Record each decision in the affected issues and, when there is one, the planning record.
+  - A plain-language paragraph before the question gives the context the user needs to answer it.
+  - The question offers more than one choice. The recommended choice is marked on its option.
+  - Wait for the user's answer. An unanswered question stays pending. A recommendation or elapsed time supplies no answer.
+  - The user can select Other and specify a response beyond the options.
+  - Use the native tool for presenting the question when one is available.
 - **Layers.**
   Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol runs artifact operations and other protocols; an artifact runs neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
