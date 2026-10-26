@@ -11,9 +11,9 @@ An epic whose delivery is recorded carried through review and integration of its
 ## Procedure
 
 1. **Open the review.**
-   For each epic base the epic's [Delivery Findings](../artifacts/epic.md#delivery-findings) name as unmerged with no open pull request, follow [Review Pull Request](review-pull-request.md) with those findings, the task merges into that base, the epic's issue and the confirmed repository setting.
+   For each epic base the epic's [Delivery Findings](../artifacts/epic.md#delivery-findings) name as unmerged with no open pull request, follow [Review Pull Request](review-pull-request.md) with the repository, that epic base, those findings, the actual task merges into it, the epic's issue, the confirmed repository setting and the current epic and task-merge records.
 2. **Integrate each base.**
-   For each open epic pull request, follow [Epic Integration](epic-integration.md) with the epic identity and body, review identity, project checkout, current delivery records, complete issue-link snapshot and criterion verification evidence.
+   For each open epic pull request, follow [Epic Integration](epic-integration.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, the epic base and the review pull request number.
    - Return a draft awaiting the user's ready mark, or a blocker, to the caller as pending.
    - Stop while any epic base remains unmerged.
 3. **Refresh the records.**

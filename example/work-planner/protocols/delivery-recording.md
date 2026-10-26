@@ -32,7 +32,7 @@ The task and epic records brought to the delivery an initiative's pull requests 
        - Apply Match Delivery to Tasks with the pull requests it names, or for a note those linked to the row's task issue.
        - Add the confirmed pairs to the matches.
      - **Draft or references.**
-       - Follow [Review Pull Request](review-pull-request.md) with the delivery findings, the task merges into that base, the epic's issue and the confirmed repository setting.
+       - Follow [Review Pull Request](review-pull-request.md) with the repository, the epic base it names, the delivery findings, the actual task merges into that base, the epic's issue, the confirmed repository setting and the current epic and task-merge records.
      - **Unmerged.**
        - Return the epic base to the caller with its review identity.
      - **Uncited.**

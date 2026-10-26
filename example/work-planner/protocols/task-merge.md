@@ -23,10 +23,10 @@ What the task, epic, board and initiative records become after one task pull req
    - Follow [Issue Delivery](issue-delivery.md) with the merged pull request, the task issue records of the tasks it delivers, the epic JSON, the returned pull request records and complete issue-link snapshot, those task-to-pull-request matches, project checkout, named instruments and output body and comment files.
    - Follow [Issue Closure](issue-closure.md) for each task issue whose delivery result it returns as eligible, with the confirmed repository setting.
 3. **Review.**
-   Follow [Review Pull Request](review-pull-request.md) for the affected epic base, with the epic's Delivery Findings, the epic's issue and the repository setting confirmed for the session.
+   Follow [Review Pull Request](review-pull-request.md) with the repository, the affected epic base, the epic's Delivery Findings, the actual task merges into that base, the epic's issue, the repository setting confirmed for the session and the current epic and task-merge records.
 4. **Close when complete.**
    When the epic's [Delivery Findings](../artifacts/epic.md#delivery-findings) name an epic base unmerged:
    - Apply [Record Epic Review](../artifacts/board-delivery.md#record-epic-review) with the epic identity, the supplied board identity and output paths.
    - Report an absent board item, and continue.
-   - Follow [Epic Closure](epic-closure.md) with the epic identity and body, its Delivery Findings, review identity, repository and initiative prefix, project checkout, current delivery records, complete issue-link snapshot, confirmed repository setting, criterion verification evidence and named instruments.
+   - Follow [Epic Closure](epic-closure.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its Delivery Findings, task issue records, confirmed matches and task-merge records, the confirmed repository setting and the criterion verification evidence Issue Delivery returned.
    - Return its pending findings and result to the caller.
