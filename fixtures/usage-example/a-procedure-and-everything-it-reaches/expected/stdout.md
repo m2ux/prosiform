@@ -2303,6 +2303,41 @@ The body's local format and field findings.
 
 ### Operations
 
+#### *Select* Project Board
+
+The theme or proposals board the request names.
+
+**Inputs:** Board owner and either a theme name or the proposals-board selection.
+
+1. Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+2. Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
+3. Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
+
+#### *Copy* Project Board
+
+A missing theme board, or a missing proposals board.
+
+**Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
+
+1. When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
+2. When the selected theme board is absent:
+   - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
+   - Require the new theme's label and board before an initiative takes that theme.
+
+#### *Ensure* Project Board
+
+The theme or proposals board the request names, created when it is absent.
+
+**Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
+
+1. Apply [Select Project Board](#select-project-board) with the owner and the theme name or proposals selection.
+   - On a missing-selection result, return it to the caller and stop.
+   - On a selected board, return its owner and number and stop.
+2. When the board is absent:
+   - For a theme a proposal derives, apply [Read Tracker Issue](#read-tracker-issue) for the originating proposal's identity. Return unresolved provenance and stop when it cannot be read.
+   - Apply [Copy Project Board](#copy-project-board) with the owner, repository, selected board kind, theme title and that proposal record when applicable.
+3. Return the owner and the board number the copy created.
+
 #### *Create* Proposals Board
 
 A new proposals board linked to the supplied repository.
@@ -2316,6 +2351,20 @@ A new proposals board linked to the supplied repository.
 5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
 6. Return the new board number after linking succeeds.
 
+#### *Create* Theme Board
+
+A new theme board linked to the supplied repository.
+
+**Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
+
+1. Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
+2. Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+3. Use the returned number as the copy source.
+4. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
+5. Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+6. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+7. Return the new board number after linking succeeds.
+
 #### *Place* Issue on Board
 
 One issue's membership and initial status.
@@ -2328,16 +2377,26 @@ One issue's membership and initial status.
 4. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
 5. Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
-#### *Locate* Project Board
-
-The board identity matching a supplied purpose or theme.
-
-**Inputs:** Owner and proposals-board purpose or theme title.
-
-1. Run [Find Proposals Board](#find-proposals-board) for proposals, or [Find Theme Board](#find-theme-board) for a theme.
-2. Return the identity or an absent-board finding for the caller's selection or creation path.
-
 ### Fields
+
+#### Themes
+
+Every initiative belongs to one theme, and each theme has one project board. Each project names its own themes.
+
+- **Example.**  workflow-server's themes.
+
+| Theme | Label | Description |
+| --- | --- | --- |
+| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
+| Language | `theme:language` | The Definition Language and Its Rules |
+| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
+| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+
+#### One Board Per Theme
+
+- A proposal-derived board title is the originating proposal's exact `[Pxx]` designator, a space, the theme name, a colon, and its description: `[P03] Canon: Definitions Checked Against the Design Canon`. Preserve the proposal's digits exactly. A board with no originating proposal uses `Name: Description`.
+- It is linked to the repository.
+- It holds the theme's initiatives, their epics and their task issues.
 
 #### Proposals
 
@@ -2708,23 +2767,20 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
    - The goal clauses are the clauses the user confirmed. The Non-Goals are the boundary.
    - The design, the acceptance criteria, and the breakdown belong to a later goal.
 4. **Validate.**
-   Apply [Validate Proposal Body](#validate-proposal-body) with the draft issue JSON and output file.
-   - Resolve each finding.
-   - Update the draft.
-   - Repeat Validate Proposal Body with the revised JSON and the same output path. Proceed to publication only when validation passes.
+   Apply [Build Body Snapshot](#build-body-snapshot) with the body file, title, labels and a JSON path.
+   - Apply [Validate Proposal Body](#validate-proposal-body) with the returned JSON and the output file.
+   - Resolve each finding it leaves unresolved in the problem, evidence, goal clauses or boundary, and repeat Populate Proposal Body with them and the same output path.
+   - Repeat Build Body Snapshot and Validate Proposal Body with the revised body and the same paths. Proceed to publication only when validation passes.
 5. **Publish.**
-   Apply [Ensure Repository Labels](#ensure-repository-labels) with the proposal's required label definitions.
-   - Pass the validated body, title and labels to [Save Tracker Issue](#save-tracker-issue), leaving it unassigned.
+   Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the validated body file, its title, the proposal's labels and each label's colour and description, leaving it unassigned.
 6. **Confirm placement.**
    Ask whether to add the issue to the proposals board.
    - On acceptance, continue to the place step.
    - On a decline, skip placement and continue to the report step with the issue URL.
    - Wait for an unanswered decision.
 7. **Place.**
-   Apply [Locate Project Board](#locate-project-board) for proposals.
-   - Create an absent board through [Create Proposals Board](#create-proposals-board).
-   - Read the saved issue id through [Read Tracker Issue](#read-tracker-issue).
-   - Apply [Place Issue on Board](#place-issue-on-board) with that id and initial status Suggested.
+   Apply [Ensure Project Board](#ensure-project-board) with the board owner, the repository and the proposals-board selection.
+   - Apply [Place Issue on Board](#place-issue-on-board) with the returned owner and board number, the repository, the saved issue number, an output file and initial status Suggested.
    - Leave the issue unassigned.
 8. **Report.**
    Give the issue's URL, and the board's when the issue was placed.

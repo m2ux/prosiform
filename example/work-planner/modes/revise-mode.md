@@ -25,12 +25,12 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - When the user states a new writing rule, add it to the applicable shared or skill-specific guidelines before validation and delivery.
 5. **Check against the guidelines.**
    Read every changed file against the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md), checking:
-   - The description, when the skill's reach changed.
-   - One line per item, bold leads on their own line, and sub-bullets for discrete points.
-   - Each rule stated once, and no description of replaced behaviour left anywhere.
-   - Every command linked to its operation section.
-   - Every link and anchor resolving.
-   - [Progressive disclosure](../../guidelines.md#progressive-disclosure), including complete common sections and caller prerequisites.
+   - The [description](../../guidelines.md#frontmatter), when the skill's reach changed.
+   - [Layout](../../guidelines.md#layout).
+   - [Prose](../../guidelines.md#prose), with the skill's own [¬ Prose](../guidelines.md#prose), and [stale claims](../../guidelines.md#changes).
+   - [Commands](../../guidelines.md#commands).
+   - [Links](../../guidelines.md#links).
+   - [Progressive disclosure](../../guidelines.md#progressive-disclosure).
    - Fix each departure.
 6. **Verify.**
    - Run [Run Tests](#run-tests) when an executable script, its consumed template or a test changed.
