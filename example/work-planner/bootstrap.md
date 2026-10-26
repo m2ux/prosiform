@@ -2,9 +2,9 @@
 prosiform:
   root: "."
 ---
-# Instructions
+# Bootstrap
 
-A link whose text opens with a symbol below is loaded through `pf`, *not* read as a file.
+A link whose text opens with one of the [symbols](#symbols) is loaded through `pf`, *not* read as a file: fill the [parameters](#parameters) from that link, run the [load command](#load), then use the bundle as its symbol states.
 
 ## Parameters
 
