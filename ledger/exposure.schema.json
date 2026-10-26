@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/m2ux/prosiform/blob/main/ledger/exposure.schema.json",
+  "title": "prosiform exposure set",
+  "description": "The sources that must be bundled before a freeze: the worked example's mode entries, each as its documented pf invocation, and the workspace skills agents invoke, each named where it lives. The declaration is written as TOML and validated against this document after parsing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "example",
+    "workspace"
+  ],
+  "properties": {
+    "example": {
+      "description": "Each mode entry of the worked example, as the example documents running it.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cwd",
+          "command"
+        ],
+        "properties": {
+          "cwd": {
+            "description": "The working directory, relative to this repository's root.",
+            "$ref": "#/$defs/text"
+          },
+          "command": {
+            "description": "The documented command line: pf and the entry, relative to cwd.",
+            "type": "string",
+            "pattern": "^pf \\S+$"
+          }
+        }
+      }
+    },
+    "workspace": {
+      "description": "Each workspace skill agents invoke, by the repository, branch and path that hold it.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repository",
+          "branch",
+          "path"
+        ],
+        "properties": {
+          "repository": {
+            "description": "The repository as owner/name.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+          },
+          "branch": {
+            "$ref": "#/$defs/text"
+          },
+          "path": {
+            "description": "The skill's entry document in that repository.",
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "pattern": "\\S"
+    }
+  }
+}
