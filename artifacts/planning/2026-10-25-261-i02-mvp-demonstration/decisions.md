@@ -113,3 +113,11 @@ The example skill is entered through `SKILL.md`, whose Modes intro links `bootst
 - **Dispatch is chosen by measurement.** A call is dispatched when withholding its target saves at least 15% of the mode's bundle and the work is self-contained; Deliver dispatches Task Merge, Hoist Issue Placement, Align Delivery Recording, and Sync both Delivery Recording and Epic Closure, which share most of their material.
 
 The migration epic carries the grammar as W22 to W26 (AC28 to AC32); the refactor epic carries the run-set's first use as W20 (AC37) and the measured dispatch marks in W19.
+
+## D15 — The demonstrated revision is tagged `demo/i02`, after its command and constructs
+
+The ground epic's tag came first in its rows, with the published command and the declared constructs depending on it. Those two rows change the example's documentation, so a tag cut first names a revision that carries neither, and the demonstration could not be repeated from it. The tag now depends on both, and the checks are read at the tag.
+
+The tag is `demo/i02`. The `contract/` and `python/` tags version the contract and a build, and documentation changes move neither; a demonstration tag of its own names the revision without implying a release. `contract/v0.11.0` and `python/v0.11.0`, cut at the skill refactor's merge, stay as the release the demonstration's build reports.
+
+[E01](https://github.com/m2ux/prosiform/issues/262) carries this as W01 depending on W02 and W03, and W04 depending on W01; its AC1 names the tag.
