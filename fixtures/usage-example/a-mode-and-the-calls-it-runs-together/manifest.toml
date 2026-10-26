@@ -1,0 +1,17 @@
+description = "The usage example that compiles the Advance mode bundles that mode with the Rules, Conventions and Bootstrap documents its links reach and the eight artifacts its links reach under the Artifacts heading. The run-set link in the Read Board Delivery Evidence operation is published with its mark and points at the Board Reads section, which the bundle carries beneath that operation as one bulleted list of calls, with no warning. The dispatched link to Sync Mode is published with its mark, and Sync Mode contributes no content."
+
+clauses = [
+  "Usage examples",
+  "Link classification and resource handling — The run-set mark",
+  "Link classification and resource handling — Run-set shape",
+  "Link classification and resource handling — The dispatch operator",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/advance-mode.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

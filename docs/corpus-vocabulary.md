@@ -143,9 +143,12 @@ The names the fixture source trees and the design's own usage examples give the 
 | --- | --- |
 | **alpha** | a heading the design's heading-only example names. |
 | **beta** | the heading beside it. |
+| **board** | the project board the example tree's artifacts read, named in their headings. |
 | **checklist** | a document a real-source fixture bundles. |
 | **column** | a table column a bundled document carries. |
 | **diagram** | a document a real-source fixture bundles. |
+| **guidelines** | the document the example tree's Revise mode defers. |
+| **plan** | the change an example tree artifact records, named in its heading. |
 | **workspace** | the directory a real-source fixture's tree is taken from. |
 
 ## What the corpus and the report state about themselves

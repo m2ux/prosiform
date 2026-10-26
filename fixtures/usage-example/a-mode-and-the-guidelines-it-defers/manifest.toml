@@ -1,0 +1,17 @@
+description = "The usage example that compiles the Revise mode bundles that mode with the Rules, Conventions and Bootstrap documents its links reach and the Plan Change artifact under the Artifacts heading. Its four deferred links to the skill guidelines are published with the mark removed and a destination naming the guidelines from the working directory, and the guidelines contribute no content. Its links to the shared guidelines resolve outside the root and keep their authored destinations."
+
+clauses = [
+  "Usage examples",
+  "Link classification and resource handling — The deferral mark",
+  "Link classification and resource handling — A withheld link's destination",
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/revise-mode.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
