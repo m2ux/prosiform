@@ -384,7 +384,7 @@ Ordinary Markdown needs neither `name`, `description`, nor a `SKILL.md` filename
 
 | Field | Accepted value | Meaning |
 | --- | --- | --- |
-| `prosiform.root` | Nonempty relative directory-path string, using forward slashes and containing no NUL, control characters, home shortcuts, environment expansion, scheme, authority, absolute or drive path. Literal `.` and `..` segments are allowed. | Resolve from the declaring file's directory; the result is this source's dependency base and confinement boundary. |
+| `prosiform.root` | Nonempty relative directory-path string, using forward slashes and containing no NUL, control characters, home shortcuts, environment expansion, scheme, authority, absolute or drive path. Literal `.` and `..` segments are allowed. | Resolve from the declaring file's directory; the result is this source's confinement boundary. The source's links resolve from its own directory, not from the root. |
 | `prosiform.group` | A single-line printable string with at least one non-whitespace character, containing neither `:` nor `/`. | Exact identity of the group this source joins. |
 | `prosiform.group-depth` | YAML Core integer from 1 through 6, excluding booleans, floats and strings. | Source heading depth for this member's merged sections. |
 | Field | Accepted value | Meaning |
@@ -427,7 +427,7 @@ A reference is a dependency when its author has not withheld it and it either na
 
 The tool guarantees internal resolution for a dependency and claims nothing about anything else.
 
-- **Local Markdown document links under the root:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve path-bearing references from the originating source's effective root, independent of the source that discovered it.
+- **Local Markdown document links under the root:** Resolve, recursively bundle, and rewrite to bundle destinations. Resolve each path-bearing reference from the directory of the originating source, within that source's effective root, independent of the source that discovered it.
 - **The deferral mark:** A link whose text opens with `¬`, as in `[¬ Record Epic Delivery](epic-issue-body.md#record-epic-delivery)`, is not compiled by this run. The character is ordinary text to the profile, so deferring adds no construct the grammar must recognize and a renderer that knows nothing of this tool displays the link. The mark is authoring syntax rather than content: the bundle carries the link's text with the mark and the spaces following it removed, because the destination the link publishes already states that the material is a run of its own.
 - **The dispatch operator:** A link whose text opens with `»`, as in `[» the shared rules](rules.md)`, states that its material is compiled by a sub-agent rather than by this run. It withholds exactly what a deferral withholds — the target contributes no content, adds no dependency through the link and no group membership — and its target is required to exist and to name the heading it names, because a dispatch an agent performs is one that can succeed. The mark is published, including the spaces following it, because it is the only thing in the bundle saying the material belongs to another agent: a withheld link's destination already differs from a compiled link's, so the two operators are not redundant with each other.
 - **One operator per link:** Text opening with both `¬` and `»` is refused with a diagnostic naming the link, under `E_UNSUPPORTED_CONSTRUCT`. One compilation cannot wait for a later run and be dispatched by this one, so a link stating both states two contradictory things and the run says so rather than choosing. The defect is in the source the run read rather than in its metadata, which is why it is not a metadata code.
@@ -445,7 +445,7 @@ The tool guarantees internal resolution for a dependency and claims nothing abou
 
 Capture the canonical invocation working directory once. Resolve positional file references and `-f DOC` from it, allowing relative parent segments. A fragment-only positional reference requires `-f DOC`; file-naming references are independent of that option.
 
-Each source's explicit `prosiform.root` resolves from that source's containing directory. Every absent root uses the captured invocation working directory, including linked sources. This effective root is the base and confinement boundary for all path-bearing local Markdown references authored in that source, including deferred links. A target's own root applies to its outgoing references once its bytes have been captured. Different valid roots are permitted; they require no global agreement. Fragment-only references identify the captured source itself, even when that source lies outside its declared root.
+Each source's explicit `prosiform.root` resolves from that source's containing directory. Every absent root uses the captured invocation working directory, including linked sources. A path-bearing local Markdown reference authored in that source, a deferred link included, resolves from the source's own directory, which is the path a reader of the file follows in an editor or on GitHub. The effective root is the confinement boundary for that result, not its base: a reference landing outside the root names nothing the root can contain. A target's own root applies to its outgoing references once its bytes have been captured. Different valid roots are permitted; they require no global agreement. Fragment-only references identify the captured source itself, even when that source lies outside its declared root.
 
 An explicit root may name a sibling library that does not contain its declaring source. The declaration authorizes dependencies within that directory; it does not require the declaring source to be moved there. A normalized authored path outside its source's effective root remains an unopened citation. Selecting an entry authorizes bounded capture of that file without requiring it to lie beneath the dependency root its bytes declare.
 
@@ -465,7 +465,7 @@ Retain the bound access context for every capture and root and recheck full-file
 4. Reject any query component on local Markdown document references, including an explicitly empty query.
 5. Strictly validate percent escapes and decode path and fragment exactly once as UTF-8. Look up the decoded source fragment exactly; do not lowercase or re-slug it.
 6. Reject NULs, control characters, decoded path separators originating from escapes, and remaining backslash separators. Local paths use forward slashes in v1.
-7. Normalize `.` and `..` relative to the proper reference base: invocation working directory for positional files, authoring source's effective root for path-bearing source links. A normalized source link outside that root is a citation; a relative positional parent path uses bounded bootstrap capture. Fragment-only source links use their captured document directly.
+7. Normalize `.` and `..` relative to the proper reference base: invocation working directory for positional files, the authoring source's own directory for path-bearing source links. A normalized source link outside the authoring source's effective root is a citation; a relative positional parent path uses bounded bootstrap capture. Fragment-only source links use their captured document directly.
 8. Enforce no-symlink source access and require a supported regular Markdown file.
 9. Treat absent and empty fragments as whole-document references; otherwise resolve to the canonical eligible section identity.
 
@@ -696,7 +696,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 
 | Outcome | Required fixtures |
 | --- | --- |
-| Root defaults | Entry and linked file without a root, with the invocation working directory different from both containing directories; both resolve outgoing paths from the invocation directory. |
+| Root defaults | Entry and linked file without a root, with the invocation working directory different from both containing directories; each resolves its outgoing paths from its own directory, and the invocation directory bounds them. |
 | Explicit roots | `"."`, `".."`, nested and sibling-library roots; different roots on explicit entries; target root independent of the referring file; a declared library root outside its declaring source. |
 | Shared identity | Diamond dependencies and cycles across different roots; reversed entry and discovery order; one capture and effective root per canonical source; distinct paths sharing an inode remain distinct. |
 | Root safety | Empty/non-string/absolute/drive/URL/home/environment root values; missing and non-directory roots; unreadable roots and sources; source and root symlinks; confined internal parent traversal and outside-root citations. |
