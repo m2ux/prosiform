@@ -19,7 +19,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - If the checkpoint is absent:
      - Read the board through [Read Board State](../artifacts/board.md#read-board-state).
      - Treat each selected initiative's delivery state as needing refresh.
-   - For initiatives with known delivery changes or unknown freshness, follow [Sync Mode](sync-mode.md) for the affected initiatives on that board.
+   - For initiatives with known delivery changes or unknown freshness, follow [» Sync Mode](sync-mode.md) for the affected initiatives on that board.
    - Resume the fetch step after their delivery results are saved.
    - Report a blocker that prevents a current summary.
    - Retain it as a gap if presenting a partial report.
