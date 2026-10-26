@@ -30,7 +30,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
    - Carry the updated change list into the next orphan.
 5. **Place.**
-   Follow [Issue Placement](../protocols/issue-placement.md) once for each confirmed placement, with the placement, its current source and destination records, the affected initiative and epic bodies with an output path for each body it changes, the planning record that registered each task row, current pull request records, the confirmed numbering map when there is one, the caller's allowance when it has one, the run's change list, each label's colour and description, and the caller's commit message file when it asks to publish.
+   Follow [⇉ Issue Placement](../protocols/issue-placement.md) once for each confirmed placement, with the placement, its current source and destination records, the affected initiative and epic bodies with an output path for each body it changes, the planning record that registered each task row, current pull request records, the confirmed numbering map when there is one, the caller's allowance when it has one, the run's change list, each label's colour and description, and the caller's commit message file when it asks to publish.
    - Carry the change list it returns into the next placement.
    - Keep each blocker and unresolved finding it returns for the report.
 6. **Set epic priority.**
