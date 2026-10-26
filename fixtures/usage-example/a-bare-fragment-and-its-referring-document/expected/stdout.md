@@ -56,6 +56,10 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
 #### Task Delivery
 
+- **Holds.**
+  - A unit's record exists and its rows link it before its session starts.
+  - A row another session holds is not dispatched.
+  - A held row stays held while its session plans and implements. The pull request's link replaces the record's link, which frees the row.
 - **Task ids.**
   - An unreserved task awaiting its pull request links its file in the planning record: `[W01](…/w01.md)`. The file name is the task id in lower case.
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes. A reserved task links only its planning folder: `[W01](…/2026-10-06-943-i07-e00-w01-queue-plan/)`. The folder's README links the work-item file. Releasing the reservation points the row to that file.
@@ -118,7 +122,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 | Note | A row that links its task issue. |
 | Unplaced | A task issue of this epic whose id is not a row. |
 | Open questions | The epic's Open Questions section remains. |
-| Ready to verify | A criterion whose delivering rows are all delivered. |
+| Ready to verify | An unticked criterion whose delivering rows are all delivered. |
 | Ticked early | A criterion ticked while a delivering row is not delivered. |
 | Disagreement | A linked pull request's test plan against the Coverage of the rows it delivers. |
 

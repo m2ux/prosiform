@@ -40,6 +40,18 @@ One initiative body, scoped to one proposal.
    - Each row must meet [Work Breakdown](#work-breakdown).
    - An item a test cannot observe must stay named as [Coverage Reports](issue-body.md#coverage-reports) define.
 
+### *Resolve* Placeholder Links
+
+Saved issue identities in the links an initiative and its epics carry before their issues exist.
+
+**Inputs:** Initiative body file, each epic body file, and the saved issue identity of the initiative and of each epic.
+
+1. Replace every temporary link in the initiative and epic body files with the saved issue identity it stands for.
+   - Each epic row of the initiative must meet [Work Breakdown](#work-breakdown).
+   - Each row reference in an epic must meet the epic's [Work Breakdown](epic-issue-body.md#work-breakdown).
+2. Confirm no temporary link remains in any of those files.
+3. Return the rewritten body files and each temporary link left unresolved, with the file that holds it.
+
 ### *Record* Initiative Delivery
 
 One initiative body with its epic delivery recorded.
@@ -182,6 +194,7 @@ A marked source in References is a document the initiative's criteria answer to.
 
 - A criterion that misstates or contradicts a marked source fails the [Correct](../references/requirement-characteristics.md#individual) characteristic.
 - A requirement a marked source states that no criterion makes true, and no Non-Goal excludes, is a gap.
+- A departure from a marked source is corrected in the criterion, unless a Non-Goal records it.
 - An epic is aligned against its initiative's marked sources, through the initiative criteria its row covers.
 - A marked source that cannot be read leaves its criteria unaligned until it is read.
 

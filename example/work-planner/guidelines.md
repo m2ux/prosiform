@@ -42,6 +42,8 @@ These rules apply to mode procedures and artifact operations.
   Nest instructions that handle an action's specific output beneath that action. Keep peer actions at the enclosing list level. Name the returned object explicitly when a pronoun would leave its referent unclear.
 - **Branch headers.**
   Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Each header is a bold label on its own line, with its instructions in child bullets. Mutually exclusive choices share one decision step. Place actions common to all branches after the branch group at the enclosing sequence level, including a shared return to the caller.
+- **Run-sets.**
+  A [run-set](bootstrap.md#symbols) is a `####` subsection under the operation, mode procedure or protocol procedure that links it, holding only one bulleted list whose every item is a call link. An item nested under another runs after it; an item that says "for each" runs once per item. Its items are reads, or dispatched work that writes no object another item writes.
 
 ## Prose
 
@@ -108,7 +110,7 @@ Read this before adding or changing a mode.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
-  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. A call whose link is [dispatched](bootstrap.md#symbols) runs in a sub-agent, from any session, dispatched or not. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
+  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential unless a step links a run-set: complete the called work, then resume the calling step with its result; a blocker returns to the caller. A call whose link is [dispatched](bootstrap.md#symbols) runs in a sub-agent, from any session, dispatched or not. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
 - **No spare parts.**
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
@@ -128,6 +130,8 @@ Read this before adding or changing a protocol.
   A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
 - **Entered whole.**
   One file holds one protocol. A caller follows the file; it does not link a step. A sequence worth following on its own is its own protocol.
+- **Preamble.**
+  The paragraphs after the title state what the protocol changes, and a paragraph of its own follows them: `Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).`
 - **Procedure.**
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**

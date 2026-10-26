@@ -14,7 +14,7 @@ A planning record is a folder. README.md is its entry point: it answers what the
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path and supplied artifact files and links.
+**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
 1. Prepare the selected record:
    - For a new record:
@@ -28,6 +28,9 @@ One planning directory and its artifact inventory.
 2. Register the artifact files supplied by the caller, using their chosen names.
    - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts).
    - File content remains supplied by the caller; this operation does not author that artifact's content.
+   - Delete each artifact the caller names as removed, with its row.
+3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
+4. Return the folder path, and the publication result when it published.
 
 
 ### *Publish* Planning Record
@@ -41,6 +44,18 @@ The record's folder committed and pushed, so every link into it resolves for a r
    - Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
 3. Run [Push Engineering Branch](#push-engineering-branch).
    - Report a push that will not fast-forward rather than rewriting the branch.
+
+### *Locate* Planning Record
+
+The existing planning folder whose reference is one issue or pull request number.
+
+**Inputs:** Issue or pull request number.
+
+1. Run [Find Engineering Worktree](#find-engineering-worktree).
+2. Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
+   - Return each folder path it lists.
+   - When it lists none, return that no record has that reference.
+
 ## Fields
 
 ### Template
@@ -83,6 +98,8 @@ README.md is the one file the folder must hold. Any file beyond README.md is add
 
 Each file beyond README.md is a row in the README's Artifacts.
 
+An overview record explains one pull request's change. Its folder's reference is the pull request number and its slug comes from the pull request's title. A pull request has one overview record, and a later overview of it reuses that folder.
+
 ### Header
 
 One blockquote: the classifier, the day the record was created, and a revised date when the README is updated after the work is done.
@@ -93,8 +110,17 @@ Two paragraphs: the purpose of this work, and why it matters.
 
 ### Artifacts
 
-- One row for every artifact in the record other than README.md, added when the file is produced.
+- One row for every artifact in the record other than README.md, added when the file is produced and removed with it.
 - The link sits on the artifact's name. The row says what the artifact holds, and the artifact is the home of that content.
+- In an overview record, the architecture overview is the one row, and its pull request is under Links.
+
+### Dependency Check
+
+`dependencies.md`, an Artifacts row: the longest chains, contending pairs and proposed epic priority map the initiative's latest dependency check printed. A later check replaces it.
+
+### Goal Trace
+
+`goal-trace.md`, an Artifacts row: the trace table of the initiative's latest goal review. A later review replaces it.
 
 ### Links
 
@@ -143,6 +169,24 @@ Publishes the engineering branch so a record's links resolve.
 
 ```bash
 cd '<engineering-worktree>' && git push
+```
+
+### List Planning Records
+
+Prints each planning folder whose reference is one issue or pull request number.
+
+**Inputs:** Engineering worktree and the reference number.
+
+- The pattern places the reference directly after the date, as the [planning-folder path](#add-planning-record) does, so a number inside the date does not match.
+
+```bash
+cd '<engineering-worktree>' && ls -d artifacts/planning/????-??-??-'<reference>'-*/
+```
+
+**Example:**
+
+```bash
+cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
 ```
 
 ### Add Planning Record

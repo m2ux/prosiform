@@ -31,6 +31,20 @@ A missing theme board, or a missing proposals board.
    - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
    - Require the new theme's label and board before an initiative takes that theme.
 
+### *Ensure* Project Board
+
+The theme or proposals board the request names, created when it is absent.
+
+**Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
+
+1. Apply [Select Project Board](#select-project-board) with the owner and the theme name or proposals selection.
+   - On a missing-selection result, return it to the caller and stop.
+   - On a selected board, return its owner and number and stop.
+2. When the board is absent:
+   - For a theme a proposal derives, apply [Read Tracker Issue](issue.md#read-tracker-issue) for the originating proposal's identity. Return unresolved provenance and stop when it cannot be read.
+   - Apply [Copy Project Board](#copy-project-board) with the owner, repository, selected board kind, theme title and that proposal record when applicable.
+3. Return the owner and the board number the copy created.
+
 ### *Create* Proposals Board
 
 A new proposals board linked to the supplied repository.
@@ -62,12 +76,13 @@ A new theme board linked to the supplied repository.
 
 One issue's membership and initial status.
 
-**Inputs:** Board owner and number, issue id and selected initial status.
+**Inputs:** Board owner and number, repository, issue number, output file and selected initial status.
 
-1. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the caller's supplied board and issue identities.
-2. Run [Add Issue to Board](#add-issue-to-board) with the issue id.
-3. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
-4. Run [Fetch Board Item](#fetch-board-item) for the saved item.
+1. Apply [Read Tracker Issue](issue.md#read-tracker-issue) with the repository, issue number and output file for the complete JSON, and take the issue id from it.
+2. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the supplied board.
+3. Run [Add Issue to Board](#add-issue-to-board) with that issue id.
+4. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
+5. Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
 ### *Read* Board State
 
@@ -97,15 +112,6 @@ One board's field definitions and requested item state.
 1. Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
 2. When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
 3. Return the field definitions and requested current item.
-
-### *Locate* Project Board
-
-The board identity matching a supplied purpose or theme.
-
-**Inputs:** Owner and proposals-board purpose or theme title.
-
-1. Run [Find Proposals Board](#find-proposals-board) for proposals, or [Find Theme Board](#find-theme-board) for a theme.
-2. Return the identity or an absent-board finding for the caller's selection or creation path.
 
 ### *Update* Item Status
 

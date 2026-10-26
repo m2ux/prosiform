@@ -14,10 +14,15 @@ The available units, held rows, blocked work and merge candidates for one board.
 
 One delivery plan from supplied board and delivery evidence.
 
-**Inputs:** Board items, pull request records, project checkout, epic-base names, resolved off-board issue files and optional record date.
+**Inputs:** Board items, pull request records, project checkout, epic-base names, resolved off-board issue files, output directory and optional record date.
 
 1. Run [Compute Available Work](#compute-available-work), mapping each supplied input to its named command parameter.
-2. Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch, and supplies missing evidence for another pass.
+2. For each unresolved issue reference the plan returns:
+   - Apply [Read Tracker Issue](issue.md#read-tracker-issue) with its repository and number into a file in the output directory.
+   - Add the returned file to the resolved off-board issue files.
+   - Run Compute Available Work again with every resolved off-board issue file, retaining the other inputs.
+   - Repeat while a reference remains that no read has failed. An unavailable issue stays an unresolved reference.
+3. Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch.
 
 ## Fields
 
@@ -27,12 +32,12 @@ A unit is one task row or tasks that name each other in Joins, as [Work Breakdow
 
 ### Report Lines
 
-- A `unit` line names one session's tasks, Coverage, record folder, branch, base and worktree. One base is `base i07/e00/main`; several are `bases i07/e00/main i07/e00/workflows`.
+- A `unit` line names one session's tasks, Coverage, record, branch, base and worktree. Its record is the folder's name, which is the record identity, and names the [planning-folder path](planning-record.md#add-planning-record) that folder takes. One base is `base i07/e00/main`; several are `bases i07/e00/main i07/e00/workflows`.
 - A `hold` line names a row a session holds and the record it links.
 - A `blocked` line names a free row whose dependencies are undelivered or whose joined task is unavailable.
 - An `unresolvable` line names a free row carrying a `Depends on` entry nothing can resolve, and the entry as written. The row waits on no delivery, so it is told apart from a blocked one, and a run meeting one exits nonzero.
 - A `merge` line names an open pull request whose test plan has passed and the epic base it targets.
-- An unresolved issue reference identifies missing dependency evidence.
+- An unresolved issue reference identifies dependency evidence no read could supply.
 
 ### Branch Context
 

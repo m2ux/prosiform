@@ -80,11 +80,14 @@ The worktree and branch one unit's session works in.
 
 The detached worktree where the graph reads the reviewed change.
 
-**Inputs:** Repository checkout, pull request number and verified head commit.
+**Inputs:** Repository, repository checkout, pull request number and verified head commit.
 
 1. Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
 2. Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
-3. If it differs from the verified head, return a changed-head finding before creating a worktree.
+3. If it differs from the verified head:
+   - Apply [Read Pull Request State](pull-request.md#read-pull-request-state) for the same pull request, and take its head as the verified head.
+   - Repeat steps 1 and 2 once.
+   - If the fetched head still differs, return a changed-head finding before creating a worktree.
 4. Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
 5. If that worktree already exists:
    - Run Read Checkout Revision there for `HEAD`.
@@ -133,7 +136,6 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
 - **Example.**
   `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
-- Every pull request delivering the epic's tasks targets that epic base.
 - A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
 
 ### Review Worktrees

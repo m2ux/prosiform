@@ -13,31 +13,37 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - Use its candidates and available destinations for triage.
 3. **Triage.**
    Read each candidate's body and discussion through [Read Tracker Issue](#read-tracker-issue), with the initiative and epic bodies whose themes or criteria it touches.
-   - Supply that evidence and planning-record references to [Draft Issue Placement](#draft-issue-placement) for each option.
-   - Order the returned options best first, with Leave last.
+   - Apply [Draft Issue Placement](#draft-issue-placement) with that orphan body, those bodies as candidate destinations, the work it proposes and the planning-record references, and take the options it returns in their order.
 4. **Decide each placement.**
-   Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) for each orphan's best option that changes the plan, with the allowance the caller supplied.
-   - An automatic option is confirmed as it stands, and recorded through [Record Plan Change](#record-plan-change).
-   - A held option is settled as [Held Change](#held-change) states, leaving the orphan where it is.
-   - An option put to the user is offered as an [interview](#rules). The grounding paragraph says what the orphan asks and where it fits.
-     - Leave is last.
+   Apply [Settle Plan Change](#settle-plan-change) for each orphan's best option that changes the plan, with the orphan as its subject, that option as the recommended one, the affected issue identities, the allowance the caller supplied and the run's change list.
+   - **Applied or answered.**
+     - Take the applied option, or the option the user chose, as the confirmed placement.
+   - **Held.**
+     - Leave the orphan where it is.
+   - Where Settle Plan Change puts the option to the user, offer the returned options in their order. The grounding paragraph says what the orphan asks and where it fits.
      - Placing an orphan in another initiative's issue needs that answer as its approval.
+   - A best option that leaves the orphan where it is is confirmed as it stands.
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
-5. **Apply.**
-   Apply [Apply Issue Placement](#apply-issue-placement) with each confirmed placement and its current source and destination records.
-   - After it returns the saved destination, run exactly one disposition procedure with the returned destination and source records: [Rewrite Orphan Issue](#rewrite-orphan-issue) for kept or left issues, or [Subsume Orphan Work](#subsume-orphan-work) for work taken by another issue.
-   - Resume review.
-6. **Review.**
-   - Apply [Validate Issue Body](#validate-issue-body) to every issue the hoist changed or created.
-   - Apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) to each initiative that gained a task or epic.
-   - Resolve each finding as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it: an automatic correction is applied, and a held one is settled as [Held Change](#held-change) states.
-   - Apply confirmed body corrections through [Apply Body Corrections](#apply-body-corrections).
-   - Publish through [Save Tracker Issue](#save-tracker-issue).
-   - Repeat Validate Issue Body with the saved affected bodies.
-   - Repeat Check Dependencies and Numbering with the saved affected bodies.
-   - Report any unresolved finding.
-7. **Report.**
-   Report each orphan's placement, the issues changed, created or closed, and the orphans left.
+   - Carry the updated change list into the next orphan.
+5. **Place.**
+   Follow [⇉ Issue Placement](protocols/issue-placement.md) once for each confirmed placement, with the placement, its current source and destination records, the affected initiative and epic bodies with an output path for each body it changes, the planning record that registered each task row, current pull request records, the confirmed numbering map when there is one, the caller's allowance when it has one, the run's change list, each label's colour and description, and the caller's commit message file when it asks to publish.
+   - Carry the change list it returns into the next placement.
+   - Keep each blocker and unresolved finding it returns for the report.
+6. **Set epic priority.**
+   When a placement added an epic, apply [Settle Plan Change](#settle-plan-change) with the [Epic Priority](#epic-priority) map Issue Placement returned as a re-prioritisation of each epic whose number it sets or moves, the map as the recommended option, those epics' identities, the caller's allowance and the run's change list.
+   - Apply [Save Tracker Issue](#save-tracker-issue) for each epic whose confirmed number differs from its priority label, with its identity, the [priority label](#priority-sets) change that number names, and the label's colour and description.
+   - A held map leaves each epic's priority label as it stands.
+7. **Review.**
+   Apply [Repair Issue Format](#repair-issue-format) once for each kind among the issues the hoist changed or created, with those issues, each with its identity, current JSON and output body path, the kind's template, required related evidence, and the kind's validator:
+   - **Initiative.**
+     - [Validate Initiative Body](#validate-initiative-body), with every linked epic JSON and the requirement sources as its further inputs.
+   - **Epic.**
+     - [Validate Epic Body](#validate-epic-body), with the initiative JSON, current pull request records and the corpus branch as its further inputs.
+   - **Task or standalone.**
+     - [Validate Issue Body](#validate-issue-body), with the [task](#fields-7) or [standalone](#fields-8) field conditions.
+   - Keep each blocker and unresolved finding it returns for the report.
+8. **Report.**
+   Report each orphan's placement, the issues changed, created or closed, the priority labels saved, the orphans left, and each blocker and unresolved finding.
    - Return the [change list](#change-list) with it, so the caller reports each placement this mode made and each it held.
 
 ## Outcomes
@@ -63,7 +69,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 - **Layers.**
   Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
-  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
+  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing. Calls run in order unless a step links a [run-set](#symbols), whose items never write to the same object; that step continues when every item has returned, with every failure returned together as blockers.
 
 # Conventions
 
@@ -107,26 +113,16 @@ The current issue, its saved body and discussion.
 
 One populated body and its metadata, written to the tracker.
 
-**Inputs:** Repository, optional existing issue number, populated body file, title and existing labels for creation; selected body or metadata changes for an existing issue. Optional comment file.
+**Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
 
 1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
-2. Return a missing-label result when an assignment names a label the repository does not contain.
+2. Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
+   - Return an unknown label definition to the caller before any write.
 3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
 4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
 5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
 7. Compare the saved fields with the intended body and metadata.
-
-#### *Close* Transferred Work
-
-An issue whose work is tracked by another issue.
-
-**Inputs:** Issue identity, confirmed destination evidence and comment file.
-
-1. Confirm the supplied destination contains the work and cites its source issue.
-2. Apply [Comment on Issue](#comment-on-issue) with the destination reference and supplied comment file.
-3. Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
-4. Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
 
 #### *Comment* on Issue
 
@@ -283,22 +279,6 @@ gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
 gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
 ```
 
-#### Close as Not Planned
-
-Closes an issue whose work another issue tracks.
-
-**Inputs:** Issue identity and confirmed evidence that the work is tracked by its recorded destination.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f state=closed -f state_reason=not_planned --jq .state
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/874' -f state=closed -f state_reason=not_planned --jq .state
-```
-
 #### Post Inline Comment
 
 Posts one line of exact comment text and returns its URL.
@@ -353,14 +333,14 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > issues.
 
 #### *Draft* Issue Placement
 
-One placement option from the supplied orphan and candidate destinations.
+The placement options for one orphan, from the supplied orphan and candidate destinations.
 
 **Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
 
-1. Identify an existing task, a new task, a new epic, a new initiative, or Leave.
-2. Record the destination and the work it takes, meeting [Fields](#fields).
-3. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
-4. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
+1. Identify each option among an existing task, a new task, a new epic, a new initiative, and Leave.
+2. For each option, record the destination and the work it takes, meeting [Fields](#fields).
+3. For each option, record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
+4. Return the options for the caller to offer and apply, each a [Placement](#placement-record) with its draft issue changes, in the order that field states.
 
 #### *Find* Placement Candidates
 
@@ -370,67 +350,6 @@ The issue candidates and available destinations from supplied records.
 
 1. Run [List Orphans](#list-orphans) with the supplied issue file.
 2. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
-
-#### *Apply* Issue Placement
-
-One selected destination for an orphan's work.
-
-**Inputs:** Confirmed placement, current source and destination records, and the affected initiative and epic bodies.
-
-1. Execute only the branch matching the confirmed destination:
-   - **Existing task.**
-     - Add the orphan's outcomes to the task criteria.
-     - Add its design to Proposal.
-     - When they exceed the epic's criteria, add epic criteria cited by the task row.
-     - Publish the affected bodies through [Save Tracker Issue](#save-tracker-issue).
-   - **New task.**
-     - Apply [Populate Epic Issue Body](#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
-     - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
-     - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
-     - Number the row where it can start.
-     - When movable rows change number, apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
-     - Publish the checked bodies through Save Tracker Issue.
-   - **New epic.**
-     - Apply [Populate Epic Issue Body](#populate-epic-issue-body).
-     - Populate the covering row through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-     - Publish the epic through [Save Tracker Issue](#save-tracker-issue).
-     - Link its issue in the initiative row.
-   - **New initiative.**
-     - Apply [Populate Initiative Issue Body](#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
-     - Publish through [Save Tracker Issue](#save-tracker-issue).
-   - **Leave.**
-     - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
-2. Return the saved destination, the identities of all affected bodies and the confirmed disposition to the caller, including the destination epic and row for a new task. The caller performs the rewrite or closure.
-
-#### *Rewrite* Orphan Issue
-
-The selected layout, with the original wording preserved for readers.
-
-**Inputs:** Source issue identity, selected destination kind, and the evidence and design the body carries.
-
-1. Fetch the body and discussion live with [Read Tracker Issue](#read-tracker-issue).
-   - Post the body word for word through [Comment on Issue](#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
-   - Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
-2. Use the selected [Populate Task Body](#populate-task-body), [Populate Epic Issue Body](#populate-epic-issue-body), [Populate Initiative Issue Body](#populate-initiative-issue-body) or [Populate Standalone Body](#populate-standalone-body) body.
-   - Carry evidence into Problem and design into Proposal.
-3. Apply [Check Round of Edits](#check-round-of-edits) with the populated body and selected kind conditions before publishing.
-   - Resolve findings.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the validated body, title and labels.
-   - Return the saved identity to the caller.
-
-#### *Subsume* Orphan Work
-
-The work remains tracked by the taking issue.
-
-**Inputs:** Orphan identity and body, confirmed destination evidence, and the planning record it references when it has one.
-
-1. Transfer the work to the taking issue.
-   - Make each outcome a criterion of one invariant.
-   - Put the design in Proposal.
-   - Cite the orphan and any planning record in References.
-2. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
-3. Apply [Close Transferred Work](#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
-   - Return the confirmed closure or blocker to the caller.
 
 ### Fields
 
@@ -454,6 +373,8 @@ The work remains tracked by the taking issue.
 | New epic | An epic in an existing initiative | Kept or subsumed |
 | New initiative | An initiative | Kept or subsumed |
 | Leave | Work outside the initiative structure | Left open |
+
+Placement options are offered best first, the destination that most nearly holds the orphan's work leading, with Leave last.
 
 #### Original Body
 
@@ -501,7 +422,7 @@ One pending change assessed against the run's allowance.
 
 1. Match the change to one kind in [Change Kinds](#change-kinds).
 2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
-3. Return it as held otherwise, for the caller to settle as [Held Change](#held-change) states.
+3. Return it as [held](#held-change) otherwise.
    - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
    - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
 
@@ -513,6 +434,27 @@ One entry in the run's list, for a change it applied or held.
 
 1. Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
 2. Return the updated list for the caller to publish and report.
+
+#### *Settle* Plan Change
+
+One pending change carried to its outcome: applied, held, or answered by the user.
+
+**Inputs:** The pending change, its subject, the option recommended for it, the affected issue identities, the allowance the caller was supplied, and the run's current [Change List](#change-list).
+
+1. Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) with the change, its subject, the recommended option and the supplied allowance.
+2. Settle the change by what it returns:
+   - **Automatic.**
+     - Take the recommended option as the applied option.
+     - Apply [Record Plan Change](#record-plan-change) with the change, its kind, that option, the affected issue identities and the current list, marked applied.
+   - **Held, with an allowance supplied.**
+     - Leave the change unapplied, meeting [Held Change](#held-change).
+     - Apply Record Plan Change with the change, its kind, the recommended option, the affected issue identities and the current list, marked held.
+     - Ask nothing, since the work the run was dispatched for does not wait on an answer.
+   - **Held, with no allowance supplied.**
+     - Put the change to the user as an [interview](#rules), with the recommended option marked, and wait for the answer.
+     - Where the answer applies a change, apply Record Plan Change with the change, its kind, the option the user chose, the affected issue identities and the current list, marked applied.
+     - An answer leaving the work where it is takes no entry, as [Change Kinds](#change-kinds) states.
+3. Return the applied option, held, or the user's answer, with the updated change list.
 
 ### Fields
 
@@ -548,7 +490,46 @@ One line: the kind, the issue or row it concerns, and the option applied or reco
 
 A held change is left unapplied and its subject stays as it stands, so the next run sees the same decision. Its entry carries the recommended option, which is what the user is answering.
 
-A run working under an allowance records and reports a held change rather than asking, since the work it was dispatched for does not wait on an answer. A run supplied no allowance puts it to the user.
+## Dependency Graph
+
+### Fields
+
+#### Epic Priority
+
+The map proposes one positive integer for each epic supplied, derived from the whole-epic edges and the components its rows declare. Epics sharing a number start together, so the number asserts they can run in parallel, and it holds a set only where both of these do.
+
+- **Prerequisite depth establishes when an epic may start.**
+  An epic with no prerequisite epic, one whose tasks are not yet written among them, carries the largest number, and each other epic takes one less than the smallest its prerequisites carry.
+- **Component contention establishes whether it can.**
+  An epic holding a row that contends with a row of an epic of the same depth takes the number below that depth, and the epics depending on it follow it down, as [Component Contention](#component-contention) states.
+
+#### Component Contention
+
+Two task rows in different epics whose work items declare one [component](#component) contend. Concurrent epics are two bases and two pull requests, so one component written from both is a merge conflict.
+
+- Rows of one epic are out of scope: they land on one base, in the order Depends on and [Joins](#joins) set, so one component written twice is a rebase on that base rather than a conflict between two of them.
+- A contending pair is answered by the number that separates its epics, or by moving the rows into one epic.
+
+#### Joins
+
+Every pair of tasks in an epic where neither depends on the other is named in the epic's Joins, or accounted for in the planning record.
+
+- **Both resolutions are stated where the pair is reported.**
+  Naming the pair in Joins asserts one pull request; the record entry says why there are two. A report naming only the first makes the assertion the cheaper answer.
+- **The record is read, so the second resolution closes the line.**
+  A record file gives each pair a line of its own naming its two ids, which is the form a joins artifact takes, and the pair leaves the report. A line naming more rows than that is prose about them and accounts for none, so no enumeration empties the report. What remains is the set named in neither.
+
+## Board Queue
+
+### Fields
+
+#### Priority Sets
+
+A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
+
+The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
+
+A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
 
 ## Issue Body
 
@@ -564,15 +545,6 @@ The shared table, before a kind fills its cells.
    - The columns must match the kind's table.
    - The shared cells must meet [Tables](#tables).
 2. Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
-
-#### *Check* Round of Edits
-
-The shared check after a round of edits.
-
-**Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
-
-1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields-2) in this file.
-2. Run [Check Body Format](#check-body-format) on every issue the round changed.
 
 #### *Validate* Issue Body
 
@@ -609,6 +581,25 @@ A local issue-shaped record for body validation.
 2. Preserve the existing issue's identity and state when supplied.
 3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
 4. Return the JSON path for validation. No tracker issue is created by this operation.
+
+#### *Repair* Issue Format
+
+The saved format corrections for a set of issues of one kind and any unresolved content findings.
+
+**Inputs:** The kind's validator, either its body file's Validate operation or [Validate Issue Body](#validate-issue-body) with the kind's field conditions; that validator's further inputs; a set of issue bodies, each with its identity, current JSON and output body path; kind template and required related evidence.
+
+1. Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
+   - Return an unreadable source as a blocker before editing.
+2. Review each returned diff.
+   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](#save-tracker-issue), without asking.
+   - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
+3. Resolve a non-mechanical finding confined to one body.
+   - Obtain the user's decision.
+   - Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
+   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+4. Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue.
+   - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
+   - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
 ### Fields
 
@@ -745,158 +736,148 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
 ```
 
-## Dependency Graph
+## Initiative Issue Body
 
 ### Operations
 
-#### *Check* Dependencies and Numbering
+#### *Validate* Initiative Body
 
-The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
+The body's local format and field findings.
 
-**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, and explicitly authorized outside-initiative files.
+**Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
 
-1. Use the supplied local drafts when reviewing unpublished work.
-   - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](#read-tracker-issue).
-   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
-2. Resolve each finding, as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](#held-change) states.
-   - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
-   - Read tasks for implied consumption edges.
-   - Account for every independent pair as [Joins](#joins) states.
-   - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
-   - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
-3. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
-   - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
-   - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
-   - Re-sort rewritten tables.
-   - Inspect every reported range.
-   - Search prose for references the script cannot see.
-   - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each printed contending pair in the planning record.
-   - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-5), supplied related evidence and output file, supplying each linked epic as `--epic`.
+2. Use its current title for the initiative row.
+3. Include excluded names in Problem and Proposal and criterion/source departures in the findings.
+4. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### Fields
 
-#### Edges
+#### Template
 
-A task edge names the producing row for each output the depending row consumes. An edge a task's prose implies is carried explicitly.
+````markdown
+## Overview
 
-- **An edge names rows, never an epic.**
-  A row naming an epic gates its task on every row of that epic, including the rows it consumes nothing from, which is how a [whole-epic edge](#whole-epic-edges) the rows do not justify reaches the initiative.
-- **A task consuming from every row of an epic names the producing row for each output.**
-  An edge another in the cell already implies is dropped, so a prerequisite chain is named by its last row, and the whole-epic reach is what the rows establish either way.
-- **An entry that cannot resolve is a permanent condition, not a prerequisite to come.**
-  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. Every tool reading the cell names the entry as written, leaves the row where it stands rather than placing it as work still to come, and exits nonzero.
+{{One paragraph: what the initiative achieves, stated as the end state. Name the goal the reviews will test against.}}
 
-#### Whole-Epic Edges
+## Problem
 
-An initiative Depends on cell takes the epics it derives, as [Work Breakdown](#work-breakdown-1) states. It derives one only where every row of the dependent epic requires every row of the prerequisite, through the task edges alone: a task row names rows, so no cell can assert a whole epic that the rows do not already establish.
+{{One sentence on the friction, then one bullet per facet. Each bullet opens with a bold statement, and its body is on the next line.}}
 
-- **The edge is the coarsest gate the plan has.**
-  It holds the dependent epic until the prerequisite closes, not until the row it consumes merges, and it drops the dependent a [priority](#epic-priority) number, so the board keeps it out of Ready while the prerequisite runs.
-- **Its cost is why it is derived and never written.**
-  A narrower dependency stays in the task graph, where it gates the row that consumes the output rather than the epic around it.
+- **{{Facet}}.**
+  {{The evidence.}}
 
-#### Epic Priority
+## Proposal
 
-The map proposes one positive integer for each epic supplied, derived from the whole-epic edges and the components its rows declare. Epics sharing a number start together, so the number asserts they can run in parallel, and it holds a set only where both of these do.
+- **{{Move}}.**
+  {{What is done, within two lines.}}
 
-- **Prerequisite depth establishes when an epic may start.**
-  An epic with no prerequisite epic, one whose tasks are not yet written among them, carries the largest number, and each other epic takes one less than the smallest its prerequisites carry.
-- **Component contention establishes whether it can.**
-  An epic holding a row that contends with a row of an epic of the same depth takes the number below that depth, and the epics depending on it follow it down, as [Component Contention](#component-contention) states.
+## Work Breakdown
 
-#### Component Contention
+| Epic | Description | Coverage | Depends on | Done |
+| --- | --- | --- | --- | --- |
+| [E00](https://github.com/{{OWNER}}/{{REPO}}/issues/{{EPIC_ISSUE}}) | {{The epic's title name, the part before the colon}} | AC{{n}}, AC{{m}} | {{Earlier epic}} | |
 
-Two task rows in different epics whose work items declare one [component](#component) contend. Concurrent epics are two bases and two pull requests, so one component written from both is a merge conflict.
+## Acceptance Criteria
 
-- Rows of one epic are out of scope: they land on one base, in the order Depends on and [Joins](#joins) set, so one component written twice is a rebase on that base rather than a conflict between two of them.
-- A contending pair is answered by the number that separates its epics, or by moving the rows into one epic.
+- [ ] **AC1.** {{One invariant. It is specific, measurable, achievable, relevant, and time-bound. It carries no stale count. It names no initiative, epic, task, or issue. It states what the initiative achieves as a whole, and it ends by naming its instrument.}}
 
-#### Joins
+## Non-Goals
 
-Every pair of tasks in an epic where neither depends on the other is named in the epic's Joins, or accounted for in the planning record.
+- {{One succinct sentence on what this initiative does not do. It names no initiative, epic, task or issue, and no owner.}}
 
-- **Both resolutions are stated where the pair is reported.**
-  Naming the pair in Joins asserts one pull request; the record entry says why there are two. A report naming only the first makes the assertion the cheaper answer.
-- **The record is read, so the second resolution closes the line.**
-  A record file gives each pair a line of its own naming its two ids, which is the form a joins artifact takes, and the pair leaves the report. A line naming more rows than that is prose about them and accounts for none, so no enumeration empties the report. What remains is the set named in neither.
+## References
 
-#### Numbering Map
+- **R1.** [{{Title}}]({{URL}}) — {{What the reader finds there.}}
+- **R2.** **Source.** [{{Title}}]({{URL}}) — {{The requirements this initiative's criteria answer to.}}
+````
 
-A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
+#### Titles
 
-### Commands
+- The title is `[I07] Name: Subtitle`.
+- Labels are `type:initiative` and a `theme:*`.
+- `I` is the initiative number. Initiatives count from `00`.
 
-#### Check Dependencies
+#### Problem
 
-Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
+- A Problem meets [Problem and Proposal](#problem-and-proposal).
 
-**Inputs:** Initiative body file, each epic id with its body file, each task id with its work-item file, and each planning-record file accounting for independent pairs.
+#### Proposal
 
-- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
-- The command runs in `<workspace>` while body files are kept outside the repository, so pass each one as an absolute path.
+- A Proposal states the design, as [Problem and Proposal](#problem-and-proposal) defines.
+- A Proposal names no epic, task, or acceptance criterion of its own initiative.
 
-- Initiative edges follow the [whole-epic prerequisite rule](#work-breakdown-1); narrower dependencies stay in the task graph.
-- It also reports dependencies listed twice or already implied, and Joins pairs.
-- It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
-- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
-- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
-- A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
-- It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
-- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
-- It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
+#### Work Breakdown
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
+The columns are `Epic | Description | Coverage | Depends on | Done`. The table has no Joins column.
+
+- An epic row's id is the epic, linked to its issue: `[E01](…/issues/937)`.
+- An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
+- An epic row is complete when its issue is closed as completed.
+- Depends on names epics only. A cell that names a task fails. Name a prerequisite epic only when every task or joined unit in the dependent epic requires every task in that prerequisite epic, directly or through its dependencies. The consumed output and the work producing it establish that requirement. Dependencies on selected tasks remain in the task tables. An edge another named whole-epic prerequisite already implies is omitted.
+- An initiative dependency that only some tasks need, or that requires only part of its prerequisite epic, is overbroad. The output and its producing tasks establish the edge.
+- An epic depending on a later epic is a backward reference.
+- Epic numbering meets [Numbering](#numbering).
+
+#### Initiative Acceptance Criteria
+
+An initiative criterion meets the [shared acceptance criteria](#shared-acceptance-criteria) and [Requirement Characteristics](#requirement-characteristics), and:
+
+- **No counts.**
+  An initiative criterion carries no counts or figures, which go stale: it measures against a named baseline or check ("against the baseline", "as the budget test measures it"). A figure stays only where it is the criterion's own target, such as a bound it holds to.
+- **SMART.**
+  Each initiative criterion is specific about what holds, measurable by a named check or baseline, achievable by the epics that cite it, and relevant, tracing to a clause and to the Problem. It is time-bound by a release tag or another named milestone outside the initiative's own work, where one exists, and otherwise by the epics that cite it.
+- **Local.**
+  An initiative criterion names no initiative, epic, task or issue, and is solution-agnostic. Coverage cells link epics to criteria. One that holds only through another initiative's work is restated as what this initiative achieves, or it is dropped.
+- **Whole.**
+  An initiative criterion states what the initiative achieves as a whole. One that restates a single epic's criterion is a duplicate: it is raised to what the epics achieve together, or left to the epic.
+- **Verified.**
+  - An initiative criterion ends by naming its instrument. Which instruments keep a criterion is [Verifiable](#verifiable).
+  - An automated test is an end-to-end walk through the real server, a smoke run of an agent against a live server, a live check on a deployed host, or a guard, fixture suite or check that continuous integration runs. The walk, smoke run or live check is preferred where the criterion is about what a run does.
+  - A named test that does not exist yet is work the plan holds: a task in the epic whose subject it tests, or a discrete test-infrastructure epic when the tests serve several criteria. That epic's row cites the criteria its tests verify.
+
+#### Non-Goals
+
+- One succinct sentence each on what the initiative does not do, naming no initiative, epic, task or issue, and no owner.
+
+#### References
+
+- A proposal-derived initiative identifies its originating proposal in References with the proposal's exact title and issue URL, labelled as the originating proposal.
+- A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources).
+- A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
+
+#### Sources
+
+A marked source in References is a document the initiative's criteria answer to. The criteria are aligned with it in both directions.
+
+- A criterion that misstates or contradicts a marked source fails the [Correct](#individual) characteristic.
+- A requirement a marked source states that no criterion makes true, and no Non-Goal excludes, is a gap.
+- A departure from a marked source is corrected in the criterion, unless a Non-Goal records it.
+- An epic is aligned against its initiative's marked sources, through the initiative criteria its row covers.
+- A marked source that cannot be read leaves its criteria unaligned until it is read.
+
+#### Deferred Debt
+
+A final epic of the initiative holds the debt that initiative's delivery defers. Its title name is `Deferred Debt` and its subtitle names the clear-up it takes; it carries its initiative's theme label and `tech-debt`, and it is raised when the initiative defers its first item. The initiative carries this criterion, which the epic's row covers:
+
+```markdown
+- [ ] **ACn.** The technical debt this initiative's delivery defers is fixed, as the Done column of its final epic's Work Breakdown shows.
 ```
 
-**Example:**
+- **It is the initiative's last epic.**
+  Its number follows every other epic of the initiative, so the epics in flight are planned and delivered ahead of it and the clear-up competes with none of them.
+- **A deferred item is a task row.**
+  Each row covers the criterion stating what fixing that item makes true, and those statements are the epic's criteria.
+- **It takes the debt its own delivery defers.**
+  Debt a unit of this epic finds in resolving its row becomes a further row of the epic, so the clear-up absorbs what fixing it uncovers.
+- **It delivers like any other epic.**
+  It takes its bases from the long-lived branches its rows change, carries the [corpus audit](#corpus-audit) criterion where those rows change workflow definitions, and remains open until every delivery base has merged and its completion conditions hold.
+- **The initiative stays open while it stands.**
+  Its row is undelivered and its criterion unticked until the epic closes.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md R=/records/joins.md
-```
+#### Breakdown Prose
 
-#### Renumber Tasks
-
-Renumbers one epic's tasks by the map given, in the files given.
-
-**Inputs:** Initiative number, epic number, epic body file, task-number map and affected body files.
-
-- `<task-number-map>` is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each affected body file as a separate argument.
-
-- It renumbers `<epic-id> Wxx` and `<epic-id>:Wxx` everywhere, and bare `Wxx` inside that epic's own body. **Example:** for `E01`, the qualified forms are `E01 Wxx` and `E01:Wxx`.
-- The map assigns each old task number a distinct new number. A source absent from the files or a duplicate destination is refused.
-- Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
-- Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
-```
-
-#### Renumber Epics
-
-Renumbers an initiative's epics across supplied body files.
-
-**Inputs:** Initiative number, current pull request records, confirmed epic-number map, body files and explicitly authorized outside-initiative files when present.
-
-- The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
-- Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
-```
+Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
 ## Epic Issue Body
 
@@ -910,12 +891,12 @@ One epic body and its local validation findings.
 
 **Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records, corpus branch and output path.
 
-1. Populate the body from the [Template](#template) at the supplied output path.
-   - Every section must meet [Fields](#fields-4).
-   - Shared content must meet the common [body conditions](#fields-2).
+1. Populate the body from the [Template](#template-1) at the supplied output path.
+   - Every section must meet [Fields](#fields-6).
+   - Shared content must meet the common [body conditions](#fields-4).
 2. Populate the shared table through [Write Issue Table](#write-issue-table).
 3. Fill the epic-specific cells.
-   - Each row must meet [Work Breakdown](#work-breakdown).
+   - Each row must meet [Work Breakdown](#work-breakdown-1).
 4. Apply [Build Body Snapshot](#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
 5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
 6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
@@ -928,7 +909,7 @@ One epic body with supplied delivery matches and completed rows recorded.
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
+   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown-1).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 #### *Record* Epic Criteria
@@ -958,7 +939,8 @@ Held task rows returned to their work-item links.
 
 1. Require the supplied release decision and refuse any row that is not held.
 2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
-3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
+3. Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
+4. Return the saved body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
 #### *Validate* Epic Body
 
@@ -966,7 +948,7 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
 
-1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-4), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-6), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
 2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
@@ -978,7 +960,7 @@ One epic body with confirmed task-grain and coverage corrections.
 **Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
 
 1. Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
-   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
+   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown-1).
    - Split a task exceeding the allowed criterion grain into the confirmed tasks.
 2. Return the revised body and any cross-body numbering or dependency changes for the caller.
 
@@ -993,13 +975,27 @@ The agreed disposition of criteria a delivered row left unmet.
    - Record an unanswered decision as pending.
    - If no criteria need further work, return the pending findings to the caller.
    - Continue to the draft step with only the criteria the user confirms need further work.
-2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
+2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown-1).
    - Confirm the draft with the user.
    - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
    - Return an unanswered draft as pending without continuing to the reconcile step.
 3. Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
    - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
    - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
+
+#### *Place* Unplaced Task Row
+
+One epic body given the row its table lacks for a task issue of the epic.
+
+**Inputs:** Epic JSON, the unplaced task issue, the run's allowance and change list when supplied, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+1. Draft the task issue's row, meeting [Work Breakdown](#work-breakdown-1).
+2. Apply [Settle Plan Change](#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
+   - Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+3. Apply [Revise Epic Rows](#revise-epic-rows) with the row as applied.
+4. Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
+5. Apply [Record Epic Delivery](#record-epic-delivery) again with the saved epic JSON and refreshed task issue records, retaining the pull request records, complete issue-link snapshot, confirmed matches, project checkout and output body file.
+6. Return the recorded body, its [Delivery Findings](#delivery-findings) and the change list to the caller.
 
 ### Fields
 
@@ -1104,6 +1100,8 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 - **The row is the epic's last.**
   It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone.
+- **The audit row is a unit of its own.**
+  It is joined to no other row, so its Joins cell is empty.
 - **A finding closes by a fix on this epic's branch or by an issue that takes it.**
   Outstanding means neither.
 - **Definitions change when a task row's work reaches the branch the corpus lives on.**
@@ -1111,6 +1109,10 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 #### Task Delivery
 
+- **Holds.**
+  - A unit's record exists and its rows link it before its session starts.
+  - A row another session holds is not dispatched.
+  - A held row stays held while its session plans and implements. The pull request's link replaces the record's link, which frees the row.
 - **Task ids.**
   - An unreserved task awaiting its pull request links its file in the planning record: `[W01](…/w01.md)`. The file name is the task id in lower case.
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes. A reserved task links only its planning folder: `[W01](…/2026-10-06-943-i07-e00-w01-queue-plan/)`. The folder's README links the work-item file. Releasing the reservation points the row to that file.
@@ -1218,182 +1220,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
 ```
 
-## Initiative Issue Body
-
-### Operations
-
-#### *Populate* Initiative Issue Body
-
-One initiative body and its local validation findings.
-
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
-
-1. Populate the body through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-2. Apply [Check Round of Edits](#check-round-of-edits).
-3. Return the populated body and its local format findings to the caller.
-
-#### *Draft* Initiative Issue Body
-
-One initiative body, scoped to one proposal.
-
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
-
-1. Populate the body from the [Template](#template-1) into a local file at the supplied output path.
-   - That file must be the source for every later edit.
-   - All populated fields must meet [Fields](#fields-5).
-2. Derive the Problem and Non-Goals from the proposal this initiative is scoped to.
-   - The Problem must meet [Problem and Proposal](#problem-and-proposal).
-   - Each Non-Goal must meet [Non-Goals](#non-goals).
-3. Write the acceptance criteria before the Work Breakdown, so each row's Coverage can cite them.
-   - Each criterion must come from a confirmed clause and meet [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
-   - The criteria must come from the requirements sources the proposal references. Where the proposal references none, they must come from the proposal's body alone.
-4. Populate the shared table through [Write Issue Table](#write-issue-table).
-5. Fill the initiative-specific cells.
-   - Each row must meet [Work Breakdown](#work-breakdown-1).
-   - An item a test cannot observe must stay named as [Coverage Reports](#coverage-reports) define.
-
-### Fields
-
-#### Template
-
-````markdown
-## Overview
-
-{{One paragraph: what the initiative achieves, stated as the end state. Name the goal the reviews will test against.}}
-
-## Problem
-
-{{One sentence on the friction, then one bullet per facet. Each bullet opens with a bold statement, and its body is on the next line.}}
-
-- **{{Facet}}.**
-  {{The evidence.}}
-
-## Proposal
-
-- **{{Move}}.**
-  {{What is done, within two lines.}}
-
-## Work Breakdown
-
-| Epic | Description | Coverage | Depends on | Done |
-| --- | --- | --- | --- | --- |
-| [E00](https://github.com/{{OWNER}}/{{REPO}}/issues/{{EPIC_ISSUE}}) | {{The epic's title name, the part before the colon}} | AC{{n}}, AC{{m}} | {{Earlier epic}} | |
-
-## Acceptance Criteria
-
-- [ ] **AC1.** {{One invariant. It is specific, measurable, achievable, relevant, and time-bound. It carries no stale count. It names no initiative, epic, task, or issue. It states what the initiative achieves as a whole, and it ends by naming its instrument.}}
-
-## Non-Goals
-
-- {{One succinct sentence on what this initiative does not do. It names no initiative, epic, task or issue, and no owner.}}
-
-## References
-
-- **R1.** [{{Title}}]({{URL}}) — {{What the reader finds there.}}
-- **R2.** **Source.** [{{Title}}]({{URL}}) — {{The requirements this initiative's criteria answer to.}}
-````
-
-#### Titles
-
-- The title is `[I07] Name: Subtitle`.
-- Labels are `type:initiative` and a `theme:*`.
-- `I` is the initiative number. Initiatives count from `00`.
-
-#### Problem
-
-- A Problem meets [Problem and Proposal](#problem-and-proposal).
-
-#### Proposal
-
-- A Proposal states the design, as [Problem and Proposal](#problem-and-proposal) defines.
-- A Proposal names no epic, task, or acceptance criterion of its own initiative.
-
-#### Work Breakdown
-
-The columns are `Epic | Description | Coverage | Depends on | Done`. The table has no Joins column.
-
-- An epic row's id is the epic, linked to its issue: `[E01](…/issues/937)`.
-- An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
-- An epic row is complete when its issue is closed as completed.
-- Depends on names epics only. A cell that names a task fails. Name a prerequisite epic only when every task or joined unit in the dependent epic requires every task in that prerequisite epic, directly or through its dependencies. The consumed output and the work producing it establish that requirement. Dependencies on selected tasks remain in the task tables. An edge another named whole-epic prerequisite already implies is omitted.
-- An initiative dependency that only some tasks need, or that requires only part of its prerequisite epic, is overbroad. The output and its producing tasks establish the edge.
-- An epic depending on a later epic is a backward reference.
-- Epic numbering meets [Numbering](#numbering).
-
-#### Initiative Acceptance Criteria
-
-An initiative criterion meets the [shared acceptance criteria](#shared-acceptance-criteria) and [Requirement Characteristics](#requirement-characteristics), and:
-
-- **No counts.**
-  An initiative criterion carries no counts or figures, which go stale: it measures against a named baseline or check ("against the baseline", "as the budget test measures it"). A figure stays only where it is the criterion's own target, such as a bound it holds to.
-- **SMART.**
-  Each initiative criterion is specific about what holds, measurable by a named check or baseline, achievable by the epics that cite it, and relevant, tracing to a clause and to the Problem. It is time-bound by a release tag or another named milestone outside the initiative's own work, where one exists, and otherwise by the epics that cite it.
-- **Local.**
-  An initiative criterion names no initiative, epic, task or issue, and is solution-agnostic. Coverage cells link epics to criteria. One that holds only through another initiative's work is restated as what this initiative achieves, or it is dropped.
-- **Whole.**
-  An initiative criterion states what the initiative achieves as a whole. One that restates a single epic's criterion is a duplicate: it is raised to what the epics achieve together, or left to the epic.
-- **Verified.**
-  - An initiative criterion ends by naming its instrument. Which instruments keep a criterion is [Verifiable](#verifiable).
-  - An automated test is an end-to-end walk through the real server, a smoke run of an agent against a live server, a live check on a deployed host, or a guard, fixture suite or check that continuous integration runs. The walk, smoke run or live check is preferred where the criterion is about what a run does.
-  - A named test that does not exist yet is work the plan holds: a task in the epic whose subject it tests, or a discrete test-infrastructure epic when the tests serve several criteria. That epic's row cites the criteria its tests verify.
-
-#### Non-Goals
-
-- One succinct sentence each on what the initiative does not do, naming no initiative, epic, task or issue, and no owner.
-
-#### References
-
-- A proposal-derived initiative identifies its originating proposal in References with the proposal's exact title and issue URL, labelled as the originating proposal.
-- A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources).
-- A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
-
-#### Sources
-
-A marked source in References is a document the initiative's criteria answer to. The criteria are aligned with it in both directions.
-
-- A criterion that misstates or contradicts a marked source fails the [Correct](#individual) characteristic.
-- A requirement a marked source states that no criterion makes true, and no Non-Goal excludes, is a gap.
-- An epic is aligned against its initiative's marked sources, through the initiative criteria its row covers.
-- A marked source that cannot be read leaves its criteria unaligned until it is read.
-
-#### Deferred Debt
-
-A final epic of the initiative holds the debt that initiative's delivery defers. Its title name is `Deferred Debt` and its subtitle names the clear-up it takes; it carries its initiative's theme label and `tech-debt`, and it is raised when the initiative defers its first item. The initiative carries this criterion, which the epic's row covers:
-
-```markdown
-- [ ] **ACn.** The technical debt this initiative's delivery defers is fixed, as the Done column of its final epic's Work Breakdown shows.
-```
-
-- **It is the initiative's last epic.**
-  Its number follows every other epic of the initiative, so the epics in flight are planned and delivered ahead of it and the clear-up competes with none of them.
-- **A deferred item is a task row.**
-  Each row covers the criterion stating what fixing that item makes true, and those statements are the epic's criteria.
-- **It takes the debt its own delivery defers.**
-  Debt a unit of this epic finds in resolving its row becomes a further row of the epic, so the clear-up absorbs what fixing it uncovers.
-- **It delivers like any other epic.**
-  It takes its bases from the long-lived branches its rows change, carries the [corpus audit](#corpus-audit) criterion where those rows change workflow definitions, and remains open until every delivery base has merged and its completion conditions hold.
-- **The initiative stays open while it stands.**
-  Its row is undelivered and its criterion unticked until the epic closes.
-
-#### Breakdown Prose
-
-Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
-
 ## Task Body
-
-### Operations
-
-#### *Populate* Task Body
-
-One task body within its supplied epic context.
-
-**Inputs:** Task scope, epic context, design, criteria and output path.
-
-- Populate the body from the [Template](#template-2) at the supplied output path.
-  - The title must meet the shared [Titles](#titles) conditions.
-  - The Problem and Proposal must meet [Problem and Proposal](#problem-and-proposal).
-  - Acceptance criteria must meet the [shared acceptance criteria](#shared-acceptance-criteria).
-  - All populated fields must meet [Fields](#fields-6), including the required [Sections](#sections).
 
 ### Fields
 
@@ -1442,22 +1269,9 @@ One task body within its supplied epic context.
 #### Sections
 
 - A task has the [epic issue body](#epic-issue-body)'s sections without the Work Breakdown table.
-- New task planning follows [Work Breakdown](#work-breakdown). This body describes an existing issue kept as a task.
+- New task planning follows [Work Breakdown](#work-breakdown-1). This body describes an existing issue kept as a task.
 
 ## Standalone Body
-
-### Operations
-
-#### *Populate* Standalone Body
-
-One standalone issue body from its supplied scope.
-
-**Inputs:** Problem, design, criteria, open questions and output path.
-
-- Populate the body from the [Template](#template-3) at the supplied output path.
-  - The title must meet the shared [Titles](#titles) conditions.
-  - The Problem and Proposal must meet [Problem and Proposal](#problem-and-proposal).
-  - All populated fields must meet [Fields](#fields-7), including the required [Sections](#sections-1).
 
 ### Fields
 
@@ -1498,6 +1312,43 @@ One standalone issue body from its supplied scope.
 
 - A standalone issue has the [epic issue body](#epic-issue-body)'s sections without the Work Breakdown table.
 
+## Repository Labels
+
+### Operations
+
+#### *Ensure* Repository Labels
+
+The required label definitions available for issue publication.
+
+**Inputs:** Repository and required label names, colours and descriptions.
+
+1. Run [List Labels](#list-labels) for the repository.
+2. Compare the returned labels with the supplied required names.
+3. Run [Create Label](#create-label) for each absent required definition.
+4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+
+### Commands
+
+#### List Labels
+
+Lists the labels that exist in the repository.
+
+**Inputs:** Repository.
+
+```bash
+gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
+```
+
+#### Create Label
+
+Creates the label specified by its name, colour and description.
+
+**Inputs:** Repository, label name, colour and description.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
+```
+
 ## Work Item
 
 ### Fields
@@ -1527,7 +1378,7 @@ One declaration line ahead of the first heading, naming the single component the
 | Note | A row that links its task issue. |
 | Unplaced | A task issue of this epic whose id is not a row. |
 | Open questions | The epic's Open Questions section remains. |
-| Ready to verify | A criterion whose delivering rows are all delivered. |
+| Ready to verify | An unticked criterion whose delivering rows are all delivered. |
 | Ticked early | A criterion ticked while a delivering row is not delivered. |
 | Disagreement | A linked pull request's test plan against the Coverage of the rows it delivers. |
 
@@ -1572,7 +1423,8 @@ pf -o <scratch>/<name>.bundle.md <destination>
 | Symbol | Description | Usage |
 | --- | --- | --- |
 | `↳` | An inline target | [Compile](#compile) it, read the whole bundle and follow the instructions in its preamble. |
-| `⇉` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. That session puts each returned question to the user, or returns it in turn when it was itself dispatched, then dispatches again with the answers. A step that dispatches for each item of a set in parallel hands every item at once to a sub-agent of its own, with that item's inputs, and continues when all have returned; only the sub-agents that returned questions are dispatched again, with their answers. |
+| `⇉` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. That session puts each returned question to the user, or returns it in turn when it was itself dispatched, then dispatches again with the answers. A [run-set](#symbols) hands each dispatched item to a sub-agent of its own at once. |
+| `⫽` | A run-set | Run the calls the linked section lists concurrently in this session, as parallel tool calls: top-level items together, a nested item once its parent alone has returned, an item that says "for each" once per item, together. Continue when every item, nested, per-item and dispatched, has returned. A failed item cancels nothing: the others finish, then the run-set returns every failure together as blockers. Questions dispatched items return are put to the user together once every item has returned, and only the items that asked are dispatched again, with their answers. |
 
 # References
 

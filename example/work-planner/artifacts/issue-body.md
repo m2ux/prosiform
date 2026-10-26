@@ -68,22 +68,34 @@ A local issue-shaped record for body validation.
 
 ### *Repair* Issue Format
 
-The saved format corrections for one issue and any unresolved content findings.
+The saved format corrections for a set of issues of one kind and any unresolved content findings.
 
-**Inputs:** Issue identity, current JSON, kind template and field conditions, required related evidence and output body path.
+**Inputs:** The kind's validator, either its body file's Validate operation or [Validate Issue Body](#validate-issue-body) with the kind's field conditions; that validator's further inputs; a set of issue bodies, each with its identity, current JSON and output body path; kind template and required related evidence.
 
-1. Apply [Validate Issue Body](#validate-issue-body) with the supplied JSON, kind conditions, related evidence and output path.
+1. Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
    - Return an unreadable source as a blocker before editing.
-2. Review the returned diff.
+2. Review each returned diff.
    - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](issue.md#save-tracker-issue), without asking.
    - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
-3. Resolve a non-mechanical finding confined to this body.
+3. Resolve a non-mechanical finding confined to one body.
    - Obtain the user's decision.
    - Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
    - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+4. Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue.
+   - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
+   - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
+
+### *Resolve* Open Questions
+
+The answers to an issue's Open Questions saved in its body, and the questions that stay open.
+
+**Inputs:** Issue identity, current JSON, kind template and field conditions, related context and output body path.
+
+1. Put each question in the body's Open Questions section to the user as an [interview](../rules.md).
+2. Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, each confirmed answer and output path, removing each settled question from Open Questions.
+3. Publish the corrected body through [Save Tracker Issue](issue.md#save-tracker-issue).
 4. Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
-   - Repeat Validate Issue Body with the saved JSON and the same kind conditions, context and output path.
-   - Return the saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
+5. Return the saved body, each decision taken and the questions still open in its Open Questions section. A question still open is a blocker to work that depends on it.
 
 ## Fields
 

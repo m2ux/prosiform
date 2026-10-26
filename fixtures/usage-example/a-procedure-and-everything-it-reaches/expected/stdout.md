@@ -19,73 +19,63 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
      - Apply [Publish Pull Request](#publish-pull-request) as a draft with the planning branch, target, title and body file. Only the user decides to merge that discussion pull request.
 3. **Draft each initiative body.**
    - For a new initiative, obtain its proposed prefix through [Select Tracker Number](#select-tracker-number) with the initiative prefix letter.
-   - Apply [Draft Initiative Issue Body](#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path. The epics' acceptance criteria carry the detail that makes the initiative's criteria true.
+   - Apply [Draft Initiative Issue Body](#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
 4. **Populate the epics.**
    Apply [Populate Epic Issue Body](#populate-epic-issue-body) for each epic and each new task row.
    - Apply [Populate Work Item](#populate-work-item) for each task with its scope, design, the component its implementation extends, criteria and test requirements.
-   - Register each returned file in the planning record.
-   - Resolve Open Questions before work starts.
-   - Apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) across the drafts and the returned work-item files.
-   - Return each epic draft and its format results to the review step.
+   - Apply Populate Planning Record with the record identity, folder path and each returned work-item file.
+   - Apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the initiative and epic drafts, the planning record, current pull request records, confirmed numbering maps when any, no allowance and the run's change list.
+   - Apply Populate Planning Record with the record identity, folder path and the returned longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map as its [Dependency Check](#dependency-check).
+   - Return each checked epic draft and its format results to the review step.
 5. **Review the drafts.**
-   Apply [Review Initiative Goal](#review-initiative-goal).
+   Apply [Review Initiative Goal](#review-initiative-goal) with the initiative and epic drafts, confirmed goal clauses, marked sources and the epic format results.
+   - Apply Populate Planning Record with the record identity, folder path and the returned trace table as its [Goal Trace](#goal-trace). With no planning record, give the trace table to the user.
    - Apply [Report Review Finding](#report-review-finding) for each returned finding, with its scope, evidence and proposed resolution.
    - Apply each confirmed resolution to the drafts:
      - For a local epic finding, apply Populate Epic Issue Body with the confirmed Proposal, row and criterion changes, including every new or renumbered criterion in Coverage.
      - For a confirmed distinct concern:
-       - Draft its own epic and initiative row.
-       - Repeat ordering review for the new epic and initiative row.
-   - Record the finding, resolution and decision in the planning record.
+       - Apply Populate Epic Issue Body for its own epic.
+       - Apply Draft Initiative Issue Body with the epic summaries that include it.
+       - Repeat Check Dependencies and Numbering for the new epic and initiative row, and record its result as step 4 does.
+   - Apply Populate Planning Record with the record identity, folder path and each finding, resolution and decision.
    - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
-   - An acceptance criterion is created only once it meets [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
 6. **Publish.**
    Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
-   - Apply [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
-   - For a new initiative:
-     - Apply [Select Tracker Number](#select-tracker-number) with the initiative prefix letter.
-     - Save it through [Save Tracker Issue](#save-tracker-issue), using temporary epic-row links until issue identities exist.
-     - Save the epics in dependency order, each carrying its confirmed priority label.
-     - Replace every temporary link in the initiative and epic bodies with the saved issue identity.
-     - Confirm no unresolved epic placeholder remains.
-   - Apply [Validate Epic Body](#validate-epic-body) with the saved initiative context.
-   - Apply [Validate Initiative Body](#validate-initiative-body) with every saved epic.
-   - Resolve findings.
-   - Save the corrected bodies.
-   - Update the planning record with evidence, decisions and issue links.
+   - Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
+   - Put each blocker it returns to the user.
 7. **Keep the goal current.**
    When the goal, a criterion, a Problem, a Proposal or an epic changes:
-   - Repeat Review Initiative Goal with the revised bodies and current sources.
+   - Repeat Review Initiative Goal with the revised bodies and current sources, and record its trace table as step 5 does.
    - Apply Report Review Finding for each finding.
-   - Apply confirmed resolutions.
+   - Apply confirmed resolutions as step 5 does.
    - Repeat that review until clear.
    - After each round, apply [Check Round of Edits](#check-round-of-edits) to affected bodies.
-   - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering.
+   - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as step 4 does.
      - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
-     - Save each confirmed change as that epic's priority label.
-   - Save affected bodies through Save Tracker Issue, matching titles to current numbers and Coverage to current criteria.
+     - Apply [Save Tracker Issue](#save-tracker-issue) with each confirmed change as that epic's [priority label](#priority-sets), with its colour and description.
+   - Apply Save Tracker Issue with each affected body, its title matching current numbers.
    - Keep local body files as the source for the next pass.
-   - Update work-item files and the README inventory for added, renamed or removed tasks.
-   - Update the discussion pull request body and planning record.
-   - Commit.
-   - Push.
+   - Apply Populate Work Item for each added or renamed task.
+   - Apply Populate Pull Request Body with the discussion pull request's current body.
+   - Apply Publish Pull Request with the discussion pull request's number and the returned body file.
+   - Apply Populate Planning Record with the record identity, folder path, each added or renamed task's work-item file, each removed task's work-item file as removed, and a commit message file, asking it to publish.
 8. **Prepare epic delivery.**
    Before any task starts:
-   - Resolve every Open Question with the user.
-   - Record the answer.
-   - Update the affected bodies, removing each settled question.
-   - Split multi-condition criteria at the end of the list.
-   - Update Coverage for the split criteria.
-   - Apply [Check Epic Prerequisites](#check-epic-prerequisites) with current initiative and prerequisite evidence; stop on a failed or incomplete result.
-   - After prerequisites pass, apply [Prepare Delivery Bases](#prepare-delivery-bases).
-   - Apply [Publish Pull Request](#publish-pull-request) to retarget each affected open task pull request to its epic base.
-   - Repeat goal and ordering review on changed bodies before returning readiness.
+   - Apply [Resolve Open Questions](#resolve-open-questions) for each affected issue with its identity, current JSON, its kind's template and field conditions, related context and an output body path.
+     - Apply Populate Planning Record with each decision it returns.
+     - Stop on a question it leaves open.
+   - Apply [Apply Body Corrections](#apply-body-corrections) to each body with a criterion joining several conditions, with the split criteria at the end of the list and their Coverage as [Shared Acceptance Criteria](#shared-acceptance-criteria) states.
+     - Apply Save Tracker Issue with each returned body.
+   - Follow [Delivery Base Preparation](#delivery-base-preparation) with the initiative's epics, the current initiative and epic bodies, prerequisite issue and base-merge records, project checkout, changed long-lived branches, repository and initiative prefix.
+     - Stop on a prerequisite finding it returns.
+     - Put each conflict and pull request awaiting a decision it returns to the user.
+   - Repeat goal and ordering review on changed bodies, as step 7 does, before returning readiness.
 9. **Record delivered work.**
    When work has landed:
    - Follow [⇉ Sync Mode](modes/sync-mode.md) for the affected initiative.
-   - For an unplaced task issue:
-     - Add its row through Populate Epic Issue Body.
-     - Save that body.
+   - For each unplaced task row it returns pending:
+     - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
      - Repeat Sync Mode with the refreshed epic.
    - Return the saved delivery state or blockers.
 
@@ -116,7 +106,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 - **Layers.**
   Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
-  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
+  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing. Calls run in order unless a step links a [run-set](#symbols), whose items never write to the same object; that step continues when every item has returned, with every failure returned together as blockers.
 
 # Conventions
 
@@ -160,10 +150,11 @@ The current issue, its saved body and discussion.
 
 One populated body and its metadata, written to the tracker.
 
-**Inputs:** Repository, optional existing issue number, populated body file, title and existing labels for creation; selected body or metadata changes for an existing issue. Optional comment file.
+**Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
 
 1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
-2. Return a missing-label result when an assignment names a label the repository does not contain.
+2. Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
+   - Return an unknown label definition to the caller before any write.
 3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
 4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
 5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
@@ -178,7 +169,8 @@ Verified completion of an issue and its linked delivery.
 
 1. Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
 2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
-   - Confirm GitHub's **Auto-close issues with merged linked pull requests** setting is disabled before any delivery pull request is linked or merged. An enabled or unknown setting blocks those actions until configuration is confirmed. Changing repository settings requires explicit authorization.
+   - Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
+   - Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
    - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
 3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
 4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
@@ -512,15 +504,13 @@ gh api --paginate 'repos/m2ux/workflow-server/issues?state=all&per_page=100' --j
 
 ## Planning Record
 
-A planning record is a folder. README.md is its entry point: it answers what the work is, and links to every other artifact the plan produces. Each artifact is the home of its own content. The progress of the work is the theme's project board.
-
 ### Operations
 
 #### *Populate* Planning Record
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path and supplied artifact files and links.
+**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
 1. Prepare the selected record:
    - For a new record:
@@ -534,6 +524,9 @@ One planning directory and its artifact inventory.
 2. Register the artifact files supplied by the caller, using their chosen names.
    - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts-1).
    - File content remains supplied by the caller; this operation does not author that artifact's content.
+   - Delete each artifact the caller names as removed, with its row.
+3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
+4. Return the folder path, and the publication result when it published.
 
 #### *Publish* Planning Record
 
@@ -589,6 +582,8 @@ README.md is the one file the folder must hold. Any file beyond README.md is add
 
 Each file beyond README.md is a row in the README's Artifacts.
 
+An overview record explains one pull request's change. Its folder's reference is the pull request number and its slug comes from the pull request's title. A pull request has one overview record, and a later overview of it reuses that folder.
+
 #### Header
 
 One blockquote: the classifier, the day the record was created, and a revised date when the README is updated after the work is done.
@@ -599,8 +594,17 @@ Two paragraphs: the purpose of this work, and why it matters.
 
 #### Artifacts
 
-- One row for every artifact in the record other than README.md, added when the file is produced.
+- One row for every artifact in the record other than README.md, added when the file is produced and removed with it.
 - The link sits on the artifact's name. The row says what the artifact holds, and the artifact is the home of that content.
+- In an overview record, the architecture overview is the one row, and its pull request is under Links.
+
+#### Dependency Check
+
+`dependencies.md`, an Artifacts row: the longest chains, contending pairs and proposed epic priority map the initiative's latest dependency check printed. A later check replaces it.
+
+#### Goal Trace
+
+`goal-trace.md`, an Artifacts row: the trace table of the initiative's latest goal review. A later review replaces it.
 
 #### Links
 
@@ -819,6 +823,15 @@ The verified delivery-issue relation for a pull request.
 3. Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
 4. Return the verified relation and refreshed snapshot.
 
+#### *Read* Initiative Pull Requests
+
+The current delivery pull requests for one initiative.
+
+**Inputs:** Repository, initiative prefix and destination collection file.
+
+1. Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
+2. Return the collection or an incomplete-fetch finding.
+
 #### *Read* Pull Request State
 
 One current pull request and its requested supporting records.
@@ -841,7 +854,30 @@ One pull request created or updated from supplied content and metadata.
 3. Re-read through [Read Pull Request State](#read-pull-request-state).
 4. Return the saved state or discrepancy.
 
+#### *Align* Pull Request Base
+
+Each open delivery pull request pointed at the base its head requires.
+
+**Inputs:** Repository, current initiative pull request records, each open epic's long-lived branches and epic bases, and the project checkout.
+
+1. Take each open pull request's target from [Scope](#scope) and [Other Pull Requests](#other-pull-requests), with each long-lived branch as [Epic Bases](#epic-bases) names it.
+   - Report an open pull request for which neither field gives a target for the user's decision, and leave it unchanged.
+2. For each open pull request whose base differs from its target, apply [Publish Pull Request](#publish-pull-request) with its number and that target as the base change.
+3. For each task pull request whose saved state is not mergeable, apply [Update Task Branch](#update-task-branch) with the worktree [Task Branches](#task-branches) places under the project checkout, its task branch and its epic base.
+   - A conflict leaves the pull request open and is reported.
+4. Return the retargeted pull requests, updated task branches, conflicts and the pull requests awaiting a decision.
+
 ### Fields
+
+#### Scope
+
+A task pull request delivers one task, or a set of tasks that name each other in Joins. It targets the epic base for the long-lived branch its work changes.
+
+#### Other Pull Requests
+
+- A pull request whose head is an epic base targets that base's long-lived branch.
+- A pull request outside epic delivery targets a long-lived branch. An open stacked pull request targets its long-lived branch once its base merges.
+- A merged pull request keeps the base it merged into.
 
 #### Issue Links
 
@@ -1060,6 +1096,24 @@ gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/reviews?per_
 gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > reviews.json
 ```
 
+#### Fetch Initiative Pull Requests
+
+Saves the task and epic pull requests that name one initiative's epics.
+
+**Inputs:** Repository, initiative prefix and destination JSON-lines file.
+
+`<initiative-prefix>` includes the opening bracket and initiative id, matching its task and epic titles.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("<initiative-prefix>"))' > '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
+```
+
 #### Fetch Pull Request Files
 
 Saves the paths a pull request changes.
@@ -1099,6 +1153,18 @@ One initiative body, scoped to one proposal.
 5. Fill the initiative-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown).
    - An item a test cannot observe must stay named as [Coverage Reports](#coverage-reports) define.
+
+#### *Resolve* Placeholder Links
+
+Saved issue identities in the links an initiative and its epics carry before their issues exist.
+
+**Inputs:** Initiative body file, each epic body file, and the saved issue identity of the initiative and of each epic.
+
+1. Replace every temporary link in the initiative and epic body files with the saved issue identity it stands for.
+   - Each epic row of the initiative must meet [Work Breakdown](#work-breakdown).
+   - Each row reference in an epic must meet the epic's [Work Breakdown](#work-breakdown-1).
+2. Confirm no temporary link remains in any of those files.
+3. Return the rewritten body files and each temporary link left unresolved, with the file that holds it.
 
 #### *Validate* Initiative Body
 
@@ -1224,6 +1290,7 @@ A marked source in References is a document the initiative's criteria answer to.
 
 - A criterion that misstates or contradicts a marked source fails the [Correct](#individual) characteristic.
 - A requirement a marked source states that no criterion makes true, and no Non-Goal excludes, is a gap.
+- A departure from a marked source is corrected in the criterion, unless a Non-Goal records it.
 - An epic is aligned against its initiative's marked sources, through the initiative criteria its row covers.
 - A marked source that cannot be read leaves its criteria unaligned until it is read.
 
@@ -1280,7 +1347,7 @@ One epic body and its local validation findings.
 
 1. Populate the body from the [Template](#template-3) at the supplied output path.
    - Every section must meet [Fields](#fields-5).
-   - Shared content must meet the common [body conditions](#fields-10).
+   - Shared content must meet the common [body conditions](#fields-11).
 2. Populate the shared table through [Write Issue Table](#write-issue-table).
 3. Fill the epic-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown-1).
@@ -1288,6 +1355,16 @@ One epic body and its local validation findings.
 5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
 6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
 7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
+
+#### *Record* Epic Delivery
+
+One epic body with supplied delivery matches and completed rows recorded.
+
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown-1).
+2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 #### *Validate* Epic Body
 
@@ -1299,6 +1376,31 @@ The body's local format and field findings.
 2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
+
+#### *Revise* Epic Rows
+
+One epic body with confirmed task-grain and coverage corrections.
+
+**Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
+
+1. Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
+   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown-1).
+   - Split a task exceeding the allowed criterion grain into the confirmed tasks.
+2. Return the revised body and any cross-body numbering or dependency changes for the caller.
+
+#### *Place* Unplaced Task Row
+
+One epic body given the row its table lacks for a task issue of the epic.
+
+**Inputs:** Epic JSON, the unplaced task issue, the run's allowance and change list when supplied, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+1. Draft the task issue's row, meeting [Work Breakdown](#work-breakdown-1).
+2. Apply [Settle Plan Change](#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
+   - Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+3. Apply [Revise Epic Rows](#revise-epic-rows) with the row as applied.
+4. Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
+5. Apply [Record Epic Delivery](#record-epic-delivery) again with the saved epic JSON and refreshed task issue records, retaining the pull request records, complete issue-link snapshot, confirmed matches, project checkout and output body file.
+6. Return the recorded body, its [Delivery Findings](#delivery-findings) and the change list to the caller.
 
 ### Fields
 
@@ -1403,6 +1505,8 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 - **The row is the epic's last.**
   It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone.
+- **The audit row is a unit of its own.**
+  It is joined to no other row, so its Joins cell is empty.
 - **A finding closes by a fix on this epic's branch or by an issue that takes it.**
   Outstanding means neither.
 - **Definitions change when a task row's work reaches the branch the corpus lives on.**
@@ -1410,6 +1514,10 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 #### Task Delivery
 
+- **Holds.**
+  - A unit's record exists and its rows link it before its session starts.
+  - A row another session holds is not dispatched.
+  - A held row stays held while its session plans and implements. The pull request's link replaces the record's link, which frees the row.
 - **Task ids.**
   - An unreserved task awaiting its pull request links its file in the planning record: `[W01](…/w01.md)`. The file name is the task id in lower case.
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes. A reserved task links only its planning folder: `[W01](…/2026-10-06-943-i07-e00-w01-queue-plan/)`. The folder's README links the work-item file. Releasing the reservation points the row to that file.
@@ -1431,6 +1539,32 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 #### Breakdown Prose
 
 Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
+
+### Commands
+
+#### Sync Epic
+
+Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
+
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
+
+- A row whose id links its task issue links the pull request instead.
+- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
+- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
+- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
+- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
+
+`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
+```
 
 ## Work Item
 
@@ -1503,26 +1637,29 @@ One declaration line ahead of the first heading, naming the single component the
 
 The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
 
-**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, and explicitly authorized outside-initiative files.
+**Inputs:** Initiative and epic bodies or local drafts, the planning record that registered each task row, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, the run's current [change list](#change-list), and explicitly authorized outside-initiative files.
 
 1. Use the supplied local drafts when reviewing unpublished work.
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](#read-tracker-issue).
-   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
-2. Resolve each finding, as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](#held-change) states.
-   - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
-   - Read tasks for implied consumption edges.
-   - Account for every independent pair as [Joins](#joins) states.
-   - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
-   - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
+   - Read each task row's work-item file from the planning record that registered it, as its [Artifacts](#artifacts-1) list it. The record holds one per task whatever that row currently links, so contention is measured rather than reported as unchecked.
+   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body, every work-item file read and each record file accounting for independent pairs.
+2. Settle each finding through [Settle Plan Change](#settle-plan-change), with the correction below as its recommended option, the affected issue identities, the supplied allowance and the current change list.
+   - The correction each finding takes:
+     - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
+     - Read tasks for implied consumption edges.
+     - Account for every independent pair as [Joins](#joins) states.
+     - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
+     - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
+   - Make the correction Settle Plan Change returns as applied, or the one the user's answer chooses, carrying its updated change list into the next finding.
+   - Keep each held finding unresolved.
 3. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
    - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
    - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
    - Re-sort rewritten tables.
    - Inspect every reported range.
    - Search prose for references the script cannot see.
-   - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each printed contending pair in the planning record.
-   - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
+   - Repeat Check Dependencies after each edge or numbering change until it reports no problem but the held findings.
+   - Return the checked bodies, the printed longest chains, each printed contending pair, the proposed [Epic Priority](#epic-priority) map, the updated change list and the unresolved findings to the caller; do not publish a failed renumbering.
 
 ### Fields
 
@@ -1674,8 +1811,7 @@ The draft checked against the initiative outcomes.
 6. Apply [Check Outside Threats](#check-outside-threats).
 7. Rank the gaps, meeting [Gaps](#gaps).
    - Flag the few that most threaten the goal.
-   - Record the trace table in the [planning record](#planning-record), or give it to the user when the change has none.
-   - Return the trace and ranked findings to the caller.
+   - Return the trace table and the ranked findings to the caller.
 
 #### *Check* Outside Threats
 
@@ -1744,42 +1880,17 @@ Each finding has an area, severity, one problem/solution pair and a source quota
 
 A finding identifies whether it needs a user decision and records any supplied answer. An unanswered decision remains pending.
 
-## Repository Labels
+## Board Queue
 
-### Operations
+### Fields
 
-#### *Ensure* Repository Labels
+#### Priority Sets
 
-The required label definitions available for issue publication.
+A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
 
-**Inputs:** Repository and required label names, colours and descriptions.
+The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
-1. Run [List Labels](#list-labels) for the repository.
-2. Compare the returned labels with the supplied required names.
-3. Run [Create Label](#create-label) for each absent required definition.
-4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
-
-### Commands
-
-#### List Labels
-
-Lists the labels that exist in the repository.
-
-**Inputs:** Repository.
-
-```bash
-gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
-```
-
-#### Create Label
-
-Creates the label specified by its name, colour and description.
-
-**Inputs:** Repository, label name, colour and description.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
-```
+A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
 
 ## Issue Body
 
@@ -1802,7 +1913,7 @@ The shared check after a round of edits.
 
 **Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
 
-1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields-10) in this file.
+1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields-11) in this file.
 2. Run [Check Body Format](#check-body-format) on every issue the round changed.
 
 #### *Validate* Issue Body
@@ -1815,6 +1926,21 @@ One body checked against its supplied kind and template.
 2. Review the body against the supplied field conditions.
 3. Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
 
+#### *Apply* Body Corrections
+
+One body rewritten from confirmed local findings.
+
+**Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
+
+1. Populate missing sections from the supplied issue and related context.
+2. Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template.
+3. Record a required tracker-kind change for the caller.
+4. Restate historical narration as the current design.
+5. Apply confirmed criterion changes.
+   - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
+6. Validate the body through [Validate Issue Body](#validate-issue-body).
+7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
+
 #### *Build* Body Snapshot
 
 A local issue-shaped record for body validation.
@@ -1825,6 +1951,37 @@ A local issue-shaped record for body validation.
 2. Preserve the existing issue's identity and state when supplied.
 3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
 4. Return the JSON path for validation. No tracker issue is created by this operation.
+
+#### *Repair* Issue Format
+
+The saved format corrections for a set of issues of one kind and any unresolved content findings.
+
+**Inputs:** The kind's validator, either its body file's Validate operation or [Validate Issue Body](#validate-issue-body) with the kind's field conditions; that validator's further inputs; a set of issue bodies, each with its identity, current JSON and output body path; kind template and required related evidence.
+
+1. Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
+   - Return an unreadable source as a blocker before editing.
+2. Review each returned diff.
+   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](#save-tracker-issue), without asking.
+   - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
+3. Resolve a non-mechanical finding confined to one body.
+   - Obtain the user's decision.
+   - Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
+   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+4. Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue.
+   - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
+   - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
+
+#### *Resolve* Open Questions
+
+The answers to an issue's Open Questions saved in its body, and the questions that stay open.
+
+**Inputs:** Issue identity, current JSON, kind template and field conditions, related context and output body path.
+
+1. Put each question in the body's Open Questions section to the user as an [interview](#rules).
+2. Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, each confirmed answer and output path, removing each settled question from Open Questions.
+3. Publish the corrected body through [Save Tracker Issue](#save-tracker-issue).
+4. Apply [Read Tracker Issue](#read-tracker-issue) for the saved issue.
+5. Return the saved body, each decision taken and the questions still open in its Open Questions section. A question still open is a blocker to work that depends on it.
 
 ### Fields
 
@@ -1961,134 +2118,6 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
 ```
 
-## Epic
-
-### Operations
-
-#### *Check* Epic Prerequisites
-
-The evidence required before starting an epic's work.
-
-**Inputs:** Current initiative and epic bodies, and current issue and base-merge records for every prerequisite the initiative row names.
-
-1. Identify each prerequisite the supplied initiative row names.
-2. Apply the initiative's [whole-epic dependency rule](#work-breakdown); a task row's reference to a row of another epic gates that row rather than this epic.
-3. Confirm each prerequisite epic is closed as completed and every one of its bases has merged. Missing records leave the prerequisite unconfirmed.
-4. Return the [Prerequisite Evidence](#prerequisite-evidence), identifying each confirmed prerequisite and missing condition. Only a confirmed result permits an unstarted epic to be marked Ready, its bases to be created or its task to be dispatched.
-
-### Fields
-
-#### Prerequisite Evidence
-
-Each prerequisite has its issue identity and completion state, expected delivery bases and their merge evidence. The result identifies confirmed and missing conditions for the candidate epic.
-
-## Delivery Branches
-
-### Operations
-
-#### *Prepare* Delivery Bases
-
-The branches a task pull request targets.
-
-**Inputs:** Project checkout, epic identifier, changed long-lived branches and confirmed prerequisite evidence.
-
-1. Run [List Long-Lived Branches](#list-long-lived-branches) with `--project` set to the project checkout.
-2. Run [List Epic Bases](#list-epic-bases) for the epic.
-3. If `config/branches` is missing or empty:
-   - Report the names as unevaluable.
-   - Obtain the project's branch names before creating delivery branches.
-4. Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
-5. Apply [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
-
-#### *Create* Epic Base
-
-The missing epic branch rooted in its remote long-lived branch.
-
-**Inputs:** Repository checkout, long-lived source branch, missing epic base name and confirmed prerequisite evidence.
-
-1. Require the confirmed prerequisites and a missing destination. Refuse a destination that already exists.
-2. Run [Fetch Remote Branch](#fetch-remote-branch) in the supplied repository checkout with the corresponding long-lived source branch, such as `main`.
-3. After a successful fetch:
-   - Run [Publish Epic Base](#publish-epic-base) with that remote source and the missing epic base name, such as `i07/e00/main`, meeting [Epic Bases](#epic-bases).
-   - Return the created branch or the failure.
-
-### Fields
-
-#### Branches
-
-A project states its long-lived branches in `config/branches` at its root, one name per line. A run from a linked worktree reads the statement its main working tree holds.
-
-- **Example.**
-  workflow-server's `config/branches` names `docker`, `main`, `workflows` and `workspace`.
-
-#### Epic Bases
-
-- Each long-lived branch an epic changes has a base branch, named for the initiative, the epic and that branch, and rooted in that long-lived branch. Its prerequisite epics are closed as completed with every delivery base merged.
-- **Example.**
-  An epic base cut from `main` is `i07/e00/main`.
-- The base's last segment is its long-lived branch, which gives the target it merges and is merged into.
-- Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
-- **Example.**
-  `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
-- Every pull request delivering the epic's tasks targets that epic base.
-- A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
-
-### Commands
-
-#### List Epic Bases
-
-Prints one epic's base branch names, one per line.
-
-**Inputs:** Repository checkout and epic branch prefix.
-
-- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
-- The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
-- The output contains one full base branch name per line.
-
-```bash
-git ls-remote --heads origin 'refs/heads/<epic-branch-prefix>/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-**Example:**
-
-```bash
-git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-#### List Long-Lived Branches
-
-Prints the long-lived branch names, one per line.
-
-**Inputs:** Project checkout.
-
-- The names meet [Branches](#branches).
-- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
-- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
-```
-
-#### Fetch Remote Branch
-
-Fetches one source branch from origin.
-
-**Inputs:** Repository checkout and source branch.
-
-```bash
-git fetch origin '<source-branch>'
-```
-
-#### Publish Epic Base
-
-Creates a remote epic base from the fetched source branch.
-
-**Inputs:** Repository checkout, fetched long-lived source branch, destination epic-base name, confirmed missing destination and prerequisite evidence.
-
-```bash
-git push origin 'origin/<source-branch>:refs/heads/<epic-base>'
-```
-
 ## Plan Change
 
 ### Operations
@@ -2101,9 +2130,39 @@ One pending change assessed against the run's allowance.
 
 1. Match the change to one kind in [Change Kinds](#change-kinds).
 2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
-3. Return it as held otherwise, for the caller to settle as [Held Change](#held-change) states.
+3. Return it as [held](#held-change) otherwise.
    - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
    - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
+
+#### *Record* Plan Change
+
+One entry in the run's list, for a change it applied or held.
+
+**Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
+
+1. Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
+2. Return the updated list for the caller to publish and report.
+
+#### *Settle* Plan Change
+
+One pending change carried to its outcome: applied, held, or answered by the user.
+
+**Inputs:** The pending change, its subject, the option recommended for it, the affected issue identities, the allowance the caller was supplied, and the run's current [Change List](#change-list).
+
+1. Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) with the change, its subject, the recommended option and the supplied allowance.
+2. Settle the change by what it returns:
+   - **Automatic.**
+     - Take the recommended option as the applied option.
+     - Apply [Record Plan Change](#record-plan-change) with the change, its kind, that option, the affected issue identities and the current list, marked applied.
+   - **Held, with an allowance supplied.**
+     - Leave the change unapplied, meeting [Held Change](#held-change).
+     - Apply Record Plan Change with the change, its kind, the recommended option, the affected issue identities and the current list, marked held.
+     - Ask nothing, since the work the run was dispatched for does not wait on an answer.
+   - **Held, with no allowance supplied.**
+     - Put the change to the user as an [interview](#rules), with the recommended option marked, and wait for the answer.
+     - Where the answer applies a change, apply Record Plan Change with the change, its kind, the option the user chose, the affected issue identities and the current list, marked applied.
+     - An answer leaving the work where it is takes no entry, as [Change Kinds](#change-kinds) states.
+3. Return the applied option, held, or the user's answer, with the updated change list.
 
 ### Fields
 
@@ -2127,11 +2186,54 @@ An option deciding to leave work where it is changes no plan, so it needs no all
 
 A new initiative is outside every allowance. The work stays where it is, open and unplaced, until the user decides where it belongs.
 
+#### Change List
+
+One list for the run, holding every change it applied and every change it held. It is what the run reports and what its record keeps.
+
+#### Entry
+
+One line: the kind, the issue or row it concerns, and the option applied or recommended. The entry states the change, not the alternatives weighed against it.
+
 #### Held Change
 
 A held change is left unapplied and its subject stays as it stands, so the next run sees the same decision. Its entry carries the recommended option, which is what the user is answering.
 
-A run working under an allowance records and reports a held change rather than asking, since the work it was dispatched for does not wait on an answer. A run supplied no allowance puts it to the user.
+## Repository Labels
+
+### Operations
+
+#### *Ensure* Repository Labels
+
+The required label definitions available for issue publication.
+
+**Inputs:** Repository and required label names, colours and descriptions.
+
+1. Run [List Labels](#list-labels) for the repository.
+2. Compare the returned labels with the supplied required names.
+3. Run [Create Label](#create-label) for each absent required definition.
+4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+
+### Commands
+
+#### List Labels
+
+Lists the labels that exist in the repository.
+
+**Inputs:** Repository.
+
+```bash
+gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
+```
+
+#### Create Label
+
+Creates the label specified by its name, colour and description.
+
+**Inputs:** Repository, label name, colour and description.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
+```
 
 ## Proposal Body
 
@@ -2146,7 +2248,7 @@ One proposal body from a confirmed problem and goal.
 - Populate the body from the [Template](#template-5) at the supplied output path.
   - The title must meet the shared [Titles](#titles-3) conditions.
   - The Problem must meet the shared [Problem and Proposal](#problem-and-proposal) conditions.
-  - All populated fields must meet [Fields](#fields-14), including the required [Sections](#sections-1).
+  - All populated fields must meet [Fields](#fields-13), including the required [Sections](#sections-1).
 
 #### *Validate* Proposal Body
 
@@ -2154,7 +2256,7 @@ The body's local format and field findings.
 
 **Inputs:** Proposal issue JSON and output file.
 
-1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-14), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-13), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
 2. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### Fields
@@ -2214,6 +2316,41 @@ The body's local format and field findings.
 
 ### Operations
 
+#### *Select* Project Board
+
+The theme or proposals board the request names.
+
+**Inputs:** Board owner and either a theme name or the proposals-board selection.
+
+1. Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+2. Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
+3. Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
+
+#### *Copy* Project Board
+
+A missing theme board, or a missing proposals board.
+
+**Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
+
+1. When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
+2. When the selected theme board is absent:
+   - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
+   - Require the new theme's label and board before an initiative takes that theme.
+
+#### *Ensure* Project Board
+
+The theme or proposals board the request names, created when it is absent.
+
+**Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
+
+1. Apply [Select Project Board](#select-project-board) with the owner and the theme name or proposals selection.
+   - On a missing-selection result, return it to the caller and stop.
+   - On a selected board, return its owner and number and stop.
+2. When the board is absent:
+   - For a theme a proposal derives, apply [Read Tracker Issue](#read-tracker-issue) for the originating proposal's identity. Return unresolved provenance and stop when it cannot be read.
+   - Apply [Copy Project Board](#copy-project-board) with the owner, repository, selected board kind, theme title and that proposal record when applicable.
+3. Return the owner and the board number the copy created.
+
 #### *Create* Proposals Board
 
 A new proposals board linked to the supplied repository.
@@ -2227,27 +2364,52 @@ A new proposals board linked to the supplied repository.
 5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
 6. Return the new board number after linking succeeds.
 
+#### *Create* Theme Board
+
+A new theme board linked to the supplied repository.
+
+**Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
+
+1. Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
+2. Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+3. Use the returned number as the copy source.
+4. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
+5. Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+6. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+7. Return the new board number after linking succeeds.
+
 #### *Place* Issue on Board
 
 One issue's membership and initial status.
 
-**Inputs:** Board owner and number, issue id and selected initial status.
+**Inputs:** Board owner and number, repository, issue number, output file and selected initial status.
 
-1. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the caller's supplied board and issue identities.
-2. Run [Add Issue to Board](#add-issue-to-board) with the issue id.
-3. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
-4. Run [Fetch Board Item](#fetch-board-item) for the saved item.
-
-#### *Locate* Project Board
-
-The board identity matching a supplied purpose or theme.
-
-**Inputs:** Owner and proposals-board purpose or theme title.
-
-1. Run [Find Proposals Board](#find-proposals-board) for proposals, or [Find Theme Board](#find-theme-board) for a theme.
-2. Return the identity or an absent-board finding for the caller's selection or creation path.
+1. Apply [Read Tracker Issue](#read-tracker-issue) with the repository, issue number and output file for the complete JSON, and take the issue id from it.
+2. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the supplied board.
+3. Run [Add Issue to Board](#add-issue-to-board) with that issue id.
+4. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
+5. Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
 ### Fields
+
+#### Themes
+
+Every initiative belongs to one theme, and each theme has one project board. Each project names its own themes.
+
+- **Example.**  workflow-server's themes.
+
+| Theme | Label | Description |
+| --- | --- | --- |
+| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
+| Language | `theme:language` | The Definition Language and Its Rules |
+| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
+| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+
+#### One Board Per Theme
+
+- A proposal-derived board title is the originating proposal's exact `[Pxx]` designator, a space, the theme name, a colon, and its description: `[P03] Canon: Definitions Checked Against the Design Canon`. Preserve the proposal's digits exactly. A board with no originating proposal uses `Name: Description`.
+- It is linked to the repository.
+- It holds the theme's initiatives, their epics and their task issues.
 
 #### Proposals
 
@@ -2392,6 +2554,210 @@ gh api "users/<owner>/projectsV2/<board-number>/items/<item-id>?fields=<status-f
 gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
 ```
 
+## Delivery Branches
+
+### Operations
+
+#### *Prepare* Delivery Bases
+
+The branches a task pull request targets.
+
+**Inputs:** Project checkout, epic identifier, changed long-lived branches and confirmed prerequisite evidence.
+
+1. Run [List Long-Lived Branches](#list-long-lived-branches) with `--project` set to the project checkout.
+2. Run [List Epic Bases](#list-epic-bases) for the epic.
+3. If `config/branches` is missing or empty:
+   - Report the names as unevaluable.
+   - Obtain the project's branch names before creating delivery branches.
+4. Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
+5. Apply [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
+
+#### *Create* Epic Base
+
+The missing epic branch rooted in its remote long-lived branch.
+
+**Inputs:** Repository checkout, long-lived source branch, missing epic base name and confirmed prerequisite evidence.
+
+1. Require the confirmed prerequisites and a missing destination. Refuse a destination that already exists.
+2. Run [Fetch Remote Branch](#fetch-remote-branch) in the supplied repository checkout with the corresponding long-lived source branch, such as `main`.
+3. After a successful fetch:
+   - Run [Publish Epic Base](#publish-epic-base) with that remote source and the missing epic base name, such as `i07/e00/main`, meeting [Epic Bases](#epic-bases).
+   - Return the created branch or the failure.
+
+#### *Update* Task Branch
+
+The current epic base merged into a unit's task branch.
+
+**Inputs:** Task worktree, task branch name and corresponding epic base branch.
+
+1. Run [Fetch Remote Branch](#fetch-remote-branch) in the unit's worktree with the epic base, such as `i07/e00/main`.
+2. Stop on failure.
+3. Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the epic base name, such as `i07/e00/main`, to merge `origin/i07/e00/main`. A conflict stops the update, leaves the pull request open and is reported.
+4. After a successful merge:
+   - Run [Push Task Branch](#push-task-branch) with the task branch as destination.
+   - Return the updated branch or the failure.
+
+#### *Read* Delivery Branches
+
+The configured long-lived branches and existing epic bases.
+
+**Inputs:** Project checkout and epic identity.
+
+1. Run [List Long-Lived Branches](#list-long-lived-branches) with the supplied checkout. Missing or empty configuration leaves branch names unevaluable.
+2. Run [List Epic Bases](#list-epic-bases) for the supplied epic.
+3. Return both collections and any missing configuration.
+
+### Fields
+
+#### Branches
+
+A project states its long-lived branches in `config/branches` at its root, one name per line. A run from a linked worktree reads the statement its main working tree holds.
+
+- **Example.**
+  workflow-server's `config/branches` names `docker`, `main`, `workflows` and `workspace`.
+
+#### Epic Bases
+
+- Each long-lived branch an epic changes has a base branch, named for the initiative, the epic and that branch, and rooted in that long-lived branch. Its prerequisite epics are closed as completed with every delivery base merged.
+- **Example.**
+  An epic base cut from `main` is `i07/e00/main`.
+- The base's last segment is its long-lived branch, which gives the target it merges and is merged into.
+- Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
+- **Example.**
+  `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
+- A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
+
+#### Task Branches
+
+A unit's task branch is cut from the epic base for the long-lived branch the unit changes, named for its initiative, epic and first task in lowercase separated by slashes, and hyphenated with a slug of at most four words from its Description when one exists: `i01/e02/w04-write-defaults`. Every pull request delivering the unit's work is opened from this branch.
+
+Its worktree is named by that branch under the worktree directory of the repository's main working tree.
+
+### Commands
+
+#### List Epic Bases
+
+Prints one epic's base branch names, one per line.
+
+**Inputs:** Repository checkout and epic branch prefix.
+
+- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
+- The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
+- The output contains one full base branch name per line.
+
+```bash
+git ls-remote --heads origin 'refs/heads/<epic-branch-prefix>/*' | cut -f2 | sed 's|refs/heads/||'
+```
+
+**Example:**
+
+```bash
+git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
+```
+
+#### List Long-Lived Branches
+
+Prints the long-lived branch names, one per line.
+
+**Inputs:** Project checkout.
+
+- The names meet [Branches](#branches).
+- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
+- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
+```
+
+#### Fetch Remote Branch
+
+Fetches one source branch from origin.
+
+**Inputs:** Repository checkout and source branch.
+
+```bash
+git fetch origin '<source-branch>'
+```
+
+#### Publish Epic Base
+
+Creates a remote epic base from the fetched source branch.
+
+**Inputs:** Repository checkout, fetched long-lived source branch, destination epic-base name, confirmed missing destination and prerequisite evidence.
+
+```bash
+git push origin 'origin/<source-branch>:refs/heads/<epic-base>'
+```
+
+#### Merge Remote Branch
+
+Merges one fetched remote branch into the current worktree branch.
+
+**Inputs:** Destination worktree and fetched source branch name without the origin prefix.
+
+```bash
+git merge --no-edit 'origin/<source-branch>'
+```
+
+#### Push Task Branch
+
+Pushes the task worktree head to its named remote task branch.
+
+**Inputs:** Task worktree, destination task branch and successful merge result.
+
+```bash
+git push origin 'HEAD:refs/heads/<task-branch>'
+```
+
+**Example:**
+
+```bash
+git push origin HEAD:refs/heads/i07/e00/w01-queue-plan
+```
+
+## Epic
+
+### Operations
+
+#### *Check* Epic Prerequisites
+
+The evidence required before starting an epic's work.
+
+**Inputs:** Current initiative and epic bodies, and current issue and base-merge records for every prerequisite the initiative row names.
+
+1. Identify each prerequisite the supplied initiative row names.
+2. Apply the initiative's [whole-epic dependency rule](#work-breakdown); a task row's reference to a row of another epic gates that row rather than this epic.
+3. Confirm each prerequisite epic is closed as completed and every one of its bases has merged. Missing records leave the prerequisite unconfirmed.
+4. Return the [Prerequisite Evidence](#prerequisite-evidence), identifying each confirmed prerequisite and missing condition. Only a confirmed result permits an unstarted epic to be marked Ready, its bases to be created or its task to be dispatched.
+
+### Fields
+
+#### Prerequisite Evidence
+
+Each prerequisite has its issue identity and completion state, expected delivery bases and their merge evidence. The result identifies confirmed and missing conditions for the candidate epic.
+
+#### Delivery Findings
+
+| Line | What it names |
+| --- | --- |
+| Conflict | Tasks that share a pull request and do not name each other in Joins. A row linked to a pull request whose title names another epic. |
+| Unmatched | A merged pull request that names the epic and that no row links. |
+| In flight | An open pull request that names the epic and that no row links. A pull request whose head is an epic base is not a task match. |
+| Draft | An epic base a merged task targets that has no pull request merging it, while a task is undelivered or a criterion is unticked. |
+| Unmerged | An epic base its pull requests target that has not merged into its long-lived branch, once every task is delivered and every criterion is ticked. A draft pull request is named draft. |
+| References | A review pull request whose cited pull requests differ from the task pull requests merged into its base. |
+| Uncited | A linked pull request whose task has its own issue and does not link it, or a review pull request that does not link the epic's issue. |
+| Note | A row that links its task issue. |
+| Unplaced | A task issue of this epic whose id is not a row. |
+| Open questions | The epic's Open Questions section remains. |
+| Ready to verify | An unticked criterion whose delivering rows are all delivered. |
+| Ticked early | A criterion ticked while a delivering row is not delivered. |
+| Disagreement | A linked pull request's test plan against the Coverage of the rows it delivers. |
+
+An unmet row links a merged pull request while a covered criterion remains unticked. A linked pull request naming another epic is a conflict and delivers its linked task once merged. A missing linked pull request leaves the supplied evidence incomplete.
+
+A coverage disagreement identifies the pull request and row, a criterion absent from either the test plan or row Coverage, an empty Test cell, or prose assigning the criterion to another task. Recording links, verified criteria and Done continues despite that finding.
+
 # Propose Mode
 
 Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
@@ -2414,23 +2780,20 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
    - The goal clauses are the clauses the user confirmed. The Non-Goals are the boundary.
    - The design, the acceptance criteria, and the breakdown belong to a later goal.
 4. **Validate.**
-   Apply [Validate Proposal Body](#validate-proposal-body) with the draft issue JSON and output file.
-   - Resolve each finding.
-   - Update the draft.
-   - Repeat Validate Proposal Body with the revised JSON and the same output path. Proceed to publication only when validation passes.
+   Apply [Build Body Snapshot](#build-body-snapshot) with the body file, title, labels and a JSON path.
+   - Apply [Validate Proposal Body](#validate-proposal-body) with the returned JSON and the output file.
+   - Resolve each finding it leaves unresolved in the problem, evidence, goal clauses or boundary, and repeat Populate Proposal Body with them and the same output path.
+   - Repeat Build Body Snapshot and Validate Proposal Body with the revised body and the same paths. Proceed to publication only when validation passes.
 5. **Publish.**
-   Apply [Ensure Repository Labels](#ensure-repository-labels) with the proposal's required label definitions.
-   - Pass the validated body, title and labels to [Save Tracker Issue](#save-tracker-issue), leaving it unassigned.
+   Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the validated body file, its title, the proposal's labels and each label's colour and description, leaving it unassigned.
 6. **Confirm placement.**
    Ask whether to add the issue to the proposals board.
    - On acceptance, continue to the place step.
    - On a decline, skip placement and continue to the report step with the issue URL.
    - Wait for an unanswered decision.
 7. **Place.**
-   Apply [Locate Project Board](#locate-project-board) for proposals.
-   - Create an absent board through [Create Proposals Board](#create-proposals-board).
-   - Read the saved issue id through [Read Tracker Issue](#read-tracker-issue).
-   - Apply [Place Issue on Board](#place-issue-on-board) with that id and initial status Suggested.
+   Apply [Ensure Project Board](#ensure-project-board) with the board owner, the repository and the proposals-board selection.
+   - Apply [Place Issue on Board](#place-issue-on-board) with the returned owner and board number, the repository, the saved issue number, an output file and initial status Suggested.
    - Leave the issue unassigned.
 8. **Report.**
    Give the issue's URL, and the board's when the issue was placed.
@@ -2443,6 +2806,65 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
   The user has that problem raised as one proposal.
 - **On the proposals board.**
   When the user wants the proposal on the proposals board, it is there, raised, and unassigned.
+
+# Protocols
+
+## Initiative Publication
+
+A reviewed initiative and its epics saved to the tracker, linked to one another, format-checked and recorded in the planning record.
+
+Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventions](#conventions).
+
+### Procedure
+
+1. **Number the initiative.**
+   For a new initiative, apply [Select Tracker Number](#select-tracker-number) with the repository, the initiative prefix letter and its existing titles.
+   - Use the confirmed number in the initiative's title.
+2. **Save the initiative.**
+   Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the reviewed initiative body file, its title and labels, and each label's colour and description.
+   - For an existing initiative, pass its issue number and the selected body and metadata changes.
+3. **Save the epics.**
+   For each reviewed epic, a prerequisite epic before the epics that depend on it:
+   - Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the epic body file, its title, its labels with the confirmed priority label among them, and each label's colour and description.
+   - For an existing epic, pass its issue number and the selected body and metadata changes.
+4. **Resolve the links.**
+   Apply [Resolve Placeholder Links](#resolve-placeholder-links) with the initiative body file, each epic body file and the saved issue identity of the initiative and of each epic.
+   - Return each temporary link left unresolved, with the file that holds it, to the caller as a blocker.
+   - Apply [Save Tracker Issue](#save-tracker-issue) with the body change for each rewritten body file.
+5. **Repair the format.**
+   - Apply [Repair Issue Format](#repair-issue-format) with [Validate Epic Body](#validate-epic-body) as the validator, the saved initiative JSON, current pull request records and corpus branch as its further inputs, the epic template, and every saved epic with its identity, current JSON and output body path.
+   - Apply [Repair Issue Format](#repair-issue-format) with [Validate Initiative Body](#validate-initiative-body) as the validator, every saved epic JSON and the requirement sources as its further inputs, the initiative template, and the saved initiative with its identity, current JSON and output body path.
+   - Return each blocker either repair returns to the caller.
+6. **Record the publication.**
+   Apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the saved initiative and epic issue links, the evidence and decisions the caller supplies, and the caller's commit message file, asking it to publish.
+   - Return the saved initiative and epic identities, the publication result and any blocker to the caller.
+
+## Delivery Base Preparation
+
+The epic bases a set of epics needs, created once their prerequisites hold, and the open delivery pull requests pointed at them.
+
+Follow the [Procedure](#procedure-3), adhering to [Rules](#rules) and [Conventions](#conventions).
+
+### Procedure
+
+1. **Confirm prerequisites.**
+   For each supplied epic:
+   - Apply [Check Epic Prerequisites](#check-epic-prerequisites) with the current initiative and epic bodies and the prerequisite issue and base-merge records.
+   - Carry a missing or unconfirmed prerequisite into the result as that epic's finding, and leave its bases uncreated.
+2. **Prepare the bases.**
+   For each epic whose prerequisites are confirmed, apply [Prepare Delivery Bases](#prepare-delivery-bases) with the project checkout, epic identity, changed long-lived branches and the confirmed [Prerequisite Evidence](#prerequisite-evidence).
+   - Carry unevaluable branch names or a failed creation into the result.
+3. **Read branches and pull requests.**
+   - Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and each supplied epic's identity.
+   - Use the current pull request records the caller supplies. When it supplies none, apply [Read Initiative Pull Requests](#read-initiative-pull-requests) with the repository, initiative prefix and destination collection file.
+   - Return to the caller with the findings when the branch names are unevaluable or the pull request evidence is incomplete.
+4. **Align the pull requests.**
+   Apply [Align Pull Request Base](#align-pull-request-base) with the repository, those pull request records, the long-lived branches and epic bases Read Delivery Branches returned, and the project checkout.
+5. **Return the result.**
+   Return to the caller:
+   - The bases created and each epic's prerequisite findings.
+   - The long-lived branches and epic bases Read Delivery Branches returned.
+   - The retargeted pull requests, updated task branches, conflicts and pull requests awaiting a decision that Align Pull Request Base returned.
 
 # Bootstrap
 
@@ -2467,7 +2889,8 @@ pf -o <scratch>/<name>.bundle.md <destination>
 | Symbol | Description | Usage |
 | --- | --- | --- |
 | `↳` | An inline target | [Compile](#compile) it, read the whole bundle and follow the instructions in its preamble. |
-| `⇉` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. That session puts each returned question to the user, or returns it in turn when it was itself dispatched, then dispatches again with the answers. A step that dispatches for each item of a set in parallel hands every item at once to a sub-agent of its own, with that item's inputs, and continues when all have returned; only the sub-agents that returned questions are dispatched again, with their answers. |
+| `⇉` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. That session puts each returned question to the user, or returns it in turn when it was itself dispatched, then dispatches again with the answers. A [run-set](#symbols) hands each dispatched item to a sub-agent of its own at once. |
+| `⫽` | A run-set | Run the calls the linked section lists concurrently in this session, as parallel tool calls: top-level items together, a nested item once its parent alone has returned, an item that says "for each" once per item, together. Continue when every item, nested, per-item and dispatched, has returned. A failed item cancels nothing: the others finish, then the run-set returns every failure together as blockers. Questions dispatched items return are put to the user together once every item has returned, and only the items that asked are dispatched again, with their answers. |
 
 # References
 
