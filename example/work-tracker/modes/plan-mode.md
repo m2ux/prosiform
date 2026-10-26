@@ -24,8 +24,8 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
    - Save the corrected bodies.
 3. **Record delivered work.**
    When work has landed:
-   - Run [» Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic's current evidence.
-   - Resolve each line of the returned [» Delivery Findings](../artifacts/epic.md#delivery-findings).
+   - Run [⇉ Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the epic's current evidence.
+   - Resolve each line of the returned [⇉ Delivery Findings](../artifacts/epic.md#delivery-findings).
    - Return the saved delivery state or blockers.
 4. **Verify outcomes met**
    - Ensure each of the [Outcomes](#outcomes) is met.

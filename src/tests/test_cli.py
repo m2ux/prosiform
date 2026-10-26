@@ -1354,7 +1354,7 @@ def test_a_deferral_stands_where_another_reference_carried_its_target(
 
 
 def test_a_dispatched_reference_under_the_root_is_not_compiled(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [\u00bb the rules](rules.md).\n")
+    written(root, "guide.md", "# Guide\n\nSee [\u21c9 the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule the sub-agent requires.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
@@ -1363,36 +1363,36 @@ def test_a_dispatched_reference_under_the_root_is_not_compiled(root: Path) -> No
 
 
 def test_a_dispatched_link_carries_the_mark_its_author_wrote(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [\u00bb the rules](rules.md).\n")
+    written(root, "guide.md", "# Guide\n\nSee [\u21c9 the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [\u00bb the rules](rules.md)." in run.stdout
+    assert "See [\u21c9 the rules](rules.md)." in run.stdout
 
 
 def test_a_dispatch_mark_on_a_resource_is_a_resource_still(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [\u00bb the diagram](plan.png).\n")
+    written(root, "guide.md", "# Guide\n\nSee [\u21c9 the diagram](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "[\u00bb the diagram](plan.png)" in run.stdout
+    assert "[\u21c9 the diagram](plan.png)" in run.stdout
 
 
 def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nRead [\u00ac \u00bb the rules](rules.md).\n")
+    written(root, "guide.md", "# Guide\n\nRead [\u00ac \u21c9 the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.stdout == ""
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["reference"] == "\u00ac \u00bb the rules"
+    assert diagnostic["reference"] == "\u00ac \u21c9 the rules"
 
 
 def test_a_link_opening_with_both_operators_is_refused_where_it_names_nothing(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\nRead [\u00bb \u00ac a picture](plan.png).\n")
+    written(root, "guide.md", "# Guide\n\nRead [\u21c9 \u00ac a picture](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -1416,7 +1416,7 @@ def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
     written(
         root,
         "guide.md",
-        f"{declaration}# Guide\n\nSee [\u00bb rules](rules.md).\n",
+        f"{declaration}# Guide\n\nSee [\u21c9 rules](rules.md).\n",
     )
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
@@ -2021,7 +2021,7 @@ def test_a_budget_spent_on_the_last_valid_reference_bundles_it(root: Path) -> No
 def dispatching(root: Path, names: Sequence[str]) -> None:
     """A chain of documents, each dispatching the next."""
     for name, following in zip(names, names[1:], strict=False):
-        written(root, name, f"# {name}\n\nRun [\u00bb next]({following}).\n")
+        written(root, name, f"# {name}\n\nRun [\u21c9 next]({following}).\n")
     written(root, names[-1], f"# {names[-1]}\n\nDone.\n")
 
 
@@ -2036,7 +2036,7 @@ def test_a_fourth_dispatch_warns_naming_the_chain(root: Path) -> None:
     dispatching(root, ["guide.md", "a.md", "b.md", "c.md", "d.md"])
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "Run [» next](a.md)." in run.stdout
+    assert "Run [⇉ next](a.md)." in run.stdout
     [warning] = run.diagnostics()
     assert warning["code"] == DISPATCH_DEPTH
     assert warning["severity"] == "warning"
@@ -2053,7 +2053,7 @@ def test_a_dispatched_section_of_the_entry_is_a_hop(root: Path) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\nRun [» Run](#run).\n\n## Run\n\nStart [» a](a.md).\n",
+        "# Guide\n\nRun [⇉ Run](#run).\n\n## Run\n\nStart [⇉ a](a.md).\n",
     )
     dispatching(root, ["a.md", "b.md", "c.md"])
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -2075,16 +2075,16 @@ def test_a_deferred_link_in_a_dispatched_closure_is_no_hop(root: Path) -> None:
 def test_a_dispatch_a_compiled_dependency_carries_is_a_hop(root: Path) -> None:
     dispatching(root, ["guide.md", "a.md", "b.md", "c.md"])
     written(root, "c.md", "# c.md\n\nSee [shared](shared.md).\n")
-    written(root, "shared.md", "# Shared\n\nRun [» d](d.md).\n")
+    written(root, "shared.md", "# Shared\n\nRun [⇉ d](d.md).\n")
     written(root, "d.md", "# d.md\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert [one["code"] for one in run.diagnostics()] == [DISPATCH_DEPTH]
 
 
 def test_a_cycle_of_dispatches_warns_and_terminates(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nRun [» a](a.md).\n")
-    written(root, "a.md", "# A\n\nRun [» b](b.md).\n")
-    written(root, "b.md", "# B\n\nRun [» a](a.md).\n")
+    written(root, "guide.md", "# Guide\n\nRun [⇉ a](a.md).\n")
+    written(root, "a.md", "# A\n\nRun [⇉ b](b.md).\n")
+    written(root, "b.md", "# B\n\nRun [⇉ a](a.md).\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     [warning] = run.diagnostics()
@@ -2096,7 +2096,7 @@ def test_a_section_dispatching_its_own_document_is_a_cycle(root: Path) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Run\n\nAgain [» the guide](guide.md).\n",
+        "# Guide\n\n## Run\n\nAgain [⇉ the guide](guide.md).\n",
     )
     run = invoke("-d", "json", "guide.md#run", cwd=root)
     assert run.status == SUCCESS
@@ -2108,7 +2108,7 @@ def test_a_section_dispatching_its_own_document_is_a_cycle(root: Path) -> None:
 def test_a_dispatched_target_whose_compilation_fails_carries_no_hop(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\nRun [» a](a.md).\n")
+    written(root, "guide.md", "# Guide\n\nRun [⇉ a](a.md).\n")
     written(root, "a.md", "# A\n\nSee [gone](gone.md).\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
@@ -2122,3 +2122,11 @@ def test_a_dispatch_warning_reads_as_text(root: Path) -> None:
     assert run.stderr.startswith(f"{DISPATCH_DEPTH}: ")
     assert "  chain: guide.md → a.md → b.md → c.md → d.md\n" in run.stderr
     assert "  related: c.md:3:1: dispatches 'd.md'" in run.stderr
+
+
+def test_a_link_opening_with_a_guillemet_is_compiled(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [» the rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "Every rule." in run.stdout

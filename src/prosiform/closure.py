@@ -23,7 +23,7 @@ from prosiform.profile import is_markdown
 from prosiform.source import ENCODING
 
 DEFERRAL_MARK = "¬"
-DISPATCH_MARK = "»"
+DISPATCH_MARK = "⇉"
 
 BLANKS = " \t"
 

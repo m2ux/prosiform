@@ -34,7 +34,7 @@ EXAMPLE = REPO / "example" / "work-tracker"
 COMMAND = "pf"
 ENCODING = "utf-8"
 
-DISPATCH = "\u00bb"
+DISPATCH = "\u21c9"
 DEFERRAL = "\u00ac"
 
 ERROR = "error"
