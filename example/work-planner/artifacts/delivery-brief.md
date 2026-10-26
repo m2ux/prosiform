@@ -20,6 +20,21 @@ One complete prompt file for a confirmed delivery unit.
    - Each part must meet [Fields](#fields).
 2. Return the brief path and any missing context. The caller resolves gaps before dispatch.
 
+### *Read* Delivery Brief
+
+The confirmed unit a delivery session works from, with its reservation still held.
+
+**Inputs:** Brief path and an output file for the epic body.
+
+1. Read the brief at the supplied path.
+   - Report each part missing from [Fields](#fields) to the caller.
+2. Confirm the reserved folder the brief names exists in its engineering worktree.
+   - Report a missing folder to the caller.
+3. Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the epic issue the brief names, writing its body to the output file.
+   - Confirm each of the unit's task rows links the reserved folder, as [Task Delivery](epic-issue-body.md#task-delivery) defines a held row.
+   - Report each released row to the caller.
+4. Return the confirmed unit, criteria, tests, branch and bases, worktree, planning-folder identity, board identity and change allowance.
+
 ## Fields
 
 ### Location
