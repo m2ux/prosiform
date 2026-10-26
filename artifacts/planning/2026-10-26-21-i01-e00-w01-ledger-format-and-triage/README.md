@@ -13,6 +13,7 @@ The ledger is where what real use reveals is kept, so a surprise met mid-task ha
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | The plan for the ledger format, triage states, exposure set and schema check |
+| [Validation](validation.md) | The format decisions and the evidence for each test-plan row |
 
 ## Links
 
