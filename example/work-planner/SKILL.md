@@ -81,7 +81,7 @@ Select the mode as appropriate to fulfill the user request:
 
 ## Dispatch
 
-A link whose text opens with `»` names work a sub-agent carries out. The session following this document dispatches each mode its `»` links name to one sub-agent, with the linked document or section as its entry, passes it the inputs the request names, and continues with the result it returns. The linked material is not read or run in this session. A run dispatched to a sub-agent dispatches nothing further: it carries out itself every mode, protocol and artifact it reaches.
+A link whose text opens with `»` names work a sub-agent carries out. Only the session that selects a mode from the skill's mode list dispatches: it hands each mode a `»` link names to one sub-agent, with the linked document or section as its entry, passes it the inputs the request names, and continues with the result it returns. That session does not read or run the linked material itself. A run dispatched to a sub-agent dispatches nothing further: it carries out itself every mode, protocol and artifact it reaches.
 
 ## Conventions
 
