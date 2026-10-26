@@ -27,7 +27,9 @@ from prosiform.closure import (
     operators,
     rebased,
     resolve,
+    run_set,
     unmarked,
+    withholding,
     withholding_target,
 )
 
@@ -368,3 +370,29 @@ def test_a_withheld_destination_names_its_target_from_the_root(
 
 def test_a_link_text_opening_with_a_guillemet_states_no_operator() -> None:
     assert operators("» the rules") == ()
+
+
+def test_a_link_text_opening_with_the_run_set_mark_states_a_run_set() -> None:
+    assert run_set("⫽ the reviews")
+    assert operators("⫽ the reviews") == ("⫽",)
+
+
+def test_a_run_set_withholds_nothing() -> None:
+    assert not withholding("⫽ the reviews")
+    assert bundled("guide.md", "plan.md#reviews", "⫽ the reviews") is not None
+    assert withholding_target("guide.md", "plan.md", "⫽ the reviews") is None
+
+
+def test_a_run_set_mark_with_no_space_after_it_is_no_operator() -> None:
+    assert not run_set("⫽the reviews")
+    assert not run_set("the ⫽ reviews")
+    assert operators("⫽⇉ the reviews") == ()
+
+
+@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "¬ ⫽ the reviews"])
+def test_the_run_set_mark_conflicts_with_either_other_operator(opening: str) -> None:
+    assert conflicting(opening)
+
+
+def test_a_run_set_mark_is_published_as_written() -> None:
+    assert unmarked("⫽ the reviews") == "⫽ the reviews"
