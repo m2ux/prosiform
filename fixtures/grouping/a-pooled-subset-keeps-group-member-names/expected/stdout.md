@@ -1,5 +1,3 @@
-Follow [Alone](#alone), [B Notes](#b-notes) and [C Other](#c-other). The other sections are material those procedures reference.
-
 # G
 
 ## Overview

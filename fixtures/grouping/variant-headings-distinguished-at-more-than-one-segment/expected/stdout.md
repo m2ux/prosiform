@@ -1,5 +1,3 @@
-Follow [Findings](#findings). The other sections are material that procedure references.
-
 # Guides
 
 ## Overview

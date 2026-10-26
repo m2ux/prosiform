@@ -4,7 +4,6 @@ clauses = [
   "File-scoped hierarchy — Source order",
   "File-scoped hierarchy — Group shift",
   "Section extraction and output hierarchy — Boundary",
-  "Entry line",
 ]
 
 [invocation]

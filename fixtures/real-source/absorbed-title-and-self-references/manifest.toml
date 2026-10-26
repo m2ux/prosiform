@@ -7,7 +7,6 @@ clauses = [
   "Link classification and resource handling — Examples",
   "Bundle destinations — Internal links",
   "Adversarial acceptance fixtures — Identity",
-  "Entry line",
 ]
 
 [invocation]

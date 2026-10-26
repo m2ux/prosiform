@@ -5,7 +5,6 @@ clauses = [
   "Bundle destinations — Internal links",
   "Bundle destinations — Document destinations",
   "Input and output contract — Continuous Markdown",
-  "Source and candidate validation modes — Preprocessing, the candidate is not refused under the generated-input policy",
 ]
 
 [invocation]

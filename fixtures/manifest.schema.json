@@ -248,7 +248,6 @@
       "enum": [
         "E_AMBIGUOUS_FILE_GROUP",
         "E_AMBIGUOUS_SOURCE_HEADING",
-        "E_GENERATED_INPUT",
         "E_HEADING_DEPTH_OVERFLOW",
         "E_INVALID_ENCODING",
         "E_INVALID_FRONTMATTER",

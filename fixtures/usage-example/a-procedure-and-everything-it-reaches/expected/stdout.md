@@ -4,8 +4,6 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 
 Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 
-Follow [Procedure](#procedure). The other sections are material that procedure references.
-
 ## Procedure
 
 1. **Take the proposal.**

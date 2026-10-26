@@ -5,5 +5,3 @@ The [specification](https://example.com/spec.md) is published elsewhere, and
 bundle neither reads nor refuses.
 
 A [mirror](//example.com/spec.md) names an authority and no local document.
-
-Follow [Guide](#guide). The other sections are material that procedure references.

@@ -7,5 +7,3 @@ A worked example:
 
 and a blank line inside the fence
 ```
-
-Follow [Guide](#guide). The other sections are material that procedure references.

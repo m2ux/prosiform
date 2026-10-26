@@ -4,7 +4,6 @@ clauses = [
   "Grouping — The overview section",
   "Grouping — A heading for every member",
   "Grouping — Document content above the grouping depth",
-  "Entry line — Link text",
 ]
 
 [invocation]

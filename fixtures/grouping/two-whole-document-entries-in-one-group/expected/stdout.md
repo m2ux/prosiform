@@ -1,5 +1,3 @@
-Follow [Guide](#guide) and [Notes](#notes). The other sections are material those procedures reference.
-
 # Docs
 
 ## Notes

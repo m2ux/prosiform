@@ -4,8 +4,6 @@ A name two documents carry is reached as [the planning procedure](#procedure) an
 
 A name one document carries is reached as [the planning operations](#operations).
 
-Follow [Entry](#entry). The other sections are material that procedure references.
-
 # Modes
 
 ## Procedure

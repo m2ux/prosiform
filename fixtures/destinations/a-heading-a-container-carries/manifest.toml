@@ -1,11 +1,10 @@
-description = "A heading a retained container carries is one the bundle emits and one the renderer indexes, so it takes an ordinal and the headings behind it are numbered from a count that holds it; the entry line's destination is therefore the renderer's third Run rather than its first."
+description = "A heading a retained container carries is one the bundle emits and one the renderer indexes, so it takes an ordinal and the headings behind it are numbered from a count that holds it; a link to the guide's Run is therefore rewritten to the renderer's third Run rather than its first."
 
 clauses = [
   "Bundle destinations — Ordinal assignment",
   "Bundle destinations — Uniqueness",
   "Resolvable where the bundle is read",
   "Source-heading resolution, enumerate headings in source order, container-nested included",
-  "Entry line",
   "Compile before publishing — step 3, source headings indexed, container-nested included",
 ]
 

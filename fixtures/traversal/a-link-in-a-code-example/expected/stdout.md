@@ -10,8 +10,6 @@ A dependency is written `[the draft](draft.md)` inline, and
 
 in a fenced example. Neither is a link, so neither names a dependency.
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
 # Rules
 
 Every rule the procedure requires.

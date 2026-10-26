@@ -8,8 +8,6 @@ A definition is written like this:
 [rules]: rules.md
 ```
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
 # Rules
 
 Every rule the guide names.

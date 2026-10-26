@@ -5,10 +5,7 @@ clauses = [
   "Input and output contract — Whole documents",
   "Link classification and resource handling — Local Markdown document links under the root",
   "Compile before publishing — step 4",
-  "Entry line",
   "Input and output contract — Entry references",
-  "Entry line — No execution verb",
-  "Entry line — Reading scope at the point of use",
 ]
 
 [invocation]

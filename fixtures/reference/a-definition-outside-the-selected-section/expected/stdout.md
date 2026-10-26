@@ -1,5 +1,3 @@
-Follow [Procedure](#procedure). The other sections are material that procedure references.
-
 # Guide
 
 ### Procedure

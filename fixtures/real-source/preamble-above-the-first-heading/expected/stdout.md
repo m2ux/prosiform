@@ -39,8 +39,6 @@ flowchart LR
 
 Teleological language and ontological language share no terms. There is no procedure that derives a structure from a purpose. Step 2 is a synthesis. Steps 6, 7, and 8 are the same synthesis run again when the comparison fails.
 
-Follow [Two Cycles](#two-cycles). The other sections are material that procedure references.
-
 ## Two Cycles
 
 Nouwens combines that ontology with the distinction between stakeholder and designer (Figure 4 of the same paper). One cycle elicits the requirement. The other designs the artefact and matches its exposed behaviour to the expected behaviour.
