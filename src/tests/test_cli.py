@@ -799,12 +799,37 @@ def test_two_sources_sharing_a_title_take_distinct_destinations(root: Path) -> N
     assert run.stdout.count("# Note\n") == 2
 
 
-def test_groups_are_ordered_by_path(root: Path) -> None:
+def test_entry_documents_are_ordered_as_the_invocation_names_them(
+    root: Path,
+) -> None:
     written(root, "guide.md", "# Guide\n")
     written(root, "docs/note.md", "Body.\n")
     written(root, "notes/note.md", "Body.\n")
     ordered = invoke("guide.md", "notes/note.md", "docs/note.md", cwd=root).stdout
-    assert ordered.index("# Docs/Note\n") < ordered.index("# Notes/Note\n")
+    assert ordered.index("# Guide\n") < ordered.index("# Notes/Note\n")
+    assert ordered.index("# Notes/Note\n") < ordered.index("# Docs/Note\n")
+
+
+def test_groups_are_ordered_by_first_link(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n[Zulu](zulu.md) then [Alpha](alpha.md).\n")
+    written(root, "alpha.md", "# Alpha\n\n[Mike](mike.md)\n")
+    written(root, "zulu.md", "# Zulu\n\n[Bravo](bravo.md)\n")
+    written(root, "bravo.md", "# Bravo\n")
+    written(root, "mike.md", "# Mike\n")
+    ordered = invoke("guide.md", cwd=root).stdout
+    found = [ordered.index(f"# {name}\n") for name in ("Guide", "Zulu", "Alpha")]
+    found += [ordered.index(f"# {name}\n") for name in ("Bravo", "Mike")]
+    assert found == sorted(found)
+
+
+def test_members_are_ordered_by_first_link(root: Path) -> None:
+    member = "---\nprosiform: {group: notes, group-depth: 2}\n---\n"
+    written(root, "guide.md", "# Guide\n\n[Zulu](zulu.md) then [Alpha](alpha.md).\n")
+    written(root, "alpha.md", member + "# Alpha\n\n## Use\n\nAlpha use.\n")
+    written(root, "zulu.md", member + "# Zulu\n\n## Use\n\nZulu use.\n")
+    ordered = invoke("guide.md", cwd=root).stdout
+    assert ordered.index("### Zulu\n") < ordered.index("### Alpha\n")
+    assert ordered.index("Zulu use.") < ordered.index("Alpha use.")
 
 
 def test_one_document_named_twice_is_one_group(root: Path) -> None:

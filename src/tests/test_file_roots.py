@@ -58,13 +58,16 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     forward = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     reverse = invoke("two/b.md", "one/a.md", cwd=tmp_path)
     assert forward.status == reverse.status == 0
-    # The first entry document leads, so the two orders differ in which
-    # document opens the bundle; every other arrangement follows the
-    # sources and the two agree below the leader.
+    # The entry documents lead in the order they are named, and each
+    # target follows in the order the bundle first links to it.
     assert forward.stdout.index("# A\n") < forward.stdout.index("# B\n")
     assert reverse.stdout.index("# B\n") < reverse.stdout.index("# A\n")
-    for run in (forward, reverse):
-        assert run.stdout.index("First target.") < run.stdout.index("Second target.")
+    assert forward.stdout.index("First target.") < forward.stdout.index(
+        "Second target."
+    )
+    assert reverse.stdout.index("Second target.") < reverse.stdout.index(
+        "First target."
+    )
     assert "[Target](#x)" in forward.stdout and "[Target](#x-1)" in forward.stdout
 
 

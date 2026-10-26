@@ -755,8 +755,9 @@ def contributing(
     fragment alone selects from the document `-f` names. The path
     is the identity the reference normalized to, so two references
     spelling one document name one group, which carries what each of
-    them selected, and the groups are ordered by path so one selection
-    always bundles to the same bytes.
+    them selected. The documents are in path order, which is the order
+    each round of the traversal reads them in; `placement` decides the
+    order the bundle carries them in.
     """
     selected: dict[str, list[Reference]] = {}
     for one in requested:
@@ -1300,6 +1301,38 @@ def parent_document(entries: Collection[Reference]) -> str | None:
     return entries[0].path or None
 
 
+def placement(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, list[Reference]],
+    referrer: Reference | None,
+    entries: Collection[Reference],
+) -> dict[str, list[Reference]]:
+    """Each document the bundle carries, in the order a reference first names it.
+
+    The entry references are read first, in the order the invocation
+    gives them, and then the selected content of each placed document,
+    in the order the documents were placed, each in source order. A
+    document is placed at the first reference that names it, so the
+    parent leads and an author orders what follows by the order the
+    links are written in. Every document the bundle carries is reached
+    from an entry reference by a chain of the links read here, so the
+    order covers them all.
+    """
+    base = referrer.path if referrer is not None else ""
+    placed = [one.path or base for one in entries]
+    order = list(dict.fromkeys(path for path in placed if path in selected))
+    at = 0
+    while at < len(order):
+        path = order[at]
+        at += 1
+        chosen = selection(path, parsed[path], selected[path], entries)
+        for one in required(path, read[path], parsed[path], chosen, ()):
+            if one.path in selected and one.path not in order:
+                order.append(one.path)
+    return {path: selected[path] for path in order}
+
+
 def assembled(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -1311,16 +1344,17 @@ def assembled(
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
+    The documents arrive in placement order, which `placement` decides.
     A document without conversion settings is its own file group. Every
     other document joins the merged group its slug names, which carries
-    its members in path order. The groups are ordered by path, a merged
-    group taking the first of its members', so one selection always
-    bundles to the same bytes. The group that carries the parent leads.
+    its members in placement order. A group stands where its first
+    document is placed, so the group carrying the parent leads and one
+    selection always bundles to the same bytes.
     """
     parent = parent_document(entries)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path in sorted(selected):
+    for path in selected:
         selecting = selected[path]
         named = read[path].conversion.group
         if named is not None:
@@ -1365,13 +1399,8 @@ def assembled(
                     read[paths[0]].conversion.heading is not False,
                 )
             )
-    ordered = sorted(groups, key=lambda one: min(set(one.record.paths()) | {one.order}))
-    if parent is None:
-        return ordered
-    return sorted(
-        ordered,
-        key=lambda one: parent not in set(one.record.paths()) | {one.order},
-    )
+    rank = {path: at for at, path in enumerate(selected)}
+    return sorted(groups, key=lambda one: rank[one.order])
 
 
 @contextmanager
@@ -1448,6 +1477,7 @@ def compose(
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
     unambiguous(selected, read)
+    selected = placement(read, parsed, selected, referrer, entries)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
