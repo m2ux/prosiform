@@ -24,5 +24,4 @@ The task and epic bodies brought to what one pull request's delivery establishes
      - Use the body and Delivery Findings it returns in the following steps; a row it leaves pending is returned to the caller with the updated change list.
 3. **Epic criteria.**
    Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) with the repository, the criteria the returned Delivery Findings name as ready to verify, the saved epic JSON and body, those findings, delivery revisions, named instruments, project checkout, output body file, pull request records and complete issue-link snapshot.
-4. **Return the result.**
-   Return to the caller the saved task and epic identities, each task's eligibility findings, the verified criteria with their evidence, the epic's Delivery Findings with each coverage disagreement as [Delivery Findings](../artifacts/epic.md#delivery-findings) defines it, and the updated change list.
+   - Return to the caller the saved task and epic identities, each task's eligibility findings, the verified criteria with their evidence, the epic's Delivery Findings with each coverage disagreement as [Delivery Findings](../artifacts/epic.md#delivery-findings) defines it, and the updated change list.
