@@ -15,7 +15,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Use the returned owner and board number for the sync and fetch steps.
    - Resolve a pending theme selection before continuing.
 2. **Sync.**
-   Follow [» Sync Mode](sync-mode.md) for each open initiative on the selected board, with the allowance the caller supplied.
+   Follow [⇉ Sync Mode](sync-mode.md) for each open initiative on the selected board, with the allowance the caller supplied.
    - Wait for its saved delivery results before the fetch step.
    - Return any blocker that prevents current delivery from being established.
 3. **Fetch.**

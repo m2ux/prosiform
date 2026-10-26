@@ -86,7 +86,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Repeat goal and ordering review on changed bodies before returning readiness.
 9. **Record delivered work.**
    When work has landed:
-   - Follow [» Sync Mode](sync-mode.md) for the affected initiative.
+   - Follow [⇉ Sync Mode](sync-mode.md) for the affected initiative.
    - For an unplaced task issue:
      - Add its row through Populate Epic Issue Body.
      - Save that body.
