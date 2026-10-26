@@ -113,15 +113,6 @@ One board's field definitions and requested item state.
 2. When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
 3. Return the field definitions and requested current item.
 
-### *Locate* Project Board
-
-The board identity matching a supplied purpose or theme.
-
-**Inputs:** Owner and proposals-board purpose or theme title.
-
-1. Run [Find Proposals Board](#find-proposals-board) for proposals, or [Find Theme Board](#find-theme-board) for a theme.
-2. Return the identity or an absent-board finding for the caller's selection or creation path.
-
 ### *Update* Item Status
 
 One board item with a confirmed status selection applied.
