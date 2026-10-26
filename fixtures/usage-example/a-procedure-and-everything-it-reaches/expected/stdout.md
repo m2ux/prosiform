@@ -1,12 +1,10 @@
 # Plan Mode
 
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 
 Follow [Procedure](#procedure). The other sections are material that procedure references.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Take the proposal.**
    - When the user names a proposal, its associated issue body defines the problem scope.
@@ -1979,6 +1977,10 @@ GitHub's **Auto-close issues with merged linked pull requests** repository setti
 
 ### Plan Change
 
+#### Allowance
+
+The caller names the change kinds its run applies without asking. A run the user drives directly is supplied none.
+
 #### Change Kinds
 
 | Kind | What It Covers |
@@ -3681,13 +3683,34 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-637.json --prs prs.json --links links.json --pr 950 --tick AC1 --fix fixed-637.md
 ```
 
+# Conventions
+
+- **Session.**
+  Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
+- **Repository.**
+  `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
+- **Bodies.**
+  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
+  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Keep these files in a working directory outside the repository.
+- **Scripts.**
+  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Boards.**
+  A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
+- **Example values.**  Substitute the real ones:
+  - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
+  - `950` a pull request, `I07` and `I08` initiative numbers;
+  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - `1` the Initiative Template board, `13` a board copied from it;
+  - `14` the Proposals Template, `15` the Proposals board;
+  - `m2ux` the user.
+  - `<checkout>` any checkout of the project, a linked worktree included.
+
 # Modes/Propose-Mode
 
-Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
+Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-1) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes-1).
 
 1. **Understand the problem.**
    Ask the user until the friction and the boundary are clear.
@@ -3735,11 +3758,9 @@ The main path meets [Outcomes](#outcomes-1).
 
 # Modes/Sync-Mode
 
-Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
+Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-2) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes-2).
 
 1. **Select.**
    Select an initiative with its open epics, or the epics the user names.
@@ -3879,11 +3900,9 @@ The main path meets [Outcomes](#outcomes-2).
 
 # Modes/Understand-Mode
 
-Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
+Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-3) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes-3).
 
 1. **Select the change.**
    Require the pull request number or URL.
@@ -4083,3 +4102,12 @@ The criteria of one issue, taken together, have these characteristics.
   An assumption is recorded beside the criterion, in the Problem or the Proposal. It is not written as the criterion.
 - **Definitions.**
   A definition is a statement of what a term means. It is not a criterion.
+
+# Rules
+
+- **Decisions.**
+  Ask one at a time, following the [interview rules](guidelines.md#modes). A decision the run's [allowance](#allowance) covers is taken with its recommended option rather than asked. Record each decision in the affected issues and, when there is one, the planning record.
+- **Layers.**
+  Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol runs artifact operations and other protocols; an artifact runs neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
+- **Execution.**
+  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is run whole. Run another mode, a protocol, or a named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.

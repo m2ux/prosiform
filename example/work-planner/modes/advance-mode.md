@@ -4,11 +4,9 @@ prosiform:
 ---
 # Advance Mode
 
-Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery.
+Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Select the board.**
    Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.

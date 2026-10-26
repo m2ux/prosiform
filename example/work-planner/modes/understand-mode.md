@@ -4,11 +4,9 @@ prosiform:
 ---
 # Understand Mode
 
-Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
+Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Select the change.**
    Require the pull request number or URL.
