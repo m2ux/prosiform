@@ -35,7 +35,7 @@ from independence import (
 
 DESIGN = """# A design
 
-## Entry line
+## File heading
 
 - **Link text:** The visible text of the heading the destination names.
 
