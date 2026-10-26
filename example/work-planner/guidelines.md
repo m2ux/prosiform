@@ -57,7 +57,7 @@ These rules apply to mode procedures and artifact operations.
 - **Measured claims.**
   A count or a chain comes from a command's output.
 - **Reachable dependencies.**
-  Each required file, heading and operation has a resolving link. Prerequisites include the files those operations require; links to another file's operation include that file.
+  Each required file, heading and operation has a resolving link; a link to another file's operation names that file.
 
 ## Operations
 
@@ -99,14 +99,14 @@ Read this before adding or changing a mode.
   An outcome does not name a procedure, a step, or a command, and it does not link to one.
 - **Procedure.**
   The top-level procedure is the main path. A short sequence that no other file references stays there. A subsection is an alternative path, a loop whose steps would otherwise be repeated, a unit another file references, or a sequence long enough that the top-level step only names it. Plan mode keeps review, and keeping the goal current, in that sequence. Keeping the goal current repeats the review. A subsection opens with one line on what it is for, and that line does not restate the steps. A step links to the user-goal outcome and does not restate it. A step calls the body artifact's procedure rather than copying it.
-- **Prerequisites.**
-  Prerequisites open with `Read these files first.` They list every file the mode's Procedure, Outcomes or Operations link to, including another mode that step runs. They do not list a family common the mode does not link to. Reading the body artifact includes the common file, because that artifact lists it. Recalculate the list after changing calls or references: retain direct dependencies, including files owning called subsections; remove entries whose last direct use is gone. Caller attribution and descriptions of another mode's internals do not create dependencies for the callee.
+- **Preamble.**
+  The paragraphs after the title state what the mode does. The last closes with `Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.`
 - **Procedure steps.**
   Each numbered step opens with a bold sentence-case action label, with its instructions on the next line. Mode procedures identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
-  Invoke another mode with Run or Follow, naming the selected scope and the whole mode or exact subsection to execute. A subsection call executes that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. Prerequisites require reading documents, not executing their procedures. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process. Called modes are listed under Prerequisites.
+  Invoke another mode with Run or Follow, naming the selected scope and the whole mode or exact subsection to execute. A subsection call executes that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
 - **No spare parts.**
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
@@ -121,7 +121,7 @@ Read this before adding or changing a mode.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every mode is added to this section.
 - **Sections.**
-  Prerequisites, Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
+  Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
 
 ## Protocols
 
@@ -137,8 +137,6 @@ Read this before adding or changing a protocol.
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**
   What a protocol changes, and what a blocker leaves unchanged, is stated by the step that changes it. A protocol carries no section restating the result; a reader following the procedure and its links has it already, and a summary goes stale against the steps it describes.
-- **Prerequisites.**
-  Prerequisites open with `Read these files first.` They list every file the protocol's Procedure links to, including each protocol it runs.
 - **No spare parts.**
   A protocol nothing runs is not a protocol. One exists because a mode or another protocol follows it.
 - **A new protocol.**
@@ -146,7 +144,7 @@ Read this before adding or changing a protocol.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every protocol is added to this section.
 - **Sections.**
-  Prerequisites, Procedure, then Guidance when the file has an assistive statement that is not a step. Procedure is required. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
+  Procedure, then Guidance when the file has an assistive statement that is not a step. Procedure is required. A protocol has no Outcomes, Fields, Rules, Operations or Commands section.
 
 ## Artifacts
 
@@ -181,8 +179,6 @@ Read this before adding or changing an artifact.
   The common file names no kind. A kind's table, its title, and a check that applies only to that kind live on that kind's file. The common file holds the rules every body shares.
 - **Operations.**
   Every procedural sequence occupies a named `###` subsection under Operations, including a kind's population path. Operations itself contains no steps; incorporate any overarching sequence into the named operations that perform its constituent work. Omit Operations when the artifact has only command specifications. Each subsection opens with one line on what it is for, followed by its **Inputs:** line and instructions. The opening line does not restate the steps. A step links to the shape it produces and does not restate it. A kind step links to the common procedure unit it uses and adds only the further population. It does not copy the shared rules.
-- **Prerequisites.**
-  Prerequisites open with `Read these files first.` They list every file the artifact's Operations, Fields or Commands link to. A kind lists `issue-body.md` because it links to it. The common file does not link to a kind.
 - **Operation steps.**
   Address instructions directly to the agent, leading each step with its action. Steps have no separate bold introductory label. Multiple steps use consecutive numbering; an operation with one step uses one bullet and counts as a procedure.
 - **Returned output.**
@@ -200,7 +196,7 @@ Read this before adding or changing an artifact.
 - **Step rules.**
   Put each action's preconditions and refusal conditions in its governing procedure step. Shared preconditions belong to a common procedure that callers invoke. Command specifications require the resulting evidence or authorization as inputs. A rule that binds every artifact is added to this section.
 - **Sections.**
-  Prerequisites, Operations, Fields, then Guidance when it has an assistive statement that is not a step or a field condition, then Commands when the file has command specifications. Fields is required. An artifact has no Procedure, Outcomes or Rules section.
+  Operations, Fields, then Guidance when it has an assistive statement that is not a step or a field condition, then Commands when the file has command specifications. Fields is required. An artifact has no Procedure, Outcomes or Rules section.
 
 ## References
 
@@ -209,7 +205,7 @@ Read this before adding or changing a reference.
 - **Support.**
   A reference is an ad hoc document that supports the process. It is neither a mode nor an artifact.
 - **Shape.**
-  It follows the shared sections above. It does not use Prerequisites, Procedure, Fields, Operations, Commands, and Outcomes.
+  It follows the shared sections above. It does not use Procedure, Fields, Operations, Commands, and Outcomes.
 - **Cited only.**
   A reference is only ever referred to. It cites neither a mode nor an artifact.
 - **Names.**
@@ -220,15 +216,15 @@ Read this before adding or changing a reference.
 ## Entry Point
 
 - **Opening.**  The bulleted list has one item for each issue type.
-- **Section order.**  Rules precedes Dependencies.
+- **Sections.**  Preamble, Bootstrap, Modes, then Dependencies.
 - **Issue bodies.**
   The skill's prose layout applies to its instructions. Issue bodies follow [Issue Body](artifacts/issue-body.md#fields); pull request bodies follow [Pull Request Body](artifacts/pull-request-body.md#fields).
-- **Common conventions.**
-  The entry point supplies [Conventions](SKILL.md#conventions) before mode selection. Graph-specific setup belongs to [Repository Graph](artifacts/repository-graph.md).
+- **Rules and conventions.**
+  What binds every mode sits beside the entry point in [Rules](rules.md) and [Conventions](conventions.md), which each mode's [preamble](#modes) links. Graph-specific setup belongs to [Repository Graph](artifacts/repository-graph.md).
 
 ## Progressive Disclosure
 
-Apply the shared [progressive disclosure](../guidelines.md#progressive-disclosure) and [disclosure verification](../guidelines.md#disclosure-verification) rules to affected callers. Modes are read whole; supporting section reads inherit the mode's command prerequisites.
+Apply the shared [progressive disclosure](../guidelines.md#progressive-disclosure) and [disclosure verification](../guidelines.md#disclosure-verification) rules to affected callers. A mode is followed from its bundle, which carries its rules, conventions and every section it links.
 
 - **Mode routes.**
   Trace each affected mode through its common conventions, selected operations and supporting guides. Include cross-mode calls and explicit whole-file requirements.

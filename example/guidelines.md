@@ -44,12 +44,12 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
     - A step the mode takes once selected stays in the mode file, as does a distinction from another mode.
     - A mode the mode runs for itself goes unnamed, since naming it routes that mode's own requests here.
     - It has no trailing full stop, no purpose clause, and no board status outside that phrase.
-- **Rules.**
-  A statement that binds every mode goes in Rules, never as loose prose in another section.
+- **Rules and conventions.**
+  A statement that binds every mode goes in a rules or conventions file beside SKILL.md, which each mode's preamble links, never as loose prose in SKILL.md.
 - **Dependencies.**
   Every tool, sandbox, runtime, branch and harness capability the skill relies on is named in Dependencies, with what it is needed for.
 - **Commands.**
-  SKILL.md links the shared command conventions on a required path and holds no command of its own.
+  SKILL.md holds no command of its own.
 
 ## Procedure files
 
@@ -125,17 +125,17 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - Prose names a spec by linking to its sub-section, mid-sentence: "run [Check Body Format](work-planner/artifacts/issue-body.md#check-body-format) on each epic".
   - A command body is inlined only in the file that owns the spec.
 - **Conventions.**
-  - Session setup, execution location, example values and other skill-wide prerequisites stand where a procedure reaching them opens no further file: SKILL.md, which selects the mode, or the file holding the operations those procedures open anyway.
+  - Session setup, execution location, example values and other skill-wide prerequisites stand in the conventions file each mode's preamble links.
   - Conventions governing one procedure's commands sit in that procedure's file, ahead of its Commands section.
 
 ## Progressive Disclosure
 
 - **Placement.**
-  Keep shared purpose, mode selection and essential constraints in the entry point. Link conditional detail where the active mode needs it.
+  Keep shared purpose and mode selection in the entry point, and what binds every mode in the rules and conventions files each mode links. Link conditional detail where the active mode needs it.
 - **Applicability.**
   State the condition beside a conditional link and require the reader to resolve it before loading the instructions. Select checks before retrieving their command specs.
 - **Reading boundaries.**
-  Link the smallest complete section the caller needs. The skill's reading rules define a heading link as that section and its subsections, stopping before the next heading of equal or higher level. Whole-file links identify required complete documents.
+  Link the smallest complete section the caller needs. A heading link names that section and its subsections, stopping before the next heading of equal or higher level. Whole-file links identify required complete documents.
 - **File size.**
   A heading link names a section; a reader takes the file. Size each file to one role's whole context, and split a file that carries guidance that role never uses. A boundary the reader need not honour is not a budget.
 - **Prerequisites.**
@@ -146,8 +146,6 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   A calling document links the common section once on a required path before its first specific section, then links specific sections at their points of use. Every supported entry path reaches that prerequisite link; an unlinked preamble or sibling section supplies no context. Reuse complete prerequisite content already read at the same revision.
 - **Prohibition and structure.**
   A rule telling a reader to retrieve less says the file carries more than that reader needs. Remove the surplus rather than policing the read.
-- **Batched reads.**
-  Preserve each link's boundary when batching retrieval. Batch selected whole files or separate section ranges; each range excludes unrelated intervening content. Inspect headings to locate boundaries.
 - **Complete output.**
   Bound reads and output volume so required content is returned completely. Retrieve missing sections when output is truncated; a request for content is not evidence of receipt.
 
