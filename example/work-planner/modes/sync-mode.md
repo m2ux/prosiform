@@ -126,7 +126,7 @@ The main path meets [Outcomes](#outcomes).
     - Follow [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Run [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
+    - Run [» Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
