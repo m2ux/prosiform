@@ -132,3 +132,10 @@ A read-only map of [E02](https://github.com/m2ux/prosiform/issues/263) against `
 - **Dispatch follows the measure.** All ten modes compile at the default budget, so the mode-deferral row is held to the 15% rule of D14. Sync → Understand Mode saves 25,264 of 146,718 bytes (17.2%) and is dispatched; Plan → Propose Mode saves 15,088 of 154,287 (9.8%) and stays inline, which leaves the bundle `demo/i02` records unchanged.
 
 The epic now holds twelve rows in four units: the work-tracker retirement (W06–W08), the skill procedures (W04, W14, W15), the grouping contract (W10–W12, after W06 for the README's design pin) and the usage fixtures (W09, W13, W16). Its criteria are renumbered AC1 to AC13; its row ids keep their numbers.
+
+## D17 — Rulings made while the debt epic was delivered
+
+- **A result stands for its revision.** Within one run, a criterion's instrument result, pass or fail, holds for the revision it ran on; a later check on that revision keeps it, and a new revision or a new run checks again. An unchanged revision gives a deterministic instrument the same answer.
+- **Deliver passes the evidence too.** Sync's chain was the criterion's scope; Deliver's Task Merges can check one epic base twice in a run, so a further row (W17) carries the evidence through Task Merge and Issue Delivery.
+- **A relative link leaving the root is the author's.** `pf` keeps such a link as written, and it resolves from the bundle only where the bundle sits beside its source. The build does not re-aim it.
+- **A reference into a shared section reaches its document.** Delivering the grouping row found both references into a section two members share resolving to the shared heading: the corpus had recorded the regression when `77539d2d` re-recorded the fixture from the build. The fix is one line in `grouping.section()`, so it rode with the grouping row that states the rule ([#320](https://github.com/m2ux/prosiform/pull/320)), and each reference now reaches its document's variant heading.
