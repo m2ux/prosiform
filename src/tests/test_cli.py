@@ -506,7 +506,7 @@ def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
     written(
         root,
         "docs/notes.md",
-        "# Notes\n\n## Detail\n\nSee [other](docs/other.md#nowhere).\n",
+        "# Notes\n\n## Detail\n\nSee [other](other.md#nowhere).\n",
     )
     written(root, "docs/other.md", "# Other\n\n## Here\n\nContent.\n")
     run = invoke("-d", "json", "entry.md", cwd=root)
@@ -518,7 +518,7 @@ def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
         "docs/notes.md#detail",
         "docs/other.md#nowhere",
     ]
-    assert reported["reference"] == "docs/other.md#nowhere"
+    assert reported["reference"] == "other.md#nowhere"
     assert reported["resolved"] == "docs/other.md"
     assert reported["source"] == "docs/notes.md:5"
 
@@ -1397,7 +1397,7 @@ def test_a_deferred_destination_is_the_target_path_from_the_root(root: Path) -> 
     written(
         root,
         "topic/guide.md",
-        "# Guide\n\nSee [\u00ac the rules](shared/rules.md#here).\n",
+        "# Guide\n\nSee [\u00ac the rules](../shared/rules.md#here).\n",
     )
     written(root, "shared/rules.md", "# Rules\n\n## Here\n\nEvery rule.\n")
     run = invoke("topic/guide.md", cwd=root)

@@ -218,15 +218,14 @@ class Stack:
         self.tree = self.artifacts / "workspace"
         self.tree.mkdir(parents=True)
         self.invocations = 0
-        self.cwd = self.tree / "run"
-        self.cwd.mkdir()
+        self.cwd = self.tree
         self.skill = self.tree / "skills" / "pf-bootstrap-specimen" / "SKILL.md"
         self.write(self.skill, SKILL)
         self.write(
             "skills/pf-bootstrap-specimen/modes/assemble.md",
             document(
                 "# Assemble\n\nENTRY_INTRO\n\n## Steps\n\nASSEMBLE_MARKER\n\n"
-                "Read [Rules](libraries/alpha/rules.md#checks).\n",
+                "Read [Rules](../../../libraries/alpha/rules.md#checks).\n",
                 root="../../..",
                 group="procedures",
                 depth=2,
@@ -236,7 +235,7 @@ class Stack:
             "skills/pf-bootstrap-specimen/modes/review.md",
             document(
                 "# Review\n\n## Checklist\n\n### Inspect\n\nREVIEW_MARKER\n\n"
-                "Read [Rules](rules.md).\n",
+                "Read [Rules](../../../libraries/beta/rules.md).\n",
                 root="../../../libraries/beta",
                 group="reviews",
                 depth=3,
@@ -245,7 +244,8 @@ class Stack:
         self.write(
             "skills/pf-bootstrap-specimen/modes/defaults.md",
             document(
-                "# Defaults\n\n## Steps\n\nDEFAULTS_MARKER\n\nRead [Leaf](leaf.md).\n",
+                "# Defaults\n\n## Steps\n\nDEFAULTS_MARKER\n\n"
+                "Read [Leaf](../../../run/leaf.md).\n",
                 group="defaults",
                 depth=2,
             ),
@@ -255,7 +255,7 @@ class Stack:
             document(
                 "# Rules\n\nALPHA_UNSELECTED_INTRO\n\n## Checks\n\n"
                 "ALPHA_RULES_MARKER\n\nRead [Checks](nested/checks.md).\n",
-                root=".",
+                root="..",
                 group="rules",
                 depth=2,
             ),
@@ -264,7 +264,7 @@ class Stack:
             "libraries/alpha/nested/checks.md",
             document(
                 "# Checks\n\n## Gate\n\n### Verify\n\nCHECKS_MARKER\n\n"
-                "Read [Shared](shared.md).\n",
+                "Read [Shared](../shared.md).\n",
                 root="..",
                 group="checks",
                 depth=3,
@@ -274,7 +274,7 @@ class Stack:
             "libraries/alpha/shared.md",
             document(
                 "# Shared\n\n## Content\n\nALPHA_SHARED_MARKER\n\n"
-                "Read [Leaf](leaf.md).\n",
+                "Read [Leaf](../../run/leaf.md).\n",
                 group="shared",
                 depth=2,
             ),
@@ -293,21 +293,13 @@ class Stack:
             "libraries/beta/shared.md",
             document(
                 "# Shared\n\n## Content\n\nBETA_SHARED_MARKER\n\n"
-                "Read [Leaf](leaf.md).\n",
+                "Read [Leaf](../../run/leaf.md).\n",
                 group="shared",
                 depth=2,
             ),
         )
-        self.write_tail(self.cwd, "CWD")
-        for path in (
-            "libraries/alpha/leaf.md",
-            "libraries/beta/leaf.md",
-            "skills/pf-bootstrap-specimen/modes/leaf.md",
-            "skills/pf-bootstrap-specimen/modes/rules.md",
-            "libraries/alpha/nested/shared.md",
-            "run/rules.md",
-        ):
-            self.write(path, "# Decoy\n\nWRONG_ROOT_MARKER\n")
+        self.write_tail(self.tree / "run", "RUN")
+        self.write("libraries/nested/checks.md", "# Decoy\n\nWRONG_ROOT_MARKER\n")
 
     def write(self, path: Path | str, text: str) -> None:
         """Write one source, creating the directories that hold it."""
@@ -551,7 +543,7 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         output = stack.successful(stack.invoke("-o", "-", stack.entry(label)))
         markers, groups, absent = cases[label]
         stack.assert_content(
-            output, [*markers, "CWD_LEAF_MARKER", "CWD_TAIL_MARKER"], groups
+            output, [*markers, "RUN_LEAF_MARKER", "RUN_TAIL_MARKER"], groups
         )
         for marker in absent:
             assert marker not in output
@@ -562,19 +554,17 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         assert stack.skill.name not in stack.entry(label)
 
 
-def test_absent_roots_follow_the_invocation_directory(stack: Stack) -> None:
-    """A second caller directory supplies the leaf an absent root resolves."""
-    other = stack.tree / "other-run"
-    stack.write_tail(other, "OTHER")
+def test_absent_roots_are_bounded_by_the_invocation_directory(stack: Stack) -> None:
+    """A caller directory that does not hold the leaf leaves the link to it authored."""
+    other = stack.tree / "skills"
     for label in stack.targets():
         first = stack.successful(stack.invoke("-o", "-", stack.entry(label)))
         second = stack.successful(
             stack.invoke("-o", "-", stack.entry(label, cwd=other), cwd=other)
         )
-        assert "CWD_LEAF_MARKER" in first
-        assert "OTHER_LEAF_MARKER" in second
-        assert "OTHER_TAIL_MARKER" in second
-        assert "CWD_LEAF_MARKER" not in second
+        assert "RUN_LEAF_MARKER" in first
+        assert "RUN_LEAF_MARKER" not in second
+        assert "run/leaf.md)" in second
 
 
 def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
@@ -583,7 +573,7 @@ def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
     assert "ENTRY_INTRO" not in output
     stack.assert_content(
         output,
-        ["ASSEMBLE_MARKER", "CHECKS_MARKER", "CWD_TAIL_MARKER"],
+        ["ASSEMBLE_MARKER", "CHECKS_MARKER", "RUN_TAIL_MARKER"],
         ["Procedures", "Checks", "Leaves"],
     )
 
@@ -616,8 +606,8 @@ def test_repeated_target_is_included_once(stack: Stack) -> None:
     target = stack.entry("Defaults")
     output = stack.successful(stack.invoke("-o", "-", target, target))
     assert output.count("DEFAULTS_MARKER") == 1
-    assert output.count("CWD_LEAF_MARKER") == 1
-    derived = stack.cwd / ".._skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
+    assert output.count("RUN_LEAF_MARKER") == 1
+    derived = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
     result = stack.invoke(target, target, bundle=derived)
     assert result.returncode == 0, result.stderr
     assert result.stdout == ""
@@ -625,11 +615,12 @@ def test_repeated_target_is_included_once(stack: Stack) -> None:
 
 
 def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
-    """Parents with different roots reach one absent-root source and the caller leaf."""
+    """Parents with different roots reach one source the caller directory bounds."""
     stack.write(
         "libraries/alpha/via.md",
         document(
-            "# Via\n\n## Body\n\nALPHA_VIA_MARKER\n\nRead [Common](common.md).\n",
+            "# Via\n\n## Body\n\nALPHA_VIA_MARKER\n\n"
+            "Read [Common](../../shared/common.md).\n",
             root="../../shared",
             group="alpha-via",
             depth=2,
@@ -638,7 +629,8 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
     stack.write(
         "portal/via.md",
         document(
-            "# Via\n\n## Body\n\nPORTAL_VIA_MARKER\n\nRead [Common](common.md).\n",
+            "# Via\n\n## Body\n\nPORTAL_VIA_MARKER\n\n"
+            "Read [Common](../shared/common.md).\n",
             root="../shared",
             group="portal-via",
             depth=2,
@@ -647,12 +639,11 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
     stack.write(
         "shared/common.md",
         document(
-            "# Common\n\n## Body\n\nCOMMON_MARKER\n\nRead [Leaf](leaf.md).\n",
+            "# Common\n\n## Body\n\nCOMMON_MARKER\n\nRead [Leaf](../run/leaf.md).\n",
             group="notes",
             depth=2,
         ),
     )
-    stack.write("shared/leaf.md", "# Decoy\n\nWRONG_ROOT_MARKER\n")
     stack.write(
         "join.md",
         document(
@@ -669,14 +660,14 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
     assert 'root: "../../shared"' in alpha
     assert 'root: "../shared"' in portal
     assert "root:" not in (stack.tree / "shared/common.md").read_text(encoding="utf-8")
-    output = stack.successful(stack.invoke("-o", "-", "../join.md"))
+    output = stack.successful(stack.invoke("-o", "-", "join.md"))
     for marker in (
         "JOIN_MARKER",
         "ALPHA_VIA_MARKER",
         "PORTAL_VIA_MARKER",
         "COMMON_MARKER",
-        "CWD_LEAF_MARKER",
-        "CWD_TAIL_MARKER",
+        "RUN_LEAF_MARKER",
+        "RUN_TAIL_MARKER",
     ):
         assert output.count(marker) == 1, marker
     headings = re.findall(r"^# (.+)$", output, re.M)
@@ -690,8 +681,8 @@ def test_rewritten_destinations_are_stable(stack: Stack) -> None:
     first = stack.successful(stack.invoke("-o", "-", target))
     second = stack.successful(stack.invoke("-o", "-", target))
     assert first == second
-    assert "[Rules](#checks-2)" in first
-    assert "[Checks](#checks-1)" in first
+    assert "[Rules](#checks)" in first
+    assert "[Checks](#checks-2)" in first
     assert "[Shared](#shared-1)" in first
     assert "[Leaf](#leaf)" in first
     assert "[Tail](#tail)" in first

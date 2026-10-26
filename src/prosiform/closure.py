@@ -348,16 +348,6 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
     )
 
 
-def qualified(path: str) -> bool:
-    """Whether a link already names the steps from the file that writes it.
-
-    A parent segment is the path a reader of that file follows. The
-    allowed source root is the boundary around the result, not a prefix
-    on the link.
-    """
-    return PARENT in path.split(SEPARATOR)
-
-
 def covers(root: str, path: str) -> bool:
     """Whether one working-directory-relative path sits inside the source root."""
     anchor = "/anchor/cwd"
@@ -369,38 +359,23 @@ def covers(root: str, path: str) -> bool:
 def inside(document: str, text: str, root: str = "") -> Reference:
     """Resolve a link from the file that carries it, within the source root.
 
-    A link with a parent segment is the path a reader follows from the
-    file, so it is resolved from that file's directory and the root is
-    not applied to it. The root still bounds the result: a path that
-    lands outside it names nothing the root can contain. Every other
-    link is resolved from the root. A fragment with no path names a
-    section of the document that carries it.
+    A link is the path a reader of its file follows, so it resolves from
+    that file's directory. The root bounds the result: a path landing
+    outside it names nothing the root can contain. A fragment with no
+    path names a section of the document that carries it.
     """
-    raw = components(text).path
-    if raw and qualified(raw):
-        base = posixpath.dirname(document)
-        found = resolve(text, base, allow_parent=True)
-        if found.external:
-            return found
-        if not covers(root, found.path):
-            raise OutsideRoot(
-                "normalizes above the allowed source root, which cannot contain "
-                "the document it names"
-            )
-        walk = found.walk or found.path
-        if base:
-            walk = posixpath.join(base, walk)
-        return replace(found, walk=walk)
-    found = resolve(text)
+    base = posixpath.dirname(document)
+    found = resolve(text, base, allow_parent=True)
     if found.external:
         return found
-    if raw:
-        return replace(
-            found,
-            path=posixpath.normpath(posixpath.join(root, found.path)),
-            walk=posixpath.join(root, found.walk or found.path),
+    if not components(text).path:
+        return replace(found, path=document, walk=document)
+    if not covers(root, found.path):
+        raise OutsideRoot(
+            "normalizes above the allowed source root, which cannot contain "
+            "the document it names"
         )
-    return replace(found, path=document, walk=document)
+    return replace(found, walk=posixpath.join(base, found.walk or found.path))
 
 
 def bundled(document: str, text: str, opening: str, root: str = "") -> Reference | None:

@@ -18,21 +18,24 @@ def rooted(root: str, text: str) -> str:
 def test_entries_and_linked_files_default_to_invocation_directory(
     tmp_path: Path,
 ) -> None:
-    written(tmp_path, "entry/a.md", "# A\n\n[B](linked/b.md)\n")
-    written(tmp_path, "linked/b.md", "# B\n\n[C](c.md)\n")
-    written(tmp_path, "c.md", "# C\n\nShared cwd.\n")
+    written(tmp_path, "entry/a.md", "# A\n\n[B](../linked/b.md)\n")
+    written(tmp_path, "linked/b.md", "# B\n\n[C](../c.md)\n")
+    written(tmp_path, "c.md", "# C\n\nShared cwd.\n\n[Above](../c.md)\n")
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Shared cwd." in run.stdout
+    assert "[Above](../c.md)" in run.stdout
 
 
 def test_library_root_outside_source_and_fragment_self_reference(
     tmp_path: Path,
 ) -> None:
     written(
-        tmp_path, "entries/a.md", rooted("../library", "# A\n\n[Self](#a) [B](b.md)\n")
+        tmp_path,
+        "entries/a.md",
+        rooted("../library", "# A\n\n[Self](#a) [B](../library/b.md)\n"),
     )
-    written(tmp_path, "library/b.md", rooted("../other", "# B\n\n[C](c.md)\n"))
+    written(tmp_path, "library/b.md", rooted("../other", "# B\n\n[C](../other/c.md)\n"))
     written(tmp_path, "other/c.md", "# C\n\nSeparate library.\n")
     run = invoke("entries/a.md", cwd=tmp_path)
     assert run.status == 0
@@ -79,12 +82,12 @@ def test_equal_displayed_files_under_distinct_roots_are_ambiguous(
 
 
 def test_shared_target_cycle_retains_its_own_root(tmp_path: Path) -> None:
-    written(tmp_path, "one/a.md", rooted("../shared", "# A\n\n[C](c.md)\n"))
-    written(tmp_path, "two/b.md", rooted("../shared", "# B\n\n[C](c.md)\n"))
+    written(tmp_path, "one/a.md", rooted("../shared", "# A\n\n[C](../shared/c.md)\n"))
+    written(tmp_path, "two/b.md", rooted("../shared", "# B\n\n[C](../shared/c.md)\n"))
     written(
         tmp_path,
         "shared/c.md",
-        rooted("..", "# C\n\n[A](one/a.md) [B](two/b.md)\n\nOnce.\n"),
+        rooted("..", "# C\n\n[A](../one/a.md) [B](../two/b.md)\n\nOnce.\n"),
     )
     run = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     assert run.status == 0
@@ -95,7 +98,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(
         tmp_path,
         "entry/a.md",
-        rooted("../library", "# A\n\n[¬Later](b%20%25%23%3F.md)\n"),
+        rooted("../library", "# A\n\n[¬Later](../library/b%20%25%23%3F.md)\n"),
     )
     written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
     run = invoke("entry/a.md", cwd=tmp_path)
@@ -143,6 +146,19 @@ def test_outside_root_link_is_an_unopened_citation(tmp_path: Path) -> None:
     run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0
     assert "[Outside](../missing.md)" in run.stdout
+
+
+def test_a_link_beside_its_file_outside_the_root_is_an_unopened_citation(
+    tmp_path: Path,
+) -> None:
+    written(tmp_path, "a.md", rooted("library", "# A\n\n[Beside](b.md)\n"))
+    written(tmp_path, "b.md", "# B\n\nBeside the entry.\n")
+    written(tmp_path, "library/b.md", "# B\n\nInside the root.\n")
+    run = invoke("a.md", cwd=tmp_path)
+    assert run.status == 0
+    assert "[Beside](b.md)" in run.stdout
+    assert "Beside the entry." not in run.stdout
+    assert "Inside the root." not in run.stdout
 
 
 def test_root_replacement_prevents_publication(
