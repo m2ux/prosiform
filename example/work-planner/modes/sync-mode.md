@@ -41,7 +41,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Return a missing selection or unresolved provenance as a blocker.
    - Apply [Record Board Delivery](../artifacts/board-delivery.md#record-board-delivery) with the saved initiative, epic and task identities, the returned board identity and an output directory.
 6. **Explain each change entering review.**
-   For each task or epic Record Board Delivery newly moves to In Review, follow [Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base, where [Ownership](../artifacts/architecture-overview.md#ownership) gives the overview to this run.
+   For each task or epic Record Board Delivery newly moves to In Review, follow [⇉ Understand Mode](understand-mode.md) with the task's open pull request or each epic review pull request, one run per base, where [Ownership](../artifacts/architecture-overview.md#ownership) gives the overview to this run.
    - Complete each overview before continuing.
 7. **Report.**
    Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
