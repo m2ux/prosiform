@@ -20,7 +20,7 @@ Each theme's project board shows where its items stand. The Proposals board hold
 
 ## Bootstrap
 
-Run `pf` from this file's directory, on a link's destination as written. A link opening with `↳` names a mode: on selecting it, run `pf -o <scratch>/<mode>.bundle.md <destination>`, with `<scratch>` a working directory outside the repository, then read the whole bundle and follow it as that mode's procedure. The bundle carries every protocol, artifact and reference the mode reaches. A link opening with `¬`, or a link in a bundle that names a file rather than one of the bundle's headings, was left out of it; when a step needs that content, load it the same way. A non-zero exit stops the run and reports `pf`'s diagnostics.
+Run `pf` from this file's directory, on a link's destination as written. A link opening with `↳` names a mode: on selecting it, run `pf -o <scratch>/<mode>.bundle.md <destination>`, with `<scratch>` a working directory outside the repository, then read the whole bundle and follow it as that mode's procedure. The bundle carries every protocol, artifact and reference the mode reaches. A non-zero exit stops the run and reports `pf`'s diagnostics.
 
 ## Modes
 
