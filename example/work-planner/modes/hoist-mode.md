@@ -4,11 +4,9 @@ prosiform:
 ---
 # Hoist Mode
 
-Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision.
+Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Fetch.**
    Fetch every issue with [Read Repository Issues](../artifacts/issue.md#read-repository-issues).

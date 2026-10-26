@@ -4,11 +4,9 @@ prosiform:
 ---
 # Deliver Mode
 
-Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, stands a completed epic in review on the board, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds.
+Starts the work a theme board makes available. It advances the board, merges each open pull request whose test plan has passed, stands a completed epic in review on the board, holds each available unit with a planning record, and dispatches one session per unit to plan, implement, open its pull request, merge it when its test plan has passed, hoist arising issues, and defer the technical debt its validation finds. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Select.**
    Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
