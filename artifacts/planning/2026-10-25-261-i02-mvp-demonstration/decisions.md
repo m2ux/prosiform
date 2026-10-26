@@ -74,4 +74,20 @@ Every guideline that conflicts with that structure is removed or restated: Prere
 
 `pf` reports nothing about an entry reference resolving to the destination the entry line links it to: the user ruled such references allowed, so a successful run writes only the bundle unless it names a resource. The design's Entry destinations clause leaves with the warning.
 
-The migration epic carries these as W12 ([#278](https://github.com/m2ux/prosiform/pull/278)), observed by AC16, and W13 ([#277](https://github.com/m2ux/prosiform/pull/277)), observed by AC17 to AC19. Its criteria are renumbered from AC14; its row ids keep their numbers.
+The migration epic carries these as W12 ([#278](https://github.com/m2ux/prosiform/pull/278)), observed by AC16, and W13 ([#277](https://github.com/m2ux/prosiform/pull/277)), observed by AC17 to AC19.
+
+## D12 — The source states the instruction; the bundle is shaped for the agent following it
+
+A routing test sent a fresh agent from `SKILL.md` through `bootstrap.md` to the Sync bundle, which it built from `example/work-planner`, read whole and stopped before any step. What it tripped on, and a review of the bundle's layout, led to these rulings.
+
+- **The preamble carries the instruction.** Every mode's preamble closes with "Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met." The instruction can differ per bundle, so `pf` emits no opening line of its own, and the `prosiform.dispatch` key, whose text followed that line, is gone with it. A bundle is ordinary Markdown: bundling a bundle is legal, its resolved links stay as they are and only its deferred links expand. Expanding one can bring in a document the bundle already holds, under a second heading, and that is accepted.
+- **Guidelines serve revision.** A rule a running mode needs sits in `rules.md` or `conventions.md`. The interview rules moved there, and every runtime link to them is a plain link.
+- **Operations are applied and procedures followed.** A link to an artifact operation opens with Apply, a link to a mode, protocol or procedure section with Follow, and a link to a command keeps Run. A mode's command specifications sit under Commands.
+- **A root bounds inclusion and names nothing.** A file that declares no group is headed by its own H1, or by its working-directory-relative path without one, and the default output name is the entry's working-directory-relative path.
+- **Each artifact is one block.** Artifacts group at depth 1 under an Artifacts heading. Merging them by section kind at depth 2 put every artifact's material under the mode's own title and split each artifact across three regions; the Sync bundle's median link jump fell from 899 lines to 147.
+- **Order follows the links.** Groups, and the members inside each group, follow the order the bundle first links them, so an author sets order by listing links in the preamble. Rules and Conventions follow each mode's own sections.
+- **An anomaly warns.** An entry reference resolving to its own heading reports nothing. Coinciding generated headings, file or member, publish with `W_COINCIDENT_HEADING` and anchors told apart by numbering; repeated headings an author writes do not warn.
+
+Deferred: installing `pf` on this host waits for the epic to reach `main`; a usage fixture showing deferred links is the debt epic's W13; generic heading names in the skill wait for its refactor; script paths naming `skills/work-planner` hold until the example becomes the production skill.
+
+The migration epic carries these as W14 to W21 ([#279](https://github.com/m2ux/prosiform/pull/279), [#280](https://github.com/m2ux/prosiform/pull/280), [#283](https://github.com/m2ux/prosiform/pull/283), [#281](https://github.com/m2ux/prosiform/pull/281), [#282](https://github.com/m2ux/prosiform/pull/282), [#284](https://github.com/m2ux/prosiform/pull/284), [#285](https://github.com/m2ux/prosiform/pull/285), [#286](https://github.com/m2ux/prosiform/pull/286)), observed by AC20 to AC27. AC5 states which files declare a group, and AC25 the artifacts' layout. Its criteria are renumbered from AC14; its row ids keep their numbers.
