@@ -1719,6 +1719,14 @@ Two paragraphs: the purpose of this work, and why it matters.
 - The link sits on the artifact's name. The row says what the artifact holds, and the artifact is the home of that content.
 - In an overview record, the architecture overview is the one row, and its pull request is under Links.
 
+#### Dependency Check
+
+`dependencies.md`, an Artifacts row: the longest chains, contending pairs and proposed epic priority map the initiative's latest dependency check printed. A later check replaces it.
+
+#### Goal Trace
+
+`goal-trace.md`, an Artifacts row: the trace table of the initiative's latest goal review. A later review replaces it.
+
 #### Links
 
 External references only: a tracker issue, a parent epic, a pull request. An artifact of this plan is an Artifacts row.
@@ -1862,7 +1870,7 @@ One orphan's work saved in its confirmed destination, with the orphan rewritten 
      - Return a temporary link left unresolved, with the file that holds it, to the caller as a blocker.
    - Apply [Save Tracker Issue](#save-tracker-issue) with the body change for each existing issue whose body file changed, a newly saved issue whose links were resolved among them.
 4. **Record the graph.**
-   When step 2 ran and the initiative has a planning record, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map that Check Dependencies and Numbering returned, the saved destination issue links, and the caller's commit message file when it asks to publish.
+   When step 2 ran and the initiative has a planning record, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map that Check Dependencies and Numbering returned as its [Dependency Check](#dependency-check), the saved destination issue links, and the caller's commit message file when it asks to publish.
 5. **Settle the orphan.**
    By the returned disposition:
    - **Kept or left.**
