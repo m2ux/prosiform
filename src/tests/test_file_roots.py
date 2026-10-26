@@ -98,7 +98,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(
         tmp_path,
         "entry/a.md",
-        rooted("../library", "# A\n\n[¬Later](../library/b%20%25%23%3F.md)\n"),
+        rooted("../library", "# A\n\n[¬ Later](../library/b%20%25%23%3F.md)\n"),
     )
     written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
     run = invoke("entry/a.md", cwd=tmp_path)
