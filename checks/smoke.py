@@ -195,11 +195,17 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
 
 
 def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
-    """Derived files, combined selections and validation through the installed CLI."""
+    """Derived files, combined selections and validation through the installed CLI.
+
+    A derived name is the entry's path from the working directory, its
+    separators written as underscores, so an entry above that directory
+    keeps its parent segments as filename text.
+    """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
+    derived = str(Path(entry).with_suffix("")).replace(os.sep, "_")
     for reference, name, expected in (
-        (entry, "guide.bundle.md", BUNDLE),
-        (entry + "#guide", "guide__guide.bundle.md", BUNDLE),
+        (entry, f"{derived}.bundle.md", BUNDLE),
+        (entry + "#guide", f"{derived}__guide.bundle.md", BUNDLE),
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
@@ -209,18 +215,18 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
         destination.unlink()
     run = invoke(environment, elsewhere, "-c", entry)
     succeeded(run, "check mode")
-    if (elsewhere / "guide.bundle.md").exists() or run.stdout:
+    if (elsewhere / f"{derived}.bundle.md").exists() or run.stdout:
         raise Failed("check mode published a bundle")
     run = invoke(environment, elsewhere, entry, entry + "#guide")
     if run.returncode != 2 or run.stdout:
         raise Failed("combined selections need an explicit destination")
-    destination = elsewhere / "guide.bundle.md"
+    destination = elsewhere / f"{derived}.bundle.md"
     destination.mkdir()
     run = invoke(environment, elsewhere, entry)
     if run.returncode != 3 or run.stdout or not destination.is_dir():
         raise Failed("derived output does not preserve an unwritable destination")
     destination.rmdir()
-    if list(elsewhere.glob(".guide.bundle.md.*")):
+    if list(elsewhere.glob(f".{derived}.bundle.md.*")):
         raise Failed("failed publication leaves temporary output")
 
 
