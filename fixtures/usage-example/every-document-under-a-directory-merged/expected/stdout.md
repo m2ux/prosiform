@@ -9,14 +9,14 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 1. **Fetch.**
    Fetch every issue with [Read Repository Issues](#read-repository-issues).
 2. **List candidates.**
-   Call [Find Placement Candidates](#find-placement-candidates) with the complete issue collection.
+   Apply [Find Placement Candidates](#find-placement-candidates) with the complete issue collection.
    - Use its candidates and available destinations for triage.
 3. **Triage.**
    Read each candidate's body and discussion through [Read Tracker Issue](#read-tracker-issue), with the initiative and epic bodies whose themes or criteria it touches.
    - Supply that evidence and planning-record references to [Draft Issue Placement](#draft-issue-placement) for each option.
    - Order the returned options best first, with Leave last.
 4. **Decide each placement.**
-   Run [Check Plan Change Autonomy](#check-plan-change-autonomy) for each orphan's best option that changes the plan, with the allowance the caller supplied.
+   Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) for each orphan's best option that changes the plan, with the allowance the caller supplied.
    - An automatic option is confirmed as it stands, and recorded through [Record Plan Change](#record-plan-change).
    - A held option is settled as [Held Change](#held-change) states, leaving the orphan where it is.
    - An option put to the user is offered as an [interview](#rules). The grounding paragraph says what the orphan asks and where it fits.
@@ -24,12 +24,12 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
      - Placing an orphan in another initiative's issue needs that answer as its approval.
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
 5. **Apply.**
-   Run [Apply Issue Placement](#apply-issue-placement) with each confirmed placement and its current source and destination records.
+   Apply [Apply Issue Placement](#apply-issue-placement) with each confirmed placement and its current source and destination records.
    - After it returns the saved destination, run exactly one disposition procedure with the returned destination and source records: [Rewrite Orphan Issue](#rewrite-orphan-issue) for kept or left issues, or [Subsume Orphan Work](#subsume-orphan-work) for work taken by another issue.
    - Resume review.
 6. **Review.**
-   - Run [Validate Issue Body](#validate-issue-body) on every issue the hoist changed or created.
-   - Run [Check Dependencies and Numbering](#check-dependencies-and-numbering) on each initiative that gained a task or epic.
+   - Apply [Validate Issue Body](#validate-issue-body) to every issue the hoist changed or created.
+   - Apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) to each initiative that gained a task or epic.
    - Resolve each finding as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it: an automatic correction is applied, and a held one is settled as [Held Change](#held-change) states.
    - Apply confirmed body corrections through [Apply Body Corrections](#apply-body-corrections).
    - Publish through [Save Tracker Issue](#save-tracker-issue).
@@ -98,7 +98,7 @@ One epic body and its local validation findings.
 2. Populate the shared table through [Write Issue Table](#write-issue-table).
 3. Fill the epic-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown).
-4. Call [Build Body Snapshot](#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
+4. Apply [Build Body Snapshot](#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
 5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
 6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
 7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
@@ -148,7 +148,7 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
 
-1. Call [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
 2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
@@ -177,9 +177,9 @@ The agreed disposition of criteria a delivered row left unmet.
    - Continue to the draft step with only the criteria the user confirms need further work.
 2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
    - Confirm the draft with the user.
-   - On acceptance, call [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
+   - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
    - Return an unanswered draft as pending without continuing to the reconcile step.
-3. Run [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
+3. Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
    - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
    - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
 
@@ -192,7 +192,7 @@ One initiative body and its local validation findings.
 **Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
 
 1. Populate the body through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-2. Follow [Check Round of Edits](#check-round-of-edits).
+2. Apply [Check Round of Edits](#check-round-of-edits).
 3. Return the populated body and its local format findings to the caller.
 
 #### *Draft* Initiative Issue Body
@@ -294,7 +294,7 @@ One populated body and its metadata, written to the tracker.
 2. Return a missing-label result when an assignment names a label the repository does not contain.
 3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
 4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
-5. Run [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
+5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
 7. Compare the saved fields with the intended body and metadata.
 
@@ -305,7 +305,7 @@ An issue whose work is tracked by another issue.
 **Inputs:** Issue identity, confirmed destination evidence and comment file.
 
 1. Confirm the supplied destination contains the work and cites its source issue.
-2. Run [Comment on Issue](#comment-on-issue) with the destination reference and supplied comment file.
+2. Apply [Comment on Issue](#comment-on-issue) with the destination reference and supplied comment file.
 3. Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
 4. Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
 
@@ -365,19 +365,19 @@ One selected destination for an orphan's work.
      - When they exceed the epic's criteria, add epic criteria cited by the task row.
      - Publish the affected bodies through [Save Tracker Issue](#save-tracker-issue).
    - **New task.**
-     - Run [Populate Epic Issue Body](#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
+     - Apply [Populate Epic Issue Body](#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
      - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
      - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
      - Number the row where it can start.
-     - When movable rows change number, run [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
+     - When movable rows change number, apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
      - Publish the checked bodies through Save Tracker Issue.
    - **New epic.**
-     - Run [Populate Epic Issue Body](#populate-epic-issue-body).
+     - Apply [Populate Epic Issue Body](#populate-epic-issue-body).
      - Populate the covering row through [Draft Initiative Issue Body](#draft-initiative-issue-body).
      - Publish the epic through [Save Tracker Issue](#save-tracker-issue).
      - Link its issue in the initiative row.
    - **New initiative.**
-     - Run [Populate Initiative Issue Body](#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
+     - Apply [Populate Initiative Issue Body](#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
      - Publish through [Save Tracker Issue](#save-tracker-issue).
    - **Leave.**
      - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
@@ -394,9 +394,9 @@ The selected layout, with the original wording preserved for readers.
    - Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
 2. Use the selected [Populate Task Body](#populate-task-body), [Populate Epic Issue Body](#populate-epic-issue-body), [Populate Initiative Issue Body](#populate-initiative-issue-body) or [Populate Standalone Body](#populate-standalone-body) body.
    - Carry evidence into Problem and design into Proposal.
-3. Run [Check Round of Edits](#check-round-of-edits) with the populated body and selected kind conditions before publishing.
+3. Apply [Check Round of Edits](#check-round-of-edits) with the populated body and selected kind conditions before publishing.
    - Resolve findings.
-   - Run [Save Tracker Issue](#save-tracker-issue) with the validated body, title and labels.
+   - Apply [Save Tracker Issue](#save-tracker-issue) with the validated body, title and labels.
    - Return the saved identity to the caller.
 
 #### *Subsume* Orphan Work
@@ -410,7 +410,7 @@ The work remains tracked by the taking issue.
    - Put the design in Proposal.
    - Cite the orphan and any planning record in References.
 2. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
-3. Run [Close Transferred Work](#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
+3. Apply [Close Transferred Work](#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
    - Return the confirmed closure or blocker to the caller.
 
 ### Plan Change
@@ -1589,6 +1589,6 @@ The criteria of one issue, taken together, have these characteristics.
   - The user can select Other and specify a response beyond the options.
   - Use the native tool for presenting the question when one is available.
 - **Layers.**
-  Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol runs artifact operations and other protocols; an artifact runs neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
+  Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
-  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is run whole. Run another mode, a protocol, or a named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
+  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
