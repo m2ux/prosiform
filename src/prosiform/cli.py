@@ -56,6 +56,7 @@ from prosiform.closure import (
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
+    RUN_SET_MARK,
     Malformed,
     OutsideRoot,
     Reference,
@@ -65,7 +66,10 @@ from prosiform.closure import (
     external,
     identity,
     inside,
+    operators,
+    resolvable,
     resolve,
+    run_set,
     withholding,
     withholding_target,
 )
@@ -115,6 +119,8 @@ from prosiform.profile import (
     refusals,
 )
 from prosiform.rewrite import Definition, definitions
+from prosiform.run_set import CODES as RUN_SET_CODES
+from prosiform.run_set import RunSet, misshapen, stray
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
@@ -170,6 +176,12 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 
+OPERATOR_NAMES = {
+    DEFERRAL_MARK: "the deferral mark",
+    DISPATCH_MARK: "the dispatch mark",
+    RUN_SET_MARK: "the run-set mark",
+}
+
 CODES = tuple(
     sorted(
         {
@@ -192,6 +204,7 @@ CODES = tuple(
             *DISPATCH_CODES,
             *LIMITS_CODES,
             *PROFILE_CODES,
+            *RUN_SET_CODES,
             *SOURCE_CODES,
         }
     )
@@ -948,41 +961,44 @@ def refusals_of_operators(
 ) -> None:
     """Refuse a link whose operator states nothing the run can carry out.
 
-    One compilation cannot wait for a later run and be dispatched by this
-    one, so a link stating both operators states two contradictory
-    things. An operator withholds the compilation of a Markdown document
-    or section under the source root, so one opening a link or an image
-    naming anything else — a remote address, a resource, a document
-    outside the root — withholds nothing and states a compilation no run
-    performs. Each is a source fault rather than a metadata fault: what
-    the author wrote states no compilation the run can carry out, and the
-    run reports the link rather than reading it one way.
+    Each operator states how one compilation is carried out — by a later
+    run, by a sub-agent, or by this run as a run-set — so a link stating
+    two states two contradictory things. An operator names the
+    compilation of a Markdown document or section under the source root,
+    so one opening a link or an image naming anything else — a remote
+    address, a resource, a document outside the root — states a
+    compilation no run performs. Each is a source fault rather than a
+    metadata fault: what the author wrote states no compilation the run
+    can carry out, and the run reports the link rather than reading it
+    one way.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
         if conflicting(use.opening):
+            stated = list(dict.fromkeys(operators(use.opening)))
             raise input_failure(
-                f"the link {use.opening!r} opens with both the deferral mark "
-                f"{DEFERRAL_MARK!r} and the dispatch mark {DISPATCH_MARK!r}, which "
-                f"state two different runs for one compilation",
+                f"the link {use.opening!r} opens with "
+                + " and ".join(f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in stated)
+                + ", which state different things for one compilation",
                 code=UNSUPPORTED_CONSTRUCT,
-                remedy="open the link's text with the one operator that states who "
-                "compiles the material",
+                remedy="open the link's text with the one operator that states how "
+                "the material is compiled",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),
             )
-        if not withholding(use.opening):
+        if not operators(use.opening):
             continue
-        target = withholding_target(path, use.destination, use.opening, source.root)
+        target = resolvable(path, use.destination, source.root)
         if not use.resource and target is not None:
             continue
         kind = "image" if use.resource else "link"
         raise input_failure(
             f"the {kind} {use.opening!r} opens with an operator and names "
             f"{use.destination!r}, which is no Markdown document or section under "
-            f"the source root, so it withholds no compilation",
+            f"the source root, so the operator states no compilation the run "
+            f"can carry out",
             code=UNSUPPORTED_CONSTRUCT,
             remedy="name a Markdown document or section the source root carries, "
             "or remove the operator",
@@ -1059,6 +1075,38 @@ def dispatches(
         )
 
 
+def run_sets(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> Iterator[RunSet]:
+    """Every run-set link the selected content of one source carries.
+
+    A run-set's target is compiled like any link's, so what is yielded is
+    the target the link resolves to, with the text the link opens with
+    and the place it is written, for the check of the target's shape.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource or not run_set(use.opening):
+            continue
+        found = resolvable(path, use.destination, source.root)
+        if found is None:
+            continue
+        line = source.line(use.line)
+        yield RunSet(
+            replace(
+                found,
+                origin=location(path, line),
+                chain=(*chain, identity(found)),
+            ),
+            use.opening,
+            Location(path, 1 if line is None else line, 1),
+        )
+
+
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
     """Every referring route must retain no-follow access to a cached identity."""
     if one.path not in captured:
@@ -1091,6 +1139,7 @@ def traverse(
     dict[str, Capture],
     list[Reference],
     list[Hop],
+    list[RunSet],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -1138,7 +1187,9 @@ def traverse(
 
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
-    for the analysis of how deep the dispatches run.
+    for the analysis of how deep the dispatches run, and so are the
+    run-set links, each target once in the same way, for the check of
+    its shape.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -1150,6 +1201,7 @@ def traverse(
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
     dispatching: dict[str, Hop] = {}
+    running: dict[str, RunSet] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1195,6 +1247,8 @@ def traverse(
                 deferred.setdefault((one.path, one.fragment), one)
             for link in dispatches(path, read[path], parsed[path], chosen, reached):
                 dispatching.setdefault(link.name, link)
+            for named in run_sets(path, read[path], parsed[path], chosen, reached):
+                running.setdefault(named.name, named)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1223,7 +1277,15 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
-    return read, parsed, defined, captured, found, list(dispatching.values())
+    return (
+        read,
+        parsed,
+        defined,
+        captured,
+        found,
+        list(dispatching.values()),
+        list(running.values()),
+    )
 
 
 def confirm(
@@ -1807,6 +1869,44 @@ def unperformable(
     return found
 
 
+def misshaped(
+    links: Sequence[RunSet],
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+) -> list[Diagnostic]:
+    """One warning for each target a run-set link names that is no run-set.
+
+    The target is compiled into the bundle, so its selected content is
+    the whole document, or the section a fragment names with its
+    subsections, read from the source the run parsed. Each link in it
+    resolves from the target's own document within that document's root.
+    """
+    found: list[Diagnostic] = []
+    for link in links:
+        tokens = parsed[link.target.path]
+        source = read[link.target.path]
+        if link.target.fragment is None:
+            chosen: Sequence[Token] = tuple(regions(tokens))
+        else:
+            try:
+                rooted = section(tokens, link.target.fragment)
+            except (Ambiguous, Nested):
+                continue
+            if rooted is None:
+                continue
+            chosen = rooted
+
+        def calls(
+            destination: str, document: str = link.target.path, root: str = source.root
+        ) -> bool:
+            return resolvable(document, destination, root) is not None
+
+        held = stray(tokens, chosen, calls)
+        if held is not None:
+            found.append(misshapen(link, held, source.line(held.line)))
+    return found
+
+
 def onward(root: Path, limits: Limits) -> Callable[[Reference], Sequence[Hop]]:
     """The dispatches a target's closure carries, were it compiled as an entry.
 
@@ -1821,7 +1921,7 @@ def onward(root: Path, limits: Limits) -> Callable[[Reference], Sequence[Hop]]:
     def beyond(target: Reference) -> Sequence[Hop]:
         entered = replace(target, origin=None, chain=(identity(target),))
         try:
-            *_, hops = traverse(root, None, [entered], limits)
+            *_, hops, _ = traverse(root, None, [entered], limits)
         except (Failure, Crossed):
             return ()
         return hops
@@ -1863,7 +1963,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     limits = budgets(options)
     try:
-        read, parsed, defined, captured, found, hops = traverse(
+        read, parsed, defined, captured, found, hops, running = traverse(
             root, referring, requested, limits
         )
     except Crossed as crossed:
@@ -1897,6 +1997,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     for warning in analysed(
         hops, {one.chain[0] for one in requested}, onward(root, limits)
     ):
+        reporter.emit(warning)
+    for warning in misshaped(running, read, parsed):
         reporter.emit(warning)
     if resourced(bundled, limits.of(NESTING)):
         reporter.emit(
