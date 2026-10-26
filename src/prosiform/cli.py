@@ -80,7 +80,7 @@ from prosiform.diagnostics import (
     Reporter,
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
-from prosiform.dispatch import Hop, analysed
+from prosiform.dispatch import Hop, analysed, procedural, unprocedural
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
@@ -1779,6 +1779,34 @@ def derived_output(
     return f"{name}.bundle.md"
 
 
+def unperformable(
+    hops: Sequence[Hop], parsed: Mapping[str, Sequence[Token]]
+) -> list[Diagnostic]:
+    """One warning for each target the bundle dispatches that carries no step.
+
+    A target's selected content is the whole document, or the section a
+    fragment names with its subsections, as the sub-agent compiling it
+    selects it. A section the run cannot root is the sub-agent's to
+    refuse, and raises nothing here.
+    """
+    found: list[Diagnostic] = []
+    for hop in hops:
+        tokens = parsed[hop.target.path]
+        if hop.target.fragment is None:
+            chosen: Sequence[Token] = tuple(regions(tokens))
+        else:
+            try:
+                rooted = section(tokens, hop.target.fragment)
+            except (Ambiguous, Nested):
+                continue
+            if rooted is None:
+                continue
+            chosen = rooted
+        if not procedural(list(within(tokens, chosen))):
+            found.append(unprocedural(hop))
+    return found
+
+
 def onward(root: Path, limits: Limits) -> Callable[[Reference], Sequence[Hop]]:
     """The dispatches a target's closure carries, were it compiled as an entry.
 
@@ -1860,6 +1888,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     except Crossed as crossed:
         raise crossing(crossed) from crossed
     for warning in coinciding:
+        reporter.emit(warning)
+    for warning in unperformable(hops, parsed):
         reporter.emit(warning)
     for warning in analysed(
         hops, {one.chain[0] for one in requested}, onward(root, limits)

@@ -17,6 +17,14 @@ compute; this module follows the hops it is handed and reads nothing
 itself. The analysis decides warnings and nothing else, so the bundle a run
 publishes is the bundle it would publish without it.
 
+A dispatched target is handed to a sub-agent to follow, so it is a
+procedure: its selected content carries at least one ordered list item,
+which is how the profile writes a step. Material with no step — fields,
+rules, a reference table — is read rather than performed, and dispatching
+it warns, so its author either dispatches a procedure or links the
+material without the operator. A list in a code block is an example of
+one rather than a step, and the parser reads none there.
+
 A chain is deeper than the limit where it reaches a hop past it, and the
 search for one stops there, so it is bounded however wide the dispatches
 fan out. A chain returning to a target already on it — the bundle's own
@@ -29,19 +37,27 @@ and both terminate on any graph of dispatches.
 from collections.abc import Callable, Collection, Iterator, Sequence
 from dataclasses import dataclass
 
+from markdown_it.token import Token
+
 from prosiform.closure import Reference, identity
 from prosiform.diagnostics import WARNING, Diagnostic, Location, RelatedLocation
 
 DISPATCH_DEPTH = "W_DISPATCH_DEPTH"
 DISPATCH_CYCLE = "W_DISPATCH_CYCLE"
+DISPATCH_NOT_PROCEDURAL = "W_DISPATCH_NOT_PROCEDURAL"
 
-CODES = (DISPATCH_DEPTH, DISPATCH_CYCLE)
+CODES = (DISPATCH_DEPTH, DISPATCH_CYCLE, DISPATCH_NOT_PROCEDURAL)
+
+STEP = "ordered_list_open"
 
 LIMIT = 3
 
 DEPTH_REMEDY = (
     "compile an intermediate target into the bundle that dispatches it, or "
     "dispatch its targets from an earlier hop"
+)
+PROCEDURE_REMEDY = (
+    "dispatch a procedure, or link the material without the dispatch operator"
 )
 CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching it"
 
@@ -206,3 +222,23 @@ def analysed(
                 )
             )
     return found
+
+
+def procedural(selected: Sequence[Token]) -> bool:
+    """Whether the selected content of a target carries a step to follow."""
+    return any(token.type == STEP for token in selected)
+
+
+def unprocedural(hop: Hop) -> Diagnostic:
+    """One warning naming a dispatch whose target carries no step."""
+    return Diagnostic(
+        WARNING,
+        f"the dispatch {hop.target.original!r} names {hop.name!r}, which carries "
+        f"no numbered step for a sub-agent to follow",
+        code=DISPATCH_NOT_PROCEDURAL,
+        reference=hop.target.original,
+        resolved=hop.name,
+        chain=hop.target.chain,
+        remedy=PROCEDURE_REMEDY,
+        location=hop.location,
+    )

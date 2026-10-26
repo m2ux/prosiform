@@ -74,7 +74,11 @@ from prosiform.cli import (
 )
 from prosiform.closure import resolve
 from prosiform.dispatch import CODES as DISPATCH_CODES
-from prosiform.dispatch import DISPATCH_CYCLE, DISPATCH_DEPTH
+from prosiform.dispatch import (
+    DISPATCH_CYCLE,
+    DISPATCH_DEPTH,
+    DISPATCH_NOT_PROCEDURAL,
+)
 from prosiform.limits import (
     BUDGETS,
     FILES,
@@ -1965,8 +1969,8 @@ def test_a_budget_spent_on_the_last_valid_reference_bundles_it(root: Path) -> No
 def dispatching(root: Path, names: Sequence[str]) -> None:
     """A chain of documents, each dispatching the next."""
     for name, following in zip(names, names[1:], strict=False):
-        written(root, name, f"# {name}\n\nRun [\u21c9 next]({following}).\n")
-    written(root, names[-1], f"# {names[-1]}\n\nDone.\n")
+        written(root, name, f"# {name}\n\n1. Run [\u21c9 next]({following}).\n")
+    written(root, names[-1], f"# {names[-1]}\n\n1. Done.\n")
 
 
 def test_a_chain_of_three_dispatches_raises_no_warning(root: Path) -> None:
@@ -1997,7 +2001,7 @@ def test_a_dispatched_section_of_the_entry_is_a_hop(root: Path) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\nRun [⇉ Run](#run).\n\n## Run\n\nStart [⇉ a](a.md).\n",
+        "# Guide\n\nRun [⇉ Run](#run).\n\n## Run\n\n1. Start [⇉ a](a.md).\n",
     )
     dispatching(root, ["a.md", "b.md", "c.md"])
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -2009,7 +2013,7 @@ def test_a_dispatched_section_of_the_entry_is_a_hop(root: Path) -> None:
 
 def test_a_deferred_link_in_a_dispatched_closure_is_no_hop(root: Path) -> None:
     dispatching(root, ["guide.md", "a.md", "b.md", "c.md"])
-    written(root, "c.md", "# c.md\n\nLater [¬ d](d.md).\n")
+    written(root, "c.md", "# c.md\n\n1. Later [¬ d](d.md).\n")
     written(root, "d.md", "# d.md\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
@@ -2018,7 +2022,7 @@ def test_a_deferred_link_in_a_dispatched_closure_is_no_hop(root: Path) -> None:
 
 def test_a_dispatch_a_compiled_dependency_carries_is_a_hop(root: Path) -> None:
     dispatching(root, ["guide.md", "a.md", "b.md", "c.md"])
-    written(root, "c.md", "# c.md\n\nSee [shared](shared.md).\n")
+    written(root, "c.md", "# c.md\n\n1. See [shared](shared.md).\n")
     written(root, "shared.md", "# Shared\n\nRun [⇉ d](d.md).\n")
     written(root, "d.md", "# d.md\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -2027,7 +2031,7 @@ def test_a_dispatch_a_compiled_dependency_carries_is_a_hop(root: Path) -> None:
 
 def test_a_cycle_of_dispatches_warns_and_terminates(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nRun [⇉ a](a.md).\n")
-    written(root, "a.md", "# A\n\nRun [⇉ b](b.md).\n")
+    written(root, "a.md", "# A\n\n1. Run [⇉ b](b.md).\n")
     written(root, "b.md", "# B\n\nRun [⇉ a](a.md).\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
@@ -2040,7 +2044,7 @@ def test_a_section_dispatching_its_own_document_is_a_cycle(root: Path) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Run\n\nAgain [⇉ the guide](guide.md).\n",
+        "# Guide\n\n## Run\n\n1. Again [⇉ the guide](guide.md).\n",
     )
     run = invoke("-d", "json", "guide.md#run", cwd=root)
     assert run.status == SUCCESS
@@ -2053,7 +2057,7 @@ def test_a_dispatched_target_whose_compilation_fails_carries_no_hop(
     root: Path,
 ) -> None:
     written(root, "guide.md", "# Guide\n\nRun [⇉ a](a.md).\n")
-    written(root, "a.md", "# A\n\nSee [gone](gone.md).\n")
+    written(root, "a.md", "# A\n\n1. See [gone](gone.md).\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.diagnostics() == []
@@ -2100,3 +2104,34 @@ def test_an_operator_naming_no_document_under_the_root_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
     assert diagnostic["source"] == "guide.md:3"
+
+
+def test_a_dispatched_section_carrying_steps_raises_nothing(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRun [\u21c9 the steps](plan.md#steps).\n")
+    written(root, "plan.md", "# Plan\n\n## Steps\n\n### First\n\n1. Read.\n2. Write.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+
+
+def test_a_dispatched_section_of_fields_warns(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [\u21c9 the fields](plan.md#fields).\n")
+    written(
+        root,
+        "plan.md",
+        "# Plan\n\n## Fields\n\n### Title\n\n- One line.\n\n## Steps\n\n1. Go.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "Read [\u21c9 the fields](plan.md#fields)." in run.stdout
+    [warning] = run.diagnostics()
+    assert warning["code"] == DISPATCH_NOT_PROCEDURAL
+    assert warning["resolved"] == "plan.md#fields"
+    assert warning["location"] == {"file": "guide.md", "line": 3, "column": 1}
+
+
+def test_a_numbered_list_in_a_code_block_is_no_step(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRun [\u21c9 the plan](plan.md).\n")
+    written(root, "plan.md", "# Plan\n\n```text\n1. Not a step.\n```\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert [one["code"] for one in run.diagnostics()] == [DISPATCH_NOT_PROCEDURAL]
