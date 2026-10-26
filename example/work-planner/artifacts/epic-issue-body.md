@@ -64,7 +64,8 @@ Held task rows returned to their work-item links.
 
 1. Require the supplied release decision and refuse any row that is not held.
 2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
-3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
+3. Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+4. Return the saved body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
 ### *Validate* Epic Body
 
