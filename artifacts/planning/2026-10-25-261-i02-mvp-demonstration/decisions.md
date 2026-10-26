@@ -121,3 +121,14 @@ The ground epic's tag came first in its rows, with the published command and the
 The tag is `demo/i02`. The `contract/` and `python/` tags version the contract and a build, and documentation changes move neither; a demonstration tag of its own names the revision without implying a release. `contract/v0.11.0` and `python/v0.11.0`, cut at the skill refactor's merge, stay as the release the demonstration's build reports.
 
 [E01](https://github.com/m2ux/prosiform/issues/262) carries this as W01 depending on W02 and W03, and W04 depending on W01; its AC1 names the tag.
+
+## D16 — The debt epic is re-scoped against the refactored example
+
+A read-only map of [E02](https://github.com/m2ux/prosiform/issues/263) against `main` at `44615a7b` set each row against the tree the migration and refactor left. The user ruled on each finding.
+
+- **Grouping by the linking file leaves the initiative.** The row would re-record every grouping and usage fixture, reverse the per-file artifact groups of D12 and force a contract major. [#234](https://github.com/m2ux/prosiform/issues/234) carries it outside I02.
+- **Two rows close as already settled.** Copy fidelity is obsolete: the example diverges from the skill on purpose, 49 files differing after the refactor. The guidance-only mode already carries its own work: Revise's 8,960-byte bundle holds Rules, Conventions, Plan Change and Bootstrap, and its work calls nothing else.
+- **`group-heading` is retired.** Once `example/work-tracker` goes, no fixture or example uses it, and the design's Group isolation invariant already contradicts a headless group. Retiring the key replaces the row that would have policed it; `pf` refuses it as invalid conversion metadata.
+- **Dispatch follows the measure.** All ten modes compile at the default budget, so the mode-deferral row is held to the 15% rule of D14. Sync → Understand Mode saves 25,264 of 146,718 bytes (17.2%) and is dispatched; Plan → Propose Mode saves 15,088 of 154,287 (9.8%) and stays inline, which leaves the bundle `demo/i02` records unchanged.
+
+The epic now holds twelve rows in four units: the work-tracker retirement (W06–W08), the skill procedures (W04, W14, W15), the grouping contract (W10–W12, after W06 for the README's design pin) and the usage fixtures (W09, W13, W16). Its criteria are renumbered AC1 to AC13; its row ids keep their numbers.
