@@ -16,7 +16,7 @@ Following [dispatch convention](../SKILL.md#dispatch).
    Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
    - Use its returned owner and board number for the following steps.
 2. **Advance.**
-   Run [» Advance Mode](advance-mode.md) for the selected board, with the [allowance](../artifacts/plan-change.md#allowance) this run applies.
+   Run [Advance Mode](advance-mode.md) for the selected board, with the [allowance](../artifacts/plan-change.md#allowance) this run applies.
    - Continue to the fetch step only after it returns a complete applied queue.
    - Report an unavailable dependency, and a queue decision it recorded rather than asked, before dispatch. An incomplete queue means no initiative is under way, so the run has no work to offer.
    - Carry the [change list](../artifacts/plan-change.md#change-list) it returns into the report step.
@@ -134,13 +134,13 @@ The confirmed unit carried from its supplied brief through implementation and de
    - The session's own classification decides.
    - For each deferred item:
      - Create it as a standalone issue through [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue).
-     - Run [» Hoist Mode](hoist-mode.md) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt).
+     - Run [Hoist Mode](hoist-mode.md) with that issue identity, the allowance the brief names, and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt).
      - Where the initiative has no such epic, the placement raises it as a new epic, carrying the criterion its initiative row covers.
      - Run [Record Plan Change](../artifacts/plan-change.md#record-plan-change) with the placement it returns.
    - Resume the arising-issues step with each saved placement or reported blocker.
 10. **Arising issues.**
     Create each issue that arose during delivery as a standalone issue with [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue), with no agent-engineering prefix.
-    - Run [» Hoist Mode](hoist-mode.md) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.
+    - Run [Hoist Mode](hoist-mode.md) with those new issue identities and the allowance the brief names, after the pull request is open and epic delivery is recorded.
     - Run [Record Plan Change](../artifacts/plan-change.md#record-plan-change) with each placement it applied and each it held.
 11. **Report the changes.**
     Register the session's [change list](../artifacts/plan-change.md#change-list) in its planning folder through [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record).

@@ -59,7 +59,7 @@ Following [dispatch convention](#dispatch).
 
 ### Dispatch
 
-A link whose text opens with `»` names work a sub-agent carries out. Dispatch one sub-agent with the linked document or section as its entry, pass it the inputs the step names, and continue with the result it returns. The linked material is not read or run in this session.
+A link whose text opens with `»` names work a sub-agent carries out. The session following this document dispatches each mode its `»` links name to one sub-agent, with the linked document or section as its entry, passes it the inputs the request names, and continues with the result it returns. The linked material is not read or run in this session. A run dispatched to a sub-agent dispatches nothing further: it carries out itself every mode, protocol and artifact it reaches.
 
 ## Overview
 
