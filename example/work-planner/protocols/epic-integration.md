@@ -24,7 +24,8 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Apply [Update Epic Base](../artifacts/delivery-branches.md#update-epic-base) with the project checkout and the epic base.
      - Return a conflict or failure to the caller.
    - Apply [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) with the repository, initiative prefix and current epic JSON.
-   - Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) for the epic, with its criterion ids, current issue JSON and body, the delivery findings, pull request records and complete issue-link snapshot Read Delivery Evidence returned, the updated epic base as delivery revision, the named instruments, the project checkout and an output body file.
+   - Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) for the epic, with its criterion ids, current issue JSON and body, the delivery findings, pull request records and complete issue-link snapshot Read Delivery Evidence returned, the updated epic base as delivery revision, the named instruments, the project checkout, the verification evidence the caller supplied and any this protocol took, and an output body file.
+     - Return the verification evidence it returns, with the revision each was taken on, to the caller with every result this protocol returns from here on.
    - When Update Epic Base merged new content into the base:
      - Repeat Review Pull Request with the current task merges.
      - Repeat Change Overview with the repository, the project checkout and the same pull request number, which reads the updated head.

@@ -31,10 +31,10 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
      - **Conflicts and disagreements.**
        - Report each as unresolved with its pull request and row.
 3. **Close each epic.**
-   For each selected epic, follow [⇉ Epic Closure](../protocols/epic-closure.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its latest Delivery Findings, task issue records, confirmed matches and the task-merge records among the pull request records, the confirmed setting, and the criterion verification evidence Delivery Recording returned.
+   For each selected epic, follow [⇉ Epic Closure](../protocols/epic-closure.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its latest Delivery Findings, task issue records, confirmed matches and the task-merge records among the pull request records, the confirmed setting, and the verification evidence Delivery Recording and each earlier Epic Closure of this run returned.
    - Report a draft awaiting the user's ready mark, a blocker and each initiative Delivery Finding it returns as pending.
 4. **Close the initiative.**
-   Follow [Issue Closure](../protocols/issue-closure.md) for the initiative with the confirmed setting, the criterion verification evidence Epic Closure returned for it and the project checkout.
+   Follow [Issue Closure](../protocols/issue-closure.md) for the initiative with the confirmed setting, the verification evidence the last Epic Closure returned and the project checkout.
    - Report an incomplete result with its unmet criteria and open epics.
 5. **Sync the board.**
    Apply [Ensure Project Board](../artifacts/board.md#ensure-project-board) with the owner, repository, the initiative's theme name and title, and the originating proposal's identity its [References](../artifacts/initiative-issue-body.md#references) name when a proposal derives the theme.

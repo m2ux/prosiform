@@ -28,14 +28,15 @@ The quality findings for the acceptance criteria of the issues being aligned, ag
 
 The verification evidence for a supplied set of criteria whose delivery is ready.
 
-**Inputs:** Criterion ids, current issue body, delivery findings, delivery revisions, named instruments and the project checkout to run them in.
+**Inputs:** Criterion ids, current issue body, delivery findings, delivery revisions, named instruments, the project checkout to run them in, and the [verification evidence](#verification-evidence) the run has already taken, when it has any.
 
 1. Confirm the supplied delivery findings establish [Readiness](#readiness) for each selected criterion.
    - Return an undelivered or unreadable dependency as a blocker for that criterion.
 2. Check out each branch the delivering pull requests merged into, in the supplied project checkout, meeting [Instrument Checkout](#instrument-checkout).
-   - Run each criterion's named instrument there.
+   - Keep the supplied evidence of each criterion taken on the revision now checked out, meeting [Verification Evidence](#verification-evidence).
+   - Run the named instrument of each other criterion there.
    - Record the result against the tested revisions, meeting [Instrument Result](#instrument-result).
-3. Return verified criterion ids with their evidence and each unresolved criterion with what is missing.
+3. Return the verification evidence of each selected criterion, kept or taken, the verified criterion ids, and each unresolved criterion with what is missing.
    - Leave body publication and further planning to the caller.
 
 ### *Tick* Verified Criteria
@@ -62,13 +63,13 @@ The criteria a body ticked without the delivery their evidence depends on, retur
 
 The verified criteria of one epic or initiative, ticked and saved to its issue.
 
-**Inputs:** Repository, criterion ids, current issue JSON and body, delivery findings, delivery revisions, named instruments, the project checkout, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
+**Inputs:** Repository, criterion ids, current issue JSON and body, delivery findings, delivery revisions, named instruments, the project checkout, the verification evidence the run has already taken when it has any, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
 
-1. Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments and project checkout.
+1. Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments, project checkout and the run's verification evidence.
    - When it returns no verified id, continue at step 4.
 2. Pass only its returned verified ids to [Tick Verified Criteria](#tick-verified-criteria) with the issue JSON and output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
 3. When the returned body differs from the current issue body, apply [Save Tracker Issue](issue.md#save-tracker-issue) with the repository, issue number and output body file.
-4. Return the verified ids with their evidence, the ids refused as not ready to verify, and each unverified criterion with what it is missing. A refused or unverified criterion stays unticked.
+4. Return the verified ids, the verification evidence Verify Selected Criteria returned, the ids refused as not ready to verify, and each unverified criterion with what it is missing. A refused or unverified criterion stays unticked.
 
 ## Fields
 
@@ -88,6 +89,10 @@ An instrument runs in a checkout of the project at the merged revision it is ver
 ### Instrument Result
 
 A criterion is verified only on a passing run of its named instrument, recorded against the tested revisions as [Coverage Reports](issue-body.md#coverage-reports) define. A failed, unavailable or inconclusive instrument leaves it unverified, and an unverified criterion is not ticked.
+
+### Verification Evidence
+
+One criterion's instrument result, passing or failing, with the issue that states the criterion and the revision it was taken on. Within one run, evidence stands for its criterion on its revision: the criterion's instrument runs at most once on each revision, and a later verification on that revision keeps the earlier evidence.
 
 ### Tick State
 
