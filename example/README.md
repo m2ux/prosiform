@@ -133,6 +133,37 @@ The selection retains its structural ancestors and rewrites the links the operat
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml).
 
+## Defer a document to a run of its own
+
+### Input
+
+The [revision procedure](work-planner/modes/revise-mode.md) opens on a step that marks the skill guidelines with `¬`:
+
+```markdown
+1. **Read the guidelines.**
+   Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md) whole before the first edit.
+```
+
+### Command
+
+```bash
+cd example/work-planner
+pf modes/revise-mode.md
+```
+
+### Output
+
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) carries the step with the deferral mark removed:
+
+```markdown
+1. **Read the guidelines.**
+   Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
+```
+
+The deferred link's destination names the guidelines from the working directory, so `pf guidelines.md` run from that directory compiles them. The guidelines contribute no content to this bundle. The shared guidelines lie outside the root, so their link keeps its authored destination.
+
+[Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml).
+
 ## Declare groups per file
 
 ### One block per document
@@ -219,6 +250,7 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 | Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) |
 | Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
+| Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) |
 | Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) |
 | Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
 

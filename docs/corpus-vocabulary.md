@@ -146,6 +146,8 @@ The names the fixture source trees and the design's own usage examples give the 
 | **checklist** | a document a real-source fixture bundles. |
 | **column** | a table column a bundled document carries. |
 | **diagram** | a document a real-source fixture bundles. |
+| **guidelines** | the document the example tree's Revise mode defers. |
+| **plan** | the change an example tree artifact records, named in its heading. |
 | **workspace** | the directory a real-source fixture's tree is taken from. |
 
 ## What the corpus and the report state about themselves
