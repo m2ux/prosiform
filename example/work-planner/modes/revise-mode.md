@@ -10,8 +10,6 @@ Changes the skill itself: SKILL.md, its modes, artifacts, references and scripts
 
 The main path meets [Outcomes](#outcomes).
 
-Following [dispatch convention](../SKILL.md#dispatch).
-
 1. **Read the guidelines.**
    Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md) whole before the first edit.
 2. **Understand the request.**

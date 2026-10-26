@@ -10,8 +10,6 @@ Starts the work a theme board makes available. It advances the board, merges eac
 
 The main path meets [Outcomes](#outcomes).
 
-Following [dispatch convention](../SKILL.md#dispatch).
-
 1. **Select.**
    Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
    - Use its returned owner and board number for the following steps.

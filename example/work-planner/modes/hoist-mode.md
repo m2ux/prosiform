@@ -10,8 +10,6 @@ Brings the chosen standalone issues into the agent-engineering structure, or lea
 
 The main path meets [Outcomes](#outcomes).
 
-Following [dispatch convention](../SKILL.md#dispatch).
-
 1. **Fetch.**
    Fetch every issue with [Read Repository Issues](../artifacts/issue.md#read-repository-issues).
 2. **List candidates.**

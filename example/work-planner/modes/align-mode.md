@@ -12,8 +12,6 @@ Alignment checks conformity to work-planning rules; judgement of content fitness
 
 The main path meets [Outcomes](#outcomes).
 
-Following [dispatch convention](../SKILL.md#dispatch).
-
 1. **Discover every issue.**
    - Scope: issues the user names, an initiative with its open epics or a board with it's complete set of initiatives and epics.
    - Open issues only. A closed issue is aligned only when named.

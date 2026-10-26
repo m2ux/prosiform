@@ -1,4 +1,4 @@
-description = "The usage example that names a procedure bundles that procedure and every document its links reach: the three modes it reaches as whole documents, each under a heading of its own, and the artifact, protocol and reference material those documents link, and the Dispatch section of the skill document they follow, under the SKILL heading and that document's title. The bundle carries two deferred links, each keeping its root-relative path, and the document they name stays out of the bundle."
+description = "The usage example that names a procedure bundles that procedure and every document its links reach: the three modes it reaches as whole documents, each under a heading of its own, and the artifact, protocol and reference material those documents link. The bundle carries two deferred links, each keeping its root-relative path, and the document they name stays out of the bundle."
 
 clauses = [
   "Usage examples",

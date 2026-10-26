@@ -10,8 +10,6 @@ Summarises a project board as a standup, in Slack markup for pasting into a chan
 
 The main path meets [Outcomes](#outcomes).
 
-Following [dispatch convention](../SKILL.md#dispatch).
-
 1. **Select the scope.**
    Run [Select Project Board](../artifacts/board.md#select-project-board) for the requested board, each requested board when the scope is all, or the theme board of the named initiative.
    - Retain the selected window and initiative filter.
