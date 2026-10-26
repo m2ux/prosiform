@@ -108,6 +108,25 @@ The agreed disposition of criteria a delivered row left unmet.
    - Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
    - Return the saved row and criterion disposition to the caller. Done follows [Tables](issue-body.md#tables).
 
+### *Place* Unplaced Task Row
+
+One epic body given the row its table lacks for a task issue of the epic.
+
+**Inputs:** Epic JSON, the unplaced task issue, the run's allowance and change list when supplied, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+1. Draft the task issue's row, meeting [Work Breakdown](#work-breakdown).
+2. Apply [Check Plan Change Autonomy](plan-change.md#check-plan-change-autonomy) with the drafted row as a task creation and the supplied allowance.
+   - **Automatic.**
+     - Take the row as drafted.
+     - Add it to the change list through [Record Plan Change](plan-change.md#record-plan-change).
+   - **Held.**
+     - Settle the row as [Held Change](plan-change.md#held-change) states.
+     - Return a row left held or unanswered to the caller as pending, without continuing to the revise step.
+3. Apply [Revise Epic Rows](#revise-epic-rows) with the confirmed row.
+4. Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+5. Apply [Record Epic Delivery](#record-epic-delivery) again with the saved epic JSON and refreshed task issue records, retaining the pull request records, complete issue-link snapshot, confirmed matches, project checkout and output body file.
+6. Return the recorded body, its [Delivery Findings](epic.md#delivery-findings) and the change list to the caller.
+
 ## Fields
 
 ### Template
