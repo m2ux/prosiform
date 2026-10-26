@@ -108,7 +108,7 @@ Read this before adding or changing a mode.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
-  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
+  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. A call whose link is [dispatched](bootstrap.md#symbols) runs in a sub-agent, from any session, dispatched or not. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
 - **No spare parts.**
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
@@ -220,7 +220,7 @@ Read this before adding or changing a reference.
 
 ## Progressive Disclosure
 
-Apply the shared [progressive disclosure](../guidelines.md#progressive-disclosure) and [disclosure verification](../guidelines.md#disclosure-verification) rules to affected callers. A mode is followed from its bundle, which carries its rules, conventions and every section it links.
+Apply the shared [progressive disclosure](../guidelines.md#progressive-disclosure) and [disclosure verification](../guidelines.md#disclosure-verification) rules to affected callers. A mode is followed from its bundle, which carries its rules, conventions and every section it links but a [dispatched](bootstrap.md#symbols) one, which is compiled for the sub-agent that follows it.
 
 - **Mode routes.**
   Trace each affected mode through its common conventions, selected operations and supporting guides. Include cross-mode calls and explicit whole-file requirements.
