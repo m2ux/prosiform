@@ -2030,7 +2030,6 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
 - **Example.**
   `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
-- Every pull request delivering the epic's tasks targets that epic base.
 - A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
 
 ### Commands
