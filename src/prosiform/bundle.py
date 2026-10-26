@@ -306,9 +306,8 @@ def emitted_visible(path: str, inline: Token, root: str = "") -> str:
 
     A link the bundle took no destination for shows the text its author
     wrote. That covers a markup or resource reference under the root, a
-    reference leaving the root, a dispatch, and a deferral whose target
-    lies outside the root, because only a withheld link under the root
-    has its destination rebased to state the deferral.
+    reference leaving the root and a dispatch, because only a deferred
+    link has its destination rebased to state the deferral.
     """
     children = inline.children or []
     carried: list[str] = []

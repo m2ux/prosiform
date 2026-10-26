@@ -946,27 +946,48 @@ def refusals_of_operators(
     chosen: Selection | None,
     chain: Sequence[str],
 ) -> None:
-    """Refuse a link whose text opens with both operators, naming the link.
+    """Refuse a link whose operator states nothing the run can carry out.
 
     One compilation cannot wait for a later run and be dispatched by this
-    one, so a link stating both states two contradictory things. It is a
-    source fault rather than a metadata fault: what the author wrote
-    admits two readings, and the run reports the link rather than
-    choosing between them.
+    one, so a link stating both operators states two contradictory
+    things. An operator withholds the compilation of a Markdown document
+    or section under the source root, so one opening a link or an image
+    naming anything else — a remote address, a resource, a document
+    outside the root — withholds nothing and states a compilation no run
+    performs. Each is a source fault rather than a metadata fault: what
+    the author wrote states no compilation the run can carry out, and the
+    run reports the link rather than reading it one way.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if use.resource or not conflicting(use.opening):
+        at = location(path, source.line(use.line))
+        if conflicting(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} opens with both the deferral mark "
+                f"{DEFERRAL_MARK!r} and the dispatch mark {DISPATCH_MARK!r}, which "
+                f"state two different runs for one compilation",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="open the link's text with the one operator that states who "
+                "compiles the material",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if not withholding(use.opening):
             continue
+        target = withholding_target(path, use.destination, use.opening, source.root)
+        if not use.resource and target is not None:
+            continue
+        kind = "image" if use.resource else "link"
         raise input_failure(
-            f"the link {use.opening!r} opens with both the deferral mark "
-            f"{DEFERRAL_MARK!r} and the dispatch mark {DISPATCH_MARK!r}, which "
-            f"state two different runs for one compilation",
+            f"the {kind} {use.opening!r} opens with an operator and names "
+            f"{use.destination!r}, which is no Markdown document or section under "
+            f"the source root, so it withholds no compilation",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy="open the link's text with the one operator that states who "
-            "compiles the material",
-            reference=use.opening,
-            source=location(path, source.line(use.line)),
+            remedy="name a Markdown document or section the source root carries, "
+            "or remove the operator",
+            reference=use.destination,
+            source=at,
             chain=(*chain, use.destination),
         )
 
@@ -984,8 +1005,8 @@ def withheld(
     Markdown document is one this run does not carry and stays
     responsible for, so its target is yielded here to be confirmed. An
     operator on a reference leaving the root, or on one naming no
-    Markdown document, withholds nothing that was going to happen, and
-    those references are text as they always were.
+    Markdown document, withholds nothing, and the run refuses it before
+    reading the withheld targets.
 
     What is yielded is a target and not a dependency. It joins no
     frontier, so the document is not bundled through this reference,

@@ -1145,24 +1145,6 @@ def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
 
 
-def test_a_marked_resource_is_emitted_with_its_mark(
-    root: Path,
-) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [¬ the diagram](plan.png).\n")
-    (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[¬ the diagram](plan.png)" in run.stdout
-
-
-def test_a_marked_image_is_emitted_with_its_mark(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee ![\u00ac the architecture](plan.png).\n")
-    (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "![¬ the architecture](plan.png)" in run.stdout
-
-
 def test_an_image_naming_a_markdown_document_carries_no_document(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee ![the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nThe rules.\n")
@@ -1195,15 +1177,6 @@ def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "![the architecture](plan.png)" in run.stdout
-
-
-def test_a_marked_reference_carrying_a_scheme_is_emitted_as_authored(
-    root: Path,
-) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [¬ the spec](https://e.test/s.md).\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[¬ the spec](https://e.test/s.md)" in run.stdout
 
 
 def test_an_unmarked_resource_is_emitted_as_authored(root: Path) -> None:
@@ -1263,20 +1236,6 @@ def test_a_drive_path_inside_a_source_is_emitted_as_authored(root: Path) -> None
     assert run.status == SUCCESS
     assert "[the rules](C:/rules.md)" in run.stdout
     assert "Every rule." not in run.stdout
-
-
-def test_a_mark_on_a_reference_outside_the_root_changes_nothing(
-    tmp_path: Path,
-) -> None:
-    allowed = tmp_path / "source"
-    allowed.mkdir()
-    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule.\n")
-    (allowed / "guide.md").write_text(
-        "# Guide\n\nSee [\u00ac the rules](../rules.md).\n"
-    )
-    run = invoke("guide.md", cwd=allowed)
-    assert run.status == SUCCESS
-    assert "[\u00ac the rules](../rules.md)" in run.stdout
 
 
 def test_a_reference_under_the_root_naming_no_document_publishes_nothing(
@@ -1370,14 +1329,6 @@ def test_a_dispatched_link_carries_the_mark_its_author_wrote(root: Path) -> None
     assert "See [\u21c9 the rules](rules.md)." in run.stdout
 
 
-def test_a_dispatch_mark_on_a_resource_is_a_resource_still(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [\u21c9 the diagram](plan.png).\n")
-    (root / "plan.png").write_text("Never opened.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[\u21c9 the diagram](plan.png)" in run.stdout
-
-
 def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nRead [\u00ac \u21c9 the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
@@ -1455,13 +1406,6 @@ def test_a_deferred_reference_naming_no_heading_fails(root: Path) -> None:
     assert reported["resolved"] == "rules.md"
     assert reported["chain"] == ["guide.md", "rules.md#absent"]
     assert run.stdout == ""
-
-
-def test_a_deferred_reference_leaving_the_root_is_not_confirmed(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [\u00ac the rules](../outside.md).\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [\u00ac the rules](../outside.md)." in run.stdout
 
 
 def test_a_deferred_destination_is_the_target_path_from_the_root(root: Path) -> None:
@@ -2130,3 +2074,29 @@ def test_a_link_opening_with_a_guillemet_is_compiled(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "Every rule." in run.stdout
+
+
+@pytest.mark.parametrize("mark", ["\u00ac", "\u21c9"])
+@pytest.mark.parametrize(
+    "use",
+    [
+        "[{mark} the spec](https://e.test/s.md)",
+        "[{mark} the diagram](plan.png)",
+        "![{mark} the architecture](plan.png)",
+        "[{mark} the rules](../outside.md)",
+    ],
+)
+def test_an_operator_naming_no_document_under_the_root_is_refused(
+    tmp_path: Path, mark: str, use: str
+) -> None:
+    allowed = tmp_path / "source"
+    allowed.mkdir()
+    (tmp_path / "outside.md").write_text("# Outside\n")
+    (allowed / "plan.png").write_text("Never opened.\n")
+    written(allowed, "guide.md", f"# Guide\n\nSee {use.format(mark=mark)}.\n")
+    run = invoke("-d", "json", "guide.md", cwd=allowed)
+    assert run.status == INPUT_FAILURE
+    assert run.stdout == ""
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == "guide.md:3"
