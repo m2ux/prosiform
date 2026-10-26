@@ -4,7 +4,6 @@ clauses = [
   "Source-heading resolution, derive visible heading text from parser events",
   "Source-heading resolution, gitHub-compatible slugs and duplicate tracking",
   "Bundle destinations — Ordinal assignment",
-  "Entry line",
   "Adversarial acceptance fixtures — Destinations",
   "Markdown-only output",
 ]

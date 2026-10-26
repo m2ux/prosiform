@@ -22,14 +22,7 @@ from prosiform.delivery import ENCODING, Delivery, Outcome, deliver, received
 
 LIMIT = 4_096
 
-BUNDLE = (
-    "# Guide\n"
-    "\n"
-    "The command bundles this document.\n"
-    "\n"
-    "Follow [Guide](#guide). "
-    "The other sections are material that procedure references.\n"
-)
+BUNDLE = "# Guide\n\nThe command bundles this document.\n"
 SOURCE = "# Guide\n\nThe command bundles this document.\n"
 ENTRY = "guide.md"
 ENTRY_POINT = "pf"

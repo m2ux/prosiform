@@ -7,5 +7,3 @@ A checklist, carrying the markers the source wrote.
 - [X] done as well
 
 Punctuation inviting substitution: "quoted", 'single', -- a dash, ... an ellipsis, (c).
-
-Follow [Guide](#guide). The other sections are material that procedure references.

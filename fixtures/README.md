@@ -22,7 +22,7 @@ fixtures/
             └── stdout.md
 ```
 
-`source/` is the tree the run is confined to. `expected/` holds the bytes the run must produce. They are separate because an expected bundle is itself Markdown, and a bundle offered as input is refused under the generated-input policy.
+`source/` is the tree the run is confined to. `expected/` holds the bytes the run must produce. They are separate because an expected bundle is itself Markdown, which a run over `source/` must not read as one of its sources.
 
 ## A symbolic link in a source tree
 
@@ -233,7 +233,6 @@ An error decides a failing run.
 | --- | --- |
 | `E_AMBIGUOUS_FILE_GROUP` | File-scoped hierarchy — two documents whose paths differ only by Markdown extension. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
-| `E_GENERATED_INPUT` | Generated input policy — a source opening with the bundle entry declaration. |
 | `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping. |

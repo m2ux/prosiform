@@ -38,10 +38,8 @@ from prosiform.bundle import (
     Group,
     Overflow,
     assemble,
-    entry_line,
     group,
     heading_text,
-    is_entry_line,
 )
 from prosiform.bundle import (
     CODES as BUNDLE_CODES,
@@ -97,7 +95,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import INVALID_CONVERSION_METADATA, InvalidMetadata
+from prosiform.metadata import InvalidMetadata
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -152,7 +150,6 @@ INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
 
-GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
@@ -171,7 +168,6 @@ RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 CODES = tuple(
     sorted(
         {
-            GENERATED_INPUT,
             INVALID_ENCODING,
             GROUP_DEPTH_CONFLICT,
             INVALID_USAGE,
@@ -683,53 +679,6 @@ def refused(
     )
 
 
-def generated(
-    path: str,
-    source: Source,
-    tokens: Sequence[Token],
-    chain: Sequence[str],
-) -> None:
-    """Refuse a source whose first block declares itself a published bundle.
-
-    The entry declaration is a reserved output convention, independent of
-    path spelling and group kind. Rewriting it defeats detection; an authored
-    declaration with the same form is detected as well. Parsing keeps code
-    and quoted examples outside the document-level declaration.
-    """
-    first = next(
-        (
-            token
-            for region in regions(tokens)
-            if region.type == "paragraph_open" and region.map is not None
-            for token in tokens
-            if token.type == "inline"
-            and token.map is not None
-            and token.map[0] == region.map[0]
-            and is_entry_line(token.content)
-        ),
-        None,
-    )
-    if first is None or first.map is None:
-        return
-    links = [token for token in first.children or () if token.type == "link_open"]
-    if not links or any(
-        not isinstance(href := token.attrGet("href"), str)
-        or not href.startswith("#")
-        or len(href) == 1
-        for token in links
-    ):
-        return
-    raise input_failure(
-        f"{path!r} opens with the bundle entry declaration, so it is output "
-        f"offered as input",
-        code=GENERATED_INPUT,
-        remedy="bundle the sources the document was built from",
-        reference=first.content,
-        source=location(path, source.line(first.map[0] + 1)),
-        chain=chain,
-    )
-
-
 def changed(path: str, what: str, chain: Sequence[str]) -> Failure:
     """One source that is no longer the source the run read."""
     return input_failure(
@@ -852,15 +801,10 @@ def selection(
     heading names nothing however much of its document reaches the
     bundle.
 
-    An entry reference is one the caller named, and the entry line
-    links what the caller asked for, so only the heading an entry
-    resolved to stays identifiable. A whole document an entry selected
-    and nothing else named is the selection `None`. The parent, the
-    first entry document, is entered at its first H2; every other such
-    document is entered at its file heading. A whole document an entry
-    selected beside named sections keeps that heading as an entry as
-    well. A whole document only a dependency selected enters the entry
-    line not at all.
+    A whole document an entry reference selected is the selection
+    `None`, which is what lets the parent, the first entry document,
+    open the bundle on its own title. A whole document only a
+    dependency selected is every region it holds.
 
     A fragment the document does not yield is a reference that reached
     a document and no section of it, so its diagnostic names that
@@ -868,7 +812,6 @@ def selection(
     the reference.
     """
     wanted: set[int] = set()
-    named: list[Token] = []
     whole = False
     entered = False
     for one in references:
@@ -912,16 +855,10 @@ def selection(
                 source=one.origin,
                 chain=one.chain,
             )
-        if one in entries:
-            named.append(found[0])
         wanted.update(id(token) for token in found)
     if whole:
-        if not named and entered:
-            return None
-        return Selection(tuple(regions(tokens)), tuple(named), document=entered)
-    return Selection(
-        tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
-    )
+        return None if entered else Selection(tuple(regions(tokens)))
+    return Selection(tuple(token for token in regions(tokens) if id(token) in wanted))
 
 
 def required(
@@ -1173,7 +1110,6 @@ def traverse(
             except Suppressed as suppressed:
                 raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
-            generated(one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
@@ -1262,61 +1198,6 @@ def confirm(
         source=one.origin,
         chain=one.chain,
     )
-
-
-def dispatch_text(
-    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
-) -> str | None:
-    """The dispatch text the contributing sources agree on, in deterministic order.
-
-    Every contributing source that declares `prosiform.dispatch` states
-    what a dispatch mark means for that skill, and the bundle carries one
-    instruction, so each declaration is held to the first. A second value
-    is a disagreement rather than a choice, because an opening line whose
-    wording depended on which source was read first would make the
-    instruction a property of traversal order.
-
-    The first declaration is the one on the first source in the order the
-    bundle arranges its groups by, so the primary location and the
-    reported one are the same two however the sources were reached.
-    """
-    declaring = [
-        path
-        for path in sorted(
-            selected, key=lambda p: (read[p].display, read[p].identity or p)
-        )
-        if read[path].conversion.dispatch is not None
-    ]
-    if not declaring:
-        return None
-    first = read[declaring[0]].conversion
-    assert first.dispatch is not None and first.dispatch_location is not None
-    for path in declaring[1:]:
-        current = read[path].conversion
-        if current.dispatch == first.dispatch:
-            continue
-        location = current.dispatch_location
-        assert location is not None
-        raise Failure(
-            INPUT_FAILURE,
-            Diagnostic(
-                ERROR,
-                f"prosiform.dispatch is {first.dispatch!r}; "
-                f"another source declares {current.dispatch!r}",
-                code=INVALID_CONVERSION_METADATA,
-                location=first.dispatch_location,
-                related=(
-                    RelatedLocation(
-                        location.file,
-                        location.line,
-                        location.column,
-                        f"prosiform.dispatch is {current.dispatch!r}",
-                    ),
-                ),
-                remedy="declare one dispatch text for every contributing source",
-            ),
-        )
-    return first.dispatch
 
 
 def group_depths(
@@ -1569,25 +1450,6 @@ def destination_map(
     return found
 
 
-def entries_named(
-    groups: Sequence[Group], assigned: Sequence[str]
-) -> list[tuple[str, str]]:
-    """Each entry reference the bundle opens on, as its text and its destination.
-
-    The order is the bundle's own: the groups in root-relative path
-    order, and inside one group the headings in source order. One
-    selection therefore opens on one line however the entry references
-    were written on the command line.
-    """
-    named = []
-    at = 0
-    for one in groups:
-        for entry in one.entries:
-            named.append((one.headings[entry], assigned[at + entry]))
-        at += len(one.headings)
-    return named
-
-
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -1599,7 +1461,8 @@ def compose(
 ) -> str:
     """The complete bundle candidate.
 
-    The candidate is its entry line and one group per source.
+    The candidate is one group per source, and it opens on the first
+    group's first part.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -1619,21 +1482,18 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    dispatch = dispatch_text(read, selected)
     unambiguous(selected, read)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
     groups = assembled(read, parsed, defined, selected, entries, targets, inforce)
-    bundled = assemble(entry_line(entries_named(groups, assigned), dispatch), groups)
+    bundled = assemble(groups)
     try:
         validate(
             bundled,
             groups,
             assigned,
             targets,
-            referrer,
-            entries,
             read,
             parsed,
             limits.of(NESTING),

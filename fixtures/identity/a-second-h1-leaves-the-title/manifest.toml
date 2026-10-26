@@ -3,7 +3,6 @@ description = "A document carrying a second document-level H1 has no only H1, so
 clauses = [
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Group shift",
-  "Entry line",
 ]
 
 [invocation]

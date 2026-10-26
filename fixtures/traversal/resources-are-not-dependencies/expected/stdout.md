@@ -9,8 +9,6 @@ traversed.
 The procedure requires [the shared rules](#rules), which the bundle
 carries.
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
 # Rules
 
 Every rule the procedure requires.

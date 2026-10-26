@@ -285,7 +285,6 @@ def test_every_pooled_contributor_has_its_own_heading_and_destination(
     assert variants == ["Agents", "Common"]
     assert answering(one, "rules/agents.md") == "Agents"
     assert answering(one, "rules/common.md") == "Common"
-    assert len(set(one.entries)) == 2
 
 
 def test_a_sole_contributor_keeps_its_subheading_arrangement() -> None:

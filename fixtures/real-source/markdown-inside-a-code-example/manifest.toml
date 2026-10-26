@@ -8,7 +8,6 @@ clauses = [
   "Frontmatter policy, do not strip YAML examples in code blocks or non-leading thematic breaks",
   "Bundle destinations — Internal links",
   "Parser and source-preserving edits — Untouched content",
-  "Entry line",
 ]
 
 [invocation]

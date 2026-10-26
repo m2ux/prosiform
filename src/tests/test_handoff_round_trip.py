@@ -37,13 +37,11 @@ ENCODING = "utf-8"
 DISPATCH = "\u00bb"
 DEFERRAL = "\u00ac"
 
-GENERATED_INPUT = "E_GENERATED_INPUT"
 ERROR = "error"
-ENTRY = "Follow ["
+RULE = "Compile the marked link and hand it to a sub-agent."
 
 LINK = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-DECLARATION = re.compile(r"^  dispatch: (.+)$", re.M)
 
 ARTIFACT = (
     "---\n"
@@ -81,27 +79,9 @@ MODE = (
     "{rules}"
 )
 
-SELECTED = (
-    "Follow [Selection](#selection). The other sections are material that "
-    "procedure references.\n"
-    "\n"
-    "# Artifacts\n"
-    "\n"
-    "## Selection\n"
-    "\n"
-    "SELECTION_MARKER\n"
-)
+SELECTED = "# Artifacts\n\n## Selection\n\nSELECTION_MARKER\n"
 
-HELD = (
-    "Follow [Held](#held). The other sections are material that "
-    "procedure references.\n"
-    "\n"
-    "# Artifacts\n"
-    "\n"
-    "## Held\n"
-    "\n"
-    "HELD_MARKER\n"
-)
+HELD = "# Artifacts\n\n## Held\n\nHELD_MARKER\n"
 
 SECTION = {"selection": SELECTED, "held": HELD}
 
@@ -137,13 +117,6 @@ def withheld(bundle: str) -> list[tuple[str, str]]:
     ]
 
 
-def declared_dispatch(skill: Path) -> str:
-    """The dispatch text the entry document declares."""
-    found = DECLARATION.search(skill.read_text(encoding=ENCODING))
-    assert found is not None, f"{skill} declares no dispatch text"
-    return found.group(1).strip().strip('"')
-
-
 @dataclass(frozen=True)
 class Run:
     """One invocation and what it carried on each of its streams."""
@@ -173,10 +146,6 @@ class Tree:
         destination = self.root / path
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(text, encoding=ENCODING)
-
-    def read(self, path: str) -> str:
-        """One document of this copy as it stands."""
-        return (self.root / path).read_text(encoding=ENCODING)
 
     def invoke(self, *arguments: str) -> Run:
         """One invocation from the copy's root, diagnostics read as data."""
@@ -306,30 +275,7 @@ def test_both_destinations_of_one_bundle_compile(tree: Tree) -> None:
     assert sorted(compiled) == sorted(SECTION), compiled
 
 
-def test_a_declared_dispatch_text_reaches_the_entry_line(tree: Tree) -> None:
-    """A mode linking the entry document's dispatch section carries its text."""
-    text = declared_dispatch(tree.root / "SKILL.md")
+def test_a_mode_bundle_carries_the_dispatch_rule_once(tree: Tree) -> None:
+    """A mode linking the entry document's dispatch section carries its rule."""
     bundle = tree.bundled("modes/plan-mode.md")
-    openings = [line for line in bundle.splitlines() if line.startswith(ENTRY)]
-    assert len(openings) == 1, openings
-    assert openings[0].endswith(f" {text}"), openings[0]
-    assert bundle.count(text) == 1, bundle
-
-
-def test_a_published_bundle_offered_as_input_is_refused(tree: Tree) -> None:
-    """A bundle this run published is refused at the line its declaration occupies."""
-    published = tree.bundled("modes/plan-mode.md")
-    written = tree.invoke("-o", "bundle.md", "modes/plan-mode.md")
-    assert written.status == 0, written.diagnostics
-    assert tree.read("bundle.md") == published
-    lines = tree.read("bundle.md").splitlines()
-    refusal = tree.invoke("bundle.md")
-    assert refusal.status == 1, refusal.diagnostics
-    assert refusal.stdout == ""
-    errors = refusal.errors()
-    assert [error["code"] for error in errors] == [GENERATED_INPUT], errors
-    reference = errors[0]["reference"]
-    assert reference.startswith(ENTRY), reference
-    occupied = lines.index(reference) + 1
-    assert occupied > 1, occupied
-    assert errors[0]["source"] == f"bundle.md:{occupied}", errors[0]["source"]
+    assert bundle.count(RULE) == 1, bundle

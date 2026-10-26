@@ -35,7 +35,7 @@ Use `--compact --input-section-level 2 --compiled-section-level 2` to show H3 ti
 
 Each prefix produces `.svg`, `.review.md`, `.stdout.md`, `.stderr.txt`, `.command.txt` and `.run.json`.
 
-The image header contains only the compiler branch and commit. The opening compiler paragraph appears under Entry Points in the review Markdown, alongside the command, image, exit status and diagnostics. The run record pins the compiler revision and hashes the source bytes and output.
+The image header contains only the compiler branch and commit. The review Markdown carries the command, image, exit status and diagnostics. The run record pins the compiler revision and hashes the source bytes and output.
 
 Body content and links are indented one step beyond their containing heading in both panels.
 

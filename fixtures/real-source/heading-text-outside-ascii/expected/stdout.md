@@ -2,8 +2,6 @@
 
 All commands work via `npx` — no global install required.
 
-Follow [Commands](#commands). The other sections are material that procedure references.
-
 ## Commands
 
 ### analyze — Build or refresh the index

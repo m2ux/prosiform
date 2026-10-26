@@ -4,11 +4,8 @@ The candidate is reparsed under the same declared grammar in a policy
 context of its own. That context accepts what the bundle generates —
 filename headings, shifted headings and the structural ancestors a later
 epic adds — and it does not pass the candidate back through frontmatter
-stripping, dependency discovery or generated-input rejection. The
-producer's candidate therefore passes here while the same document
-supplied to a later invocation is correctly refused as generated input;
-the two are separate policies over one grammar rather than one policy
-disagreeing with itself.
+stripping or dependency discovery: the two are separate policies over
+one grammar rather than one policy disagreeing with itself.
 
 What the reparse supplies is the published bytes read as a reader reads
 them. What the provenance supplies is the claim those bytes are held to:
@@ -20,8 +17,8 @@ construction recorded rather than that it is internally consistent.
 The invariants checked here are block boundary safety, target
 integrity, exactly-once coverage,
 absence of new links, absence of surviving definitions, reference
-preservation, outline preservation, depth safety, group isolation, entry
-line integrity, one intended destination per rewritten link, and the two
+preservation, outline preservation, depth safety, group isolation, one
+intended destination per rewritten link, and the two
 sides of region accounting: a candidate holding fewer regions than the
 provenance claims has omitted one, and a candidate holding more carries
 content no source range accounts for.
@@ -71,11 +68,10 @@ from prosiform.bundle import (
     blank,
     carried_headings,
     emitted_visible,
-    entry_slot,
     heading_text,
     openings,
 )
-from prosiform.closure import Reference, bundled, rebased, unmarked, withholding_target
+from prosiform.closure import bundled, rebased, unmarked, withholding_target
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     Ancestor,
@@ -107,7 +103,6 @@ from prosiform.source import (
 
 ANCHOR = "#"
 TITLE = "title"
-PARAGRAPH_OPEN = "paragraph_open"
 LINK_CLOSE = "link_close"
 CODE_BLOCKS = ("fence", "code_block")
 
@@ -116,8 +111,6 @@ LINK = "link"
 UNSAFE_BUNDLE_BOUNDARY = "E_UNSAFE_BUNDLE_BOUNDARY"
 
 CODES = (UNSAFE_BUNDLE_BOUNDARY,)
-
-ENTRY_LINE = "the entry line"
 
 CONTAINERS = {
     "fence": "code example",
@@ -138,7 +131,6 @@ REFERENCE_PRESERVATION = "reference preservation"
 OUTLINE_PRESERVATION = "outline preservation"
 DEPTH_SAFETY = "depth safety"
 GROUP_ISOLATION = "group isolation"
-ENTRY_LINE_INTEGRITY = "entry line integrity"
 ONE_DESTINATION = "one intended destination"
 NO_OMISSIONS = "no accidental omissions"
 NO_EXPANSION = "no accidental expansion"
@@ -512,18 +504,12 @@ def boundaries(
     """
     named = parts(groups)
     started = {token.map[0] for token in spans if token.map is not None}
-    slot = entry_slot(groups)
-    span = spans[slot] if slot < len(spans) else None
-    entry_lines = (
-        span.map[1] - span.map[0] if span is not None and span.map is not None else 1
-    )
-    for at, (opens, (what, path)) in enumerate(
-        zip(openings(groups, entry_lines), named, strict=True)
+    for (carried, opening), opens, (what, _path) in zip(
+        named[:-1], openings(groups)[1:], named[1:], strict=True
     ):
         if opens in started or opens >= len(physical):
             continue
         holding = container(spans, opens)
-        carried, opening = named[at - 1] if at else (ENTRY_LINE, path)
         kind = (
             "container"
             if holding is None
@@ -537,8 +523,8 @@ def structure(
 ) -> list[tuple[Record, Part, Token]]:
     """Pair each region the candidate holds with the provenance that claims it.
 
-    The bundle is its entry line, then for each group the filename
-    heading and one region for each part the group records: a selected
+    The bundle is, for each group, the filename heading and one region
+    for each part the group records: a selected
     source range, or a structural ancestor. A group the parent's title
     opens records that title among its parts and has no filename heading
     ahead of them. A candidate holding fewer
@@ -549,9 +535,7 @@ def structure(
     ancestor it is, so a heading-only part cannot stand in for a
     selected one either.
     """
-    expected = 1 + sum(
-        (1 if one.wrapped else 0) + len(one.record.parts) for one in groups
-    )
+    expected = sum((1 if one.wrapped else 0) + len(one.record.parts) for one in groups)
     if len(spans) != expected:
         short = len(spans) < expected
         raise Invalid(
@@ -559,15 +543,8 @@ def structure(
             f"the candidate holds {len(spans)} region(s) against the {expected} "
             f"the provenance accounts for",
         )
-    slot = entry_slot(groups)
-    if slot >= len(spans) or spans[slot].type != PARAGRAPH_OPEN:
-        found = spans[slot].type if slot < len(spans) else "nothing"
-        raise Invalid(
-            ENTRY_LINE_INTEGRITY,
-            f"the entry paragraph is a {found!r} rather than a paragraph",
-        )
     paired: list[tuple[Record, Part, Token]] = []
-    at = 0 if any(one.entry_at is not None for one in groups) else 1
+    at = 0
     for one in groups:
         if one.wrapped:
             opening = spans[at]
@@ -578,9 +555,7 @@ def structure(
                     f"rather than on its own heading",
                 )
             at += 1
-        for index, part in enumerate(one.record.parts):
-            if one.entry_at is not None and index == one.entry_at:
-                at += 1
+        for part in one.record.parts:
             span = spans[at]
             if isinstance(part, Ancestor | Generated) and (
                 span.type != HEADING_OPEN or level(span) != part.level
@@ -592,8 +567,6 @@ def structure(
                     f"level {part.level}",
                 )
             paired.append((one.record, part, span))
-            at += 1
-        if one.entry_at is not None and one.entry_at == len(one.record.parts):
             at += 1
     return paired
 
@@ -928,46 +901,6 @@ def integrity(
             )
 
 
-def entry(
-    spans: Sequence[Token],
-    tokens: Sequence[Token],
-    referrer: Reference | None,
-    requested: Collection[Reference],
-    targets: Mapping[tuple[str, str | None], str],
-    groups: Sequence[Group],
-) -> None:
-    """Hold the entry line to naming every entry reference and no other.
-
-    Each entry reference is resolved to the destination its target was
-    assigned, and the links the published entry line carries are read
-    back from the candidate. The two sets are the same set, or the line
-    names something the caller did not ask for, or leaves out something
-    the caller did.
-    """
-    expected = set()
-    for one in requested:
-        path = one.path or (referrer.path if referrer is not None else "")
-        assigned = targets.get((path, one.fragment))
-        if assigned is None:
-            raise Invalid(
-                ENTRY_LINE_INTEGRITY,
-                f"the entry reference {one.original!r} names a target no "
-                f"destination was assigned to",
-            )
-        expected.add(normalizeLink(f"{ANCHOR}{assigned}"))
-    carried = {
-        use.destination
-        for inline in inlines(tokens, [spans[entry_slot(groups)]])
-        for _, _at, use in uses(inline)
-    }
-    if carried != expected:
-        raise Invalid(
-            ENTRY_LINE_INTEGRITY,
-            f"the entry line links {sorted(carried)} against the "
-            f"{sorted(expected)} the entry references were assigned",
-        )
-
-
 def leakage(environment: Mapping[str, Any]) -> None:
     """Hold the candidate to carrying no surviving link-reference definition.
 
@@ -1104,8 +1037,6 @@ def validate(
     groups: Sequence[Group],
     assigned: Sequence[str],
     targets: Mapping[tuple[str, str | None], str],
-    referrer: Reference | None,
-    requested: Collection[Reference],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     budget: int,
@@ -1132,7 +1063,6 @@ def validate(
     leakage(environment)
     outline(tokens, groups)
     integrity(named(tokens, groups, assigned), targets)
-    entry(spans, tokens, referrer, requested, targets, groups)
     for record, part, span in paired:
         if isinstance(part, Ancestor):
             structural(record, part, span, tokens)

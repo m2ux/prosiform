@@ -1,7 +1,5 @@
 # Bare
 
-Follow [Bare](#bare) and [Kept](#kept). The other sections are material those procedures reference.
-
 ## Findings
 
 The run held throughout.

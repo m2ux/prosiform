@@ -16,10 +16,9 @@ from typing import Any
 import pytest
 from markdown_it.token import Token
 
-from prosiform.bundle import Group, assemble, entry_line
+from prosiform.bundle import Group, assemble
 from prosiform.candidate import (
     DEPTH_SAFETY,
-    ENTRY_LINE_INTEGRITY,
     EXACTLY_ONCE,
     GROUP_ISOLATION,
     NO_DEFINITION_LEAKAGE,
@@ -39,7 +38,6 @@ from prosiform.candidate import (
 from prosiform.cli import (
     assembled,
     destination_map,
-    entries_named,
 )
 from prosiform.closure import Reference
 from prosiform.limits import BUDGETS, NESTING, Limits
@@ -59,7 +57,6 @@ class Built:
     groups: list[Group]
     assigned: list[str]
     targets: dict[tuple[str, str | None], str]
-    requested: list[Reference]
     read: dict[str, Source]
     parsed: dict[str, list[Token]]
 
@@ -70,8 +67,6 @@ class Built:
             self.groups,
             self.assigned,
             self.targets,
-            None,
-            self.requested,
             self.read,
             self.parsed,
             BUDGET,
@@ -112,8 +107,8 @@ def built(
     assigned = fragments([one for each in headed for one in each.headings])
     targets = destination_map(headed, assigned)
     groups = assembled(read, parsed, defined, selected, requested, targets, {})
-    bundled = assemble(entry_line(entries_named(groups, assigned)), groups)
-    return Built(bundled, groups, assigned, targets, requested, read, parsed)
+    bundled = assemble(groups)
+    return Built(bundled, groups, assigned, targets, read, parsed)
 
 
 def named(reference: str) -> Reference:
@@ -318,12 +313,6 @@ def test_a_region_recorded_twice_fails() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
     one.groups = [doubled(one.groups[0])]
     assert refused(one).invariant == EXACTLY_ONCE
-
-
-def test_an_entry_line_naming_another_destination_fails() -> None:
-    one = built({"guide.md": GUIDE}, ["guide.md#rules"])
-    one.bundled = one.bundled.replace("](#rules)", "](#notes)", 1)
-    assert refused(one).invariant == ENTRY_LINE_INTEGRITY
 
 
 def test_a_filename_wrapper_does_not_stand_in_for_a_missing_region() -> None:

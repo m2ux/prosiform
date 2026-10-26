@@ -4,8 +4,6 @@ Brings the chosen standalone issues into the agent-engineering structure, or lea
 
 Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 
-Follow [Procedure](#procedure). The other sections are material that procedure references.
-
 ## Procedure
 
 1. **Fetch.**

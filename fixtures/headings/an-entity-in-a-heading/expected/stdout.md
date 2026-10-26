@@ -1,5 +1,3 @@
-Follow [Article](#article) and [Café](#café-1). The other sections are material those procedures reference.
-
 # Article
 
 An opening paragraph, above the first heading.

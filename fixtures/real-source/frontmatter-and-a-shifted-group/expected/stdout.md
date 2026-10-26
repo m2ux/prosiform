@@ -1,7 +1,5 @@
 # Impact Analysis with GitNexus
 
-Follow [When to Use](#when-to-use). The other sections are material that procedure references.
-
 ## When to Use
 
 - "Is it safe to change this function?"

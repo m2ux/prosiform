@@ -26,10 +26,14 @@ pf modes/plan-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens with:
+The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens on the mode's own title and preamble, which tell the agent what to follow:
 
 ```markdown
-Follow [Procedure](#procedure). The other sections are material that procedure references.
+# Plan Mode
+
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
+
+Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 ```
 
 Its publish step reads:
@@ -72,15 +76,13 @@ pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins:
+The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins with the section the artifacts' group merges into:
 
 ```markdown
-Follow [Record Epic Delivery](#record-epic-delivery). The other sections are material that procedure references.
-
 ## Operations
 ```
 
-The selected operation follows, beneath the section the artifacts' group merges into:
+The selected operation follows beneath it:
 
 ```markdown
 ### *Record* Epic Delivery

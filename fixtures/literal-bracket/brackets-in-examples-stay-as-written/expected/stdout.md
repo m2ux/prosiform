@@ -8,8 +8,6 @@ A [runner] use and its definition:
 [runner]: run.md
 ```
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
 # Run
 
 How the runner runs.

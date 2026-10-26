@@ -6,7 +6,6 @@ clauses = [
   "Markdown and source-heading profile, pipe tables enabled",
   "Markdown and source-heading profile — Unsupported extensions",
   "Parser and source-preserving edits — Untouched content",
-  "Entry line",
 ]
 
 [invocation]

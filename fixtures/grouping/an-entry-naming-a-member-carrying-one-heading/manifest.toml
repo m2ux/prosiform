@@ -3,7 +3,6 @@ description = "An entry reference naming a member whose whole content is the one
 clauses = [
   "Grouping — Document content above the grouping depth",
   "Bundle destinations — Document destinations",
-  "Entry line — Link text",
 ]
 
 [invocation]
