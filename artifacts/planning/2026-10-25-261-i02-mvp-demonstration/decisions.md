@@ -57,3 +57,11 @@ The same review's merged-group fixture keeps a name stating directory-wide membe
 The example's links were rewritten from the declared root so the bundle would include what they name, and 457 of them then opened nothing for a reader. The user directed that source links are never changed to suit the build: the build follows the path a reader follows. [#274](https://github.com/m2ux/prosiform/pull/274) makes every link resolve from the directory of the file that writes it, with the root as the boundary only, and restores every example link to the skill's own destination. Every mode bundle is byte-identical before and after.
 
 This delivers the debt epic's row on a root naming a sibling and a parent, so that row and its criterion leave that epic and the migration epic's W09 carries the work. The debt epic's criteria and references are renumbered; its row ids keep their numbers.
+
+## D10 — SKILL.md loads each mode through pf
+
+`SKILL.md` is read raw as the skill's entry point. Each mode link in its Modes list opens with `↳` (U+21B3), a skill-level bootstrap mark: it tells the reading agent to run `pf` from the skill's directory on the link's destination as written, writing the bundle to a scratch file outside the repository, then to read the whole bundle and follow it as that mode's procedure. The bundle goes to a file because a mode bundle of 200 KB or more printed to standard output is truncated by agent harnesses.
+
+`pf` never sees the mark, since no mode bundle compiles `SKILL.md`'s Modes list, so the mark needs no compiler operator. `»` stays reserved for sub-agent dispatch, which waits until the skill is factored ([#275](https://github.com/m2ux/prosiform/pull/275), reverted). The section is named Bootstrap so "dispatch" keeps that one meaning.
+
+The Linked sections rule leaves `SKILL.md`: a mode is followed from its bundle, which carries each linked section under its own heading, and the Prerequisites it named are gone from the tree. The migration epic carries this as W11 ([#276](https://github.com/m2ux/prosiform/pull/276)), observed by AC15 and AC16.
