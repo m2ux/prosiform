@@ -49,6 +49,15 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
    - For an initiative, apply [Record Initiative Criteria](initiative-issue-body.md#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
 2. Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
 
+### *Untick* Criteria
+
+The criteria a body ticked without the delivery their evidence depends on, returned to unticked.
+
+**Inputs:** Current issue body, criterion ids and output body file.
+
+1. Clear the tick on each supplied criterion, and Done on each row or table that cites it, meeting [Tick State](#tick-state).
+2. Write the body to the output file and return it for publication, leaving every other criterion and row as it stands.
+
 ### *Record* Verified Criteria
 
 The verified criteria of one epic or initiative, ticked and saved to its issue.

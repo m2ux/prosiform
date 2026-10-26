@@ -12,53 +12,27 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 1. **Select the board.**
    Apply [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
-   - Use the returned owner and board number for the sync and fetch steps.
+   - Use the returned owner and board number for the sync and read steps.
    - Resolve a pending theme selection before continuing.
 2. **Sync.**
    Follow [⇉ Sync Mode](sync-mode.md) for each open initiative on the selected board, with the allowance the caller supplied.
-   - Wait for its saved delivery results before the fetch step.
+   - Wait for its saved delivery results before the read step.
    - Return any blocker that prevents current delivery from being established.
-3. **Fetch.**
-   - Apply [Read Board State](../artifacts/board.md#read-board-state) for the current board items and Status field.
-   - Apply [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](../artifacts/board.md#repositories) Read Board State returned.
-   - Apply [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) for those pull requests, which is where the issue each one delivers is read.
-   - Apply [Read Board Configuration](../artifacts/board.md#read-board-configuration) for the board fields.
-   - Apply [Read Board Assignee](../artifacts/board.md#read-board-assignee) for the assignee login.
-4. **Plan.**
-   Apply [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the selected board identity, current board items with Status, initiative pull request records, board fields, assignee login and an output directory such as `board/`.
-   - Include every resolved off-board issue file and confirmed unplanned initiative identity.
-5. **Resolve missing evidence.**
-   For each unresolved issue reference:
-   - Apply [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) into a file.
-     - Add the returned file to the resolved off-board issue files.
-   - Apply [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the current board items, initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved issue file and confirmed unplanned initiative identity.
-   - Repeat while references remain unresolved; an unavailable issue leaves the queue pending.
-6. **Resolve queue decisions.**
-   Decide only from an `order` or `ask` line in [Report Lines](../artifacts/board-queue.md#report-lines), each of which is a re-prioritisation.
-   - Apply [Check Plan Change Autonomy](../artifacts/plan-change.md#check-plan-change-autonomy) for each line, with the allowance the caller supplied.
-     - An automatic line takes its [recommended decision](../artifacts/board-queue.md#recommended-decisions), recorded through [Record Plan Change](../artifacts/plan-change.md#record-plan-change).
-     - A held line, and an automatic one the recommendation leaves without an answer, is settled as [Held Change](../artifacts/plan-change.md#held-change) states, put as an [interview](../rules.md) where it reaches the user.
-     - A line this mode records rather than asks leaves the queue pending, which the write step reads as incomplete.
-   - For `order`, the answer is the [parallel work map](../artifacts/board-queue.md#priority-sets): a positive integer on each listed initiative, or none left unordered.
-   - For `ask`:
-     - The answer is a positive integer or none.
-     - Record the initiative's identity as confirmed unplanned when the answer is none.
-   - After an answer:
-     - Apply [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the priority label each confirmed number names, for every repository holding one of those initiatives.
-     - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with each initiative identity and its confirmed priority-label addition.
-     - Apply [Read Board State](../artifacts/board.md#read-board-state) again.
-     - Apply [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
-   - Resolve any further missing evidence through step 5.
-   - Repeat this step while a decision is pending. An unanswered question leaves the queue pending.
-   - Return the [change list](../artifacts/plan-change.md#change-list) with the queue, so the caller reports each decision this mode made and each it held.
-7. **Write.**
-   Once the queue is [complete](../artifacts/board-queue.md#completeness), run each proposed Status and assignee call it returned.
-   - Apply [Read Board State](../artifacts/board.md#read-board-state) again.
-   - Apply [Plan Board Queue](../artifacts/board-queue.md#plan-board-queue) with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, retaining every resolved off-board issue file and confirmed unplanned initiative identity.
-   - Resolve new missing evidence or decisions through steps 5 and 6.
-   - Repeat this step until the refreshed queue is complete and contains no further call.
-8. **Report.**
+3. **Read the evidence.**
+   Apply [Read Board Delivery Evidence](../artifacts/delivery-evidence.md#read-board-delivery-evidence) with the selected board owner and number, authenticated access, output paths and destination snapshot files.
+   - Return incomplete evidence as a blocker.
+4. **Apply the queue.**
+   Apply [Apply Board Queue](../artifacts/board-queue.md#apply-board-queue) with the board identity, the returned board items with Status, initiative pull request records, board fields and assignee login, an output directory such as `board/`, every resolved off-board issue file and every confirmed unplanned initiative identity.
+   - Return a reference it reports as missing evidence as a blocker; the queue stays pending.
+   - When it returns pending decisions, settle them in the decide step, then return to the read step.
+5. **Decide.**
+   For each pending `order` or `ask` line, a re-prioritisation as [Report Lines](../artifacts/board-queue.md#report-lines) states, apply [Settle Plan Change](../artifacts/plan-change.md#settle-plan-change) with the line, the initiatives it names, its [recommended decision](../artifacts/board-queue.md#recommended-decisions), those initiatives' identities, the allowance the caller supplied and the run's [change list](../artifacts/plan-change.md#change-list).
+   - For each initiative an applied option or answer numbers, apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with its identity and the [priority label](../artifacts/board-queue.md#priority-sets) that number names, with the label's colour and description.
+   - Add each initiative an `ask` answer leaves with no number to the confirmed unplanned initiative identities.
+   - A held or unanswered line leaves the queue pending: report it and continue at the report step.
+6. **Report.**
    Report each move and each `order`, `ask`, `wait` and `next` line using [Report Lines](../artifacts/board-queue.md#report-lines).
+   - Return the change list with the queue, so the caller reports each decision this mode made and each it held.
 
 ## Outcomes
 
