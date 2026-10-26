@@ -1,0 +1,21 @@
+description = "An image whose alternative text opens with the dispatch operator names a resource whatever file it points at, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — An operator's target",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "plan.png"
+source = "guide.md:3"
+chain = ["guide.md", "plan.png"]

@@ -1,0 +1,21 @@
+description = "A link whose text opens with the deferral operator names a Markdown document above the allowed source root, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — An operator's target",
+  "Adversarial acceptance fixtures — Deferral",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "../guidelines.md"
+source = "guide.md:3"
+chain = ["guide.md", "../guidelines.md"]
