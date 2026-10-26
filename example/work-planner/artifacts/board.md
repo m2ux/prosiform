@@ -31,6 +31,20 @@ A missing theme board, or a missing proposals board.
    - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
    - Require the new theme's label and board before an initiative takes that theme.
 
+### *Ensure* Project Board
+
+The theme or proposals board the request names, created when it is absent.
+
+**Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
+
+1. Apply [Select Project Board](#select-project-board) with the owner and the theme name or proposals selection.
+   - On a missing-selection result, return it to the caller and stop.
+   - On a selected board, return its owner and number and stop.
+2. When the board is absent:
+   - For a theme a proposal derives, apply [Read Tracker Issue](issue.md#read-tracker-issue) for the originating proposal's identity. Return unresolved provenance and stop when it cannot be read.
+   - Apply [Copy Project Board](#copy-project-board) with the owner, repository, selected board kind, theme title and that proposal record when applicable.
+3. Return the owner and the board number the copy created.
+
 ### *Create* Proposals Board
 
 A new proposals board linked to the supplied repository.
