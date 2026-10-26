@@ -35,3 +35,16 @@ The refreshed queue is current and carries one `next` line: `#261: E00`.
 - **`I01` is next.** It moves to In Progress when `I02` completes.
 - **`I03` waits.** It holds the lowest rank, so its work does not compete with the demonstration.
 - **`I02:E01` and `I02:E02` wait behind `E00`.** The ground epic ranks below the migration and above the debt, which is the order the user confirmed.
+
+## Priority with the skill-refactor epic
+
+The user ranked the skill-refactor epic next after the migration epic, ahead of the ground and the debt.
+
+| Issue | Was | Now |
+| --- | --- | --- |
+| `#258 [I02:E00]` Example Migration | `priority: 3` | `priority: 4` |
+| `#290 [I02:E03]` Skill Refactor | `priority: 2` | `priority: 3` |
+| `#262 [I02:E01]` Demonstration Ground | `priority: 2` | `priority: 2` |
+| `#263 [I02:E02]` Deferred Debt | `priority: 1` | `priority: 1` |
+
+The skill-refactor epic stays in Backlog: an epic can start only once every prerequisite epic its initiative row names is closed as completed with its bases merged, and the migration epic is in review.

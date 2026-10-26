@@ -1,84 +1,43 @@
 # Waves
 
-The epic's sixty tasks in three waves. Each task extends one component, the file its work item declares, and is one pull request unless its Joins cell names another. Depends on carries the order; the waves group the work by kind.
+The epic's nineteen tasks in three waves. Each task is one pull request over one group of files, and the file its work item declares as its component is the group's first. Depends on carries the order; the waves group the work by layer.
 
-- **No file is written by two tasks that can run together.** Two tasks extending one file are ordered by Depends on, so tasks that can run at once touch different files. The usage fixtures every task re-records are generated output, so a rebase re-records them rather than merging them.
-- **Wave 1 and wave 2 change artifacts only.** Their call sites in modes and protocols move in wave 3, so no two early tasks edit one mode. The example is not run live, so an operation with no caller yet on the epic base costs nothing; the last task removes any that stay uncalled.
-- **A wave-2 task touching no wave-1 file depends on none.** Seven new operations sit in files wave 1 leaves alone, so they can start with wave 1.
-- **Wave 3 protocols depend on the operations they apply,** and each mode task depends on the protocols it follows and the operations it applies.
-- **Joined pairs share a pull request.** The two operations that resolve their own missing evidence, the two freshness retries, the Task Merge rewrite with the narrowing of the operation it absorbs, and the README with the fixture verification.
+- **Wave 1 changes artifacts.** Each task completes one artifact group: the fixes and extensions to its existing operations and the operations it gains, so no task waits on another for the same file. The ten tasks share no source file and can run together.
+- **Wave 2 changes protocols.** Each task writes or clears one cluster of protocols that share inputs, and depends on the artifact groups whose operations it applies. The four clusters share no file.
+- **Wave 3 changes modes, then verifies.** Each mode task depends on the protocols it follows and the artifact groups it applies directly; the four mode groups share no file. The last task removes operations left uncalled, brings the worked examples in line, and verifies the bundles and fixtures.
+- **Concurrent tasks share only generated files.** Every task re-records the usage fixtures its change moves, so a rebase re-records them rather than merging them.
+- **Call sites move a layer at a time.** Wave 1 leaves the modes' and protocols' calls as they are, and wave 2 the modes' calls. The example is not run live, so an operation with no caller yet on the epic base costs nothing; the last task removes any that stay uncalled.
 
-## Wave 1: small fixes and extensions of existing operations
+## Wave 1: artifacts
 
-| Task | Component | Description | Depends on | Joins |
+| Task | Files | Description | Coverage | Depends on |
 | --- | --- | --- | --- | --- |
-| W01 | `example/work-planner/artifacts/issue.md` | Saved issues ensuring their own labels |  |  |
-| W02 | `example/work-planner/artifacts/issue-body.md` | Format repair taking each kind's validator |  |  |
-| W03 | `example/work-planner/artifacts/epic-issue-body.md` | Hold and release rules in the epic body |  |  |
-| W04 | `example/work-planner/artifacts/task-body.md` | Task delivery returning its comment file |  |  |
-| W05 | `example/work-planner/artifacts/delivery-evidence.md` | Delivery evidence read without writes |  |  |
-| W06 | `example/work-planner/artifacts/delivery-plan.md` | Available work resolving its own issues |  | W07 |
-| W07 | `example/work-planner/artifacts/standup-report.md` | Standup report resolving its own initiatives |  | W06 |
-| W08 | `example/work-planner/artifacts/pull-request.md` | Merge and publication rules in pull request fields |  |  |
-| W09 | `example/work-planner/artifacts/delivery-branches.md` | Review worktree retrying a changed head |  | W10 |
-| W10 | `example/work-planner/artifacts/repository-graph.md` | Change measurement retrying a stale index |  | W09 |
-| W11 | `example/work-planner/artifacts/planning-record.md` | Planning record populated and published together |  |  |
-| W12 | `example/work-planner/artifacts/placement.md` | Placement options ordered by their field |  |  |
-| W13 | `example/work-planner/artifacts/dependency-graph.md` | Dependency check reading its own work items |  |  |
-| W14 | `example/work-planner/artifacts/board.md` | Board placement taking the issue number |  |  |
-| W15 | `example/work-planner/artifacts/initiative-issue-body.md` | Source departures stated in Sources field |  |  |
-| W16 | `example/work-planner/artifacts/architecture-overview.md` | Overview ownership stated in its fields |  |  |
-| W17 | `example/work-planner/artifacts/goal-trace.md` | Goal review returning its trace table |  |  |
-| W18 | `example/work-planner/modes/revise-mode.md` | Revision checklist linking the guidelines |  |  |
+| W01 | `example/work-planner/artifacts/issue.md`, `example/work-planner/artifacts/issue-body.md` | Issue and issue-body operations | AC1, AC2, AC3, AC31, AC32 |  |
+| W02 | `example/work-planner/artifacts/initiative-issue-body.md`, `example/work-planner/artifacts/acceptance-criteria.md` | Criteria and initiative-body operations | AC20, AC33, AC35, AC36 |  |
+| W03 | `example/work-planner/artifacts/epic-issue-body.md`, `example/work-planner/artifacts/task-body.md`, `example/work-planner/artifacts/epic.md` | Epic, epic-body and task-body operations | AC4, AC5, AC6, AC7, AC24, AC34 |  |
+| W04 | `example/work-planner/artifacts/board.md`, `example/work-planner/artifacts/board-queue.md` | Board and board-queue operations | AC19, AC25, AC37 |  |
+| W05 | `example/work-planner/artifacts/delivery-evidence.md`, `example/work-planner/artifacts/delivery-plan.md`, `example/work-planner/artifacts/standup-report.md`, `example/work-planner/artifacts/board-delivery.md` | Delivery evidence, plan and report operations | AC8, AC9, AC10, AC38, AC54 |  |
+| W06 | `example/work-planner/artifacts/pull-request.md`, `example/work-planner/artifacts/delivery-branches.md`, `example/work-planner/artifacts/repository-graph.md`, `example/work-planner/artifacts/pull-request-body.md` | Pull request and branch operations | AC11, AC12, AC13, AC14, AC26, AC39, AC53 |  |
+| W07 | `example/work-planner/artifacts/planning-record.md`, `example/work-planner/artifacts/work-item.md`, `example/work-planner/artifacts/delivery-brief.md` | Planning record, work item and brief operations | AC15, AC16, AC27, AC28, AC40 |  |
+| W08 | `example/work-planner/artifacts/placement.md`, `example/work-planner/artifacts/dependency-graph.md`, `example/work-planner/artifacts/plan-change.md` | Plan change, dependency and placement operations | AC17, AC18, AC29, AC44 |  |
+| W09 | `example/work-planner/artifacts/technical-debt.md` | Technical debt classified by its artifact | AC30 |  |
+| W10 | `example/work-planner/artifacts/architecture-overview.md`, `example/work-planner/artifacts/goal-trace.md` | Overview and goal-trace fields and returns | AC21, AC22 |  |
 
-## Wave 2: new operations and the technical-debt artifact
+## Wave 2: protocols
 
-| Task | Component | Description | Depends on | Joins |
+| Task | Files | Description | Coverage | Depends on |
 | --- | --- | --- | --- | --- |
-| W19 | `example/work-planner/artifacts/epic.md` | Pull requests matched to tasks |  |  |
-| W20 | `example/work-planner/artifacts/board-queue.md` | Board queue applied until it converges |  |  |
-| W21 | `example/work-planner/artifacts/pull-request-body.md` | Test coverage checked against criteria |  |  |
-| W22 | `example/work-planner/artifacts/work-item.md` | Work item read for its component |  |  |
-| W23 | `example/work-planner/artifacts/delivery-brief.md` | Delivery brief read and reservation confirmed |  |  |
-| W24 | `example/work-planner/artifacts/plan-change.md` | Plan changes settled by one operation |  |  |
-| W25 | `example/work-planner/artifacts/technical-debt.md` | Technical debt classified by its artifact |  |  |
-| W26 | `example/work-planner/artifacts/issue.md` | Issue completion checked by kind | W01 |  |
-| W27 | `example/work-planner/artifacts/issue-body.md` | Open questions resolved by one operation | W02 |  |
-| W28 | `example/work-planner/artifacts/initiative-issue-body.md` | Placeholder epic links resolved | W15 |  |
-| W29 | `example/work-planner/artifacts/epic-issue-body.md` | Unplaced task row placed by one operation | W03 |  |
-| W30 | `example/work-planner/artifacts/acceptance-criteria.md` | Verified criteria recorded, criteria quality checked | W15 |  |
-| W31 | `example/work-planner/artifacts/board.md` | Project board ensured for a theme | W14 |  |
-| W32 | `example/work-planner/artifacts/delivery-evidence.md` | Board-scoped delivery evidence read once | W05 |  |
-| W33 | `example/work-planner/artifacts/pull-request.md` | Pull request bases aligned to the epic | W08 |  |
-| W34 | `example/work-planner/artifacts/planning-record.md` | Planning record located by reference | W11 |  |
+| W11 | `example/work-planner/protocols/delivery-recording.md`, `example/work-planner/protocols/epic-closure.md`, `example/work-planner/protocols/issue-closure.md`, `example/work-planner/protocols/issue-delivery.md`, `example/work-planner/protocols/task-merge.md` | Delivery recording and closure protocols | AC46, AC47, AC51, AC52, AC59 | W01, W02, W03, W06 |
+| W12 | `example/work-planner/protocols/review-pull-request.md`, `example/work-planner/protocols/delivery-base-preparation.md`, `example/work-planner/protocols/epic-integration.md` | Base preparation, review and integration protocols | AC43, AC45, AC50 | W02, W06 |
+| W13 | `example/work-planner/protocols/issue-placement.md`, `example/work-planner/protocols/initiative-publication.md` | Initiative publication and issue placement protocols | AC42, AC48 | W01, W02, W07, W08 |
+| W14 | `example/work-planner/protocols/unit-hold.md`, `example/work-planner/protocols/change-overview.md` | Unit hold and change overview protocols | AC41, AC49 | W03, W06, W07 |
 
-## Wave 3: protocols, and the residue in modes, protocols and artifacts
+## Wave 3: modes and verification
 
-| Task | Component | Description | Depends on | Joins |
+| Task | Files | Description | Coverage | Depends on |
 | --- | --- | --- | --- | --- |
-| W35 | `example/work-planner/protocols/unit-hold.md` | Unit Hold protocol | W03, W11, W22 |  |
-| W36 | `example/work-planner/protocols/issue-placement.md` | Issue Placement protocol | W13 |  |
-| W37 | `example/work-planner/protocols/review-pull-request.md` | Review Pull Request applying operations only | W08 |  |
-| W38 | `example/work-planner/artifacts/dependency-graph.md` | Dependency findings settled through plan change | W13, W24 |  |
-| W39 | `example/work-planner/protocols/delivery-base-preparation.md` | Delivery Base Preparation protocol | W33 |  |
-| W40 | `example/work-planner/protocols/delivery-recording.md` | Delivery Recording protocol | W19, W27, W29, W30 |  |
-| W41 | `example/work-planner/protocols/epic-closure.md` | Epic Closure protocol | W30 |  |
-| W42 | `example/work-planner/protocols/initiative-publication.md` | Initiative Publication protocol | W01, W02, W11, W28 |  |
-| W43 | `example/work-planner/protocols/change-overview.md` | Change Overview applying operations only | W09, W10, W34 |  |
-| W44 | `example/work-planner/protocols/epic-integration.md` | Epic Integration applying operations only | W08, W30 |  |
-| W45 | `example/work-planner/protocols/issue-closure.md` | Issue Closure applying operations only | W26 |  |
-| W46 | `example/work-planner/protocols/issue-delivery.md` | Issue Delivery applying operations only | W04, W29, W30 |  |
-| W47 | `example/work-planner/artifacts/pull-request.md` | Task pull requests merged without branch updates | W33 | W53 |
-| W48 | `example/work-planner/artifacts/board-delivery.md` | Board delivery reading board evidence | W32 |  |
-| W49 | `example/work-planner/modes/advance-mode.md` | Advance Mode orchestrating only | W01, W20, W24, W32 |  |
-| W50 | `example/work-planner/modes/hoist-mode.md` | Hoist Mode orchestrating only | W02, W12, W36, W38 |  |
-| W51 | `example/work-planner/modes/propose-mode.md` | Propose Mode orchestrating only | W01, W31 |  |
-| W52 | `example/work-planner/modes/standup-mode.md` | Standup Mode orchestrating only | W02, W07, W32 |  |
-| W53 | `example/work-planner/protocols/task-merge.md` | Task Merge from merge to records | W41 | W47 |
-| W54 | `example/work-planner/modes/align-mode.md` | Align Mode orchestrating only | W38, W39, W40 |  |
-| W55 | `example/work-planner/modes/plan-mode.md` | Plan Mode orchestrating only | W17, W27, W38, W39, W42 |  |
-| W56 | `example/work-planner/modes/sync-mode.md` | Sync Mode orchestrating only | W16, W31, W40, W41 |  |
-| W57 | `example/work-planner/modes/deliver-mode.md` | Deliver Mode orchestrating only | W06, W21, W23, W24, W25, W32, W35, W39, W53 |  |
-| W58 | `example/work-planner` | No operation or protocol left uncalled | W18, W37, W43, W44, W45, W46, W47, W48, W49, W50, W51, W52, W54, W55, W56, W57 |  |
-| W59 | `example/README.md` | Worked examples quoting the current tree | W58 | W60 |
-| W60 | `fixtures/usage-example` | Mode bundles and usage fixtures verified | W58 | W59 |
+| W15 | `example/work-planner/modes/advance-mode.md`, `example/work-planner/modes/standup-mode.md`, `example/work-planner/modes/sync-mode.md` | Sync, Advance and Standup orchestrating only | AC55, AC58, AC62 | W04, W05, W08, W10, W11 |
+| W16 | `example/work-planner/modes/align-mode.md`, `example/work-planner/modes/plan-mode.md` | Align and Plan orchestrating only | AC60, AC61 | W10, W11, W12, W13 |
+| W17 | `example/work-planner/modes/deliver-mode.md` | Deliver Mode orchestrating only | AC63 | W05, W08, W09, W11, W12, W14 |
+| W18 | `example/work-planner/modes/revise-mode.md`, `example/work-planner/modes/hoist-mode.md`, `example/work-planner/modes/propose-mode.md` | Hoist, Propose and Revise orchestrating only | AC23, AC56, AC57 | W04, W13 |
+| W19 | `example/work-planner`, `example/README.md`, `fixtures/usage-example` | Uncalled operations removed, tree and fixtures verified | AC64, AC65, AC66, AC67, AC68, AC69 | W15, W16, W17, W18 |
