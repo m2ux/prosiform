@@ -250,7 +250,7 @@ An error decides a failing run.
 | `E_TARGET_NOT_FOUND` | Link classification — a reference under the root naming no document, or no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, One operator per link and An operator's target — a link opening with both operators, or an operator naming no Markdown document or section under the root. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, One operator per link and An operator's target — a link opening with more than one operator, or an operator naming no Markdown document or section under the root. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
@@ -264,6 +264,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_DISPATCH_NOT_PROCEDURAL` | Link classification and resource handling, Dispatched procedures — a dispatched target whose selected content carries no numbered step. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
+| `W_RUN_SET_SHAPE` | Link classification and resource handling, Run-set shape — a run-set link naming a target that holds anything but one bulleted list whose every item links a Markdown document or section under the root. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
 

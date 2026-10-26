@@ -5,14 +5,16 @@ Authored links that escape their source root remain citations; positional
 references permit parent bootstrap. Canonical source identities are relative
 to the invocation working directory, independent of the discovering parent.
 
-Two operators open a link's text, each a mark followed by a space, and
-each withholds the compilation the other withholds: one states when the
-material is compiled, the other who compiles it. Only the dispatch states
-what its destination does not: a withheld link's destination is the
-target's path, which no compiled link carries, so the deferral is stated
-there and its mark is authoring syntax. A dispatch has no such
-destination to tell a reader who compiles the material, so its mark is
-content and the bundle publishes it."""
+Three operators open a link's text, each a mark followed by a space, and
+one link states one of them. Two withhold the same compilation: one states
+when the material is compiled, the other who compiles it. Only the
+dispatch states what its destination does not: a withheld link's
+destination is the target's path, which no compiled link carries, so the
+deferral is stated there and its mark is authoring syntax. A dispatch has
+no such destination to tell a reader who compiles the material, so its
+mark is content and the bundle publishes it. The third, the run-set mark,
+withholds nothing: its target is compiled like any link's, and the mark
+is content stating how the calls the target holds are run."""
 
 import posixpath
 import re
@@ -25,6 +27,7 @@ from prosiform.source import ENCODING
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
+RUN_SET_MARK = "⫽"
 
 SPACE = " "
 BLANKS = " \t"
@@ -49,7 +52,7 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 PATH_PART = "path segment"
 FRAGMENT_PART = "fragment"
 
-OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK)
+OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, RUN_SET_MARK)
 
 
 class Unresolvable(Exception):
@@ -252,11 +255,12 @@ def opens(text: str, at: int) -> bool:
 
 
 def conflicting(opening: str) -> bool:
-    """Whether a link's text opens with both operators.
+    """Whether a link's text opens with more than one operator.
 
-    One compilation cannot wait for a later run and be dispatched by this
-    one, so a link stating both states two contradictory things and the
-    run says so rather than choosing.
+    Each operator states how one compilation is carried out — by a later
+    run, by a sub-agent, or by this run as a run-set — so a link stating
+    two states two contradictory things and the run says so rather than
+    choosing.
     """
     return len(set(operators(opening))) > 1
 
@@ -276,6 +280,16 @@ def dispatched(opening: str) -> bool:
     return DISPATCH_MARK in operators(opening)
 
 
+def run_set(opening: str) -> bool:
+    """Whether a link states that the calls its target holds run concurrently.
+
+    A run-set withholds nothing: the target is compiled into the bundle
+    like any link's, because the agent reads the calls it holds, and the
+    mark is content stating how those calls are run.
+    """
+    return RUN_SET_MARK in operators(opening)
+
+
 def withholding(opening: str) -> bool:
     """Whether a link withholds its compilation from this run.
 
@@ -287,9 +301,10 @@ def withholding(opening: str) -> bool:
     Which of the two marks reaches the bundle is a separate decision for
     each, read through `operators`: a dispatch states who compiles the
     material, which only the mark can tell a reader, while a deferral
-    states when, which the destination already states.
+    states when, which the destination already states. A run-set
+    withholds nothing.
     """
-    return bool(operators(opening))
+    return deferred(opening) or dispatched(opening)
 
 
 def unmarked(text: str) -> str:
@@ -302,7 +317,8 @@ def unmarked(text: str) -> str:
 
     Text opening with no deferral operator is the author's prose and is
     returned as written. A dispatch's mark states who compiles the
-    material, which its destination does not, so it stays.
+    material, which its destination does not, and a run-set's mark how
+    the calls it names are run, so each stays.
 
     The caller applies it where the bundle rebased the link's
     destination, which is where the destination states the deferral.
