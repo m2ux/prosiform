@@ -54,11 +54,11 @@ Run these from the repository root. One entry writes its bundle to an entry-deri
 ### Bundle a Source and its Dependencies
 
 ```bash
-pf example/work-tracker/modes/plan-mode.md
+pf example/work-planner/modes/plan-mode.md
 ```
 
 ### Compile a Selected Section
 
 ```bash
-pf 'example/work-tracker/artifacts/epic.md#delivery-findings'
+pf 'example/work-planner/artifacts/epic.md#delivery-findings'
 ```
