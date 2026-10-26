@@ -49,6 +49,15 @@ One pull request body referencing its published overview.
 
 3. Return the complete updated body file for publication.
 
+### *Check* Test Coverage
+
+The criteria a unit's planned tests leave unobserved.
+
+**Inputs:** The work item's test row and each criterion the unit's Coverage carries.
+
+1. Compare the test row with each supplied criterion, meeting [Test Coverage](#test-coverage).
+2. Return each criterion with no test.
+
 ## Fields
 
 ### Template
