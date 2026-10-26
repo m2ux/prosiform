@@ -20,28 +20,21 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
      - Read the board through [Read Board State](../artifacts/board.md#read-board-state).
      - Treat each selected initiative's delivery state as needing refresh.
    - For initiatives with known delivery changes or unknown freshness, follow [⇉ Sync Mode](sync-mode.md) for the affected initiatives on that board.
-   - Resume the fetch step after their delivery results are saved.
+   - Resume the read step after their delivery results are saved.
    - Report a blocker that prevents a current summary.
    - Retain it as a gap if presenting a partial report.
-3. **Fetch.**
-   Apply [Read Board State](../artifacts/board.md#read-board-state) with the selected board identity.
-   - Apply [Fetch All Initiative Pull Requests](../artifacts/pull-request.md#fetch-all-initiative-pull-requests) for the [repositories](../artifacts/board.md#repositories) Read Board State returned.
-   - Apply [Fetch Pull Request Issue Links](../artifacts/pull-request.md#fetch-pull-request-issue-links) for those records.
-   - Pass the returned snapshots to Compose Standup Report.
+3. **Read the evidence.**
+   Apply [Read Board Delivery Evidence](../artifacts/delivery-evidence.md#read-board-delivery-evidence) with the selected board owner and number, authenticated access, output paths and destination snapshot files.
+   - Retain incomplete evidence as a gap.
 4. **Compose.**
-   Apply [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the board items, initiative pull request records, complete issue-link snapshot, selected window and initiative filter, resolved off-board initiative records and output paths.
-5. **Resolve evidence.**
-   For each unresolved initiative:
-   - Apply [Locate Initiative Issue](../artifacts/issue.md#locate-initiative-issue).
-   - Apply [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for its current JSON.
-   - Repeat [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with all resolved initiative records, retaining the board items, pull requests, links, selected window and filter. An unavailable record remains a reported gap.
+   Apply [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the returned board items, pull request records and complete issue-link snapshot, the selected window and initiative filter, and output paths.
+5. **Repair.**
+   For an epic the report names with an unreadable Work Breakdown, apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) as the validator and its further inputs, the epic identity, current JSON and output body path, the [epic template](../artifacts/epic-issue-body.md#template) and required related evidence.
+   - If it confirms a saved correction, repeat steps 3–6, retaining the selected board, window and initiative filter.
+   - If it reports a blocker or no correction, carry the unresolved finding to the report without repeating the same repair.
 6. **Report.**
    Present the returned report verbatim in a fenced block for copying.
-   - Put unresolved findings beneath it.
-   - For an epic [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) returns with an unreadable Work Breakdown:
-     - Apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with the epic identity, current JSON, [epic template and field conditions](../artifacts/epic-issue-body.md#fields), required related evidence and output body path.
-     - If it confirms a saved correction, repeat steps 3–6 with refreshed records, retaining the selected board, window and initiative filter.
-     - If it reports a blocker or no correction, return the unresolved finding without repeating the same repair.
+   - Put unresolved findings and gaps beneath it.
 
 ## Outcomes
 
