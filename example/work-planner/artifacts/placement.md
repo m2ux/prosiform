@@ -32,34 +32,32 @@ The issue candidates and available destinations from supplied records.
 
 ### *Apply* Issue Placement
 
-One selected destination for an orphan's work.
+The destination bodies one confirmed placement populates, as local files.
 
-**Inputs:** Confirmed placement, current source and destination records, and the affected initiative and epic bodies.
+**Inputs:** Confirmed placement, current source and destination records, the affected initiative and epic bodies, and an output path for each body the placement changes.
 
-1. Execute only the branch matching the confirmed destination:
+1. Populate only the branch matching the confirmed destination, each body at its supplied output path:
    - **Existing task.**
      - Add the orphan's outcomes to the task criteria.
      - Add its design to Proposal.
      - When they exceed the epic's criteria, add epic criteria cited by the task row.
-     - Publish the affected bodies through [Save Tracker Issue](issue.md#save-tracker-issue).
    - **New task.**
      - Apply [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
      - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
      - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](epic-issue-body.md#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
      - Number the row where it can start.
-     - When movable rows change number, apply [Check Dependencies and Numbering](dependency-graph.md#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
-     - Publish the checked bodies through Save Tracker Issue.
    - **New epic.**
      - Apply [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body).
-     - Populate the covering row through [Draft Initiative Issue Body](initiative-issue-body.md#draft-initiative-issue-body).
-     - Publish the epic through [Save Tracker Issue](issue.md#save-tracker-issue).
-     - Link its issue in the initiative row.
+     - Populate the covering row through [Draft Initiative Issue Body](initiative-issue-body.md#draft-initiative-issue-body), with a temporary link standing for the epic's issue until it is saved.
    - **New initiative.**
      - Apply [Populate Initiative Issue Body](initiative-issue-body.md#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
-     - Publish through [Save Tracker Issue](issue.md#save-tracker-issue).
    - **Leave.**
-     - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
-2. Return the saved destination, the identities of all affected bodies and the confirmed disposition to the caller, including the destination epic and row for a new task. The caller performs the rewrite or closure.
+     - Use the source issue as the destination with disposition Leave, changing no destination body.
+2. For a subsumed orphan, carry its work in the destination body.
+   - Make each outcome a criterion of one invariant.
+   - Put the design in Proposal.
+   - Cite the orphan and any planning record in References.
+3. Return each populated body file with its issue identity, or with its title and labels for a new issue; each temporary link; the destination, including the epic and row for a new task; and the confirmed disposition.
 
 ### *Rewrite* Orphan Issue
 
@@ -79,16 +77,12 @@ The selected layout, with the original wording preserved for readers.
 
 ### *Subsume* Orphan Work
 
-The work remains tracked by the taking issue.
+The orphan closed, its work tracked by the taking issue.
 
-**Inputs:** Orphan identity and body, confirmed destination evidence, and the planning record it references when it has one.
+**Inputs:** Orphan identity and the saved destination evidence that carries its work and cites it.
 
-1. Transfer the work to the taking issue.
-   - Make each outcome a criterion of one invariant.
-   - Put the design in Proposal.
-   - Cite the orphan and any planning record in References.
-2. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
-3. Apply [Close Transferred Work](issue.md#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
+1. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
+2. Apply [Close Transferred Work](issue.md#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
    - Return the confirmed closure or blocker to the caller.
 
 ## Fields
