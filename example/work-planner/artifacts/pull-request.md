@@ -23,7 +23,7 @@ One task or epic pull request's merge result, or its handoff for human approval.
    - Keep approval with that reviewer. Another account, an administrative bypass or a setting change cannot supply it. Changing repository protection requires the user's explicit authorization, asked for separately.
    - For example, workflow-server's `main` requires one approving review, so carry an epic to ready and stop.
 2. When approval permits the agent to merge:
-   - Call [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
+   - Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
    - If the merge is refused, return the refusal to the caller for fresh verification.
 3. Return the merge result, including its merge commit when supplied, for the caller's readback.
 
