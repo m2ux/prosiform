@@ -68,14 +68,7 @@ SOURCE = (
     '---\nprosiform: {root: "."}\n---\n'
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
-BUNDLE = (
-    "# Guide\n"
-    "\n"
-    "The installed command bundles this document.\n"
-    "\n"
-    "Follow [Guide](#guide). "
-    "The other sections are material that procedure references.\n"
-)
+BUNDLE = "# Guide\n\nThe installed command bundles this document.\n"
 
 
 class Failed(Exception):
@@ -204,17 +197,9 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
 def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     """Derived files, combined selections and validation through the installed CLI."""
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    fragment = (
-        "Follow [Guide](#guide). "
-        "The other sections are material that procedure references.\n"
-        "\n"
-        "# Guide\n"
-        "\n"
-        "The installed command bundles this document.\n"
-    )
     for reference, name, expected in (
         (entry, "guide.bundle.md", BUNDLE),
-        (entry + "#guide", "guide__guide.bundle.md", fragment),
+        (entry + "#guide", "guide__guide.bundle.md", BUNDLE),
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)

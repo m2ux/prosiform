@@ -57,9 +57,9 @@ beneath its heading.
 
 The parent is the first entry document. Where that document is a member
 and carries a title, the title and the content above the grouping depth
-open the group at the levels the author wrote, and the whole-document
-entry resolves to the parent's first H2 at the destination the bundle
-assigned that heading. The sections the parent carries at the grouping
+open the group at the levels the author wrote, and a whole-document
+reference to the parent resolves to its first H2 at the destination the
+bundle assigned that heading. The sections the parent carries at the grouping
 depth follow in the parent's order, with the parent's own contribution
 first where several members share one section. A section only another
 member contributes follows those, and the other members' subsections
@@ -91,7 +91,6 @@ from prosiform.bundle import (
     carried_headings,
     emitted_text,
     escaped,
-    preamble_end,
     region,
     required,
     rewrite,
@@ -207,7 +206,6 @@ class Member:
     chains: dict[int, tuple[Token, ...]]
     emitting: set[int]
     ancestors: set[int]
-    targets: tuple[Target, ...]
     title: Token | None
     absorbing: Token | None
     items: list[Item] = field(default_factory=list)
@@ -273,16 +271,6 @@ def prepared(
         if assigned is None
         else rewrite(physical, tokens, chosen, assigned, path, defined, root)
     )
-    named_targets = (
-        ()
-        if selected is None
-        else tuple((path, named[id(token)]) for token in selected.named)
-    )
-    targets: tuple[Target, ...] = (
-        ((path, None), *named_targets)
-        if selected is None or selected.document
-        else named_targets
-    )
     member = Member(
         path,
         tokens,
@@ -293,7 +281,6 @@ def prepared(
         ancestry(tokens),
         emitting,
         needed,
-        targets,
         titled_token,
         absorbing,
     )
@@ -469,7 +456,7 @@ def arranged(
 
 
 def direct(into: Assembly, member: Member) -> None:
-    """Point the parent's whole-document entry at its first H2.
+    """Point a whole-document reference to the parent at its first H2.
 
     The heading is the one the bundle emitted for that source heading,
     so the destination is wherever the merge placed it.
@@ -543,27 +530,11 @@ def merged(
         direct(into, parent_member)
     for member in members:
         contributed(into, member)
-    reached: dict[Target, int] = {}
-    for at, one in enumerate(into.headings):
-        for target in one.answers:
-            reached.setdefault(target, at)
-    entries = tuple(
-        reached[target]
-        for member in members
-        for target in member.targets
-        if target in reached
-    )
     return Group(
         tuple(into.emitted),
-        entries,
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
         min(member.path for member in members),
         wrapped=headed and not kept,
-        entry_at=(
-            preamble_end(into.parts, into.headings)
-            if kept and parent_member is not None
-            else None
-        ),
     )
 
 
@@ -602,8 +573,7 @@ def contributed(into: "Assembly", member: Member) -> None:
     heading where it emits none carrying it. That destination is
     therefore one the bundle has, whatever the member contributes, so a
     reference the closure resolved into a merged group is rewritten
-    rather than left for the entry line to read as one it never
-    assigned.
+    to a destination the bundle assigned.
     """
     answered = {target for one in into.headings for target in one.answers}
     whole: Target = (member.path, None)

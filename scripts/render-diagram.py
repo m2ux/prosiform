@@ -86,15 +86,6 @@ def card(x, y, width, title, body, output=False):
     return "\n".join(result), height
 
 
-def split_entry_points(stdout):
-    from prosiform.bundle import is_entry_line
-
-    paragraph, separator, body = stdout.partition("\n\n")
-    if is_entry_line(paragraph):
-        return paragraph, body if separator else ""
-    return "", stdout
-
-
 def compact_markdown(body):
     """Keep parsed headings and links; omit other content."""
     from markdown_it import MarkdownIt
@@ -208,7 +199,7 @@ def svg(
         block, h = card(466, at, 690, path, content)
         blocks.append(block)
         at += h + 22
-    _, bundle_body = split_entry_points(stdout)
+    bundle_body = stdout
     if compact:
         bundle_body = compact_markdown(bundle_body)
     expected = (
@@ -390,18 +381,6 @@ def main():
         command,
         fence,
     ]
-    entry_points, _ = split_entry_points(body)
-    if entry_points:
-        review.extend(
-            [
-                "",
-                "### Entry Points",
-                "",
-                entry_points.replace(
-                    "](#", "](" + destinations[".stdout.md"].name + "#"
-                ),
-            ]
-        )
     review.extend(["", "### Diagnostics", "", "Exit status: " + str(status)])
     if diagnostics:
         review.extend(["", fence + "text", diagnostics.rstrip(), fence])
