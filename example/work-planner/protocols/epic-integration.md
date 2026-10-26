@@ -13,7 +13,8 @@ One epic base merged into its long-lived branch, on current branch, epic and pul
 1. **Prepare the review.**
    - Apply [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository.
    - Follow [Review Pull Request](review-pull-request.md) with the actual task merges, the epic's issue and that confirmed setting.
-   - Follow [Change Overview](change-overview.md) with the review pull request identity.
+   - Follow [Change Overview](change-overview.md) with the repository, the project checkout and the review pull request number.
+     - On a changed-head finding, follow it again with the same inputs.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
    - When it is a draft, put the ready mark [State](../artifacts/pull-request.md#state) leaves to the user as an [interview](../rules.md), naming the epic standing in review on its board.
    - Return a draft still awaiting that decision to the caller, open.
@@ -24,7 +25,7 @@ One epic base merged into its long-lived branch, on current branch, epic and pul
    - Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) for the epic, with its criterion ids, current issue JSON and body, the delivery findings, pull request records and complete issue-link snapshot Read Delivery Evidence returned, the updated epic base as delivery revision, the named instruments, the project checkout and an output body file.
    - When Update Epic Base merged new content into the base:
      - Repeat Review Pull Request with the current task merges.
-     - Repeat Change Overview with the same pull request identity and updated head.
+     - Repeat Change Overview with the repository, the project checkout and the same pull request number, which reads the updated head.
 3. **Check readiness.**
    - Apply [Check Epic Readiness](../artifacts/epic.md#check-epic-readiness) with the current epic JSON, pull request records, complete issue-link snapshot and the verification evidence Record Verified Criteria returned.
    - Apply [Fetch Merge Readiness](../artifacts/pull-request.md#fetch-merge-readiness) with the review pull request identity, delivery kind epic, the epic base, the long-lived branch [Epic Bases](../artifacts/delivery-branches.md#epic-bases) names for it as target, and output paths.
