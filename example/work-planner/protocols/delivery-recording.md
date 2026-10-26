@@ -51,8 +51,8 @@ The task and epic records brought to the delivery an initiative's pull requests 
        - Apply Record Verified Criteria again for each criterion Plan Gap Task returns as already holding.
      - **Ticked early.**
        - Apply Match Delivery to Tasks for the delivery the criterion's rows lack.
-       - Where no match is confirmed, apply [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections) with the current body, the epic template and fields, the criterion unticked as the confirmed resolution and the output path.
-       - Apply Save Tracker Issue with that corrected body.
+       - Where no match is confirmed, apply [Untick Criteria](../artifacts/acceptance-criteria.md#untick-criteria) with the current body, those criterion ids and the output body file.
+       - Apply Save Tracker Issue with the returned body.
      - **Disagreement.**
        - Return each to the caller with its pull request and row.
    - Repeat Record Epic Delivery, its save and this routing with the saved epic JSON, refreshed records and every confirmed match, until it returns no unmatched, in flight, uncited, note or unplaced finding beyond those returned to the caller as pending.
