@@ -5,6 +5,7 @@ clauses = [
   "Input and output contract — Sections",
   "Section extraction and output hierarchy — Boundary",
   "Compile before publishing — step 4",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]

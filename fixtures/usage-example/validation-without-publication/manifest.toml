@@ -4,6 +4,7 @@ clauses = [
   "Usage examples",
   "CLI contract — -c, discover, bundle and validate without emitting or publishing the bundle",
   "Validation scope",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]

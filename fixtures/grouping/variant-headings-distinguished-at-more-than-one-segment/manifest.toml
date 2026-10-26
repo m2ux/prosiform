@@ -4,6 +4,7 @@ clauses = [
   "Grouping — Group membership",
   "Grouping — Variants by document",
   "Grouping — Document content above the grouping depth",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]
