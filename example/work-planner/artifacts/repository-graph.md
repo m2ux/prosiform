@@ -25,8 +25,9 @@ Current graph evidence for the supplied change.
 5. For each reported flow, run [Flow Trace](#flow-trace).
 6. Inspect the staleness block on every response. For a behind index:
    - Discard its measurements.
-   - Reindex.
-   - Repeat the affected measurements.
+   - Run [Index Repository](#index-repository).
+   - Repeat steps 1 to 5 once with the updated index.
+   - If a response is still behind, return a freshness blocker.
 7. Return only evidence current with the supplied head, meeting [Fields](#fields), or a freshness blocker.
 
 ## Fields
