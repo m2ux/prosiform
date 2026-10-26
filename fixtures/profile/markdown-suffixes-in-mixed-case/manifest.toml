@@ -1,4 +1,4 @@
-description = "Both Markdown suffixes are classified case-insensitively, while each document's file heading keeps the spelling and case the filesystem holds."
+description = "Both Markdown suffixes are classified case-insensitively, while the file heading of a document carrying no title keeps the spelling and case the filesystem holds."
 
 clauses = [
   "Markdown and source-heading profile — File suffixes",

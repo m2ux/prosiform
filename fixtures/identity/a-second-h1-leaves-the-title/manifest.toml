@@ -1,4 +1,4 @@
-description = "A document carrying a second document-level H1 has no only H1, so the title the path names is kept and the group shifts by one."
+description = "A document carrying a second document-level H1 has no single title, so both H1s are kept where its author wrote them."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",

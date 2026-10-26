@@ -1,4 +1,4 @@
-description = "A document without conversion metadata keeps its own file group, headed by its root-relative path, beside the explicitly declared merged group. One bundle therefore carries both arrangements, and the groups are ordered by root-relative path with the merged one taking the first of its members'."
+description = "A document without conversion metadata keeps its own file group, here the parent opening the bundle on its own title, beside the explicitly declared merged group. One bundle therefore carries both arrangements, and the groups are ordered by path with the merged one taking the first of its members'."
 
 clauses = [
   "Grouping — Group membership",

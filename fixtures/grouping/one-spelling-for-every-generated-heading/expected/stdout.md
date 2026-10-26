@@ -2,9 +2,9 @@
 
 The work starts here.
 
-It reads the [Field Notes](#guidesfield-notes), the [Common Rules](#common) and the [Codex Rules](#codex).
+It reads the [Field Notes](#field-notes), the [Common Rules](#common) and the [Codex Rules](#codex).
 
-# Guides/Field-Notes
+# Field Notes
 
 What the work observed while it ran.
 

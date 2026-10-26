@@ -1,4 +1,4 @@
-description = "A reference graph whose dependencies form a cycle bundles to a fixed point: each reachable document is present once, in root-relative path order, and the traversal terminates on the identity each reference normalized to rather than on a depth it refuses at."
+description = "A reference graph whose dependencies form a cycle bundles to a fixed point: each reachable document is present once, in path order, and the traversal terminates on the identity each reference normalized to rather than on a depth it refuses at."
 
 clauses = [
   "Compile before publishing, expanding coverage",

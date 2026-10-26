@@ -10,7 +10,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - When the user names a proposal, its associated issue body defines the problem scope.
    - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
    - When neither a proposal nor an existing initiative is named:
-     - Follow [Propose Mode](#modespropose-mode) with the user's goal.
+     - Follow [Propose Mode](#propose-mode) with the user's goal.
      - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
 2. **Prepare the planning record.**
    - For an initiative, epic or complex plan, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder and supplied evidence files.
@@ -82,7 +82,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - Repeat goal and ordering review on changed bodies before returning readiness.
 9. **Record delivered work.**
    When work has landed:
-   - Follow [Sync Mode](#modessync-mode) for the affected initiative.
+   - Follow [Sync Mode](#sync-mode) for the affected initiative.
    - For an unplaced task issue:
      - Add its row through Populate Epic Issue Body.
      - Save that body.
@@ -3706,7 +3706,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
   - `m2ux` the user.
   - `<checkout>` any checkout of the project, a linked worktree included.
 
-# Modes/Propose-Mode
+# Propose Mode
 
 Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
 
@@ -3758,7 +3758,7 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
 - **On the proposals board.**
   When the user wants the proposal on the proposals board, it is there, raised, and unassigned.
 
-# Modes/Sync-Mode
+# Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
 
@@ -3882,7 +3882,7 @@ Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventio
     - Apply [Record Board Delivery](#record-board-delivery) after the issue bodies and closures are saved.
 13. **Explain each change entering review.**
     For each task or epic newly confirmed In Review by the board step:
-    - Follow [Understand Mode](#modesunderstand-mode) with the task's open pull request or each epic review pull request, one run per base.
+    - Follow [Understand Mode](#understand-mode) with the task's open pull request or each epic review pull request, one run per base.
     - Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms a task or epic In Review that integration did not already explain.
 14. **Report.**
     Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
@@ -3902,7 +3902,7 @@ Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventio
 - **The queue stays undecided.**
   A sync on its own leaves the choice of what to start next undecided.
 
-# Modes/Understand-Mode
+# Understand Mode
 
 Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
 

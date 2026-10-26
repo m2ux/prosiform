@@ -1,4 +1,4 @@
-description = "A source whose only H1 does not slug to the final segment of its path keeps that heading, which moves down one level to sit beneath the file heading rather than beside it."
+description = "A source whose only H1 is a title its path does not spell opens the bundle on that title, its sections at the levels its author wrote."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",

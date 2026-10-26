@@ -1,7 +1,7 @@
-description = "A chain of dependencies discovered in the reverse of root-relative path order bundles in path order, so discovery order decides no part of the arrangement."
+description = "A chain of dependencies discovered in the reverse of path order bundles in path order, so discovery order decides no part of the arrangement."
 
 clauses = [
-  "Input and output contract — Groups, headed by its normalized root-relative path",
+  "Input and output contract — Groups, headed by its title or its working-directory path",
   "Compile before publishing, expanding coverage",
 ]
 

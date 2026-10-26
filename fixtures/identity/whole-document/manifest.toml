@@ -1,4 +1,4 @@
-description = "A whole-document entry reference bundles the document beneath one heading carrying its root-relative path, which absorbs the document's own title."
+description = "A whole-document entry reference bundles the whole document, which opens the bundle on its own title with its sections at the levels its author wrote."
 
 clauses = [
   "Input and output contract — Whole documents",
