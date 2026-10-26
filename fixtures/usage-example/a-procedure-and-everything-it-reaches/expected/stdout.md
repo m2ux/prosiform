@@ -1503,26 +1503,29 @@ One declaration line ahead of the first heading, naming the single component the
 
 The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
 
-**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, and explicitly authorized outside-initiative files.
+**Inputs:** Initiative and epic bodies or local drafts, the planning record that registered each task row, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, the run's current [change list](#change-list), and explicitly authorized outside-initiative files.
 
 1. Use the supplied local drafts when reviewing unpublished work.
    - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](#read-tracker-issue).
-   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
-2. Resolve each finding, as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](#held-change) states.
-   - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
-   - Read tasks for implied consumption edges.
-   - Account for every independent pair as [Joins](#joins) states.
-   - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
-   - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
+   - Read each task row's work-item file from the planning record that registered it, as its [Artifacts](#artifacts-1) list it. The record holds one per task whatever that row currently links, so contention is measured rather than reported as unchecked.
+   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body, every work-item file read and each record file accounting for independent pairs.
+2. Settle each finding through [Settle Plan Change](#settle-plan-change), with the correction below as its recommended option, the affected issue identities, the supplied allowance and the current change list.
+   - The correction each finding takes:
+     - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
+     - Read tasks for implied consumption edges.
+     - Account for every independent pair as [Joins](#joins) states.
+     - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
+     - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
+   - Make the correction Settle Plan Change returns as applied, or the one the user's answer chooses, carrying its updated change list into the next finding.
+   - Keep each held finding unresolved.
 3. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
    - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
    - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
    - Re-sort rewritten tables.
    - Inspect every reported range.
    - Search prose for references the script cannot see.
-   - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each printed contending pair in the planning record.
-   - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
+   - Repeat Check Dependencies after each edge or numbering change until it reports no problem but the held findings.
+   - Return the checked bodies, the printed longest chains, each printed contending pair, the proposed [Epic Priority](#epic-priority) map, the updated change list and the unresolved findings to the caller; do not publish a failed renumbering.
 
 ### Fields
 
@@ -2101,9 +2104,39 @@ One pending change assessed against the run's allowance.
 
 1. Match the change to one kind in [Change Kinds](#change-kinds).
 2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
-3. Return it as held otherwise, for the caller to settle as [Held Change](#held-change) states.
+3. Return it as [held](#held-change) otherwise.
    - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
    - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
+
+#### *Record* Plan Change
+
+One entry in the run's list, for a change it applied or held.
+
+**Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
+
+1. Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
+2. Return the updated list for the caller to publish and report.
+
+#### *Settle* Plan Change
+
+One pending change carried to its outcome: applied, held, or answered by the user.
+
+**Inputs:** The pending change, its subject, the option recommended for it, the affected issue identities, the allowance the caller was supplied, and the run's current [Change List](#change-list).
+
+1. Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) with the change, its subject, the recommended option and the supplied allowance.
+2. Settle the change by what it returns:
+   - **Automatic.**
+     - Take the recommended option as the applied option.
+     - Apply [Record Plan Change](#record-plan-change) with the change, its kind, that option, the affected issue identities and the current list, marked applied.
+   - **Held, with an allowance supplied.**
+     - Leave the change unapplied, meeting [Held Change](#held-change).
+     - Apply Record Plan Change with the change, its kind, the recommended option, the affected issue identities and the current list, marked held.
+     - Ask nothing, since the work the run was dispatched for does not wait on an answer.
+   - **Held, with no allowance supplied.**
+     - Put the change to the user as an [interview](#rules), with the recommended option marked, and wait for the answer.
+     - Where the answer applies a change, apply Record Plan Change with the change, its kind, the option the user chose, the affected issue identities and the current list, marked applied.
+     - An answer leaving the work where it is takes no entry, as [Change Kinds](#change-kinds) states.
+3. Return the applied option, held, or the user's answer, with the updated change list.
 
 ### Fields
 
@@ -2127,11 +2160,17 @@ An option deciding to leave work where it is changes no plan, so it needs no all
 
 A new initiative is outside every allowance. The work stays where it is, open and unplaced, until the user decides where it belongs.
 
+#### Change List
+
+One list for the run, holding every change it applied and every change it held. It is what the run reports and what its record keeps.
+
+#### Entry
+
+One line: the kind, the issue or row it concerns, and the option applied or recommended. The entry states the change, not the alternatives weighed against it.
+
 #### Held Change
 
 A held change is left unapplied and its subject stays as it stands, so the next run sees the same decision. Its entry carries the recommended option, which is what the user is answering.
-
-A run working under an allowance records and reports a held change rather than asking, since the work it was dispatched for does not wait on an answer. A run supplied no allowance puts it to the user.
 
 ## Proposal Body
 
