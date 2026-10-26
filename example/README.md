@@ -76,16 +76,20 @@ pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins with the section the artifacts' group merges into:
+The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
 
 ```markdown
-## Operations
+# Artifacts
+
+## Epic Issue Body
+
+### Operations
 ```
 
 The selected operation follows beneath it:
 
 ```markdown
-### *Record* Epic Delivery
+#### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
@@ -96,20 +100,20 @@ One epic body with supplied delivery matches and completed rows recorded.
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
-The selection retains its structural ancestor and rewrites the links the operation carries to bundle fragments. The rest of the bundle contains the sections those links reach.
+The selection retains its structural ancestors and rewrites the links the operation carries to bundle fragments. The rest of the bundle contains the sections those links reach.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml).
 
 ## Declare groups per file
 
-### Above-depth prose
+### One block per document
 
 ```bash
 cd example/work-planner
 pf modes/hoist-mode.md
 ```
 
-Every artifact file declares group `artifacts` at depth `2`, with the group's own heading suppressed. A mode file declares its root and no group.
+Every artifact file declares group `artifacts` at depth `1`. A mode file declares its root and no group.
 
 For example, the [epic](work-planner/artifacts/epic.md) begins with this declaration:
 
@@ -118,30 +122,27 @@ For example, the [epic](work-planner/artifacts/epic.md) begins with this declara
 prosiform:
   root: ".."
   group: "artifacts"
-  group-depth: 2
-  group-heading: false
+  group-depth: 1
 ---
 ```
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) merges the artifacts into one `Overview` and one `Operations`, with each member named beneath them:
+The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`:
 
 ```markdown
-## Overview
+# Artifacts
 
-### Epic Issue Body
+## Dependency Graph
 
-Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
+### Operations
 
-## Operations
-
-### Dependency Graph
+#### *Check* Dependencies and Numbering
 ```
 
-`group-heading: false` omits the group's own heading, so each member is named by its H3 rather than a document title. Only a member reached as a whole document contributes prose above the grouping depth, which is why `Epic Issue Body` is the member `Overview` holds.
+No two artifacts share a title, so each heading keeps its source text, and a link to a whole artifact resolves to the H2 its title heads.
 
-The [requirement characteristics](work-planner/references/requirement-characteristics.md) document declares group `references` at depth `1` and keeps the group's heading, so the same bundle opens that group with its name in title case and merges the member's H1 beneath it:
+The [requirement characteristics](work-planner/references/requirement-characteristics.md) document declares group `references` at depth `1` in the same way, so the bundle opens that group with its name in title case and carries the member's H1 beneath it:
 
 ```markdown
 # References
@@ -178,7 +179,7 @@ Select rules for your harness:
 Follow [Agents](#agents).
 ```
 
-`Overview` is absent here. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
+Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
 
 ## More fixture examples
 

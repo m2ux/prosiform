@@ -86,15 +86,11 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
   - `m2ux` the user.
   - `<checkout>` any checkout of the project, a linked worktree included.
 
-## Overview
+# Artifacts
 
-### Epic Issue Body
+## Issue
 
-Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
-
-## Operations
-
-### Issue
+### Operations
 
 #### *Read* Tracker Issue
 
@@ -151,358 +147,7 @@ The issue collection used for repository-wide selection.
 1. Run [Fetch All Issues](#fetch-all-issues), saving the complete collection.
 2. Return it with pull requests distinguishable from issues.
 
-### Placement
-
-#### *Draft* Issue Placement
-
-One placement option from the supplied orphan and candidate destinations.
-
-**Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
-
-1. Identify an existing task, a new task, a new epic, a new initiative, or Leave.
-2. Record the destination and the work it takes, meeting [Fields](#fields).
-3. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
-4. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
-
-#### *Find* Placement Candidates
-
-The issue candidates and available destinations from supplied records.
-
-**Inputs:** Complete repository issue collection.
-
-1. Run [List Orphans](#list-orphans) with the supplied issue file.
-2. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
-
-#### *Apply* Issue Placement
-
-One selected destination for an orphan's work.
-
-**Inputs:** Confirmed placement, current source and destination records, and the affected initiative and epic bodies.
-
-1. Execute only the branch matching the confirmed destination:
-   - **Existing task.**
-     - Add the orphan's outcomes to the task criteria.
-     - Add its design to Proposal.
-     - When they exceed the epic's criteria, add epic criteria cited by the task row.
-     - Publish the affected bodies through [Save Tracker Issue](#save-tracker-issue).
-   - **New task.**
-     - Apply [Populate Epic Issue Body](#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
-     - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
-     - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
-     - Number the row where it can start.
-     - When movable rows change number, apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
-     - Publish the checked bodies through Save Tracker Issue.
-   - **New epic.**
-     - Apply [Populate Epic Issue Body](#populate-epic-issue-body).
-     - Populate the covering row through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-     - Publish the epic through [Save Tracker Issue](#save-tracker-issue).
-     - Link its issue in the initiative row.
-   - **New initiative.**
-     - Apply [Populate Initiative Issue Body](#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
-     - Publish through [Save Tracker Issue](#save-tracker-issue).
-   - **Leave.**
-     - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
-2. Return the saved destination, the identities of all affected bodies and the confirmed disposition to the caller, including the destination epic and row for a new task. The caller performs the rewrite or closure.
-
-#### *Rewrite* Orphan Issue
-
-The selected layout, with the original wording preserved for readers.
-
-**Inputs:** Source issue identity, selected destination kind, and the evidence and design the body carries.
-
-1. Fetch the body and discussion live with [Read Tracker Issue](#read-tracker-issue).
-   - Post the body word for word through [Comment on Issue](#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
-   - Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
-2. Use the selected [Populate Task Body](#populate-task-body), [Populate Epic Issue Body](#populate-epic-issue-body), [Populate Initiative Issue Body](#populate-initiative-issue-body) or [Populate Standalone Body](#populate-standalone-body) body.
-   - Carry evidence into Problem and design into Proposal.
-3. Apply [Check Round of Edits](#check-round-of-edits) with the populated body and selected kind conditions before publishing.
-   - Resolve findings.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the validated body, title and labels.
-   - Return the saved identity to the caller.
-
-#### *Subsume* Orphan Work
-
-The work remains tracked by the taking issue.
-
-**Inputs:** Orphan identity and body, confirmed destination evidence, and the planning record it references when it has one.
-
-1. Transfer the work to the taking issue.
-   - Make each outcome a criterion of one invariant.
-   - Put the design in Proposal.
-   - Cite the orphan and any planning record in References.
-2. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
-3. Apply [Close Transferred Work](#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
-   - Return the confirmed closure or blocker to the caller.
-
-### Plan Change
-
-#### *Check* Plan Change Autonomy
-
-One pending change assessed against the run's allowance.
-
-**Inputs:** The pending change, its subject, the option recommended for it, and the allowance the caller was supplied.
-
-1. Match the change to one kind in [Change Kinds](#change-kinds).
-2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
-3. Return it as held otherwise, for the caller to settle as [Held Change](#held-change) states.
-   - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
-   - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
-
-#### *Record* Plan Change
-
-One entry in the run's list, for a change it applied or held.
-
-**Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
-
-1. Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
-2. Return the updated list for the caller to publish and report.
-
-### Issue Body
-
-#### *Write* Issue Table
-
-The shared table, before a kind fills its cells.
-
-**Inputs:** Current body, the kind's table columns and supplied row data.
-
-1. Populate the shared Done, Coverage and Depends on cells from the supplied row data.
-   - The columns must match the kind's table.
-   - The shared cells must meet [Tables](#tables).
-2. Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
-
-#### *Check* Round of Edits
-
-The shared check after a round of edits.
-
-**Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
-
-1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields) in this file.
-2. Run [Check Body Format](#check-body-format) on every issue the round changed.
-
-#### *Validate* Issue Body
-
-One body checked against its supplied kind and template.
-
-**Inputs:** Issue JSON, kind field conditions, required related evidence and output body file.
-
-1. Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
-2. Review the body against the supplied field conditions.
-3. Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
-
-#### *Apply* Body Corrections
-
-One body rewritten from confirmed local findings.
-
-**Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
-
-1. Populate missing sections from the supplied issue and related context.
-2. Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template.
-3. Record a required tracker-kind change for the caller.
-4. Restate historical narration as the current design.
-5. Apply confirmed criterion changes.
-   - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
-6. Validate the body through [Validate Issue Body](#validate-issue-body).
-7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
-
-#### *Build* Body Snapshot
-
-A local issue-shaped record for body validation.
-
-**Inputs:** Current body file, title, labels, optional existing issue JSON and destination JSON path.
-
-1. Write the body's exact text, title and labels to the destination as JSON.
-2. Preserve the existing issue's identity and state when supplied.
-3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
-4. Return the JSON path for validation. No tracker issue is created by this operation.
-
-### Dependency Graph
-
-#### *Check* Dependencies and Numbering
-
-The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
-
-**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, and explicitly authorized outside-initiative files.
-
-1. Use the supplied local drafts when reviewing unpublished work.
-   - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](#read-tracker-issue).
-   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
-2. Resolve each finding, as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](#held-change) states.
-   - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
-   - Read tasks for implied consumption edges.
-   - Account for every independent pair as [Joins](#joins) states.
-   - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
-   - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
-3. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
-   - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
-   - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
-   - Re-sort rewritten tables.
-   - Inspect every reported range.
-   - Search prose for references the script cannot see.
-   - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
-   - Record the printed longest chains and each printed contending pair in the planning record.
-   - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
-
-### Epic Issue Body
-
-#### *Populate* Epic Issue Body
-
-One epic body and its local validation findings.
-
-**Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records, corpus branch and output path.
-
-1. Populate the body from the [Template](#template) at the supplied output path.
-   - Every section must meet [Fields](#fields).
-   - Shared content must meet the common [body conditions](#fields).
-2. Populate the shared table through [Write Issue Table](#write-issue-table).
-3. Fill the epic-specific cells.
-   - Each row must meet [Work Breakdown](#work-breakdown).
-4. Apply [Build Body Snapshot](#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
-5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
-6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
-7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
-
-#### *Record* Epic Delivery
-
-One epic body with supplied delivery matches and completed rows recorded.
-
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
-
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
-
-#### *Record* Epic Criteria
-
-Verified criteria and completed rows in one epic body.
-
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
-
-1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
-2. Return the body and refused criteria. Complete rows receive Done ticks.
-
-#### *Reserve* Task Rows
-
-Task rows held for one confirmed delivery session.
-
-**Inputs:** Epic JSON, confirmed task ids, supplied planning-folder identity, planning-records base URL, record date and output body file.
-
-1. Require the caller's confirmed unit and existing planning folder. Refuse a row already held or linked to a pull request or commit.
-2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
-3. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
-
-#### *Release* Task Rows
-
-Held task rows returned to their work-item links.
-
-**Inputs:** Epic JSON, task ids, explicit user decision releasing the hold and output body file.
-
-1. Require the supplied release decision and refuse any row that is not held.
-2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
-3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
-
-#### *Validate* Epic Body
-
-The body's local format and field findings.
-
-**Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
-
-1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
-2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
-3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
-4. Return the corrected body, mechanical diff and unresolved findings for the caller.
-
-#### *Revise* Epic Rows
-
-One epic body with confirmed task-grain and coverage corrections.
-
-**Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
-
-1. Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
-   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
-   - Split a task exceeding the allowed criterion grain into the confirmed tasks.
-2. Return the revised body and any cross-body numbering or dependency changes for the caller.
-
-#### *Plan* Gap Task
-
-The agreed disposition of criteria a delivered row left unmet.
-
-**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
-
-1. Present each unmet criterion and its missing evidence to the user.
-   - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
-   - Record an unanswered decision as pending.
-   - If no criteria need further work, return the pending findings to the caller.
-   - Continue to the draft step with only the criteria the user confirms need further work.
-2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
-   - Confirm the draft with the user.
-   - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
-   - Return an unanswered draft as pending without continuing to the reconcile step.
-3. Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
-   - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
-   - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
-
-### Initiative Issue Body
-
-#### *Populate* Initiative Issue Body
-
-One initiative body and its local validation findings.
-
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
-
-1. Populate the body through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-2. Apply [Check Round of Edits](#check-round-of-edits).
-3. Return the populated body and its local format findings to the caller.
-
-#### *Draft* Initiative Issue Body
-
-One initiative body, scoped to one proposal.
-
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
-
-1. Populate the body from the [Template](#template-1) into a local file at the supplied output path.
-   - That file must be the source for every later edit.
-   - All populated fields must meet [Fields](#fields).
-2. Derive the Problem and Non-Goals from the proposal this initiative is scoped to.
-   - The Problem must meet [Problem and Proposal](#problem-and-proposal).
-   - Each Non-Goal must meet [Non-Goals](#non-goals).
-3. Write the acceptance criteria before the Work Breakdown, so each row's Coverage can cite them.
-   - Each criterion must come from a confirmed clause and meet [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
-   - The criteria must come from the requirements sources the proposal references. Where the proposal references none, they must come from the proposal's body alone.
-4. Populate the shared table through [Write Issue Table](#write-issue-table).
-5. Fill the initiative-specific cells.
-   - Each row must meet [Work Breakdown](#work-breakdown-1).
-   - An item a test cannot observe must stay named as [Coverage Reports](#coverage-reports) define.
-
-### Task Body
-
-#### *Populate* Task Body
-
-One task body within its supplied epic context.
-
-**Inputs:** Task scope, epic context, design, criteria and output path.
-
-- Populate the body from the [Template](#template-2) at the supplied output path.
-  - The title must meet the shared [Titles](#titles) conditions.
-  - The Problem and Proposal must meet [Problem and Proposal](#problem-and-proposal).
-  - Acceptance criteria must meet the [shared acceptance criteria](#shared-acceptance-criteria).
-  - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
-
-### Standalone Body
-
-#### *Populate* Standalone Body
-
-One standalone issue body from its supplied scope.
-
-**Inputs:** Problem, design, criteria, open questions and output path.
-
-- Populate the body from the [Template](#template-3) at the supplied output path.
-  - The title must meet the shared [Titles](#titles) conditions.
-  - The Problem and Proposal must meet [Problem and Proposal](#problem-and-proposal).
-  - All populated fields must meet [Fields](#fields), including the required [Sections](#sections-1).
-
-## Commands
-
-### Issue
+### Commands
 
 #### Create Tracker Issue
 
@@ -700,206 +345,92 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > '<issue
 gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > issues.json
 ```
 
-### Placement
+## Placement
 
-#### List Orphans
+### Operations
 
-Lists the hoist candidates, and the open initiatives and epics they could join.
+#### *Draft* Issue Placement
 
-**Inputs:** Complete supplied repository issue collection.
+One placement option from the supplied orphan and candidate destinations.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py '<issues-json-file>'
-```
+**Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
 
-**Example:**
+1. Identify an existing task, a new task, a new epic, a new initiative, or Leave.
+2. Record the destination and the work it takes, meeting [Fields](#fields).
+3. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
+4. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py issues.json
-```
+#### *Find* Placement Candidates
 
-### Issue Body
+The issue candidates and available destinations from supplied records.
 
-#### Check Body Format
+**Inputs:** Complete repository issue collection.
 
-Checks one issue against its template, and with `--fix` writes the body with the mechanical fixes made.
+1. Run [List Orphans](#list-orphans) with the supplied issue file.
+2. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
 
-**Inputs:** Issue JSON, local output body file and the additional format inputs supplied by the kind.
+#### *Apply* Issue Placement
 
-- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
-- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+One selected destination for an orphan's work.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
-```
+**Inputs:** Confirmed placement, current source and destination records, and the affected initiative and epic bodies.
 
-**Example:**
+1. Execute only the branch matching the confirmed destination:
+   - **Existing task.**
+     - Add the orphan's outcomes to the task criteria.
+     - Add its design to Proposal.
+     - When they exceed the epic's criteria, add epic criteria cited by the task row.
+     - Publish the affected bodies through [Save Tracker Issue](#save-tracker-issue).
+   - **New task.**
+     - Apply [Populate Epic Issue Body](#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
+     - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
+     - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
+     - Number the row where it can start.
+     - When movable rows change number, apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the affected initiative and epic drafts and confirmed numbering map.
+     - Publish the checked bodies through Save Tracker Issue.
+   - **New epic.**
+     - Apply [Populate Epic Issue Body](#populate-epic-issue-body).
+     - Populate the covering row through [Draft Initiative Issue Body](#draft-initiative-issue-body).
+     - Publish the epic through [Save Tracker Issue](#save-tracker-issue).
+     - Link its issue in the initiative row.
+   - **New initiative.**
+     - Apply [Populate Initiative Issue Body](#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
+     - Publish through [Save Tracker Issue](#save-tracker-issue).
+   - **Leave.**
+     - Use the source issue as the destination with disposition Leave. The caller rewrites its standalone body and keeps the issue open.
+2. Return the saved destination, the identities of all affected bodies and the confirmed disposition to the caller, including the destination epic and row for a new task. The caller performs the rewrite or closure.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
-```
+#### *Rewrite* Orphan Issue
 
-### Dependency Graph
+The selected layout, with the original wording preserved for readers.
 
-#### Check Dependencies
+**Inputs:** Source issue identity, selected destination kind, and the evidence and design the body carries.
 
-Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
+1. Fetch the body and discussion live with [Read Tracker Issue](#read-tracker-issue).
+   - Post the body word for word through [Comment on Issue](#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
+   - Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
+2. Use the selected [Populate Task Body](#populate-task-body), [Populate Epic Issue Body](#populate-epic-issue-body), [Populate Initiative Issue Body](#populate-initiative-issue-body) or [Populate Standalone Body](#populate-standalone-body) body.
+   - Carry evidence into Problem and design into Proposal.
+3. Apply [Check Round of Edits](#check-round-of-edits) with the populated body and selected kind conditions before publishing.
+   - Resolve findings.
+   - Apply [Save Tracker Issue](#save-tracker-issue) with the validated body, title and labels.
+   - Return the saved identity to the caller.
 
-**Inputs:** Initiative body file, each epic id with its body file, each task id with its work-item file, and each planning-record file accounting for independent pairs.
+#### *Subsume* Orphan Work
 
-- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
-- The command runs in `<workspace>` while body files are kept outside the repository, so pass each one as an absolute path.
+The work remains tracked by the taking issue.
 
-- Initiative edges follow the [whole-epic prerequisite rule](#work-breakdown-1); narrower dependencies stay in the task graph.
-- It also reports dependencies listed twice or already implied, and Joins pairs.
-- It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
-- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
-- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
-- A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
-- It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
-- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
-- It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
+**Inputs:** Orphan identity and body, confirmed destination evidence, and the planning record it references when it has one.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
-```
+1. Transfer the work to the taking issue.
+   - Make each outcome a criterion of one invariant.
+   - Put the design in Proposal.
+   - Cite the orphan and any planning record in References.
+2. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
+3. Apply [Close Transferred Work](#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
+   - Return the confirmed closure or blocker to the caller.
 
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md R=/records/joins.md
-```
-
-#### Renumber Tasks
-
-Renumbers one epic's tasks by the map given, in the files given.
-
-**Inputs:** Initiative number, epic number, epic body file, task-number map and affected body files.
-
-- `<task-number-map>` is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each affected body file as a separate argument.
-
-- It renumbers `<epic-id> Wxx` and `<epic-id>:Wxx` everywhere, and bare `Wxx` inside that epic's own body. **Example:** for `E01`, the qualified forms are `E01 Wxx` and `E01:Wxx`.
-- The map assigns each old task number a distinct new number. A source absent from the files or a duplicate destination is refused.
-- Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
-- Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
-```
-
-#### Renumber Epics
-
-Renumbers an initiative's epics across supplied body files.
-
-**Inputs:** Initiative number, current pull request records, confirmed epic-number map, body files and explicitly authorized outside-initiative files when present.
-
-- The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
-- Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
-```
-
-### Epic Issue Body
-
-#### Sync Epic
-
-Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
-
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
-
-- A row whose id links its task issue links the pull request instead.
-- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
-- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
-- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
-- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
-
-`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
-```
-
-#### Tick Epic Criteria
-
-Ticks confirmed epic criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
-
-`<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
-```
-
-#### Reserve Row
-
-Holds each named task row for one session, by setting its record folder as the row's single link.
-
-**Inputs:** Epic JSON, confirmed reservable task ids, planning-folder identity, record date, records base URL and output body file.
-
-- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
-- The caller supplies the planned folder identity; `--date` is the day it is opened.
-
-`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` identifies the planning records folder.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records 'https://github.com/<owner>/<repo>/tree/engineering/artifacts/planning' --fix fixed-943.md
-```
-
-#### Release Row
-
-Frees each named task row, by replacing the planning-folder link with its work-item file link.
-
-**Inputs:** Epic JSON, confirmed held task ids, authorized release and output body file.
-
-- The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
-
-`<task-ids>` is a comma-separated list of task ids.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
-```
-
-## Fields
-
-### Placement
+### Fields
 
 - **Source.** The orphan's repository, issue number and current body.
 - **Destination.** The selected issue or proposed work, with the criteria and design it takes.
@@ -938,7 +469,50 @@ Candidates are open issues without an agent-engineering prefix. Orphans have no 
 
 An existing-epic option identifies the row to add, with Description, criteria, Depends on and Joins, or the existing task already delivering the work. Leave applies when no initiative goal covers it or it is not planned work. Each option names whether the source is kept or subsumed.
 
-### Plan Change
+### Commands
+
+#### List Orphans
+
+Lists the hoist candidates, and the open initiatives and epics they could join.
+
+**Inputs:** Complete supplied repository issue collection.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py '<issues-json-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py issues.json
+```
+
+## Plan Change
+
+### Operations
+
+#### *Check* Plan Change Autonomy
+
+One pending change assessed against the run's allowance.
+
+**Inputs:** The pending change, its subject, the option recommended for it, and the allowance the caller was supplied.
+
+1. Match the change to one kind in [Change Kinds](#change-kinds).
+2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
+3. Return it as held otherwise, for the caller to settle as [Held Change](#held-change) states.
+   - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
+   - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
+
+#### *Record* Plan Change
+
+One entry in the run's list, for a change it applied or held.
+
+**Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
+
+1. Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
+2. Return the updated list for the caller to publish and report.
+
+### Fields
 
 #### Allowance
 
@@ -974,7 +548,67 @@ A held change is left unapplied and its subject stays as it stands, so the next 
 
 A run working under an allowance records and reports a held change rather than asking, since the work it was dispatched for does not wait on an answer. A run supplied no allowance puts it to the user.
 
-### Issue Body
+## Issue Body
+
+### Operations
+
+#### *Write* Issue Table
+
+The shared table, before a kind fills its cells.
+
+**Inputs:** Current body, the kind's table columns and supplied row data.
+
+1. Populate the shared Done, Coverage and Depends on cells from the supplied row data.
+   - The columns must match the kind's table.
+   - The shared cells must meet [Tables](#tables).
+2. Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
+
+#### *Check* Round of Edits
+
+The shared check after a round of edits.
+
+**Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
+
+1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields-2) in this file.
+2. Run [Check Body Format](#check-body-format) on every issue the round changed.
+
+#### *Validate* Issue Body
+
+One body checked against its supplied kind and template.
+
+**Inputs:** Issue JSON, kind field conditions, required related evidence and output body file.
+
+1. Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
+2. Review the body against the supplied field conditions.
+3. Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
+
+#### *Apply* Body Corrections
+
+One body rewritten from confirmed local findings.
+
+**Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
+
+1. Populate missing sections from the supplied issue and related context.
+2. Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template.
+3. Record a required tracker-kind change for the caller.
+4. Restate historical narration as the current design.
+5. Apply confirmed criterion changes.
+   - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
+6. Validate the body through [Validate Issue Body](#validate-issue-body).
+7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
+
+#### *Build* Body Snapshot
+
+A local issue-shaped record for body validation.
+
+**Inputs:** Current body file, title, labels, optional existing issue JSON and destination JSON path.
+
+1. Write the body's exact text, title and labels to the destination as JSON.
+2. Preserve the existing issue's identity and state when supplied.
+3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
+4. Return the JSON path for validation. No tracker issue is created by this operation.
+
+### Fields
 
 #### Titles
 
@@ -1088,7 +722,57 @@ An issue's References section does not link issues or pull requests on the same 
 - **Apply.** Title or label changes for the caller to publish on the issue.
 - **Decide.** Missing content or a judgement for the caller to resolve.
 
-### Dependency Graph
+### Commands
+
+#### Check Body Format
+
+Checks one issue against its template, and with `--fix` writes the body with the mechanical fixes made.
+
+**Inputs:** Issue JSON, local output body file and the additional format inputs supplied by the kind.
+
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
+
+## Dependency Graph
+
+### Operations
+
+#### *Check* Dependencies and Numbering
+
+The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
+
+**Inputs:** Initiative and epic bodies or local drafts, the work-item file of each task that has one, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, and explicitly authorized outside-initiative files.
+
+1. Use the supplied local drafts when reviewing unpublished work.
+   - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](#read-tracker-issue).
+   - Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body and every supplied work-item file.
+2. Resolve each finding, as [Check Plan Change Autonomy](#check-plan-change-autonomy) returns it for the supplied allowance: an automatic correction is taken, and a held one is settled as [Held Change](#held-change) states.
+   - Name the producing row for each consumed output, meeting [Edges](#edges), replacing an epic a task row names with the rows the task consumes.
+   - Read tasks for implied consumption edges.
+   - Account for every independent pair as [Joins](#joins) states.
+   - Account for every contending pair as [Component Contention](#component-contention) states: the proposed map separates the two epics by a number, or the contending rows move into one epic.
+   - Resolve backward references by moving work to the epic owning its inputs, or removing duplicate work already owned there. Work claimed twice has one owner and a boundary in both bodies.
+3. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
+   - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
+   - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
+   - Re-sort rewritten tables.
+   - Inspect every reported range.
+   - Search prose for references the script cannot see.
+   - Repeat Check Dependencies after each edge or numbering change until it reports no problem.
+   - Record the printed longest chains and each printed contending pair in the planning record.
+   - Return the checked bodies, the proposed [Epic Priority](#epic-priority) map and unresolved findings to the caller; do not publish a failed renumbering.
+
+### Fields
 
 #### Edges
 
@@ -1139,7 +823,183 @@ Every pair of tasks in an epic where neither depends on the other is named in th
 
 A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
 
-### Epic Issue Body
+### Commands
+
+#### Check Dependencies
+
+Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
+
+**Inputs:** Initiative body file, each epic id with its body file, each task id with its work-item file, and each planning-record file accounting for independent pairs.
+
+- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
+- The command runs in `<workspace>` while body files are kept outside the repository, so pass each one as an absolute path.
+
+- Initiative edges follow the [whole-epic prerequisite rule](#work-breakdown-1); narrower dependencies stay in the task graph.
+- It also reports dependencies listed twice or already implied, and Joins pairs.
+- It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
+- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
+- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
+- A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
+- It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
+- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
+- It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md R=/records/joins.md
+```
+
+#### Renumber Tasks
+
+Renumbers one epic's tasks by the map given, in the files given.
+
+**Inputs:** Initiative number, epic number, epic body file, task-number map and affected body files.
+
+- `<task-number-map>` is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each affected body file as a separate argument.
+
+- It renumbers `<epic-id> Wxx` and `<epic-id>:Wxx` everywhere, and bare `Wxx` inside that epic's own body. **Example:** for `E01`, the qualified forms are `E01 Wxx` and `E01:Wxx`.
+- The map assigns each old task number a distinct new number. A source absent from the files or a duplicate destination is refused.
+- Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
+- Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
+```
+
+#### Renumber Epics
+
+Renumbers an initiative's epics across supplied body files.
+
+**Inputs:** Initiative number, current pull request records, confirmed epic-number map, body files and explicitly authorized outside-initiative files when present.
+
+- The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
+- Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
+```
+
+## Epic Issue Body
+
+Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
+
+### Operations
+
+#### *Populate* Epic Issue Body
+
+One epic body and its local validation findings.
+
+**Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records, corpus branch and output path.
+
+1. Populate the body from the [Template](#template) at the supplied output path.
+   - Every section must meet [Fields](#fields-4).
+   - Shared content must meet the common [body conditions](#fields-2).
+2. Populate the shared table through [Write Issue Table](#write-issue-table).
+3. Fill the epic-specific cells.
+   - Each row must meet [Work Breakdown](#work-breakdown).
+4. Apply [Build Body Snapshot](#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
+5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
+6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
+7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
+
+#### *Record* Epic Delivery
+
+One epic body with supplied delivery matches and completed rows recorded.
+
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
+2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+
+#### *Record* Epic Criteria
+
+Verified criteria and completed rows in one epic body.
+
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
+
+1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+2. Return the body and refused criteria. Complete rows receive Done ticks.
+
+#### *Reserve* Task Rows
+
+Task rows held for one confirmed delivery session.
+
+**Inputs:** Epic JSON, confirmed task ids, supplied planning-folder identity, planning-records base URL, record date and output body file.
+
+1. Require the caller's confirmed unit and existing planning folder. Refuse a row already held or linked to a pull request or commit.
+2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
+3. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
+
+#### *Release* Task Rows
+
+Held task rows returned to their work-item links.
+
+**Inputs:** Epic JSON, task ids, explicit user decision releasing the hold and output body file.
+
+1. Require the supplied release decision and refuse any row that is not held.
+2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
+3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
+
+#### *Validate* Epic Body
+
+The body's local format and field findings.
+
+**Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
+
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-4), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
+3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
+4. Return the corrected body, mechanical diff and unresolved findings for the caller.
+
+#### *Revise* Epic Rows
+
+One epic body with confirmed task-grain and coverage corrections.
+
+**Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
+
+1. Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
+   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
+   - Split a task exceeding the allowed criterion grain into the confirmed tasks.
+2. Return the revised body and any cross-body numbering or dependency changes for the caller.
+
+#### *Plan* Gap Task
+
+The agreed disposition of criteria a delivered row left unmet.
+
+**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
+
+1. Present each unmet criterion and its missing evidence to the user.
+   - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
+   - Record an unanswered decision as pending.
+   - If no criteria need further work, return the pending findings to the caller.
+   - Continue to the draft step with only the criteria the user confirms need further work.
+2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
+   - Confirm the draft with the user.
+   - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
+   - Return an unanswered draft as pending without continuing to the reconcile step.
+3. Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
+   - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
+   - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
+
+### Fields
 
 #### Template
 
@@ -1271,7 +1131,126 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
-### Initiative Issue Body
+### Commands
+
+#### Sync Epic
+
+Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
+
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
+
+- A row whose id links its task issue links the pull request instead.
+- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
+- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
+- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
+- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
+
+`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
+```
+
+#### Tick Epic Criteria
+
+Ticks confirmed epic criteria, refusing any not ready to verify, and ticks completed rows.
+
+**Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
+
+`<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
+```
+
+#### Reserve Row
+
+Holds each named task row for one session, by setting its record folder as the row's single link.
+
+**Inputs:** Epic JSON, confirmed reservable task ids, planning-folder identity, record date, records base URL and output body file.
+
+- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
+- The caller supplies the planned folder identity; `--date` is the day it is opened.
+
+`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` identifies the planning records folder.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records 'https://github.com/<owner>/<repo>/tree/engineering/artifacts/planning' --fix fixed-943.md
+```
+
+#### Release Row
+
+Frees each named task row, by replacing the planning-folder link with its work-item file link.
+
+**Inputs:** Epic JSON, confirmed held task ids, authorized release and output body file.
+
+- The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
+
+`<task-ids>` is a comma-separated list of task ids.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
+```
+
+## Initiative Issue Body
+
+### Operations
+
+#### *Populate* Initiative Issue Body
+
+One initiative body and its local validation findings.
+
+**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+
+1. Populate the body through [Draft Initiative Issue Body](#draft-initiative-issue-body).
+2. Apply [Check Round of Edits](#check-round-of-edits).
+3. Return the populated body and its local format findings to the caller.
+
+#### *Draft* Initiative Issue Body
+
+One initiative body, scoped to one proposal.
+
+**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+
+1. Populate the body from the [Template](#template-1) into a local file at the supplied output path.
+   - That file must be the source for every later edit.
+   - All populated fields must meet [Fields](#fields-5).
+2. Derive the Problem and Non-Goals from the proposal this initiative is scoped to.
+   - The Problem must meet [Problem and Proposal](#problem-and-proposal).
+   - Each Non-Goal must meet [Non-Goals](#non-goals).
+3. Write the acceptance criteria before the Work Breakdown, so each row's Coverage can cite them.
+   - Each criterion must come from a confirmed clause and meet [Initiative Acceptance Criteria](#initiative-acceptance-criteria).
+   - The criteria must come from the requirements sources the proposal references. Where the proposal references none, they must come from the proposal's body alone.
+4. Populate the shared table through [Write Issue Table](#write-issue-table).
+5. Fill the initiative-specific cells.
+   - Each row must meet [Work Breakdown](#work-breakdown-1).
+   - An item a test cannot observe must stay named as [Coverage Reports](#coverage-reports) define.
+
+### Fields
 
 #### Template
 
@@ -1398,7 +1377,23 @@ A final epic of the initiative holds the debt that initiative's delivery defers.
 
 Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
-### Task Body
+## Task Body
+
+### Operations
+
+#### *Populate* Task Body
+
+One task body within its supplied epic context.
+
+**Inputs:** Task scope, epic context, design, criteria and output path.
+
+- Populate the body from the [Template](#template-2) at the supplied output path.
+  - The title must meet the shared [Titles](#titles) conditions.
+  - The Problem and Proposal must meet [Problem and Proposal](#problem-and-proposal).
+  - Acceptance criteria must meet the [shared acceptance criteria](#shared-acceptance-criteria).
+  - All populated fields must meet [Fields](#fields-6), including the required [Sections](#sections).
+
+### Fields
 
 #### Template
 
@@ -1447,7 +1442,22 @@ Work Breakdown contains its table. Explanatory prose belongs in Proposal. The bo
 - A task has the [epic issue body](#epic-issue-body)'s sections without the Work Breakdown table.
 - New task planning follows [Work Breakdown](#work-breakdown). This body describes an existing issue kept as a task.
 
-### Standalone Body
+## Standalone Body
+
+### Operations
+
+#### *Populate* Standalone Body
+
+One standalone issue body from its supplied scope.
+
+**Inputs:** Problem, design, criteria, open questions and output path.
+
+- Populate the body from the [Template](#template-3) at the supplied output path.
+  - The title must meet the shared [Titles](#titles) conditions.
+  - The Problem and Proposal must meet [Problem and Proposal](#problem-and-proposal).
+  - All populated fields must meet [Fields](#fields-7), including the required [Sections](#sections-1).
+
+### Fields
 
 #### Template
 
@@ -1486,7 +1496,9 @@ Work Breakdown contains its table. Explanatory prose belongs in Proposal. The bo
 
 - A standalone issue has the [epic issue body](#epic-issue-body)'s sections without the Work Breakdown table.
 
-### Work Item
+## Work Item
+
+### Fields
 
 #### Component
 
@@ -1495,7 +1507,9 @@ One declaration line ahead of the first heading, naming the single component the
 - A task that creates the component names the path it creates.
 - A task whose implementation extends more than one component is split into a task for each.
 
-### Epic
+## Epic
+
+### Fields
 
 #### Delivery Findings
 
@@ -1519,7 +1533,9 @@ An unmet row links a merged pull request while a covered criterion remains untic
 
 A coverage disagreement identifies the pull request and row, a criterion absent from either the test plan or row Coverage, an empty Test cell, or prose assigning the criterion to another task. Recording links, verified criteria and Done continues despite that finding.
 
-### Pull Request
+## Pull Request
+
+### Fields
 
 #### Issue Links
 
