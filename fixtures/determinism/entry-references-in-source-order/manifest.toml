@@ -1,4 +1,4 @@
-description = "One selection bundles to groups in path order, each group carrying its content in source order, whichever order the entry references were written in."
+description = "The entry documents lead in the order the entry references name them, each group carrying its content in source order, and each dependency follows in the order the bundle first links to it: the link the first entry carries is read before the link the second carries."
 
 clauses = [
   "Input and output contract — Groups, headed by its title or its working-directory path",

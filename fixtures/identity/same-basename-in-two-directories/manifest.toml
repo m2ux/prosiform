@@ -1,4 +1,4 @@
-description = "Two sources sharing a basename in different directories stay distinguishable: the one carrying no title is headed by its own path relative to the working directory, directory included, and the groups are ordered by path rather than by entry order."
+description = "Two sources sharing a basename in different directories stay distinguishable: the one carrying no title is headed by its own path relative to the working directory, directory included, and the groups follow the order the entry references name them."
 
 clauses = [
   "File-scoped hierarchy, same basename in different directories",
