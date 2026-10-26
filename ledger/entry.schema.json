@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/m2ux/prosiform/blob/main/ledger/entry.schema.json",
+  "title": "prosiform ledger entry",
+  "description": "One result met in use: when it was met, the invocation and the source identities that reproduce it without the session that met it, the result observed against the result expected, and its triage. The entry is written as TOML and validated against this document after parsing, because TOML's value model is a subset of JSON's.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "date",
+    "invocation",
+    "sources",
+    "observed",
+    "expected",
+    "triage"
+  ],
+  "properties": {
+    "date": {
+      "description": "The day the result was observed, as YYYY-MM-DD in a string.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "invocation": {
+      "description": "The pf command line and the directory it ran from.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "cwd"
+      ],
+      "properties": {
+        "command": {
+          "description": "The command line exactly as run, beginning with pf.",
+          "type": "string",
+          "pattern": "^pf( |$)"
+        },
+        "cwd": {
+          "description": "The working directory, relative to the checkout of the first source; '.' is that checkout's root.",
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "sources": {
+      "description": "Each source the run bundled, named so a reader checks out the same bytes.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "observed": {
+      "description": "The result the run produced.",
+      "$ref": "#/$defs/text"
+    },
+    "expected": {
+      "description": "The result the reader expected.",
+      "$ref": "#/$defs/text"
+    },
+    "triage": {
+      "description": "Where the entry is answered, and why.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reason"
+      ],
+      "properties": {
+        "state": {
+          "description": "A design change answers it in the contract, a corpus gap in a fixture, a build defect in the build; no change answers it as intended behaviour.",
+          "enum": [
+            "design change",
+            "corpus gap",
+            "build defect",
+            "no change"
+          ]
+        },
+        "reason": {
+          "description": "Why the entry takes its state.",
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "run": {
+      "description": "The identity of a run record this entry cites, in the form the run record declares.",
+      "$ref": "#/$defs/text"
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "revision",
+        "path"
+      ],
+      "properties": {
+        "repository": {
+          "description": "The repository as owner/name.",
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "revision": {
+          "description": "The full commit id the source was read at.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "path": {
+          "description": "The path in that repository the run read, a file or a directory.",
+          "$ref": "#/$defs/text"
+        }
+      }
+    }
+  }
+}

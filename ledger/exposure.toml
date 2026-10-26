@@ -1,0 +1,86 @@
+# The sources that must be bundled before a freeze. Schema: exposure.schema.json.
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/advance-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/align-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/deliver-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/hoist-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/plan-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/propose-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/revise-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/standup-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/sync-mode.md"
+
+[[example]]
+cwd = "example/work-planner"
+command = "pf modes/understand-mode.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/server-in-the-loop/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/work-planner/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/workflow-canon/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/gitnexus/gitnexus-cli/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/gitnexus/gitnexus-debugging/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/gitnexus/gitnexus-exploring/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/gitnexus/gitnexus-guide/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/gitnexus/gitnexus-impact-analysis/SKILL.md"
+
+[[workspace]]
+repository = "m2ux/workflow-server"
+branch = "workspace"
+path = "skills/gitnexus/gitnexus-refactoring/SKILL.md"
