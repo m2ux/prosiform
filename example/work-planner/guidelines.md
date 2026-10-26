@@ -70,7 +70,7 @@ These rules govern command and access specifications. Procedural operations foll
 - **One command.**
   Each specification exposes one command or access action. Put sequencing, branching, repetition and readback in an artifact operation or mode procedure. A working-directory prefix and output-filter pipeline belong to the command they serve. Optional flags for one command share its specification.
 - **One home.**
-  A command specification sits under Commands in an artifact, or Operations in a mode. Artifact operations run their implementation commands by heading link. A kind supplies only its additional parameters to a common operation.
+  A command specification sits under Commands in an artifact, or Commands in a mode. Artifact operations run their implementation commands by heading link. A kind supplies only its additional parameters to a common operation.
 - **Direction.**
   The procedure names the command it runs. A command does not name that procedure.
 
@@ -116,7 +116,7 @@ Read this before adding or changing a mode.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every mode sits in [Rules](rules.md), or in [Conventions](conventions.md) when it is a skill-wide prerequisite.
 - **Sections.**
-  Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Operations. Procedure and Outcomes are required, and Operations holds cross-artifact command specifications. A mode has no Rules section.
+  Procedure, Outcomes, then Guidance when the file has an assistive statement that is not a step, a condition, or a mode outcome, then Commands. Procedure and Outcomes are required, and Commands holds cross-artifact command specifications. A mode has no Rules section.
 
 ## Protocols
 
