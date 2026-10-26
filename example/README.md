@@ -128,16 +128,16 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`:
+The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
 
 ```markdown
 # Artifacts
 
-## Dependency Graph
+## Issue
 
 ### Operations
 
-#### *Check* Dependencies and Numbering
+#### *Read* Tracker Issue
 ```
 
 No two artifacts share a title, so each heading keeps its source text, and a link to a whole artifact resolves to the H2 its title heads.
@@ -164,22 +164,22 @@ The grouped portion is:
 ```markdown
 # Rules
 
-## Agents
-
-Select rules for your harness:
-
-- If you are Codex, compile [Codex](rules/codex.md).
-- If you are Claude, compile [Claude](rules/claude.md).
-
 ## Common
 
 - Check every link.
 - Use clear headings.
 
 Follow [Agents](#agents).
+
+## Agents
+
+Select rules for your harness:
+
+- If you are Codex, compile [Codex](rules/codex.md).
+- If you are Claude, compile [Claude](rules/claude.md).
 ```
 
-Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
+`Common` leads because the command line names it, and `Agents` follows at the link `Common` carries. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
 
 ## More fixture examples
 
