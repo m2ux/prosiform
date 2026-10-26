@@ -18,53 +18,57 @@ Work Planner plans work as GitHub issues and keeps the plan current until the wo
 
 Each theme's project board shows where its items stand. The Proposals board holds proposals. A planning record holds what an initiative leaves out: the evidence, the decisions and each review.
 
+## Bootstrap
+
+A mode link opening with `↳` is loaded through `pf`, not read as a file. On selecting a mode, run `pf -o - <file>`, where `<file>` is the document the link opens, and follow the bundle it prints as that mode's procedure: it carries every protocol, artifact and reference the mode reaches. A non-zero exit stops the run and reports `pf`'s diagnostics.
+
 ## Modes
 
 Select the mode as appropriate to fulfill the user request:
 
-- **[Propose](modes/propose-mode.md)**
+- **[↳ Propose](modes/propose-mode.md)**
   - Forward-looking, scoped to one problem
   - Scoping a problem nothing is planned against yet
   - Raising a proposal issue with optional board placement
-- **[Plan](modes/plan-mode.md)**
+- **[↳ Plan](modes/plan-mode.md)**
   - Forward-looking, scoped to one approved proposal
   - Turning an approved proposal into initiatives
   - Raising, breaking down and restructuring initiatives and epics
   - Review passes of a plan against its goal, dependencies included
   - Renumbering of epics and tasks
   - Folding review findings into issues
-- **[Align](modes/align-mode.md)**
+- **[↳ Align](modes/align-mode.md)**
   - Backward-looking, scoped to one epic, initiative or board
   - Checks of existing issues against their templates and the rules that bind them, with fixes
   - Acceptance criteria checked for verifiability and against the sources the initiative marks
   - Epic branch structure and task pull request bases brought to the delivery shape
-- **[Sync](modes/sync-mode.md)**
+- **[↳ Sync](modes/sync-mode.md)**
   - Backward-looking, scoped to one epic, initiative or board
   - Delivery recorded against the issues that planned it
   - Closure of complete task issues, epics and initiatives
   - The theme board brought current with its issues
-- **[Advance](modes/advance-mode.md)**
+- **[↳ Advance](modes/advance-mode.md)**
   - Forward-looking, scoped to one board
   - Placement of initiatives and epics as In Progress or as Ready
   - A parallel work map for initiatives with no priority
-- **[Deliver](modes/deliver-mode.md)**
+- **[↳ Deliver](modes/deliver-mode.md)**
   - Forward-looking, scoped to one board
   - Delivery of a theme board's work, each unit planned, implemented and raised as a pull request
   - Dispatch of one session per unit of work
   - Merging task pull requests through the shared delivery procedure
-- **[Understand](modes/understand-mode.md)**
+- **[↳ Understand](modes/understand-mode.md)**
   - Backward-looking, scoped to one pull request
   - An architecture overview of one pull request
   - Structural and functional diagrams of its changes
   - The order to read the diff in
-- **[Hoist](modes/hoist-mode.md)**
+- **[↳ Hoist](modes/hoist-mode.md)**
   - Forward-looking, scoped to a repository's orphan issues
   - Discovery of orphan issues
   - Placements for each in an existing or new initiative, epic or task
-- **[Standup](modes/standup-mode.md)**
+- **[↳ Standup](modes/standup-mode.md)**
   - Backward-looking, scoped to one board's reporting window
   - Standup summaries of a theme's board for a Slack channel
-- **[Revise](modes/revise-mode.md)**
+- **[↳ Revise](modes/revise-mode.md)**
   - Forward-looking, scoped to this skill's own files
   - Changes to SKILL.md, its modes, artifacts, references and scripts
 
@@ -105,6 +109,7 @@ Select the mode as appropriate to fulfill the user request:
 ## Dependencies
 
 - **GitHub CLI (`gh`).**
+- **Prosiform (`pf`).**
 - **Sandbox.** (`scripts/sbx`).
 - **Python 3.10 or later.**
 - **git.**
