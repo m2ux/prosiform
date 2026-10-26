@@ -63,7 +63,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 - **Layers.**
   Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
-  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
+  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing. Calls run in order unless a step links a [run-set](#symbols), whose items never write to the same object.
 
 # Conventions
 
@@ -1660,7 +1660,8 @@ pf -o <scratch>/<name>.bundle.md <destination>
 | Symbol | Description | Usage |
 | --- | --- | --- |
 | `↳` | An inline target | [Compile](#compile) it, read the whole bundle and follow the instructions in its preamble. |
-| `⇉` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. That session puts each returned question to the user, or returns it in turn when it was itself dispatched, then dispatches again with the answers. A step that dispatches for each item of a set in parallel hands every item at once to a sub-agent of its own, with that item's inputs, and continues when all have returned; only the sub-agents that returned questions are dispatched again, with their answers. |
+| `⇉` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. That session puts each returned question to the user, or returns it in turn when it was itself dispatched, then dispatches again with the answers. A [run-set](#symbols) of dispatched items hands each to a sub-agent of its own at once; only the sub-agents that returned questions are dispatched again, with their answers. |
+| `⫽` | A run-set | Run the calls the linked section lists concurrently in this session, as parallel tool calls: top-level items together, a nested item once its parent has returned, an item that says "for each" once per item, together. Continue when every item has returned. |
 
 # References
 
