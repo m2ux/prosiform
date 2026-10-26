@@ -12,14 +12,14 @@ A proposed destination and disposition for one orphan's work.
 
 ### *Draft* Issue Placement
 
-One placement option from the supplied orphan and candidate destinations.
+The placement options for one orphan, from the supplied orphan and candidate destinations.
 
 **Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
 
-1. Identify an existing task, a new task, a new epic, a new initiative, or Leave.
-2. Record the destination and the work it takes, meeting [Fields](#fields).
-3. Record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
-4. Return the placement for the caller to offer and apply. The output is the [Placement](#placement-record), including the draft issue changes.
+1. Identify each option among an existing task, a new task, a new epic, a new initiative, and Leave.
+2. For each option, record the destination and the work it takes, meeting [Fields](#fields).
+3. For each option, record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
+4. Return the options for the caller to offer and apply, each a [Placement](#placement-record) with its draft issue changes, in the order that field states.
 
 ### *Find* Placement Candidates
 
@@ -113,6 +113,8 @@ The work remains tracked by the taking issue.
 | New epic | An epic in an existing initiative | Kept or subsumed |
 | New initiative | An initiative | Kept or subsumed |
 | Leave | Work outside the initiative structure | Left open |
+
+Placement options are offered best first, the destination that most nearly holds the orphan's work leading, with Leave last.
 
 ### Original Body
 
