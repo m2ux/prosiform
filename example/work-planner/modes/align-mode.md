@@ -6,7 +6,9 @@ prosiform:
 
 Brings one or more existing proposal, initiative, epic, task, and standalone issues and/or PRs into line with the plan they belong to and structurally aligns them with the guidelines they are held to. 
 
-Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
+Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review.
+
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
 

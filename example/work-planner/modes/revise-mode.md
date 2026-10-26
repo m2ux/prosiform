@@ -4,7 +4,9 @@ prosiform:
 ---
 # Revise Mode
 
-Changes the skill itself: SKILL.md, its modes, artifacts, references and scripts. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
+Changes the skill itself: SKILL.md, its modes, artifacts, references and scripts.
+
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
 

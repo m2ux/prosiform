@@ -4,7 +4,9 @@ prosiform:
 ---
 # Hoist Mode
 
-Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
+Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision.
+
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
 

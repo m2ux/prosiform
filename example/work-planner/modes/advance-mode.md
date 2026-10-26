@@ -4,7 +4,9 @@ prosiform:
 ---
 # Advance Mode
 
-Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
+Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery.
+
+Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
 

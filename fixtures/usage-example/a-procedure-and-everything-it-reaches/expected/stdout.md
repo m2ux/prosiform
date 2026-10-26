@@ -1,6 +1,8 @@
 # Plan Mode
 
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
+
+Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 
 Follow [Procedure](#procedure). The other sections are material that procedure references.
 
@@ -3708,7 +3710,9 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 # Modes/Propose-Mode
 
-Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-1) are met.
+Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
+
+Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-1) are met.
 
 ## Procedure
 
@@ -3758,7 +3762,9 @@ Scopes one problem: the friction, the evidence, and the boundary, and states the
 
 # Modes/Sync-Mode
 
-Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-2) are met.
+Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
+
+Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-2) are met.
 
 ## Procedure
 
@@ -3900,7 +3906,9 @@ Records delivery on an initiative, its epics, and their task issues. Each task t
 
 # Modes/Understand-Mode
 
-Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-3) are met.
+Explains the named pull request's changes through a measured architecture overview and publishes that overview for its reviewer.
+
+Follow the [Procedure](#procedure-3), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-3) are met.
 
 ## Procedure
 

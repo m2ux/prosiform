@@ -1,6 +1,8 @@
 # Hoist Mode
 
-Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision. Follow [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
+Brings the chosen standalone issues into the agent-engineering structure, or leaves them open according to the user's decision.
+
+Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 
 Follow [Procedure](#procedure). The other sections are material that procedure references.
 
