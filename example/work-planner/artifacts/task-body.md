@@ -26,10 +26,11 @@ One task body within its supplied epic context.
 
 One task body with its confirmed delivery and verified criteria recorded.
 
-**Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids and output body file.
+**Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids, output body file and output comment file.
 
 1. Run [Sync Task Issue](#sync-task-issue) with the task JSON, records as `--prs`, snapshot as `--links`, delivery number as `--pr`, verified ids as `--tick` and output as `--fix`. Tick only criteria the caller has verified.
-2. Return the body and eligibility findings; the caller publishes comments and closes the tracker issue.
+2. Write `Delivered by #<pull-request-number>.` to the output comment file, with the delivering pull request number.
+3. Return the body, the comment file and the eligibility findings. The caller saves the body, posts the comment file through [Comment on Issue](issue.md#comment-on-issue) and closes the tracker issue.
 
 ## Fields
 

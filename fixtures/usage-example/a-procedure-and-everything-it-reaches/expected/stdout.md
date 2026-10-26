@@ -1407,6 +1407,8 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 - **The row is the epic's last.**
   It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone.
+- **The audit row is a unit of its own.**
+  It is joined to no other row, so its Joins cell is empty.
 - **A finding closes by a fix on this epic's branch or by an issue that takes it.**
   Outstanding means neither.
 - **Definitions change when a task row's work reaches the branch the corpus lives on.**
@@ -1414,6 +1416,10 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 #### Task Delivery
 
+- **Holds.**
+  - A unit's record exists and its rows link it before its session starts.
+  - A row another session holds is not dispatched.
+  - A held row stays held while its session plans and implements. The pull request's link replaces the record's link, which frees the row.
 - **Task ids.**
   - An unreserved task awaiting its pull request links its file in the planning record: `[W01](…/w01.md)`. The file name is the task id in lower case.
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes. A reserved task links only its planning folder: `[W01](…/2026-10-06-943-i07-e00-w01-queue-plan/)`. The folder's README links the work-item file. Releasing the reservation points the row to that file.
@@ -2036,7 +2042,6 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - Each base is worked in one worktree, named by the base under the worktree directory of the repository's main working tree.
 - **Example.**
   `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
-- Every pull request delivering the epic's tasks targets that epic base.
 - A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
 
 ### Commands
