@@ -51,3 +51,9 @@ W08's delivery found that an entry document which is itself a titled group membe
 The user chose to ratify the build in the contract on the debt epic, as its W10 (the contract text) and W11 (the fixtures citing it), rather than revert the build or record the drift alone.
 
 The same review's merged-group fixture keeps a name stating directory-wide membership, which per-file declarations no longer give. Its rename is the debt epic's W09. W09 and W10 share no file, so neither joins the other.
+
+## D9 — A link resolves from the file that writes it
+
+The example's links were rewritten from the declared root so the bundle would include what they name, and 457 of them then opened nothing for a reader. The user directed that source links are never changed to suit the build: the build follows the path a reader follows. [#274](https://github.com/m2ux/prosiform/pull/274) makes every link resolve from the directory of the file that writes it, with the root as the boundary only, and restores every example link to the skill's own destination. Every mode bundle is byte-identical before and after.
+
+This delivers the debt epic's row on a root naming a sibling and a parent, so that row and its criterion leave that epic and the migration epic's W09 carries the work. The debt epic's criteria and references are renumbered; its row ids keep their numbers.
