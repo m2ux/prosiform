@@ -1,0 +1,15 @@
+description = "A run-set target whose bulleted list nests, each item at every level linking a Markdown document under the root, is a run-set, so the bundle publishes with no warning."
+
+clauses = [
+  "Link classification and resource handling — Run-set shape",
+  "Adversarial acceptance fixtures — Run-set",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

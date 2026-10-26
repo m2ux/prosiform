@@ -1,4 +1,4 @@
-description = "A link whose text opens with both the deferral mark and the dispatch mark is refused with a diagnostic naming the link, because one compilation cannot wait for a later run and be dispatched by this one."
+description = "A link whose text opens with both the deferral mark and the dispatch mark is refused with a diagnostic naming the link, because each operator states how one compilation is carried out, so a link stating two states two contradictory things."
 
 clauses = [
   "Link classification and resource handling — One operator per link",

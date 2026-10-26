@@ -279,7 +279,8 @@
         "W_DISPATCH_DEPTH",
         "W_DISPATCH_NOT_PROCEDURAL",
         "W_DISPATCH_SELF",
-        "W_RESOURCE_PORTABILITY"
+        "W_RESOURCE_PORTABILITY",
+        "W_RUN_SET_SHAPE"
       ]
     }
   }
