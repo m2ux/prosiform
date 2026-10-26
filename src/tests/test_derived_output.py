@@ -22,13 +22,13 @@ def invoke(root: Path, *arguments: str) -> Run:
 
 @pytest.mark.parametrize("suffix", [".md", ".markdown", ".MD", ".MARKDOWN"])
 @pytest.mark.parametrize("fragment", ["", "#part", "#p%61rt"])
-def test_file_and_section_names_follow_captured_entry_root(
+def test_file_and_section_names_follow_the_working_directory_path(
     tmp_path: Path, suffix: str, fragment: str
 ) -> None:
     name = f"Skill/modes/Run_it{suffix}"
     written(tmp_path, name, rooted("..", "# Run\n\n## Part\n\nSelected.\n"))
     run = invoke(tmp_path, name + fragment)
-    output = "modes_Run_it" + ("__part" if fragment else "") + ".bundle.md"
+    output = "Skill_modes_Run_it" + ("__part" if fragment else "") + ".bundle.md"
     assert run.status == 0 and run.stdout == ""
     explicit = invoke(tmp_path, "-o", "-", name + fragment)
     assert (tmp_path / output).read_text() == explicit.stdout
@@ -77,22 +77,28 @@ def test_distinct_selections_require_explicit_output(
             assert "First." in (tmp_path / destination).read_text()
 
 
-def test_parent_relative_name_is_filename_text_and_linked_root_does_not_rename_it(
-    tmp_path: Path,
-) -> None:
+def test_a_declared_root_does_not_rename_an_entry_s_output(tmp_path: Path) -> None:
     written(tmp_path, "entries/a.md", rooted("../library", "# A\n\n[B](b.md)\n"))
     written(tmp_path, "library/b.md", rooted(".", "# B\n"))
     run = invoke(tmp_path, "entries/a.md")
     assert run.status == 0
-    assert (tmp_path / ".._entries_a.bundle.md").is_file()
+    assert (tmp_path / "entries_a.bundle.md").is_file()
+
+
+def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None:
+    written(tmp_path, "entries/a.md", "# A\n")
+    (tmp_path / "work").mkdir()
+    run = invoke(tmp_path / "work", "../entries/a.md")
+    assert run.status == 0
+    assert (tmp_path / "work" / ".._entries_a.bundle.md").is_file()
 
 
 def test_fragment_referrer_and_check_mode(tmp_path: Path) -> None:
     written(tmp_path, "dir/a.md", rooted(".", "# A\n\n## Part\n\nContent.\n"))
     assert invoke(tmp_path, "-c", "-f", "dir/a.md", "#part").status == 0
-    assert not (tmp_path / "a__part.bundle.md").exists()
+    assert not (tmp_path / "dir_a__part.bundle.md").exists()
     assert invoke(tmp_path, "-f", "dir/a.md", "#part").status == 0
-    assert "Content." in (tmp_path / "a__part.bundle.md").read_text()
+    assert "Content." in (tmp_path / "dir_a__part.bundle.md").read_text()
 
 
 @pytest.mark.parametrize("deferred", [False, True])

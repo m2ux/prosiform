@@ -17,7 +17,7 @@ A merged heading keeps its source text. Where that text occurs once in
 the group it is emitted alone, and where several documents contribute it
 the text is emitted once and each document's content hangs beneath it
 under a variant heading naming the document. The name a variant heading
-carries is the shortest run of that document's root-relative path which
+carries is the shortest run of that document's path which
 distinguishes it from the others, in title case, measured after the
 leading segments they all share are dropped, because those are the
 context the group heading already states.
@@ -30,7 +30,7 @@ both its overview subsection and every variant, following the same
 qualification and group-word removal in both places.
 
 A member's subsection is named by the shortest run of that document's
-root-relative path which distinguishes it from the group's other
+path which distinguishes it from the group's other
 members, in title case, measured after the leading segments they all
 share are dropped. A trailing word the group's heading states is
 omitted where qualification still distinguishes the displayed names. It
@@ -493,13 +493,12 @@ def merged(
     named: str,
     depth: int,
     members: Sequence[Member],
-    displays: Mapping[str, str] | None = None,
     parent: str | None = None,
     headed: bool = True,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
-    The members are in root-relative path order, which is the order
+    The members are in path order, which is the order
     every arrangement below reads them in, so one selection always
     bundles to the same bytes. The parent opens the group on its own
     title where it carries one, and its sections precede every section
@@ -516,9 +515,7 @@ def merged(
         into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
         into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
-    displays = {m.path: m.path for m in members} if displays is None else displays
-    names = member_headings([displays[m.path] for m in members], named)
-    headings = {m.path: names[displays[m.path]] for m in members}
+    headings = member_headings([m.path for m in members], named)
     order = arranged(depth, parent_member, pooled)
     if not kept:
         overview(into, headings, depth, members, bool(pooled), parent)

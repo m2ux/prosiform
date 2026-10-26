@@ -8,7 +8,6 @@ from test_cli import invoke, written
 
 from prosiform import cli
 from prosiform.access import read_source
-from prosiform.bundle import AMBIGUOUS_FILE_GROUP
 
 
 def rooted(root: str, text: str) -> str:
@@ -64,21 +63,19 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     # sources and the two agree below the leader.
     assert forward.stdout.index("# A\n") < forward.stdout.index("# B\n")
     assert reverse.stdout.index("# B\n") < reverse.stdout.index("# A\n")
-    assert "First target." in forward.stdout and "Second target." in forward.stdout
-    assert (
-        forward.stdout[forward.stdout.index("# One/X") :]
-        == (reverse.stdout[reverse.stdout.index("# One/X") :])
-    )
+    for run in (forward, reverse):
+        assert run.stdout.index("First target.") < run.stdout.index("Second target.")
+    assert "[Target](#x)" in forward.stdout and "[Target](#x-1)" in forward.stdout
 
 
-def test_equal_displayed_files_under_distinct_roots_are_ambiguous(
+def test_files_under_distinct_roots_are_headed_by_working_directory_paths(
     tmp_path: Path,
 ) -> None:
     for name in ("one", "two"):
-        written(tmp_path, f"{name}/same.md", rooted(".", "# Same\n"))
-    run = invoke("-d", "json", "one/same.md", "two/same.md", cwd=tmp_path)
-    assert run.status == 1
-    assert run.diagnostics()[0]["code"] == AMBIGUOUS_FILE_GROUP
+        written(tmp_path, f"{name}/same.md", rooted(".", "Body.\n"))
+    run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
+    assert run.status == 0
+    assert run.stdout == "# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
 
 
 def test_shared_target_cycle_retains_its_own_root(tmp_path: Path) -> None:
@@ -205,7 +202,9 @@ def test_root_option_is_invalid_usage(tmp_path: Path) -> None:
     assert run.status == 2
 
 
-def test_equal_member_names_across_roots_are_ambiguous(tmp_path: Path) -> None:
+def test_members_under_distinct_roots_are_named_by_their_paths(
+    tmp_path: Path,
+) -> None:
     for folder in ("one", "two"):
         written(
             tmp_path,
@@ -213,9 +212,9 @@ def test_equal_member_names_across_roots_are_ambiguous(tmp_path: Path) -> None:
             "---\nprosiform: {root: ., group: rules, group-depth: 2}\n---\n"
             "# Same\n\n## Run\n\nContent.\n",
         )
-    run = invoke("-d", "json", "one/same.md", "two/same.md", cwd=tmp_path)
-    assert run.status == 1
-    assert run.diagnostics()[0]["code"] == AMBIGUOUS_FILE_GROUP
+    run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
+    assert run.status == 0
+    assert "### One Same\n" in run.stdout and "### Two Same\n" in run.stdout
 
 
 @pytest.mark.parametrize("linked", [False, True])

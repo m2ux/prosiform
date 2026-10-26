@@ -67,8 +67,8 @@ from prosiform.bundle import (
     ancestry,
     blank,
     carried_headings,
+    document_title,
     emitted_visible,
-    heading_text,
     openings,
 )
 from prosiform.closure import bundled, rebased, unmarked, withholding_target
@@ -589,9 +589,7 @@ def above(tokens: Sequence[Token]) -> dict[int, tuple[int, ...]]:
     }
 
 
-def absorbing(
-    record: Record, path: str, tokens: Sequence[Token], display: str | None = None
-) -> set[int]:
+def absorbing(record: Record, path: str, tokens: Sequence[Token]) -> set[int]:
     """The source line of the heading the group names in one source's place.
 
     A file group's heading names the document's title, and a merged
@@ -600,12 +598,11 @@ def absorbing(
     by that heading and the title is no structural ancestor. The line
     is what the outline check reads it as emitted at.
     """
-    named = (
-        heading_text(path if display is None else display)
+    found = (
+        document_title(tokens)
         if record.merged is None
-        else PurePosixPath(path).stem
+        else absorbed(tokens, PurePosixPath(path).stem)
     )
-    found = absorbed(tokens, named)
     if found is None or found.map is None:
         return set()
     return {found.map[0] + 1}
@@ -620,11 +617,7 @@ def sourced(one: Part) -> str | None:
     return None
 
 
-def placement(
-    record: Record,
-    parsed: Mapping[str, Sequence[Token]],
-    read: Mapping[str, Source] | None = None,
-) -> None:
+def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
     """Hold one group's parts to the outline their source gave them.
 
     Each part the group emits is placed by the chain of eligible
@@ -655,14 +648,7 @@ def placement(
     for path in record.paths():
         tokens = parsed[path]
         chains = above(tokens)
-        emitted_at: set[int | None] = set(
-            absorbing(
-                record,
-                path,
-                tokens,
-                (read[path].display or path) if read is not None else None,
-            )
-        )
+        emitted_at: set[int | None] = set(absorbing(record, path, tokens))
         if record.merged is not None:
             emitted_at |= answered.get(path, set())
         for one in record.parts:
@@ -1053,7 +1039,7 @@ def validate(
     coverage(groups)
     for one in groups:
         levels(one.record)
-        placement(one.record, parsed, read)
+        placement(one.record, parsed)
     environment: dict[str, Any] = {}
     tokens = parse(bundled, budget, environment)
     physical = lines(bundled)
