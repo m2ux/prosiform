@@ -50,7 +50,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 - **The guidelines hold.**
   The change agrees with the guidelines, and a new rule the user stated for how the skill is written is part of that change.
 
-## Operations
+## Commands
 
 ### Run Tests
 
