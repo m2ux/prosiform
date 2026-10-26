@@ -47,10 +47,10 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
        - Apply [Resolve Open Questions](../artifacts/issue-body.md#resolve-open-questions) with the epic identity, current JSON, the epic [Template](../artifacts/epic-issue-body.md#template) and [Fields](../artifacts/epic-issue-body.md#fields), the initiative as related context and an output body path.
        - Return the questions it leaves open to the caller.
      - **Ready to verify.**
-       - Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) with the repository, those criterion ids less any that Issue Delivery or an earlier pass of this routing took this run, the epic's current JSON and body, delivery findings, delivery revisions, named instruments, project checkout, output body file, pull request records and complete issue-link snapshot.
-       - Retain its verified ids and evidence, with those Issue Delivery returned, for the caller.
+       - Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) with the repository, those criterion ids, the epic's current JSON and body, delivery findings, delivery revisions, named instruments, project checkout, the verification evidence Issue Delivery and each earlier pass of this routing returned, output body file, pull request records and complete issue-link snapshot.
+       - Retain its verified ids and verification evidence, with those Issue Delivery returned, for the next pass and the caller.
        - For each criterion this run leaves unverified on an unmet row, as Delivery Findings defines one, apply [Plan Gap Task](../artifacts/epic-issue-body.md#plan-gap-task) with the current epic JSON and body, the delivered task row, those criterion ids, the delivery records, complete issue-link snapshot and output body path, once per criterion.
-       - Apply Record Verified Criteria again for each criterion Plan Gap Task returns as already holding.
+       - Apply Record Verified Criteria again for each criterion Plan Gap Task returns as already holding, with the verification evidence retained so far.
      - **Ticked early.**
        - Apply Match Delivery to Tasks for the delivery the criterion's rows lack.
        - Where no match is confirmed, apply [Untick Criteria](../artifacts/acceptance-criteria.md#untick-criteria) with the current body, those criterion ids and the output body file.
@@ -58,4 +58,4 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
      - **Disagreement.**
        - Return each to the caller with its pull request and row.
    - Repeat Record Epic Delivery, its save and this routing with the saved epic JSON, refreshed records and every confirmed match, until it returns no unmatched, in flight, uncited, note or unplaced finding beyond those returned to the caller as pending.
-   - Return to the caller the saved epic and task identities, each epic's latest Delivery Findings, the verified criteria with their evidence, the pull request records and complete issue-link snapshot, the updated change list and every pending or unresolved finding.
+   - Return to the caller the saved epic and task identities, each epic's latest Delivery Findings, the verified criteria, every verification evidence this run took with the revision it was taken on, the pull request records and complete issue-link snapshot, the updated change list and every pending or unresolved finding.
