@@ -2215,12 +2215,13 @@ A new proposals board linked to the supplied repository.
 
 One issue's membership and initial status.
 
-**Inputs:** Board owner and number, issue id and selected initial status.
+**Inputs:** Board owner and number, repository, issue number, output file and selected initial status.
 
-1. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the caller's supplied board and issue identities.
-2. Run [Add Issue to Board](#add-issue-to-board) with the issue id.
-3. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
-4. Run [Fetch Board Item](#fetch-board-item) for the saved item.
+1. Apply [Read Tracker Issue](#read-tracker-issue) with the repository, issue number and output file for the complete JSON, and take the issue id from it.
+2. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the supplied board.
+3. Run [Add Issue to Board](#add-issue-to-board) with that issue id.
+4. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
+5. Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
 #### *Locate* Project Board
 
