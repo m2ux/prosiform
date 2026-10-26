@@ -73,7 +73,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Apply [Create Task Worktree](../artifacts/delivery-branches.md#create-task-worktree).
    - Apply [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, the component each of its rows declares, reserved folder, worktrees, test obligations, selected board identity and this run's allowance.
    - Resolve any returned gap before dispatch.
-   - Follow [⇉ Run Delivery Session](#run-delivery-session) with the unit's brief, in the unit's worktree, with the engineering worktree in reach for the planning record. No unit's session starts any other way.
+   - Start each unit's session through the sub-agent dispatch this session provides, following [Run Delivery Session](#run-delivery-session) with the unit's brief, in the unit's worktree, with the engineering worktree in reach for the planning record. No unit's session starts any other way.
    - When this session provides no sub-agent dispatch, report that and stop before any unit begins.
    - Continue to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
    - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as [Task Branches](../artifacts/delivery-branches.md#task-branches) defines.
