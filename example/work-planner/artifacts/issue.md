@@ -30,7 +30,7 @@ One populated body and its metadata, written to the tracker.
 2. Return a missing-label result when an assignment names a label the repository does not contain.
 3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
 4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
-5. Run [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
+5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
 7. Compare the saved fields with the intended body and metadata.
 
@@ -40,7 +40,7 @@ Verified completion of an issue and its linked delivery.
 
 **Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
 
-1. Run [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
+1. Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
 2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
    - Confirm GitHub's **Auto-close issues with merged linked pull requests** setting is disabled before any delivery pull request is linked or merged. An enabled or unknown setting blocks those actions until configuration is confirmed. Changing repository settings requires explicit authorization.
    - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
@@ -48,7 +48,7 @@ Verified completion of an issue and its linked delivery.
 4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
    - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
    - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
-5. Run [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
+5. Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
 ### *Close* Transferred Work
 
@@ -57,7 +57,7 @@ An issue whose work is tracked by another issue.
 **Inputs:** Issue identity, confirmed destination evidence and comment file.
 
 1. Confirm the supplied destination contains the work and cites its source issue.
-2. Run [Comment on Issue](#comment-on-issue) with the destination reference and supplied comment file.
+2. Apply [Comment on Issue](#comment-on-issue) with the destination reference and supplied comment file.
 3. Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
 4. Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
 
@@ -79,7 +79,7 @@ An issue closed after its final evidence check.
 
 **Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
 
-1. Run [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
+1. Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
 2. Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
 3. Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
 4. Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
@@ -92,7 +92,7 @@ The issue's current content and complete Development snapshot.
 
 **Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
 
-1. Run [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
+1. Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
 2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
    - Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
 3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.

@@ -25,6 +25,8 @@ These rules apply to mode procedures and artifact operations.
 
 - **Explicit execution.**
   State the action, its inputs and any condition that selects it. Name the result used by the next step. Branches state where to continue or stop; retries name the repeated operation and refreshed inputs. Distinguish reading a definition from executing a procedure. Resolve timing, caller responsibility and return points in the instructions.
+- **Step verbs.**
+  A step applies an artifact operation and follows a mode, a protocol or a procedure subsection. It runs a command.
 
 - **Subsection titles.**
   A procedure subsection title contains at least three words and names the action and its subject.
@@ -68,7 +70,7 @@ These rules govern command and access specifications. Procedural operations foll
 - **One command.**
   Each specification exposes one command or access action. Put sequencing, branching, repetition and readback in an artifact operation or mode procedure. A working-directory prefix and output-filter pipeline belong to the command they serve. Optional flags for one command share its specification.
 - **One home.**
-  A command specification sits under Commands in an artifact, or Operations in a mode. Artifact operations call their implementation commands by heading link. A kind supplies only its additional parameters to a common operation.
+  A command specification sits under Commands in an artifact, or Operations in a mode. Artifact operations run their implementation commands by heading link. A kind supplies only its additional parameters to a common operation.
 - **Direction.**
   The procedure names the command it runs. A command does not name that procedure.
 
@@ -90,7 +92,7 @@ These rules govern command and access specifications. Procedural operations foll
 Read this before adding or changing a mode.
 
 - **Orchestration.**
-  Modes coordinate; artifact operations perform and validate work on their own subject. Mode procedures are lean orchestration wrappers: they select scope, call artifact operations with named inputs, route returned findings and user decisions, and coordinate changes across artifacts. A procedure that manages multiple artifacts belongs in a mode. A mode keeps commands only for work spanning artifacts or validating the skill itself.
+  Modes coordinate; artifact operations perform and validate work on their own subject. Mode procedures are lean orchestration wrappers: they select scope, apply artifact operations with named inputs, route returned findings and user decisions, and coordinate changes across artifacts. A procedure that manages multiple artifacts belongs in a mode. A mode keeps commands only for work spanning artifacts or validating the skill itself.
 - **One goal.**
   A mode is the lifecycle of one user goal. It changes when that lifecycle changes.
 - **Outcomes.**
@@ -98,7 +100,7 @@ Read this before adding or changing a mode.
 - **No procedure in an outcome.**
   An outcome does not name a procedure, a step, or a command, and it does not link to one.
 - **Procedure.**
-  The top-level procedure is the main path. A short sequence that no other file references stays there. A subsection is an alternative path, a loop whose steps would otherwise be repeated, a unit another file references, or a sequence long enough that the top-level step only names it. Plan mode keeps review, and keeping the goal current, in that sequence. Keeping the goal current repeats the review. A subsection opens with one line on what it is for, and that line does not restate the steps. A step links to the user-goal outcome and does not restate it. A step calls the body artifact's procedure rather than copying it.
+  The top-level procedure is the main path. A short sequence that no other file references stays there. A subsection is an alternative path, a loop whose steps would otherwise be repeated, a unit another file references, or a sequence long enough that the top-level step only names it. Plan mode keeps review, and keeping the goal current, in that sequence. Keeping the goal current repeats the review. A subsection opens with one line on what it is for, and that line does not restate the steps. A step links to the user-goal outcome and does not restate it. A step applies the body artifact's operation rather than copying it.
 - **Preamble.**
   The paragraphs after the title state what the mode does, and a paragraph of its own follows them: `Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.`
 - **Procedure steps.**
@@ -106,7 +108,7 @@ Read this before adding or changing a mode.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
-  Invoke another mode with Run or Follow, naming the selected scope and the whole mode or exact subsection to execute. A subsection call executes that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
+  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential unless concurrency is explicitly stated: complete the called work, then resume the calling step with its result; a blocker returns to the caller. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
 - **No spare parts.**
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
@@ -125,13 +127,13 @@ Read this before adding or changing a protocol.
 - **Named for the situation.**
   A protocol is named for the situation it governs, as a noun phrase: Task Merge, Issue Closure, Epic Integration. Its file is `<situation>.md`.
 - **Entered whole.**
-  One file holds one protocol. A caller runs the file; it does not link a step. A sequence worth calling on its own is its own protocol.
+  One file holds one protocol. A caller follows the file; it does not link a step. A sequence worth following on its own is its own protocol.
 - **Procedure.**
   The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**
   What a protocol changes, and what a blocker leaves unchanged, is stated by the step that changes it. A protocol carries no section restating the result; a reader following the procedure and its links has it already, and a summary goes stale against the steps it describes.
 - **No spare parts.**
-  A protocol nothing runs is not a protocol. One exists because a mode or another protocol follows it.
+  A protocol nothing follows is not a protocol. One exists because a mode or another protocol follows it.
 - **A new protocol.**
   A new protocol is a new file. An artifact is not edited to name it.
 - **Step rules.**
@@ -150,11 +152,11 @@ Read this before adding or changing an artifact.
 - **Descriptions.**
   Describe the artifact's subject and contents directly. Omit inconsequential implementation qualifiers such as virtual. Distinguish proposed changes from applied state where the caller needs that distinction; a queue is not itself proposed merely because its changes await application.
 - **Prose API.**
-  Artifact operations form a prose-based API addressed by subsection titles. Each names its inputs, the artifact state it reads or changes, and the output it returns. Modes call operation headings; operations call command headings. Related artifacts are supplied as evidence rather than managed through the operation.
+  Artifact operations form a prose-based API addressed by subsection titles. Each names its inputs, the artifact state it reads or changes, and the output it returns. Modes apply operations by heading link; operations run commands by heading link. Related artifacts are supplied as evidence rather than managed through the operation.
 - **Operation inputs.**
   Callers address an artifact operation through descriptive input names, such as board fields. CLI flags such as `--fields` belong to the artifact's implementation details, not the calling mode procedure. Repeated calls identify the inputs they refresh and retain.
 - **Operation scope.**
-  An operation exists because a procedure calls it. Classify the work by its subject and behaviour, not its verb or script name: a read that sequences access steps is an operation, and a plan that derives an artifact's state is an operation.
+  An operation exists because a procedure applies it. Classify the work by its subject and behaviour, not its verb or script name: a read that sequences access steps is an operation, and a plan that derives an artifact's state is an operation.
   - Reading, inspecting, planning, populating and validating are shapes an operation can take, not a set an artifact fills. A sibling operation is no reason to add its counterpart, and a wrapper whose body is one call to another operation is that operation.
 - **Bodies and lifecycle.**
   A body artifact populates and validates document content. A subject artifact owns its readiness and completion checks from supplied evidence. Reading evidence about related artifacts does not make a check orchestration; coordinating changes to those artifacts does. Creation, metadata, linking and closure belong to the artifact for the tracked object.
@@ -179,15 +181,15 @@ Read this before adding or changing an artifact.
 - **Population conditions.**
   A population step leads with the writing action and its template or owning operation. Mandatory field conditions follow as nested bullets under that step, linked to their local or shared definitions. Each condition states what must hold; field rules remain at their linked home.
 - **Command implementation.**
-  Commands holds the artifact's command and access specifications. Operations holds the sequences that call them. Both expose named subsections to callers.
+  Commands holds the artifact's command and access specifications. Operations holds the sequences that run them. Both expose named subsections to callers.
 - **No spare parts.**
-  An artifact does not carry an operation, a field or a command nothing reaches. An operation no procedure cites is surface that drifts from whatever it wraps, and its capability is already reachable through the operation it would call.
+  An artifact does not carry an operation, a field or a command nothing reaches. An operation no procedure cites is surface that drifts from whatever it wraps, and its capability is already reachable through the operation it would apply.
 - **A new kind.**
   A new kind is a new file. The common file is not edited to name it.
 - **Detail.**
   A change keeps every existing condition. A shorter file is not a reason to drop one.
 - **Step rules.**
-  Put each action's preconditions and refusal conditions in its governing procedure step. Shared preconditions belong to a common procedure that callers invoke. Command specifications require the resulting evidence or authorization as inputs. A rule that binds every run of an artifact operation sits in [Rules](rules.md); a rule on how every artifact is written is added to this section.
+  Put each action's preconditions and refusal conditions in its governing procedure step. Shared preconditions belong to a common operation that callers apply. Command specifications require the resulting evidence or authorization as inputs. A rule that binds every run of an artifact operation sits in [Rules](rules.md); a rule on how every artifact is written is added to this section.
 - **Sections.**
   Operations, Fields, then Guidance when it has an assistive statement that is not a step or a field condition, then Commands when the file has command specifications. Fields is required. An artifact has no Procedure, Outcomes or Rules section.
 

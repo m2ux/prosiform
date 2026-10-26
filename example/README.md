@@ -14,7 +14,7 @@ The [planning procedure](work-planner/modes/plan-mode.md) links the documents it
 6. **Publish.**
    Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [interview](../rules.md), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
-   - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
+   - Apply [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
 ### Command
@@ -42,7 +42,7 @@ Its publish step reads:
 6. **Publish.**
    Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
-   - Call [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
+   - Apply [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
 The three documents the step links arrive in the bundle, and their headings are destinations its links point at. A link to a whole document points at the heading the bundle gives it, here `Rules`.

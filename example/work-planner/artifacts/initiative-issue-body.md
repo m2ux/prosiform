@@ -18,7 +18,7 @@ One initiative body and its local validation findings.
 **Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
 
 1. Populate the body through [Draft Initiative Issue Body](#draft-initiative-issue-body).
-2. Follow [Check Round of Edits](issue-body.md#check-round-of-edits).
+2. Apply [Check Round of Edits](issue-body.md#check-round-of-edits).
 3. Return the populated body and its local format findings to the caller.
 
 ### *Draft* Initiative Issue Body
@@ -65,7 +65,7 @@ The body's local format and field findings.
 
 **Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
 
-1. Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying each linked epic as `--epic`.
+1. Apply [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying each linked epic as `--epic`.
 2. Use its current title for the initiative row.
 3. Include excluded names in Problem and Proposal and criterion/source departures in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.

@@ -115,7 +115,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - A single catalog holds only those specifications most of whose entries have several callers. Where a block of a catalog has one caller, it belongs to that caller.
   - A caller is a procedure that runs the command. A sibling specification, and any passage of prose naming a command, does not make the file holding it a caller.
   - A procedure is a section carrying numbered steps, whatever its heading names it. The step is the author stating that the reader performs these, in this order, and is the only place a file records that.
-  - Prose runs nothing whatever its mood, order or count: a sentence routing three commands in sequence names them as a statement of what one command does names it. State a route as steps to call them.
+  - Prose runs nothing whatever its mood, order or count: a sentence routing three commands in sequence names them as a statement of what one command does names it. State a route as steps that run them.
   - SKILL.md holds no specification. A command the entry point names is specified in the file whose procedure runs it, or in the catalog.
   - A specification with two owners has one home and a link from the other. A count of those links that keeps growing says the split is in the wrong place.
 - **Spec layout.**

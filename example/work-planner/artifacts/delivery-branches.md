@@ -23,7 +23,7 @@ The branches a task pull request targets.
    - Report the names as unevaluable.
    - Obtain the project's branch names before creating delivery branches.
 4. Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
-5. Run [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
+5. Apply [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
 ### *Create* Epic Base
 

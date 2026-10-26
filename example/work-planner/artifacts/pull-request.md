@@ -23,7 +23,7 @@ One task or epic pull request's merge result, or its handoff for human approval.
    - Keep approval with that reviewer. Another account, an administrative bypass or a setting change cannot supply it. Changing repository protection requires the user's explicit authorization, asked for separately.
    - For example, workflow-server's `main` requires one approving review, so carry an epic to ready and stop.
 2. When approval permits the agent to merge:
-   - Call [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
+   - Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
    - If the merge is refused, return the refusal to the caller for fresh verification.
 3. Return the merge result, including its merge commit when supplied, for the caller's readback.
 
@@ -51,7 +51,7 @@ The complete issue-link snapshot for a supplied set of pull requests.
 
 **Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
 
-1. For every pull request in `prs.json`, run [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+1. For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
 2. Repeat that read after a link changes.
 3. If any relation is unreadable, return the incomplete result.
 4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
@@ -63,9 +63,9 @@ The verified delivery-issue relation for a pull request.
 
 **Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
 
-1. Run [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+1. Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
 2. Stop on a blocker or an unverified edit.
-3. Run [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
+3. Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
 4. Return the verified relation and refreshed snapshot.
 
 ### *Merge* Epic Pull Request
@@ -118,7 +118,7 @@ One pull request created or updated from supplied content and metadata.
 **Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
 
 1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
-   - For a task or epic pull request, run [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+   - For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
 2. For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
 3. Re-read through [Read Pull Request State](#read-pull-request-state).
 4. Return the saved state or discrepancy.
@@ -148,16 +148,16 @@ Merges each open task pull request whose test plan has passed.
 
 **Inputs:** Task pull request identity, its epic base, the project checkout, the repository prerequisite and the passing test-plan evidence.
 
-1. Run [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close) for the repository, and confirm the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
-2. Run [Update Epic Base](delivery-branches.md#update-epic-base) with the supplied project checkout and epic base.
+1. Apply [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close) for the repository, and confirm the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
+2. Apply [Update Epic Base](delivery-branches.md#update-epic-base) with the supplied project checkout and epic base.
    - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
-   - Run [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
+   - Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
    - Stop on a handoff for human approval.
    - If the merge is refused:
-     - Run [Update Task Branch](delivery-branches.md#update-task-branch).
+     - Apply [Update Task Branch](delivery-branches.md#update-task-branch).
      - Repeat Fetch Merge Readiness for the updated task head.
      - Retry Merge Delivery Pull Request once with that verified evidence. A conflict or repeated refusal leaves the pull request open with the blocker reported.
-3. Run [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
+3. Apply [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
    - Return that result to the caller.
 
 ### *Fetch* Merge Readiness
@@ -166,14 +166,14 @@ The current pull request's readiness against its target requirements and head ch
 
 **Inputs:** Pull request identity, its target branch, and the protection, rules, check and status output paths.
 
-1. Run [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
+1. Apply [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
    - Retain the literal head SHA and target branch for the evidence calls.
-2. Call [Read Target Requirements](delivery-branches.md#read-target-requirements) with the repository, target and protection/rules output paths.
+2. Apply [Read Target Requirements](delivery-branches.md#read-target-requirements) with the repository, target and protection/rules output paths.
    - Carry any unresolved requirement into the readiness result.
 3. Read the head evidence.
-   - Call [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
+   - Apply [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
    - Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A missing or pending check, blocked merge state or unmet required review leaves readiness unresolved.
-4. Run [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
+4. Apply [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
    - Compare its head with the retained SHA; a changed head requires fresh evidence.
    - Return the verified head, target requirements and readiness result, including unresolved conditions.
 

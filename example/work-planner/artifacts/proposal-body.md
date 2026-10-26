@@ -28,7 +28,7 @@ The body's local format and field findings.
 
 **Inputs:** Proposal issue JSON and output file.
 
-1. Call [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
+1. Apply [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
 2. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ## Fields
