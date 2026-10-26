@@ -6,23 +6,21 @@ prosiform:
 
 A link whose text opens with one of the [symbols](#symbols) is loaded through `pf`, *not* read as a file: fill the [parameters](#parameters) from that link, run the [load command](#load), then use the bundle as its symbol states.
 
-## Parameters
+## Load
+
+Run from this file's directory. A non-zero exit stops the run and reports `pf`'s diagnostics.
+
+```bash
+pf -o <scratch>/<name>.bundle.md <destination>
+```
+
+### Parameters
 
 | Parameter | Value |
 | --- | --- |
 | `<destination>` | The link's destination as written. |
 | `<name>` | The destination's file name without its suffix. |
 | `<scratch>` | An existing working directory outside the repository. |
-
-## Load
-
-Run from this file's directory:
-
-```bash
-pf -o <scratch>/<name>.bundle.md <destination>
-```
-
-A non-zero exit stops the run and reports `pf`'s diagnostics.
 
 ## Symbols
 
