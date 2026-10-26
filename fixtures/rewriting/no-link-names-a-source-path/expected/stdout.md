@@ -8,12 +8,12 @@ The procedure requires [the shared rules](#rules) whole,
 
 What the procedure amounts to.
 
+# Rules
+
+Every rule the procedure requires.
+
 # Process
 
 ### Review
 
 The section the procedure requires.
-
-# Rules
-
-Every rule the procedure requires.

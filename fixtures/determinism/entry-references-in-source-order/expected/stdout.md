@@ -2,10 +2,6 @@
 
 Alpha body, which needs [zeta](#zeta).
 
-# Beta
-
-Beta body.
-
 # Middle
 
 ### One
@@ -19,3 +15,7 @@ Two body.
 # Zeta
 
 Zeta body.
+
+# Beta
+
+Beta body.

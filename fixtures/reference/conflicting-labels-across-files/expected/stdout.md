@@ -7,10 +7,10 @@ requires [the tools](#tools).
 
 The runner the guide's own definition names.
 
-# Tools Runner
-
-The runner the tools' own definition names.
-
 # Tools
 
 The tools name [the runner](#tools-runner) their own definition points at.
+
+# Tools Runner
+
+The runner the tools' own definition names.

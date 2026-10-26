@@ -16,20 +16,20 @@ Write each observation down as it is made.
 
 ## Overview
 
-### Codex
-
-The rules one harness reads.
-
 ### Common
 
 The rules every harness reads.
 
-## Procedure
-
 ### Codex
 
-Read the harness rules after the common ones.
+The rules one harness reads.
+
+## Procedure
 
 ### Common
 
 Read the common rules first.
+
+### Codex
+
+Read the harness rules after the common ones.
