@@ -11,7 +11,7 @@ import os
 import re
 import sys
 import tempfile
-from collections.abc import Collection, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
@@ -61,6 +61,7 @@ from prosiform.closure import (
     Reference,
     components,
     conflicting,
+    dispatched,
     external,
     identity,
     inside,
@@ -78,6 +79,8 @@ from prosiform.diagnostics import (
     RelatedLocation,
     Reporter,
 )
+from prosiform.dispatch import CODES as DISPATCH_CODES
+from prosiform.dispatch import Hop, analysed
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
@@ -186,6 +189,7 @@ CODES = tuple(
             COINCIDENT_HEADING,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
+            *DISPATCH_CODES,
             *LIMITS_CODES,
             *PROFILE_CODES,
             *SOURCE_CODES,
@@ -1003,6 +1007,37 @@ def withheld(
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 
+def dispatches(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> Iterator[Hop]:
+    """Every dispatched link the selected content of one source carries.
+
+    A dispatch is a withheld link a sub-agent compiles, so what is
+    yielded is the target `withheld` yields for it, with the place the
+    link is written: the hop a chain of dispatches takes from here.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource or not dispatched(use.opening):
+            continue
+        found = withholding_target(path, use.destination, use.opening, source.root)
+        if found is None:
+            continue
+        line = source.line(use.line)
+        yield Hop(
+            replace(
+                found,
+                origin=location(path, line),
+                chain=(*chain, identity(found)),
+            ),
+            Location(path, 1 if line is None else line, 1),
+        )
+
+
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
     """Every referring route must retain no-follow access to a cached identity."""
     if one.path not in captured:
@@ -1034,6 +1069,7 @@ def traverse(
     dict[str, dict[str, Definition]],
     dict[str, Capture],
     list[Reference],
+    list[Hop],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -1078,6 +1114,10 @@ def traverse(
     budgets over what the run opens, counts and reaches are held here
     as each figure is reached, so a run crosses a boundary at the point
     it crosses it rather than after building what it could not keep.
+
+    The dispatched links the selected content carries are returned as
+    well, each target once at the first link the rounds read naming it,
+    for the analysis of how deep the dispatches run.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -1088,6 +1128,7 @@ def traverse(
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
+    dispatching: dict[str, Hop] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1131,6 +1172,8 @@ def traverse(
             for one in withheld(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
+            for link in dispatches(path, read[path], parsed[path], chosen, reached):
+                dispatching.setdefault(link.name, link)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1159,7 +1202,7 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
-    return read, parsed, defined, captured, found
+    return read, parsed, defined, captured, found, list(dispatching.values())
 
 
 def confirm(
@@ -1715,6 +1758,28 @@ def derived_output(
     return f"{name}.bundle.md"
 
 
+def onward(root: Path, limits: Limits) -> Callable[[Reference], Sequence[Hop]]:
+    """The dispatches a target's closure carries, were it compiled as an entry.
+
+    A sub-agent compiles a dispatched target as its own entry, so its
+    closure is the one this run's traversal reaches from that target,
+    under every rule this run's own closure follows. The traversal is
+    read for its dispatches alone and publishes nothing. A target whose
+    own compilation is refused carries no further hop here: that run
+    reports the refusal, and this one publishes the bundle it compiled.
+    """
+
+    def beyond(target: Reference) -> Sequence[Hop]:
+        entered = replace(target, origin=None, chain=(identity(target),))
+        try:
+            *_, hops = traverse(root, None, [entered], limits)
+        except (Failure, Crossed):
+            return ()
+        return hops
+
+    return beyond
+
+
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
     grammar = parser()
@@ -1749,7 +1814,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     limits = budgets(options)
     try:
-        read, parsed, defined, captured, found = traverse(
+        read, parsed, defined, captured, found, hops = traverse(
             root, referring, requested, limits
         )
     except Crossed as crossed:
@@ -1774,6 +1839,10 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     except Crossed as crossed:
         raise crossing(crossed) from crossed
     for warning in coinciding:
+        reporter.emit(warning)
+    for warning in analysed(
+        hops, {one.chain[0] for one in requested}, onward(root, limits)
+    ):
         reporter.emit(warning)
     if resourced(bundled, limits.of(NESTING)):
         reporter.emit(
