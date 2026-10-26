@@ -6,9 +6,23 @@ prosiform:
 ---
 # Acceptance Criteria
 
-The verification state of an issue's acceptance criteria: what each criterion's instrument reported, against which revision, and which criteria that evidence lets a body tick.
+The quality and verification state of an issue's acceptance criteria: how each criterion holds against its characteristics and marked sources, what its instrument reported, against which revision, and which criteria that evidence lets a body tick.
 
 ## Operations
+
+### *Check* Criteria Quality
+
+The quality findings for the acceptance criteria of the issues being aligned, against their characteristics and the marked sources they answer to.
+
+**Inputs:** Each issue body whose criteria are checked, the initiative's References, checkout, authenticated source access and source destination files.
+
+1. Check each criterion against [Requirement Characteristics](../references/requirement-characteristics.md), through [Verifiable](issue-body.md#verifiable).
+   - Record each criterion that fails, with the characteristic it fails.
+2. Apply [Read Requirement Sources](initiative-issue-body.md#read-requirement-sources) with the initiative's References, checkout, authenticated source access and source destination files.
+3. Align the criteria with each source read, as [Sources](initiative-issue-body.md#sources) defines.
+   - Record each departure, with the criterion and the source it departs from.
+   - Record each gap, with the source requirement no criterion makes true.
+4. Return the failing criteria, departures and gaps with the source findings Read Requirement Sources returns.
 
 ### *Verify* Selected Criteria
 
@@ -34,6 +48,18 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
    - For an epic, apply [Record Epic Criteria](epic-issue-body.md#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
    - For an initiative, apply [Record Initiative Criteria](initiative-issue-body.md#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
 2. Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
+
+### *Record* Verified Criteria
+
+The verified criteria of one epic or initiative, ticked and saved to its issue.
+
+**Inputs:** Repository, criterion ids, current issue JSON and body, delivery findings, delivery revisions, named instruments, the project checkout, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
+
+1. Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments and project checkout.
+   - When it returns no verified id, continue at step 4.
+2. Pass only its returned verified ids to [Tick Verified Criteria](#tick-verified-criteria) with the issue JSON and output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
+3. When the returned body differs from the current issue body, apply [Save Tracker Issue](issue.md#save-tracker-issue) with the repository, issue number and output body file.
+4. Return the verified ids with their evidence, the ids refused as not ready to verify, and each unverified criterion with what it is missing. A refused or unverified criterion stays unticked.
 
 ## Fields
 
