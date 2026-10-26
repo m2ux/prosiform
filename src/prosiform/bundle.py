@@ -399,10 +399,10 @@ def target(
     emitting it recorded the target it answers to.
 
     A withheld link under the allowed source root takes its target's
-    path from that root, so the run that compiles it later needs
-    nothing but the root to follow it. It is never rewritten to a
-    bundle destination, even where another reference carried its target
-    into the bundle: what one author withheld cannot be changed by
+    path from the invocation working directory, so the run that
+    compiles it later, from that directory, follows it as written. It is
+    never rewritten to a bundle destination, even where another reference
+    carried its target into the bundle: what one author withheld cannot be changed by
     another author's reference.
 
     A link resolving outside the allowed source root, and one naming no

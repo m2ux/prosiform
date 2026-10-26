@@ -543,7 +543,8 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
 
     The destination arrives whole. Where a link points is the bundle's
     question, and this writes the answer, so a fragment of the bundle
-    and a path from the allowed source root are published the same way.
+    and a path from the invocation working directory are published the
+    same way.
     """
     found: list[tuple[int, int, str]] = []
     if one.definition is not None:

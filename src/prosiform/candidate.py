@@ -298,9 +298,10 @@ def intended(
     gives it.
 
     A withheld link under the allowed source root carries its target's
-    path from that root, so where it points is the destination the
-    bundle rebased. A link resolving nowhere the bundle is responsible
-    for is published as authored like any other mention.
+    path from the invocation working directory, so where it points is
+    the destination the bundle rebased. A link resolving nowhere the
+    bundle is responsible for is published as authored like any other
+    mention.
 
     What a withheld link shows is its author's text with a deferral mark
     taken off: the destination already states the deferral, so the mark
