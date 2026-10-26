@@ -111,6 +111,8 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
   - Wait for the user's answer. An unanswered question stays pending. A recommendation or elapsed time supplies no answer.
   - The user can select Other and specify a response beyond the options.
   - Use the native tool for presenting the question when one is available.
+- **Dispatch.**
+  A link whose text opens with a symbol is compiled and used as the [bootstrap](#bootstrap) states.
 - **Layers.**
   Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
@@ -3957,6 +3959,31 @@ Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventio
   Each task and epic that enters review has an overview on the pull request a reviewer reads.
 - **The queue stays undecided.**
   A sync on its own leaves the choice of what to start next undecided.
+
+# Bootstrap
+
+A link whose text opens with a matching [symbol](#symbols) follows the usage instructions and is *not* read as a file.
+
+## Compile
+
+Compile a target file. Run from the skill's directory, which holds `SKILL.md`.
+
+```bash
+pf -o <scratch>/<name>.bundle.md <destination>
+```
+
+- `<destination>`  The link's destination as written.
+- `<name>`  The destination's file name without its suffix.
+- `<scratch>`  An existing working directory outside the repository.
+
+> A non-zero exit stops the run and reports `pf`'s diagnostics.
+
+## Symbols
+
+| Symbol | Description | Usage |
+| --- | --- | --- |
+| `↳` | An inline target | [Compile](#compile) it, read the whole bundle and follow the instructions in its preamble. |
+| `»` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. Put each question the result returns to the user, then dispatch again with the answers. A sub-agent following a dispatched bundle dispatches nothing further and puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. |
 
 # References
 

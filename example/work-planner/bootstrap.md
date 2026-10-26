@@ -8,7 +8,7 @@ A link whose text opens with a matching [symbol](#symbols) follows the usage ins
 
 ## Compile
 
-Compile a target file. Run from this file's directory.
+Compile a target file. Run from the skill's directory, which holds `SKILL.md`.
 
 ```bash
 pf -o <scratch>/<name>.bundle.md <destination>
@@ -25,4 +25,4 @@ pf -o <scratch>/<name>.bundle.md <destination>
 | Symbol | Description | Usage |
 | --- | --- | --- |
 | `↳` | An inline target | [Compile](#compile) it, read the whole bundle and follow the instructions in its preamble. |
-| `»` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A sub-agent following a dispatched bundle dispatches nothing further. |
+| `»` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. Put each question the result returns to the user, then dispatch again with the answers. A sub-agent following a dispatched bundle dispatches nothing further and puts no question to the user: it returns each question, with its context paragraph and options, unanswered to the session that dispatched it. |
