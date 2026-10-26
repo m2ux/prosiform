@@ -8,11 +8,11 @@ Run the commands from the repository root after [installation](../README.md#inst
 
 ### Input
 
-The [planning procedure](work-planner/modes/plan-mode.md) links the documents its publish step reaches, and defers a third that a run of its own opens:
+The [planning procedure](work-planner/modes/plan-mode.md) links the documents its publish step reaches:
 
 ```markdown
 6. **Publish.**
-   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [¬ Interview](../guidelines.md#modes), the proposal the recommended answer.
+   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [interview](../rules.md), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
    - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
@@ -36,12 +36,12 @@ Its publish step reads:
 
 ```markdown
 6. **Publish.**
-   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [Interview](guidelines.md#modes), the proposal the recommended answer.
+   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
    - Call [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
-The two documents the step links arrive in the bundle, and their headings are destinations its links point at. The deferred link drops its `¬` marker and names its target `guidelines.md`, the path from the invocation directory; that document is excluded, and the published path alone states the deferral.
+The three documents the step links arrive in the bundle, and their headings are destinations its links point at. A link to a whole document points at the heading the bundle gives it, here `Rules`.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
