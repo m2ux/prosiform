@@ -157,7 +157,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
 
 ```markdown
 # Artifacts
@@ -219,7 +219,7 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 | Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) |
 | Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
-| Compile declared groups | [Manifest](../fixtures/usage-example/every-document-under-a-directory-merged/manifest.toml) | [Bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) |
+| Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) |
 | Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
 
 ## Source and validation
