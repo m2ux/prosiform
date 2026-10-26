@@ -37,11 +37,11 @@ The brief names the reserved planning folder and engineering worktree. Each task
 
 ### Validation Scope
 
-The brief carries the tests required by the unit's criteria, meeting [Test Coverage](artifacts/pull-request-body.md#test-coverage). It identifies the work item's test rows and requires implementation and verification of that scope.
+The brief carries the tests required by the unit's criteria, meeting [Test Coverage](../artifacts/pull-request-body.md#test-coverage). It identifies the work item's test rows and requires implementation and verification of that scope.
 
 ### Change Autonomy
 
-The brief names the supplied [allowance](artifacts/plan-change.md#allowance): the plan changes the session applies on its own. It requires the session's [change list](artifacts/plan-change.md#change-list) with its result, holding what it applied and what it held.
+The brief names the supplied [allowance](../artifacts/plan-change.md#allowance): the plan changes the session applies on its own. It requires the session's [change list](../artifacts/plan-change.md#change-list) with its result, holding what it applied and what it held.
 
 ### Execution Instructions
 

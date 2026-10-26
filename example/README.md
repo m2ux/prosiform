@@ -12,9 +12,9 @@ The [planning procedure](work-planner/modes/plan-mode.md) links the documents it
 
 ```markdown
 6. **Publish.**
-   Put the proposed [Epic Priority](artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [¬ Interview](guidelines.md#modes), the proposal the recommended answer.
+   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [¬ Interview](../guidelines.md#modes), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
-   - Call [Ensure Repository Labels](artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
+   - Call [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
 ### Command
@@ -60,7 +60,7 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](../artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
 ### Command

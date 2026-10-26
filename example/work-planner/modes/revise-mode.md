@@ -11,9 +11,9 @@ Changes the skill itself: SKILL.md, its modes, artifacts, references and scripts
 The main path meets [Outcomes](#outcomes).
 
 1. **Read the guidelines.**
-   Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](guidelines.md) whole before the first edit.
+   Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md) whole before the first edit.
 2. **Understand the request.**
-   Interview the user, as an [¬ Interview](guidelines.md#modes), until the change and its scope are clear.
+   Interview the user, as an [¬ Interview](../guidelines.md#modes), until the change and its scope are clear.
    - Find every file the change touches: the rule's home, each file that cites it, and any script, docstring or test that states it.
 3. **Work in a worktree.**
    Branch a worktree for the change.
@@ -24,7 +24,7 @@ The main path meets [Outcomes](#outcomes).
    - Write it to the guidelines' layout, prose, link and command rules as it is written, not in a later pass.
    - When the user states a new writing rule, add it to the applicable shared or skill-specific guidelines before validation and delivery.
 5. **Check against the guidelines.**
-   Read every changed file against the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](guidelines.md), checking:
+   Read every changed file against the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md), checking:
    - The description, when the skill's reach changed.
    - One line per item, bold leads on their own line, and sub-bullets for discrete points.
    - Each rule stated once, and no description of replaced behaviour left anywhere.
@@ -36,7 +36,7 @@ The main path meets [Outcomes](#outcomes).
    - Run [Run Tests](#run-tests) when an executable script, its consumed template or a test changed.
    - When SKILL.md changes, confirm its frontmatter opens and closes with `---` and holds `name` and `description`.
    - Run [Check Skill Files](#check-skill-files) for every affected skill.
-   - Apply [disclosure verification](../../guidelines.md#disclosure-verification) with the skill's [¬ representative scenarios](guidelines.md#progressive-disclosure).
+   - Apply [disclosure verification](../../guidelines.md#disclosure-verification) with the skill's [¬ representative scenarios](../guidelines.md#progressive-disclosure).
    - Resolve every required file, command and heading without an implicit external dependency.
 7. **Deliver.**
    - Commit.

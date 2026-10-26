@@ -24,16 +24,16 @@ The draft checked against the initiative outcomes.
    - Every initiative criterion traces to a goal clause.
    - Remove one that traces to none, or put that scope to the user.
    - Record any criterion no task row delivers as a gap from the supplied epic format results.
-3. Call [Read Requirement Sources](artifacts/initiative-issue-body.md#read-requirement-sources) with the initiative References, checkout, authenticated access and output files.
-   - Extend the trace table with the source requirement each criterion answers to. Each unmatched requirement, each criterion that departs from the one it cites, and each source that could not be read is a gap [Sources](artifacts/initiative-issue-body.md#sources) names.
-4. Check each criterion against the [shared acceptance criteria](artifacts/issue-body.md#shared-acceptance-criteria) and [Initiative Acceptance Criteria](artifacts/initiative-issue-body.md#initiative-acceptance-criteria).
-5. Call [Build Body Snapshot](artifacts/issue-body.md#build-body-snapshot) for each supplied local draft with its title, labels and existing identity when present.
-   - Use the returned initiative and epic JSON for [Validate Initiative Body](artifacts/initiative-issue-body.md#validate-initiative-body) with the initiative JSON, every linked epic's current JSON, source evidence and output file.
+3. Call [Read Requirement Sources](../artifacts/initiative-issue-body.md#read-requirement-sources) with the initiative References, checkout, authenticated access and output files.
+   - Extend the trace table with the source requirement each criterion answers to. Each unmatched requirement, each criterion that departs from the one it cites, and each source that could not be read is a gap [Sources](../artifacts/initiative-issue-body.md#sources) names.
+4. Check each criterion against the [shared acceptance criteria](../artifacts/issue-body.md#shared-acceptance-criteria) and [Initiative Acceptance Criteria](../artifacts/initiative-issue-body.md#initiative-acceptance-criteria).
+5. Call [Build Body Snapshot](../artifacts/issue-body.md#build-body-snapshot) for each supplied local draft with its title, labels and existing identity when present.
+   - Use the returned initiative and epic JSON for [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body) with the initiative JSON, every linked epic's current JSON, source evidence and output file.
    - Incorporate its local findings into this review.
 6. Follow [Check Outside Threats](#check-outside-threats).
 7. Rank the gaps, meeting [Gaps](#gaps).
    - Flag the few that most threaten the goal.
-   - Record the trace table in the [planning record](artifacts/planning-record.md), or give it to the user when the change has none.
+   - Record the trace table in the [planning record](../artifacts/planning-record.md), or give it to the user when the change has none.
    - Return the trace and ranked findings to the caller.
 
 ### *Check* Outside Threats

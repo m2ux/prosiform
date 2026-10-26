@@ -18,8 +18,8 @@ One proposal body from a confirmed problem and goal.
 **Inputs:** Confirmed problem, evidence, goal clauses, boundary and output path.
 
 - Populate the body from the [Template](#template) at the supplied output path.
-  - The title must meet the shared [Titles](artifacts/issue-body.md#titles) conditions.
-  - The Problem must meet the shared [Problem and Proposal](artifacts/issue-body.md#problem-and-proposal) conditions.
+  - The title must meet the shared [Titles](../artifacts/issue-body.md#titles) conditions.
+  - The Problem must meet the shared [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal) conditions.
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
 ### *Validate* Proposal Body
@@ -28,7 +28,7 @@ The body's local format and field findings.
 
 **Inputs:** Proposal issue JSON and output file.
 
-1. Call [Validate Issue Body](artifacts/issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
+1. Call [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
 2. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ## Fields
@@ -68,7 +68,7 @@ The body's local format and field findings.
 
 ### Problem
 
-- A Problem meets [Problem and Proposal](artifacts/issue-body.md#problem-and-proposal).
+- A Problem meets [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal).
 
 ### Goal
 

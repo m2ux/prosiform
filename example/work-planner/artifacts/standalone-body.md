@@ -18,8 +18,8 @@ One standalone issue body from its supplied scope.
 **Inputs:** Problem, design, criteria, open questions and output path.
 
 - Populate the body from the [Template](#template) at the supplied output path.
-  - The title must meet the shared [Titles](artifacts/issue-body.md#titles) conditions.
-  - The Problem and Proposal must meet [Problem and Proposal](artifacts/issue-body.md#problem-and-proposal).
+  - The title must meet the shared [Titles](../artifacts/issue-body.md#titles) conditions.
+  - The Problem and Proposal must meet [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal).
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
 ### *Revise* Standalone Body
@@ -68,4 +68,4 @@ One standalone body with its confirmed boundary integrated.
 
 ### Sections
 
-- A standalone issue has the [epic issue body](artifacts/epic-issue-body.md)'s sections without the Work Breakdown table.
+- A standalone issue has the [epic issue body](../artifacts/epic-issue-body.md)'s sections without the Work Breakdown table.

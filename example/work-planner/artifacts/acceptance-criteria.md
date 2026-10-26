@@ -32,8 +32,8 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
 **Inputs:** Issue JSON, verified criterion ids, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
 
 1. Record the criteria, meeting [Tick State](#tick-state).
-   - For an epic, run [Record Epic Criteria](artifacts/epic-issue-body.md#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
-   - For an initiative, run [Record Initiative Criteria](artifacts/initiative-issue-body.md#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
+   - For an epic, run [Record Epic Criteria](../artifacts/epic-issue-body.md#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
+   - For an initiative, run [Record Initiative Criteria](../artifacts/initiative-issue-body.md#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
 2. Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
 
 ## Fields
@@ -53,8 +53,8 @@ An instrument runs in a checkout of the project at the merged revision it is ver
 
 ### Instrument Result
 
-A criterion is verified only on a passing run of its named instrument, recorded against the tested revisions as [Coverage Reports](artifacts/issue-body.md#coverage-reports) define. A failed, unavailable or inconclusive instrument leaves it unverified, and an unverified criterion is not ticked.
+A criterion is verified only on a passing run of its named instrument, recorded against the tested revisions as [Coverage Reports](../artifacts/issue-body.md#coverage-reports) define. A failed, unavailable or inconclusive instrument leaves it unverified, and an unverified criterion is not ticked.
 
 ### Tick State
 
-A ticked criterion carries verification evidence. Done on the row or table that cites it follows [Tables](artifacts/issue-body.md#tables) and [Work Breakdown](artifacts/epic-issue-body.md#work-breakdown). A criterion refused as not ready to verify is returned unticked with what it is missing.
+A ticked criterion carries verification evidence. Done on the row or table that cites it follows [Tables](../artifacts/issue-body.md#tables) and [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown). A criterion refused as not ready to verify is returned unticked with what it is missing.

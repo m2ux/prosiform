@@ -24,7 +24,7 @@ One delivery plan from supplied board and delivery evidence.
 
 ### Work Units
 
-A unit is one task row or tasks that name each other in Joins, as [Work Breakdown](artifacts/epic-issue-body.md#work-breakdown) defines. One unit is one pull request's work. Its task ids and Descriptions determine the planning-folder identity, branch, epic base and worktree.
+A unit is one task row or tasks that name each other in Joins, as [Work Breakdown](../artifacts/epic-issue-body.md#work-breakdown) defines. One unit is one pull request's work. Its task ids and Descriptions determine the planning-folder identity, branch, epic base and worktree.
 
 ### Report Lines
 
@@ -37,7 +37,7 @@ A unit is one task row or tasks that name each other in Joins, as [Work Breakdow
 
 ### Branch Context
 
-The project checkout supplies the long-lived branch names defined in [Branches](artifacts/delivery-branches.md#branches). A base whose last segment is not one of those names is ignored. A supplied record date determines the planning folder's day; the default is today.
+The project checkout supplies the long-lived branch names defined in [Branches](../artifacts/delivery-branches.md#branches). A base whose last segment is not one of those names is ignored. A supplied record date determines the planning folder's day; the default is today.
 
 ## Commands
 
