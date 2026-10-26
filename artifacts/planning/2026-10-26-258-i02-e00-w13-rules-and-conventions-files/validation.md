@@ -15,7 +15,7 @@
 | `make invocation` | 28 statement(s) of the documented invocation, each held to the build `PROSIFORM_BUILD` names | 0 |
 | `make conformance` | 305 clause(s) the design states, 55 covered by no fixture, 0 declaration(s) naming no clause | 0 |
 | `make independence` | every word of every fixture declaration and every report entry is one the contract states | 0 |
-| `make links` | every reference in 103 document(s) resolved | 0 |
+| `make links` | every reference in 104 document(s) resolved | 0 |
 | `make layout` | 3 tree(s) present | 0 |
 | `make tables` | 16 command(s) and 8 declaration(s), each declared by the project and named by a table | 0 |
 | `make vocabulary` | 38 contract term(s), every one defined in `docs/glossary.md` | 0 |
@@ -28,7 +28,8 @@
 ## Structure
 
 - `rules.md` (`# Rules`) and `conventions.md` (`# Conventions`) sit beside `SKILL.md`, frontmatter `prosiform: root: "."` only; their link destinations are byte-identical to those `SKILL.md` wrote.
-- `SKILL.md` H2 order: `Bootstrap`, `Modes`, `Dependencies`.
+- `SKILL.md` H2 order: `Modes`, `Dependencies`; Modes opens `Read the [bootstrap](bootstrap.md) instructions then select the mode as appropriate to fulfill the user request:`.
+- `bootstrap.md` (`# Bootstrap`) sits beside `SKILL.md`, body unchanged, frontmatter `prosiform: root: "."` only.
 - All ten modes carry `## Outcomes`; each preamble's last paragraph ends `Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.` (align-mode: second paragraph).
 - `The main path meets [Outcomes](#outcomes).`: 0 occurrences under `example/`.
 - `## Prerequisites`: 0 occurrences under `example/work-planner` (AC2).
@@ -48,7 +49,7 @@
 | Artifacts — Prerequisites | Prerequisites open with `Read these files first.` They list every file the artifact's Operations, Fields or Commands link to. … | Removed. |
 | Artifacts — Sections | Prerequisites, Operations, Fields, then Guidance … | Operations, Fields, then Guidance … |
 | References — Shape | It does not use Prerequisites, Procedure, Fields, … | It does not use Procedure, Fields, … |
-| Entry Point — Section order | Rules precedes Dependencies. | **Sections.** Preamble, Bootstrap, Modes, then Dependencies. |
+| Entry Point — Section order | Rules precedes Dependencies. | **Sections.** Preamble, Modes, then Dependencies. Modes opens by linking [Bootstrap](bootstrap.md), which sits beside the entry point. |
 | Entry Point — Common conventions | The entry point supplies [Conventions](SKILL.md#conventions) before mode selection. Graph-specific setup belongs to [Repository Graph]. | **Rules and conventions.** What binds every mode sits beside the entry point in [Rules](rules.md) and [Conventions](conventions.md), which each mode's preamble links. Graph-specific setup belongs to [Repository Graph]. |
 | Progressive Disclosure — intro | Modes are read whole; supporting section reads inherit the mode's command prerequisites. | A mode is followed from its bundle, which carries its rules, conventions and every section it links. |
 
@@ -65,7 +66,7 @@
 
 ## Bundles
 
-Each mode bundled with `pf -o <scratch>/<mode>.md modes/<mode>-mode.md` from `example/work-planner`, default budgets (`-E 8`, `-O 262144`). Every bundle exits 0 with one `W_ENTRY_DESTINATION` warning and carries `# Rules` and `# Conventions`.
+Each mode bundled with `pf -o <scratch>/<mode>.md modes/<mode>-mode.md` from `example/work-planner`, default budgets (`-E 8`, `-O 262144`). Every bundle exits 0 with one `W_ENTRY_DESTINATION` warning and carries `# Rules` and `# Conventions`. No bundle carries `bootstrap.md`: no file in any mode's closure links it or `SKILL.md`, and the plan-mode bundle rebuilt after the move is byte-identical to the one before it.
 
 | Mode | Exit | Bytes |
 | --- | --- | --- |
