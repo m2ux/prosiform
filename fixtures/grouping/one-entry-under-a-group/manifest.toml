@@ -8,6 +8,7 @@ clauses = [
   "Grouping — Variants by document",
   "Grouping — Document content above the grouping depth",
   "Adversarial acceptance fixtures — Grouping",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]

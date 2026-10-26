@@ -1,10 +1,10 @@
 """Round-trip evidence that the destinations a bundle publishes compile.
 
 Both operators state that material is compiled in a later run, and the corpus
-asserts only the form that material takes in the bundle. This suite bundles a
-copy of the work-tracker example, reads the destinations the bundle published,
-and compiles each of them in a second run, so the handoff is held by runs
-rather than by a reading of the published bytes.
+asserts only the form that material takes in the bundle. This suite bundles each
+mode of a copy of the work-planner example, reads the destinations each bundle
+published, and compiles each of them in a second run, so the handoff is held by
+runs rather than by a reading of the published bytes.
 
 A destination is taken from the first bundle and never restated here. The
 authoring string states what the mode linked to, and compiling that string
@@ -30,7 +30,7 @@ from urllib.parse import unquote
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-EXAMPLE = REPO / "example" / "work-tracker"
+EXAMPLE = REPO / "example" / "work-planner"
 COMMAND = "pf"
 ENCODING = "utf-8"
 
@@ -38,9 +38,11 @@ DISPATCH = "\u21c9"
 DEFERRAL = "\u00ac"
 
 ERROR = "error"
-RULE = "Compile the marked link and hand it to a sub-agent."
+RULE = "| A dispatched target |"
 
 LINK = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
+FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,}).*?^ {0,3}\1", re.MULTILINE | re.DOTALL)
+SPAN = re.compile(r"`[^`\n]*`")
 SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 
 ARTIFACT = (
@@ -109,10 +111,14 @@ def withheld(bundle: str) -> list[tuple[str, str]]:
     compiles the material. A deferral publishes its text without the mark, so
     the destination is the whole of what states it and the label states
     nothing.
+
+    Code is published as its author wrote it, so a link a code block or span
+    shows is an example of a link rather than one the bundle published.
     """
+    prose = SPAN.sub("", FENCE.sub("", bundle))
     return [
         (label, destination)
-        for label, destination in LINK.findall(bundle)
+        for label, destination in LINK.findall(prose)
         if not destination.startswith("#") and SCHEME.match(destination) is None
     ]
 
@@ -191,6 +197,31 @@ class Tree:
             assert (self.root / unquote(path)).is_file(), destination
             assert fragment, destination
         return found
+
+    def published(self, entry: str) -> list[tuple[str, str]]:
+        """The destinations one mode published that name a document of this copy.
+
+        A link landing outside the root stays as its author wrote it, so it
+        names material no run from this root compiles and is a reference rather
+        than a handoff. Neither operator may name such material, so a
+        dispatched destination always names a document of this copy.
+        """
+        found = []
+        for label, destination in withheld(self.bundled(entry)):
+            path = unquote(destination.partition("#")[0])
+            target = (self.root / path).resolve()
+            inside = target.is_relative_to(self.root.resolve()) and target.is_file()
+            assert inside or not label.startswith(DISPATCH), destination
+            if inside:
+                found.append((label, destination))
+        return found
+
+    def modes(self) -> list[str]:
+        """Every mode of this copy, as an entry named from its root."""
+        return sorted(
+            path.relative_to(self.root).as_posix()
+            for path in (self.root / "modes").glob("*.md")
+        )
 
 
 @pytest.fixture
@@ -275,7 +306,28 @@ def test_both_destinations_of_one_bundle_compile(tree: Tree) -> None:
     assert sorted(compiled) == sorted(SECTION), compiled
 
 
+def test_each_destination_the_example_publishes_compiles(tree: Tree) -> None:
+    """Every destination a mode of the example publishes compiles in a second run.
+
+    Each mode is bundled as its own entry, and each distinct destination the
+    bundles published is compiled once. The example dispatches and defers, so
+    both operators' destinations are among them.
+    """
+    published: dict[str, str] = {}
+    for entry in tree.modes():
+        for label, destination in tree.published(entry):
+            published.setdefault(destination, label)
+    labels = list(published.values())
+    assert any(label.startswith(DISPATCH) for label in labels), published
+    assert any(not label.startswith(DISPATCH) for label in labels), published
+    for destination in published:
+        run = tree.compiled(destination)
+        assert run.errors() == [], (destination, run.diagnostics)
+        assert run.status == 0, (destination, run.diagnostics)
+        assert run.stdout, destination
+
+
 def test_a_mode_bundle_carries_the_dispatch_rule_once(tree: Tree) -> None:
-    """A mode linking the entry document's dispatch section carries its rule."""
+    """A mode bundle carries the bootstrap's dispatched-target symbol once."""
     bundle = tree.bundled("modes/plan-mode.md")
     assert bundle.count(RULE) == 1, bundle

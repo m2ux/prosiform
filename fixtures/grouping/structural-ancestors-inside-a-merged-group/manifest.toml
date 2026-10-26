@@ -1,10 +1,11 @@
-description = "Above the grouping depth the group's own structure supplies the chain, and at or below it the eligible ancestors a selection skipped are emitted as headings alone. A heading at the grouping depth one member selected and another reached only as an ancestor is emitted once for both, and the member's own title is no ancestor because the overview subsection stands in its place."
+description = "Above the grouping depth the group's own structure supplies the chain, and at or below it the eligible ancestors a selection skipped are emitted as headings alone. A heading at the grouping depth one member selected and another reached only as an ancestor is emitted once for both, and the member's own title is no ancestor because the group's heading stands in its place."
 
 clauses = [
   "Grouping — Group structure",
   "Grouping — Document content above the grouping depth",
   "Post-compilation invariants — Outline preservation",
   "Heading-only structural ancestors",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]

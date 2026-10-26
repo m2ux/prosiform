@@ -263,6 +263,33 @@ def test_no_two_members_of_one_group_reach_one_destination() -> None:
     assert len(set(reached)) == len(documents)
 
 
+def reaching(one: Group, path: str, fragment: str) -> list[str]:
+    """The text of each heading a reference to one member's section reaches."""
+    return [
+        heading.text
+        for heading in one.record.headings
+        if (path, fragment) in heading.answers
+    ]
+
+
+def test_a_reference_into_a_shared_section_reaches_its_document_s_variant() -> None:
+    one = group_of(
+        "rules",
+        2,
+        {
+            "rules/agents.md": "## Style\n\nName the harness.\n",
+            "rules/common.md": "## Style\n\nKeep paragraphs short.\n",
+        },
+    )
+    assert reaching(one, "rules/agents.md", "style") == ["Agents"]
+    assert reaching(one, "rules/common.md", "style") == ["Common"]
+
+
+def test_a_reference_into_a_section_one_member_carries_reaches_its_heading() -> None:
+    one = group_of("rules", 2, {"rules/agents.md": "## Style\n\nName the harness.\n"})
+    assert reaching(one, "rules/agents.md", "style") == ["Style"]
+
+
 @pytest.mark.parametrize("preamble", ["", "Read this first.\n\n"])
 @pytest.mark.parametrize("first", ["Body.\n", "### Draft\n\nBody.\n", ""])
 @pytest.mark.parametrize("second", ["### Draft\n\nOther body.\n", ""])

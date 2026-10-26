@@ -32,7 +32,6 @@ INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 DEPTH = "group-depth"
-HEADING = "group-heading"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
     "null": re.compile(r"(?:~|null|Null|NULL|)"),
@@ -72,10 +71,8 @@ class Conversion:
     root_location: Location | None = None
     group: str | None = None
     depth: int | None = None
-    heading: bool | None = None
     group_location: Location | None = None
     depth_location: Location | None = None
-    heading_location: Location | None = None
 
 
 class InvalidMetadata(Exception):
@@ -333,19 +330,10 @@ def decode(
                 key.location,
             )
         name = "prosiform." + key.value
-        if key.value not in ("root", GROUP, DEPTH, HEADING):
+        if key.value not in ("root", GROUP, DEPTH):
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
-        if key.value == HEADING:
-            if value.kind != "bool":
-                raise _fail(
-                    INVALID_CONVERSION_METADATA,
-                    f"{name} must be a boolean",
-                    value.location,
-                )
-            fields[key.value] = value
-            continue
         if key.value != DEPTH and value.kind != "str":
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"{name} must be a string", value.location
@@ -371,13 +359,6 @@ def decode(
     root_value = declared_root.value if declared_root is not None else None
     root_location = declared_root.location if declared_root is not None else None
     if GROUP not in fields and DEPTH not in fields:
-        if HEADING in fields:
-            raise _fail(
-                INVALID_CONVERSION_METADATA,
-                "prosiform.group-heading requires prosiform.group and "
-                "prosiform.group-depth",
-                fields[HEADING].location,
-            )
         return Conversion(
             root=root_value,
             root_location=root_location,
@@ -415,21 +396,11 @@ def decode(
             "prosiform.group-depth must be an integer from 1 through 6",
             depth.location,
         )
-    declared_heading = fields.get(HEADING)
-    heading = (
-        declared_heading.value.lower() == "true"
-        if declared_heading is not None
-        else None
-    )
     return Conversion(
         root=root_value,
         root_location=root_location,
         group=group.value,
         depth=int(numeric_depth),
-        heading=heading,
         group_location=group.location,
         depth_location=depth.location,
-        heading_location=(
-            declared_heading.location if declared_heading is not None else None
-        ),
     )

@@ -1,0 +1,21 @@
+description = "A group declaration naming group-heading beside group and group-depth names a key the contract does not admit, so it fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
+
+clauses = [
+  "Conversion metadata — The admitted keys",
+  "Metadata failures",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/plan-mode.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["unknown field prosiform.group-heading"]
+reference = "modes/plan-mode.md"
+chain = ["modes/plan-mode.md"]

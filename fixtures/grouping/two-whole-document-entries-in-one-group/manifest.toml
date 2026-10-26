@@ -1,8 +1,9 @@
-description = "The source files declare membership of one merged group, and two entries each naming a whole document are bundled under the group's heading, each member under the subsection naming it rather than under a file heading."
+description = "The source files declare membership of one merged group, and two entries each naming a whole document are bundled under the group's heading, each member under the subsection naming it rather than under a file heading. The parent's title sits at the grouping depth, so the group opens on its own heading."
 
 clauses = [
   "Grouping — Group structure",
   "Grouping — Document content above the grouping depth",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]

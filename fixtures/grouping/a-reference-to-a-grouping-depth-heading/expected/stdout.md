@@ -1,6 +1,6 @@
 # Entry
 
-A name two documents carry is reached as [the planning procedure](#procedure) and as [the review procedure](#procedure).
+A name two documents carry is reached as [the planning procedure](#plan) and as [the review procedure](#review).
 
 A name one document carries is reached as [the planning operations](#operations).
 

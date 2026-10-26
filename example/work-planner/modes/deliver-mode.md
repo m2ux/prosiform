@@ -38,7 +38,8 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
 5. **Merge.**
    Apply [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for each repository a `merge` line names.
-   - For each `merge` line, follow [⇉ Task Merge](../protocols/task-merge.md) with the pull request and epic base it names, that confirmed setting as the repository prerequisite, the passing test-plan evidence its pull request record carries, its head branch and the worktree [Task Branches](../artifacts/delivery-branches.md#task-branches) places for that branch, the repository, initiative prefix and project checkout, the epic issue its tasks belong to with its criterion ids and named instruments, the selected board identity, and output body and comment files.
+   - For each `merge` line, follow [⇉ Task Merge](../protocols/task-merge.md) with the pull request and epic base it names, that confirmed setting as the repository prerequisite, the passing test-plan evidence its pull request record carries, its head branch and the worktree [Task Branches](../artifacts/delivery-branches.md#task-branches) places for that branch, the repository, initiative prefix and project checkout, the epic issue its tasks belong to with its criterion ids and named instruments, the selected board identity, the run's verification evidence, and output body and comment files.
+   - Add the verification evidence it returns to the run's, which starts empty, before the next `merge` line.
    - Carry each merge, handoff, refusal, conflict, epic review and pending finding it returns into the report step.
 6. **Confirm.**
    Show each `unit` line, with its tasks, coverage, record, branch, base and worktree, and each `hold` line with the record it links and whether a session is still running.

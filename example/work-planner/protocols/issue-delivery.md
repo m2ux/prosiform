@@ -14,7 +14,8 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 1. **Task issues.**
    For each task issue the pull requests deliver:
-   - Apply [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) for each criterion the task covers, with its current body, delivery findings, delivery revisions, named instruments and the project checkout.
+   - Apply [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria) for each criterion the task covers, with its current body, delivery findings, delivery revisions, named instruments, the project checkout and the run's verification evidence.
+   - Add the verification evidence it returns to the run's, which starts as the verification evidence the caller supplied.
    - Apply [Record Task Delivery](../artifacts/task-body.md#record-task-delivery) with the task JSON, pull request records, complete issue-link snapshot, its delivering pull request number, returned verified criterion ids, output body file and output comment file.
    - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the repository, task issue number and returned body file.
    - Apply [Comment on Issue](../artifacts/issue.md#comment-on-issue) with the repository, task issue number and returned comment file.
@@ -25,5 +26,6 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
      - Apply [Place Unplaced Task Row](../artifacts/epic-issue-body.md#place-unplaced-task-row) with the saved epic JSON, that task issue, the caller's allowance and change list when supplied, the pull request records, complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
      - Use the body and Delivery Findings it returns in the following steps; a row it leaves pending is returned to the caller with the updated change list.
 3. **Epic criteria.**
-   Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) with the repository, the criteria the returned Delivery Findings name as ready to verify, the saved epic JSON and body, those findings, delivery revisions, named instruments, project checkout, output body file, pull request records and complete issue-link snapshot.
-   - Return to the caller the saved task and epic identities, each task's eligibility findings, the verified criteria with their evidence, each criterion left unverified, the epic's Delivery Findings with each coverage disagreement as [Delivery Findings](../artifacts/epic.md#delivery-findings) defines it, and the updated change list.
+   Apply [Record Verified Criteria](../artifacts/acceptance-criteria.md#record-verified-criteria) with the repository, the criteria the returned Delivery Findings name as ready to verify, the saved epic JSON and body, those findings, delivery revisions, named instruments, project checkout, the run's verification evidence, output body file, pull request records and complete issue-link snapshot.
+   - Add the verification evidence it returns to the run's.
+   - Return to the caller the saved task and epic identities, each task's eligibility findings, the verified criteria, the run's verification evidence with the revision each was taken on, each criterion left unverified, the epic's Delivery Findings with each coverage disagreement as [Delivery Findings](../artifacts/epic.md#delivery-findings) defines it, and the updated change list.

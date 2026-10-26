@@ -1341,32 +1341,6 @@ def group_depths(
         depths[name] = first.depth
         for path in members[name][1:]:
             current = read[path].conversion
-            if (current.heading is False) != (first.heading is False):
-                location = current.heading_location or current.depth_location
-                assert location is not None and first.depth_location is not None
-                raise Failure(
-                    INPUT_FAILURE,
-                    Diagnostic(
-                        ERROR,
-                        f"prosiform.group-heading for group {name!r} "
-                        f"is {str(first.heading is not False).lower()}; "
-                        f"another member declares "
-                        f"{str(current.heading is not False).lower()}",
-                        code=GROUP_DEPTH_CONFLICT,
-                        location=first.heading_location or first.depth_location,
-                        related=(
-                            RelatedLocation(
-                                location.file,
-                                location.line,
-                                location.column,
-                                f"prosiform.group-heading for group {name!r} is "
-                                f"{str(current.heading is not False).lower()}",
-                            ),
-                        ),
-                        remedy="declare group-heading the same way on every "
-                        "member of the group",
-                    ),
-                )
             if current.depth != first.depth:
                 location = current.depth_location
                 assert location is not None
@@ -1628,7 +1602,6 @@ def assembled(
                         for path in paths
                     ],
                     parent,
-                    read[paths[0]].conversion.heading is not False,
                 )
             )
     rank = {path: at for at, path in enumerate(selected)}
