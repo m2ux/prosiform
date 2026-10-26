@@ -500,7 +500,6 @@ def merged(
     depth: int,
     members: Sequence[Member],
     parent: str | None = None,
-    headed: bool = True,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
@@ -517,7 +516,7 @@ def merged(
     if parent_member is not None and situated(parent_member, depth):
         situate(into, parent_member, depth)
         kept = True
-    elif headed:
+    else:
         title = titled(named)
         into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
         into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
@@ -538,7 +537,7 @@ def merged(
         tuple(into.emitted),
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
         members[0].path,
-        wrapped=headed and not kept,
+        wrapped=not kept,
     )
 
 
