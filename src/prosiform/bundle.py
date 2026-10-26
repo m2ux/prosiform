@@ -16,6 +16,8 @@ code, raw HTML, an entity or a strikethrough, or closing the heading
 that carries it. Two documents whose file headings coincide are two
 headings of one text, which take distinct destinations as any repeated
 heading does: the renderer's slug, the later one carrying its ordinal.
+A reader tells the two apart only by where each stands, so the run
+warns of them.
 
 A group is assembled from the maximal regions the run selected, in
 source order, each carried as the bytes its source wrote. A whole
@@ -137,10 +139,9 @@ from prosiform.source import (
 MAX_LEVEL = 6
 SHIFT = 1
 
-AMBIGUOUS_FILE_GROUP = "E_AMBIGUOUS_FILE_GROUP"
 HEADING_DEPTH_OVERFLOW = "E_HEADING_DEPTH_OVERFLOW"
 
-CODES = (AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW)
+CODES = (HEADING_DEPTH_OVERFLOW,)
 
 TERMINATOR = "\n"
 SEPARATOR = TERMINATOR
@@ -447,6 +448,19 @@ def document_title(tokens: Sequence[Token]) -> Token | None:
     return opening
 
 
+def file_heading(path: str, tokens: Sequence[Token], root: str = "") -> str:
+    """The text one document's file group is headed by.
+
+    It is the document's title where the document carries one, as the
+    group shows it on one line, and the path the run read the document
+    by where it carries none.
+    """
+    titled = document_title(tokens)
+    if titled is None:
+        return heading_text(path)
+    return single_line(shown_text(path, tokens, root)[id(titled)])
+
+
 def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
     """The document's title, where it slugs to what a name slugs to.
 
@@ -704,7 +718,7 @@ def group(
     situate = situate and carries_title(tokens) and selected is None
     text = shown_text(path, tokens, root)
     titled = document_title(tokens)
-    title = heading_text(path) if titled is None else single_line(text[id(titled)])
+    title = file_heading(path, tokens, root)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])

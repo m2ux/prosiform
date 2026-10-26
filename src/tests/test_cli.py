@@ -31,13 +31,12 @@ import pytest
 from prosiform import PROFILE
 from prosiform.access import read_source
 from prosiform.bundle import (
-    AMBIGUOUS_FILE_GROUP,
+    CODES as BUNDLE_CODES,
+)
+from prosiform.bundle import (
     HEADING_DEPTH_OVERFLOW,
     Group,
     assemble,
-)
-from prosiform.bundle import (
-    CODES as BUNDLE_CODES,
 )
 from prosiform.candidate import (
     CODES as CANDIDATE_CODES,
@@ -47,6 +46,7 @@ from prosiform.candidate import (
 )
 from prosiform.cli import (
     CODES,
+    COINCIDENT_HEADING,
     GROUP_DEPTH_CONFLICT,
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -185,6 +185,7 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         UNEXPECTED_INTERNAL_ERROR,
         UNSUPPORTED_ENTRY_SUFFIX,
         RESOURCE_PORTABILITY,
+        COINCIDENT_HEADING,
     }
     for published in (
         BUNDLE_CODES,
@@ -842,21 +843,154 @@ def test_one_document_named_twice_is_one_group(root: Path) -> None:
 def test_two_paths_differing_only_by_suffix_are_two_groups(root: Path) -> None:
     written(root, "guide.md", "One.\n")
     written(root, "guide.markdown", "Two.\n")
-    run = invoke("guide.md", "guide.markdown", cwd=root)
+    run = invoke("-d", "json", "guide.md", "guide.markdown", cwd=root)
     assert run.status == SUCCESS
     assert run.stdout == "# Guide\n\nOne.\n\n# Guide\n\nTwo.\n"
+    assert [one["code"] for one in run.diagnostics()] == [COINCIDENT_HEADING]
 
 
-def test_two_members_whose_paths_differ_only_by_suffix_are_ambiguous(
-    root: Path,
-) -> None:
-    grouped = "---\nprosiform: {group: notes, group-depth: 2}\n---\n# Guide\n"
-    written(root, "guide.md", grouped)
-    written(root, "guide.markdown", grouped)
-    run = invoke("-d", "json", "guide.md", "guide.markdown", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.stdout == ""
-    assert [one["code"] for one in run.diagnostics()] == [AMBIGUOUS_FILE_GROUP]
+def test_coinciding_file_headings_warn_once_naming_every_source(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\nRead [a](a/note.md), [b](b/note.md) and [c](c/note.md).\n",
+    )
+    written(root, "a/note.md", "Intro.\n\n# Note\n\nA.\n")
+    written(root, "b/note.md", "---\nname: b\n---\n# NOTE\n\nB.\n")
+    written(root, "c/note.md", "# Note\n\nC.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "[a](#note), [b](#note-1) and [c](#note-2)" in run.stdout
+    assert run.diagnostics() == [
+        {
+            "severity": "warning",
+            "message": "3 file headings read 'Note', which a reader tells apart "
+            "only by where each stands",
+            "code": COINCIDENT_HEADING,
+            "remedy": "retitle or rename a document so its file heading reads apart",
+            "location": {"file": "a/note.md", "line": 3, "column": 1},
+            "related": [
+                {
+                    "file": "b/note.md",
+                    "line": 4,
+                    "column": 1,
+                    "message": "file heading 'NOTE'",
+                },
+                {
+                    "file": "c/note.md",
+                    "line": 1,
+                    "column": 1,
+                    "message": "file heading 'Note'",
+                },
+            ],
+        }
+    ]
+
+
+def test_a_path_heading_is_located_at_its_document(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [one](one/notes.md).\n")
+    written(root, "one/notes.md", "Read [two](../One/notes.md).\n")
+    written(root, "One/notes.md", "Two.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "# One/Notes\n\nRead [two](#onenotes-1).\n\n# One/Notes\n" in run.stdout
+    [warning] = run.diagnostics()
+    assert warning["location"] == {"file": "one/notes.md", "line": 1, "column": 1}
+    assert warning["related"] == [
+        {
+            "file": "One/notes.md",
+            "line": 1,
+            "column": 1,
+            "message": "file heading 'One/Notes'",
+        }
+    ]
+
+
+def test_the_parent_title_coincides_with_a_file_heading(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [the other](other/guide.md).\n")
+    written(root, "other/guide.md", "# Guide\n\nOther.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    [warning] = run.diagnostics()
+    assert warning["location"] == {"file": "guide.md", "line": 1, "column": 1}
+    assert [one["file"] for one in warning["related"]] == ["other/guide.md"]
+
+
+def test_each_coinciding_set_warns_in_bundle_order(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n[1](a/b.md) [2](a/c.md) [3](z/c.md) [4](z/b.md)\n",
+    )
+    for name in ("a/b.md", "a/c.md", "z/c.md", "z/b.md"):
+        written(root, name, "Body.\n")
+    written(root, "a/b.md", "# Bee\n")
+    written(root, "z/b.md", "# Bee\n")
+    written(root, "a/c.md", "# Sea\n")
+    written(root, "z/c.md", "# Sea\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert [one["location"]["file"] for one in run.diagnostics()] == [
+        "a/b.md",
+        "a/c.md",
+    ]
+
+
+def test_headings_an_author_repeats_warn_of_nothing(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [the note](note.md).\n\n## Use\n")
+    written(root, "note.md", "# Note\n\n## Use\n\n## Use\n\n### Note\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+
+
+def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\nRead [one](notes/note.md) and [two](notes/note.markdown).\n",
+    )
+    written(root, "notes/note.md", conversion("notes", 2) + "One.\n")
+    written(root, "notes/note.markdown", conversion("notes", 2) + "Two.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stdout == (
+        "# Guide\n\nRead [one](#note) and [two](#note-1).\n\n"
+        "# Notes\n\n## Note\n\nOne.\n\n## Note\n\nTwo.\n"
+    )
+    assert run.diagnostics() == [
+        {
+            "severity": "warning",
+            "message": "2 member headings of group 'notes' read 'Note', which a "
+            "reader tells apart only by where each stands",
+            "code": COINCIDENT_HEADING,
+            "remedy": "rename a member so its path distinguishes it in the group",
+            "location": {"file": "notes/note.md", "line": 3, "column": 10},
+            "related": [
+                {
+                    "file": "notes/note.markdown",
+                    "line": 3,
+                    "column": 10,
+                    "message": "member heading 'Note'",
+                }
+            ],
+        }
+    ]
+
+
+def test_a_coincidence_reads_as_text(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [a](a/note.md) and [b](b/note.md).\n")
+    written(root, "a/note.md", "# Note\n")
+    written(root, "b/note.md", "# Note\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stderr == (
+        "W_COINCIDENT_HEADING: 2 file headings read 'Note', which a reader "
+        "tells apart only by where each stands\n"
+        "  remedy: retitle or rename a document so its file heading reads apart\n"
+        "  location: a/note.md:1:1\n"
+        "  related: b/note.md:1:1: file heading 'Note'\n"
+    )
 
 
 def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
