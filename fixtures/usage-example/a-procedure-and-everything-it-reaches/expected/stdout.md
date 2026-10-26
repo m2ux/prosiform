@@ -512,8 +512,6 @@ gh api --paginate 'repos/m2ux/workflow-server/issues?state=all&per_page=100' --j
 
 ## Planning Record
 
-A planning record is a folder. README.md is its entry point: it answers what the work is, and links to every other artifact the plan produces. Each artifact is the home of its own content. The progress of the work is the theme's project board.
-
 ### Operations
 
 #### *Populate* Planning Record
@@ -548,17 +546,6 @@ The record's folder committed and pushed, so every link into it resolves for a r
    - Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
 3. Run [Push Engineering Branch](#push-engineering-branch).
    - Report a push that will not fast-forward rather than rewriting the branch.
-
-#### *Locate* Planning Record
-
-The existing planning folder whose reference is one issue or pull request number.
-
-**Inputs:** Issue or pull request number.
-
-1. Run [Find Engineering Worktree](#find-engineering-worktree).
-2. Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
-   - Return each folder path it lists.
-   - When it lists none, return that no record has that reference.
 
 ### Fields
 
@@ -665,24 +652,6 @@ Publishes the engineering branch so a record's links resolve.
 
 ```bash
 cd '<engineering-worktree>' && git push
-```
-
-#### List Planning Records
-
-Prints each planning folder whose reference is one issue or pull request number.
-
-**Inputs:** Engineering worktree and the reference number.
-
-- The pattern places the reference directly after the date, as the [planning-folder path](#add-planning-record) does, so a number inside the date does not match.
-
-```bash
-cd '<engineering-worktree>' && ls -d artifacts/planning/????-??-??-'<reference>'-*/
-```
-
-**Example:**
-
-```bash
-cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
 ```
 
 #### Add Planning Record
@@ -1709,8 +1678,7 @@ The draft checked against the initiative outcomes.
 6. Apply [Check Outside Threats](#check-outside-threats).
 7. Rank the gaps, meeting [Gaps](#gaps).
    - Flag the few that most threaten the goal.
-   - Record the trace table in the [planning record](#planning-record), or give it to the user when the change has none.
-   - Return the trace and ranked findings to the caller.
+   - Return the trace table and the ranked findings to the caller.
 
 #### *Check* Outside Threats
 
