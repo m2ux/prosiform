@@ -122,6 +122,19 @@ One pull request created or updated from supplied content and metadata.
 3. Re-read through [Read Pull Request State](#read-pull-request-state).
 4. Return the saved state or discrepancy.
 
+### *Align* Pull Request Base
+
+Each open delivery pull request pointed at the base its head requires.
+
+**Inputs:** Repository, current initiative pull request records, each open epic's long-lived branches and epic bases, and the project checkout.
+
+1. Take each open pull request's target from [Scope](#scope) and [Other Pull Requests](#other-pull-requests), with each long-lived branch as [Epic Bases](delivery-branches.md#epic-bases) names it.
+   - Report an open pull request for which neither field gives a target for the user's decision, and leave it unchanged.
+2. For each open pull request whose base differs from its target, apply [Publish Pull Request](#publish-pull-request) with its number and that target as the base change.
+3. For each task pull request whose saved state is not mergeable, apply [Update Task Branch](delivery-branches.md#update-task-branch) with the worktree [Task Branches](delivery-branches.md#task-branches) places under the project checkout, its task branch and its epic base.
+   - A conflict leaves the pull request open and is reported.
+4. Return the retargeted pull requests, updated task branches, conflicts and the pull requests awaiting a decision.
+
 ### *Locate* Review Pull Request
 
 The review pull request for a supplied epic base.
@@ -145,33 +158,30 @@ The check-run and status evidence for one literal head commit.
 
 Merges each open task pull request whose test plan has passed.
 
-**Inputs:** Task pull request identity, its epic base, the project checkout, the repository prerequisite and the passing test-plan evidence.
+**Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
 
 1. Apply [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close) for the repository, and confirm the task pull request's epic base. The base carries no review requirement of its own; where one applies, [Merge Delivery Pull Request](#merge-delivery-pull-request) governs.
-2. Apply [Update Epic Base](delivery-branches.md#update-epic-base) with the supplied project checkout and epic base.
-   - Fetch readiness with [Fetch Merge Readiness](#fetch-merge-readiness) for the task pull request and its epic base.
-   - Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
+2. Apply [Fetch Merge Readiness](#fetch-merge-readiness) with delivery kind task for the task pull request and its epic base as target.
+3. Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
    - Stop on a handoff for human approval.
-   - If the merge is refused:
-     - Apply [Update Task Branch](delivery-branches.md#update-task-branch).
-     - Repeat Fetch Merge Readiness for the updated task head.
-     - Retry Merge Delivery Pull Request once with that verified evidence. A conflict or repeated refusal leaves the pull request open with the blocker reported.
-3. Apply [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
+   - Return a refusal with its readiness evidence. The pull request stays open.
+4. Apply [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
    - Return that result to the caller.
 
 ### *Fetch* Merge Readiness
 
 The current pull request's readiness against its target requirements and head checks.
 
-**Inputs:** Pull request identity, its target branch, and the protection, rules, check and status output paths.
+**Inputs:** Pull request identity, delivery kind, its target branch, for an epic pull request its epic base, and the protection, rules, check and status output paths.
 
 1. Apply [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
    - Retain the literal head SHA and target branch for the evidence calls.
+   - For an epic pull request, report it as not ready when its head is not the supplied epic base, or its target is not that base's long-lived branch, as [Epic Bases](delivery-branches.md#epic-bases) names it.
 2. Apply [Read Target Requirements](delivery-branches.md#read-target-requirements) with the repository, target and protection/rules output paths.
    - Carry any unresolved requirement into the readiness result.
 3. Read the head evidence.
    - Apply [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
-   - Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A missing or pending check, blocked merge state or unmet required review leaves readiness unresolved.
+   - Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A conflict, a failed, missing or pending check, a blocked merge state or an unmet required review leaves readiness unresolved.
 4. Apply [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
    - Compare its head with the retained SHA; a changed head requires fresh evidence.
    - Return the verified head, target requirements and readiness result, including unresolved conditions.
@@ -180,15 +190,20 @@ The current pull request's readiness against its target requirements and head ch
 
 ### State
 
-A pull request is open, draft, ready for review, merged or closed without merge. A merged result identifies the verified head, target and merge commit. An epic review is draft from the first task merge until the user marks it ready.
+A pull request is open, draft, ready for review, merged or closed without merge. A merged result identifies the verified head, target and merge commit.
+
+- An epic's review pull request is published as a draft when the first task merges into its epic base, and an unmerged epic base with work merged into it has one.
+- The review stays draft, and its epic open, until the epic is complete and the user marks it ready.
 
 ### Scope
 
-A task pull request delivers one task, or a set of tasks that name each other in Joins.
+A task pull request delivers one task, or a set of tasks that name each other in Joins. It targets the epic base for the long-lived branch its work changes.
 
 ### Other Pull Requests
 
-A pull request outside epic delivery targets a long-lived branch. An open stacked pull request targets its long-lived branch once its base merges.
+- A pull request whose head is an epic base targets that base's long-lived branch.
+- A pull request outside epic delivery targets a long-lived branch. An open stacked pull request targets its long-lived branch once its base merges.
+- A merged pull request keeps the base it merged into.
 
 ### Issue Links
 
