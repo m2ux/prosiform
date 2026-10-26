@@ -19,10 +19,11 @@ The draft pull request and body that present one epic base's delivered changes f
 2. **Populate.**
    Pass the existing body when present and the actual task merges into the base to [Populate Review Body](../artifacts/pull-request-body.md#populate-review-body).
 3. **Publish.**
-   When the first task merges, a draft is reported or an unmerged base has no review:
-   - Pass the returned file to [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request), supplying its number for an existing review, and for a new one the epic's issue with the repository setting the caller confirmed. The epic stays open; the user marks the draft ready when the epic is complete.
-4. **Confirm.**
-   Apply [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for the published review.
-   - Compare its complete body with the published file.
-   - Apply [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the current epic and refreshed review and task-merge records.
-   - Return its cited-versus-actual merge findings with the review identity. The session recording each task merge owns this update.
+   For an existing review, or a base whose [State](../artifacts/pull-request.md#state) calls for one, pass the returned file to [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request).
+   - For an existing review, supply its number.
+   - For a new review, supply the epic kind, the epic base as head with the target [Other Pull Requests](../artifacts/pull-request.md#other-pull-requests) gives it, the epic's issue, the repository setting the caller confirmed and a link-snapshot destination.
+   - Return a discrepancy Publish Pull Request reports to the caller.
+   - When the base has no review and its State calls for none, return the absence result to the caller.
+4. **Record.**
+   Apply [Record Epic Delivery](../artifacts/epic-issue-body.md#record-epic-delivery) with the current epic and the task-merge records, including the review state Publish Pull Request returned.
+   - Return its updated body and [Delivery Findings](../artifacts/epic.md#delivery-findings) with the review identity to the caller.
