@@ -4,11 +4,11 @@ prosiform:
 ---
 # Bootstrap
 
-A link whose text opens with one of the [symbols](#symbols) is loaded through `pf`, *not* read as a file: fill the [load command](#load)'s parameters from that link, run it, then use the bundle as its symbol states.
+A link whose text opens with a matching [symbol](#symbols) follows the usage instructions and is *not* read as a file.
 
-## Load
+## Compile
 
-Run from this file's directory. A non-zero exit stops the run and reports `pf`'s diagnostics.
+Compile a target file.
 
 ```bash
 pf -o <scratch>/<name>.bundle.md <destination>
@@ -18,9 +18,11 @@ pf -o <scratch>/<name>.bundle.md <destination>
 - `<name>`  The destination's file name without its suffix.
 - `<scratch>`  An existing working directory outside the repository.
 
+> A non-zero exit stops the run and reports `pf`'s diagnostics.
+
 ## Symbols
 
-| Symbol | Names | Use of the bundle |
+| Symbol | Description | Usage |
 | --- | --- | --- |
-| `↳` | A Prosiform target | [Load](#load) it, then read the whole bundle and follow the instructions in its preamble. |
-| `»` | A dispatched target | [Load](#load) it, then hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A sub-agent following a dispatched bundle dispatches nothing further. |
+| `↳` | An inline target | [Compile](#compile) it, read the whole bundle and follow the instructions in its preamble. |
+| `»` | A dispatched target | [Compile](#compile) it, hand the bundle to one sub-agent, with the inputs the request names, to follow the instructions in its preamble, and continue with the result it returns. A sub-agent following a dispatched bundle dispatches nothing further. |
