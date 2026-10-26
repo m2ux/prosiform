@@ -22,49 +22,49 @@ Each theme's project board shows where its items stand. The Proposals board hold
 
 Select the mode as appropriate to fulfill the user request:
 
-- **[Propose](modes/propose-mode.md)**
+- **[» Propose](modes/propose-mode.md)**
   - Forward-looking, scoped to one problem
   - Scoping a problem nothing is planned against yet
   - Raising a proposal issue with optional board placement
-- **[Plan](modes/plan-mode.md)**
+- **[» Plan](modes/plan-mode.md)**
   - Forward-looking, scoped to one approved proposal
   - Turning an approved proposal into initiatives
   - Raising, breaking down and restructuring initiatives and epics
   - Review passes of a plan against its goal, dependencies included
   - Renumbering of epics and tasks
   - Folding review findings into issues
-- **[Align](modes/align-mode.md)**
+- **[» Align](modes/align-mode.md)**
   - Backward-looking, scoped to one epic, initiative or board
   - Checks of existing issues against their templates and the rules that bind them, with fixes
   - Acceptance criteria checked for verifiability and against the sources the initiative marks
   - Epic branch structure and task pull request bases brought to the delivery shape
-- **[Sync](modes/sync-mode.md)**
+- **[» Sync](modes/sync-mode.md)**
   - Backward-looking, scoped to one epic, initiative or board
   - Delivery recorded against the issues that planned it
   - Closure of complete task issues, epics and initiatives
   - The theme board brought current with its issues
-- **[Advance](modes/advance-mode.md)**
+- **[» Advance](modes/advance-mode.md)**
   - Forward-looking, scoped to one board
   - Placement of initiatives and epics as In Progress or as Ready
   - A parallel work map for initiatives with no priority
-- **[Deliver](modes/deliver-mode.md)**
+- **[» Deliver](modes/deliver-mode.md)**
   - Forward-looking, scoped to one board
   - Delivery of a theme board's work, each unit planned, implemented and raised as a pull request
   - Dispatch of one session per unit of work
   - Merging task pull requests through the shared delivery procedure
-- **[Understand](modes/understand-mode.md)**
+- **[» Understand](modes/understand-mode.md)**
   - Backward-looking, scoped to one pull request
   - An architecture overview of one pull request
   - Structural and functional diagrams of its changes
   - The order to read the diff in
-- **[Hoist](modes/hoist-mode.md)**
+- **[» Hoist](modes/hoist-mode.md)**
   - Forward-looking, scoped to a repository's orphan issues
   - Discovery of orphan issues
   - Placements for each in an existing or new initiative, epic or task
-- **[Standup](modes/standup-mode.md)**
+- **[» Standup](modes/standup-mode.md)**
   - Backward-looking, scoped to one board's reporting window
   - Standup summaries of a theme's board for a Slack channel
-- **[Revise](modes/revise-mode.md)**
+- **[» Revise](modes/revise-mode.md)**
   - Forward-looking, scoped to this skill's own files
   - Changes to SKILL.md, its modes, artifacts, references and scripts
 
@@ -78,6 +78,10 @@ Select the mode as appropriate to fulfill the user request:
   Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol runs artifact operations and other protocols; an artifact runs neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
 - **Execution.**
   A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is run whole. Run another mode, a protocol, or a named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
+
+## Dispatch
+
+A link whose text opens with `»` names work a sub-agent carries out. Only the session that selects a mode from the skill's mode list dispatches: it hands each mode a `»` link names to one sub-agent, with the linked document or section as its entry, passes it the inputs the request names, and continues with the result it returns. That session does not read or run the linked material itself. A run dispatched to a sub-agent dispatches nothing further: it carries out itself every mode, protocol and artifact it reaches.
 
 ## Conventions
 

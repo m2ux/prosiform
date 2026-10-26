@@ -43,6 +43,22 @@ Its publish step reads:
 
 The two documents the step links arrive in the bundle, and their headings are destinations its links point at. The deferred link drops its `¬` marker and names its target `guidelines.md`, the path from the invocation directory; that document is excluded, and the published path alone states the deferral.
 
+The procedure's opening points at the skill's dispatch convention:
+
+```markdown
+Following [dispatch convention](../SKILL.md#dispatch).
+```
+
+Only the skill's routing links carry the `»` dispatch mark, so the modes this procedure runs arrive whole, each under a heading of its own. The bundle rewrites the convention link to `#dispatch` and brings in the one section it names, beneath the skill document's group and title:
+
+```markdown
+# SKILL
+
+## Work Planner
+
+### Dispatch
+```
+
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
 ## Select a section

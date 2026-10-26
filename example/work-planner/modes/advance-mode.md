@@ -10,6 +10,8 @@ Decides which initiatives and epics on a theme board are underway and which are 
 
 The main path meets [Outcomes](#outcomes).
 
+Following [dispatch convention](../SKILL.md#dispatch).
+
 1. **Select the board.**
    Run [Select Project Board](../artifacts/board.md#select-project-board) with the requested theme or board identity.
    - Use the returned owner and board number for the sync and fetch steps.

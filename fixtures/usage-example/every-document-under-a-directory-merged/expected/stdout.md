@@ -8,6 +8,8 @@ Follow [Procedure](#procedure). The other sections are material that procedure r
 
 The main path meets [Outcomes](#outcomes).
 
+Following [dispatch convention](#dispatch).
+
 1. **Fetch.**
    Fetch every issue with [Read Repository Issues](#read-repository-issues).
 2. **List candidates.**
@@ -50,6 +52,14 @@ The main path meets [Outcomes](#outcomes).
   A standalone issue an agent-engineering issue cites is placed, or taken into the issue that already carries that work.
 - **The decision respected.**
   An orphan moves on the user's word, or on the allowance its caller supplied, and work needing a decision outside that allowance stays where it is.
+
+# SKILL
+
+## Work Planner
+
+### Dispatch
+
+A link whose text opens with `»` names work a sub-agent carries out. Only the session that selects a mode from the skill's mode list dispatches: it hands each mode a `»` link names to one sub-agent, with the linked document or section as its entry, passes it the inputs the request names, and continues with the result it returns. That session does not read or run the linked material itself. A run dispatched to a sub-agent dispatches nothing further: it carries out itself every mode, protocol and artifact it reaches.
 
 ## Overview
 

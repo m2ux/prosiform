@@ -10,6 +10,8 @@ Explains the named pull request's changes through a measured architecture overvi
 
 The main path meets [Outcomes](#outcomes).
 
+Following [dispatch convention](../SKILL.md#dispatch).
+
 1. **Select the change.**
    Require the pull request number or URL.
    - Ask and stop when none is supplied. Do not infer it from the current branch.

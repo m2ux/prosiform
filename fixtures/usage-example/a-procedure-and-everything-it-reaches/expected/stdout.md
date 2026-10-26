@@ -8,6 +8,8 @@ Follow [Procedure](#procedure). The other sections are material that procedure r
 
 The main path meets [Outcomes](#outcomes).
 
+Following [dispatch convention](#dispatch).
+
 1. **Take the proposal.**
    - When the user names a proposal, its associated issue body defines the problem scope.
    - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
@@ -103,6 +105,14 @@ The main path meets [Outcomes](#outcomes).
   The user has settled which of the initiative's epics start alongside each other, from a proposal the dependency graph makes.
 - **Review before creation.**
   Findings on that initiative are folded in before any of its issues are created.
+
+# SKILL
+
+## Work Planner
+
+### Dispatch
+
+A link whose text opens with `»` names work a sub-agent carries out. Only the session that selects a mode from the skill's mode list dispatches: it hands each mode a `»` link names to one sub-agent, with the linked document or section as its entry, passes it the inputs the request names, and continues with the result it returns. That session does not read or run the linked material itself. A run dispatched to a sub-agent dispatches nothing further: it carries out itself every mode, protocol and artifact it reaches.
 
 ## Overview
 
@@ -3689,6 +3699,8 @@ Scopes one problem: the friction, the evidence, and the boundary, and states the
 
 The main path meets [Outcomes](#outcomes-1).
 
+Following [dispatch convention](#dispatch).
+
 1. **Understand the problem.**
    Ask the user until the friction and the boundary are clear.
    - State the goal back as clauses meeting [Goal](#goal).
@@ -3740,6 +3752,8 @@ Records delivery on an initiative, its epics, and their task issues. Each task t
 ## Procedure
 
 The main path meets [Outcomes](#outcomes-2).
+
+Following [dispatch convention](#dispatch).
 
 1. **Select.**
    Select an initiative with its open epics, or the epics the user names.
@@ -3884,6 +3898,8 @@ Explains the named pull request's changes through a measured architecture overvi
 ## Procedure
 
 The main path meets [Outcomes](#outcomes-3).
+
+Following [dispatch convention](#dispatch).
 
 1. **Select the change.**
    Require the pull request number or URL.
