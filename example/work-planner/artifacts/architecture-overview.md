@@ -112,6 +112,10 @@ sequenceDiagram
 - **R1.** [{{Title}}]({{URL}}) — {{what the reader finds there}}.
 ````
 
+### Ownership
+
+One overview explains one pull request, and a reviewer meets it on that pull request. The run that integrates an epic base owns that epic's overview. Any other run writes an overview only for a task or epic entering review that no integration explained. An overview already written is kept: the pull request it explains is the one already reviewed. An initiative has no overview of its own.
+
 ### Diagrams
 
 Every overview carries one structural diagram and one functional diagram. A further diagram is carried when the change warrants it, and displaces prose rather than adding to it.
