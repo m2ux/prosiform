@@ -246,7 +246,6 @@
     "errorCode": {
       "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
       "enum": [
-        "E_AMBIGUOUS_FILE_GROUP",
         "E_AMBIGUOUS_SOURCE_HEADING",
         "E_HEADING_DEPTH_OVERFLOW",
         "E_INVALID_ENCODING",
@@ -275,6 +274,7 @@
     "warningCode": {
       "description": "The warning catalogue: the stable warning codes the design declares, each prefixed W_. A warning accompanies a successful run rather than deciding a failing one, so a fixture declaring one states what a run writes to standard error while still succeeding. A diagnostic whose severity is warning draws its code from here.",
       "enum": [
+        "W_COINCIDENT_HEADING",
         "W_RESOURCE_PORTABILITY"
       ]
     }

@@ -1,4 +1,4 @@
-description = "Two documents whose paths differ only by Markdown extension are two file groups. Each is headed by its own title, so the headings coincide and take distinct destinations as any repeated heading does."
+description = "Two documents whose paths differ only by Markdown extension are two file groups. Each is headed by its own title, so the headings coincide, take distinct destinations as any repeated heading does, and warn that a reader tells them apart only by where each stands."
 
 clauses = [
   "File-scoped hierarchy, two documents whose paths differ only by Markdown extension",
@@ -13,4 +13,8 @@ arguments = ["guide.md", "guide.markdown"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_COINCIDENT_HEADING"
+message_contains = ["Guide"]

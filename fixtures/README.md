@@ -231,7 +231,6 @@ An error decides a failing run.
 
 | Code | Declared by |
 | --- | --- |
-| `E_AMBIGUOUS_FILE_GROUP` | File-scoped hierarchy — two documents whose paths differ only by Markdown extension. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
@@ -259,6 +258,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 
 | Code | Declared by |
 | --- | --- |
+| `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.

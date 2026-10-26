@@ -32,16 +32,17 @@ from prosiform.access import (
     opened as open_source,
 )
 from prosiform.bundle import (
-    AMBIGUOUS_FILE_GROUP,
+    CODES as BUNDLE_CODES,
+)
+from prosiform.bundle import (
     HEADING_DEPTH_OVERFLOW,
     MAX_LEVEL,
     Group,
     Overflow,
     assemble,
+    document_title,
+    file_heading,
     group,
-)
-from prosiform.bundle import (
-    CODES as BUNDLE_CODES,
 )
 from prosiform.candidate import (
     CODES as CANDIDATE_CODES,
@@ -73,6 +74,7 @@ from prosiform.diagnostics import (
     TEXT,
     WARNING,
     Diagnostic,
+    Location,
     RelatedLocation,
     Reporter,
 )
@@ -163,6 +165,7 @@ UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
+COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 
 CODES = tuple(
     sorted(
@@ -180,6 +183,7 @@ CODES = tuple(
             UNEXPECTED_INTERNAL_ERROR,
             UNSUPPORTED_ENTRY_SUFFIX,
             RESOURCE_PORTABILITY,
+            COINCIDENT_HEADING,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *LIMITS_CODES,
@@ -1264,34 +1268,136 @@ def group_depths(
     return depths
 
 
-def unambiguous(
-    selected: dict[str, list[Reference]], read: Mapping[str, Source]
-) -> None:
-    """Hold each member heading of a merged group to naming one source.
+@dataclass(frozen=True)
+class Named:
+    """One generated heading, and where the source it names is located."""
 
-    A member is named by the shortest run of its path that distinguishes
-    it from the group's other members, so two members whose paths differ
-    only by Markdown extension, or only by capitalization, take one
-    name, which a reader cannot tell apart.
+    text: str
+    location: Location
+
+
+def file_named(
+    path: str, source: Source, tokens: Sequence[Token], wrapped: bool
+) -> Named | None:
+    """One document's file heading, located at the title it carries or at the document.
+
+    A titled document is headed by its title, so the heading is located
+    on the line that title stands on. The parent opens the bundle on
+    that title rather than on a heading the bundle writes, and is headed
+    by it all the same. An untitled document is headed by its path,
+    which names the document as a whole, so the heading is located at
+    the document's first position; a parent the bundle opens without a
+    file heading and without a single title is headed by nothing.
     """
-    members: dict[str, list[str]] = {}
-    for path in selected:
-        name = read[path].conversion.group
-        if name is not None:
-            members.setdefault(name, []).append(path)
-    for name, paths in members.items():
-        names = member_headings(paths, name)
-        seen: dict[str, str] = {}
+    title = document_title(tokens)
+    if title is None and not wrapped:
+        return None
+    at = None if title is None or title.map is None else title.map[0] + 1
+    line = source.line(at)
+    return Named(
+        file_heading(path, tokens, source.root),
+        Location(path, 1 if line is None else line, 1),
+    )
+
+
+def coincidence(
+    kind: str, named: Sequence[Named], remedy: str, within: str = ""
+) -> Diagnostic:
+    """One warning naming a set of generated headings that read alike.
+
+    The first heading is the primary location and every other is a
+    related one, each carrying the text it reads, so a caller finds each
+    source the coinciding headings stand for. A set held within one
+    merged group names that group.
+    """
+    first, *others = named
+    return Diagnostic(
+        WARNING,
+        f"{len(named)} {kind}s{within} read {first.text!r}, which a reader tells apart "
+        f"only by where each stands",
+        code=COINCIDENT_HEADING,
+        remedy=remedy,
+        location=first.location,
+        related=tuple(
+            RelatedLocation(
+                one.location.file,
+                one.location.line,
+                one.location.column,
+                f"{kind} {one.text!r}",
+            )
+            for one in others
+        ),
+    )
+
+
+def coincident(
+    groups: Sequence[Group],
+    selected: Mapping[str, Sequence[Reference]],
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+) -> list[Diagnostic]:
+    """One warning for each set of generated headings that coincide.
+
+    The headings that name a source are its file headings, the parent's
+    own title among them where the bundle opens on it, and, within one
+    merged group, its member headings. Two of either
+    coincide where their texts are one text but for capitalization,
+    because a reader reads them as one name and the renderer slugs them
+    alike, so the bundle tells them apart by an ordinal alone. A member
+    is named by the shortest run of its path that distinguishes it from
+    the group's other members, so members whose paths differ only by
+    Markdown extension or capitalization take one name. The bundle is
+    published either way; the warning is what sends a reader to check
+    it. A heading an author wrote is the author's to repeat and warns of
+    nothing.
+
+    The warnings follow the bundle order of the first heading each set
+    holds, and each set's headings follow it too.
+    """
+    files: dict[str, tuple[int, list[Named]]] = {}
+    found: list[tuple[int, Diagnostic]] = []
+    for at, one in enumerate(groups):
+        named = one.record.path
+        if one.record.merged is None:
+            heading = file_named(named, read[named], parsed[named], one.wrapped)
+            if heading is not None:
+                files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
+            continue
+        paths = [path for path in selected if read[path].conversion.group == named]
+        names = member_headings(paths, named)
+        members: dict[str, list[Named]] = {}
         for path in paths:
-            title = names[path].casefold()
-            if title in seen:
-                raise input_failure(
-                    f"{path!r} and {seen[title]!r} share member heading {title!r}",
-                    code=AMBIGUOUS_FILE_GROUP,
-                    remedy="use distinguishable member paths",
-                    reference=path,
-                )
-            seen[title] = path
+            declared = read[path].conversion.group_location
+            assert declared is not None
+            members.setdefault(names[path].casefold(), []).append(
+                Named(names[path], declared)
+            )
+        found.extend(
+            (
+                at,
+                coincidence(
+                    "member heading",
+                    same,
+                    "rename a member so its path distinguishes it in the group",
+                    f" of group {named!r}",
+                ),
+            )
+            for same in members.values()
+            if len(same) > 1
+        )
+    found.extend(
+        (
+            at,
+            coincidence(
+                "file heading",
+                same,
+                "retitle or rename a document so its file heading reads apart",
+            ),
+        )
+        for at, same in files.values()
+        if len(same) > 1
+    )
+    return [diagnostic for _at, diagnostic in sorted(found, key=lambda one: one[0])]
 
 
 def parent_document(entries: Collection[Reference]) -> str | None:
@@ -1452,11 +1558,12 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-) -> str:
-    """The complete bundle candidate.
+) -> tuple[str, list[Diagnostic]]:
+    """The complete bundle candidate, and the warnings its headings raise.
 
     The candidate is one group per source, and it opens on the first
-    group's first part.
+    group's first part. The warnings name the generated headings that
+    coincide, which accompany the bundle rather than refuse it.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -1476,7 +1583,6 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    unambiguous(selected, read)
     selected = placement(read, parsed, selected, referrer, entries)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
@@ -1496,7 +1602,7 @@ def compose(
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled
+    return bundled, coincident(groups, selected, read, parsed)
 
 
 def resource(destination: str, embedded: bool) -> bool:
@@ -1655,7 +1761,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         destination = Path(output).resolve()
         if destination in sources(root, read):
             raise usage_failure(f"the output path {output!r} names an input source")
-    bundled = compose(read, parsed, defined, referring, requested, found, limits)
+    bundled, coinciding = compose(
+        read, parsed, defined, referring, requested, found, limits
+    )
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
@@ -1665,6 +1773,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    for warning in coinciding:
+        reporter.emit(warning)
     if resourced(bundled, limits.of(NESTING)):
         reporter.emit(
             Diagnostic(
