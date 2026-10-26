@@ -2,4 +2,4 @@
 
 ## Run
 
-How the run goes.
+1. Run the draft.

@@ -1,0 +1,28 @@
+description = "A dispatch naming a section of the entry's own document is a hop like any other, and warns as a dispatch of its own document: the section's closure is what its sub-agent compiles, so a chain through it reaching a fourth dispatch warns, while the chain from the same section's own dispatch in the bundle is three hops and raises nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatching its own document",
+  "Link classification and resource handling — Dispatch depth",
+  "Link classification and resource handling — Fragment-only links",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_DISPATCH_SELF"
+reference = "#run"
+resolved = "guide.md#run"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_DISPATCH_DEPTH"
+reference = "#run"
+chain = ["guide.md", "guide.md#run", "plan.md", "review.md", "record.md"]

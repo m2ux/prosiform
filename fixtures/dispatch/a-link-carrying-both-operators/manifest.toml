@@ -17,6 +17,6 @@ stdout = "expected/stdout.md"
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["one compilation"]
-reference = "¬ » the shared rules"
+reference = "¬ ⇉ the shared rules"
 source = "guide.md:3"
 chain = ["guide.md", "rules.md"]

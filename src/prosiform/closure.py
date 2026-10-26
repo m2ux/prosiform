@@ -23,7 +23,7 @@ from prosiform.profile import is_markdown
 from prosiform.source import ENCODING
 
 DEFERRAL_MARK = "¬"
-DISPATCH_MARK = "»"
+DISPATCH_MARK = "⇉"
 
 BLANKS = " \t"
 
@@ -296,9 +296,8 @@ def unmarked(text: str) -> str:
     returned as written. A dispatch's mark states who compiles the
     material, which its destination does not, so it stays.
 
-    The caller decides whether a link's destination states a deferral:
-    a reference outside the root and one naming a resource carry their
-    own text, mark included, because nothing rebased them.
+    The caller applies it where the bundle rebased the link's
+    destination, which is where the destination states the deferral.
     """
     at = 0
     while at < len(text) and text[at] in BLANKS:
@@ -421,11 +420,11 @@ def withholding_target(
     exist, and the destination the bundle publishes names it from the
     root.
 
-    An operator on anything else changes nothing that was going to
-    happen to it. A reference leaving the root, one naming no Markdown
-    document and one whose form the grammar does not admit are text
-    whether their author marked them or not, so each is answered here
-    as no withheld target.
+    An operator on anything else states a compilation no run performs:
+    a reference leaving the root, one naming no Markdown document and
+    one whose form the grammar does not admit withhold nothing, so each
+    is answered here as no withheld target and the run refuses the link
+    that carries it.
 
     This and `bundled` are the two halves of one rule, read from one
     resolution: a reference under the root naming a Markdown document is

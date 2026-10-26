@@ -1,3 +1,3 @@
 # Rules
 
-Every rule the sub-agent compiles.
+1. Apply every rule the sub-agent compiles.
