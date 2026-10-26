@@ -1,7 +1,5 @@
 # Integration Review
 
-Follow [Verdict](#verdict). The other sections are material that procedure references.
-
 ## Verdict
 
 {{Verdict, decisive evidence and the revision combination it applies to.}}

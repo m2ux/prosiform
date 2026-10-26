@@ -3,7 +3,6 @@ description = "A heading whose own text spells an ordinal keeps it, and a headin
 clauses = [
   "Source-heading resolution, gitHub-compatible slugs and duplicate tracking",
   "Bundle destinations — Ordinal assignment",
-  "Entry line",
 ]
 
 [invocation]
@@ -13,15 +12,4 @@ arguments = ["article.md", "run.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Article"
-resolved = "article"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Run"
-resolved = "run-4"
+diagnostics = []

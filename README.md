@@ -1,7 +1,7 @@
 # 🧩 Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/fcf09141d218af58826c5c1878cbdcce00001e1f/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v1](https://img.shields.io/badge/profile-skill--markdown--v1-blue.svg)](https://github.com/m2ux/prosiform/blob/dc2e172f07df30e67fea26b9d55f44e0e0f69c63/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
@@ -31,12 +31,13 @@ Leaving retrieval to the agent costs:
 Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
-pf -o skill-bundle.md example/my-skill/procedure.md example/my-skill/rules/common.md
+cd example/my-skill
+pf -o skill-bundle.md procedure.md rules/common.md
 ```
 
 The Common and Agents files each declare group `rules` and depth `1` in their [conversion metadata](invocation.md#conversion-metadata).
 
-![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Agents and Common beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
+![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Common and Agents beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
 ## Installation
 

@@ -1,21 +1,23 @@
-"""The bundle: one file group for each contributing source, under one entry line.
+"""The bundle: one file group for each contributing source.
 
 A group is a source document unless its conversion metadata names the
 merged group that `grouping` assembles. A file group is headed by one
-generated H1 whose visible
-text is the document's normalized root-relative path with the Markdown
-extension removed, in title case: each word of the path is capitalized
-and every separator the path carries is kept, so the heading names the
-document the filesystem holds and carries the one convention every
-generated heading takes. The path is escaped as literal heading text, so
-punctuation in a filename names a file rather than opening a link, an
-image, emphasis, code, raw HTML, an entity or a strikethrough, or closing
-the heading that carries it. Two
-documents sharing a basename in different directories carry their
-directories in their headings and stay distinguishable; two whose paths
-differ only by Markdown extension, or only by the capitalization of
-their letters, produce one heading text twice, which the command
-refuses as an ambiguous file group.
+generated H1. Its visible text is the document's title, where the
+document carries one: its first heading, where that heading is its only
+H1 and sits at the document level. A document carrying no title is
+headed by its normalized path relative to the invocation working
+directory with the Markdown extension removed, in title case: each word
+of the path is capitalized and every separator the path carries is
+kept, so the heading names the document the filesystem holds and
+carries the one convention every generated heading takes. Either text
+is escaped as literal heading text, so punctuation in a title or a
+filename names itself rather than opening a link, an image, emphasis,
+code, raw HTML, an entity or a strikethrough, or closing the heading
+that carries it. Two documents whose file headings coincide are two
+headings of one text, which take distinct destinations as any repeated
+heading does: the renderer's slug, the later one carrying its ordinal.
+A reader tells the two apart only by where each stands, so the run
+warns of them.
 
 A group is assembled from the maximal regions the run selected, in
 source order, each carried as the bytes its source wrote. A whole
@@ -45,9 +47,8 @@ occupies, so an indented thematic break keeps its indent, a delimiter
 keeps its trailing spaces and a code example keeps its bytes. A
 terminator belongs to the line it terminates and is content as the rest
 of the line is, so a region ends with the newline its source spelled on
-the line that ends it, and the parts the bundle generates — the entry
-line and every generated heading — end with the newline the bundle
-generates.
+the line that ends it, and every heading the bundle generates ends with
+the newline the bundle generates.
 
 Each resolved reference-style use in selected content is published
 inline, and every original definition node is removed, the definitions
@@ -56,13 +57,9 @@ where it sits, with the blank line the container separated it by, and
 a definition at the document level lies between two regions and is
 dropped by the slice that takes them.
 
-The file heading absorbs the source's first heading when that heading is
-the document's only H1 and its slug equals the slug of the final segment
-of the path, because the file heading already names it. Both sides are
-slugged, so the capitalization and spacing a filesystem carries decide
-nothing and a document at `My Note.md` titled `My Note` is absorbed as
-one at `my-note.md` is. A group whose title is
-absorbed keeps its source heading levels; every other group moves each
+The file heading absorbs the document's title, because it carries that
+title's text. A group whose title is absorbed keeps its source heading
+levels; every other group moves each
 emitted heading down one level, the file heading taking the level that
 makes room. A heading a retained container carries is shifted where it
 sits, so the container keeps the structure it had. A shift that would
@@ -142,10 +139,9 @@ from prosiform.source import (
 MAX_LEVEL = 6
 SHIFT = 1
 
-AMBIGUOUS_FILE_GROUP = "E_AMBIGUOUS_FILE_GROUP"
 HEADING_DEPTH_OVERFLOW = "E_HEADING_DEPTH_OVERFLOW"
 
-CODES = (AMBIGUOUS_FILE_GROUP, HEADING_DEPTH_OVERFLOW)
+CODES = (HEADING_DEPTH_OVERFLOW,)
 
 TERMINATOR = "\n"
 SEPARATOR = TERMINATOR
@@ -157,13 +153,6 @@ SPACE = " "
 HEADING_OPEN = "heading_open"
 
 ANCHOR = "#"
-
-ENTRY_OPENING = "Follow "
-ENTRY_ONE = ". The other sections are material that procedure references."
-ENTRY_MANY = ". The other sections are material those procedures reference."
-ENTRY_CLOSINGS = (ENTRY_ONE, ENTRY_MANY)
-ENTRY_JOIN = ", "
-ENTRY_LAST = " and "
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -234,14 +223,15 @@ class Group:
     no fragment of it. A file heading that absorbed a source heading
     answers to that heading's fragment as well, which is held apart
     because the heading itself is not emitted.
+
+    The order is the path of the first document the group carries in
+    placement order, which is where the bundle places the group.
     """
 
     parts: tuple[str, ...]
-    entries: tuple[int, ...]
     record: Record
     order: str
     wrapped: bool = True
-    entry_at: int | None = None
 
     @property
     def text(self) -> str:
@@ -271,7 +261,10 @@ def title_cased(text: str) -> str:
 
 
 def heading_text(path: str) -> str:
-    """One source's file heading: its root-relative path in title case, the suffix gone.
+    """One untitled source's file heading: its path in title case, the suffix gone.
+
+    The path is the one the run read the source by, relative to the
+    invocation working directory.
 
     The suffix is classified case-insensitively, as the profile
     classifies one, and the path the heading spells is the path the
@@ -285,11 +278,6 @@ def heading_text(path: str) -> str:
     return title_cased(path)
 
 
-def final_segment(title: str) -> str:
-    """The last segment of a file heading's path, which a title can be absorbed by."""
-    return PurePosixPath(title).name
-
-
 def escaped(text: str) -> str:
     """One string as literal Markdown text, read as the characters it carries.
 
@@ -301,50 +289,6 @@ def escaped(text: str) -> str:
     renderer takes that sequence off the heading rather than showing it.
     """
     return OPENER.sub(r"\\\1", text)
-
-
-def is_entry_line(content: str) -> bool:
-    """Whether one paragraph is the instruction to follow the named entries.
-
-    A declared dispatch text follows the entry sentence in the same
-    paragraph, so the sentence is read from where the paragraph opens
-    with it to a closing that ends the paragraph or precedes the space
-    the text after it is joined by.
-    """
-    if not content.startswith(ENTRY_OPENING):
-        return False
-    return any(
-        content.startswith(closing, at)
-        and (len(content) == at + len(closing) or content[at + len(closing)] == SPACE)
-        for closing in ENTRY_CLOSINGS
-        for at in range(len(ENTRY_OPENING), len(content))
-    )
-
-
-def entry_line(named: Sequence[tuple[str, str]], dispatch: str | None = None) -> str:
-    """The paragraph that tells the agent to follow each named entry.
-
-    One entry is that procedure. Several entries are those procedures.
-    The other sections are material the named procedures reference.
-
-    A declared dispatch text follows the entry sentence in the same
-    paragraph, so a reader meets the rule that says what a dispatched
-    link means and the entries it governs as one instruction. Absent,
-    the paragraph is the entry sentence alone.
-    """
-    links = [f"[{escaped(text)}]({ANCHOR}{target})" for text, target in named]
-    closing = ENTRY_ONE if len(named) == 1 else ENTRY_MANY
-    sentence = f"{ENTRY_OPENING}{listed(links)}{closing}"
-    if dispatch is None:
-        return sentence
-    return f"{sentence} {escaped(dispatch)}"
-
-
-def listed(items: Sequence[str]) -> str:
-    """Several items as one phrase, the last joined by a word rather than a comma."""
-    if len(items) == 1:
-        return items[0]
-    return f"{ENTRY_JOIN.join(items[:-1])}{ENTRY_LAST}{items[-1]}"
 
 
 def is_atx(token: Token) -> bool:
@@ -362,9 +306,8 @@ def emitted_visible(path: str, inline: Token, root: str = "") -> str:
 
     A link the bundle took no destination for shows the text its author
     wrote. That covers a markup or resource reference under the root, a
-    reference leaving the root, a dispatch, and a deferral whose target
-    lies outside the root, because only a withheld link under the root
-    has its destination rebased to state the deferral.
+    reference leaving the root and a dispatch, because only a deferred
+    link has its destination rebased to state the deferral.
     """
     children = inline.children or []
     carried: list[str] = []
@@ -459,10 +402,10 @@ def target(
     emitting it recorded the target it answers to.
 
     A withheld link under the allowed source root takes its target's
-    path from that root, so the run that compiles it later needs
-    nothing but the root to follow it. It is never rewritten to a
-    bundle destination, even where another reference carried its target
-    into the bundle: what one author withheld cannot be changed by
+    path from the invocation working directory, so the run that
+    compiles it later, from that directory, follows it as written. It is
+    never rewritten to a bundle destination, even where another reference
+    carried its target into the bundle: what one author withheld cannot be changed by
     another author's reference.
 
     A link resolving outside the allowed source root, and one naming no
@@ -486,24 +429,49 @@ def carries_title(tokens: Sequence[Token]) -> bool:
     )
 
 
-def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
-    """The source heading the file heading absorbs, where the source carries one.
+def document_title(tokens: Sequence[Token]) -> Token | None:
+    """The document's title: its first heading, where that is its only H1.
 
-    A title the path already names is absorbed: the document's first
-    heading, where that heading is its only H1, sits at the document
-    level, and slugs to what the final segment of the file heading's
-    path slugs to. The segment is slugged as the title is, so a
-    filesystem's capitalization and spacing decide nothing.
+    The title sits at the document level, so an H1 a container carries
+    titles nothing, and a document carrying a second H1 or opening on a
+    deeper heading has no single heading that names it.
     """
     carried = list(headings(tokens))
     if not carried:
         return None
-    opening, inline = carried[0]
+    opening, _inline = carried[0]
     if level(opening) != 1 or sum(1 for one, _ in carried if level(one) == 1) != 1:
         return None
     if not any(token is opening for token in regions(tokens)):
         return None
-    if slug(visible(inline)) != slug(final_segment(title)):
+    return opening
+
+
+def file_heading(path: str, tokens: Sequence[Token], root: str = "") -> str:
+    """The text one document's file group is headed by.
+
+    It is the document's title where the document carries one, as the
+    group shows it on one line, and the path the run read the document
+    by where it carries none.
+    """
+    titled = document_title(tokens)
+    if titled is None:
+        return heading_text(path)
+    return single_line(shown_text(path, tokens, root)[id(titled)])
+
+
+def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
+    """The document's title, where it slugs to what a name slugs to.
+
+    Both sides are slugged, so the capitalization and spacing a
+    filesystem carries decide nothing and a document at `My Note.md`
+    titled `My Note` is named by `my-note` as one at `my-note.md` is.
+    """
+    opening = document_title(tokens)
+    if opening is None:
+        return None
+    inline = next(one for heading, one in headings(tokens) if heading is opening)
+    if slug(visible(inline)) != slug(name):
         return None
     return opening
 
@@ -701,26 +669,24 @@ def group(
     selected: Selection | None = None,
     assigned: dict[tuple[str, str | None], str] | None = None,
     root: str = "",
-    display: str | None = None,
     situate: bool = False,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
     The parent keeps its H1 and the content above its first H2 at the
-    levels the author wrote, and its whole-document entry is that first
-    H2.
+    levels the author wrote, and a whole-document reference to it
+    resolves to that first H2.
 
-    A selection of None is the whole document. The file heading is the
-    entry to it, and the parent's first H2 is the entry to the parent.
-    A selection of sections emits the regions it
-    names and nothing else, and each heading an entry reference resolved
-    to is the entry to the destination that heading takes.
+    A selection of None is the whole document. A selection of sections
+    emits the regions it names and nothing else.
 
-    A title is absorbed only where the group emits it, because the
-    absorption is the file heading standing in for a heading the group
-    carries. A group that emits none therefore shifts, and a reference
-    to an absorbed title resolves to the file heading's own destination.
-    The file heading names that title either way, so a selection
+    The file heading carries the document's title where the document
+    has one, and the path the run read it by where it has none. A title
+    is absorbed only where the group emits it, because the absorption is
+    the file heading standing in for a heading the group carries. A
+    group that emits none therefore shifts, and a reference to an
+    absorbed title resolves to the file heading's own destination. The
+    file heading names that title either way, so a selection
     beneath an unemitted one is placed by the file heading and the
     title is no structural ancestor: a second heading carrying the
     document's own name is one a reader cannot tell from the first.
@@ -748,10 +714,10 @@ def group(
     included, so the bundle carries the uses and none of the
     declarations behind them.
     """
-    situate = (
-        situate and carries_title(tokens) and (selected is None or selected.document)
-    )
-    title = heading_text(path if display is None else display)
+    situate = situate and carries_title(tokens) and selected is None
+    text = shown_text(path, tokens, root)
+    titled = document_title(tokens)
+    title = file_heading(path, tokens, root)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])
@@ -761,10 +727,6 @@ def group(
         if selected is None
         else {id(token) for token in selected.regions}
     )
-    naming: set[int] = (
-        set() if selected is None else {id(token) for token in selected.named}
-    )
-    titled = absorbed(tokens, title)
     absorbing = (
         None
         if situate
@@ -774,11 +736,9 @@ def group(
     )
     by = 0 if situate or absorbing is not None else SHIFT
     emitted = [] if situate else [f"{ATX} {escaped(title)}"]
-    text = shown_text(path, tokens, root)
     named = source_fragments(tokens)
     emitting_headings: list[Emitted] = []
     recorded: list[Part] = []
-    entries = [] if situate else ([0] if selected is None or selected.document else [])
     if not situate:
         resolving: list[Target] = [(path, None)]
         if absorbing is not None:
@@ -816,16 +776,12 @@ def group(
         if id(token) not in emitting:
             continue
         if token is absorbing:
-            if id(token) in naming and 0 not in entries:
-                entries.append(0)
             continue
         carried = carried_headings(tokens, token)
         for opening in carried:
             depth = level(opening) + by
             if depth > MAX_LEVEL:
                 raise Overflow(text[id(opening)], depth, path)
-        if token.type == HEADING_OPEN and id(token) in naming:
-            entries.append(len(emitting_headings))
         emitting_headings.extend(
             Carried(
                 emitted_text(one, text[id(one)], by),
@@ -852,7 +808,7 @@ def group(
             )
         )
         emitted.append(region(written, tokens, token, by, removed))
-    if situate and (selected is None or selected.document):
+    if situate:
         roots = {
             token.map[0] + 1
             for token in regions(tokens)
@@ -887,118 +843,37 @@ def group(
             emitting_headings[at] = replace(
                 heading, answers=(*heading.answers, (path, None))
             )
-            if at in entries:
-                entries.remove(at)
-            entries.insert(0, at)
     return Group(
         tuple(emitted),
-        tuple(entries),
         Record(path, None, tuple(emitting_headings), tuple(recorded)),
         path,
         wrapped=not situate,
-        entry_at=preamble_end(recorded, emitting_headings) if situate else None,
     )
 
 
-def preamble_end(recorded: Sequence[Part], headings: Sequence[Emitted]) -> int:
-    """The part index of the parent's first H2, where the entry paragraph sits.
-
-    The parts before it are the title and the preamble. With no H2 the
-    entry follows the whole of that document.
-    """
-    line = next(
-        (
-            origin.line
-            for heading in headings
-            if isinstance(heading, Carried)
-            for origin in heading.origins
-            if origin.level == 2 and origin.line is not None
-        ),
-        None,
-    )
-    if line is None:
-        return len(recorded)
-    for index, part in enumerate(recorded):
-        start = (
-            part.lines[0] + 1
-            if isinstance(part, Range)
-            else part.origins[0].line
-            if isinstance(part, Ancestor)
-            else None
-        )
-        if start == line:
-            return index
-    return len(recorded)
-
-
-def sequence(line: str, groups: Sequence[Group]) -> list[str]:
-    """The emitted parts, the entry paragraph beneath the parent's preamble.
-
-    One blank line separates the preamble from the paragraph, which is
-    the blank line `joined` writes between two parts. A run whose parent
-    carries no situated preamble keeps the paragraph at the head.
-    """
-    placed = False
-    found: list[str] = []
-    for one in groups:
-        if one.entry_at is None or placed:
-            found.extend(one.parts)
-            continue
-        found.extend(one.parts[: one.entry_at])
-        found.append(line)
-        found.extend(one.parts[one.entry_at :])
-        placed = True
-    if not placed:
-        found.insert(0, line)
-    return found
-
-
-def entry_slot(groups: Sequence[Group]) -> int:
-    """The region index of the entry paragraph in the assembled document."""
-    at = 0
-    for one in groups:
-        if one.entry_at is None:
-            at += (1 if one.wrapped else 0) + len(one.record.parts)
-            continue
-        return at + (1 if one.wrapped else 0) + one.entry_at
-    return 0
-
-
-def assemble(line: str, groups: Sequence[Group]) -> str:
-    """The document: the parent's title and preamble, then the entry paragraph.
+def assemble(groups: Sequence[Group]) -> str:
+    """The document: every group's parts in bundle order.
 
     One blank line between two maximal emitted regions is the separation
     the contract requires, and it is written here and nowhere else, so
-    the geometry `openings` reads back is the geometry this writes. Each
-    part ends with the newline that ends its own last line, so the
-    document closes with the one its final part carries.
+    the geometry `openings` reads back is the geometry this writes. The
+    document opens on the first part of the first group, and each part
+    ends with the newline that ends its own last line, so the document
+    closes with the one its final part carries.
     """
-    return joined(sequence(line, groups))
+    return joined([part for one in groups for part in one.parts])
 
 
-def openings(groups: Sequence[Group], entry_lines: int) -> list[int]:
+def openings(groups: Sequence[Group]) -> list[int]:
     """The line of the document each emitted part opens on, in order.
 
-    A part opens one blank line below the last line of the part above
-    it. The entry paragraph occupies `entry_lines` where the parent
-    places it, and the part after it opens one blank line below that
-    paragraph. A heading the entry names can carry a line break, so the
-    count is read from the candidate rather than assumed.
+    The first part opens the document, and every later part opens one
+    blank line below the last line of the part above it.
     """
     at = 0
     found: list[int] = []
-    placed = False
     for one in groups:
-        cut = one.entry_at
-        for index, part in enumerate(one.parts):
-            if cut is not None and not placed and index == cut:
-                at += entry_lines + 1
-                placed = True
+        for part in one.parts:
             found.append(at)
             at += len(lines(part)) + 1
-        if cut is not None and not placed and cut >= len(one.parts):
-            at += entry_lines + 1
-            placed = True
-    if not placed:
-        return [line + entry_lines + 1 for line in found]
     return found

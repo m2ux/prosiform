@@ -13,15 +13,4 @@ arguments = ["parts/one.md", "parts/two.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Context"
-resolved = "context"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Two"
-resolved = "two-1"
+diagnostics = []

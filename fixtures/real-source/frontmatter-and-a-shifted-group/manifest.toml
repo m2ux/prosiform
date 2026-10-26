@@ -1,4 +1,4 @@
-description = "A workspace skill routing document loses its frontmatter and, its title being one the path does not name, moves every heading down one level, carrying its blockquote, its column-padded tables and the checklist inside its code example unchanged."
+description = "A workspace skill routing document loses its frontmatter and opens the bundle on its own title, carrying its blockquote, its column-padded tables and the checklist inside its code example unchanged."
 
 clauses = [
   "Input and output contract — Whole documents",
@@ -12,7 +12,6 @@ clauses = [
   "Markdown and source-heading profile — HTML",
   "Link classification and resource handling — Examples",
   "Parser and source-preserving edits — Untouched content",
-  "Entry line",
 ]
 
 [invocation]
@@ -22,9 +21,4 @@ arguments = ["gitnexus-impact-analysis/SKILL.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "When to Use"
-resolved = "when-to-use"
+diagnostics = []

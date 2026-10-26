@@ -1,25 +1,33 @@
-# The Standing Order
+# Entry
+
+Follow [the standing order](#guide).
+
+# Guide
+
+## The Standing Order
 
 An opening paragraph, above the first eligible heading.
 
-Follow [Run](#run). The other sections are material that procedure references.
-
-## Run
+### Run
 
 Carry the procedure out.
 
-### Preparation
+#### Preparation
 
 What to have ready.
 
-#### The Checklist
+##### The Checklist
 
 Each item, in order.
 
-##### A Single Item
+###### A Single Item
 
 The item itself.
 
-## Stop
+### Stop
 
 Stop it.
+
+## Afterword
+
+What follows the order.

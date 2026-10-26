@@ -1,4 +1,4 @@
-description = "Every heading of a group whose title the path does not name moves down exactly one level, H1 through H5, keeping the visible text it carries and the depth it sits at relative to the headings around it."
+description = "Every heading of a group whose document carries no single title moves down exactly one level beneath the file heading its path names, H1 through H5, keeping the visible text it carries and the depth it sits at relative to the headings around it."
 
 clauses = [
   "File-scoped hierarchy — Group shift",
@@ -7,14 +7,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["entry.md"]
 
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Run"
-resolved = "run"
+diagnostics = []

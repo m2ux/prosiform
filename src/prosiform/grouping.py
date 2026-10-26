@@ -13,11 +13,17 @@ content moves to sit beneath it, so the level a heading is emitted at is
 the level its author wrote under a shift the arrangement supplies rather
 than a single shift for the whole group.
 
+The members are read in placement order: the order in which the bundle
+first reaches each of them by a reference, reading the entry references
+and then each placed document's selected content. The overview
+subsections, the merged sections and the variants inside each follow
+that order, after what the parent contributes.
+
 A merged heading keeps its source text. Where that text occurs once in
 the group it is emitted alone, and where several documents contribute it
 the text is emitted once and each document's content hangs beneath it
 under a variant heading naming the document. The name a variant heading
-carries is the shortest run of that document's root-relative path which
+carries is the shortest run of that document's path which
 distinguishes it from the others, in title case, measured after the
 leading segments they all share are dropped, because those are the
 context the group heading already states.
@@ -30,7 +36,7 @@ both its overview subsection and every variant, following the same
 qualification and group-word removal in both places.
 
 A member's subsection is named by the shortest run of that document's
-root-relative path which distinguishes it from the group's other
+path which distinguishes it from the group's other
 members, in title case, measured after the leading segments they all
 share are dropped. A trailing word the group's heading states is
 omitted where qualification still distinguishes the displayed names. It
@@ -57,9 +63,9 @@ beneath its heading.
 
 The parent is the first entry document. Where that document is a member
 and carries a title, the title and the content above the grouping depth
-open the group at the levels the author wrote, and the whole-document
-entry resolves to the parent's first H2 at the destination the bundle
-assigned that heading. The sections the parent carries at the grouping
+open the group at the levels the author wrote, and a whole-document
+reference to the parent resolves to its first H2 at the destination the
+bundle assigned that heading. The sections the parent carries at the grouping
 depth follow in the parent's order, with the parent's own contribution
 first where several members share one section. A section only another
 member contributes follows those, and the other members' subsections
@@ -91,7 +97,6 @@ from prosiform.bundle import (
     carried_headings,
     emitted_text,
     escaped,
-    preamble_end,
     region,
     required,
     rewrite,
@@ -207,7 +212,6 @@ class Member:
     chains: dict[int, tuple[Token, ...]]
     emitting: set[int]
     ancestors: set[int]
-    targets: tuple[Target, ...]
     title: Token | None
     absorbing: Token | None
     items: list[Item] = field(default_factory=list)
@@ -273,16 +277,6 @@ def prepared(
         if assigned is None
         else rewrite(physical, tokens, chosen, assigned, path, defined, root)
     )
-    named_targets = (
-        ()
-        if selected is None
-        else tuple((path, named[id(token)]) for token in selected.named)
-    )
-    targets: tuple[Target, ...] = (
-        ((path, None), *named_targets)
-        if selected is None or selected.document
-        else named_targets
-    )
     member = Member(
         path,
         tokens,
@@ -293,7 +287,6 @@ def prepared(
         ancestry(tokens),
         emitting,
         needed,
-        targets,
         titled_token,
         absorbing,
     )
@@ -469,7 +462,7 @@ def arranged(
 
 
 def direct(into: Assembly, member: Member) -> None:
-    """Point the parent's whole-document entry at its first H2.
+    """Point a whole-document reference to the parent at its first H2.
 
     The heading is the one the bundle emitted for that source heading,
     so the destination is wherever the merge placed it.
@@ -506,17 +499,17 @@ def merged(
     named: str,
     depth: int,
     members: Sequence[Member],
-    displays: Mapping[str, str] | None = None,
     parent: str | None = None,
     headed: bool = True,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
-    The members are in root-relative path order, which is the order
-    every arrangement below reads them in, so one selection always
-    bundles to the same bytes. The parent opens the group on its own
-    title where it carries one, and its sections precede every section
-    the merge adds.
+    The members are in placement order, the order a reference first
+    names each of them in, which is the order every arrangement below
+    reads them in, so one selection always bundles to the same bytes.
+    The group stands where its first member is placed. The parent opens
+    the group on its own title where it carries one, and its sections
+    precede every section the merge adds.
     """
     into = Assembly()
     parent_member = next((one for one in members if one.path == parent), None)
@@ -529,9 +522,7 @@ def merged(
         into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
         into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
-    displays = {m.path: m.path for m in members} if displays is None else displays
-    names = member_headings([displays[m.path] for m in members], named)
-    headings = {m.path: names[displays[m.path]] for m in members}
+    headings = member_headings([m.path for m in members], named)
     order = arranged(depth, parent_member, pooled)
     if not kept:
         overview(into, headings, depth, members, bool(pooled), parent)
@@ -543,27 +534,11 @@ def merged(
         direct(into, parent_member)
     for member in members:
         contributed(into, member)
-    reached: dict[Target, int] = {}
-    for at, one in enumerate(into.headings):
-        for target in one.answers:
-            reached.setdefault(target, at)
-    entries = tuple(
-        reached[target]
-        for member in members
-        for target in member.targets
-        if target in reached
-    )
     return Group(
         tuple(into.emitted),
-        entries,
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
-        min(member.path for member in members),
+        members[0].path,
         wrapped=headed and not kept,
-        entry_at=(
-            preamble_end(into.parts, into.headings)
-            if kept and parent_member is not None
-            else None
-        ),
     )
 
 
@@ -602,8 +577,7 @@ def contributed(into: "Assembly", member: Member) -> None:
     heading where it emits none carrying it. That destination is
     therefore one the bundle has, whatever the member contributes, so a
     reference the closure resolved into a merged group is rewritten
-    rather than left for the entry line to read as one it never
-    assigned.
+    to a destination the bundle assigned.
     """
     answered = {target for one in into.headings for target in one.answers}
     whole: Target = (member.path, None)
@@ -699,9 +673,9 @@ def contributions(
 ) -> list[tuple[str, list[tuple[Member, Token]]]]:
     """Each distinct heading text at the grouping depth, with what contributes it.
 
-    The order is first appearance across the members in path order, so
-    a name enters the group where the first document carrying it puts
-    it.
+    The order is first appearance across the members in placement
+    order, so a name enters the group where the first document carrying
+    it puts it.
     """
     found: dict[str, list[tuple[Member, Token]]] = {}
     for member in members:

@@ -8,7 +8,6 @@ clauses = [
   "Frontmatter policy, do not strip YAML examples in code blocks or non-leading thematic breaks",
   "Bundle destinations — Internal links",
   "Parser and source-preserving edits — Untouched content",
-  "Entry line",
 ]
 
 [invocation]
@@ -18,9 +17,4 @@ arguments = ["artifacts/architecture-overview.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Operations"
-resolved = "operations"
+diagnostics = []

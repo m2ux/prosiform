@@ -58,9 +58,9 @@ dispatch operator is the one thing in the bundle saying the material
 belongs to another agent, so its label reaches the bundle as the author
 wrote it. A deferral states when, which the destination already says, so
 its mark and the blanks following it are dropped from the label it opens.
-A link the bundle took no destination for carries its own text whichever
-operator it opens with: a reference leaving the root, one naming no
-Markdown document and one naming a resource are text as they were.
+A link the bundle took no destination for opens with no operator, because
+the run refuses an operator naming anything but a Markdown document or
+section under the root, and it is published as its author wrote it.
 """
 
 import re
@@ -537,13 +537,13 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
     for that link and the destination states the deferral, so the mark
     and the blanks following it go. The edit reaches the prefix of the
     label, which no nested use opens on, so it still overlaps nothing.
-    A dispatch keeps its mark, and so does a reference the bundle took
-    no destination for, because nothing about those states who compiles
-    the material except the mark itself.
+    A dispatch keeps its mark, because nothing else about it states who
+    compiles the material.
 
     The destination arrives whole. Where a link points is the bundle's
     question, and this writes the answer, so a fragment of the bundle
-    and a path from the allowed source root are published the same way.
+    and a path from the invocation working directory are published the
+    same way.
     """
     found: list[tuple[int, int, str]] = []
     if one.definition is not None:

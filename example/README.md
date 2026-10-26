@@ -1,55 +1,51 @@
 # Worked examples
 
-These examples use [work-tracker](work-tracker/SKILL.md), a skill with a routing document, a planning procedure, and linked artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
+These examples use [work-planner](work-planner/SKILL.md), a skill with a routing document, ten modes, six protocols and thirty artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
 
-Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. An entry's `prosiform.root`, when present, is a directory path relative to that file.
+Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. Each link resolves from the directory of the file that writes it, the path a reader follows. A file's `prosiform.root`, when present, is a directory path relative to that file, and bounds what its links reach.
 
 ## Bundle a procedure and its dependencies
 
 ### Input
 
-The [planning procedure](work-tracker/modes/plan-mode.md) links two prerequisites and defers the routing document:
+The [planning procedure](work-planner/modes/plan-mode.md) links the documents its publish step reaches:
 
 ```markdown
-## Prerequisites
-
-Read these files first.
-
-- [Epic Issue Body](artifacts/epic-issue-body.md)
-- [Epic](artifacts/epic.md)
-
-The caller reached this mode through the routing document [¬ SKILL.md](SKILL.md), which this procedure defers to a run of its own.
+6. **Publish.**
+   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [interview](../rules.md), the proposal the recommended answer.
+   - Take the positive integer the user confirms for each epic.
+   - Apply [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
 ### Command
 
 ```bash
-cd example/work-tracker
+cd example/work-planner
 pf modes/plan-mode.md
 ```
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens with:
+The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens on the mode's own title and preamble, which tell the agent what to follow:
 
 ```markdown
-Follow [Plan](#plan). The other sections are material that procedure references.
+# Plan Mode
+
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
+
+Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 ```
 
-Its planning procedure contains:
+Its publish step reads:
 
 ```markdown
-## Prerequisites
-
-Read these files first.
-
-- [Epic Issue Body](#epic-issue-body)
-- [Epic](#epic)
-
-The caller reached this mode through the routing document [SKILL.md](SKILL.md), which this procedure defers to a run of its own.
+6. **Publish.**
+   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
+   - Take the positive integer the user confirms for each epic.
+   - Apply [Ensure Repository Labels](#ensure-repository-labels) with the required definitions, the priority label each confirmed number names among them, before saving the issues.
 ```
 
-The two prerequisites appear in the bundle, and their links point to bundle headings. The deferred link drops its `¬` marker and uses the root-relative path `SKILL.md`; that document is excluded, and the published path alone states the deferral.
+The three documents the step links arrive in the bundle, and their headings are destinations its links point at. A link to a whole document points at the heading the bundle gives it, here `Rules`.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
@@ -57,96 +53,101 @@ The two prerequisites appear in the bundle, and their links point to bundle head
 
 ### Input
 
-The [epic issue body](work-tracker/artifacts/epic-issue-body.md) contains this operation beneath its `Operations` heading:
+The [epic issue body](work-planner/artifacts/epic-issue-body.md) contains this operation beneath its `Operations` heading:
 
 ```markdown
 ### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches and output body file.
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
+1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](artifacts/epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
 ### Command
 
 ```bash
-cd example/work-tracker
+cd example/work-planner
 pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 ```
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins:
+The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
 
 ```markdown
-Follow [Record Epic Delivery](#record-epic-delivery). The other sections are material that procedure references.
-
 # Artifacts
 
-## Operations
+## Epic Issue Body
 
-### *Record* Epic Delivery
+### Operations
+```
+
+The selected operation follows beneath it:
+
+```markdown
+#### *Record* Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches and output body file.
+**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link` and the output file to `--fix`.
+1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
    - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
 
-The selection retains its structural ancestor, places the selected heading beneath its declared group, and rewrites links to bundle fragments. The rest of the bundle contains the sections those links reach.
+The selection retains its structural ancestors and rewrites the links the operation carries to bundle fragments. The rest of the bundle contains the sections those links reach.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml).
 
 ## Declare groups per file
 
-### Above-depth prose
+### One block per document
 
 ```bash
-cd example/work-tracker
-pf modes/plan-mode.md
+cd example/work-planner
+pf modes/hoist-mode.md
 ```
 
-The artifact files declare group `artifacts`, and the mode file declares `modes`, each at depth `2` in its frontmatter. Each linked file supplies its own settings.
+Every artifact file declares group `artifacts` at depth `1`. A mode file declares its root and no group.
 
-For example, both artifact files begin with this declaration:
+For example, the [epic](work-planner/artifacts/epic.md) begins with this declaration:
 
 ```yaml
 ---
 prosiform:
-  group: artifacts
-  group-depth: 2
+  root: ".."
+  group: "artifacts"
+  group-depth: 1
 ---
 ```
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) includes an `Overview` because each artifact's introductory prose needs a section:
+The [expected bundle](../fixtures/usage-example/every-document-under-a-directory-merged/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
 
 ```markdown
 # Artifacts
 
-## Overview
+## Issue
 
-### Epic Issue Body
+### Operations
 
-Populates one epic body. The body states one slice of the design and lists the tasks that deliver it.
+#### *Read* Tracker Issue
+```
 
-The delivery lines this body records are defined in [Epic](#epic).
+No two artifacts share a title, so each heading keeps its source text, and a link to a whole artifact resolves to the H2 its title heads.
 
-### Epic
+The [requirement characteristics](work-planner/references/requirement-characteristics.md) document declares group `references` at depth `1` in the same way, so the bundle opens that group with its name in title case and carries the member's H1 beneath it:
 
-An epic's task delivery findings, integration readiness and completion state.
+```markdown
+# References
 
-## Operations
-
-### Epic Issue Body
+## Requirement Characteristics
 ```
 
 ### Named members beneath the group
@@ -163,26 +164,26 @@ The grouped portion is:
 ```markdown
 # Rules
 
-## Agents
-
-Select rules for your harness:
-
-- If you are Codex, compile [Codex](rules/codex.md).
-- If you are Claude, compile [Claude](rules/claude.md).
-
 ## Common
 
 - Check every link.
 - Use clear headings.
 
 Follow [Agents](#agents).
+
+## Agents
+
+Select rules for your harness:
+
+- If you are Codex, compile [Codex](rules/codex.md).
+- If you are Claude, compile [Claude](rules/claude.md).
 ```
 
-`Overview` is absent here. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
+`Common` leads because the command line names it, and `Agents` follows at the link `Common` carries. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
 
 ## More fixture examples
 
-Every case below uses the same [source tree](work-tracker/SKILL.md). Each manifest records the arguments, exit status, and diagnostics.
+Every case below uses the same [source tree](work-planner/SKILL.md). Each manifest records the arguments, exit status, and diagnostics.
 
 | Example | Invocation fixture | Expected output |
 | --- | --- | --- |

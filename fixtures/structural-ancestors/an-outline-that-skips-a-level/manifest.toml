@@ -1,4 +1,4 @@
-description = "A selection whose source outline skips a level keeps the gap: the structural ancestors above it are emitted at the levels the source gave them, shifted by the group's shift, and the level the source never wrote is not filled in."
+description = "A selection whose source outline skips a level keeps the gap: the structural ancestor above it is emitted at the level the source gave it, shifted by the group's shift, the title the file heading carries is no ancestor, and the level the source never wrote is not filled in."
 
 clauses = [
   "Heading-only structural ancestors — Depth",
@@ -13,9 +13,4 @@ arguments = ["notes.md#detail"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Detail"
-resolved = "detail"
+diagnostics = []

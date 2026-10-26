@@ -7,7 +7,6 @@ clauses = [
   "Link classification and resource handling — Examples",
   "Bundle destinations — Internal links",
   "Adversarial acceptance fixtures — Identity",
-  "Entry line",
 ]
 
 [invocation]
@@ -17,9 +16,4 @@ arguments = ["artifacts/repository-labels.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Operations"
-resolved = "operations"
+diagnostics = []

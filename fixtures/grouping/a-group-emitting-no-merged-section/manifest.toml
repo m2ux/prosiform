@@ -4,7 +4,6 @@ clauses = [
   "Grouping — The overview section",
   "Grouping — A heading for every member",
   "Grouping — Document content above the grouping depth",
-  "Entry line — Link text",
 ]
 
 [invocation]
@@ -14,15 +13,4 @@ arguments = ["rules/agents.md", "rules/common.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Rules"
-resolved = "rules"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Common"
-resolved = "common"
+diagnostics = []

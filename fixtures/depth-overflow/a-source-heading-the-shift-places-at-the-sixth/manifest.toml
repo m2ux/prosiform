@@ -1,4 +1,4 @@
-description = "A source heading the group's shift places at the sixth level publishes, so the depth the contract refuses is the seventh and the sixth is reached rather than approached; the tree is the overflowing one less its last heading."
+description = "A source heading the group's shift places at the sixth level publishes, so the depth the contract refuses is the seventh and the sixth is reached rather than approached; a second H1 leaves the document without a title, so its group shifts, and the tree is the overflowing one less the heading the shift carries past the sixth."
 
 clauses = [
   "File-scoped hierarchy — Depth overflow",
@@ -13,9 +13,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Guide"
-resolved = "guide"
+diagnostics = []

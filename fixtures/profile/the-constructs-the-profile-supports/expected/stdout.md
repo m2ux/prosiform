@@ -4,8 +4,6 @@ A paragraph carrying a `code span`, an inline link to [the steps](#steps), a
 reference link to [the appendix](#appendix), an image ![a diagram](diagram.png)
 and autolinks <https://example.com/profile> and <someone@example.com>.
 
-Follow [Steps](#steps). The other sections are material that procedure references.
-
 ## Steps
 
 - a bullet

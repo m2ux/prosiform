@@ -68,20 +68,7 @@ SOURCE = (
     '---\nprosiform: {root: "."}\n---\n'
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
-BUNDLE = (
-    "# Guide\n"
-    "\n"
-    "The installed command bundles this document.\n"
-    "\n"
-    "Follow [Guide](#guide). "
-    "The other sections are material that procedure references.\n"
-)
-REPORT = (
-    "W_ENTRY_DESTINATION: the entry reference 'Guide' resolves to the "
-    "destination 'guide', which the bundle's entry line links it to\n"
-    "  reference: Guide\n"
-    "  resolved: guide\n"
-)
+BUNDLE = "# Guide\n\nThe installed command bundles this document.\n"
 
 
 class Failed(Exception):
@@ -194,39 +181,31 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     """A reference bundled from a source root the repository does not hold.
 
     Standard output carries the bundle and nothing else, and standard
-    error carries the destination the entry reference resolved to, so
-    the installed command's stream split is the one the contract names.
+    error carries nothing, so the installed command's stream split is
+    the one the contract names.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    what = f"{COMMAND} {entry}"
     run = invoke(environment, elsewhere, "-o", "-", entry)
-    succeeded(run, what)
-    if run.stdout != BUNDLE:
+    produced = reported(run, f"{COMMAND} {entry}")
+    if produced != BUNDLE:
         raise Failed(
             f"the bundle differs from the one the source names\n"
-            f"expected {BUNDLE!r}\nproduced {run.stdout!r}"
-        )
-    if run.stderr != REPORT:
-        raise Failed(
-            f"{what} reports another entry destination\n"
-            f"expected {REPORT!r}\nproduced {run.stderr!r}"
+            f"expected {BUNDLE!r}\nproduced {produced!r}"
         )
 
 
 def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
-    """Derived files, combined selections and validation through the installed CLI."""
+    """Derived files, combined selections and validation through the installed CLI.
+
+    A derived name is the entry's path from the working directory, its
+    separators written as underscores, so an entry above that directory
+    keeps its parent segments as filename text.
+    """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    fragment = (
-        "Follow [Guide](#guide). "
-        "The other sections are material that procedure references.\n"
-        "\n"
-        "# Guide\n"
-        "\n"
-        "The installed command bundles this document.\n"
-    )
+    derived = str(Path(entry).with_suffix("")).replace(os.sep, "_")
     for reference, name, expected in (
-        (entry, "guide.bundle.md", BUNDLE),
-        (entry + "#guide", "guide__guide.bundle.md", fragment),
+        (entry, f"{derived}.bundle.md", BUNDLE),
+        (entry + "#guide", f"{derived}__guide.bundle.md", BUNDLE),
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
@@ -236,18 +215,18 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
         destination.unlink()
     run = invoke(environment, elsewhere, "-c", entry)
     succeeded(run, "check mode")
-    if (elsewhere / "guide.bundle.md").exists() or run.stdout:
+    if (elsewhere / f"{derived}.bundle.md").exists() or run.stdout:
         raise Failed("check mode published a bundle")
     run = invoke(environment, elsewhere, entry, entry + "#guide")
     if run.returncode != 2 or run.stdout:
         raise Failed("combined selections need an explicit destination")
-    destination = elsewhere / "guide.bundle.md"
+    destination = elsewhere / f"{derived}.bundle.md"
     destination.mkdir()
     run = invoke(environment, elsewhere, entry)
     if run.returncode != 3 or run.stdout or not destination.is_dir():
         raise Failed("derived output does not preserve an unwritable destination")
     destination.rmdir()
-    if list(elsewhere.glob(".guide.bundle.md.*")):
+    if list(elsewhere.glob(f".{derived}.bundle.md.*")):
         raise Failed("failed publication leaves temporary output")
 
 

@@ -3,7 +3,6 @@ description = "A heading carrying an entity takes the fragment the character tha
 clauses = [
   "Source-heading resolution, derive visible heading text from parser events",
   "Bundle destinations — Ordinal assignment",
-  "Entry line",
 ]
 
 [invocation]
@@ -13,15 +12,4 @@ arguments = ["article.md", "café.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Article"
-resolved = "article"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Café"
-resolved = "café-1"
+diagnostics = []

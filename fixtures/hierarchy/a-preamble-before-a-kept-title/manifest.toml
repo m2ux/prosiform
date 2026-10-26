@@ -1,11 +1,10 @@
-description = "A document's preamble sits after its file heading and before its first retained source heading, which here is a title the path does not carry and the group shifts."
+description = "A document's preamble above its title opens the bundle, before that title and the sections beneath it."
 
 clauses = [
   "File-scoped hierarchy — Preamble",
   "File-scoped hierarchy — Source order",
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Group shift",
-  "Entry line",
 ]
 
 [invocation]
@@ -15,9 +14,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Run"
-resolved = "run"
+diagnostics = []

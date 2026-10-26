@@ -14,8 +14,8 @@ blanked out before the document is scanned and a link beside it is resolved.
 Four classes of reference, each resolved by what it names:
 
 - a fragment alone resolves against the document's own headings;
-- a repository-relative path resolves against the working tree, and its
-  fragment against the headings of the Markdown file it names;
+- a relative path resolves from the directory of the document that writes
+  it, and its fragment against the headings of the Markdown file it names;
 - a GitHub blob or tree URL into this repository resolves against the git
   ref it names, so a reference to the engineering branch is checked without
   the network;
@@ -48,8 +48,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from documents import ROOT, documents, strip_code_fences, strip_literal
-
-from prosiform.source import content
 
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
@@ -187,13 +185,11 @@ def git_path_exists(ref: str, path: str) -> bool:
     return result.returncode == 0
 
 
-def resolve_local(document: Path, target: str, base: Path | None = None) -> str | None:
+def resolve_local(document: Path, target: str) -> str | None:
     """One local reference, resolved as the build resolves it.
 
-    A link carrying a parent segment is the path a reader follows from the
-    file that writes it, so it resolves from that file's directory. Every
-    other link resolves from the declaring root, which is the file's own
-    directory where the file declares none.
+    A link is the path a reader follows from the file that writes it, so it
+    resolves from that file's directory.
     """
     path_part, _, fragment = target.partition("#")
     if not path_part:
@@ -201,12 +197,7 @@ def resolve_local(document: Path, target: str, base: Path | None = None) -> str 
             return f"no heading in {document.name} generates #{fragment}"
         return None
 
-    qualified = ".." in path_part.split("/")
-    if base is None or qualified:
-        origin = document.parent
-    else:
-        origin = base
-    resolved = (origin / path_part).resolve()
+    resolved = (document.parent / path_part).resolve()
     if not resolved.exists():
         return f"{path_part} does not exist"
     if fragment and resolved.suffix in (".md", ".markdown"):
@@ -405,8 +396,6 @@ def check(document: Path, online: bool) -> tuple[list[str], list[str]]:
     failures: list[str] = []
     unanswered: list[str] = []
     text = document.read_text()
-    declaration = content(text).conversion.root
-    base = document.parent / declaration if declaration is not None else None
     for target in references(text):
         reason: Outcome
         if is_repository_tree_url(target):
@@ -422,7 +411,7 @@ def check(document: Path, online: bool) -> tuple[list[str], list[str]]:
             failures.append(f"{target} — reference carries an unsupported scheme")
             continue
         else:
-            reason = resolve_local(document, target, base)
+            reason = resolve_local(document, target)
             kind = "local"
         if isinstance(reason, Unreachable):
             unanswered.append(f"{target} — {reason.reason}")

@@ -4,7 +4,6 @@ clauses = [
   "Usage examples",
   "CLI contract — -f DOC, the referring document a fragment-only reference resolves against",
   "Input and output contract — Sections",
-  "Entry line",
 ]
 
 [invocation]
@@ -14,9 +13,4 @@ arguments = ["-f", "artifacts/epic-issue-body.md", "#record-epic-delivery"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Record Epic Delivery"
-resolved = "record-epic-delivery"
+diagnostics = []

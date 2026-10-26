@@ -43,12 +43,12 @@ DESIGN = """# A design
 
 Prose above the first section.
 
-## Entry line
+## File heading
 
-The bundle opens with a preamble of its own.
+Each group opens on a heading of its own.
 
 - **Link text:** The visible text of the heading the destination names.
-- **Order:** Several entries are named in bundle order.
+- **Order:** Groups are emitted in bundle order.
 
 ## Block boundaries
 
@@ -152,9 +152,8 @@ def corpus(tmp_path: Path) -> Path:
     directory = tmp_path / "fixtures"
     fixture(
         directory,
-        "an-entry-line-naming-one-entry",
-        ["Entry line — Link text", "Block boundaries, an unclosed fence"],
-        diagnostics=[{"severity": "warning", "code": "W_ENTRY_DESTINATION"}],
+        "a-file-heading-naming-one-group",
+        ["File heading — Link text", "Block boundaries, an unclosed fence"],
     )
     fixture(
         directory,
@@ -180,9 +179,9 @@ def names(design: str) -> list[str]:
 
 def test_a_clause_is_a_heading_or_an_enumerated_rule_under_one() -> None:
     assert names(DESIGN) == [
-        "Entry line",
-        "Entry line — Link text",
-        "Entry line — Order",
+        "File heading",
+        "File heading — Link text",
+        "File heading — Order",
         "Block boundaries",
         "Frontmatter policy",
         "Frontmatter policy — step 1",
@@ -202,8 +201,8 @@ def test_a_clause_a_fixture_names_carries_that_fixture(corpus: Path) -> None:
         (clause.name, where)
         for clause, where in report(DESIGN, corpus, REPORTED).mapping
     )
-    entry = "family/an-entry-line-naming-one-entry"
-    assert mapped["Entry line — Link text"] == (entry,)
+    entry = "family/a-file-heading-naming-one-group"
+    assert mapped["File heading — Link text"] == (entry,)
     assert mapped["Resource limits — -F"] == ("family/a-limit-crossed",)
 
 
@@ -214,22 +213,22 @@ def test_a_clause_the_case_follows_carries_the_fixture_naming_it(
         (clause.name, where)
         for clause, where in report(DESIGN, corpus, REPORTED).mapping
     )
-    assert mapped["Block boundaries"] == ("family/an-entry-line-naming-one-entry",)
+    assert mapped["Block boundaries"] == ("family/a-file-heading-naming-one-group",)
 
 
 def test_a_clause_no_fixture_names_is_uncovered(corpus: Path) -> None:
     uncovered = [clause.name for clause in report(DESIGN, corpus, REPORTED).uncovered]
     assert "Resource limits — -L" in uncovered
-    assert "Entry line — Order" in uncovered
-    assert "Entry line — Link text" not in uncovered
+    assert "File heading — Order" in uncovered
+    assert "File heading — Link text" not in uncovered
 
 
 def test_a_declaration_naming_no_clause_fails_the_report(tmp_path: Path) -> None:
     directory = tmp_path / "fixtures"
-    fixture(directory, "a-fixture-naming-nothing", ["Entry line — Invented"])
+    fixture(directory, "a-fixture-naming-nothing", ["File heading — Invented"])
     found = report(DESIGN, directory, REPORTED)
     assert found.unnamed == (
-        ("Entry line — Invented", ("family/a-fixture-naming-nothing",)),
+        ("File heading — Invented", ("family/a-fixture-naming-nothing",)),
     )
     assert found.failures
 

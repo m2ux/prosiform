@@ -1,4 +1,4 @@
-description = "A reference naming a source heading no file heading absorbed resolves to that heading's own destination, so absorption changes the destination of the title it absorbed and of nothing else."
+description = "A reference naming a source heading the file heading did not absorb resolves to that heading's own destination, beside a reference to the absorbed title that resolves to the file heading's, so absorption decides the destination of the title it absorbed and of nothing else."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",
@@ -13,9 +13,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Guide"
-resolved = "guide"
+diagnostics = []

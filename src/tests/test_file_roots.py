@@ -8,7 +8,6 @@ from test_cli import invoke, written
 
 from prosiform import cli
 from prosiform.access import read_source
-from prosiform.bundle import AMBIGUOUS_FILE_GROUP
 
 
 def rooted(root: str, text: str) -> str:
@@ -18,21 +17,24 @@ def rooted(root: str, text: str) -> str:
 def test_entries_and_linked_files_default_to_invocation_directory(
     tmp_path: Path,
 ) -> None:
-    written(tmp_path, "entry/a.md", "# A\n\n[B](linked/b.md)\n")
-    written(tmp_path, "linked/b.md", "# B\n\n[C](c.md)\n")
-    written(tmp_path, "c.md", "# C\n\nShared cwd.\n")
+    written(tmp_path, "entry/a.md", "# A\n\n[B](../linked/b.md)\n")
+    written(tmp_path, "linked/b.md", "# B\n\n[C](../c.md)\n")
+    written(tmp_path, "c.md", "# C\n\nShared cwd.\n\n[Above](../c.md)\n")
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Shared cwd." in run.stdout
+    assert "[Above](../c.md)" in run.stdout
 
 
 def test_library_root_outside_source_and_fragment_self_reference(
     tmp_path: Path,
 ) -> None:
     written(
-        tmp_path, "entries/a.md", rooted("../library", "# A\n\n[Self](#a) [B](b.md)\n")
+        tmp_path,
+        "entries/a.md",
+        rooted("../library", "# A\n\n[Self](#a) [B](../library/b.md)\n"),
     )
-    written(tmp_path, "library/b.md", rooted("../other", "# B\n\n[C](c.md)\n"))
+    written(tmp_path, "library/b.md", rooted("../other", "# B\n\n[C](../other/c.md)\n"))
     written(tmp_path, "other/c.md", "# C\n\nSeparate library.\n")
     run = invoke("entries/a.md", cwd=tmp_path)
     assert run.status == 0
@@ -56,35 +58,36 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     forward = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     reverse = invoke("two/b.md", "one/a.md", cwd=tmp_path)
     assert forward.status == reverse.status == 0
-    # The first entry document leads, so the two orders differ in which
-    # document opens the bundle; every other arrangement follows the
-    # sources and the two agree below the leader.
+    # The entry documents lead in the order they are named, and each
+    # target follows in the order the bundle first links to it.
     assert forward.stdout.index("# A\n") < forward.stdout.index("# B\n")
     assert reverse.stdout.index("# B\n") < reverse.stdout.index("# A\n")
-    assert "First target." in forward.stdout and "Second target." in forward.stdout
-    assert (
-        forward.stdout[forward.stdout.index("# One/X") :]
-        == (reverse.stdout[reverse.stdout.index("# One/X") :])
+    assert forward.stdout.index("First target.") < forward.stdout.index(
+        "Second target."
     )
+    assert reverse.stdout.index("Second target.") < reverse.stdout.index(
+        "First target."
+    )
+    assert "[Target](#x)" in forward.stdout and "[Target](#x-1)" in forward.stdout
 
 
-def test_equal_displayed_files_under_distinct_roots_are_ambiguous(
+def test_files_under_distinct_roots_are_headed_by_working_directory_paths(
     tmp_path: Path,
 ) -> None:
     for name in ("one", "two"):
-        written(tmp_path, f"{name}/same.md", rooted(".", "# Same\n"))
-    run = invoke("-d", "json", "one/same.md", "two/same.md", cwd=tmp_path)
-    assert run.status == 1
-    assert run.diagnostics()[0]["code"] == AMBIGUOUS_FILE_GROUP
+        written(tmp_path, f"{name}/same.md", rooted(".", "Body.\n"))
+    run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
+    assert run.status == 0
+    assert run.stdout == "# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
 
 
 def test_shared_target_cycle_retains_its_own_root(tmp_path: Path) -> None:
-    written(tmp_path, "one/a.md", rooted("../shared", "# A\n\n[C](c.md)\n"))
-    written(tmp_path, "two/b.md", rooted("../shared", "# B\n\n[C](c.md)\n"))
+    written(tmp_path, "one/a.md", rooted("../shared", "# A\n\n[C](../shared/c.md)\n"))
+    written(tmp_path, "two/b.md", rooted("../shared", "# B\n\n[C](../shared/c.md)\n"))
     written(
         tmp_path,
         "shared/c.md",
-        rooted("..", "# C\n\n[A](one/a.md) [B](two/b.md)\n\nOnce.\n"),
+        rooted("..", "# C\n\n[A](../one/a.md) [B](../two/b.md)\n\nOnce.\n"),
     )
     run = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     assert run.status == 0
@@ -95,7 +98,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(
         tmp_path,
         "entry/a.md",
-        rooted("../library", "# A\n\n[¬Later](b%20%25%23%3F.md)\n"),
+        rooted("../library", "# A\n\n[¬ Later](../library/b%20%25%23%3F.md)\n"),
     )
     written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
     run = invoke("entry/a.md", cwd=tmp_path)
@@ -145,6 +148,19 @@ def test_outside_root_link_is_an_unopened_citation(tmp_path: Path) -> None:
     assert "[Outside](../missing.md)" in run.stdout
 
 
+def test_a_link_beside_its_file_outside_the_root_is_an_unopened_citation(
+    tmp_path: Path,
+) -> None:
+    written(tmp_path, "a.md", rooted("library", "# A\n\n[Beside](b.md)\n"))
+    written(tmp_path, "b.md", "# B\n\nBeside the entry.\n")
+    written(tmp_path, "library/b.md", "# B\n\nInside the root.\n")
+    run = invoke("a.md", cwd=tmp_path)
+    assert run.status == 0
+    assert "[Beside](b.md)" in run.stdout
+    assert "Beside the entry." not in run.stdout
+    assert "Inside the root." not in run.stdout
+
+
 def test_root_replacement_prevents_publication(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -189,7 +205,9 @@ def test_root_option_is_invalid_usage(tmp_path: Path) -> None:
     assert run.status == 2
 
 
-def test_equal_member_names_across_roots_are_ambiguous(tmp_path: Path) -> None:
+def test_members_under_distinct_roots_are_named_by_their_paths(
+    tmp_path: Path,
+) -> None:
     for folder in ("one", "two"):
         written(
             tmp_path,
@@ -197,9 +215,9 @@ def test_equal_member_names_across_roots_are_ambiguous(tmp_path: Path) -> None:
             "---\nprosiform: {root: ., group: rules, group-depth: 2}\n---\n"
             "# Same\n\n## Run\n\nContent.\n",
         )
-    run = invoke("-d", "json", "one/same.md", "two/same.md", cwd=tmp_path)
-    assert run.status == 1
-    assert run.diagnostics()[0]["code"] == AMBIGUOUS_FILE_GROUP
+    run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
+    assert run.status == 0
+    assert "### One Same\n" in run.stdout and "### Two Same\n" in run.stdout
 
 
 @pytest.mark.parametrize("linked", [False, True])

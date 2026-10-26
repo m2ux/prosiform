@@ -1,17 +1,20 @@
-"""Normalize references under a source-owned dependency base.
+"""Normalize each reference from the file that writes it, within a source-owned root.
 
 URI components split before decoding. Local path segments decode once.
 Authored links that escape their source root remain citations; positional
 references permit parent bootstrap. Canonical source identities are relative
 to the invocation working directory, independent of the discovering parent.
 
-Two operators open a link's text, and each withholds the compilation the
-other withholds: one states when the material is compiled, the other who
-compiles it. Only the dispatch states what its destination does not: a
-withheld link's destination is the target's path, which no compiled link
-carries, so the deferral is stated there and its mark is authoring
-syntax. A dispatch has no such destination to tell a reader who compiles
-the material, so its mark is content and the bundle publishes it."""
+Three operators open a link's text, each a mark followed by a space, and
+one link states one of them. Two withhold the same compilation: one states
+when the material is compiled, the other who compiles it. Only the
+dispatch states what its destination does not: a withheld link's
+destination is the target's path, which no compiled link carries, so the
+deferral is stated there and its mark is authoring syntax. A dispatch has
+no such destination to tell a reader who compiles the material, so its
+mark is content and the bundle publishes it. The third, the run-set mark,
+withholds nothing: its target is compiled like any link's, and the mark
+is content stating how the calls the target holds are run."""
 
 import posixpath
 import re
@@ -23,8 +26,10 @@ from prosiform.profile import is_markdown
 from prosiform.source import ENCODING
 
 DEFERRAL_MARK = "¬"
-DISPATCH_MARK = "»"
+DISPATCH_MARK = "⇉"
+RUN_SET_MARK = "⫽"
 
+SPACE = " "
 BLANKS = " \t"
 
 FRAGMENT = "#"
@@ -47,7 +52,7 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 PATH_PART = "path segment"
 FRAGMENT_PART = "fragment"
 
-OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK)
+OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, RUN_SET_MARK)
 
 
 class Unresolvable(Exception):
@@ -73,8 +78,9 @@ class Reference:
 
     An external reference carries a scheme or an authority, names no
     local document, and holds the text it was authored as. Every other
-    reference holds the root-relative path it normalized to and the
-    section it names, which is absent for a whole-document reference.
+    reference holds the working-directory-relative path it normalized
+    to and the section it names, which is absent for a whole-document
+    reference.
 
     A reference a source carries also holds the location it is written
     at, which a diagnostic about it names, because the document that
@@ -225,29 +231,36 @@ def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -
 def operators(opening: str) -> tuple[str, ...]:
     """Each operator one link's text opens with, in the order it is written.
 
-    An operator opens the text, so text one sits inside names a document
-    the way any prose does. The blanks between two operators are the
-    spacing an operator is written with, so text opening with one and
+    An operator is its mark followed by a space, and it opens the text,
+    so text a mark sits inside, or opens with no space after it, names a
+    document the way any prose does. The blanks between two operators are
+    the spacing an operator is written with, so text opening with one and
     then the other carries both.
     """
     found: list[str] = []
     at = 0
-    while at < len(opening):
+    while True:
         while at < len(opening) and opening[at] in BLANKS:
             at += 1
-        if at == len(opening) or opening[at] not in OPERATORS:
+        if not opens(opening, at):
             break
         found.append(opening[at])
         at += 1
     return tuple(found)
 
 
-def conflicting(opening: str) -> bool:
-    """Whether a link's text opens with both operators.
+def opens(text: str, at: int) -> bool:
+    """Whether an operator starts at one position of a link's text."""
+    return text[at : at + 1] in OPERATORS and text[at + 1 : at + 2] == SPACE
 
-    One compilation cannot wait for a later run and be dispatched by this
-    one, so a link stating both states two contradictory things and the
-    run says so rather than choosing.
+
+def conflicting(opening: str) -> bool:
+    """Whether a link's text opens with more than one operator.
+
+    Each operator states how one compilation is carried out — by a later
+    run, by a sub-agent, or by this run as a run-set — so a link stating
+    two states two contradictory things and the run says so rather than
+    choosing.
     """
     return len(set(operators(opening))) > 1
 
@@ -267,6 +280,16 @@ def dispatched(opening: str) -> bool:
     return DISPATCH_MARK in operators(opening)
 
 
+def run_set(opening: str) -> bool:
+    """Whether a link states that the calls its target holds run concurrently.
+
+    A run-set withholds nothing: the target is compiled into the bundle
+    like any link's, because the agent reads the calls it holds, and the
+    mark is content stating how those calls are run.
+    """
+    return RUN_SET_MARK in operators(opening)
+
+
 def withholding(opening: str) -> bool:
     """Whether a link withholds its compilation from this run.
 
@@ -278,9 +301,10 @@ def withholding(opening: str) -> bool:
     Which of the two marks reaches the bundle is a separate decision for
     each, read through `operators`: a dispatch states who compiles the
     material, which only the mark can tell a reader, while a deferral
-    states when, which the destination already states.
+    states when, which the destination already states. A run-set
+    withholds nothing.
     """
-    return bool(operators(opening))
+    return deferred(opening) or dispatched(opening)
 
 
 def unmarked(text: str) -> str:
@@ -291,18 +315,18 @@ def unmarked(text: str) -> str:
     rather than content. The mark goes with the blanks written around
     it, which are its spacing.
 
-    Text opening with no deferral mark is the author's prose and is
+    Text opening with no deferral operator is the author's prose and is
     returned as written. A dispatch's mark states who compiles the
-    material, which its destination does not, so it stays.
+    material, which its destination does not, and a run-set's mark how
+    the calls it names are run, so each stays.
 
-    The caller decides whether a link's destination states a deferral:
-    a reference outside the root and one naming a resource carry their
-    own text, mark included, because nothing rebased them.
+    The caller applies it where the bundle rebased the link's
+    destination, which is where the destination states the deferral.
     """
     at = 0
     while at < len(text) and text[at] in BLANKS:
         at += 1
-    if at == len(text) or text[at] != DEFERRAL_MARK:
+    if not opens(text, at) or text[at] != DEFERRAL_MARK:
         return text
     at += 1
     while at < len(text) and text[at] in BLANKS:
@@ -348,16 +372,6 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
     )
 
 
-def qualified(path: str) -> bool:
-    """Whether a link already names the steps from the file that writes it.
-
-    A parent segment is the path a reader of that file follows. The
-    allowed source root is the boundary around the result, not a prefix
-    on the link.
-    """
-    return PARENT in path.split(SEPARATOR)
-
-
 def covers(root: str, path: str) -> bool:
     """Whether one working-directory-relative path sits inside the source root."""
     anchor = "/anchor/cwd"
@@ -369,38 +383,23 @@ def covers(root: str, path: str) -> bool:
 def inside(document: str, text: str, root: str = "") -> Reference:
     """Resolve a link from the file that carries it, within the source root.
 
-    A link with a parent segment is the path a reader follows from the
-    file, so it is resolved from that file's directory and the root is
-    not applied to it. The root still bounds the result: a path that
-    lands outside it names nothing the root can contain. Every other
-    link is resolved from the root. A fragment with no path names a
-    section of the document that carries it.
+    A link is the path a reader of its file follows, so it resolves from
+    that file's directory. The root bounds the result: a path landing
+    outside it names nothing the root can contain. A fragment with no
+    path names a section of the document that carries it.
     """
-    raw = components(text).path
-    if raw and qualified(raw):
-        base = posixpath.dirname(document)
-        found = resolve(text, base, allow_parent=True)
-        if found.external:
-            return found
-        if not covers(root, found.path):
-            raise OutsideRoot(
-                "normalizes above the allowed source root, which cannot contain "
-                "the document it names"
-            )
-        walk = found.walk or found.path
-        if base:
-            walk = posixpath.join(base, walk)
-        return replace(found, walk=walk)
-    found = resolve(text)
+    base = posixpath.dirname(document)
+    found = resolve(text, base, allow_parent=True)
     if found.external:
         return found
-    if raw:
-        return replace(
-            found,
-            path=posixpath.normpath(posixpath.join(root, found.path)),
-            walk=posixpath.join(root, found.walk or found.path),
+    if not components(text).path:
+        return replace(found, path=document, walk=document)
+    if not covers(root, found.path):
+        raise OutsideRoot(
+            "normalizes above the allowed source root, which cannot contain "
+            "the document it names"
         )
-    return replace(found, path=document, walk=document)
+    return replace(found, walk=posixpath.join(base, found.walk or found.path))
 
 
 def bundled(document: str, text: str, opening: str, root: str = "") -> Reference | None:
@@ -445,11 +444,11 @@ def withholding_target(
     exist, and the destination the bundle publishes names it from the
     root.
 
-    An operator on anything else changes nothing that was going to
-    happen to it. A reference leaving the root, one naming no Markdown
-    document and one whose form the grammar does not admit are text
-    whether their author marked them or not, so each is answered here
-    as no withheld target.
+    An operator on anything else states a compilation no run performs:
+    a reference leaving the root, one naming no Markdown document and
+    one whose form the grammar does not admit withhold nothing, so each
+    is answered here as no withheld target and the run refuses the link
+    that carries it.
 
     This and `bundled` are the two halves of one rule, read from one
     resolution: a reference under the root naming a Markdown document is
@@ -488,8 +487,9 @@ def rebased(found: Reference, text: str) -> str:
     """URI-escape a withheld target's canonical working-directory-relative path.
 
     A deferral and a dispatch publish the same destination: the path the
-    run that compiles the material follows from the root the bundle
-    names, with the fragment the link resolved retained.
+    run that compiles the material follows from the working directory
+    the bundle was compiled in, with the fragment the link resolved
+    retained.
     """
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
     fragment = components(text).fragment

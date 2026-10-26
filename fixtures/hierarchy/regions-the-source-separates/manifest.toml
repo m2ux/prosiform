@@ -4,7 +4,6 @@ clauses = [
   "File-scoped hierarchy — Source order",
   "File-scoped hierarchy — Group shift",
   "Section extraction and output hierarchy — Boundary",
-  "Entry line",
 ]
 
 [invocation]
@@ -14,15 +13,4 @@ arguments = ["guide.md#gamma", "guide.md#alpha"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Alpha"
-resolved = "alpha"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Gamma"
-resolved = "gamma"
+diagnostics = []

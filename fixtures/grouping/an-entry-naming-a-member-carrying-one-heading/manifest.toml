@@ -3,7 +3,6 @@ description = "An entry reference naming a member whose whole content is the one
 clauses = [
   "Grouping — Document content above the grouping depth",
   "Bundle destinations — Document destinations",
-  "Entry line — Link text",
 ]
 
 [invocation]
@@ -13,15 +12,4 @@ arguments = ["notes/bare.md", "notes/kept.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Bare"
-resolved = "bare"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Kept"
-resolved = "kept"
+diagnostics = []

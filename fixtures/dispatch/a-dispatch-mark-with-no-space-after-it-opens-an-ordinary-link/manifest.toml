@@ -1,0 +1,17 @@
+description = "A link whose text opens with the dispatch mark and no space after it opens no operator: it is compiled like any other link, its target contributing content and its destination rewritten to the bundled heading, and the bundle carries the link's text exactly as its author wrote it, with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — The dispatch operator",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

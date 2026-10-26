@@ -1,11 +1,10 @@
-description = "The usage example that names two sections selects each from the document that carries it, and the reference inside the first carries the second document's section it names."
+description = "The usage example that names two sections selects each from the document that carries it, and the reference the first makes to the second resolves to that selected section."
 
 clauses = [
   "Usage examples",
   "Input and output contract — Sections",
   "Section extraction and output hierarchy — Boundary",
   "Compile before publishing — step 4",
-  "Entry line",
 ]
 
 [invocation]
@@ -18,15 +17,4 @@ arguments = [
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Record Epic Delivery"
-resolved = "record-epic-delivery"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Delivery Findings"
-resolved = "delivery-findings"
+diagnostics = []

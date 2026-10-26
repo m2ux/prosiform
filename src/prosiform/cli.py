@@ -11,7 +11,7 @@ import os
 import re
 import sys
 import tempfile
-from collections.abc import Collection, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
@@ -32,19 +32,17 @@ from prosiform.access import (
     opened as open_source,
 )
 from prosiform.bundle import (
-    AMBIGUOUS_FILE_GROUP,
+    CODES as BUNDLE_CODES,
+)
+from prosiform.bundle import (
     HEADING_DEPTH_OVERFLOW,
     MAX_LEVEL,
     Group,
     Overflow,
     assemble,
-    entry_line,
+    document_title,
+    file_heading,
     group,
-    heading_text,
-    is_entry_line,
-)
-from prosiform.bundle import (
-    CODES as BUNDLE_CODES,
 )
 from prosiform.candidate import (
     CODES as CANDIDATE_CODES,
@@ -58,15 +56,20 @@ from prosiform.closure import (
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
+    RUN_SET_MARK,
     Malformed,
     OutsideRoot,
     Reference,
     components,
     conflicting,
+    dispatched,
     external,
     identity,
     inside,
+    operators,
+    resolvable,
     resolve,
+    run_set,
     withholding,
     withholding_target,
 )
@@ -76,9 +79,12 @@ from prosiform.diagnostics import (
     TEXT,
     WARNING,
     Diagnostic,
+    Location,
     RelatedLocation,
     Reporter,
 )
+from prosiform.dispatch import CODES as DISPATCH_CODES
+from prosiform.dispatch import Hop, analysed, procedural, selfward, unprocedural
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
@@ -97,7 +103,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import INVALID_CONVERSION_METADATA, InvalidMetadata
+from prosiform.metadata import InvalidMetadata
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -113,6 +119,8 @@ from prosiform.profile import (
     refusals,
 )
 from prosiform.rewrite import Definition, definitions
+from prosiform.run_set import CODES as RUN_SET_CODES
+from prosiform.run_set import RunSet, misshapen, stray
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
@@ -152,7 +160,6 @@ INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
 
-GENERATED_INPUT = "E_GENERATED_INPUT"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
@@ -166,13 +173,18 @@ TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
-ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
+COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
+
+OPERATOR_NAMES = {
+    DEFERRAL_MARK: "the deferral mark",
+    DISPATCH_MARK: "the dispatch mark",
+    RUN_SET_MARK: "the run-set mark",
+}
 
 CODES = tuple(
     sorted(
         {
-            GENERATED_INPUT,
             INVALID_ENCODING,
             GROUP_DEPTH_CONFLICT,
             INVALID_USAGE,
@@ -185,12 +197,14 @@ CODES = tuple(
             TARGET_NOT_FOUND,
             UNEXPECTED_INTERNAL_ERROR,
             UNSUPPORTED_ENTRY_SUFFIX,
-            ENTRY_DESTINATION,
             RESOURCE_PORTABILITY,
+            COINCIDENT_HEADING,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
+            *DISPATCH_CODES,
             *LIMITS_CODES,
             *PROFILE_CODES,
+            *RUN_SET_CODES,
             *SOURCE_CODES,
         }
     )
@@ -639,12 +653,7 @@ def read_document(
                 ),
             ) from error
         effective = os.path.relpath(rooted[-1][0], root)
-        source = replace(
-            source,
-            root="" if effective == "." else effective,
-            display=os.path.relpath(root / name, rooted[-1][0]),
-            identity=captured.identity,
-        )
+        source = replace(source, root="" if effective == "." else effective)
         captured = replace(captured, directories=(*captured.directories, *rooted))
         return Opened(source, len(data), captured)
     except InvalidMetadata as invalid:
@@ -681,53 +690,6 @@ def refused(
         remedy=refusal.remedy,
         reference=refusal.reference,
         source=location(name, source.line(refusal.line)),
-        chain=chain,
-    )
-
-
-def generated(
-    path: str,
-    source: Source,
-    tokens: Sequence[Token],
-    chain: Sequence[str],
-) -> None:
-    """Refuse a source whose first block declares itself a published bundle.
-
-    The entry declaration is a reserved output convention, independent of
-    path spelling and group kind. Rewriting it defeats detection; an authored
-    declaration with the same form is detected as well. Parsing keeps code
-    and quoted examples outside the document-level declaration.
-    """
-    first = next(
-        (
-            token
-            for region in regions(tokens)
-            if region.type == "paragraph_open" and region.map is not None
-            for token in tokens
-            if token.type == "inline"
-            and token.map is not None
-            and token.map[0] == region.map[0]
-            and is_entry_line(token.content)
-        ),
-        None,
-    )
-    if first is None or first.map is None:
-        return
-    links = [token for token in first.children or () if token.type == "link_open"]
-    if not links or any(
-        not isinstance(href := token.attrGet("href"), str)
-        or not href.startswith("#")
-        or len(href) == 1
-        for token in links
-    ):
-        return
-    raise input_failure(
-        f"{path!r} opens with the bundle entry declaration, so it is output "
-        f"offered as input",
-        code=GENERATED_INPUT,
-        remedy="bundle the sources the document was built from",
-        reference=first.content,
-        source=location(path, source.line(first.map[0] + 1)),
         chain=chain,
     )
 
@@ -814,8 +776,9 @@ def contributing(
     fragment alone selects from the document `-f` names. The path
     is the identity the reference normalized to, so two references
     spelling one document name one group, which carries what each of
-    them selected, and the groups are ordered by root-relative path so
-    one selection always bundles to the same bytes.
+    them selected. The documents are in path order, which is the order
+    each round of the traversal reads them in; `placement` decides the
+    order the bundle carries them in.
     """
     selected: dict[str, list[Reference]] = {}
     for one in requested:
@@ -854,15 +817,10 @@ def selection(
     heading names nothing however much of its document reaches the
     bundle.
 
-    An entry reference is one the caller named, and the entry line
-    links what the caller asked for, so only the heading an entry
-    resolved to stays identifiable. A whole document an entry selected
-    and nothing else named is the selection `None`. The parent, the
-    first entry document, is entered at its first H2; every other such
-    document is entered at its file heading. A whole document an entry
-    selected beside named sections keeps that heading as an entry as
-    well. A whole document only a dependency selected enters the entry
-    line not at all.
+    A whole document an entry reference selected is the selection
+    `None`, which is what lets the parent, the first entry document,
+    open the bundle on its own title. A whole document only a
+    dependency selected is every region it holds.
 
     A fragment the document does not yield is a reference that reached
     a document and no section of it, so its diagnostic names that
@@ -870,7 +828,6 @@ def selection(
     the reference.
     """
     wanted: set[int] = set()
-    named: list[Token] = []
     whole = False
     entered = False
     for one in references:
@@ -914,16 +871,10 @@ def selection(
                 source=one.origin,
                 chain=one.chain,
             )
-        if one in entries:
-            named.append(found[0])
         wanted.update(id(token) for token in found)
     if whole:
-        if not named and entered:
-            return None
-        return Selection(tuple(regions(tokens)), tuple(named), document=entered)
-    return Selection(
-        tuple(token for token in regions(tokens) if id(token) in wanted), tuple(named)
-    )
+        return None if entered else Selection(tuple(regions(tokens)))
+    return Selection(tuple(token for token in regions(tokens) if id(token) in wanted))
 
 
 def required(
@@ -1008,27 +959,51 @@ def refusals_of_operators(
     chosen: Selection | None,
     chain: Sequence[str],
 ) -> None:
-    """Refuse a link whose text opens with both operators, naming the link.
+    """Refuse a link whose operator states nothing the run can carry out.
 
-    One compilation cannot wait for a later run and be dispatched by this
-    one, so a link stating both states two contradictory things. It is a
-    source fault rather than a metadata fault: what the author wrote
-    admits two readings, and the run reports the link rather than
-    choosing between them.
+    Each operator states how one compilation is carried out — by a later
+    run, by a sub-agent, or by this run as a run-set — so a link stating
+    two states two contradictory things. An operator names the
+    compilation of a Markdown document or section under the source root,
+    so one opening a link or an image naming anything else — a remote
+    address, a resource, a document outside the root — states a
+    compilation no run performs. Each is a source fault rather than a
+    metadata fault: what the author wrote states no compilation the run
+    can carry out, and the run reports the link rather than reading it
+    one way.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if use.resource or not conflicting(use.opening):
+        at = location(path, source.line(use.line))
+        if conflicting(use.opening):
+            stated = list(dict.fromkeys(operators(use.opening)))
+            raise input_failure(
+                f"the link {use.opening!r} opens with "
+                + " and ".join(f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in stated)
+                + ", which state different things for one compilation",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="open the link's text with the one operator that states how "
+                "the material is compiled",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if not operators(use.opening):
             continue
+        target = resolvable(path, use.destination, source.root)
+        if not use.resource and target is not None:
+            continue
+        kind = "image" if use.resource else "link"
         raise input_failure(
-            f"the link {use.opening!r} opens with both the deferral mark "
-            f"{DEFERRAL_MARK!r} and the dispatch mark {DISPATCH_MARK!r}, which "
-            f"state two different runs for one compilation",
+            f"the {kind} {use.opening!r} opens with an operator and names "
+            f"{use.destination!r}, which is no Markdown document or section under "
+            f"the source root, so the operator states no compilation the run "
+            f"can carry out",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy="open the link's text with the one operator that states who "
-            "compiles the material",
-            reference=use.opening,
-            source=location(path, source.line(use.line)),
+            remedy="name a Markdown document or section the source root carries, "
+            "or remove the operator",
+            reference=use.destination,
+            source=at,
             chain=(*chain, use.destination),
         )
 
@@ -1046,8 +1021,8 @@ def withheld(
     Markdown document is one this run does not carry and stays
     responsible for, so its target is yielded here to be confirmed. An
     operator on a reference leaving the root, or on one naming no
-    Markdown document, withholds nothing that was going to happen, and
-    those references are text as they always were.
+    Markdown document, withholds nothing, and the run refuses it before
+    reading the withheld targets.
 
     What is yielded is a target and not a dependency. It joins no
     frontier, so the document is not bundled through this reference,
@@ -1067,6 +1042,69 @@ def withheld(
             continue
         at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
+
+
+def dispatches(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> Iterator[Hop]:
+    """Every dispatched link the selected content of one source carries.
+
+    A dispatch is a withheld link a sub-agent compiles, so what is
+    yielded is the target `withheld` yields for it, with the place the
+    link is written: the hop a chain of dispatches takes from here.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource or not dispatched(use.opening):
+            continue
+        found = withholding_target(path, use.destination, use.opening, source.root)
+        if found is None:
+            continue
+        line = source.line(use.line)
+        yield Hop(
+            replace(
+                found,
+                origin=location(path, line),
+                chain=(*chain, identity(found)),
+            ),
+            Location(path, 1 if line is None else line, 1),
+        )
+
+
+def run_sets(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> Iterator[RunSet]:
+    """Every run-set link the selected content of one source carries.
+
+    A run-set's target is compiled like any link's, so what is yielded is
+    the target the link resolves to, with the text the link opens with
+    and the place it is written, for the check of the target's shape.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource or not run_set(use.opening):
+            continue
+        found = resolvable(path, use.destination, source.root)
+        if found is None:
+            continue
+        line = source.line(use.line)
+        yield RunSet(
+            replace(
+                found,
+                origin=location(path, line),
+                chain=(*chain, identity(found)),
+            ),
+            use.opening,
+            Location(path, 1 if line is None else line, 1),
+        )
 
 
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
@@ -1100,6 +1138,8 @@ def traverse(
     dict[str, dict[str, Definition]],
     dict[str, Capture],
     list[Reference],
+    list[Hop],
+    list[RunSet],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -1144,6 +1184,12 @@ def traverse(
     budgets over what the run opens, counts and reaches are held here
     as each figure is reached, so a run crosses a boundary at the point
     it crosses it rather than after building what it could not keep.
+
+    The dispatched links the selected content carries are returned as
+    well, each target once at the first link the rounds read naming it,
+    for the analysis of how deep the dispatches run, and so are the
+    run-set links, each target once in the same way, for the check of
+    its shape.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -1154,6 +1200,8 @@ def traverse(
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
+    dispatching: dict[str, Hop] = {}
+    running: dict[str, RunSet] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1175,7 +1223,6 @@ def traverse(
             except Suppressed as suppressed:
                 raise declined(suppressed, one.path, source, one.chain) from suppressed
             total += opened.size
-            generated(one.path, source, tokens, one.chain)
             read[one.path] = source
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
@@ -1198,6 +1245,10 @@ def traverse(
             for one in withheld(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
+            for link in dispatches(path, read[path], parsed[path], chosen, reached):
+                dispatching.setdefault(link.name, link)
+            for named in run_sets(path, read[path], parsed[path], chosen, reached):
+                running.setdefault(named.name, named)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1226,7 +1277,15 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
-    return read, parsed, defined, captured, found
+    return (
+        read,
+        parsed,
+        defined,
+        captured,
+        found,
+        list(dispatching.values()),
+        list(running.values()),
+    )
 
 
 def confirm(
@@ -1266,69 +1325,12 @@ def confirm(
     )
 
 
-def dispatch_text(
-    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
-) -> str | None:
-    """The dispatch text the contributing sources agree on, in deterministic order.
-
-    Every contributing source that declares `prosiform.dispatch` states
-    what a dispatch mark means for that skill, and the bundle carries one
-    instruction, so each declaration is held to the first. A second value
-    is a disagreement rather than a choice, because an opening line whose
-    wording depended on which source was read first would make the
-    instruction a property of traversal order.
-
-    The first declaration is the one on the first source in the order the
-    bundle arranges its groups by, so the primary location and the
-    reported one are the same two however the sources were reached.
-    """
-    declaring = [
-        path
-        for path in sorted(
-            selected, key=lambda p: (read[p].display, read[p].identity or p)
-        )
-        if read[path].conversion.dispatch is not None
-    ]
-    if not declaring:
-        return None
-    first = read[declaring[0]].conversion
-    assert first.dispatch is not None and first.dispatch_location is not None
-    for path in declaring[1:]:
-        current = read[path].conversion
-        if current.dispatch == first.dispatch:
-            continue
-        location = current.dispatch_location
-        assert location is not None
-        raise Failure(
-            INPUT_FAILURE,
-            Diagnostic(
-                ERROR,
-                f"prosiform.dispatch is {first.dispatch!r}; "
-                f"another source declares {current.dispatch!r}",
-                code=INVALID_CONVERSION_METADATA,
-                location=first.dispatch_location,
-                related=(
-                    RelatedLocation(
-                        location.file,
-                        location.line,
-                        location.column,
-                        f"prosiform.dispatch is {current.dispatch!r}",
-                    ),
-                ),
-                remedy="declare one dispatch text for every contributing source",
-            ),
-        )
-    return first.dispatch
-
-
 def group_depths(
     read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
 ) -> dict[str, int]:
-    """Consistent depths for named groups, ordered by identity and source path."""
+    """Consistent depths for named groups, ordered by source path."""
     members: dict[str, list[str]] = {}
-    for path in sorted(
-        selected, key=lambda p: (read[p].display, read[p].identity or p)
-    ):
+    for path in sorted(selected):
         name = read[path].conversion.group
         if name is not None:
             members.setdefault(name, []).append(path)
@@ -1392,50 +1394,136 @@ def group_depths(
     return depths
 
 
-def unambiguous(
-    selected: dict[str, list[Reference]], read: Mapping[str, Source]
-) -> None:
-    """Hold each file heading to naming one source, as a reader must read it.
+@dataclass(frozen=True)
+class Named:
+    """One generated heading, and where the source it names is located."""
 
-    A merged group is headed by its declared name rather than by a
-    path, so a member of one heads no file group and two members
-    sharing a title are told apart by the names the arrangement gives
-    them.
+    text: str
+    location: Location
+
+
+def file_named(
+    path: str, source: Source, tokens: Sequence[Token], wrapped: bool
+) -> Named | None:
+    """One document's file heading, located at the title it carries or at the document.
+
+    A titled document is headed by its title, so the heading is located
+    on the line that title stands on. The parent opens the bundle on
+    that title rather than on a heading the bundle writes, and is headed
+    by it all the same. An untitled document is headed by its path,
+    which names the document as a whole, so the heading is located at
+    the document's first position; a parent the bundle opens without a
+    file heading and without a single title is headed by nothing.
     """
-    headed: dict[str, str] = {}
-    for path, selecting in selected.items():
-        if read[path].conversion.group is not None:
-            continue
-        title = heading_text(read[path].display or path).casefold()
-        if title in headed:
-            raise input_failure(
-                f"{path!r} and {headed[title]!r} both head a file group {title!r}, "
-                f"which a reader cannot tell apart",
-                code=AMBIGUOUS_FILE_GROUP,
-                remedy="bundle one of the two, or rename one of the documents",
-                reference=path,
-                chain=selecting[0].chain,
+    title = document_title(tokens)
+    if title is None and not wrapped:
+        return None
+    at = None if title is None or title.map is None else title.map[0] + 1
+    line = source.line(at)
+    return Named(
+        file_heading(path, tokens, source.root),
+        Location(path, 1 if line is None else line, 1),
+    )
+
+
+def coincidence(
+    kind: str, named: Sequence[Named], remedy: str, within: str = ""
+) -> Diagnostic:
+    """One warning naming a set of generated headings that read alike.
+
+    The first heading is the primary location and every other is a
+    related one, each carrying the text it reads, so a caller finds each
+    source the coinciding headings stand for. A set held within one
+    merged group names that group.
+    """
+    first, *others = named
+    return Diagnostic(
+        WARNING,
+        f"{len(named)} {kind}s{within} read {first.text!r}, which a reader tells apart "
+        f"only by where each stands",
+        code=COINCIDENT_HEADING,
+        remedy=remedy,
+        location=first.location,
+        related=tuple(
+            RelatedLocation(
+                one.location.file,
+                one.location.line,
+                one.location.column,
+                f"{kind} {one.text!r}",
             )
-        headed[title] = path
-    members: dict[str, list[str]] = {}
-    for path in selected:
-        name = read[path].conversion.group
-        if name is not None:
-            members.setdefault(name, []).append(path)
-    for name, paths in members.items():
-        displays = {path: read[path].display or path for path in paths}
-        names = member_headings(list(displays.values()), name)
-        seen: dict[str, str] = {}
+            for one in others
+        ),
+    )
+
+
+def coincident(
+    groups: Sequence[Group],
+    selected: Mapping[str, Sequence[Reference]],
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+) -> list[Diagnostic]:
+    """One warning for each set of generated headings that coincide.
+
+    The headings that name a source are its file headings, the parent's
+    own title among them where the bundle opens on it, and, within one
+    merged group, its member headings. Two of either
+    coincide where their texts are one text but for capitalization,
+    because a reader reads them as one name and the renderer slugs them
+    alike, so the bundle tells them apart by an ordinal alone. A member
+    is named by the shortest run of its path that distinguishes it from
+    the group's other members, so members whose paths differ only by
+    Markdown extension or capitalization take one name. The bundle is
+    published either way; the warning is what sends a reader to check
+    it. A heading an author wrote is the author's to repeat and warns of
+    nothing.
+
+    The warnings follow the bundle order of the first heading each set
+    holds, and each set's headings follow it too.
+    """
+    files: dict[str, tuple[int, list[Named]]] = {}
+    found: list[tuple[int, Diagnostic]] = []
+    for at, one in enumerate(groups):
+        named = one.record.path
+        if one.record.merged is None:
+            heading = file_named(named, read[named], parsed[named], one.wrapped)
+            if heading is not None:
+                files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
+            continue
+        paths = [path for path in selected if read[path].conversion.group == named]
+        names = member_headings(paths, named)
+        members: dict[str, list[Named]] = {}
         for path in paths:
-            title = names[displays[path]].casefold()
-            if title in seen:
-                raise input_failure(
-                    f"{path!r} and {seen[title]!r} share member heading {title!r}",
-                    code=AMBIGUOUS_FILE_GROUP,
-                    remedy="use distinguishable member paths",
-                    reference=path,
-                )
-            seen[title] = path
+            declared = read[path].conversion.group_location
+            assert declared is not None
+            members.setdefault(names[path].casefold(), []).append(
+                Named(names[path], declared)
+            )
+        found.extend(
+            (
+                at,
+                coincidence(
+                    "member heading",
+                    same,
+                    "rename a member so its path distinguishes it in the group",
+                    f" of group {named!r}",
+                ),
+            )
+            for same in members.values()
+            if len(same) > 1
+        )
+    found.extend(
+        (
+            at,
+            coincidence(
+                "file heading",
+                same,
+                "retitle or rename a document so its file heading reads apart",
+            ),
+        )
+        for at, same in files.values()
+        if len(same) > 1
+    )
+    return [diagnostic for _at, diagnostic in sorted(found, key=lambda one: one[0])]
 
 
 def parent_document(entries: Collection[Reference]) -> str | None:
@@ -1443,6 +1531,38 @@ def parent_document(entries: Collection[Reference]) -> str | None:
     if not isinstance(entries, Sequence) or not entries:
         return None
     return entries[0].path or None
+
+
+def placement(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, list[Reference]],
+    referrer: Reference | None,
+    entries: Collection[Reference],
+) -> dict[str, list[Reference]]:
+    """Each document the bundle carries, in the order a reference first names it.
+
+    The entry references are read first, in the order the invocation
+    gives them, and then the selected content of each placed document,
+    in the order the documents were placed, each in source order. A
+    document is placed at the first reference that names it, so the
+    parent leads and an author orders what follows by the order the
+    links are written in. Every document the bundle carries is reached
+    from an entry reference by a chain of the links read here, so the
+    order covers them all.
+    """
+    base = referrer.path if referrer is not None else ""
+    placed = [one.path or base for one in entries]
+    order = list(dict.fromkeys(path for path in placed if path in selected))
+    at = 0
+    while at < len(order):
+        path = order[at]
+        at += 1
+        chosen = selection(path, parsed[path], selected[path], entries)
+        for one in required(path, read[path], parsed[path], chosen, ()):
+            if one.path in selected and one.path not in order:
+                order.append(one.path)
+    return {path: selected[path] for path in order}
 
 
 def assembled(
@@ -1456,19 +1576,17 @@ def assembled(
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
+    The documents arrive in placement order, which `placement` decides.
     A document without conversion settings is its own file group. Every
     other document joins the merged group its slug names, which carries
-    its members in root-relative path order. The groups are ordered by
-    root-relative path, a merged group taking the first of its
-    members', so one selection always bundles to the same bytes. The
-    group that carries the parent leads.
+    its members in placement order. A group stands where its first
+    document is placed, so the group carrying the parent leads and one
+    selection always bundles to the same bytes.
     """
     parent = parent_document(entries)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path in sorted(
-        selected, key=lambda p: (read[p].display, read[p].identity or p)
-    ):
+    for path in selected:
         selecting = selected[path]
         named = read[path].conversion.group
         if named is not None:
@@ -1485,7 +1603,6 @@ def assembled(
                     selection(path, tokens, selecting, entries),
                     assigned,
                     read[path].root,
-                    read[path].display or path,
                     path == parent,
                 )
             )
@@ -1510,24 +1627,12 @@ def assembled(
                         )
                         for path in paths
                     ],
-                    {path: read[path].display for path in paths},
                     parent,
                     read[paths[0]].conversion.heading is not False,
                 )
             )
-    ordered = sorted(
-        groups,
-        key=lambda one: min(
-            (read[p].display, read[p].identity or p)
-            for p in set(one.record.paths()) | {one.order}
-        ),
-    )
-    if parent is None:
-        return ordered
-    return sorted(
-        ordered,
-        key=lambda one: parent not in set(one.record.paths()) | {one.order},
-    )
+    rank = {path: at for at, path in enumerate(selected)}
+    return sorted(groups, key=lambda one: rank[one.order])
 
 
 @contextmanager
@@ -1571,25 +1676,6 @@ def destination_map(
     return found
 
 
-def entries_named(
-    groups: Sequence[Group], assigned: Sequence[str]
-) -> list[tuple[str, str]]:
-    """Each entry reference the bundle opens on, as its text and its destination.
-
-    The order is the bundle's own: the groups in root-relative path
-    order, and inside one group the headings in source order. One
-    selection therefore opens on one line however the entry references
-    were written on the command line.
-    """
-    named = []
-    at = 0
-    for one in groups:
-        for entry in one.entries:
-            named.append((one.headings[entry], assigned[at + entry]))
-        at += len(one.headings)
-    return named
-
-
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -1598,13 +1684,12 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-) -> tuple[str, list[tuple[str, str]]]:
-    """The complete bundle candidate, and the entry destinations it opens on.
+) -> tuple[str, list[Diagnostic]]:
+    """The complete bundle candidate, and the warnings its headings raise.
 
-    The candidate is its entry line and one group per source. The pairs
-    returned are the ones that entry line is written from, so what a
-    caller reads on the diagnostic stream and what the bundle states in
-    its opening line are one computation rather than two.
+    The candidate is one group per source, and it opens on the first
+    group's first part. The warnings name the generated headings that
+    coincide, which accompany the bundle rather than refuse it.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -1624,22 +1709,18 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    dispatch = dispatch_text(read, selected)
-    unambiguous(selected, read)
+    selected = placement(read, parsed, selected, referrer, entries)
     headed = assembled(read, parsed, defined, selected, entries, None, inforce)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
     groups = assembled(read, parsed, defined, selected, entries, targets, inforce)
-    named = entries_named(groups, assigned)
-    bundled = assemble(entry_line(named, dispatch), groups)
+    bundled = assemble(groups)
     try:
         validate(
             bundled,
             groups,
             assigned,
             targets,
-            referrer,
-            entries,
             read,
             parsed,
             limits.of(NESTING),
@@ -1647,7 +1728,7 @@ def compose(
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, named
+    return bundled, coincident(groups, selected, read, parsed)
 
 
 def resource(destination: str, embedded: bool) -> bool:
@@ -1744,7 +1825,7 @@ def derived_output(
     referrer: Reference | None,
     requested: Sequence[Reference],
 ) -> str:
-    """The basename of one normalized entry, relative to its captured root."""
+    """The basename of one normalized entry, from its working-directory path."""
     selections = {
         (one.path or (referrer.path if referrer else ""), one.fragment)
         for one in requested
@@ -1754,10 +1835,98 @@ def derived_output(
             "multiple distinct selections require an explicit -o destination"
         )
     path, fragment = next(iter(selections))
-    name = str(Path(read[path].display).with_suffix("")).replace(os.sep, "_")
+    name = str(Path(path).with_suffix("")).replace(os.sep, "_")
     if fragment is not None:
         name += f"__{fragment}"
     return f"{name}.bundle.md"
+
+
+def unperformable(
+    hops: Sequence[Hop], parsed: Mapping[str, Sequence[Token]]
+) -> list[Diagnostic]:
+    """One warning for each target the bundle dispatches that carries no step.
+
+    A target's selected content is the whole document, or the section a
+    fragment names with its subsections, as the sub-agent compiling it
+    selects it. A section the run cannot root is the sub-agent's to
+    refuse, and raises nothing here.
+    """
+    found: list[Diagnostic] = []
+    for hop in hops:
+        tokens = parsed[hop.target.path]
+        if hop.target.fragment is None:
+            chosen: Sequence[Token] = tuple(regions(tokens))
+        else:
+            try:
+                rooted = section(tokens, hop.target.fragment)
+            except (Ambiguous, Nested):
+                continue
+            if rooted is None:
+                continue
+            chosen = rooted
+        if not procedural(list(within(tokens, chosen))):
+            found.append(unprocedural(hop))
+    return found
+
+
+def misshaped(
+    links: Sequence[RunSet],
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+) -> list[Diagnostic]:
+    """One warning for each target a run-set link names that is no run-set.
+
+    The target is compiled into the bundle, so its selected content is
+    the whole document, or the section a fragment names with its
+    subsections, read from the source the run parsed. Each link in it
+    resolves from the target's own document within that document's root.
+    """
+    found: list[Diagnostic] = []
+    for link in links:
+        tokens = parsed[link.target.path]
+        source = read[link.target.path]
+        if link.target.fragment is None:
+            chosen: Sequence[Token] = tuple(regions(tokens))
+        else:
+            try:
+                rooted = section(tokens, link.target.fragment)
+            except (Ambiguous, Nested):
+                continue
+            if rooted is None:
+                continue
+            chosen = rooted
+
+        def calls(
+            destination: str, document: str = link.target.path, root: str = source.root
+        ) -> bool:
+            return resolvable(document, destination, root) is not None
+
+        held = stray(tokens, chosen, calls)
+        if held is not None:
+            found.append(misshapen(link, held, source.line(held.line)))
+    return found
+
+
+def onward(root: Path, limits: Limits) -> Callable[[Reference], Sequence[Hop]]:
+    """The dispatches a target's closure carries, were it compiled as an entry.
+
+    A sub-agent compiles a dispatched target as its own entry, so its
+    closure is the one this run's traversal reaches from that target,
+    under every rule this run's own closure follows. The traversal is
+    read for its dispatches alone and publishes nothing. A target whose
+    own compilation is refused carries no further hop here: that run
+    reports the refusal, and this one publishes the bundle it compiled.
+    """
+
+    def beyond(target: Reference) -> Sequence[Hop]:
+        entered = replace(target, origin=None, chain=(identity(target),))
+        try:
+            *_, hops, _ = traverse(root, None, [entered], limits)
+        except (Failure, Crossed):
+            return ()
+        return hops
+
+    return beyond
 
 
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
@@ -1794,7 +1963,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     limits = budgets(options)
     try:
-        read, parsed, defined, captured, found = traverse(
+        read, parsed, defined, captured, found, hops, running = traverse(
             root, referring, requested, limits
         )
     except Crossed as crossed:
@@ -1806,7 +1975,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         destination = Path(output).resolve()
         if destination in sources(root, read):
             raise usage_failure(f"the output path {output!r} names an input source")
-    bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
+    bundled, coinciding = compose(
+        read, parsed, defined, referring, requested, found, limits
+    )
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
@@ -1816,6 +1987,19 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    for warning in coinciding:
+        reporter.emit(warning)
+    for warning in unperformable(hops, parsed):
+        reporter.emit(warning)
+    for hop in hops:
+        if hop.own:
+            reporter.emit(selfward(hop))
+    for warning in analysed(
+        hops, {one.chain[0] for one in requested}, onward(root, limits)
+    ):
+        reporter.emit(warning)
+    for warning in misshaped(running, read, parsed):
+        reporter.emit(warning)
     if resourced(bundled, limits.of(NESTING)):
         reporter.emit(
             Diagnostic(
@@ -1831,17 +2015,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             publish(bundled, stdout)
         else:
             publish_file(bundled, destination)
-    for reference, target in named:
-        reporter.emit(
-            Diagnostic(
-                WARNING,
-                f"the entry reference {reference!r} resolves to the destination "
-                f"{target!r}, which the bundle's entry line links it to",
-                code=ENTRY_DESTINATION,
-                reference=reference,
-                resolved=target,
-            )
-        )
     return SUCCESS
 
 

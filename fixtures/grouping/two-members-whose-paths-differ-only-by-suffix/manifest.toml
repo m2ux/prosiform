@@ -1,0 +1,19 @@
+description = "Two members of one group whose paths differ only by Markdown extension take one member name. The run publishes the bundle, each coinciding heading keeping its text and taking a distinct destination, and warns that a reader tells them apart only by where each stands."
+
+clauses = [
+  "Grouping — Residual ambiguity",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md", "guide.markdown"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_COINCIDENT_HEADING"
+message_contains = ["Guide"]

@@ -1,9 +1,8 @@
-description = "A document whose whole content is one heading, with no conversion metadata, is a file group of its own headed by its root-relative path, with that heading absorbed into it. It is the arrangement the same document with declared group membership is compared with: the content carried is the same, and where it sits is not."
+description = "A document whose whole content is one heading, with no conversion metadata, is a file group of its own headed by that heading, its title, absorbed into the file heading. It is the arrangement the same document with declared group membership is compared with: the content carried is the same, and where it sits is not."
 
 clauses = [
   "Grouping",
   "Input and output contract — Groups",
-  "Agent delivery contract — Entry destinations",
 ]
 
 [invocation]
@@ -13,15 +12,4 @@ arguments = ["notes/bare.md", "notes/kept.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Bare"
-resolved = "bare"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Notes/Kept"
-resolved = "noteskept"
+diagnostics = []

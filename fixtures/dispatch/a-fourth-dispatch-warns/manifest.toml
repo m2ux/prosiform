@@ -1,0 +1,20 @@
+description = "A chain reaching a fourth dispatch is deeper than a chain is held to, so the bundle publishes and the run warns, naming the chain from the bundle's own dispatch to the fourth hop."
+
+clauses = [
+  "Link classification and resource handling — Dispatch depth",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_DISPATCH_DEPTH"
+reference = "plan.md"
+chain = ["guide.md", "plan.md", "review.md", "record.md", "publish.md"]

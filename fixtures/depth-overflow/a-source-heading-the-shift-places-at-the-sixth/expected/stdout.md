@@ -2,8 +2,6 @@
 
 It follows [the standing order](#order).
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
 # Order
 
 ## The Standing Order
@@ -23,3 +21,7 @@ Each item, in order.
 ###### A Single Item
 
 The item itself.
+
+## Afterword
+
+What follows the order.

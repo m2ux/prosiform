@@ -1,5 +1,3 @@
-Follow [Procedure](#procedure) and [Review](#review). The other sections are material those procedures reference.
-
 # Modes
 
 ## Overview

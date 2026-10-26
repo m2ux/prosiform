@@ -1,0 +1,14 @@
+description = "A field under metadata carries no conversion meaning: a dispatch key there is no prosiform key, so the run succeeds and the bundle carries only the authored content."
+
+clauses = [
+  "Conversion metadata — Unrelated fields have no conversion meaning",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

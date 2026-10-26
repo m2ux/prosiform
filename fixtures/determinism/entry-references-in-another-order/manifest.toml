@@ -1,7 +1,7 @@
-description = "The same selection written in another entry argument order bundles to the same bytes, so the arrangement follows the sources rather than the command line."
+description = "The same selection written in another entry argument order leads with the entry document named first, and each section of one document still follows source order whichever entry reference named it first."
 
 clauses = [
-  "Input and output contract — Groups, headed by its normalized root-relative path",
+  "Input and output contract — Groups, headed by its title or its working-directory path",
   "File-scoped hierarchy — Source order",
   "Adversarial acceptance fixtures — Coverage, different entry argument orders",
 ]
@@ -13,21 +13,4 @@ arguments = ["middle.md#two", "alpha.md", "middle.md#one"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "One"
-resolved = "one"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Two"
-resolved = "two"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Alpha"
-resolved = "alpha"
+diagnostics = []

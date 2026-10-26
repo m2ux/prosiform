@@ -1,14 +1,11 @@
-description = "The usage example that names a procedure bundles that procedure and the two documents its prerequisites reach, leaving out the routing document it names in prose rather than links."
+description = "The usage example that names a procedure bundles that procedure and every document its compiled links reach: the one mode it reaches as a whole document, Propose Mode, under a heading of its own, the Rules and Conventions documents the modes link, the Bootstrap document the rules link, and the artifact and reference material those documents link. The dispatched link to Sync Mode is published with its mark and a destination naming the mode from the root, and Sync Mode contributes no content. The bundle carries no deferred link."
 
 clauses = [
   "Usage examples",
   "Input and output contract — Whole documents",
   "Link classification and resource handling — Local Markdown document links under the root",
   "Compile before publishing — step 4",
-  "Entry line",
   "Input and output contract — Entry references",
-  "Entry line — No execution verb",
-  "Entry line — Reading scope at the point of use",
 ]
 
 [invocation]
@@ -18,9 +15,4 @@ arguments = ["modes/plan-mode.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Procedure"
-resolved = "procedure"
+diagnostics = []

@@ -3,12 +3,10 @@
 A literal [runner] this source defines nothing for, beside the
 [tools](#tools) it requires.
 
-Follow [Guide](#guide). The other sections are material that procedure references.
+# Tools
+
+The tools resolve [the runner](#run) against their own definition.
 
 # Run
 
 How the runner runs.
-
-# Tools
-
-The tools resolve [the runner](#run) against their own definition.

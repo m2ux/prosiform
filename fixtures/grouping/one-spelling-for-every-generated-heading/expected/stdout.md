@@ -2,11 +2,9 @@
 
 The work starts here.
 
-It reads the [Field Notes](#guidesfield-notes), the [Common Rules](#common) and the [Codex Rules](#codex).
+It reads the [Field Notes](#field-notes), the [Common Rules](#common) and the [Codex Rules](#codex).
 
-Follow [Entry Point](#entry-point). The other sections are material that procedure references.
-
-# Guides/Field-Notes
+# Field Notes
 
 What the work observed while it ran.
 
@@ -18,20 +16,20 @@ Write each observation down as it is made.
 
 ## Overview
 
-### Codex
-
-The rules one harness reads.
-
 ### Common
 
 The rules every harness reads.
 
-## Procedure
-
 ### Codex
 
-Read the harness rules after the common ones.
+The rules one harness reads.
+
+## Procedure
 
 ### Common
 
 Read the common rules first.
+
+### Codex
+
+Read the harness rules after the common ones.

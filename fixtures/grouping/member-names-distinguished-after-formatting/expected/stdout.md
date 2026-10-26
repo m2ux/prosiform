@@ -1,5 +1,3 @@
-Follow [Procedure](#procedure) and [B Plan](#b-plan). The other sections are material those procedures reference.
-
 # Modes
 
 ## Overview

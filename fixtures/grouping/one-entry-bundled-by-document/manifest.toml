@@ -1,9 +1,8 @@
-description = "One entry with no conversion metadata puts each contributing document in a file group of its own, headed by its root-relative path. It is the arrangement the same entry with declared group membership is compared with: the content selected and the entry destination reported are the same, and where each section sits is not."
+description = "One entry with no conversion metadata puts each contributing document in a file group of its own, headed by its own title. It is the arrangement the same entry with declared group membership is compared with: the content selected is the same, and where each section sits is not."
 
 clauses = [
   "Grouping",
   "Input and output contract — Groups",
-  "Agent delivery contract — Entry destinations",
 ]
 
 [invocation]
@@ -13,9 +12,4 @@ arguments = ["modes/plan-mode.md#operations"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Operations"
-resolved = "operations"
+diagnostics = []

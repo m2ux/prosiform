@@ -1,0 +1,15 @@
+description = "A chain of dependencies bundles in the order its links first reach each document, so the entry leads and each document follows the one whose content first links to it, whatever their paths."
+
+clauses = [
+  "Input and output contract — Groups, headed by its title or its working-directory path",
+  "Compile before publishing, expanding coverage",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["zulu.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

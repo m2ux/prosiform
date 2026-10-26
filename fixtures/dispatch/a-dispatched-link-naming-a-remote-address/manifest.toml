@@ -1,0 +1,21 @@
+description = "A link whose text opens with the dispatch operator names a remote address, which no source root holds, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — An operator's target",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "https://example.test/spec.md"
+source = "guide.md:3"
+chain = ["guide.md", "https://example.test/spec.md"]

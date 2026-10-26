@@ -27,6 +27,9 @@ from prosiform.closure import (
     operators,
     rebased,
     resolve,
+    run_set,
+    unmarked,
+    withholding,
     withholding_target,
 )
 
@@ -152,34 +155,53 @@ def test_a_link_text_with_no_mark_is_not_deferred() -> None:
 
 
 def test_a_link_text_opening_with_the_dispatch_mark_is_dispatched() -> None:
-    assert dispatched("» Record Epic Delivery")
+    assert dispatched("⇉ Record Epic Delivery")
 
 
 def test_a_link_text_carrying_the_dispatch_mark_elsewhere_is_not_dispatched() -> None:
-    assert not dispatched("the » operator")
+    assert not dispatched("the ⇉ operator")
 
 
 def test_a_dispatch_mark_is_no_deferral_and_the_two_marks_are_told_apart() -> None:
-    assert not deferred("» the rules")
+    assert not deferred("⇉ the rules")
     assert not dispatched("¬ the rules")
 
 
-def test_both_marks_opening_one_text_conflict_however_they_are_spaced() -> None:
-    assert conflicting("¬ » the rules")
-    assert conflicting("»¬ the rules")
-    assert conflicting("¬  »the rules")
+def test_a_mark_opening_the_text_with_no_space_after_it_is_no_operator() -> None:
+    assert not dispatched("⇉Record Epic Delivery")
+    assert not deferred("¬Record Epic Delivery")
+    assert not dispatched("⇉")
+    assert not deferred("¬\tRecord Epic Delivery")
+
+
+def test_both_operators_opening_one_text_conflict_however_they_are_spaced() -> None:
+    assert conflicting("¬ ⇉ the rules")
+    assert conflicting("⇉  ¬ the rules")
+    assert conflicting(" ¬ \t⇉ the rules")
 
 
 def test_one_operator_alone_does_not_conflict() -> None:
     assert not conflicting("¬ the rules")
-    assert not conflicting("» the rules")
-    assert not conflicting("¬ and » the rules")
+    assert not conflicting("⇉ the rules")
+    assert not conflicting("¬ and ⇉ the rules")
+
+
+def test_a_mark_with_no_space_after_it_ends_the_operators_a_text_opens_with() -> None:
+    assert operators("¬⇉ the rules") == ()
+    assert operators("⇉¬ the rules") == ()
+    assert operators("¬  ⇉the rules") == ("¬",)
 
 
 def test_operators_are_each_operator_one_text_opens_with() -> None:
-    assert operators("¬ » the rules") == ("¬", "»")
-    assert operators("» the rules") == ("»",)
+    assert operators("¬ ⇉ the rules") == ("¬", "⇉")
+    assert operators("⇉ the rules") == ("⇉",)
     assert operators("the ¬ rules") == ()
+
+
+def test_an_unspaced_deferral_mark_is_published_as_written() -> None:
+    assert unmarked("¬  the rules") == "the rules"
+    assert unmarked("¬the rules") == "¬the rules"
+    assert unmarked("⇉ the rules") == "⇉ the rules"
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
@@ -187,7 +209,18 @@ def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> 
 
 
 def test_a_link_walking_out_of_its_own_directory_normalizes_against_it() -> None:
-    assert inside("docs/guide.md", "notes.md").path == "notes.md"
+    assert inside("docs/guide.md", "../notes.md").path == "notes.md"
+
+
+def test_a_link_resolves_from_its_file_whatever_root_bounds_it() -> None:
+    found = inside("docs/guide.md", "notes.md", "")
+    assert found.path == "docs/notes.md"
+    assert found.walk == "docs/notes.md"
+
+
+def test_a_root_bounds_a_link_without_being_the_base_it_resolves_from() -> None:
+    with pytest.raises(OutsideRoot):
+        inside("docs/guide.md", "../notes.md", "docs")
 
 
 def test_a_link_above_the_root_names_a_document_the_root_cannot_contain() -> None:
@@ -241,7 +274,7 @@ def test_two_spellings_of_one_section_share_an_identity() -> None:
 def test_a_reference_resolving_under_the_root_is_a_dependency() -> None:
     found = bundled("docs/guide.md", "rules.md#alpha", "the rules")
     assert found is not None
-    assert (found.path, found.fragment) == ("rules.md", "alpha")
+    assert (found.path, found.fragment) == ("docs/rules.md", "alpha")
 
 
 def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
@@ -252,7 +285,7 @@ def test_a_fragment_of_its_own_document_is_a_dependency() -> None:
 
 def test_a_withheld_reference_under_the_root_is_no_dependency() -> None:
     assert bundled("guide.md", "rules.md", "¬ the rules") is None
-    assert bundled("guide.md", "rules.md", "» the rules") is None
+    assert bundled("guide.md", "rules.md", "⇉ the rules") is None
 
 
 def test_the_same_reference_unmarked_is_a_dependency() -> None:
@@ -283,13 +316,13 @@ def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
     assert bundled("guide.md", destination, "the rules") is None
 
 
-@pytest.mark.parametrize("opening", ["¬ the rules", "» the rules"])
+@pytest.mark.parametrize("opening", ["¬ the rules", "⇉ the rules"])
 def test_a_withheld_reference_under_the_root_is_a_withheld_target(
     opening: str,
 ) -> None:
     found = withholding_target("docs/guide.md", "rules.md", opening)
     assert found is not None
-    assert found.path == "rules.md"
+    assert found.path == "docs/rules.md"
 
 
 def test_an_unmarked_reference_withholds_nothing() -> None:
@@ -312,23 +345,54 @@ def test_a_mark_on_a_reference_the_run_carries_none_of_withholds_nothing(
     destination: str,
 ) -> None:
     assert withholding_target("guide.md", destination, "¬ the rules") is None
-    assert withholding_target("guide.md", destination, "» the rules") is None
+    assert withholding_target("guide.md", destination, "⇉ the rules") is None
 
 
 @pytest.mark.parametrize(
     ("document", "destination", "expected"),
     [
-        ("topic/guide.md", "shared/rules.md", "shared/rules.md"),
-        ("topic/guide.md", "shared/rules.md#here", "shared/rules.md#here"),
+        ("topic/guide.md", "../shared/rules.md", "shared/rules.md"),
+        ("topic/guide.md", "../shared/rules.md#here", "shared/rules.md#here"),
+        ("topic/guide.md", "rules.md", "topic/rules.md"),
         ("guide.md", "#beta", "guide.md#beta"),
         ("guide.md", "rules.md#", "rules.md#"),
         ("guide.md", "notes%23draft.md#run", "notes%23draft.md#run"),
     ],
 )
-@pytest.mark.parametrize("opening", ["¬ the rules", "» the rules"])
+@pytest.mark.parametrize("opening", ["¬ the rules", "⇉ the rules"])
 def test_a_withheld_destination_names_its_target_from_the_root(
     document: str, destination: str, expected: str, opening: str
 ) -> None:
     found = withholding_target(document, destination, opening)
     assert found is not None
     assert rebased(found, destination) == expected
+
+
+def test_a_link_text_opening_with_a_guillemet_states_no_operator() -> None:
+    assert operators("» the rules") == ()
+
+
+def test_a_link_text_opening_with_the_run_set_mark_states_a_run_set() -> None:
+    assert run_set("⫽ the reviews")
+    assert operators("⫽ the reviews") == ("⫽",)
+
+
+def test_a_run_set_withholds_nothing() -> None:
+    assert not withholding("⫽ the reviews")
+    assert bundled("guide.md", "plan.md#reviews", "⫽ the reviews") is not None
+    assert withholding_target("guide.md", "plan.md", "⫽ the reviews") is None
+
+
+def test_a_run_set_mark_with_no_space_after_it_is_no_operator() -> None:
+    assert not run_set("⫽the reviews")
+    assert not run_set("the ⫽ reviews")
+    assert operators("⫽⇉ the reviews") == ()
+
+
+@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "¬ ⫽ the reviews"])
+def test_the_run_set_mark_conflicts_with_either_other_operator(opening: str) -> None:
+    assert conflicting(opening)
+
+
+def test_a_run_set_mark_is_published_as_written() -> None:
+    assert unmarked("⫽ the reviews") == "⫽ the reviews"

@@ -1,9 +1,8 @@
-description = "A title spelled with spaces and a path segment spelling it with hyphens slug alike, so the file heading absorbs the title and the group keeps its source levels."
+description = "A document at `docs/my-note.md` titled `My Note` opens the bundle on that title as its author wrote it, its sections at their source levels, and its path names no heading."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Group shift",
-  "Entry line",
 ]
 
 [invocation]
@@ -13,9 +12,4 @@ arguments = ["docs/my-note.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Run"
-resolved = "run"
+diagnostics = []

@@ -1,11 +1,9 @@
 # Guide
 
 The scope is named in [Scope](#scope), and the
-title in [Repository Labels](#docsrepository-labels).
+title in [Repository Labels](#repository-labels).
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
-# Docs/Repository-Labels
+# Repository Labels
 
 Every label the repository carries.
 

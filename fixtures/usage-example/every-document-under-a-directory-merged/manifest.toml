@@ -1,4 +1,4 @@
-description = "The usage example that merges declared members arranges the closure into two merged groups: each is headed by its declared name in title case, carries an Overview section holding each member's preamble under a subsection named by the run of that document's path that tells it apart from the other members, and emits one heading for each distinct source heading at the grouping depth. A whole-document reference to a member resolves to that member's overview subsection."
+description = "The usage example that compiles declared groups arranges the artifact documents its closure reaches into one group headed Artifacts, holding one section for each member. Each section is headed by that member's own title, kept as its source text since no other member carries it, and holds that member's own Operations, Fields and Commands subsections, as many of the three as the member has. The reference document joins a second group, headed References, which emits the one heading its member carries at the grouping depth. A whole-document reference to a member resolves to the section its title heads."
 
 clauses = [
   "Usage examples",
@@ -6,20 +6,14 @@ clauses = [
   "Grouping — Group structure",
   "Grouping — Verbatim names",
   "Grouping — Group naming",
-  "Grouping — Document content above the grouping depth",
-  "Entry line",
+  "Grouping — A heading for every member",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["modes/plan-mode.md"]
+arguments = ["modes/hoist-mode.md"]
 
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Procedure"
-resolved = "procedure"
+diagnostics = []

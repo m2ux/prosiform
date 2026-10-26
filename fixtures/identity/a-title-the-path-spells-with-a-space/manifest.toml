@@ -1,10 +1,9 @@
-description = "The contract's own example: a document at `My Note.md` titled `My Note` has that title absorbed, because the final path segment is slugged as the title is."
+description = "A document at `My Note.md` titled `My Note` opens the bundle on that title as its author wrote it, its sections at their source levels."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Group shift",
   "File-scoped hierarchy — Preamble",
-  "Entry line",
 ]
 
 [invocation]
@@ -14,9 +13,4 @@ arguments = ["My Note.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Run"
-resolved = "run"
+diagnostics = []

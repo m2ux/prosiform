@@ -1,4 +1,4 @@
-description = "A reference graph whose dependencies form a cycle bundles to a fixed point: each reachable document is present once, in root-relative path order, and the traversal terminates on the identity each reference normalized to rather than on a depth it refuses at."
+description = "A reference graph whose dependencies form a cycle bundles to a fixed point: each reachable document is present once, in the order a link first reaches it, and the traversal terminates on the identity each reference normalized to rather than on a depth it refuses at."
 
 clauses = [
   "Compile before publishing, expanding coverage",
@@ -13,9 +13,4 @@ arguments = ["alpha.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Alpha"
-resolved = "alpha"
+diagnostics = []

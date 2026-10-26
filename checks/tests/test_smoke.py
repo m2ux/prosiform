@@ -64,27 +64,25 @@ def test_a_version_response_naming_no_profile_is_refused(
 def test_a_bundle_differing_from_the_source_is_refused(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out="# guide\n", err=smoke.REPORT))
+    answering(monkeypatch, run(out="# guide\n"))
     with pytest.raises(smoke.Failed) as refused:
         smoke.bundles(tmp_path, tmp_path, tmp_path)
     assert "the bundle differs" in str(refused.value)
 
 
-def test_a_bundle_reporting_another_destination_is_refused(
+def test_a_bundle_writing_to_standard_error_is_refused(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(
-        monkeypatch, run(out=smoke.BUNDLE, err="W_ENTRY_DESTINATION: elsewhere\n")
-    )
+    answering(monkeypatch, run(out=smoke.BUNDLE, err="W_RESOURCE_PORTABILITY: x\n"))
     with pytest.raises(smoke.Failed) as refused:
         smoke.bundles(tmp_path, tmp_path, tmp_path)
-    assert "another entry destination" in str(refused.value)
+    assert "wrote to standard error" in str(refused.value)
 
 
-def test_the_bundle_and_the_report_the_source_names_are_accepted(
+def test_the_bundle_the_source_names_is_accepted(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out=smoke.BUNDLE, err=smoke.REPORT))
+    answering(monkeypatch, run(out=smoke.BUNDLE))
     smoke.bundles(tmp_path, tmp_path, tmp_path)
 
 

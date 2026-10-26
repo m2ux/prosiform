@@ -1,0 +1,21 @@
+description = "A prosiform key the contract does not admit, here dispatch, fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
+
+clauses = [
+  "Conversion metadata — The admitted keys",
+  "Metadata failures",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["unknown field prosiform.dispatch"]
+reference = "guide.md"
+chain = ["guide.md"]

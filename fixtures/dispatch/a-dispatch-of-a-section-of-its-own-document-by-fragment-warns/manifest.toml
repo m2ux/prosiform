@@ -1,0 +1,20 @@
+description = "A dispatched link naming a section of the document that writes it by fragment alone hands a sub-agent material the dispatching session compiles itself, so the bundle publishes and the run warns, naming the link and the section."
+
+clauses = [
+  "Link classification and resource handling — Dispatching its own document",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_DISPATCH_SELF"
+reference = "#steps"
+resolved = "guide.md#steps"

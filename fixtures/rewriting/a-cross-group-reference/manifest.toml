@@ -5,7 +5,6 @@ clauses = [
   "Bundle destinations — Internal links",
   "Bundle destinations — Document destinations",
   "Input and output contract — Continuous Markdown",
-  "Source and candidate validation modes — Preprocessing, the candidate is not refused under the generated-input policy",
 ]
 
 [invocation]
@@ -15,9 +14,4 @@ arguments = ["one/guide.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Guide"
-resolved = "guide"
+diagnostics = []

@@ -1,4 +1,4 @@
-description = "A reference naming the source heading the file heading absorbed resolves to the file heading's own destination, which a source in a directory spells differently from the heading's own slug."
+description = "A reference naming the source heading the file heading absorbed resolves to the file heading's own destination, the one heading the bundle emits carrying that title's text."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",
@@ -13,9 +13,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Guide"
-resolved = "guide"
+diagnostics = []

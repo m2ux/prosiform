@@ -22,7 +22,7 @@ fixtures/
             └── stdout.md
 ```
 
-`source/` is the tree the run is confined to. `expected/` holds the bytes the run must produce. They are separate because an expected bundle is itself Markdown, and a bundle offered as input is refused under the generated-input policy.
+`source/` is the tree the run is confined to. `expected/` holds the bytes the run must produce. They are separate because an expected bundle is itself Markdown, which a run over `source/` must not read as one of its sources.
 
 ## A symbolic link in a source tree
 
@@ -34,7 +34,7 @@ A checkout whose filesystem or configuration cannot create a link writes the tar
 
 ## Copied sources
 
-Most families write their sources for the clause they exercise. The `real-source/` family does not: each of its sources is a document copied byte for byte from one of this workspace's skills, at the root-relative path that skill gives it. A source written to exercise one clause exercises that clause and says nothing about the documents the tool exists to bundle, so this family is where the corpus meets prose nobody wrote for it.
+Most families write their sources for the clause they exercise. The `real-source/` family does not: each of its sources is a document copied byte for byte from one of this workspace's skills, at the path that skill gives it. A source written to exercise one clause exercises that clause and says nothing about the documents the tool exists to bundle, so this family is where the corpus meets prose nobody wrote for it.
 
 A copied source is not edited. A document that needs an edit to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
 
@@ -44,7 +44,7 @@ A document joins the family when its closure is itself: no local Markdown docume
 
 The `usage-example/` family runs the invocations the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) publishes as its usage examples, so an example that stops being a valid invocation fails a run rather than going quietly stale.
 
-Each of its fixtures reaches [`example/work-tracker/`](../example/README.md) through a `source` symbolic link, because the design and the corpus must name one tree: a copy per fixture would let the published invocation and the invocation under test drift apart. The tree is the repository's own example material, maintained with the contract, rather than a source written for one clause.
+Each of its fixtures reaches [`example/work-planner/`](../example/work-planner/SKILL.md) through a `source` symbolic link, because the design and the corpus must name one tree: a copy per fixture would let the published invocation and the invocation under test drift apart. The tree is the repository's own example material, maintained with the contract, rather than a source written for one clause.
 
 ## The manifest
 
@@ -231,9 +231,7 @@ An error decides a failing run.
 
 | Code | Declared by |
 | --- | --- |
-| `E_AMBIGUOUS_FILE_GROUP` | File-scoped hierarchy — two documents whose paths differ only by Markdown extension. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
-| `E_GENERATED_INPUT` | Generated input policy — a source opening with the bundle entry declaration. |
 | `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping. |
@@ -252,7 +250,7 @@ An error decides a failing run.
 | `E_TARGET_NOT_FOUND` | Link classification — a reference under the root naming no document, or no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, One operator per link and An operator's target — a link opening with more than one operator, or an operator naming no Markdown document or section under the root. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
@@ -260,8 +258,13 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 
 | Code | Declared by |
 | --- | --- |
-| `W_ENTRY_DESTINATION` | Agent delivery contract, Entry destinations — one entry reference and the destination it resolved to, reported so a caller can act on it as data. |
+| `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
+| `W_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatches returning to a target already on it. |
+| `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
+| `W_DISPATCH_NOT_PROCEDURAL` | Link classification and resource handling, Dispatched procedures — a dispatched target whose selected content carries no numbered step. |
+| `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
+| `W_RUN_SET_SHAPE` | Link classification and resource handling, Run-set shape — a run-set link naming a target that holds anything but one bulleted list whose every item links a Markdown document or section under the root. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
 

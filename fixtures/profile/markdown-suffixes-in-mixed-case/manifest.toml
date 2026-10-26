@@ -1,4 +1,4 @@
-description = "Both Markdown suffixes are classified case-insensitively, while each document's file heading keeps the spelling and case the filesystem holds."
+description = "Both Markdown suffixes are classified case-insensitively, while the file heading of a document carrying no title keeps the spelling and case the filesystem holds."
 
 clauses = [
   "Markdown and source-heading profile — File suffixes",
@@ -12,15 +12,4 @@ arguments = ["Guide.MD", "notes/Note.Markdown"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Reading the guide"
-resolved = "reading-the-guide"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Notes/Note"
-resolved = "notesnote"
+diagnostics = []
