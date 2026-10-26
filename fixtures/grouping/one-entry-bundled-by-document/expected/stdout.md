@@ -1,16 +1,16 @@
-# Modes/Plan-Mode
+# Plan Mode
 
 ### Operations
 
 #### Draft
 
-Write the first pass, reading it back as [Review Mode](#modesreview-mode) states.
+Write the first pass, reading it back as [Review Mode](#review-mode) states.
 
 #### Review
 
 Read the draft back against the goal.
 
-# Modes/Review-Mode
+# Review Mode
 
 Reads a plan back against the goal it states.
 

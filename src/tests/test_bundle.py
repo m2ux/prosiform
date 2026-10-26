@@ -119,26 +119,24 @@ def test_a_group_opens_on_its_file_heading() -> None:
     assert grouped("docs/note.md", "Body.\n").text == "# Docs/Note\n\nBody.\n"
 
 
-def test_a_title_the_path_already_names_is_absorbed() -> None:
+def test_the_file_heading_absorbs_the_document_s_title() -> None:
     carried = grouped("guide.md", "# Guide\n\n## Run\n\nDo it.\n")
     assert carried.text == "# Guide\n\n## Run\n\nDo it.\n"
     assert carried.headings == ("Guide", "Run")
 
 
-def test_a_path_segment_is_slugged_as_the_title_it_is_compared_with_is() -> None:
-    carried = grouped("My Note.md", "# My Note\n\n## Run\n\nDo it.\n")
-    assert carried.text == "# My Note\n\n## Run\n\nDo it.\n"
-    assert carried.headings == ("My Note", "Run")
+@pytest.mark.parametrize("name", ["My Note", "my-note", "MY NOTE"])
+def test_a_name_is_slugged_as_the_title_it_is_compared_with_is(name: str) -> None:
+    assert absorbed(parse("# My Note\n"), name) is not None
 
 
-def test_a_hyphenated_segment_absorbs_the_title_spelling_it_with_spaces() -> None:
+def test_a_name_slugging_elsewhere_absorbs_no_title() -> None:
+    assert absorbed(parse("# Docs\n"), "note") is None
+
+
+def test_a_file_heading_carries_the_title_and_not_the_path() -> None:
     carried = grouped("docs/my-note.md", "# My Note\n\n## Run\n")
-    assert carried.text == "# Docs/My-Note\n\n## Run\n"
-
-
-def test_a_title_naming_another_segment_of_the_path_is_not_absorbed() -> None:
-    carried = grouped("docs/note.md", "# Docs\n\n## Run\n")
-    assert carried.text == "# Docs/Note\n\n## Docs\n\n### Run\n"
+    assert carried.text == "# My Note\n\n## Run\n"
 
 
 def test_an_absorbed_group_keeps_its_source_heading_levels() -> None:
@@ -146,10 +144,16 @@ def test_an_absorbed_group_keeps_its_source_heading_levels() -> None:
     assert grouped("guide.md", text).text == "# Guide\n\n## Run\n\n### Detail\n"
 
 
-def test_a_title_the_path_does_not_name_is_kept_and_shifted() -> None:
+def test_a_title_the_path_does_not_name_heads_the_group() -> None:
     carried = grouped("guide.md", "# Another Name\n\n## Run\n")
-    assert carried.text == "# Guide\n\n## Another Name\n\n### Run\n"
-    assert carried.headings == ("Guide", "Another Name", "Run")
+    assert carried.text == "# Another Name\n\n## Run\n"
+    assert carried.headings == ("Another Name", "Run")
+
+
+def test_a_title_heads_the_group_as_literal_text() -> None:
+    carried = grouped("guide.md", "# The *marked* [guide](https://example.com)\n")
+    assert carried.text == "# The marked guide\n"
+    assert carried.headings == ("The marked guide",)
 
 
 def test_a_second_h1_leaves_the_title_unabsorbed() -> None:
@@ -241,8 +245,8 @@ def test_the_separation_between_two_regions_is_one_blank_line() -> None:
 def test_a_heading_a_container_carries_is_shifted_where_it_sits(
     written: str, expected: str
 ) -> None:
-    carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
-    assert carried.text == f"# Guide\n\n## Another Name\n\n{expected}\n"
+    carried = grouped("guide.md", f"## Lead\n\n{written}\n")
+    assert carried.text == f"# Guide\n\n### Lead\n\n{expected}\n"
 
 
 def test_a_heading_a_container_carries_is_one_the_group_emits() -> None:
@@ -257,8 +261,8 @@ def test_a_heading_a_code_example_holds_is_no_heading_the_group_emits() -> None:
 
 def test_a_container_keeps_the_heading_like_text_a_code_example_holds() -> None:
     written = "> ```markdown\n> ## Not A Heading\n> ```"
-    carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
-    assert carried.text == f"# Guide\n\n## Another Name\n\n{written}\n"
+    carried = grouped("guide.md", f"## Lead\n\n{written}\n")
+    assert carried.text == f"# Guide\n\n### Lead\n\n{written}\n"
 
 
 @pytest.mark.parametrize(
@@ -274,8 +278,8 @@ def test_a_container_keeps_the_heading_like_text_a_code_example_holds() -> None:
 def test_a_shifted_group_emits_a_setext_heading_as_atx(
     written: str, expected: str
 ) -> None:
-    carried = grouped("guide.md", f"# Another Name\n\n{written}\n")
-    assert carried.text == f"# Guide\n\n## Another Name\n\n{expected}\n"
+    carried = grouped("guide.md", f"## Lead\n\n{written}\n")
+    assert carried.text == f"# Guide\n\n### Lead\n\n{expected}\n"
 
 
 def test_a_group_that_shifts_by_nothing_leaves_a_setext_heading_alone() -> None:
@@ -284,17 +288,17 @@ def test_a_group_that_shifts_by_nothing_leaves_a_setext_heading_alone() -> None:
 
 
 def test_a_converted_heading_keeps_a_number_sign_run_ending_its_text() -> None:
-    carried = grouped("guide.md", "# Another Name\n\nSharp #\n---\n")
-    assert carried.text == "# Guide\n\n## Another Name\n\n### Sharp \\#\n"
+    carried = grouped("guide.md", "## Lead\n\nSharp #\n---\n")
+    assert carried.text == "# Guide\n\n### Lead\n\n### Sharp \\#\n"
 
 
 def test_a_converted_heading_shows_the_text_its_source_lines_carried() -> None:
-    carried = grouped("guide.md", "# Another Name\n\nRun\nand stop\n---\n")
-    assert carried.headings == ("Guide", "Another Name", "Run and stop")
+    carried = grouped("guide.md", "## Lead\n\nRun\nand stop\n---\n")
+    assert carried.headings == ("Guide", "Lead", "Run and stop")
 
 
 def test_a_shift_beyond_the_sixth_level_for_a_nested_heading_is_an_overflow() -> None:
-    text = "# Another Name\n\n> ###### Deep\n"
+    text = "## Lead\n\n> ###### Deep\n"
     with pytest.raises(Overflow) as refused:
         grouped("guide.md", text)
     assert refused.value.heading == "Deep"
@@ -302,7 +306,7 @@ def test_a_shift_beyond_the_sixth_level_for_a_nested_heading_is_an_overflow() ->
 
 
 def test_a_shift_beyond_the_sixth_level_is_an_overflow() -> None:
-    text = "# Another Name\n\n###### Deep\n"
+    text = "## Lead\n\n###### Deep\n"
     with pytest.raises(Overflow) as refused:
         grouped("guide.md", text)
     assert refused.value.heading == "Deep"

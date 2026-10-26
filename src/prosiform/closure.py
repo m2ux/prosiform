@@ -464,8 +464,9 @@ def rebased(found: Reference, text: str) -> str:
     """URI-escape a withheld target's canonical working-directory-relative path.
 
     A deferral and a dispatch publish the same destination: the path the
-    run that compiles the material follows from the root the bundle
-    names, with the fragment the link resolved retained.
+    run that compiles the material follows from the working directory
+    the bundle was compiled in, with the fragment the link resolved
+    retained.
     """
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
     fragment = components(text).fragment

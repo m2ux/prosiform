@@ -17,7 +17,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 | Term | Definition |
 | --- | --- |
-| **root** | A source's confinement directory. A reference the source carries resolves from the source's own directory, and names a dependency only where it lands inside the root. An explicit declaration resolves from that source's directory; absence uses the invocation working directory. |
+| **root** | A source's confinement directory. A reference the source carries resolves from the source's own directory, and names a dependency only where it lands inside the root. An explicit declaration resolves from that source's directory; absence uses the invocation working directory. It bounds what the source may include and names no heading, order or output. |
 | **source document** | One captured local Markdown file, recognized by its `.md` or `.markdown` suffix. |
 | **section** | A document-level heading and its subsections, ending before the next heading of equal or higher level. The smallest unit a reference can select. |
 | **region** | A contiguous span of a source document selected for inclusion: a whole document, or a section. |

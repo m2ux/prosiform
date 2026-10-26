@@ -1,4 +1,4 @@
-description = "The contract's own example: a document at `My Note.md` titled `My Note` has that title absorbed, because the final path segment is slugged as the title is."
+description = "A document at `My Note.md` titled `My Note` opens the bundle on that title as its author wrote it, its sections at their source levels."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",

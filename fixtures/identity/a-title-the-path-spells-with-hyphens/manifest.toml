@@ -1,4 +1,4 @@
-description = "A title spelled with spaces and a path segment spelling it with hyphens slug alike, so the file heading absorbs the title and the group keeps its source levels."
+description = "A document at `docs/my-note.md` titled `My Note` opens the bundle on that title as its author wrote it, its sections at their source levels, and its path names no heading."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",

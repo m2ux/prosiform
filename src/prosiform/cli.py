@@ -39,7 +39,6 @@ from prosiform.bundle import (
     Overflow,
     assemble,
     group,
-    heading_text,
 )
 from prosiform.bundle import (
     CODES as BUNDLE_CODES,
@@ -633,12 +632,7 @@ def read_document(
                 ),
             ) from error
         effective = os.path.relpath(rooted[-1][0], root)
-        source = replace(
-            source,
-            root="" if effective == "." else effective,
-            display=os.path.relpath(root / name, rooted[-1][0]),
-            identity=captured.identity,
-        )
+        source = replace(source, root="" if effective == "." else effective)
         captured = replace(captured, directories=(*captured.directories, *rooted))
         return Opened(source, len(data), captured)
     except InvalidMetadata as invalid:
@@ -761,8 +755,8 @@ def contributing(
     fragment alone selects from the document `-f` names. The path
     is the identity the reference normalized to, so two references
     spelling one document name one group, which carries what each of
-    them selected, and the groups are ordered by root-relative path so
-    one selection always bundles to the same bytes.
+    them selected, and the groups are ordered by path so one selection
+    always bundles to the same bytes.
     """
     selected: dict[str, list[Reference]] = {}
     for one in requested:
@@ -1203,11 +1197,9 @@ def confirm(
 def group_depths(
     read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
 ) -> dict[str, int]:
-    """Consistent depths for named groups, ordered by identity and source path."""
+    """Consistent depths for named groups, ordered by source path."""
     members: dict[str, list[str]] = {}
-    for path in sorted(
-        selected, key=lambda p: (read[p].display, read[p].identity or p)
-    ):
+    for path in sorted(selected):
         name = read[path].conversion.group
         if name is not None:
             members.setdefault(name, []).append(path)
@@ -1274,39 +1266,23 @@ def group_depths(
 def unambiguous(
     selected: dict[str, list[Reference]], read: Mapping[str, Source]
 ) -> None:
-    """Hold each file heading to naming one source, as a reader must read it.
+    """Hold each member heading of a merged group to naming one source.
 
-    A merged group is headed by its declared name rather than by a
-    path, so a member of one heads no file group and two members
-    sharing a title are told apart by the names the arrangement gives
-    them.
+    A member is named by the shortest run of its path that distinguishes
+    it from the group's other members, so two members whose paths differ
+    only by Markdown extension, or only by capitalization, take one
+    name, which a reader cannot tell apart.
     """
-    headed: dict[str, str] = {}
-    for path, selecting in selected.items():
-        if read[path].conversion.group is not None:
-            continue
-        title = heading_text(read[path].display or path).casefold()
-        if title in headed:
-            raise input_failure(
-                f"{path!r} and {headed[title]!r} both head a file group {title!r}, "
-                f"which a reader cannot tell apart",
-                code=AMBIGUOUS_FILE_GROUP,
-                remedy="bundle one of the two, or rename one of the documents",
-                reference=path,
-                chain=selecting[0].chain,
-            )
-        headed[title] = path
     members: dict[str, list[str]] = {}
     for path in selected:
         name = read[path].conversion.group
         if name is not None:
             members.setdefault(name, []).append(path)
     for name, paths in members.items():
-        displays = {path: read[path].display or path for path in paths}
-        names = member_headings(list(displays.values()), name)
+        names = member_headings(paths, name)
         seen: dict[str, str] = {}
         for path in paths:
-            title = names[displays[path]].casefold()
+            title = names[path].casefold()
             if title in seen:
                 raise input_failure(
                     f"{path!r} and {seen[title]!r} share member heading {title!r}",
@@ -1337,17 +1313,14 @@ def assembled(
 
     A document without conversion settings is its own file group. Every
     other document joins the merged group its slug names, which carries
-    its members in root-relative path order. The groups are ordered by
-    root-relative path, a merged group taking the first of its
-    members', so one selection always bundles to the same bytes. The
-    group that carries the parent leads.
+    its members in path order. The groups are ordered by path, a merged
+    group taking the first of its members', so one selection always
+    bundles to the same bytes. The group that carries the parent leads.
     """
     parent = parent_document(entries)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path in sorted(
-        selected, key=lambda p: (read[p].display, read[p].identity or p)
-    ):
+    for path in sorted(selected):
         selecting = selected[path]
         named = read[path].conversion.group
         if named is not None:
@@ -1364,7 +1337,6 @@ def assembled(
                     selection(path, tokens, selecting, entries),
                     assigned,
                     read[path].root,
-                    read[path].display or path,
                     path == parent,
                 )
             )
@@ -1389,18 +1361,11 @@ def assembled(
                         )
                         for path in paths
                     ],
-                    {path: read[path].display for path in paths},
                     parent,
                     read[paths[0]].conversion.heading is not False,
                 )
             )
-    ordered = sorted(
-        groups,
-        key=lambda one: min(
-            (read[p].display, read[p].identity or p)
-            for p in set(one.record.paths()) | {one.order}
-        ),
-    )
+    ordered = sorted(groups, key=lambda one: min(set(one.record.paths()) | {one.order}))
     if parent is None:
         return ordered
     return sorted(
@@ -1598,7 +1563,7 @@ def derived_output(
     referrer: Reference | None,
     requested: Sequence[Reference],
 ) -> str:
-    """The basename of one normalized entry, relative to its captured root."""
+    """The basename of one normalized entry, from its working-directory path."""
     selections = {
         (one.path or (referrer.path if referrer else ""), one.fragment)
         for one in requested
@@ -1608,7 +1573,7 @@ def derived_output(
             "multiple distinct selections require an explicit -o destination"
         )
     path, fragment = next(iter(selections))
-    name = str(Path(read[path].display).with_suffix("")).replace(os.sep, "_")
+    name = str(Path(path).with_suffix("")).replace(os.sep, "_")
     if fragment is not None:
         name += f"__{fragment}"
     return f"{name}.bundle.md"

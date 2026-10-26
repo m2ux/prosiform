@@ -3,7 +3,7 @@
 The procedure requires [the review step](#review),
 which another group carries.
 
-# Two/Process
+# Process
 
 ### Review
 

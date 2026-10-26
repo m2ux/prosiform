@@ -1,4 +1,4 @@
-description = "A document's preamble sits after its file heading and before its first retained source heading, which here is a title the path does not carry and the group shifts."
+description = "A document's preamble above its title opens the bundle, before that title and the sections beneath it."
 
 clauses = [
   "File-scoped hierarchy — Preamble",

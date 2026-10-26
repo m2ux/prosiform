@@ -1,0 +1,20 @@
+description = "Two members of one group whose paths differ only by Markdown extension take one member name, which a reader cannot tell apart, so the run refuses the bundle rather than publishing two members under one name."
+
+clauses = [
+  "Grouping — Residual ambiguity",
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md", "guide.markdown"]
+
+[expected]
+exit_status = 1
+stdout = "expected/stdout.md"
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_AMBIGUOUS_FILE_GROUP"
+reference = "guide.md"

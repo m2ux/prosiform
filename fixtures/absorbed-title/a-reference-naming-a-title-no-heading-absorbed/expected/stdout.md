@@ -1,9 +1,9 @@
 # Guide
 
 The scope is named in [Scope](#scope), and the
-title in [Repository Labels](#docsrepository-labels).
+title in [Repository Labels](#repository-labels).
 
-# Docs/Repository-Labels
+# Repository Labels
 
 Every label the repository carries.
 
