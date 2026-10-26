@@ -10,6 +10,8 @@ Records delivery on an initiative, its epics, and their task issues. Each task t
 
 The main path meets [Outcomes](#outcomes).
 
+Following [dispatch convention](../SKILL.md#dispatch).
+
 1. **Select.**
    Select an initiative with its open epics, or the epics the user names.
    - Run [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for each selected issue before inspecting its Open Questions or format.

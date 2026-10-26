@@ -10,6 +10,8 @@ Scopes one problem: the friction, the evidence, and the boundary, and states the
 
 The main path meets [Outcomes](#outcomes).
 
+Following [dispatch convention](../SKILL.md#dispatch).
+
 1. **Understand the problem.**
    Ask the user until the friction and the boundary are clear.
    - State the goal back as clauses meeting [Goal](../artifacts/proposal-body.md#goal).

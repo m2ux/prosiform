@@ -79,6 +79,10 @@ Select the mode as appropriate to fulfill the user request:
 - **Execution.**
   A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is run whole. Run another mode, a protocol, or a named subsection only where the procedure calls it; finish that call and return its result before continuing, unless the procedure explicitly dispatches concurrent work.
 
+## Dispatch
+
+A link whose text opens with `»` names work a sub-agent carries out. Dispatch one sub-agent with the linked document or section as its entry, pass it the inputs the step names, and continue with the result it returns. The linked material is not read or run in this session.
+
 ## Conventions
 
 - **Session.**
