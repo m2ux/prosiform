@@ -20,7 +20,7 @@ One task's local implementation plan.
 - Write the supplied task's file from [Template](#template), returning its path for registration in the planning record.
   - Its name and content must meet [Identity](#identity) and [Sections](#sections).
   - The supplied component must meet [Component](#component).
-  - The test row must meet [Test Coverage](../artifacts/pull-request-body.md#test-coverage), using the supplied criteria without copying them into the file.
+  - The test row must meet [Test Coverage](pull-request-body.md#test-coverage), using the supplied criteria without copying them into the file.
 
 ## Fields
 
@@ -67,5 +67,5 @@ One declaration line ahead of the first heading, naming the single component the
 
 - Component names the component the Implementation part extends, meeting [Component](#component).
 - Overview states what the task delivers and why.
-- Problem and Proposal meet [Problem and Proposal](../artifacts/issue-body.md#problem-and-proposal); the Proposal starts with the scene.
+- Problem and Proposal meet [Problem and Proposal](issue-body.md#problem-and-proposal); the Proposal starts with the scene.
 - Work Breakdown decomposes the work into parts, such as analysis, plan, implementation, review and test. Its columns are Part and Description. The test row names the checks required by the work.

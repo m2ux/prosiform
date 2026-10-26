@@ -12,8 +12,8 @@ One epic base merged into its long-lived branch, on current branch, epic and pul
 
 1. **Prepare the evidence.**
    - Run [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for the repository, which gates the merge this protocol makes.
-   - Follow [Review Pull Request](../protocols/review-pull-request.md) with the actual task merges, the epic's issue and that confirmed setting.
-   - Follow [Change Overview](../protocols/change-overview.md) with the review pull request identity.
+   - Follow [Review Pull Request](review-pull-request.md) with the actual task merges, the epic's issue and that confirmed setting.
+   - Follow [Change Overview](change-overview.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
    - Put a draft still awaiting its ready mark to the user as an [¬ Interview](../guidelines.md#modes), naming the epic standing in review on its board.
