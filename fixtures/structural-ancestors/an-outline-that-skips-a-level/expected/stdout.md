@@ -1,6 +1,4 @@
-# Notes
-
-## Guide
+# Guide
 
 ### Alpha
 

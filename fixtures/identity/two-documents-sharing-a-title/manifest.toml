@@ -1,0 +1,17 @@
+description = "Two documents in different directories carrying one title are each headed by that title, so the two file headings coincide and take distinct destinations as any repeated heading does: the later carries the renderer's ordinal, and each link reaches the document it names."
+
+clauses = [
+  "File-scoped hierarchy, two documents sharing a title",
+  "File-scoped hierarchy — Absorbed title",
+  "Bundle destinations — Ordinal assignment",
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

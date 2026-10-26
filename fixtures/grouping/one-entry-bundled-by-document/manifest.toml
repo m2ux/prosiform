@@ -1,4 +1,4 @@
-description = "One entry with no conversion metadata puts each contributing document in a file group of its own, headed by its root-relative path. It is the arrangement the same entry with declared group membership is compared with: the content selected is the same, and where each section sits is not."
+description = "One entry with no conversion metadata puts each contributing document in a file group of its own, headed by its own title. It is the arrangement the same entry with declared group membership is compared with: the content selected is the same, and where each section sits is not."
 
 clauses = [
   "Grouping",

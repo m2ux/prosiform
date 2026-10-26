@@ -1,6 +1,6 @@
 # Bare
 
-# Notes/Kept
+# Kept
 
 What this document states before its first section.
 

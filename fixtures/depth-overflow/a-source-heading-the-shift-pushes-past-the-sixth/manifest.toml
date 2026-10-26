@@ -1,4 +1,4 @@
-description = "A source heading the group's shift would place at the seventh level fails before publication, naming the heading and the level it would take, and standard output carries nothing."
+description = "A source heading the group's shift would place at the seventh level fails before publication, naming the heading and the level it would take, and standard output carries nothing; a second H1 leaves the document without a title, so its group shifts."
 
 clauses = [
   "File-scoped hierarchy — Depth overflow",

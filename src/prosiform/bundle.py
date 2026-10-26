@@ -2,20 +2,20 @@
 
 A group is a source document unless its conversion metadata names the
 merged group that `grouping` assembles. A file group is headed by one
-generated H1 whose visible
-text is the document's normalized root-relative path with the Markdown
-extension removed, in title case: each word of the path is capitalized
-and every separator the path carries is kept, so the heading names the
-document the filesystem holds and carries the one convention every
-generated heading takes. The path is escaped as literal heading text, so
-punctuation in a filename names a file rather than opening a link, an
-image, emphasis, code, raw HTML, an entity or a strikethrough, or closing
-the heading that carries it. Two
-documents sharing a basename in different directories carry their
-directories in their headings and stay distinguishable; two whose paths
-differ only by Markdown extension, or only by the capitalization of
-their letters, produce one heading text twice, which the command
-refuses as an ambiguous file group.
+generated H1. Its visible text is the document's title, where the
+document carries one: its first heading, where that heading is its only
+H1 and sits at the document level. A document carrying no title is
+headed by its normalized path relative to the invocation working
+directory with the Markdown extension removed, in title case: each word
+of the path is capitalized and every separator the path carries is
+kept, so the heading names the document the filesystem holds and
+carries the one convention every generated heading takes. Either text
+is escaped as literal heading text, so punctuation in a title or a
+filename names itself rather than opening a link, an image, emphasis,
+code, raw HTML, an entity or a strikethrough, or closing the heading
+that carries it. Two documents whose file headings coincide are two
+headings of one text, which take distinct destinations as any repeated
+heading does: the renderer's slug, the later one carrying its ordinal.
 
 A group is assembled from the maximal regions the run selected, in
 source order, each carried as the bytes its source wrote. A whole
@@ -55,13 +55,9 @@ where it sits, with the blank line the container separated it by, and
 a definition at the document level lies between two regions and is
 dropped by the slice that takes them.
 
-The file heading absorbs the source's first heading when that heading is
-the document's only H1 and its slug equals the slug of the final segment
-of the path, because the file heading already names it. Both sides are
-slugged, so the capitalization and spacing a filesystem carries decide
-nothing and a document at `My Note.md` titled `My Note` is absorbed as
-one at `my-note.md` is. A group whose title is
-absorbed keeps its source heading levels; every other group moves each
+The file heading absorbs the document's title, because it carries that
+title's text. A group whose title is absorbed keeps its source heading
+levels; every other group moves each
 emitted heading down one level, the file heading taking the level that
 makes room. A heading a retained container carries is shifted where it
 sits, so the container keeps the structure it had. A shift that would
@@ -261,7 +257,10 @@ def title_cased(text: str) -> str:
 
 
 def heading_text(path: str) -> str:
-    """One source's file heading: its root-relative path in title case, the suffix gone.
+    """One untitled source's file heading: its path in title case, the suffix gone.
+
+    The path is the one the run read the source by, relative to the
+    invocation working directory.
 
     The suffix is classified case-insensitively, as the profile
     classifies one, and the path the heading spells is the path the
@@ -273,11 +272,6 @@ def heading_text(path: str) -> str:
     if spelled.suffix.lower() in SUFFIXES:
         return title_cased(str(spelled.with_suffix("")))
     return title_cased(path)
-
-
-def final_segment(title: str) -> str:
-    """The last segment of a file heading's path, which a title can be absorbed by."""
-    return PurePosixPath(title).name
 
 
 def escaped(text: str) -> str:
@@ -405,10 +399,10 @@ def target(
     emitting it recorded the target it answers to.
 
     A withheld link under the allowed source root takes its target's
-    path from that root, so the run that compiles it later needs
-    nothing but the root to follow it. It is never rewritten to a
-    bundle destination, even where another reference carried its target
-    into the bundle: what one author withheld cannot be changed by
+    path from the invocation working directory, so the run that
+    compiles it later, from that directory, follows it as written. It is
+    never rewritten to a bundle destination, even where another reference
+    carried its target into the bundle: what one author withheld cannot be changed by
     another author's reference.
 
     A link resolving outside the allowed source root, and one naming no
@@ -432,24 +426,36 @@ def carries_title(tokens: Sequence[Token]) -> bool:
     )
 
 
-def absorbed(tokens: Sequence[Token], title: str) -> Token | None:
-    """The source heading the file heading absorbs, where the source carries one.
+def document_title(tokens: Sequence[Token]) -> Token | None:
+    """The document's title: its first heading, where that is its only H1.
 
-    A title the path already names is absorbed: the document's first
-    heading, where that heading is its only H1, sits at the document
-    level, and slugs to what the final segment of the file heading's
-    path slugs to. The segment is slugged as the title is, so a
-    filesystem's capitalization and spacing decide nothing.
+    The title sits at the document level, so an H1 a container carries
+    titles nothing, and a document carrying a second H1 or opening on a
+    deeper heading has no single heading that names it.
     """
     carried = list(headings(tokens))
     if not carried:
         return None
-    opening, inline = carried[0]
+    opening, _inline = carried[0]
     if level(opening) != 1 or sum(1 for one, _ in carried if level(one) == 1) != 1:
         return None
     if not any(token is opening for token in regions(tokens)):
         return None
-    if slug(visible(inline)) != slug(final_segment(title)):
+    return opening
+
+
+def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
+    """The document's title, where it slugs to what a name slugs to.
+
+    Both sides are slugged, so the capitalization and spacing a
+    filesystem carries decide nothing and a document at `My Note.md`
+    titled `My Note` is named by `my-note` as one at `my-note.md` is.
+    """
+    opening = document_title(tokens)
+    if opening is None:
+        return None
+    inline = next(one for heading, one in headings(tokens) if heading is opening)
+    if slug(visible(inline)) != slug(name):
         return None
     return opening
 
@@ -647,7 +653,6 @@ def group(
     selected: Selection | None = None,
     assigned: dict[tuple[str, str | None], str] | None = None,
     root: str = "",
-    display: str | None = None,
     situate: bool = False,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
@@ -659,11 +664,13 @@ def group(
     A selection of None is the whole document. A selection of sections
     emits the regions it names and nothing else.
 
-    A title is absorbed only where the group emits it, because the
-    absorption is the file heading standing in for a heading the group
-    carries. A group that emits none therefore shifts, and a reference
-    to an absorbed title resolves to the file heading's own destination.
-    The file heading names that title either way, so a selection
+    The file heading carries the document's title where the document
+    has one, and the path the run read it by where it has none. A title
+    is absorbed only where the group emits it, because the absorption is
+    the file heading standing in for a heading the group carries. A
+    group that emits none therefore shifts, and a reference to an
+    absorbed title resolves to the file heading's own destination. The
+    file heading names that title either way, so a selection
     beneath an unemitted one is placed by the file heading and the
     title is no structural ancestor: a second heading carrying the
     document's own name is one a reader cannot tell from the first.
@@ -692,7 +699,9 @@ def group(
     declarations behind them.
     """
     situate = situate and carries_title(tokens) and selected is None
-    title = heading_text(path if display is None else display)
+    text = shown_text(path, tokens, root)
+    titled = document_title(tokens)
+    title = heading_text(path) if titled is None else single_line(text[id(titled)])
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])
@@ -702,7 +711,6 @@ def group(
         if selected is None
         else {id(token) for token in selected.regions}
     )
-    titled = absorbed(tokens, title)
     absorbing = (
         None
         if situate
@@ -712,7 +720,6 @@ def group(
     )
     by = 0 if situate or absorbing is not None else SHIFT
     emitted = [] if situate else [f"{ATX} {escaped(title)}"]
-    text = shown_text(path, tokens, root)
     named = source_fragments(tokens)
     emitting_headings: list[Emitted] = []
     recorded: list[Part] = []

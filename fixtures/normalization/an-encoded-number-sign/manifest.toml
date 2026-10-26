@@ -1,4 +1,4 @@
-description = "An encoded number sign is a character of a filename, so the reference names a section of the document whose path carries it and the generated file heading shows that character as literal heading text."
+description = "An encoded number sign is a character of a filename, so the reference names a section of the document whose path carries it, and the file heading shows the document's title, which spells that character, as literal heading text."
 
 clauses = [
   "Resolution sequence — notes%23draft.md#run",

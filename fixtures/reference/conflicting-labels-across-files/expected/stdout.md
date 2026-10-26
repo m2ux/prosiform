@@ -3,11 +3,11 @@
 The guide names [the runner](#guide-runner) its own definition points at, and
 requires [the tools](#tools).
 
-# Guide-Runner
+# Guide Runner
 
 The runner the guide's own definition names.
 
-# Tools-Runner
+# Tools Runner
 
 The runner the tools' own definition names.
 

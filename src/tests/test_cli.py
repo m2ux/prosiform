@@ -777,20 +777,32 @@ def test_a_run_that_cannot_publish_reports_the_publication_failure_alone(
     assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
 
 
-def test_two_sources_sharing_a_basename_stay_distinguishable(root: Path) -> None:
-    written(root, "docs/note.md", "# Note\n\nUnder docs.\n")
-    written(root, "notes/note.md", "# Note\n\nUnder notes.\n")
+def test_two_untitled_sources_sharing_a_basename_stay_distinguishable(
+    root: Path,
+) -> None:
+    written(root, "docs/note.md", "Under docs.\n")
+    written(root, "notes/note.md", "Under notes.\n")
     run = invoke("docs/note.md", "notes/note.md", cwd=root)
     assert run.status == SUCCESS
-    assert "Under docs." in run.stdout
-    assert "# Notes/Note\n" in run.stdout
-    assert "Under notes." in run.stdout
+    assert "# Docs/Note\n\nUnder docs." in run.stdout
+    assert "# Notes/Note\n\nUnder notes." in run.stdout
 
 
-def test_groups_are_ordered_by_root_relative_path(root: Path) -> None:
+def test_two_sources_sharing_a_title_take_distinct_destinations(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\n[One](docs/note.md) [Two](notes/note.md)\n")
+    written(root, "docs/note.md", "# Note\n\nUnder docs.\n")
+    written(root, "notes/note.md", "# Note\n\nUnder notes.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "[One](#note) [Two](#note-1)" in run.stdout
+    assert run.stdout.index("Under docs.") < run.stdout.index("Under notes.")
+    assert run.stdout.count("# Note\n") == 2
+
+
+def test_groups_are_ordered_by_path(root: Path) -> None:
     written(root, "guide.md", "# Guide\n")
-    written(root, "docs/note.md", "# Note\n")
-    written(root, "notes/note.md", "# Note\n")
+    written(root, "docs/note.md", "Body.\n")
+    written(root, "notes/note.md", "Body.\n")
     ordered = invoke("guide.md", "notes/note.md", "docs/note.md", cwd=root).stdout
     assert ordered.index("# Docs/Note\n") < ordered.index("# Notes/Note\n")
 
@@ -802,11 +814,20 @@ def test_one_document_named_twice_is_one_group(root: Path) -> None:
     assert run.stdout.count("# Guide\n") == 1
 
 
-def test_two_paths_differing_only_by_suffix_are_an_ambiguous_file_group(
+def test_two_paths_differing_only_by_suffix_are_two_groups(root: Path) -> None:
+    written(root, "guide.md", "One.\n")
+    written(root, "guide.markdown", "Two.\n")
+    run = invoke("guide.md", "guide.markdown", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stdout == "# Guide\n\nOne.\n\n# Guide\n\nTwo.\n"
+
+
+def test_two_members_whose_paths_differ_only_by_suffix_are_ambiguous(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n")
-    written(root, "guide.markdown", "# Guide\n")
+    grouped = "---\nprosiform: {group: notes, group-depth: 2}\n---\n# Guide\n"
+    written(root, "guide.md", grouped)
+    written(root, "guide.markdown", grouped)
     run = invoke("-d", "json", "guide.md", "guide.markdown", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.stdout == ""
@@ -816,7 +837,7 @@ def test_two_paths_differing_only_by_suffix_are_an_ambiguous_file_group(
 def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
     root: Path,
 ) -> None:
-    written(root, "deep.md", "# Another Name\n\n###### Deep\n")
+    written(root, "deep.md", "## Lead\n\n###### Deep\n")
     written(root, "guide.md", "# Guide\n\nIt needs [the deep one](deep.md).\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -955,7 +976,7 @@ def test_a_validation_only_run_bundles_and_publishes_nothing(
 def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     root: Path,
 ) -> None:
-    written(root, "deep.md", "# Another Name\n\n###### Deep\n")
+    written(root, "deep.md", "## Lead\n\n###### Deep\n")
     written(root, "guide.md", "# Guide\n\nIt needs [the deep one](deep.md).\n")
     run = invoke("-c", "-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE

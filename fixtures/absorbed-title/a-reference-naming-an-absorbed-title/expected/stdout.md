@@ -1,7 +1,7 @@
 # Guide
 
-The labels are listed in [Repository Labels](#docsrepository-labels).
+The labels are listed in [Repository Labels](#repository-labels).
 
-# Docs/Repository-Labels
+# Repository Labels
 
 Every label the repository carries.

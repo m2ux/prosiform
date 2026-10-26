@@ -1,4 +1,4 @@
-description = "An H1 the path names but another heading precedes is not the document's first heading, so it is kept and the group shifts by one."
+description = "An H1 another heading precedes is not the document's title, so the document carries no title and each heading is kept where its author wrote it."
 
 clauses = [
   "File-scoped hierarchy — Absorbed title",
