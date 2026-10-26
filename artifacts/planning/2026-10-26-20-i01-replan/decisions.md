@@ -47,5 +47,5 @@ Issue 234 states that a parent can name more than one group and that a directory
 ## R8 — Corrected Delivery Records
 
 - E09 is closed with every row delivered and every criterion ticked, so its row takes Done and AC15 is ticked.
-- E03 W11 (issue 204) is closed as completed with its criterion unticked and no pull request of its own; its row is left for a sync to settle rather than ticked here.
+- E03 W11 (issue 204) was closed as completed with its criterion unticked and no pull request of its own. `checks/vocabulary.py` on `main` resolves the contract as `origin/engineering` at run time and names that ref, not the revision it read, so AC12 does not hold. The issue is reopened and the row stays open.
 - Issue 31 is closed and E10 carries its requirement. The repository is public and `main` is unprotected, so E10's Problem holds as written.
