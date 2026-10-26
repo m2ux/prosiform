@@ -164,6 +164,55 @@ The deferred link's destination names the guidelines from the working directory,
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml).
 
+## Run calls together
+
+### Input
+
+The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step that marks its `Board Reads` section with `⫽`, a section holding only a bulleted list of calls:
+
+```markdown
+1. Apply the [⫽ board reads](#board-reads).
+2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+#### Board Reads
+
+- Apply [Read Board State](board.md#read-board-state) with the board owner and number for its items, Status field and repositories.
+  - Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for each [repository](board.md#repositories) Read Board State returned.
+    - Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) with those records.
+- Apply [Read Board Configuration](board.md#read-board-configuration) with the board owner and number and output paths for the board fields.
+- Apply [Read Board Assignee](board.md#read-board-assignee) for the assignee login.
+```
+
+### Command
+
+The [board procedure](work-planner/modes/advance-mode.md) applies that operation in its read step:
+
+```bash
+cd example/work-planner
+pf modes/advance-mode.md
+```
+
+### Output
+
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/stdout.md) publishes the `⫽` mark and points the link at the compiled `Board Reads` section, whose calls point at their headings in the bundle:
+
+```markdown
+1. Apply the [⫽ board reads](#board-reads).
+2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+##### Board Reads
+
+- Apply [Read Board State](#read-board-state) with the board owner and number for its items, Status field and repositories.
+  - Apply [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests) for each [repository](#repositories) Read Board State returned.
+    - Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with those records.
+- Apply [Read Board Configuration](#read-board-configuration) with the board owner and number and output paths for the board fields.
+- Apply [Read Board Assignee](#read-board-assignee) for the assignee login.
+```
+
+The section stands one level deeper than in its source, beneath the `Delivery Evidence` member of the `Artifacts` group. The agent reads the calls in the bundle and runs them together, as the bundle's `Symbols` table states.
+
+[Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/manifest.toml).
+
 ## Declare groups per file
 
 ### One block per document
@@ -251,6 +300,7 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 | Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
 | Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) |
+| Run calls together with `⫽` | [Manifest](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/stdout.md) |
 | Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) |
 | Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
 
