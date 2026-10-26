@@ -23,7 +23,7 @@ One orphan's work saved in its confirmed destination, with the orphan rewritten 
      - Return a temporary link left unresolved, with the file that holds it, to the caller as a blocker.
    - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the body change for each existing issue whose body file changed, a newly saved issue whose links were resolved among them.
 4. **Record the graph.**
-   When step 2 ran and the initiative has a planning record, apply [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map that Check Dependencies and Numbering returned, the saved destination issue links, and the caller's commit message file when it asks to publish.
+   When step 2 ran and the initiative has a planning record, apply [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map that Check Dependencies and Numbering returned as its [Dependency Check](../artifacts/planning-record.md#dependency-check), the saved destination issue links, and the caller's commit message file when it asks to publish.
 5. **Settle the orphan.**
    By the returned disposition:
    - **Kept or left.**
