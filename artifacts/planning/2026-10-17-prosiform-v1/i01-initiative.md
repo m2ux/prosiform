@@ -78,7 +78,7 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 | [E03](https://github.com/m2ux/prosiform/issues/187) | Repository Checks | AC10 | | |
 | [E06](https://github.com/m2ux/prosiform/issues/218) | Document Metadata | AC3, AC12, AC13 | | ✓ |
 | [E09](https://github.com/m2ux/prosiform/issues/242) | Dispatch Operator | AC3, AC15 | | ✓ |
-| [E10](https://github.com/m2ux/prosiform/issues/257) | Repository Configuration | AC16 | | |
+| [E10](https://github.com/m2ux/prosiform/issues/257) | Repository Configuration | AC16 | | ✓ |
 | [E13](https://github.com/m2ux/prosiform/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
 
 ## Acceptance Criteria
@@ -100,7 +100,7 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 
 - [x] **AC15.** The refined contract supports a link whose material the reading agent compiles for a sub-agent, and an entry document declaring what that mark means, as the dispatch conformance suite demonstrates.
 
-- [ ] **AC16.** The repository holds the branch shape its delivery procedure assumes, with merge and deletion on its long-lived branches governed by the platform rather than by convention, as the protection settings show.
+- [x] **AC16.** The repository holds the branch shape its delivery procedure assumes, with merge and deletion on its long-lived branches governed by the platform rather than by convention, as the protection settings show.
 
 ## Non-Goals
 
