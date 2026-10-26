@@ -4,7 +4,7 @@ prosiform:
 ---
 # Bootstrap
 
-A link whose text opens with one of the [symbols](#symbols) is loaded through `pf`, *not* read as a file: fill the [parameters](#parameters) from that link, run the [load command](#load), then use the bundle as its symbol states.
+A link whose text opens with one of the [symbols](#symbols) is loaded through `pf`, *not* read as a file: fill the [load command](#load)'s parameters from that link, run it, then use the bundle as its symbol states.
 
 ## Load
 
@@ -14,13 +14,9 @@ Run from this file's directory. A non-zero exit stops the run and reports `pf`'s
 pf -o <scratch>/<name>.bundle.md <destination>
 ```
 
-### Parameters
-
-| Parameter | Value |
-| --- | --- |
-| `<destination>` | The link's destination as written. |
-| `<name>` | The destination's file name without its suffix. |
-| `<scratch>` | An existing working directory outside the repository. |
+- `<destination>`  The link's destination as written.
+- `<name>`  The destination's file name without its suffix.
+- `<scratch>`  An existing working directory outside the repository.
 
 ## Symbols
 
