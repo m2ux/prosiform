@@ -40,9 +40,9 @@ E11 is not reused, because pull requests delivered under `I01:E11` before that e
 
 Issue 234's references name `example/my-skill` on a deleted branch and a root rule that depended on E08. The epic restates its problem against `example/work-planner` and leaves root resolution as the design states it.
 
-## R7 — How a Parent Assigns Links to Groups Is Open
+## R7 — A Parent Assigns Links to Groups by Heading
 
-Issue 234 states that a parent can name more than one group and that a directory name assigns no group, and does not state how the parent says which link joins which group. The recommendation is that a group rule names the heading of the parent's own section its links sit under, so the assignment reads from the structure an author already writes and adds no list to keep in step with the body. The question stays open on E12 until the user settles it.
+Issue 234 states that a parent can name more than one group and that a directory name assigns no group, and does not state how the parent says which link joins which group. A group rule names a heading of the file that declares it, and the links written under that heading join that group. The assignment reads from the structure an author already writes and adds no list to keep in step with the body. A list of targets in metadata was rejected because it drifts from the body; a target folder was rejected because issue 234 assigns no group by directory.
 
 ## R8 — Corrected Delivery Records
 

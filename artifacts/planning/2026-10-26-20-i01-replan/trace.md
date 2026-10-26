@@ -16,7 +16,7 @@ The refinement goal traced after the re-plan. Clauses are the outcomes the initi
 Ranked, most threatening first.
 
 1. **E01 W04 against E12.** Porting the example's grouping to the workspace skills before E12 changes it would be done twice. A row edge from E01 to E12 would point at a later epic, so the order is held by priority instead: E12 takes a higher priority than E01, and its three rows can start now while E01 W04 waits on the ledger.
-2. **E12's open question.** How a parent assigns links to groups is undecided, and W01 cannot state the rule without it. It blocks delivery, not publication; the recommendation is in [R7](decisions.md#r7--how-a-parent-assigns-links-to-groups-is-open).
+2. **E12's assignment form.** Settled by [R7](decisions.md#r7--a-parent-assigns-links-to-groups-by-heading): a group rule names a heading of its declaring file.
 3. **AC16 traces to no Overview clause.** Branch protection was folded in from a standalone issue and is not a refinement outcome. It stays, as the initiative's standing home for repository configuration; no criterion depends on it.
 4. **E03 W11's delivery is unrecorded.** Issue 204 is closed with its criterion unticked and no pull request of its own; a sync settles it.
 
