@@ -13,6 +13,12 @@ content moves to sit beneath it, so the level a heading is emitted at is
 the level its author wrote under a shift the arrangement supplies rather
 than a single shift for the whole group.
 
+The members are read in placement order: the order in which the bundle
+first reaches each of them by a reference, reading the entry references
+and then each placed document's selected content. The overview
+subsections, the merged sections and the variants inside each follow
+that order, after what the parent contributes.
+
 A merged heading keeps its source text. Where that text occurs once in
 the group it is emitted alone, and where several documents contribute it
 the text is emitted once and each document's content hangs beneath it
@@ -498,11 +504,12 @@ def merged(
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
-    The members are in path order, which is the order
-    every arrangement below reads them in, so one selection always
-    bundles to the same bytes. The parent opens the group on its own
-    title where it carries one, and its sections precede every section
-    the merge adds.
+    The members are in placement order, the order a reference first
+    names each of them in, which is the order every arrangement below
+    reads them in, so one selection always bundles to the same bytes.
+    The group stands where its first member is placed. The parent opens
+    the group on its own title where it carries one, and its sections
+    precede every section the merge adds.
     """
     into = Assembly()
     parent_member = next((one for one in members if one.path == parent), None)
@@ -530,7 +537,7 @@ def merged(
     return Group(
         tuple(into.emitted),
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
-        min(member.path for member in members),
+        members[0].path,
         wrapped=headed and not kept,
     )
 
@@ -666,9 +673,9 @@ def contributions(
 ) -> list[tuple[str, list[tuple[Member, Token]]]]:
     """Each distinct heading text at the grouping depth, with what contributes it.
 
-    The order is first appearance across the members in path order, so
-    a name enters the group where the first document carrying it puts
-    it.
+    The order is first appearance across the members in placement
+    order, so a name enters the group where the first document carrying
+    it puts it.
     """
     found: dict[str, list[tuple[Member, Token]]] = {}
     for member in members:

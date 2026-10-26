@@ -681,8 +681,8 @@ def test_rewritten_destinations_are_stable(stack: Stack) -> None:
     first = stack.successful(stack.invoke("-o", "-", target))
     second = stack.successful(stack.invoke("-o", "-", target))
     assert first == second
-    assert "[Rules](#checks-2)" in first
-    assert "[Checks](#checks-1)" in first
+    assert "[Rules](#checks)" in first
+    assert "[Checks](#checks-2)" in first
     assert "[Shared](#shared-1)" in first
     assert "[Leaf](#leaf)" in first
     assert "[Tail](#tail)" in first

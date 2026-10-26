@@ -10,10 +10,10 @@ Both members are reached as whole documents: [With Preamble](#with-preamble) car
 
 What this document states before its first section.
 
-## Outcomes
-
-The second run was recorded as it ran.
-
 ## Findings
 
 The first run held throughout.
+
+## Outcomes
+
+The second run was recorded as it ran.

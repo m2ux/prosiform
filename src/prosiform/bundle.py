@@ -222,6 +222,9 @@ class Group:
     no fragment of it. A file heading that absorbed a source heading
     answers to that heading's fragment as well, which is held apart
     because the heading itself is not emitted.
+
+    The order is the path of the first document the group carries in
+    placement order, which is where the bundle places the group.
     """
 
     parts: tuple[str, ...]
