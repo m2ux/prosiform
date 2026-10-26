@@ -14,7 +14,7 @@ The instructions and context supplied to one delivery session.
 
 One complete prompt file for a confirmed delivery unit.
 
-**Inputs:** Epic URL, task ids, Descriptions, each task's component, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, change allowance, supplied session procedure and output path.
+**Inputs:** Epic URL, task ids, Descriptions, each task's component, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, change allowance and output path.
 
 1. Write the supplied identity, context and execution instructions to the prompt file, at the supplied output path or where [Location](#location) puts it.
    - Each part must meet [Fields](#fields).
@@ -44,4 +44,4 @@ The brief names the supplied [allowance](plan-change.md#allowance): the plan cha
 
 ### Execution Instructions
 
-The caller supplies the session procedure and its invocation context. The brief includes that procedure with its planning, publication, merge, debt and arising-issue obligations, plus the confirmed decisions and evidence needed to execute it. A missing instruction or prerequisite is a finding returned to the caller.
+The session follows the procedure it is dispatched with. The brief carries the confirmed decisions and evidence that procedure's planning, publication, merge, debt and arising-issue obligations need. A missing prerequisite is a finding returned to the caller.

@@ -71,12 +71,11 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
    For each held unit:
    - Apply [Create Task Worktree](../artifacts/delivery-branches.md#create-task-worktree).
-   - Apply [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, the component each of its rows declares, reserved folder, worktrees, test obligations, selected board identity, this run's allowance and [Run Delivery Session](#run-delivery-session) as the supplied execution procedure.
+   - Apply [Populate Delivery Brief](../artifacts/delivery-brief.md#populate-delivery-brief) with the confirmed unit, the component each of its rows declares, reserved folder, worktrees, test obligations, selected board identity and this run's allowance.
    - Resolve any returned gap before dispatch.
-   - The agent following this mode starts each unit through the sub-agent dispatch of the session it was called from, and that dispatch is the only way a unit's session starts.
-   - When that session provides no sub-agent dispatch, this mode reports that and stops before any unit begins.
-   - The sub-agent works in the unit's worktree, reads the brief, and has the engineering worktree in reach for the planning record.
-   - Leave the dispatched session following its Run Delivery Session procedure. The calling mode continues to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
+   - Follow [» Run Delivery Session](#run-delivery-session) with the unit's brief, in the unit's worktree, with the engineering worktree in reach for the planning record. No unit's session starts any other way.
+   - When this session provides no sub-agent dispatch, report that and stop before any unit begins.
+   - Continue to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
    - A unit works on the branch [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) names, cut from the epic base, as [Task Branches](../artifacts/delivery-branches.md#task-branches) defines.
 9. **Report.**
    Each pull request merged, and each left open by a conflict; each epic moved to In Review; each review pull request updated; each unit dispatched, with its record, branch, worktree and the session started for it; each row left held; each blocked row and what blocks it.
