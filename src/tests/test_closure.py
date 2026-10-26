@@ -27,6 +27,7 @@ from prosiform.closure import (
     operators,
     rebased,
     resolve,
+    unmarked,
     withholding_target,
 )
 
@@ -164,10 +165,17 @@ def test_a_dispatch_mark_is_no_deferral_and_the_two_marks_are_told_apart() -> No
     assert not dispatched("¬ the rules")
 
 
-def test_both_marks_opening_one_text_conflict_however_they_are_spaced() -> None:
+def test_a_mark_opening_the_text_with_no_space_after_it_is_no_operator() -> None:
+    assert not dispatched("⇉Record Epic Delivery")
+    assert not deferred("¬Record Epic Delivery")
+    assert not dispatched("⇉")
+    assert not deferred("¬\tRecord Epic Delivery")
+
+
+def test_both_operators_opening_one_text_conflict_however_they_are_spaced() -> None:
     assert conflicting("¬ ⇉ the rules")
-    assert conflicting("⇉¬ the rules")
-    assert conflicting("¬  ⇉the rules")
+    assert conflicting("⇉  ¬ the rules")
+    assert conflicting(" ¬ \t⇉ the rules")
 
 
 def test_one_operator_alone_does_not_conflict() -> None:
@@ -176,10 +184,22 @@ def test_one_operator_alone_does_not_conflict() -> None:
     assert not conflicting("¬ and ⇉ the rules")
 
 
+def test_a_mark_with_no_space_after_it_ends_the_operators_a_text_opens_with() -> None:
+    assert operators("¬⇉ the rules") == ()
+    assert operators("⇉¬ the rules") == ()
+    assert operators("¬  ⇉the rules") == ("¬",)
+
+
 def test_operators_are_each_operator_one_text_opens_with() -> None:
     assert operators("¬ ⇉ the rules") == ("¬", "⇉")
     assert operators("⇉ the rules") == ("⇉",)
     assert operators("the ¬ rules") == ()
+
+
+def test_an_unspaced_deferral_mark_is_published_as_written() -> None:
+    assert unmarked("¬  the rules") == "the rules"
+    assert unmarked("¬the rules") == "¬the rules"
+    assert unmarked("⇉ the rules") == "⇉ the rules"
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:

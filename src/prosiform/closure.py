@@ -5,13 +5,14 @@ Authored links that escape their source root remain citations; positional
 references permit parent bootstrap. Canonical source identities are relative
 to the invocation working directory, independent of the discovering parent.
 
-Two operators open a link's text, and each withholds the compilation the
-other withholds: one states when the material is compiled, the other who
-compiles it. Only the dispatch states what its destination does not: a
-withheld link's destination is the target's path, which no compiled link
-carries, so the deferral is stated there and its mark is authoring
-syntax. A dispatch has no such destination to tell a reader who compiles
-the material, so its mark is content and the bundle publishes it."""
+Two operators open a link's text, each a mark followed by a space, and
+each withholds the compilation the other withholds: one states when the
+material is compiled, the other who compiles it. Only the dispatch states
+what its destination does not: a withheld link's destination is the
+target's path, which no compiled link carries, so the deferral is stated
+there and its mark is authoring syntax. A dispatch has no such
+destination to tell a reader who compiles the material, so its mark is
+content and the bundle publishes it."""
 
 import posixpath
 import re
@@ -25,6 +26,7 @@ from prosiform.source import ENCODING
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
 
+SPACE = " "
 BLANKS = " \t"
 
 FRAGMENT = "#"
@@ -226,21 +228,27 @@ def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -
 def operators(opening: str) -> tuple[str, ...]:
     """Each operator one link's text opens with, in the order it is written.
 
-    An operator opens the text, so text one sits inside names a document
-    the way any prose does. The blanks between two operators are the
-    spacing an operator is written with, so text opening with one and
+    An operator is its mark followed by a space, and it opens the text,
+    so text a mark sits inside, or opens with no space after it, names a
+    document the way any prose does. The blanks between two operators are
+    the spacing an operator is written with, so text opening with one and
     then the other carries both.
     """
     found: list[str] = []
     at = 0
-    while at < len(opening):
+    while True:
         while at < len(opening) and opening[at] in BLANKS:
             at += 1
-        if at == len(opening) or opening[at] not in OPERATORS:
+        if not opens(opening, at):
             break
         found.append(opening[at])
         at += 1
     return tuple(found)
+
+
+def opens(text: str, at: int) -> bool:
+    """Whether an operator starts at one position of a link's text."""
+    return text[at : at + 1] in OPERATORS and text[at + 1 : at + 2] == SPACE
 
 
 def conflicting(opening: str) -> bool:
@@ -292,7 +300,7 @@ def unmarked(text: str) -> str:
     rather than content. The mark goes with the blanks written around
     it, which are its spacing.
 
-    Text opening with no deferral mark is the author's prose and is
+    Text opening with no deferral operator is the author's prose and is
     returned as written. A dispatch's mark states who compiles the
     material, which its destination does not, so it stays.
 
@@ -302,7 +310,7 @@ def unmarked(text: str) -> str:
     at = 0
     while at < len(text) and text[at] in BLANKS:
         at += 1
-    if at == len(text) or text[at] != DEFERRAL_MARK:
+    if not opens(text, at) or text[at] != DEFERRAL_MARK:
         return text
     at += 1
     while at < len(text) and text[at] in BLANKS:

@@ -143,7 +143,7 @@ def test_yaml_collection_depth_is_bounded(tmp_path: Path) -> None:
 def test_deferred_source_is_captured_once_and_contributes_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬One](b.md#one) [¬Two](b.md#two)\n")
+    (tmp_path / "a.md").write_text("# A\n\n[¬ One](b.md#one) [¬ Two](b.md#two)\n")
     (tmp_path / "b.md").write_text(
         "---\n" + settings("b") + "---\n# One\n\n## Two\n\nHidden.\n"
     )
@@ -167,7 +167,7 @@ def test_deferred_source_is_captured_once_and_contributes_nothing(
 def test_deferred_source_counts_towards_raw_budgets(
     tmp_path: Path, option: str
 ) -> None:
-    a = "# A\n\n[¬B](b.md)\n"
+    a = "# A\n\n[¬ B](b.md)\n"
     (tmp_path / "a.md").write_text(a)
     (tmp_path / "b.md").write_text("---\nname: " + "x" * 100 + "\n---\n# B\n")
     bound = "1" if option == "-F" else str(len(a.encode()) + 1)
@@ -178,7 +178,7 @@ def test_deferred_source_counts_towards_raw_budgets(
 
 
 def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬B](b.md)\n")
+    (tmp_path / "a.md").write_text("# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\na: [\n---\n# B\n")
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
@@ -190,7 +190,7 @@ def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
 def test_deferred_metadata_change_is_rechecked_with_its_chain(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬B](b.md)\n")
+    (tmp_path / "a.md").write_text("# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\n" + settings("one") + "---\n# B\n")
     reads = 0
 

@@ -1290,7 +1290,7 @@ def test_a_deferred_link_publishes_its_text_without_the_mark(root: Path) -> None
 
 @pytest.mark.parametrize(
     "written_as",
-    ["[\u00acthe rules](rules.md)", "[\u00ac\tthe rules](rules.md)"],
+    ["[\u00ac  the rules](rules.md)", "[\u00ac \tthe rules](rules.md)"],
 )
 def test_the_blanks_after_the_mark_go_with_it(root: Path, written_as: str) -> None:
     written(root, "guide.md", f"# Guide\n\nSee {written_as}.\n")
@@ -1298,6 +1298,30 @@ def test_the_blanks_after_the_mark_go_with_it(root: Path, written_as: str) -> No
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "See [the rules](rules.md)." in run.stdout
+
+
+@pytest.mark.parametrize("mark", ["\u00ac", "\u21c9"])
+def test_a_mark_with_no_space_after_it_opens_an_ordinary_link(
+    root: Path, mark: str
+) -> None:
+    written(root, "guide.md", f"# Guide\n\nSee [{mark}Rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert f"See [{mark}Rules](#rules)." in run.stdout
+    assert "Every rule." in run.stdout
+    assert run.diagnostics() == []
+
+
+def test_marks_opening_a_link_with_no_space_between_them_open_no_operator(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nSee [\u00ac\u21c9 Rules](rules.md).\n")
+    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "See [\u00ac\u21c9 Rules](#rules)." in run.stdout
+    assert run.diagnostics() == []
 
 
 def test_a_deferral_stands_where_another_reference_carried_its_target(

@@ -106,7 +106,7 @@ def test_fragment_referrer_and_check_mode(tmp_path: Path) -> None:
 def test_derived_destination_cannot_overlap_any_captured_source(
     tmp_path: Path, deferred: bool, check: bool
 ) -> None:
-    mark = "¬" if deferred else ""
+    mark = "¬ " if deferred else ""
     written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a.bundle.md)\n")
     written(tmp_path, "a.bundle.md", "# Captured\n\nPreserve.\n")
     run = invoke(tmp_path, *(["-c"] if check else []), "a.md")
