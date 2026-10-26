@@ -35,7 +35,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
    - Keep each blocker and unresolved finding it returns for the report.
 6. **Set epic priority.**
    When a placement added an epic, apply [Settle Plan Change](../artifacts/plan-change.md#settle-plan-change) with the [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map Issue Placement returned as a re-prioritisation of each epic whose number it sets or moves, the map as the recommended option, those epics' identities, the caller's allowance and the run's change list.
-   - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) for each epic whose confirmed number differs from its priority label, with its identity, the label change that number names, and the label's colour and description.
+   - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) for each epic whose confirmed number differs from its priority label, with its identity, the [priority label](../artifacts/board-queue.md#priority-sets) change that number names, and the label's colour and description.
    - A held map leaves each epic's priority label as it stands.
 7. **Review.**
    Apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) once for each kind among the issues the hoist changed or created, with those issues, each with its identity, current JSON and output body path, the kind's template, required related evidence, and the kind's validator:

@@ -42,7 +42,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 6. **Publish.**
    Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
    - Take the positive integer the user confirms for each epic.
-   - Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed priority label among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
+   - Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
    - Put each blocker it returns to the user.
 7. **Keep the goal current.**
    When the goal, a criterion, a Problem, a Proposal or an epic changes:
@@ -53,13 +53,13 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - After each round, apply [Check Round of Edits](#check-round-of-edits) to affected bodies.
    - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as step 4 does.
      - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
-     - Apply [Save Tracker Issue](#save-tracker-issue) with each confirmed change as that epic's priority label, with its colour and description.
+     - Apply [Save Tracker Issue](#save-tracker-issue) with each confirmed change as that epic's [priority label](#priority-sets), with its colour and description.
    - Apply Save Tracker Issue with each affected body, its title matching current numbers.
    - Keep local body files as the source for the next pass.
    - Apply Populate Work Item for each added or renamed task.
    - Apply Populate Pull Request Body with the discussion pull request's current body.
    - Apply Publish Pull Request with the discussion pull request's number and the returned body file.
-   - Apply Populate Planning Record with the record identity, folder path, each added, renamed or removed task's work-item file and a commit message file, asking it to publish.
+   - Apply Populate Planning Record with the record identity, folder path, each added or renamed task's work-item file, each removed task's work-item file as removed, and a commit message file, asking it to publish.
 8. **Prepare epic delivery.**
    Before any task starts:
    - Apply [Resolve Open Questions](#resolve-open-questions) for each affected issue with its identity, current JSON, its kind's template and field conditions, related context and an output body path.
@@ -510,7 +510,7 @@ gh api --paginate 'repos/m2ux/workflow-server/issues?state=all&per_page=100' --j
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path, supplied artifact files and links, and a commit message file when the caller asks to publish.
+**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
 1. Prepare the selected record:
    - For a new record:
@@ -524,6 +524,7 @@ One planning directory and its artifact inventory.
 2. Register the artifact files supplied by the caller, using their chosen names.
    - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts-1).
    - File content remains supplied by the caller; this operation does not author that artifact's content.
+   - Delete each artifact the caller names as removed, with its row.
 3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
 4. Return the folder path, and the publication result when it published.
 
@@ -593,7 +594,7 @@ Two paragraphs: the purpose of this work, and why it matters.
 
 #### Artifacts
 
-- One row for every artifact in the record other than README.md, added when the file is produced.
+- One row for every artifact in the record other than README.md, added when the file is produced and removed with it.
 - The link sits on the artifact's name. The row says what the artifact holds, and the artifact is the home of that content.
 - In an overview record, the architecture overview is the one row, and its pull request is under Links.
 
@@ -1346,7 +1347,7 @@ One epic body and its local validation findings.
 
 1. Populate the body from the [Template](#template-3) at the supplied output path.
    - Every section must meet [Fields](#fields-5).
-   - Shared content must meet the common [body conditions](#fields-10).
+   - Shared content must meet the common [body conditions](#fields-11).
 2. Populate the shared table through [Write Issue Table](#write-issue-table).
 3. Fill the epic-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown-1).
@@ -1879,6 +1880,18 @@ Each finding has an area, severity, one problem/solution pair and a source quota
 
 A finding identifies whether it needs a user decision and records any supplied answer. An unanswered decision remains pending.
 
+## Board Queue
+
+### Fields
+
+#### Priority Sets
+
+A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
+
+The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
+
+A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+
 ## Issue Body
 
 ### Operations
@@ -1900,7 +1913,7 @@ The shared check after a round of edits.
 
 **Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
 
-1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields-10) in this file.
+1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields-11) in this file.
 2. Run [Check Body Format](#check-body-format) on every issue the round changed.
 
 #### *Validate* Issue Body
@@ -2235,7 +2248,7 @@ One proposal body from a confirmed problem and goal.
 - Populate the body from the [Template](#template-5) at the supplied output path.
   - The title must meet the shared [Titles](#titles-3) conditions.
   - The Problem must meet the shared [Problem and Proposal](#problem-and-proposal) conditions.
-  - All populated fields must meet [Fields](#fields-12), including the required [Sections](#sections-1).
+  - All populated fields must meet [Fields](#fields-13), including the required [Sections](#sections-1).
 
 #### *Validate* Proposal Body
 
@@ -2243,7 +2256,7 @@ The body's local format and field findings.
 
 **Inputs:** Proposal issue JSON and output file.
 
-1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-12), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-13), supplied related evidence and output file, using the proposal field conditions and required title and label metadata.
 2. Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### Fields
@@ -2737,7 +2750,7 @@ Each prerequisite has its issue identity and completion state, expected delivery
 | Note | A row that links its task issue. |
 | Unplaced | A task issue of this epic whose id is not a row. |
 | Open questions | The epic's Open Questions section remains. |
-| Ready to verify | A criterion whose delivering rows are all delivered. |
+| Ready to verify | An unticked criterion whose delivering rows are all delivered. |
 | Ticked early | A criterion ticked while a delivering row is not delivered. |
 | Disagreement | A linked pull request's test plan against the Coverage of the rows it delivers. |
 

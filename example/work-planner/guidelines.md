@@ -43,7 +43,7 @@ These rules apply to mode procedures and artifact operations.
 - **Branch headers.**
   Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Each header is a bold label on its own line, with its instructions in child bullets. Mutually exclusive choices share one decision step. Place actions common to all branches after the branch group at the enclosing sequence level, including a shared return to the caller.
 - **Run-sets.**
-  A [run-set](bootstrap.md#symbols) is a `####` subsection under the operation, mode procedure or protocol procedure that links it, holding only one bulleted list whose every item is a call link. An item nested under another runs after it; an item that says "for each" runs once per item. Its use is reads.
+  A [run-set](bootstrap.md#symbols) is a `####` subsection under the operation, mode procedure or protocol procedure that links it, holding only one bulleted list whose every item is a call link. An item nested under another runs after it; an item that says "for each" runs once per item. Its items are reads, or dispatched work that writes no object another item writes.
 
 ## Prose
 

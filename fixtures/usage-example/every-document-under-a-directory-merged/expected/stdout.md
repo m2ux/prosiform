@@ -31,7 +31,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - Keep each blocker and unresolved finding it returns for the report.
 6. **Set epic priority.**
    When a placement added an epic, apply [Settle Plan Change](#settle-plan-change) with the [Epic Priority](#epic-priority) map Issue Placement returned as a re-prioritisation of each epic whose number it sets or moves, the map as the recommended option, those epics' identities, the caller's allowance and the run's change list.
-   - Apply [Save Tracker Issue](#save-tracker-issue) for each epic whose confirmed number differs from its priority label, with its identity, the label change that number names, and the label's colour and description.
+   - Apply [Save Tracker Issue](#save-tracker-issue) for each epic whose confirmed number differs from its priority label, with its identity, the [priority label](#priority-sets) change that number names, and the label's colour and description.
    - A held map leaves each epic's priority label as it stands.
 7. **Review.**
    Apply [Repair Issue Format](#repair-issue-format) once for each kind among the issues the hoist changed or created, with those issues, each with its identity, current JSON and output body path, the kind's template, required related evidence, and the kind's validator:
@@ -40,7 +40,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - **Epic.**
      - [Validate Epic Body](#validate-epic-body), with the initiative JSON, current pull request records and the corpus branch as its further inputs.
    - **Task or standalone.**
-     - [Validate Issue Body](#validate-issue-body), with the [task](#fields-6) or [standalone](#fields-7) field conditions.
+     - [Validate Issue Body](#validate-issue-body), with the [task](#fields-7) or [standalone](#fields-8) field conditions.
    - Keep each blocker and unresolved finding it returns for the report.
 8. **Report.**
    Report each orphan's placement, the issues changed, created or closed, the priority labels saved, the orphans left, and each blocker and unresolved finding.
@@ -519,6 +519,18 @@ Every pair of tasks in an epic where neither depends on the other is named in th
 - **The record is read, so the second resolution closes the line.**
   A record file gives each pair a line of its own naming its two ids, which is the form a joins artifact takes, and the pair leaves the report. A line naming more rows than that is prose about them and accounts for none, so no enumeration empties the report. What remains is the set named in neither.
 
+## Board Queue
+
+### Fields
+
+#### Priority Sets
+
+A parallel work map assigns a positive integer to each ranked initiative. Every initiative with the same number runs together as one set. One left unordered stays in Backlog.
+
+The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
+
+A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+
 ## Issue Body
 
 ### Operations
@@ -734,7 +746,7 @@ The body's local format and field findings.
 
 **Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
 
-1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-4), supplied related evidence and output file, supplying each linked epic as `--epic`.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-5), supplied related evidence and output file, supplying each linked epic as `--epic`.
 2. Use its current title for the initiative row.
 3. Include excluded names in Problem and Proposal and criterion/source departures in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
@@ -880,8 +892,8 @@ One epic body and its local validation findings.
 **Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records, corpus branch and output path.
 
 1. Populate the body from the [Template](#template-1) at the supplied output path.
-   - Every section must meet [Fields](#fields-5).
-   - Shared content must meet the common [body conditions](#fields-3).
+   - Every section must meet [Fields](#fields-6).
+   - Shared content must meet the common [body conditions](#fields-4).
 2. Populate the shared table through [Write Issue Table](#write-issue-table).
 3. Fill the epic-specific cells.
    - Each row must meet [Work Breakdown](#work-breakdown-1).
@@ -936,7 +948,7 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
 
-1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-5), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+1. Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-6), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
 2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
 3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
 4. Return the corrected body, mechanical diff and unresolved findings for the caller.
@@ -1366,7 +1378,7 @@ One declaration line ahead of the first heading, naming the single component the
 | Note | A row that links its task issue. |
 | Unplaced | A task issue of this epic whose id is not a row. |
 | Open questions | The epic's Open Questions section remains. |
-| Ready to verify | A criterion whose delivering rows are all delivered. |
+| Ready to verify | An unticked criterion whose delivering rows are all delivered. |
 | Ticked early | A criterion ticked while a delivering row is not delivered. |
 | Disagreement | A linked pull request's test plan against the Coverage of the rows it delivers. |
 
