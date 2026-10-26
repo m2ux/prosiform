@@ -1020,7 +1020,8 @@ Held task rows returned to their work-item links.
 
 1. Require the supplied release decision and refuse any row that is not held.
 2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
-3. Return the body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
+3. Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
+4. Return the saved body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
 #### *Validate* Epic Body
 
@@ -1062,6 +1063,20 @@ The agreed disposition of criteria a delivered row left unmet.
 3. Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
    - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
    - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
+
+#### *Place* Unplaced Task Row
+
+One epic body given the row its table lacks for a task issue of the epic.
+
+**Inputs:** Epic JSON, the unplaced task issue, the run's allowance and change list when supplied, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+1. Draft the task issue's row, meeting [Work Breakdown](#work-breakdown).
+2. Apply [Settle Plan Change](#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
+   - Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+3. Apply [Revise Epic Rows](#revise-epic-rows) with the row as applied.
+4. Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
+5. Apply [Record Epic Delivery](#record-epic-delivery) again with the saved epic JSON and refreshed task issue records, retaining the pull request records, complete issue-link snapshot, confirmed matches, project checkout and output body file.
+6. Return the recorded body, its [Delivery Findings](#delivery-findings) and the change list to the caller.
 
 ### Fields
 
@@ -1166,6 +1181,8 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 - **The row is the epic's last.**
   It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone.
+- **The audit row is a unit of its own.**
+  It is joined to no other row, so its Joins cell is empty.
 - **A finding closes by a fix on this epic's branch or by an issue that takes it.**
   Outstanding means neither.
 - **Definitions change when a task row's work reaches the branch the corpus lives on.**
@@ -1173,6 +1190,10 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 #### Task Delivery
 
+- **Holds.**
+  - A unit's record exists and its rows link it before its session starts.
+  - A row another session holds is not dispatched.
+  - A held row stays held while its session plans and implements. The pull request's link replaces the record's link, which frees the row.
 - **Task ids.**
   - An unreserved task awaiting its pull request links its file in the planning record: `[W01](…/w01.md)`. The file name is the task id in lower case.
   - Every link on a task row names that row's id, and the row carries one delivery per long-lived branch its unit changes. A reserved task links only its planning folder: `[W01](…/2026-10-06-943-i07-e00-w01-queue-plan/)`. The folder's README links the work-item file. Releasing the reservation points the row to that file.

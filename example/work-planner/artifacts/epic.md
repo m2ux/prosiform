@@ -30,6 +30,17 @@ The delivery findings for one epic from supplied evidence.
 1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
 2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
+### *Match* Delivery to Tasks
+
+The tasks each delivering pull request works on.
+
+**Inputs:** Epic JSON, and the pull requests to match with their changes and descriptions.
+
+1. Read each pull request's changes and description against the Descriptions of the epic's task rows.
+2. Name the tasks it works on: one task, or tasks that name each other in [Joins](epic-issue-body.md#work-breakdown).
+3. Put each match that is not clear to the user as an [interview](../rules.md). An unanswered match stays pending.
+4. Return the confirmed matches as task-to-pull-request pairs, and the pending ones, to the caller.
+
 ### *Check* Epic Readiness
 
 The epic's eligibility for integration from current delivery and criterion evidence.
