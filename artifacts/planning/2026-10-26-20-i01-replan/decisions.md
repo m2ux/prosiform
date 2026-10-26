@@ -49,3 +49,14 @@ Issue 234 states that a parent can name more than one group and that a directory
 - E09 is closed with every row delivered and every criterion ticked, so its row takes Done and AC15 is ticked.
 - E03 W11 (issue 204) was closed as completed with its criterion unticked and no pull request of its own. `checks/vocabulary.py` on `main` resolves the contract as `origin/engineering` at run time and names that ref, not the revision it read, so AC12 does not hold. The issue is reopened and the row stays open.
 - Issue 31 is closed and E10 carries its requirement. The repository is public and `main` is unprotected, so E10's Problem holds as written.
+
+## R9 — Parent Merge Waits for the Ledger
+
+E12 was closed as not planned before any work landed, and AC17 is retired with its id unused. Two premises failed when the epic was read against the example:
+
+- **Assignment by heading cannot reproduce the example's groups.** A mode writes its artifact and protocol links together in the numbered steps of one Procedure section, so a group rule naming a heading would gather every link into one group. R7 holds for no tree the example contains.
+- **A file reached from several parents is the common case.** Most artifacts are linked from several modes and protocols. Issue 234 places that outside its scope, and composing each child inside its parent would repeat a shared file or need an ownership rule no criterion stated.
+
+The member-declared model bundles the example with every link resolving, so no observed failure motivates the change. Issue 234 stays open as a candidate finding: it enters the ledger once the ledger exists, and becomes a revision only where real use shows the member-declared model failing. Any later plan settles link assignment and shared-file ownership before stating the rule.
+
+The epic bases `i01/e12/main` and `i01/e12/engineering` were created and deleted unused, and the W01 hold was released with its record.

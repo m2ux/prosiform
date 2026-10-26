@@ -15,7 +15,7 @@ The goal is unchanged: the specification is settled by use, every finding is res
 | [Decisions](decisions.md) | The re-plan decisions, each with its evidence |
 | [Goal trace](trace.md) | Goal clauses traced to criteria, epics and sources after the re-plan |
 | [Joins](joins.md) | The task pairs the re-plan made eligible to share a pull request, and why each keeps its own |
-| [I01:E12 body](i01-e12.md) | The local source for the Parent Merge epic |
+| [I01:E12 body](i01-e12.md) | The local source for the Parent Merge epic, closed as not planned ([R9](decisions.md#r9--parent-merge-waits-for-the-ledger)) |
 | [I01:E12:W01](i01-e12/w01.md) | The implementation plan for parent-owned grouping stated by the contract |
 | [I01:E12:W02](i01-e12/w02.md) | The implementation plan for children composed before their parent merges them |
 | [I01:E12:W03](i01-e12/w03.md) | The implementation plan for example groups declared by the linking files |

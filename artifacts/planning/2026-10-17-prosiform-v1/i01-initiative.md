@@ -1,6 +1,6 @@
 ## Overview
 
-The prototype is used as the tool agents in this workspace invoke, and what that use reveals changes the specification until it stops changing. Every surprise becomes a ledger entry reducible to a fixture; an accepted finding changes the design first, then the corpus, then the build. Per-file conversion metadata, the dispatch operator and file-owned grouping are explicit contract extensions within this refinement. The initiative ends when every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision, which is the target the production build names.
+The prototype is used as the tool agents in this workspace invoke, and what that use reveals changes the specification until it stops changing. Every surprise becomes a ledger entry reducible to a fixture; an accepted finding changes the design first, then the corpus, then the build. Per-file conversion metadata and the dispatch operator are explicit contract extensions within this refinement. The initiative ends when every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision, which is the target the production build names.
 
 ## Problem
 
@@ -20,9 +20,6 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 
 - **A fix applied to the build leaves the contract wrong.**
   Correcting a bundling in code without changing the design leaves the design asserting the original behaviour, and the next implementation reads the design.
-
-- **A leaf declares the group its parent names.**
-  Each artifact in the example declares its own group and restates a root its parent already owns, so grouping is stated by the file included rather than by the file that writes the links.
 
 - **A moving contract cannot be implemented twice.**
   A corpus that changes under refinement gives a second implementation no fixed target and no revision it can be said to satisfy.
@@ -65,9 +62,6 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 - **Source files own structural conversion settings.**
   Each contributing file supplies its settings through skill-compatible metadata, independent of the caller that selects it.
 
-- **A file groups the links it writes.**
-  The file that writes a link owns the group rules for it and merges the composed results of the links it lists, so an included file declares no group for a section it does not contain.
-
 - **Entry files define their invocation.**
   A file declares its root and determines its bundle filename, so ordinary compilation needs only `pf <file>`.
 
@@ -85,7 +79,6 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 | [E06](https://github.com/m2ux/prosiform/issues/218) | Document Metadata | AC3, AC12, AC13 | | ✓ |
 | [E09](https://github.com/m2ux/prosiform/issues/242) | Dispatch Operator | AC3, AC15 | | ✓ |
 | [E10](https://github.com/m2ux/prosiform/issues/257) | Repository Configuration | AC16 | | |
-| [E12](https://github.com/m2ux/prosiform/issues/323) | Parent Merge | AC3, AC17 | | |
 | [E13](https://github.com/m2ux/prosiform/issues/23) | Specification Freeze | AC5, AC6, AC7 | | |
 
 ## Acceptance Criteria
@@ -109,8 +102,6 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 
 - [ ] **AC16.** The repository holds the branch shape its delivery procedure assumes, with merge and deletion on its long-lived branches governed by the platform rather than by convention, as the protection settings show.
 
-- [ ] **AC17.** A file's group rules govern the composed results of the links that file writes, and a file reached through a link declares no group for a section it does not contain, as the grouping conformance suite and the example's bundles show.
-
 ## Non-Goals
 
 - It does not implement a production build.
@@ -132,5 +123,6 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 - **R5.** **Source.** [Document Metadata: Per-File Settings Govern Linked Compilation](https://github.com/m2ux/prosiform/issues/216) — originating requirements for per-file conversion metadata.
 - **R6.** **Source.** [File-owned invocation decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/design.md) — confirmed metadata root and entry-derived output requirements.
 - **R7.** **Source.** [Dispatch operator planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-24-242-i01-e09-dispatch-operator) — the operator, the metadata key and the published deferral form, with the decisions behind them.
-- **R8.** **Source.** [Parent Merge: Each File Groups the Links It Writes](https://github.com/m2ux/prosiform/issues/234) — the requirements for grouping owned by the file that writes the link.
+- **R8.** [Parent Merge: Each File Groups the Links It Writes](https://github.com/m2ux/prosiform/issues/234) — grouping owned by the file that writes the link, a candidate finding the ledger accepts only where real use shows a need.
 - **R9.** [Refinement scope record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-26-20-i01-replan) — the exposure set, the epics this stage does not take, and the Parent Merge epic, with the evidence behind each.
+
