@@ -2,8 +2,7 @@
 prosiform:
   root: ".."
   group: "artifacts"
-  group-depth: 2
-  group-heading: false
+  group-depth: 1
 ---
 # Board Delivery
 
