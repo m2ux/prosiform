@@ -216,7 +216,8 @@ Read this before adding or changing a reference.
 ## Entry Point
 
 - **Opening.**  The bulleted list has one item for each issue type.
-- **Sections.**  Preamble, Bootstrap, Modes, then Dependencies.
+- **Sections.**
+  Preamble, Modes, then Dependencies. Modes opens by linking [Bootstrap](bootstrap.md), which sits beside the entry point.
 - **Issue bodies.**
   The skill's prose layout applies to its instructions. Issue bodies follow [Issue Body](artifacts/issue-body.md#fields); pull request bodies follow [Pull Request Body](artifacts/pull-request-body.md#fields).
 - **Rules and conventions.**
