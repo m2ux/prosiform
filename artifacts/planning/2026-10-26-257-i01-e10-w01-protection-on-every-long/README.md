@@ -4,14 +4,19 @@
 
 ## Executive Summary
 
-This record holds the delivery of I01:E10 W01: `main` requires a pull request before merge and refuses a force-push and a deletion, while `engineering` and `workspace` refuse a force-push and a deletion and still accept a direct push.
+This record holds the delivery of I01:E10 W01: `main` requires a pull request before merge and refuses a force-push and a deletion, while `engineering` and `workspace` refuse a force-push and a deletion and take a direct push through the Admin role's bypass.
 
-The repository is public and its long-lived branches are unprotected, so the delivery procedure is the only thing holding the branch shape. The settings must leave the procedure working: planning records and workspace changes are pushed directly, and task and epic pull requests are merged by the delivering session.
+Repository ruleset 25628172 already holds that shape, so the row is delivered by recording it rather than by a settings change. The ruleset also requires a pull request on `engineering` and `workspace` for any writer without the bypass; that stricter configuration is kept.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
+| [Evidence](evidence.md) | The ruleset governing the long-lived branches, read against AC1 and AC3 |
+| [Ruleset](ruleset.json) | Ruleset 25628172 as the API returns it |
+| [Rules on main](rules-main.json) | The rules in effect on `main` |
+| [Rules on engineering](rules-engineering.json) | The rules in effect on `engineering` |
+| [Rules on workspace](rules-workspace.json) | The rules in effect on `workspace` |
 
 ## Links
 
