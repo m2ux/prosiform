@@ -14,6 +14,7 @@ The ledger is where what real use reveals is kept, so a surprise met mid-task ha
 | --- | --- |
 | [W01 work item](w01.md) | The plan for the ledger format, triage states, exposure set and schema check |
 | [Validation](validation.md) | The format decisions and the evidence for each test-plan row |
+| [Change list](change-list.md) | Each plan change this session applied or held |
 
 ## Links
 
@@ -21,3 +22,5 @@ The ledger is where what real use reveals is kept, so a surprise met mid-task ha
 | --- | --- |
 | Epic | [I01:E00 Findings Ledger](https://github.com/m2ux/prosiform/issues/21) |
 | Initiative | [I01 Field Refinement](https://github.com/m2ux/prosiform/issues/20) |
+| Pull request | [#324 Ledger Format and Triage States](https://github.com/m2ux/prosiform/pull/324) |
+| Review pull request | [#325 Findings Ledger](https://github.com/m2ux/prosiform/pull/325) |
