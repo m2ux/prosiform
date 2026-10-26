@@ -16,7 +16,7 @@ One epic base merged into its long-lived branch, on current branch, epic and pul
    - Follow [Change Overview](change-overview.md) with the review pull request identity.
    - Resume with its published overview so the complete review body cites the task merges and carries that overview.
    - Read the pull request through [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state).
-   - Put a draft still awaiting its ready mark to the user as an [¬ Interview](../guidelines.md#modes), naming the epic standing in review on its board.
+   - Put a draft still awaiting its ready mark to the user as an [interview](../rules.md), naming the epic standing in review on its board.
    - Continue only on a pull request the user has marked ready, and leave a draft waiting for that decision.
    - Confirm its head is the epic base and its target is the corresponding long-lived branch.
 2. **Refresh and validate.**

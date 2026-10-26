@@ -1,4 +1,4 @@
-description = "The usage example that names a procedure bundles that procedure and every document its links reach: the three modes it reaches as whole documents, each under a heading of its own, the rules and conventions documents each mode links, and the artifact, protocol and reference material those documents link. The bundle carries three deferred links, each keeping its root-relative path, and the document they name stays out of the bundle."
+description = "The usage example that names a procedure bundles that procedure and every document its links reach: the three modes it reaches as whole documents, each under a heading of its own, the rules and conventions documents each mode links, and the artifact, protocol and reference material those documents link. The bundle carries no deferred link."
 
 clauses = [
   "Usage examples",
@@ -9,7 +9,6 @@ clauses = [
   "Input and output contract — Entry references",
   "Entry line — No execution verb",
   "Entry line — Reading scope at the point of use",
-  "Link classification and resource handling — The deferral mark",
 ]
 
 [invocation]

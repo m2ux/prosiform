@@ -111,13 +111,6 @@ Read this before adding or changing a mode.
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
   A new mode is a new file. An artifact is not edited to name it.
-- **Interview.**
-  A question the user must decide is put this way.
-  - A plain-language paragraph before the question gives the context the user needs to answer it.
-  - The question offers more than one choice. The recommended choice is marked on its option.
-  - Wait for the user's answer. An unanswered question stays pending. A recommendation or elapsed time supplies no answer.
-  - The user can select Other and specify a response beyond the options.
-  - Use the native tool for presenting the question when one is available.
 - **Step rules.**
   A rule that binds one step sits in that step. A rule that binds every mode is added to this section.
 - **Sections.**
