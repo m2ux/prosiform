@@ -24,7 +24,6 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 - **Generated headings:** A heading the bundle generates — a file heading, a merged group's heading, a member subsection heading and a variant heading alike — is emitted in *title case*: each word of the name is capitalized and the name's own structure is kept. The convention changes letters and not structure, so a file heading, which is a path, keeps its slashes and its hyphens and capitalizes each part of a hyphenated word, while a name a group derives from a declared group slug or a document stem is those words joined by spaces and is capitalized as it is derived. The convention covers what the compiler writes and nothing else: a heading an author wrote is emitted as they spelled it, and a filesystem path a run names — a diagnostic's reference, a deferred link's destination — carries the spelling the filesystem holds.
 - **Groups:** A group is one top-level division of the bundle. By default it is one *source document*, headed by its normalized root-relative path with the Markdown extension removed; a *grouping rule* declared in per-file metadata joins contributing documents under their declared *slug*. Emit each selected *region* once. Keep source order among selected content and required heading-only ancestors within a document's group, and within each contribution a document makes to a merged one.
 - **Dependency order:** Order sources by their own effective-root-relative path, breaking ties by canonical absolute path, compared lexically with forward-slash separators. Order groups by their least contributing source in this order, and members within a group by this order. This source order also governs declaration conflicts. Discovery order and argument order never decide the arrangement. Equal displayed file or member names remain subject to the existing ambiguity checks; differing roots do not promise unique headings. Per-file grouping declarations determine where a section sits.
-- **Entry line:** Open the bundle with a generated preamble naming each entry reference and linking to the destination it resolved to.
 - **Entry identity:** Keep selected entry targets identifiable even when their content is subsumed by a larger included region.
 
 ## Parser and source-preserving edits
@@ -269,25 +268,6 @@ A destination is the fragment the renderer itself would generate, so every inter
 
 An ordinal is safe here in a way it is not in a source document. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A bundle is generated whole in one pass and validated against the map that produced it, so every ordinal it carries is assigned and checked in the same run. A bundle is not a source: it is not hand-edited, and no link into one outlives the run that wrote it.
 
-### Entry line
-
-The bundle opens with a preamble of its own: one generated line naming each entry reference and linking to the destination it resolved to, followed by a statement that the remainder is material those entries reference.
-
-```markdown
-This bundle was built for [Plan Mode](#plan-mode); everything else is material it references.
-
-# Artifacts
-```
-
-- **Link text:** The visible text of the heading the destination names, so what the line says and what the reader finds agree. Under a grouping rule that is the subsection naming the member, or the variant heading naming it where it takes no subsection, which is a name the caller cannot derive from the reference it supplied.
-- **Order:** Several entries are named in bundle order — groups and members follow deterministic source order, and headings within one source follow source order — followed by the closing statement. Each name is separated from the next by a comma and the last from the one before it by `and`. The order is the bundle's rather than the command line's, so one selection opens on one line however its entry references were written, and a reader meets the names in the order the document that follows carries them.
-- **No execution verb:** The line states what the bundle was built for. It does not instruct the agent to carry anything out, because the tool does not know whether an entry names a procedure, and execution verbs belong to the authored instructions.
-- **Generated structure:** The line is recorded with the group, file and variant headings as generated structure, not as selected content, so it counts toward no source's coverage. Its links are ordinary internal references and are validated as such.
-- **Reading scope at the point of use:** A bundle can hold several documents' procedures. The line is where the bundle says which one it was built for, so the distinction between the material to act on and the material it references survives into the document the agent actually reads.
-- **The declared dispatch text:** A *dispatch text* declared as `prosiform.dispatch` adds that text after the entry sentence, in the same paragraph, so a reader meets the rule that governs the marked links and the entries it governs as one instruction. Absent the key, the paragraph is the entry sentence alone. The text is the author's own and the compiler reads no structure in it, so it is emitted as literal text in the position the sentence ends.
-
-The complete entry declaration is the reserved output signal used by the Generated input policy. Authored links into a document's own sections carry no such signal without the declaration's opening and closing prose.
-
 ### Markdown-only output
 
 The bundle contains Markdown and nothing else. No anchor elements, no identifiers and no other markup are emitted at a destination, so a destination is a name for a place in the document rather than an element in it.
@@ -387,14 +367,10 @@ Ordinary Markdown needs neither `name`, `description`, nor a `SKILL.md` filename
 | `prosiform.root` | Nonempty relative directory-path string, using forward slashes and containing no NUL, control characters, home shortcuts, environment expansion, scheme, authority, absolute or drive path. Literal `.` and `..` segments are allowed. | Resolve from the declaring file's directory; the result is this source's confinement boundary. The source's links resolve from its own directory, not from the root. |
 | `prosiform.group` | A single-line printable string with at least one non-whitespace character, containing neither `:` nor `/`. | Exact identity of the group this source joins. |
 | `prosiform.group-depth` | YAML Core integer from 1 through 6, excluding booleans, floats and strings. | Source heading depth for this member's merged sections. |
-| Field | Accepted value | Meaning |
-| --- | --- | --- |
-| `prosiform.dispatch` | A single-line printable string with at least one non-whitespace character. | What a dispatch-marked link means for this skill, emitted after the entry sentence in the bundle's opening line. |
 
-Group and group-depth are present together or absent together; root and dispatch are independent of that pair. Absent grouping fields leave the source in its individual file group. Every absent root uses the working directory captured at invocation start, including linked sources. Absent frontmatter, an empty block or an absent or empty `prosiform` mapping uses both defaults. A present `prosiform` must be a mapping with string keys; null, scalar and sequence values fail. Its only keys are `root`, `group`, `group-depth`, `group-heading` and `dispatch`; unknown keys fail. Unrelated frontmatter fields, including `metadata`, have no conversion meaning. No schema version, inherited profile or command argument string is interpreted. Root paths are filesystem strings, not URI references: neither percent decoding nor shell expansion applies.
+Group and group-depth are present together or absent together; root is independent of that pair. Absent grouping fields leave the source in its individual file group. Every absent root uses the working directory captured at invocation start, including linked sources. Absent frontmatter, an empty block or an absent or empty `prosiform` mapping uses both defaults. A present `prosiform` must be a mapping with string keys; null, scalar and sequence values fail. Its only keys are `root`, `group`, `group-depth` and `group-heading`; unknown keys fail. Unrelated frontmatter fields, including `metadata`, have no conversion meaning. No schema version, inherited profile or command argument string is interpreted. Root paths are filesystem strings, not URI references: neither percent decoding nor shell expansion applies.
 
-- **The admitted keys:** `root`, `group`, `group-depth`, `group-heading` and `dispatch` are the keys the `prosiform` mapping admits, and a key outside them fails with `E_INVALID_CONVERSION_METADATA` wherever it sits in the mapping.
-- **The dispatch text is one declaration:** Every contributing source that declares `prosiform.dispatch` states the same value, and a second value fails with `E_INVALID_CONVERSION_METADATA` naming both locations and publishes nothing. A bundle whose opening line depended on which source was read first would make the instruction a property of traversal order.
+- **The admitted keys:** `root`, `group`, `group-depth` and `group-heading` are the keys the `prosiform` mapping admits, and a key outside them fails with `E_INVALID_CONVERSION_METADATA` wherever it sits in the mapping.
 - **Unrelated fields have no conversion meaning:** A top-level field the conversion contract does not name, `metadata` among them, states nothing about a run and is neither read nor published, whatever it holds.
 
 - **YAML grammar:** Accept one YAML 1.2 document using the Core schema. An empty or comments-only block is absent metadata; an explicit null document root fails. A nonempty document root must be a mapping. Reject duplicate keys in every mapping, custom tags, aliases and merge keys (`<<`), including in unrelated fields. Document-root and `prosiform` mapping keys must be strings. Elsewhere, safe Core keys and nested collections remain valid; duplicate keys use YAML node equality (tag and canonical value), so boolean and integer keys remain distinct. Printable group characters follow YAML printable characters except line breaks and control characters; spaces within and around a nonblank name are significant. Malformed YAML fails even without conversion keys.
@@ -532,21 +508,13 @@ Read each distinct source once during discovery and keep its parsed content, can
 
 This is change detection, not a transactional filesystem snapshot: files can change again after a check. When strict reproducibility is required, bundle from an immutable source snapshot; do not claim that hashing alone supplies cross-file atomicity.
 
-## Generated input policy
-
-Rebundling of prosiform output is unsupported in v1. Reject an input document whose first block is a document-level paragraph carrying the bundle's entry declaration with `E_GENERATED_INPUT`. The declaration starts with `This bundle was built for `, ends with `; everything else is material it references.`, and contains at least one link, with every link naming a nonempty local fragment. Report the declaration's first line as the source location and its complete text as the reference.
-
-Every published bundle carries this declaration, whether its groups are file groups or merged groups. Detection depends on neither filesystem paths nor heading capitalization. An authored title naming its own document or a sibling bundles. A declaration inside a code block or a block quote is an example, not a document-level declaration. The check reads the first block of the complete source after transport metadata is stripped, including when the selected section lies later in the file.
-
-The declaration is reserved as an output signal. An authored document opening with the same declaration is detected too; quote it or place it in code when presenting an example. This signal is not proof of origin or a security signature: removing or rewriting the declaration defeats detection, and no detection of arbitrary modified derivatives is claimed. The entry line supplies the signal without another metadata wrapper or a filesystem probe.
-
 ## Agent delivery contract
 
 Successful compilation establishes that the complete candidate passed validation. It does not establish that a downstream tool transport delivered every byte to the calling agent.
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
 - **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a *delivery* failure rather than a truncated apparent success.
-- **Clean Markdown:** Keep success stdout limited to the bundle document. Beyond the entry line, the bundle carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
+- **Clean Markdown:** Keep success stdout limited to the bundle document. The bundle opens on its first group's content and carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
 - **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
 
@@ -554,7 +522,7 @@ Successful compilation establishes that the complete candidate passed validation
 
 Validate link resolution, supported selected syntax, and resource rules within the selected dependency closure. Parsing a complete file for indexing does not make its unselected sibling sections dependencies; ancestor-only headings undergo structural, depth, and namespace checks but not dependency traversal.
 
-Whole-file checks are limited to facts needed for safe access or correct interpretation: source identity and encoding, raw-byte and required parsing-resource limits, frontmatter, source-change detection, original heading enumeration, definitions needed by selected uses, ambiguity of requested fragments, and generated-input detection.
+Whole-file checks are limited to facts needed for safe access or correct interpretation: source identity and encoding, raw-byte and required parsing-resource limits, frontmatter, source-change detection, original heading enumeration, definitions needed by selected uses, and ambiguity of requested fragments.
 
 An unrelated broken link in an unselected sibling must not fail bundling. If closure expands to include that sibling, its links become subject to validation.
 
@@ -566,11 +534,10 @@ Keep `-L` scoped to authored occurrences in the selected closure. If full-file i
 
 Use the same declared Markdown grammar where applicable, but separate the policy context for source validation from candidate validation.
 
-- **Source mode:** Enforce source-root and generated-input rules, source-fragment resolution, and source-owned self-reference checks. A source fragment names one heading and carries no ordinal.
+- **Source mode:** Enforce source-root rules, source-fragment resolution, and source-owned self-reference checks. A source fragment names one heading and carries no ordinal.
 - **Candidate mode:** Accept generated filename headings, shifted headings, and structural ancestors. Validate destinations, coverage, reconstructed outlines, block structure, and reference invariants against source provenance.
 - **Ownership:** Retain original source ownership independently of output heading levels. Validate the reconstructed outline against that model rather than assigning synthetic file/structural ancestor headings executable ownership.
-- **Preprocessing:** Do not pass the candidate back through source frontmatter stripping, dependency discovery, or generated-input rejection.
-- **Reuse:** The producer's candidate may pass candidate validation, while that same document supplied to a later invocation remains invalid under the generated-input policy.
+- **Preprocessing:** Do not pass the candidate back through source frontmatter stripping or dependency discovery.
 
 ## Validation and failure contract
 
@@ -580,7 +547,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Target integrity:** Every rewritten link points to the intended source-derived destination, not merely a section whose slug happens to coincide.
 - **Uniqueness:** Each bundle destination occurs once, and resolves in the renderer that reads the bundle.
 - **Boundaries:** Combining sections must not make later material part of an earlier code fence, HTML block, or unintended container.
-- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting, title absorption, heading shifts and necessary Setext conversion, the generated entry line, generated group, variant and member headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
+- **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting, title absorption, heading shifts and necessary Setext conversion, generated group, variant and member headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
 - **Safety:** Enforce bounded bootstrap access, each referring source's effective root and configured resource limits. Never execute included commands, and never open a reference the tool did not resolve as a local Markdown dependency.
 - **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation. An output destination that refuses the write, a detected broken pipe among them, fails with `E_PUBLICATION_FAILED`.
@@ -598,7 +565,6 @@ Validate the completed document against the source-to-output mapping, not only i
 - **No accidental expansion:** The only unselected source-derived content emitted is required heading-only ancestry. Never include an unselected ancestor's body or siblings merely to supply structure.
 - **Destination stability:** A reference's destination is the one its target was assigned, before and after overlap consolidation.
 - **Block-syntax preservation:** Generated headings and region boundaries must not absorb content into unintended non-heading containers.
-- **Entry line integrity:** The bundle's entry line names every entry reference and no other, and each of its links resolves to the destination that reference's target was assigned.
 - **Group isolation:** Each group has exactly one H1, each contributing source belongs to exactly one group, and a source's emitted headings sit beneath that group's H1 rather than entering another group's outline.
 - **Outline preservation:** Each selected eligible heading retains its original ancestor chain and relative level gaps under its group's shift, using structural ancestors where needed. In a merged group the grouping rules supply the chain above the grouping depth, and the heading the rules place there is where the preserved chain begins. Validate against the original source outline and the grouping rules together.
 - **Depth safety:** No emitted heading exceeds H6; overflow produces a failure, not a success with altered depth.
@@ -652,19 +618,17 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **Destinations:** A unique bundled heading taking a bare slug, repeated bundled headings taking ordinals in bundle order, a source fragment ambiguous within one document refused, two documents whose paths differ only by Markdown extension refused, same-basename paths in different directories, and a file group whose filename heading does not imply whole-document inclusion.
 - **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
 - **Deferral:** A marked reference under the root contributing nothing to the bundle, the mark and the spaces following it removed from the published link because its destination states the deferral, a fragment-only reference deferred the same way, a deferred link standing unrewritten where another reference carried its target, a deferred reference naming no document and one naming no heading each refused, and a deferred link published with its target's URI-escaped path from the invocation working directory.
-- **Dispatch:** A dispatched reference under the root contributing nothing to the bundle while its mark is published, a dispatched link published with its target's URI-escaped path from the invocation working directory and its fragment retained, a declared dispatch text opening the bundle after the entry sentence and its absence leaving that sentence alone, two contributing sources declaring different texts refused with both locations named, a link opening with both operators refused with the link named, and an unknown `prosiform` key refused beside a key the contract admits.
+- **Dispatch:** A dispatched reference under the root contributing nothing to the bundle while its mark is published, a dispatched link published with its target's URI-escaped path from the invocation working directory and its fragment retained, and a link opening with both operators refused with the link named.
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
 - **Boundaries:** Unclosed fences, HTML blocks, adjacent lists, nested containers, file-group separation, leading frontmatter, and YAML examples that must remain intact.
 - **File hierarchy:** Same-basename sources in different directories; the Markdown extension absent from the filename heading; a nested path and a hyphenated name emitted in title case beside a merged group's heading; a heading an author wrote and a deferred link's path keeping the spelling their source gave them; paths needing Markdown escaping; a group whose title the file heading absorbs and one whose H1 it does not; a document carrying more than one H1; H1–H5 shifts; H6 overflow; Setext and multiline-heading conversion; and unchanged heading-like code examples.
 - **Grouping:** One entry bundled with and without a group, selecting the same content; a merged section drawn from several documents; a name occurring once left bare; a name several documents carry emitted once with a variant heading each, distinguished at one path segment and at more than one; two members of one stem in different directories taking the subsection headings that tell them apart; a merged section carrying body text from more than one document split by document; an unannotated document keeping its own group; a whole-document reference to a member resolving to the subsection naming it, one to a member carrying nothing above the grouping depth and contributing a heading text no other member carries resolving to that merged heading, and one to such a member whose contribution is pooled with another's resolving to the variant heading naming it; a member named by the heading its own title is absorbed into; a group emitting no merged section carrying its member subsections directly beneath its heading; a reference to a grouping-depth heading resolving to the variant carrying the document it named; a member's shallower section carried under the subsection naming it; a section split by document taking precedence over the names inside it; and explicit members in unrelated directories using the same group identity.
 - **Partial outlines:** Disjoint selections such as Alpha and Beta/Detail; deduplicated ancestor structural ancestors; original skipped heading levels; ancestor promotion after dependency expansion; and no ancestor-body or structural ancestor-link dependency leakage.
-- **Entry line:** One entry and several; an entry whose destination is a file heading and one whose destination is a member subsection under a grouping rule; the link text matching the heading it names; and the line counting toward no source's coverage.
 - **Wrapper identity:** A partial file group's document destination does not satisfy a whole-document dependency without expanding its selected content.
 - **Normalization:** Empty fragments, query rejection, percent-encoded delimiters, double-encoded percent sequences, invalid escapes, root escapes, internal `..`, symlinked files/directories, and unsupported path forms.
 - **Resources:** An image, a script link and a relative path inside a command example each emitted byte-identical, with the portability warning on stderr.
 - **Consistency:** Source modification, deletion, or changed canonical identity during compilation.
 - **Validation scope:** Unselected broken/self-referential siblings do not fail a narrow run but do fail when later included.
-- **Generated inputs:** Reject a source opening with the bundle entry declaration, while accepting code examples and authored titles naming sibling documents.
 - **Delivery:** Nonzero process exit, output-budget failure, broken output pipe, wrapper rejection of transport-oversized output, and a successful run reporting each entry reference's destination, with and without a grouping rule.
 - **Parser fidelity:** Exact ranges for multiline references, reference-style images, nested image/link edits, tables, tabs, Unicode, escapes, CRLF, and original diagnostic coordinates.
 - **Definition inventory:** Remove every selected definition occurrence, including duplicates, unused labels, case-fold-equivalent labels, multiline definitions, and supported containers, without changing original winner selection.
