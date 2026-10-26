@@ -4,7 +4,13 @@ prosiform:
 ---
 # Instructions
 
-A link whose text opens with a symbol below is loaded through `pf`, *not* read as a file. Run `pf` from this file's directory, on the link's destination as written, with `<scratch>` an existing working directory outside the repository and `<name>` the destination's file name without its suffix.
+A link whose text opens with a symbol below is loaded through `pf`, *not* read as a file. Run `pf` from this file's directory.
+
+| Parameter | Value |
+| --- | --- |
+| `<destination>` | The link's destination as written. |
+| `<name>` | The destination's file name without its suffix. |
+| `<scratch>` | An existing working directory outside the repository. |
 
 | Symbol | Names | Run | Use of the bundle |
 | --- | --- | --- | --- |
