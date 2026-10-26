@@ -1552,6 +1552,7 @@ One standalone issue body from its supplied scope.
 
 - One row for every artifact in the record other than README.md, added when the file is produced.
 - The link sits on the artifact's name. The row says what the artifact holds, and the artifact is the home of that content.
+- In an overview record, the architecture overview is the one row, and its pull request is under Links.
 
 ## Work Item
 

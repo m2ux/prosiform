@@ -21,6 +21,17 @@ One task's local implementation plan.
   - The supplied component must meet [Component](#component).
   - The test row must meet [Test Coverage](pull-request-body.md#test-coverage), using the supplied criteria without copying them into the file.
 
+### *Read* Work Item
+
+The component and test row one task's plan declares.
+
+**Inputs:** Task id and the planning folder whose README registers that task's work item.
+
+1. Read the task's file in that folder, named as [Identity](#identity) states.
+   - Report a missing file to the caller.
+2. Return its [Component](#component) declaration and the Test row of its Work Breakdown.
+   - Report a missing declaration or Test row to the caller.
+
 ## Fields
 
 ### Template
