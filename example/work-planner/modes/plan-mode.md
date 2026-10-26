@@ -4,11 +4,9 @@ prosiform:
 ---
 # Plan Mode
 
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Take the proposal.**
    - When the user names a proposal, its associated issue body defines the problem scope.

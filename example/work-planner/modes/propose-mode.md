@@ -4,11 +4,9 @@ prosiform:
 ---
 # Propose Mode
 
-Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
+Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`. Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.
 
 ## Procedure
-
-The main path meets [Outcomes](#outcomes).
 
 1. **Understand the problem.**
    Ask the user until the friction and the boundary are clear.
