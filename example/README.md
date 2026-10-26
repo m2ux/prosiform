@@ -43,6 +43,40 @@ Its publish step reads:
 
 The two documents the step links arrive in the bundle, and their headings are destinations its links point at. The deferred link drops its `¬` marker and names its target `guidelines.md`, the path from the invocation directory; that document is excluded, and the published path alone states the deferral.
 
+The procedure's opening points at the skill's dispatch convention, and its first step hands another mode to a sub-agent:
+
+```markdown
+Following [dispatch convention](../SKILL.md#dispatch).
+
+1. **Take the proposal.**
+   - When the user names a proposal, its associated issue body defines the problem scope.
+   - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
+   - When neither a proposal nor an existing initiative is named:
+     - Run [» Propose Mode](propose-mode.md) with the user's goal.
+```
+
+The bundle reads:
+
+```markdown
+Following [dispatch convention](#dispatch).
+
+1. **Take the proposal.**
+   - When the user names a proposal, its associated issue body defines the problem scope.
+   - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
+   - When neither a proposal nor an existing initiative is named:
+     - Run [» Propose Mode](modes/propose-mode.md) with the user's goal.
+```
+
+The dispatched link keeps its `»` mark and names `modes/propose-mode.md`, the path from the invocation directory; that mode is excluded, and so is every document only it reaches. The convention link brings in the one section it names, beneath the skill document's group and title:
+
+```markdown
+# SKILL
+
+## Work Planner
+
+### Dispatch
+```
+
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
 ## Select a section
