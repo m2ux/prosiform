@@ -4,7 +4,6 @@ clauses = [
   "Usage examples",
   "CLI contract — -f DOC, the referring document a fragment-only reference resolves against",
   "Input and output contract — Sections",
-  "Entry line",
 ]
 
 [invocation]

@@ -1,0 +1,15 @@
+description = "The source files declare membership of one merged group, and two entries each naming a whole document are bundled under the group's heading, each member under the subsection naming it rather than under a file heading."
+
+clauses = [
+  "Grouping — Group structure",
+  "Grouping — Document content above the grouping depth",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["docs/notes.md", "docs/guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

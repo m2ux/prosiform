@@ -1,5 +1,3 @@
-Follow [Detail](#detail) and [Gamma](#gamma). The other sections are material those procedures reference.
-
 # Guide
 
 ### Alpha

@@ -24,8 +24,8 @@ SURFACES = (GUIDE, README, EXAMPLES)
 
 INSTRUCTIONS = (
     "pf [OPTIONS] REF [REF ...]",
-    "The only keys in `prosiform` are `root`, `group`, `group-depth`, "
-    "`group-heading` and `dispatch`",
+    "The only keys in `prosiform` are `root`, `group`, `group-depth` and "
+    "`group-heading`",
     "An explicit root resolves from the declaring file's directory.",
     "Every absent root uses the working directory",
     "`-f DOC`",

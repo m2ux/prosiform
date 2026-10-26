@@ -13,5 +13,3 @@ A paragraph mentioning {#custom-id} names no section.
 ```
 
 A regular expression `[^abc]` matches one character.
-
-Follow [Guide](#guide). The other sections are material that procedure references.

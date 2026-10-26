@@ -1,5 +1,3 @@
-Follow [Article](#article) and [The--Overview](#the--overview-1). The other sections are material those procedures reference.
-
 # Article
 
 ### The ![A diagram](plan.png) overview

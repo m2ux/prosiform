@@ -3,7 +3,6 @@ description = "A title spelled with spaces and a path segment spelling it with h
 clauses = [
   "File-scoped hierarchy — Absorbed title",
   "File-scoped hierarchy — Group shift",
-  "Entry line",
 ]
 
 [invocation]

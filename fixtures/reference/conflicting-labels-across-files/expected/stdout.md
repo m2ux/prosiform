@@ -3,8 +3,6 @@
 The guide names [the runner](#guide-runner) its own definition points at, and
 requires [the tools](#tools).
 
-Follow [Guide](#guide). The other sections are material that procedure references.
-
 # Guide-Runner
 
 The runner the guide's own definition names.

@@ -3,7 +3,6 @@ description = "A heading whose own text spells an ordinal keeps it, and a headin
 clauses = [
   "Source-heading resolution, gitHub-compatible slugs and duplicate tracking",
   "Bundle destinations — Ordinal assignment",
-  "Entry line",
 ]
 
 [invocation]

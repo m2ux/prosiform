@@ -3,7 +3,6 @@ description = "A path whose punctuation spells a Markdown link is escaped as lit
 clauses = [
   "File-scoped hierarchy, escape the path as literal heading text",
   "Bundle destinations — Document destinations",
-  "Entry line",
 ]
 
 [invocation]

@@ -1,5 +1,3 @@
-Follow [Operations](#operations). The other sections are material that procedure references.
-
 # Modes/Plan-Mode
 
 ### Operations

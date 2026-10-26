@@ -618,16 +618,10 @@ def nesting(tokens: Sequence[Token]) -> int:
 
 @dataclass(frozen=True)
 class Selection:
-    """What one source contributes to the bundle, and what named it.
+    """What one source contributes to the bundle.
 
     The regions are the document-level blocks the run selected, in
-    source order. The named headings are the ones an entry reference
-    resolved to, which is what the entry line links and what the bundle
-    keeps identifiable. The document flag names the file heading as an
-    entry beside those headings, which is a whole document selected
-    together with one of its sections.
+    source order.
     """
 
     regions: tuple[Token, ...]
-    named: tuple[Token, ...]
-    document: bool = False

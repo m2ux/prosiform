@@ -2,8 +2,6 @@
 
 An opening paragraph, above the first heading the fixture measures.
 
-Follow [What's new: v1.0\!](#whats-new-v10), [Café-Münster](#café-münster-1), [Notes](#notes-2), [The-Code-Span-And-Bold-Text](#the-code-span-and-bold-text-1) and [Whats-New-V10](#whats-new-v10-1). The other sections are material those procedures reference.
-
 ## What's new: v1.0!
 
 Punctuation the renderer discards.

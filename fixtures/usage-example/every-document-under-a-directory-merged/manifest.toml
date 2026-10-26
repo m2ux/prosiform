@@ -8,7 +8,6 @@ clauses = [
   "Grouping — Group naming",
   "Grouping — Document content above the grouping depth",
   "Grouping — The overview section",
-  "Entry line",
 ]
 
 [invocation]

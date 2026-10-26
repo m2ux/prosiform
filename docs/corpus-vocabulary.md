@@ -17,6 +17,9 @@ The words a sentence needs that the design has no occasion to write.
 | **across** | spanning something, such as two lines. |
 | **alongside** | beside, of two things emitted together. |
 | **although** | concedes a fact the clause stands in spite of. |
+| **however** | in whatever way or number, of a count that changes nothing. |
+| **instruct** | to direct that a thing be done. |
+| **remainder** | what is left once a part is taken. |
 | **apiece** | one each, of a count shared out. |
 | **beside** | next to, of adjacent content. |
 | **choose** | to settle on one of several. |

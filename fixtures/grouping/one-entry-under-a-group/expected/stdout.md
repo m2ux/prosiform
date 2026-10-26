@@ -2,8 +2,6 @@
 
 Scopes the solution before any work starts.
 
-Follow [Procedure](#procedure) and [Review](#review-4). The other sections are material those procedures reference.
-
 ## Procedure
 
 ### Plan

@@ -2,8 +2,6 @@
 
 What the run reads before it starts.
 
-Follow [a lower-case section](#a-lower-case-section). The other sections are material that procedure references.
-
 ## a lower-case section
 
 The spelling its author wrote.

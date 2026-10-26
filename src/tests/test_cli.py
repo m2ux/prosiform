@@ -47,7 +47,6 @@ from prosiform.candidate import (
 )
 from prosiform.cli import (
     CODES,
-    GENERATED_INPUT,
     GROUP_DEPTH_CONFLICT,
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -172,7 +171,6 @@ def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
 
 def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
     declared = {
-        GENERATED_INPUT,
         GROUP_DEPTH_CONFLICT,
         INVALID_ENCODING,
         INVALID_USAGE,
@@ -330,16 +328,16 @@ def test_a_fragment_only_reference_selects_from_the_referring_document(
     )
 
 
-def test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection(
+def test_an_entry_naming_a_member_of_one_heading_opens_on_its_title(
     root: Path,
 ) -> None:
     written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
     run = invoke("notes/bare.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("# Bare\n\nFollow [Bare](#bare).")
+    assert run.stdout == "# Bare\n"
 
 
-def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
+def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_that_title(
     root: Path,
 ) -> None:
     written(
@@ -349,7 +347,7 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection(
     )
     run = invoke("notes/second.md#second", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout.startswith("# Second\n\nFollow [Second](#second).")
+    assert run.stdout.startswith("# Second\n\n## Outcomes\n")
 
 
 def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
@@ -429,7 +427,7 @@ def test_an_output_path_naming_no_input_source_is_accepted(
 def test_standard_output_is_an_explicit_output_destination(root: Path) -> None:
     run = invoke("-o", "-", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "Follow " in run.stdout
+    assert run.stdout.startswith("# Guide\n")
 
 
 def test_a_validation_only_run_publishes_nothing(root: Path) -> None:
@@ -765,13 +763,7 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.diagnostics() == []
-    assert run.stdout == (
-        "# Guide\n"
-        "\n"
-        "Follow [Run](#run). "
-        "The other sections are material that procedure references.\n"
-        "\n## Run\n\nDo it.\n"
-    )
+    assert run.stdout == ("# Guide\n\n## Run\n\nDo it.\n")
 
 
 def test_a_run_that_cannot_publish_reports_the_publication_failure_alone(
@@ -866,10 +858,7 @@ def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n\n## Stop\n\nStop it.\n")
     run = invoke("guide.md#run", cwd=root)
     assert run.status == SUCCESS
-    assert run.stdout == (
-        "Follow [Run](#run). The other sections are material that procedure "
-        "references.\n\n# Guide\n\n### Run\n\nDo it.\n"
-    )
+    assert run.stdout == ("# Guide\n\n### Run\n\nDo it.\n")
 
 
 def test_a_fragment_naming_a_container_nested_heading_is_refused(root: Path) -> None:
@@ -908,14 +897,7 @@ def test_a_named_output_file_carries_the_bundle(root: Path, tmp_path: Path) -> N
     run = invoke("-o", str(destination), "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.stdout == ""
-    assert destination.read_text() == (
-        "# Guide\n"
-        "\n"
-        "Body.\n"
-        "\n"
-        "Follow [Guide](#guide). "
-        "The other sections are material that procedure references.\n"
-    )
+    assert destination.read_text() == ("# Guide\n\nBody.\n")
 
 
 def test_a_named_output_file_is_published_through_one_rename(
@@ -1213,59 +1195,6 @@ def test_a_dispatch_mark_on_a_resource_is_a_resource_still(root: Path) -> None:
     assert "[\u00bb the diagram](plan.png)" in run.stdout
 
 
-def test_a_declared_dispatch_text_opens_the_bundle_after_the_entry_sentence(
-    root: Path,
-) -> None:
-    declaration = "---\nprosiform:\n  dispatch: Each mark is the sub-agent's.\n---\n"
-    written(
-        root,
-        "guide.md",
-        f"{declaration}# Guide\n\nSee [\u00bb the rules](rules.md).\n",
-    )
-    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "references. Each mark is the sub-agent's.\n" in run.stdout
-
-
-def test_no_declared_dispatch_text_leaves_the_entry_line_as_it_was(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nSee [\u00bb the rules](rules.md).\n")
-    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "sub-agent" not in run.stdout.splitlines()[0]
-
-
-def test_every_contributing_source_agrees_on_the_dispatch_text(root: Path) -> None:
-    declaration = "---\nprosiform:\n  dispatch: One rule.\n---\n"
-    written(
-        root,
-        "guide.md",
-        f"{declaration}# Guide\n\nRead [the rules](rules.md).\n",
-    )
-    written(
-        root,
-        "rules.md",
-        "---\nprosiform:\n  dispatch: Another rule.\n---\n# Rules\n\nEvery rule.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.stdout == ""
-    diagnostic = run.diagnostics()[0]
-    assert diagnostic["code"] == INVALID_CONVERSION_METADATA
-    assert diagnostic["location"]["file"] == "guide.md"
-    assert [one["file"] for one in diagnostic["related"]] == ["rules.md"]
-
-
-def test_the_same_dispatch_text_twice_is_one_instruction(root: Path) -> None:
-    declaration = "---\nprosiform:\n  dispatch: One rule.\n---\n"
-    written(root, "guide.md", f"{declaration}# Guide\n\nRead [the rules](rules.md).\n")
-    written(root, "rules.md", f"{declaration}# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.stdout.count("One rule.") == 1
-
-
 def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nRead [\u00ac \u00bb the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
@@ -1287,11 +1216,12 @@ def test_a_link_opening_with_both_operators_is_refused_where_it_names_nothing(
     assert run.diagnostics()[0]["code"] == UNSUPPORTED_CONSTRUCT
 
 
-def test_an_unknown_prosiform_key_still_fails(root: Path) -> None:
+@pytest.mark.parametrize("key", ["dispatch", "dispatched"])
+def test_an_unknown_prosiform_key_fails(root: Path, key: str) -> None:
     written(
         root,
         "guide.md",
-        "---\nprosiform:\n  dispatched: One rule.\n---\n# Guide\n",
+        f"---\nprosiform:\n  {key}: One rule.\n---\n# Guide\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -1656,8 +1586,8 @@ def test_a_candidate_disagreeing_with_its_provenance_publishes_nothing(
     destination = tmp_path / "bundle.md"
     assembling = assemble
 
-    def dropping(line: str, groups: Sequence[Group]) -> str:
-        return assembling(line, groups).replace("\n\nMore body.", "")
+    def dropping(groups: Sequence[Group]) -> str:
+        return assembling(groups).replace("\n\nMore body.", "")
 
     monkeypatch.setattr("prosiform.cli.assemble", dropping)
     run = invoke("-d", "json", "-o", str(destination), "guide.md", cwd=root)
@@ -1903,68 +1833,3 @@ def test_a_budget_spent_on_the_last_valid_reference_bundles_it(root: Path) -> No
     assert run.status == SUCCESS
     assert "The plan." in run.stdout
     assert PARSER_REFERENCE_LIMIT not in run.stderr
-
-
-@pytest.mark.parametrize("folder", ["docs", "DoCs"])
-@pytest.mark.parametrize("merged", [False, True])
-def test_actual_bundle_reuse_is_refused(
-    tmp_path: Path, folder: str, merged: bool
-) -> None:
-    source = tmp_path / folder / "gUiDe.md"
-    source.parent.mkdir()
-    source.write_text("# Guide\n\n## Install\n\nContent.\n")
-    if merged:
-        source.write_text(conversion(folder, 2) + source.read_text())
-    first = invoke(f"{folder}/gUiDe.md", cwd=tmp_path)
-    assert first.status == SUCCESS
-    (tmp_path / "bundle.md").write_text(first.stdout)
-    second = invoke("-d", "json", "bundle.md", cwd=tmp_path)
-    assert second.status == INPUT_FAILURE
-    assert second.stdout == ""
-    assert second.diagnostics()[0]["code"] == GENERATED_INPUT
-    assert second.diagnostics()[0]["source"] == "bundle.md:3"
-
-
-@pytest.mark.parametrize(
-    "text",
-    [
-        "~~~markdown\n{declaration}\n~~~\n",
-        "> {declaration}\n\n# Notes\n",
-        "Follow prose. The other sections are material that procedure references.\n",
-        "Follow [Notes](https://example.com). "
-        "The other sections are material that procedure references.\n",
-    ],
-)
-def test_authored_declaration_examples_bundle(tmp_path: Path, text: str) -> None:
-    declaration = (
-        "Follow [Notes](#notes). "
-        "The other sections are material that procedure references."
-    )
-    (tmp_path / "notes.md").write_text(text.format(declaration=declaration))
-    result = invoke("notes.md", cwd=tmp_path)
-    assert result.status == SUCCESS
-
-
-def test_a_title_followed_by_the_declaration_is_a_bundle(tmp_path: Path) -> None:
-    (tmp_path / "notes.md").write_text(
-        "# Notes\n"
-        "\n"
-        "Follow [Notes](#notes). "
-        "The other sections are material that procedure references.\n"
-    )
-    result = invoke("-d", "json", "notes.md", cwd=tmp_path)
-    assert result.status == INPUT_FAILURE
-    assert [one["code"] for one in result.diagnostics()] == [GENERATED_INPUT]
-
-
-def test_generated_input_reports_location_after_frontmatter(tmp_path: Path) -> None:
-    (tmp_path / "bundle.md").write_text(
-        "---\ntitle: Bundle\n---\n\n"
-        "Follow [Notes](#notes). "
-        "The other sections are material that procedure references.\n"
-        "\n# Notes\n\n## Findings\n\nContent.\n"
-    )
-    result = invoke("-d", "json", "bundle.md#findings", cwd=tmp_path)
-    assert result.status == INPUT_FAILURE
-    assert result.diagnostics()[0]["code"] == GENERATED_INPUT
-    assert result.diagnostics()[0]["source"] == "bundle.md:5"

@@ -1,4 +1,4 @@
-"""Assert the bundle's structure: its file groups and its entry line.
+"""Assert the bundle's structure: its file groups and how they join.
 
 The corpus declares what a run publishes. These are the cases beneath
 it: the heading one path generates, the escaping that keeps that heading
@@ -15,11 +15,9 @@ from prosiform.bundle import (
     Overflow,
     absorbed,
     assemble,
-    entry_line,
     escaped,
     group,
     heading_text,
-    is_entry_line,
     openings,
     title_cased,
 )
@@ -115,60 +113,6 @@ def test_a_path_ending_in_a_number_sign_keeps_it_in_its_file_heading() -> None:
     one = grouped("notes/draft #.md", "A document whose path ends in a number sign.\n")
     assert one.text.splitlines()[0] == "# Notes/Draft \\#"
     assert one.headings[0] == "Notes/Draft #"
-
-
-def test_the_entry_line_names_one_reference_and_its_destination() -> None:
-    assert entry_line([("guide", "guide")]) == (
-        "Follow [guide](#guide). "
-        "The other sections are material that procedure references."
-    )
-
-
-def test_the_entry_line_names_every_reference_the_run_was_given() -> None:
-    assert entry_line([("a", "a"), ("b", "b"), ("c", "c")]) == (
-        "Follow [a](#a), [b](#b) and [c](#c). "
-        "The other sections are material those procedures reference."
-    )
-
-
-def test_the_entry_line_escapes_the_text_of_the_heading_it_names() -> None:
-    assert "[plan\\_\\[v2\\]](#plan_v2)" in entry_line([("plan_[v2]", "plan_v2")])
-
-
-def test_a_declared_dispatch_text_follows_the_entry_sentence() -> None:
-    sentence = entry_line([("guide", "guide")])
-    assert entry_line([("guide", "guide")], "Each mark is the sub-agent's.") == (
-        f"{sentence} Each mark is the sub-agent's."
-    )
-
-
-def test_a_declared_dispatch_text_follows_the_sentence_for_any_entry_count() -> None:
-    named = [("a", "a"), ("b", "b")]
-    assert entry_line(named, "One rule.") == f"{entry_line(named)} One rule."
-
-
-def test_an_absent_dispatch_text_leaves_the_entry_sentence_alone() -> None:
-    assert entry_line([("guide", "guide")]) == entry_line([("guide", "guide")], None)
-
-
-def test_a_dispatch_text_is_escaped_as_literal_text() -> None:
-    assert "a \\[v2\\] rule" in entry_line([("g", "g")], "a [v2] rule")
-
-
-def test_the_entry_line_is_recognized_wherever_its_sentence_is_published() -> None:
-    assert is_entry_line(entry_line([("guide", "guide")]))
-    assert is_entry_line(entry_line([("guide", "guide")], "One rule."))
-
-
-def test_a_paragraph_that_does_not_carry_the_entry_sentence_is_no_entry_line() -> None:
-    assert not is_entry_line("Follow the guide.")
-    assert not is_entry_line("Read [guide](#guide).")
-
-
-def test_a_dispatch_text_reaches_the_bundle_where_the_sentence_is() -> None:
-    carried = grouped("note.md", "Body.\n")
-    line = entry_line([("Note", "note")], "One rule.")
-    assert f"{line}\n" in assemble(line, [carried])
 
 
 def test_a_group_opens_on_its_file_heading() -> None:
@@ -276,8 +220,8 @@ def test_a_last_line_carrying_no_terminator_ends_with_the_bundles_own() -> None:
 
 
 def test_a_bundle_closes_with_the_newline_its_final_part_carries() -> None:
-    bundled = assemble("Line.", [grouped("guide.md", "# Guide\r\n\r\nBody.\r\n")])
-    assert bundled == "Line.\n\n# Guide\n\nBody.\r\n"
+    bundled = assemble([grouped("guide.md", "# Guide\r\n\r\nBody.\r\n")])
+    assert bundled == "# Guide\n\nBody.\r\n"
 
 
 def test_the_separation_between_two_regions_is_one_blank_line() -> None:
@@ -371,8 +315,8 @@ def test_an_absorbed_group_reaches_the_sixth_level_without_overflow() -> None:
 
 
 def test_a_bundle_ends_in_exactly_one_newline() -> None:
-    bundled = assemble("Line.", [grouped("guide.md", "# Guide\n")])
-    assert bundled == "Line.\n\n# Guide\n"
+    bundled = assemble([grouped("guide.md", "# Guide\n")])
+    assert bundled == "# Guide\n"
 
 
 def test_a_group_is_its_parts_one_blank_line_apart() -> None:
@@ -385,9 +329,9 @@ def test_a_group_is_its_parts_one_blank_line_apart() -> None:
 def test_each_part_opens_one_blank_line_below_the_part_above_it() -> None:
     text = "# Guide\n\nOpening prose.\n\n- A rule.\n- Another rule.\n"
     carried = grouped("guide.md", text)
-    bundled = assemble("Line.", [carried])
-    assert openings([carried], 1) == [2, 4, 6]
-    assert [lines(bundled)[at] for at in openings([carried], 1)] == [
+    bundled = assemble([carried])
+    assert openings([carried]) == [0, 2, 4]
+    assert [lines(bundled)[at] for at in openings([carried])] == [
         "# Guide\n",
         "Opening prose.\n",
         "- A rule.\n",
@@ -397,9 +341,9 @@ def test_each_part_opens_one_blank_line_below_the_part_above_it() -> None:
 def test_the_parts_of_two_groups_open_in_bundle_order() -> None:
     first = grouped("guide.md", "# Guide\n\nOpening prose.\n")
     second = grouped("note.md", "# Note\n")
-    bundled = assemble("Line.", [first, second])
-    assert openings([first, second], 1) == [2, 4, 6]
-    assert [lines(bundled)[at] for at in openings([first, second], 1)] == [
+    bundled = assemble([first, second])
+    assert openings([first, second]) == [0, 2, 4]
+    assert [lines(bundled)[at] for at in openings([first, second])] == [
         "# Guide\n",
         "Opening prose.\n",
         "# Note\n",
@@ -415,7 +359,7 @@ def selecting(path: str, text: str, *named: str) -> Group:
     chosen = tuple(
         token for token in regions(tokens) if any(token is one for one in wanted)
     )
-    return group(path, tokens, lines(text), None, Selection(chosen, ()), None)
+    return group(path, tokens, lines(text), None, Selection(chosen), None)
 
 
 OUTLINED = """## Alpha

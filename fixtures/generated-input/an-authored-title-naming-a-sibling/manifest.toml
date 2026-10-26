@@ -1,9 +1,0 @@
-description = "An authored title naming a sibling document bundles."
-clauses = ["Generated input policy"]
-[invocation]
-cwd = "source"
-arguments = ["notes.md"]
-[expected]
-exit_status = 0
-stdout = "expected/stdout.md"
-diagnostics = []

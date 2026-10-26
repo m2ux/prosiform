@@ -1,7 +1,6 @@
-description = "A prosiform key the contract does not admit still fails with E_INVALID_CONVERSION_METADATA, so admitting dispatch adds no key beside it."
+description = "A prosiform key the contract does not admit, here dispatch, fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
 
 clauses = [
-  "Conversion metadata — prosiform.dispatch",
   "Conversion metadata — The admitted keys",
   "Metadata failures",
 ]
@@ -17,6 +16,6 @@ stdout = "expected/stdout.md"
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_CONVERSION_METADATA"
-message_contains = ["prosiform.dispatched"]
+message_contains = ["unknown field prosiform.dispatch"]
 reference = "guide.md"
 chain = ["guide.md"]

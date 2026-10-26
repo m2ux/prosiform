@@ -1,5 +1,3 @@
-Follow [Detail](#detail). The other sections are material that procedure references.
-
 # Notes
 
 ## Guide

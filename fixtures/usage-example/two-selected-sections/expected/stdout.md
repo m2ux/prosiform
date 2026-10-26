@@ -1,5 +1,3 @@
-Follow [Record Epic Delivery](#record-epic-delivery) and [Delivery Findings](#delivery-findings). The other sections are material those procedures reference.
-
 ## Operations
 
 ### *Record* Epic Delivery

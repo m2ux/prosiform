@@ -1,5 +1,3 @@
-Follow [One](#one), [Two](#two) and [Alpha](#alpha). The other sections are material those procedures reference.
-
 # Middle
 
 ### One

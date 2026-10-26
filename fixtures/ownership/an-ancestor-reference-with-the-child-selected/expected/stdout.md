@@ -1,5 +1,3 @@
-Follow [Step](#step). The other sections are material that procedure references.
-
 # Manual
 
 ### Procedure

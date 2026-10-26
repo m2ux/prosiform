@@ -3,7 +3,6 @@ description = "A path ending in a space and a number sign is escaped as literal 
 clauses = [
   "File-scoped hierarchy, escape the path as literal heading text",
   "Resolution sequence — step 2",
-  "Entry line",
 ]
 
 [invocation]
