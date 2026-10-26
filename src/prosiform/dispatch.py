@@ -25,6 +25,11 @@ it warns, so its author either dispatches a procedure or links the
 material without the operator. A list in a code block is an example of
 one rather than a step, and the parser reads none there.
 
+A dispatch naming the document that writes it — a section of it by
+fragment or by path, or the whole of it — hands a sub-agent material its
+own session compiles, so it warns. It is the shortest cycle, and is
+reported as this rather than as a cycle.
+
 A chain is deeper than the limit where it reaches a hop past it, and the
 search for one stops there, so it is bounded however wide the dispatches
 fan out. A chain returning to a target already on it — the bundle's own
@@ -46,7 +51,9 @@ DISPATCH_DEPTH = "W_DISPATCH_DEPTH"
 DISPATCH_CYCLE = "W_DISPATCH_CYCLE"
 DISPATCH_NOT_PROCEDURAL = "W_DISPATCH_NOT_PROCEDURAL"
 
-CODES = (DISPATCH_DEPTH, DISPATCH_CYCLE, DISPATCH_NOT_PROCEDURAL)
+DISPATCH_SELF = "W_DISPATCH_SELF"
+
+CODES = (DISPATCH_DEPTH, DISPATCH_CYCLE, DISPATCH_NOT_PROCEDURAL, DISPATCH_SELF)
 
 STEP = "ordered_list_open"
 
@@ -55,6 +62,10 @@ LIMIT = 3
 DEPTH_REMEDY = (
     "compile an intermediate target into the bundle that dispatches it, or "
     "dispatch its targets from an earlier hop"
+)
+SELF_REMEDY = (
+    "move the procedure to a document of its own, or link it without the "
+    "dispatch operator"
 )
 PROCEDURE_REMEDY = (
     "dispatch a procedure, or link the material without the dispatch operator"
@@ -68,6 +79,11 @@ class Hop:
 
     target: Reference
     location: Location
+
+    @property
+    def own(self) -> bool:
+        """Whether the link names the document that writes it."""
+        return self.target.path == self.location.file
 
     @property
     def name(self) -> str:
@@ -125,8 +141,13 @@ def returning(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] |
 
     The entries stand on every chain, so a dispatch naming the bundle's
     own entry closes a cycle. A target every chain through which was
-    followed to its end without returning is not followed again.
+    followed to its end without returning is not followed again. A
+    dispatch naming the document that writes it is the shortest cycle,
+    which the self-dispatch warning names when that document's own run
+    reads it, so it closes none here.
     """
+    if first.own:
+        return None
     if first.name in entries:
         return [first]
     chain = [first]
@@ -140,6 +161,8 @@ def returning(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] |
             name = chain.pop().name
             on.discard(name)
             done.add(name)
+            continue
+        if following.own:
             continue
         if following.name in on:
             return [*chain, following]
@@ -240,5 +263,21 @@ def unprocedural(hop: Hop) -> Diagnostic:
         resolved=hop.name,
         chain=hop.target.chain,
         remedy=PROCEDURE_REMEDY,
+        location=hop.location,
+    )
+
+
+def selfward(hop: Hop) -> Diagnostic:
+    """One warning naming a dispatch of the document that writes it."""
+    return Diagnostic(
+        WARNING,
+        f"the dispatch {hop.target.original!r} names {hop.name!r} in the document "
+        f"that writes it, so it hands a sub-agent material the dispatching "
+        f"session compiles itself",
+        code=DISPATCH_SELF,
+        reference=hop.target.original,
+        resolved=hop.name,
+        chain=hop.target.chain,
+        remedy=SELF_REMEDY,
         location=hop.location,
     )

@@ -80,7 +80,7 @@ from prosiform.diagnostics import (
     Reporter,
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
-from prosiform.dispatch import Hop, analysed, procedural, unprocedural
+from prosiform.dispatch import Hop, analysed, procedural, selfward, unprocedural
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
@@ -1891,6 +1891,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         reporter.emit(warning)
     for warning in unperformable(hops, parsed):
         reporter.emit(warning)
+    for hop in hops:
+        if hop.own:
+            reporter.emit(selfward(hop))
     for warning in analysed(
         hops, {one.chain[0] for one in requested}, onward(root, limits)
     ):

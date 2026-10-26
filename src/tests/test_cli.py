@@ -78,6 +78,7 @@ from prosiform.dispatch import (
     DISPATCH_CYCLE,
     DISPATCH_DEPTH,
     DISPATCH_NOT_PROCEDURAL,
+    DISPATCH_SELF,
 )
 from prosiform.limits import (
     BUDGETS,
@@ -2006,9 +2007,10 @@ def test_a_dispatched_section_of_the_entry_is_a_hop(root: Path) -> None:
     dispatching(root, ["a.md", "b.md", "c.md"])
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    [warning] = run.diagnostics()
-    assert warning["code"] == DISPATCH_DEPTH
-    assert warning["chain"] == ["guide.md", "guide.md#run", "a.md", "b.md", "c.md"]
+    own, deep = run.diagnostics()
+    assert own["code"] == DISPATCH_SELF
+    assert deep["code"] == DISPATCH_DEPTH
+    assert deep["chain"] == ["guide.md", "guide.md#run", "a.md", "b.md", "c.md"]
 
 
 def test_a_deferred_link_in_a_dispatched_closure_is_no_hop(root: Path) -> None:
@@ -2040,17 +2042,29 @@ def test_a_cycle_of_dispatches_warns_and_terminates(root: Path) -> None:
     assert warning["chain"] == ["guide.md", "a.md", "b.md", "a.md"]
 
 
-def test_a_section_dispatching_its_own_document_is_a_cycle(root: Path) -> None:
+def test_a_section_dispatching_its_own_document_warns_once(root: Path) -> None:
     written(
         root,
         "guide.md",
-        "# Guide\n\n## Run\n\n1. Again [⇉ the guide](guide.md).\n",
+        "# Guide\n\n## Run\n\n1. Again [\u21c9 the guide](guide.md).\n",
     )
     run = invoke("-d", "json", "guide.md#run", cwd=root)
     assert run.status == SUCCESS
     [warning] = run.diagnostics()
-    assert warning["code"] == DISPATCH_CYCLE
-    assert warning["chain"] == ["guide.md#run", "guide.md", "guide.md"]
+    assert warning["code"] == DISPATCH_SELF
+    assert warning["resolved"] == "guide.md"
+    assert warning["location"] == {"file": "guide.md", "line": 5, "column": 1}
+
+
+def test_a_fragment_only_dispatch_names_its_own_document(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n1. Run [\u21c9 the steps](#steps).\n\n## Steps\n\n1. Go.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert [one["code"] for one in run.diagnostics()] == [DISPATCH_SELF]
 
 
 def test_a_dispatched_target_whose_compilation_fails_carries_no_hop(
