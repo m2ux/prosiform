@@ -1,4 +1,4 @@
-description = "The usage example that merges declared members arranges the artifact documents its closure reaches into one group emitted without a heading of its own. Its Overview section holds, under that member's name, the content above the grouping depth of the one member reached as a whole document, and each of its Operations, Fields and Commands sections holds one subsection for each member contributing to it, named by the run of that document's path that tells it apart from the other members. The reference document joins a second group, headed References, which emits the one heading its member carries at the grouping depth. A whole-document reference to a member resolves to that member's overview subsection."
+description = "The usage example that compiles declared groups arranges the artifact documents its closure reaches into one group headed Artifacts, holding one section for each of its twelve members. Each section is headed by that member's own title, kept as its source text since no other member carries it, and holds that member's own Operations, Fields and Commands subsections, as many of the three as the member has. The reference document joins a second group, headed References, which emits the one heading its member carries at the grouping depth. A whole-document reference to a member resolves to the section its title heads."
 
 clauses = [
   "Usage examples",
@@ -6,8 +6,7 @@ clauses = [
   "Grouping — Group structure",
   "Grouping — Verbatim names",
   "Grouping — Group naming",
-  "Grouping — Document content above the grouping depth",
-  "Grouping — The overview section",
+  "Grouping — A heading for every member",
 ]
 
 [invocation]
