@@ -1,0 +1,19 @@
+description = "A successful run writes the bundle to standard output and nothing to the diagnostic stream, and the bundle's entry line names each entry reference in the bundle's own order rather than the command line's: the two entries are named in reverse path order and linked in path order."
+
+clauses = [
+  "Agent delivery contract — Clean Markdown",
+  "Entry line",
+  "Post-compilation invariants — Entry line integrity",
+  "Adversarial acceptance fixtures — Delivery",
+  "Input and output contract — Entry line",
+  "Entry line — Order",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["notes.md", "guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

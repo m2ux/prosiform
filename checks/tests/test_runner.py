@@ -73,11 +73,11 @@ INVALID_USAGE = {
     "severity": "error",
     "code": "E_INVALID_USAGE",
 }
-ENTRY_DESTINATION = {
-    "severity": "warning",
-    "code": "W_ENTRY_DESTINATION",
-    "reference": "guide",
-    "resolved": "guide",
+TARGET_NOT_FOUND = {
+    "severity": "error",
+    "code": "E_TARGET_NOT_FOUND",
+    "reference": "procedure.md#review",
+    "resolved": "procedure.md",
 }
 ROOT_NOT_FOUND = {
     "severity": "error",
@@ -717,15 +717,15 @@ def test_a_declared_resolved_identity_that_differs_is_reported(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fixture = write_fixture(
-        tmp_path / "fixture", exit_status=0, diagnostics=(ENTRY_DESTINATION,)
+        tmp_path / "fixture", exit_status=1, diagnostics=(TARGET_NOT_FOUND,)
     )
-    emitted = dict(ENTRY_DESTINATION)
-    emitted["resolved"] = "guide-1"
-    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 0))
+    emitted = dict(TARGET_NOT_FOUND)
+    emitted["resolved"] = "docs/procedure.md"
+    configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 1))
     detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
     assert "diagnostic 1 carries another resolved" in detail
-    assert "expected 'guide'" in detail
-    assert "produced 'guide-1'" in detail
+    assert "expected 'procedure.md'" in detail
+    assert "produced 'docs/procedure.md'" in detail
 
 
 def test_a_declared_inclusion_chain_that_differs_is_reported(

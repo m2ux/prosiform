@@ -219,7 +219,7 @@ def test_a_reported_code_the_contract_declares_nowhere_is_read(
 def test_the_contract_declares_its_interface_terms() -> None:
     declared = declared_names(DOCUMENTATION)
     assert "E_ROOT_NOT_FOUND" in declared
-    assert "W_ENTRY_DESTINATION" in declared
+    assert "W_RESOURCE_PORTABILITY" in declared
     assert "warning" in declared
     assert "4" in declared
     assert "-d {text,json}" in declared

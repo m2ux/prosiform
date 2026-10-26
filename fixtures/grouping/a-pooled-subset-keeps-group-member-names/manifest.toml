@@ -15,21 +15,4 @@ arguments = ["g/a/notes.md", "g/b/notes.md", "g/c/other.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Alone"
-resolved = "alone"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "B Notes"
-resolved = "b-notes"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "C Other"
-resolved = "c-other"
+diagnostics = []

@@ -260,7 +260,6 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 
 | Code | Declared by |
 | --- | --- |
-| `W_ENTRY_DESTINATION` | Agent delivery contract, Entry destinations — one entry reference and the destination it resolved to, reported so a caller can act on it as data. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.

@@ -14,9 +14,4 @@ arguments = ["-c", "-o", "bundle.md", "guide.md"]
 exit_status = 0
 stdout = "expected/stdout.md"
 absent = ["bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Run"
-resolved = "run"
+diagnostics = []

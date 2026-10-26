@@ -5,14 +5,14 @@ severity, the stable code of the defect it reports, a message, and the
 further fields the contract names where they are known: the reference it
 concerns, the identity that reference resolved to, the source location it
 was found at, the inclusion chain that reached it, and a remedy where one
-can be stated accurately. A resolved identity is a bundle destination
-where the reference reached one and a canonical source path where it
-reached a document. The inclusion chain is the references followed from
-an entry reference to the one the diagnostic concerns, each named by the
-identity it resolved to, so a caller reading a failure deep in a closure
-sees the route the run took to reach it. The code is required because the
-contract names one for every failing outcome it declares, so a diagnostic
-without one would report a defect the contract does not name.
+can be stated accurately. A resolved identity is the canonical source
+path of the document the reference reached. The inclusion chain is the
+references followed from an entry reference to the one the diagnostic
+concerns, each named by the identity it resolved to, so a caller reading
+a failure deep in a closure sees the route the run took to reach it. The
+code is required because the contract names one for every failing
+outcome it declares, so a diagnostic without one would report a defect
+the contract does not name.
 
 A field a diagnostic does not carry is a field its defect has no value
 for: a command line the grammar refuses names no source, and a run that

@@ -76,12 +76,6 @@ BUNDLE = (
     "Follow [Guide](#guide). "
     "The other sections are material that procedure references.\n"
 )
-REPORT = (
-    "W_ENTRY_DESTINATION: the entry reference 'Guide' resolves to the "
-    "destination 'guide', which the bundle's entry line links it to\n"
-    "  reference: Guide\n"
-    "  resolved: guide\n"
-)
 
 
 class Failed(Exception):
@@ -194,22 +188,16 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     """A reference bundled from a source root the repository does not hold.
 
     Standard output carries the bundle and nothing else, and standard
-    error carries the destination the entry reference resolved to, so
-    the installed command's stream split is the one the contract names.
+    error carries nothing, so the installed command's stream split is
+    the one the contract names.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    what = f"{COMMAND} {entry}"
     run = invoke(environment, elsewhere, "-o", "-", entry)
-    succeeded(run, what)
-    if run.stdout != BUNDLE:
+    produced = reported(run, f"{COMMAND} {entry}")
+    if produced != BUNDLE:
         raise Failed(
             f"the bundle differs from the one the source names\n"
-            f"expected {BUNDLE!r}\nproduced {run.stdout!r}"
-        )
-    if run.stderr != REPORT:
-        raise Failed(
-            f"{what} reports another entry destination\n"
-            f"expected {REPORT!r}\nproduced {run.stderr!r}"
+            f"expected {BUNDLE!r}\nproduced {produced!r}"
         )
 
 

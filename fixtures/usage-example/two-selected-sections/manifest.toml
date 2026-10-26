@@ -18,15 +18,4 @@ arguments = [
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Record Epic Delivery"
-resolved = "record-epic-delivery"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Delivery Findings"
-resolved = "delivery-findings"
+diagnostics = []
