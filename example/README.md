@@ -20,10 +20,14 @@ The [planning procedure](work-planner/modes/plan-mode.md) links the documents it
 
 ### Command
 
+The command runs from the skill's directory and names the entry, the planning procedure, relative to it:
+
 ```bash
 cd example/work-planner
 pf modes/plan-mode.md
 ```
+
+It writes the bundle to `modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
 
 ### Output
 
@@ -48,6 +52,29 @@ Its publish step reads:
 ```
 
 The four documents the step links arrive in the bundle, and their headings are destinations its links point at. A link to a whole document points at the heading the bundle gives it, here `Rules` and `Initiative Publication`.
+
+### Constructs
+
+The bundle shows each of these constructs:
+
+- **The entry's own content.** Plan Mode's title, preamble, `Procedure` and `Outcomes` open the bundle, without the entry's frontmatter.
+- **Whole documents under their titles.** Rules, Conventions, Propose Mode and Bootstrap declare no group, and each stands as an H1 headed by its own title.
+- **Declared groups.** `Artifacts`, `Protocols` and `References` head their members in title case, each member's H1 an H2 beneath the group: the eighteen artifacts the bundle's links reach, two protocols and one reference.
+- **Dependency order.** Rules and Conventions follow the entry's own sections, in the order its preamble links them.
+- **Compiled links.** Every link to a document or section under the root points at a heading in the bundle.
+- **Distinct destinations for coinciding headings.** The `Procedure` headings of Propose Mode and Initiative Publication take `#procedure-1` and `#procedure-2`, the destinations their preambles link.
+- **A dispatched link.** The `⇉` mark is published, the destination names Sync Mode from the working directory, and Sync Mode contributes no content:
+
+  ```markdown
+  9. **Record delivered work.**
+     When work has landed:
+     - Follow [⇉ Sync Mode](modes/sync-mode.md) for the affected initiative.
+     - For each unplaced task row it returns pending:
+       - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
+       - Repeat Sync Mode with the refreshed epic.
+  ```
+
+- **An outside-root link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
