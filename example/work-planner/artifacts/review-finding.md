@@ -29,7 +29,7 @@ The verified findings presented for resolution.
 
 **Inputs:** Area, severity, problem, solution and source evidence for each finding.
 
-1. Call [Populate Review Finding](#populate-review-finding) with the area, severity, problem, solution and source evidence.
+1. Apply [Populate Review Finding](#populate-review-finding) with the area, severity, problem, solution and source evidence.
    - Resolve any evidence gap before reporting it.
    - Group the returned findings by area.
 2. Put each pending decision to the user, one question at a time.

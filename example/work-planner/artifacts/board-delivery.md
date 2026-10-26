@@ -27,11 +27,11 @@ One epic's board item at In Review, recording that its delivery is complete and 
 
 **Inputs:** Epic issue identity, board identity and output paths.
 
-1. Run [Read Board State](board.md#read-board-state) for the supplied board to obtain its items and Status field.
-2. Run [Read Board Configuration](board.md#read-board-configuration) with the board identity and output paths for the Status option ids.
+1. Apply [Read Board State](board.md#read-board-state) for the supplied board to obtain its items and Status field.
+2. Apply [Read Board Configuration](board.md#read-board-configuration) with the board identity and output paths for the Status option ids.
 3. Match the epic's issue to its board item.
    - Return an absent item as a finding and stop. The status write below needs it.
-4. Run [Update Item Status](board.md#update-item-status) with the board and item identities, the Status field and In Review option ids, and that status in its request body file, meeting [Status Changes](#status-changes).
+4. Apply [Update Item Status](board.md#update-item-status) with the board and item identities, the Status field and In Review option ids, and that status in its request body file, meeting [Status Changes](#status-changes).
    - Repeat the write and read the item again when it still shows the preceding status. The item list can lag a write.
 5. Return the confirmed status or the discrepancy left for the caller.
 
@@ -42,23 +42,23 @@ The board's status and assignees after its issues record delivery.
 **Inputs:** Saved initiative, epic and task identities, board identity, output directory, and the repositories the board's issues live in.
 
 1. Read the issues, the board and its delivery records.
-   - Run [Read Tracker Issue](issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
-   - Run [Read Board State](board.md#read-board-state) for the selected board.
-   - Run [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for its repositories.
-   - Run [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) for those records.
-   - Run [Read Board Configuration](board.md#read-board-configuration) with the board and output paths.
-   - Run [Read Board Assignee](board.md#read-board-assignee) for the assignment login.
+   - Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved initiative, epic and task identities.
+   - Apply [Read Board State](board.md#read-board-state) for the selected board.
+   - Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for its repositories.
+   - Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) for those records.
+   - Apply [Read Board Configuration](board.md#read-board-configuration) with the board and output paths.
+   - Apply [Read Board Assignee](board.md#read-board-assignee) for the assignment login.
    - Pass these returned snapshots to Plan Board Changes.
-2. Run [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
+2. Apply [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, and assignee login.
    - Fetch each unresolved issue.
    - Pass the fetched files to Plan Board Changes as resolved off-board issue files.
 3. Run each emitted call, including the assignee calls, which act on the issue rather than the board item.
-   - Run [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
+   - Apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
    - If that item still shows the preceding status:
      - Repeat its write.
      - Repeat the same item read. The item list can lag a write.
 4. Fetch the issues and items again.
-   - Run [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
+   - Apply [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
    - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
 ## Fields
