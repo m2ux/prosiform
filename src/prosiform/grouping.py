@@ -500,7 +500,6 @@ def merged(
     depth: int,
     members: Sequence[Member],
     parent: str | None = None,
-    headed: bool = True,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
@@ -517,7 +516,7 @@ def merged(
     if parent_member is not None and situated(parent_member, depth):
         situate(into, parent_member, depth)
         kept = True
-    elif headed:
+    else:
         title = titled(named)
         into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
         into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
@@ -538,7 +537,7 @@ def merged(
         tuple(into.emitted),
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
         members[0].path,
-        wrapped=headed and not kept,
+        wrapped=not kept,
     )
 
 
@@ -714,6 +713,9 @@ def section(
     """One merged section: its heading, then the content its members contribute.
 
     The parent's contribution leads a section several members share.
+    A reference to a contributor's heading resolves to the variant
+    heading naming that document where the section splits into variants,
+    and to the merged heading where one document contributes it.
     """
     if parent is not None:
         contributing = tuple(
@@ -726,7 +728,9 @@ def section(
         for member, anchor in contributing
         if id(anchor) in member.emitting
     )
-    merged_heading(into, text, SECTION_LEVEL, contributing, by, answers)
+    merged_heading(
+        into, text, SECTION_LEVEL, contributing, by, () if variants else answers
+    )
     if variants:
         for member, anchor in contributing:
             heading, recorded = generated_part(

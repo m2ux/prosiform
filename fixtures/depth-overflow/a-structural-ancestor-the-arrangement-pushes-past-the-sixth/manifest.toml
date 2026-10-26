@@ -5,6 +5,7 @@ clauses = [
   "File-scoped hierarchy — Depth overflow",
   "Post-compilation invariants — Depth safety",
   "Grouping — Variants by document",
+  "Grouping — The parent arrangement",
 ]
 
 [invocation]

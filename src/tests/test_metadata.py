@@ -353,27 +353,13 @@ def test_unreserved_fields_have_no_conversion_meaning(text: str) -> None:
         "r",
         "depth",
         "dispatch",
+        "group-heading",
         "unknown",
     ],
 )
 def test_reserved_mapping_has_exact_keys(key: str) -> None:
     with pytest.raises(InvalidMetadata) as caught:
         parse(f"prosiform: {{{key}: x}}")
-    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
-
-
-def test_group_heading_false_is_recorded() -> None:
-    found = parse("prosiform: {group: artifacts, group-depth: 2, group-heading: false}")
-    assert found.heading is False
-
-
-def test_an_absent_group_heading_means_the_heading_is_present() -> None:
-    assert parse("prosiform: {group: artifacts, group-depth: 2}").heading is None
-
-
-def test_group_heading_requires_the_group_fields() -> None:
-    with pytest.raises(InvalidMetadata) as caught:
-        parse("prosiform: {group-heading: false}")
     assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
 
 
