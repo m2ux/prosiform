@@ -14,15 +14,4 @@ arguments = ["notes/note.md", "docs/note.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Note"
-resolved = "note"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Docs/Note"
-resolved = "docsnote"
+diagnostics = []

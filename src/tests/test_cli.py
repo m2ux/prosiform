@@ -47,7 +47,6 @@ from prosiform.candidate import (
 )
 from prosiform.cli import (
     CODES,
-    ENTRY_DESTINATION,
     GENERATED_INPUT,
     GROUP_DEPTH_CONFLICT,
     INPUT_FAILURE,
@@ -187,7 +186,6 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         TARGET_NOT_FOUND,
         UNEXPECTED_INTERNAL_ERROR,
         UNSUPPORTED_ENTRY_SUFFIX,
-        ENTRY_DESTINATION,
         RESOURCE_PORTABILITY,
     }
     for published in (
@@ -766,7 +764,7 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+    assert run.diagnostics() == []
     assert run.stdout == (
         "# Guide\n"
         "\n"
@@ -776,47 +774,7 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     )
 
 
-def test_a_successful_run_reports_each_entry_reference_and_its_destination(
-    root: Path,
-) -> None:
-    written(root, "notes.md", "# Notes\n\n### Step\n\nFirst.\n")
-    written(root, "rules.md", "# Rules\n\n### Step\n\nSecond.\n")
-    run = invoke("-d", "json", "notes.md#step", "rules.md#step", cwd=root)
-    assert run.status == SUCCESS
-    assert [
-        (one["severity"], one["code"], one["reference"], one["resolved"])
-        for one in run.diagnostics()
-    ] == [
-        ("warning", ENTRY_DESTINATION, "Step", "step"),
-        ("warning", ENTRY_DESTINATION, "Step", "step-1"),
-    ]
-
-
-def test_an_entry_destination_is_reported_in_the_format_the_run_declares(
-    root: Path,
-) -> None:
-    written(root, "guide.md", "# Guide\n\nBody.\n")
-    run = invoke("-d", "text", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.stderr == (
-        f"{ENTRY_DESTINATION}: the entry reference 'Guide' resolves to the "
-        "destination 'guide', which the bundle's entry line links it to\n"
-        "  reference: Guide\n"
-        "  resolved: guide\n"
-    )
-
-
-def test_a_validation_only_run_reports_the_destinations_it_resolved(
-    root: Path,
-) -> None:
-    written(root, "guide.md", "# Guide\n\nBody.\n")
-    run = invoke("-c", "-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.stdout == ""
-    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
-
-
-def test_a_run_that_cannot_publish_reports_no_entry_destination(
+def test_a_run_that_cannot_publish_reports_the_publication_failure_alone(
     root: Path, tmp_path: Path
 ) -> None:
     written(root, "guide.md", "# Guide\n\nBody.\n")
@@ -1834,7 +1792,7 @@ def test_a_title_the_allowed_source_root_cannot_contain_names_no_document(
     (root / "titled.md").write_text("# ../outside\n\nBody.\n")
     run = invoke("-d", "json", "titled.md", cwd=root)
     assert run.status == SUCCESS
-    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+    assert run.diagnostics() == []
 
 
 def test_an_unsafe_boundary_is_an_input_failure(tmp_path: Path) -> None:
@@ -1887,7 +1845,7 @@ def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) ->
     run = invoke("-d", "json", "-N", "1", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "The plan." in run.stdout
-    assert [one["code"] for one in run.diagnostics()] == [ENTRY_DESTINATION]
+    assert run.diagnostics() == []
 
 
 def test_the_source_changed_fault_fails_the_run_and_publishes_nothing(

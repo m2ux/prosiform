@@ -154,7 +154,6 @@ def corpus(tmp_path: Path) -> Path:
         directory,
         "an-entry-line-naming-one-entry",
         ["Entry line — Link text", "Block boundaries, an unclosed fence"],
-        diagnostics=[{"severity": "warning", "code": "W_ENTRY_DESTINATION"}],
     )
     fixture(
         directory,

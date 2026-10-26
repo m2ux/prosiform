@@ -22,33 +22,4 @@ arguments = [
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "What's new: v1.0!"
-resolved = "whats-new-v10"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Café-Münster"
-resolved = "café-münster-1"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Notes"
-resolved = "notes-2"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "The-Code-Span-And-Bold-Text"
-resolved = "the-code-span-and-bold-text-1"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Whats-New-V10"
-resolved = "whats-new-v10-1"
+diagnostics = []

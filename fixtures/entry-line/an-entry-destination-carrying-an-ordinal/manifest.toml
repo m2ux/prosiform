@@ -14,15 +14,4 @@ arguments = ["notes.md#step", "rules.md#step"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Step"
-resolved = "step"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Step"
-resolved = "step-1"
+diagnostics = []

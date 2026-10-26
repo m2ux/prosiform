@@ -166,7 +166,6 @@ TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
-ENTRY_DESTINATION = "W_ENTRY_DESTINATION"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 
 CODES = tuple(
@@ -185,7 +184,6 @@ CODES = tuple(
             TARGET_NOT_FOUND,
             UNEXPECTED_INTERNAL_ERROR,
             UNSUPPORTED_ENTRY_SUFFIX,
-            ENTRY_DESTINATION,
             RESOURCE_PORTABILITY,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
@@ -1598,13 +1596,10 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-) -> tuple[str, list[tuple[str, str]]]:
-    """The complete bundle candidate, and the entry destinations it opens on.
+) -> str:
+    """The complete bundle candidate.
 
-    The candidate is its entry line and one group per source. The pairs
-    returned are the ones that entry line is written from, so what a
-    caller reads on the diagnostic stream and what the bundle states in
-    its opening line are one computation rather than two.
+    The candidate is its entry line and one group per source.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -1630,8 +1625,7 @@ def compose(
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
     groups = assembled(read, parsed, defined, selected, entries, targets, inforce)
-    named = entries_named(groups, assigned)
-    bundled = assemble(entry_line(named, dispatch), groups)
+    bundled = assemble(entry_line(entries_named(groups, assigned), dispatch), groups)
     try:
         validate(
             bundled,
@@ -1647,7 +1641,7 @@ def compose(
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, named
+    return bundled
 
 
 def resource(destination: str, embedded: bool) -> bool:
@@ -1806,7 +1800,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         destination = Path(output).resolve()
         if destination in sources(root, read):
             raise usage_failure(f"the output path {output!r} names an input source")
-    bundled, named = compose(read, parsed, defined, referring, requested, found, limits)
+    bundled = compose(read, parsed, defined, referring, requested, found, limits)
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
@@ -1831,17 +1825,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             publish(bundled, stdout)
         else:
             publish_file(bundled, destination)
-    for reference, target in named:
-        reporter.emit(
-            Diagnostic(
-                WARNING,
-                f"the entry reference {reference!r} resolves to the destination "
-                f"{target!r}, which the bundle's entry line links it to",
-                code=ENTRY_DESTINATION,
-                reference=reference,
-                resolved=target,
-            )
-        )
     return SUCCESS
 
 

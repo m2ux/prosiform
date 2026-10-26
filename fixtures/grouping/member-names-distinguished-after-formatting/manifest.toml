@@ -14,15 +14,4 @@ arguments = ["modes/a/plan.md", "modes/b/plan-mode.md"]
 [expected]
 exit_status = 0
 stdout = "expected/stdout.md"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "Procedure"
-resolved = "procedure"
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_ENTRY_DESTINATION"
-reference = "B Plan"
-resolved = "b-plan"
+diagnostics = []
