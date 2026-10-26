@@ -64,4 +64,14 @@ This delivers the debt epic's row on a root naming a sibling and a parent, so th
 
 `pf` never sees the mark, since no mode bundle compiles `SKILL.md`'s Modes list, so the mark needs no compiler operator. `»` stays reserved for sub-agent dispatch, which waits until the skill is factored ([#275](https://github.com/m2ux/prosiform/pull/275), reverted). The section is named Bootstrap so "dispatch" keeps that one meaning.
 
-The Linked sections rule leaves `SKILL.md`: a mode is followed from its bundle, which carries each linked section under its own heading, and the Prerequisites it named are gone from the tree. The migration epic carries this as W11 ([#276](https://github.com/m2ux/prosiform/pull/276)), observed by AC15 and AC16.
+The Linked sections rule leaves `SKILL.md`: a mode is followed from its bundle, which carries each linked section under its own heading, and the Prerequisites it named are gone from the tree. The migration epic carries this as W11 ([#276](https://github.com/m2ux/prosiform/pull/276)), observed by AC14 and AC15.
+
+## D11 — Rules, conventions and bootstrap sit beside the entry point
+
+The user dictated the skill's structure for the `pf` migration. `rules.md`, `conventions.md` and `bootstrap.md` sit beside `SKILL.md`, which keeps its preamble, Modes and Dependencies. Its Modes section opens with "Read the [bootstrap](bootstrap.md) instructions then select the mode as appropriate to fulfill the user request:". Every mode's preamble closes with "Follow [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.", so every mode bundle carries both files, and the Procedure no longer states that its main path meets Outcomes. The largest bundle, `deliver-mode`, is 246,141 bytes against 262,144.
+
+Every guideline that conflicts with that structure is removed or restated: Prerequisites sections, rules held in `SKILL.md`, the entry point supplying Conventions before mode selection, and reading linked sections by hand. The example's links therefore no longer equal the copied skill's at every place, so the migration epic drops the criterion holding them equal; a link copied from the skill still keeps its destination.
+
+`pf` reports nothing about an entry reference resolving to the destination the entry line links it to: the user ruled such references allowed, so a successful run writes only the bundle unless it names a resource. The design's Entry destinations clause leaves with the warning.
+
+The migration epic carries these as W12 ([#278](https://github.com/m2ux/prosiform/pull/278)), observed by AC16, and W13 ([#277](https://github.com/m2ux/prosiform/pull/277)), observed by AC17 to AC19. Its criteria are renumbered from AC14; its row ids keep their numbers.
