@@ -9,22 +9,31 @@ headless browser, and reads every anchor the drawings carry. The corpus
 holds the build to that same bundle byte for byte, so the bundle rendered
 is the one the build publishes.
 
-A fixture passes when its drawings carry exactly the anchors its entry
-lists, one per link its bundle rewrote, and each opens `#<slug>` for a
-heading the bundle carries. An anchor the drawing lacks is a link Mermaid
-did not render as one; an extra one is a link the bundle did not rewrite.
+A Gantt diagram's link is no anchor: Mermaid binds it as a click handler
+that calls `window.open` once the page runs. Each fixture `CLICKED` names
+is proven in a running page instead: `click.mjs` renders each `mermaid`
+fence of its expected bundle with the Mermaid and the browser mermaid-cli
+ships, binds the handlers, clicks each clickable task and records the URL
+each click opens.
+
+A fixture passes when its drawings carry, or its clicks open, exactly the
+destinations its entry lists, one per link its bundle rewrote, and each
+opens `#<slug>` for a heading the bundle carries. A destination missing is
+a link Mermaid did not render as one; an extra one is a link the bundle
+did not rewrite; a click opening anything but one URL is a handler Mermaid
+did not bind as one link.
 
 `MERMAID_CLI` holds the mermaid-cli command line, split as a shell splits
-one. mermaid-cli and the browser it drives are no dependency of the build,
-so `make check` leaves this check out, and with nothing configured the run
-fails rather than passing over the fixtures.
-
-A Gantt diagram's link is no anchor: Mermaid binds it as a click handler
-when the page runs, and draws an anchor only in its sandboxed mode, which
-mermaid-cli does not render. No Gantt fixture is listed.
+one. Its last word names `mmdc`, and the words before it are what runs a
+command where `mmdc` is reachable, so the click program runs under them as
+`node`. mermaid-cli and the browser it drives are no dependency of the
+build, so `make check` leaves this check out, and with nothing configured
+the run fails rather than passing over the fixtures.
 """
 
+import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -41,6 +50,9 @@ SVG = "{http://www.w3.org/2000/svg}"
 XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
 HREF = "href"
 BUNDLE = "expected/stdout.md"
+CLICK_PROGRAM = Path(__file__).resolve().parent / "click.mjs"
+NODE = "node"
+MERMAID_FENCE = re.compile(r"^```mermaid[^\n]*\n(.*?)^```", re.MULTILINE | re.DOTALL)
 
 RENDERED: dict[str, list[str]] = {
     "rewriting/a-flowchart-click-in-each-form": ["#plan", "#build", "#test", "#ship"],
@@ -68,6 +80,10 @@ RENDERED: dict[str, list[str]] = {
     "rewriting/a-sequence-diagram-links-line-repeating-a-key": ["#server"],
 }
 
+CLICKED: dict[str, list[str]] = {
+    "rewriting/a-gantt-diagram-click-destination": ["#freeze", "#publish"],
+}
+
 
 def anchors(svg: Path) -> list[str]:
     """The href of each anchor one rendered diagram carries, in document order."""
@@ -90,8 +106,32 @@ def rendered(command: list[str], bundle: Path, work: Path) -> list[str]:
     return [href for svg in drawn for href in anchors(svg)]
 
 
-def held(name: str, expected: list[str], found: list[str], bundle: str) -> list[str]:
-    """What one fixture's drawings fail to hold, as one line per defect."""
+def clicked(command: list[str], bundle: str) -> tuple[list[str], list[str]]:
+    """The URL each click on a clickable task of the bundle's diagrams opens.
+
+    A click opening anything but one URL is a defect of its own, returned
+    beside the URLs the clicks that opened one did.
+    """
+    definitions = [fence.group(1) for fence in MERMAID_FENCE.finditer(bundle)]
+    result = subprocess.run(
+        [*command[:-1], NODE, str(CLICK_PROGRAM), command[-1]],
+        input=json.dumps(definitions),
+        stdout=subprocess.PIPE,
+        text=True,
+        check=True,
+    )
+    clicks = [click for diagram in json.loads(result.stdout) for click in diagram]
+    found = [click[0] for click in clicks if len(click) == 1]
+    defects = [
+        f"a click opens {click!r}, where one link opens one URL"
+        for click in clicks
+        if len(click) != 1
+    ]
+    return found, defects
+
+
+def held(expected: list[str], found: list[str], bundle: str) -> list[str]:
+    """What one fixture's drawings or clicks fail to hold, as one line per defect."""
     headings = links.fragments_of(bundle)
     defects = [
         f"{href!r} opens no heading the bundle carries"
@@ -110,19 +150,22 @@ def main() -> int:
         return 1
     command = shlex.split(configured)
     failed = 0
-    for name, expected in RENDERED.items():
+    for name, expected in [*RENDERED.items(), *CLICKED.items()]:
         bundle = FIXTURES / name / BUNDLE
-        with tempfile.TemporaryDirectory() as work:
-            found = rendered(command, bundle, Path(work))
-        defects = held(name, expected, found, bundle.read_text())
+        text = bundle.read_text()
+        if name in CLICKED:
+            found, defects = clicked(command, text)
+        else:
+            with tempfile.TemporaryDirectory() as work:
+                found = rendered(command, bundle, Path(work))
+            defects = []
+        defects += held(expected, found, text)
         print(f"{name}: {'pass' if not defects else 'fail'} {found}")
         for defect in defects:
             print(f"  {defect}")
         failed += bool(defects)
-    print(
-        f"render check: {len(RENDERED)} fixture(s), "
-        f"{len(RENDERED) - failed} pass, {failed} fail"
-    )
+    total = len(RENDERED) + len(CLICKED)
+    print(f"render check: {total} fixture(s), {total - failed} pass, {failed} fail")
     return 1 if failed else 0
 
 

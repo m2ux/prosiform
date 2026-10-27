@@ -35,9 +35,10 @@
 # for the same reason.
 #
 # `make render` draws the diagrams of the corpus's diagram-link fixtures with
-# mermaid-cli, which `MERMAID_CLI` names, and fails without one. mermaid-cli
-# and the headless browser it drives are no dependency of the build, so
-# `make check` leaves it out.
+# mermaid-cli, which `MERMAID_CLI` names, and fails without one. A Gantt
+# fixture's diagram is clicked in a running page instead, with the browser
+# mermaid-cli ships. mermaid-cli and the headless browser it drives are no
+# dependency of the build, so `make check` leaves it out.
 #
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.

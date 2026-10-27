@@ -975,3 +975,67 @@ def test_a_content_hash_is_taken_over_the_bytes_the_file_held() -> None:
     assert hashed(b"# Guide\n") == hashed(b"# Guide\n")
     assert hashed(b"# Guide\n") != hashed(b"# Guide\r\n")
     assert len(hashed(b"")) == 64
+
+
+def unfollowed(content: str) -> list[tuple[str, str, int]]:
+    """Each link one diagram renders that no diagram link line writes."""
+    fence = next(
+        token for token in parse(f"```mermaid\n{content}```\n") if token.type == "fence"
+    )
+    return [(one.form, one.destination, one.line) for one in linking(fence).unfollowed]
+
+
+KANBAN_TICKET = "Kanban ticket's link"
+LABEL_ANCHOR = "HTML anchor in a node label"
+
+
+def test_a_kanban_ticket_renders_the_link_its_front_matter_base_builds() -> None:
+    content = (
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'people/#TICKET#.md'\n---\n"
+        "kanban\n  Todo\n    [Write]@{ ticket: user, priority: 'High' }\n"
+    )
+    assert unfollowed(content) == [(KANBAN_TICKET, "people/user.md", 9)]
+
+
+def test_a_kanban_ticket_renders_the_link_an_init_directive_base_builds() -> None:
+    content = (
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'people/#TICKET#.md'\n---\n"
+        "%%{init: {'kanban': {'ticketBaseUrl': 'https://t.example/#TICKET#'}}}%%\n"
+        "kanban\n  Todo\n    [Write]@{ ticket: MC-1 }\n"
+    )
+    assert unfollowed(content) == [(KANBAN_TICKET, "https://t.example/MC-1", 10)]
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "kanban\n  Todo\n    [Write]@{ ticket: user }\n",
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'p/#TICKET#.md'\n---\n"
+        "kanban\n  Todo\n    [Write]@{ priority: 'High' }\n",
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'p/#TICKET#.md'\n---\n"
+        "flowchart LR\n  A[Write]@{ ticket: user }\n",
+    ],
+)
+def test_a_ticket_with_no_base_or_outside_a_kanban_renders_no_link(
+    content: str,
+) -> None:
+    assert unfollowed(content) == []
+
+
+@pytest.mark.parametrize(
+    ("written", "destination"),
+    [
+        ("A[\"<a href='people/user.md'>User</a>\"] --> B", "people/user.md"),
+        ('A[<a href="people/user.md">User</a>] --> B', "people/user.md"),
+        ('A["<A class=x HREF=people/user.md>User</A>"]', "people/user.md"),
+    ],
+)
+def test_an_html_anchor_in_a_node_label_renders_its_href(
+    written: str, destination: str
+) -> None:
+    content = f"flowchart LR\n{written}\n"
+    assert unfollowed(content) == [(LABEL_ANCHOR, destination, 3)]
+
+
+def test_an_html_anchor_in_a_comment_renders_nothing() -> None:
+    assert unfollowed("flowchart LR\n%% <a href='people/user.md'>User</a>\n") == []
