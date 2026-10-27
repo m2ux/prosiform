@@ -369,6 +369,7 @@ def parser() -> Parser:
     grammar = Parser(
         prog=NAME,
         add_help=False,
+        allow_abbrev=False,
         usage=f"{NAME} [OPTIONS] REF [REF ...]",
         description=(
             "Bundle the local Markdown closure of one or more entry references "
@@ -420,18 +421,21 @@ def parser() -> Parser:
         )
     grammar.add_argument(
         "-C",
+        "--codes",
         dest="codes",
         action="store_true",
         help="list this build's error and warning codes",
     )
     grammar.add_argument(
         "-v",
+        "--version",
         dest="version",
         action="store_true",
         help="tool version and profile identifier",
     )
     grammar.add_argument(
         "-h",
+        "--help",
         dest="help",
         action="store_true",
         help="usage, defaults and exit statuses",
