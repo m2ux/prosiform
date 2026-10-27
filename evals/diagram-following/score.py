@@ -22,9 +22,11 @@ which its trace and the path differ, the classes taken in this order:
 - it is a state an edge leads to from a decision on how often `trace.log`
   holds a line, the loop's decision: *loop miscount*;
 - it is a state an edge leads to from any other decision: *wrong branch*;
-- it is a state a walk of two or more edges reaches: *skipped state*;
-- it is a state no walk reaches, which includes any state entered after a
-  terminal one: *invented state*.
+- it is another state a walk of two or more edges reaches, entered with
+  the states between omitted: *skipped state*;
+- it is any other state the diagram holds, which no edge leads to from the
+  one before it: a step back, a state entered after a terminal one, or the
+  one before it repeated: *invalid transition*.
 
 The verdict's `record` is the form the runner writes and the report reads.
 """
@@ -45,6 +47,7 @@ class Failure(StrEnum):
     WRONG_BRANCH = "wrong_branch"
     SKIPPED_STATE = "skipped_state"
     INVENTED_STATE = "invented_state"
+    INVALID_TRANSITION = "invalid_transition"
     LOOP_MISCOUNT = "loop_miscount"
     MISSING_ACTION = "missing_action"
     UNFINISHED = "unfinished"
@@ -126,9 +129,9 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
         if condition is not None and FEWER.match(condition):
             return Failure.LOOP_MISCOUNT
         return Failure.WRONG_BRANCH
-    if entered in reachable(workflow, previous):
+    if entered != previous and entered in reachable(workflow, previous):
         return Failure.SKIPPED_STATE
-    return Failure.INVENTED_STATE
+    return Failure.INVALID_TRANSITION
 
 
 def score(workflow: Workflow, scenario: Scenario, workspace: Path) -> Verdict:

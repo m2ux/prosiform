@@ -78,6 +78,13 @@ def test_a_run_walking_its_scenario_path_with_every_action_passes(
             2,
         ),
         (
+            "linear",
+            "straight-through",
+            ["Plan", "Build", "Plan"],
+            Failure.INVALID_TRANSITION,
+            2,
+        ),
+        (
             "looping",
             "two-rounds",
             ["Draft", "Review", "Revise", "Check", "Review", "Publish"],
@@ -90,6 +97,7 @@ def test_a_run_walking_its_scenario_path_with_every_action_passes(
         "wrong-branch",
         "skipped-state",
         "invented-state",
+        "invalid-transition",
         "loop-miscount",
         "unfinished",
     ],
@@ -148,22 +156,40 @@ def test_an_empty_or_absent_trace_is_unfinished(tmp_path: Path) -> None:
     assert (verdict.failure, verdict.divergence) == (Failure.UNFINISHED, 0)
 
 
-def test_a_state_entered_after_the_terminal_or_with_no_walk_to_it_is_invented(
+@pytest.mark.parametrize(
+    ("workflow", "name", "trace", "divergence"),
+    [
+        ("linear", "straight-through", ["Plan", "Build", "Test", "Ship", "Plan"], 4),
+        ("looping", "no-rework", ["Draft", "Review", "Publish", "Review"], 3),
+        ("looping", "two-rounds", ["Draft", "Review", "Revise", "Check", "Draft"], 4),
+        ("linear", "straight-through", ["Plan", "Build", "Build", "Test", "Ship"], 2),
+        ("looping", "no-rework", ["Draft", "Review", "Review", "Publish"], 2),
+    ],
+    ids=[
+        "past-the-terminal",
+        "past-the-terminal-on-a-cycle",
+        "step-back",
+        "repeat",
+        "repeat-on-a-cycle",
+    ],
+)
+def test_a_diagram_state_no_edge_leads_to_is_an_invalid_transition(
+    tmp_path: Path, workflow: str, name: str, trace: list[str], divergence: int
+) -> None:
+    verdict = run(tmp_path, workflow, name, trace)
+    assert (verdict.failure, verdict.divergence) == (
+        Failure.INVALID_TRANSITION,
+        divergence,
+    )
+
+
+def test_a_state_further_along_a_cycle_with_one_omitted_is_skipped(
     tmp_path: Path,
 ) -> None:
-    (tmp_path / "after").mkdir()
-    after = run(
-        tmp_path / "after",
-        "linear",
-        "straight-through",
-        ["Plan", "Build", "Test", "Ship", "Plan"],
+    verdict = run(
+        tmp_path, "looping", "two-rounds", ["Draft", "Review", "Check", "Review"]
     )
-    assert (after.failure, after.divergence) == (Failure.INVENTED_STATE, 4)
-    (tmp_path / "back").mkdir()
-    back = run(
-        tmp_path / "back", "linear", "straight-through", ["Plan", "Build", "Plan"]
-    )
-    assert (back.failure, back.divergence) == (Failure.INVENTED_STATE, 2)
+    assert (verdict.failure, verdict.divergence) == (Failure.SKIPPED_STATE, 2)
 
 
 def test_a_trace_is_read_stripped_of_blank_lines_and_surrounding_whitespace(
