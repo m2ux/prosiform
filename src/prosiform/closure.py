@@ -23,7 +23,7 @@ from dataclasses import dataclass, replace
 from urllib.parse import quote
 
 from prosiform.profile import is_markdown
-from prosiform.source import ENCODING
+from prosiform.source import ENCODING, external
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
@@ -44,9 +44,7 @@ DIGITS = 2
 HEXADECIMAL = "0123456789abcdefABCDEF"
 BASE = 16
 
-AUTHORITY = "//"
 DRIVE = re.compile(r"^[A-Za-z]:")
-SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]+:")
 CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
 PATH_PART = "path segment"
@@ -138,11 +136,6 @@ def components(text: str) -> Components:
     head, marked, fragment = text.partition(FRAGMENT)
     path, asked, query = head.partition(QUERY)
     return Components(path, query if asked else None, fragment if marked else None)
-
-
-def external(path: str) -> bool:
-    """Whether a reference carries a scheme or an authority."""
-    return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
 
 
 def decoded(text: str, part: str) -> str:

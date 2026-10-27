@@ -1,4 +1,4 @@
-"""The `skill-markdown-v2` profile: the parser it configures and what it refuses.
+"""The `skill-markdown-v3` profile: the parser it configures and what it refuses.
 
 The profile is CommonMark with pipe tables and double-tilde strikethrough
 enabled, source task-list markers preserved as the text the source wrote,
@@ -10,9 +10,11 @@ enabled by name, and leaving the task-list plugin out is what keeps a
 marker the three characters the source spelled.
 
 A link the parser produces is a use, and a code span or a code block
-carries none, with one exception the source model reads: a `click` line
-in a fence whose info string opens with `mermaid` names a destination a
-reader of the rendered diagram follows, so each such destination is a
+carries none, with one exception the source model reads: a diagram link
+line in a fence whose info string opens with `mermaid` — a `click` line,
+a class diagram's `link` line, or a sequence diagram's `link` or `links`
+participant menu, its keywords in any letter case — names a destination
+a reader of the rendered diagram follows, so each such destination is a
 use although the parser reads the fence as text.
 
 A reference definition can otherwise turn `[x]` at the head of a list item
@@ -46,6 +48,18 @@ heading syntax: a wiki link, its transclusion form, a footnote reference,
 and a heading-attribute suffix at the end of a heading. A directive
 written in a templating language the profile does not read is ordinary
 prose, and so is a brace block anywhere but the end of a heading.
+
+A Mermaid sequence diagram's `links` line whose JSON object holds a value
+that is no string names a link Mermaid renders opening nothing, so it is
+refused as an unsupported construct naming its line rather than bundled
+around the gap.
+
+A Kanban ticket's link and an HTML anchor in a node label are links
+Mermaid renders that the diagram link reader does not follow. One naming
+a local Markdown document would ship a link to a file the bundle does not
+hold, so it is refused as an unsupported construct naming its line, as raw
+HTML is, and the author writes it as a `click` line. One naming a remote
+address is carried as written.
 """
 
 import re
@@ -63,6 +77,7 @@ from markdown_it.utils import EnvType
 
 from prosiform import PROFILE
 from prosiform.limits import NESTING
+from prosiform.source import FENCE, external, linking
 
 PRESET = "commonmark"
 ENABLED = ("table", "strikethrough")
@@ -450,6 +465,52 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
         )
 
 
+def local_markdown(destination: str) -> bool:
+    """Whether a destination names a Markdown document by a local path.
+
+    A local path carries no scheme and no authority, and the path is
+    what the destination writes before its query or fragment.
+    """
+    path = destination.partition("#")[0].partition("?")[0]
+    return not external(path) and is_markdown(path)
+
+
+def diagram_refusals(fence: Token) -> Iterator[Refusal]:
+    """Each line one diagram carries that the profile refuses, in written order.
+
+    A `links` line holding a value that is no string is refused, and so
+    is a link Mermaid renders that the reader does not follow, where it
+    names a local Markdown document.
+    """
+    read = linking(fence)
+    for at in read.broken:
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the sequence diagram's links line holds a value that is not a "
+                f"string, which Mermaid renders as a link opening nothing, so the "
+                f"{PROFILE} profile cannot carry it"
+            ),
+            remedy="write each value of the links object as a string",
+            line=at,
+        )
+    for link in read.unfollowed:
+        if not local_markdown(link.destination):
+            continue
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the diagram's {link.form} names the local Markdown document "
+                f"{link.destination!r}, which Mermaid renders as a link the "
+                f"{PROFILE} profile does not follow, so the bundle would carry "
+                f"a link to a document it does not hold"
+            ),
+            remedy="write the link as a click line naming the document",
+            line=link.line,
+            reference=link.destination,
+        )
+
+
 def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
     """Every construct the profile refuses, in the order the run carries them.
 
@@ -466,5 +527,7 @@ def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
         if token.type == HTML_BLOCK:
             opening = next(iter(token.content.strip().splitlines()), token.content)
             yield html_refusal(opening, line(token))
+        elif token.type == FENCE:
+            yield from diagram_refusals(token)
         elif token.type == INLINE:
             yield from inline_refusals(token, heading)

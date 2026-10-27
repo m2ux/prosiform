@@ -51,7 +51,7 @@ PROJECT = ROOT / "src"
 PYTHON_VERSION = PROJECT / ".python-version"
 
 COMMAND = "pf"
-PROFILE = "skill-markdown-v2"
+PROFILE = "skill-markdown-v3"
 
 OBSERVED = (
     "named on the path",

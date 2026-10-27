@@ -45,7 +45,7 @@ it. Inside a
 region nothing is touched but the lines a link-reference definition
 occupies and the links the bundle rewrites, so an indented thematic
 break keeps its indent, a delimiter keeps its trailing spaces and a
-code example keeps every byte but a diagram's click destinations. A
+code example keeps every byte but a diagram's link destinations. A
 terminator belongs to the line it terminates and is content as the rest
 of the line is, so a region ends with the newline its source spelled on
 the line that ends it, and every heading the bundle generates ends with
@@ -87,11 +87,14 @@ is scoped to the whole bundle, so a reference from one group to another
 is spelled as one inside a group is. A mark goes with the rewrite,
 because a reader of the bundle has no use for authoring syntax.
 
-A Mermaid diagram's click destination is a link written inside a code
+A Mermaid diagram's link destination is a link written inside a code
 example, and the bundle rewrites it as it rewrites any other: the
-characters between its quotes take the destination its target was
-given, and every other byte of the fence is carried as written. A
-click destination the bundle compiled nothing for, such as one outside
+destination's characters take the destination its target was given,
+and every other byte of the fence is carried as written. The anchor is
+spelled as the line's form spells it: a quoted destination opens it
+with `#`, and a sequence diagram's menu entry with `#35;`, the entity
+Mermaid renders as `#` where a bare one would open a comment. A diagram
+link destination the bundle compiled nothing for, such as one outside
 the root or one naming no Markdown document, keeps the text its author
 wrote.
 
@@ -128,6 +131,7 @@ from prosiform.provenance import (
 )
 from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
+    ANCHOR,
     FENCE,
     HREF,
     LINE_FEED,
@@ -164,8 +168,6 @@ ENDINGS = (f"{CARRIAGE_RETURN}{TERMINATOR}", TERMINATOR, CARRIAGE_RETURN)
 ATX = "#"
 SPACE = " "
 HEADING_OPEN = "heading_open"
-
-ANCHOR = "#"
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -390,8 +392,9 @@ def rewrite(
     A source declaring no definition carries no reference-style use, so
     a token holding no link is the text its source wrote.
 
-    A diagram's click destination is replaced in the one line the click
-    is written on, between its quotes, so the line count holds there too.
+    A diagram's link destination is replaced in the one line it is
+    written on, so the line count holds there too. Several destinations
+    on one line are replaced in written order.
     """
     written = list(physical)
     for inline in inlines(tokens, selected):
@@ -407,7 +410,7 @@ def rewrite(
         held = lines(fence.content)
         first = 0 if fence.map is None else fence.map[0] + 1
         for click in clicks(fence):
-            given = target(path, click.destination, "", assigned, root)
+            given = target(path, click.destination, "", assigned, root, click.anchor)
             if given is not None:
                 at = click.line - 1
                 written[at] = clicked(written[at], held[at - first], click, given)
@@ -415,7 +418,7 @@ def rewrite(
 
 
 def clicked(physical: str, held: str, click: Click, given: str) -> str:
-    """One physical line with a diagram click's destination replaced.
+    """One physical line with one diagram link destination replaced.
 
     The fence holds the line without the container markers and indent
     the document line opens with, so the line the fence holds is the
@@ -423,9 +426,9 @@ def clicked(physical: str, held: str, click: Click, given: str) -> str:
     the end of the line, which both carry alike, its terminator aside:
     a CRLF the document wrote reaches the fence as a line feed.
     """
-    after = len(bare(held)) - click.offset - len(click.destination)
+    after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
-    return f"{physical[: end - len(click.destination)]}{given}{physical[end:]}"
+    return f"{physical[: end - len(click.written)]}{given}{physical[end:]}"
 
 
 def target(
@@ -434,12 +437,15 @@ def target(
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
     root: str = "",
+    anchor: str = ANCHOR,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
     because the closure selected what the link named and the group
-    emitting it recorded the target it answers to.
+    emitting it recorded the target it answers to. Its destination is
+    that heading's slug behind the anchor spelling the link's form
+    writes, `#` wherever the link is not a sequence diagram's menu entry.
 
     A withheld link under the allowed source root takes its target's
     path from the invocation working directory, so the run that
@@ -454,7 +460,7 @@ def target(
     """
     found = bundled(path, destination, opening, root)
     if found is not None:
-        return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
+        return f"{anchor}{assigned[(found.path, found.fragment)]}"
     deferred = withholding_target(path, destination, opening, root)
     if deferred is None:
         return None

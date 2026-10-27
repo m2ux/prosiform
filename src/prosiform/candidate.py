@@ -82,6 +82,7 @@ from prosiform.provenance import (
     Record,
 )
 from prosiform.source import (
+    ANCHOR,
     FENCE,
     HEADING_OPEN,
     HREF,
@@ -105,7 +106,6 @@ from prosiform.source import (
     within,
 )
 
-ANCHOR = "#"
 TITLE = "title"
 LINK_CLOSE = "link_close"
 CODE_BLOCKS = ("fence", "code_block")
@@ -183,13 +183,15 @@ class Unsafe(Exception):
 
 
 class Use:
-    """One link, image or diagram click use, as the parts of it the bundle carries.
+    """One link, image or diagram link use, as the parts of it the bundle carries.
 
     The destination is the one the parser resolved, so a reference-style
     use in a source and the inline use the bundle publishes for it arrive
     in the same shape and are compared as the same thing. A diagram's
-    click destination is the text between its quotes, which no parser
-    resolves, and it shows no text and carries no title.
+    link destination is the one its line names, which a sequence diagram's
+    menu entry writes with an entity for its `#`, so a destination the
+    bundle rewrote reads as `#<slug>` whatever form wrote it. It shows no
+    text and carries no title.
     """
 
     def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
@@ -293,9 +295,9 @@ def carried(
 ) -> Iterator[tuple[Sequence[Token], int, Use]]:
     """Every use one region carries, in source order, with its position.
 
-    An inline token's uses arrive as `uses` reads them. A diagram's click
+    An inline token's uses arrive as `uses` reads them. A diagram's link
     destinations arrive in the order its fence writes them, each on no
-    run of inline events, because a click carries no link text for a
+    run of inline events, because a diagram link carries no text for a
     mark to open.
     """
     for token in within(tokens, [span]):
@@ -343,10 +345,11 @@ def intended(
     image's alternative content where the use was written there, so
     the opening is read from the event the author wrote it on.
 
-    A diagram's click destination opens with nothing, so it is compiled
+    A diagram's link destination opens with nothing, so it is compiled
     wherever it resolves to a Markdown document under the root and is
-    never withheld. The anchor it takes is the one the bundle writes
-    between its quotes, which no parser normalizes.
+    never withheld. The anchor it takes is the one the bundle writes in
+    the line, which no parser normalizes, read as the destination it
+    names: `#<slug>`, whichever spelling the line's form writes.
     """
     if one.kind == IMAGE:
         return one
@@ -379,10 +382,10 @@ def intended(
 
 
 def carrying(tokens: Sequence[Token], span: Token) -> set[int]:
-    """Each line one region's link, image and diagram click uses occupy.
+    """Each line one region's link, image and diagram link uses occupy.
 
     A line the bundle edits is a heading's line, a line of an inline
-    token carrying a link or an image, or a line a diagram's click
+    token carrying a link or an image, or a line a diagram's link
     destination is written on: reference-use conversion and destination
     rewriting reach nowhere else. Every other line of a selected region
     is bytes the bundle carries as its source wrote them, which is what
@@ -437,7 +440,7 @@ def code(tokens: Sequence[Token], span: Token) -> list[tuple[str, str, str]]:
 
     A code block's content carries the blank lines inside it, which the
     line comparison passes over, so the example is compared whole. A
-    diagram's click destinations are the characters of it the bundle
+    diagram's link destinations are the characters of it the bundle
     rewrites, so the example is compared without them.
     """
     start, end = span.map or (0, 0)
@@ -451,13 +454,17 @@ def code(tokens: Sequence[Token], span: Token) -> list[tuple[str, str, str]]:
 
 
 def undestined(example: Token) -> str:
-    """One code example's content with each diagram click destination taken out."""
+    """One code example's content with each diagram link destination taken out.
+
+    A line can name several destinations, so they are taken out from the
+    last back, and each offset still names the characters it was read at.
+    """
     held = lines(example.content)
     first = 0 if example.map is None else example.map[0] + 2
-    for click in clicks(example):
+    for click in reversed(list(clicks(example))):
         at = click.line - first
         line = held[at]
-        held[at] = line[: click.offset] + line[click.offset + len(click.destination) :]
+        held[at] = line[: click.offset] + line[click.offset + len(click.written) :]
     return "".join(held)
 
 
@@ -983,13 +990,13 @@ def references(
     targets: Mapping[tuple[str, str | None], str],
     root: str = "",
 ) -> None:
-    """Hold one region's uses, diagram clicks among them, to those its source wrote.
+    """Hold one region's uses, diagram links among them, to those its source wrote.
 
     A use count that differs is text the author wrote as literal
-    brackets read as a reference, or a click line the bundle added or
+    brackets read as a reference, or a diagram link the bundle added or
     dropped, and a use that differs in what it shows, in its title or
     in where it points is a reference the bundle did not preserve. A
-    diagram's click destinations are the characters of a code example
+    diagram's link destinations are the characters of a code example
     preservation sets aside, so this is where each is held.
     """
     expected = [

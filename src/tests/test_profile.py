@@ -1,6 +1,6 @@
 """Assert the build's configured parser supplies every clause of the profile.
 
-`skill-markdown-v2` is CommonMark with pipe tables and double-tilde
+`skill-markdown-v3` is CommonMark with pipe tables and double-tilde
 strikethrough enabled, source task-list markers preserved as text,
 typographic substitution disabled, and raw HTML recognized as a token of
 its own so a run can refuse it. Each clause here names the configuration
@@ -220,3 +220,33 @@ def test_the_ceiling_is_reached_under_every_budget_at_its_default() -> None:
     with pytest.raises(Suppressed) as declined:
         parse(nested(budget + HEADROOM + 1, budget), budget)
     assert declined.value.reference == "plan.md"
+
+
+@pytest.mark.parametrize(
+    "diagram",
+    [
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'people/#TICKET#.md'\n---\n"
+        "kanban\n  Todo\n    [Write]@{ ticket: user }\n",
+        "flowchart LR\n  A[\"<a href='people/user.md#setup'>User</a>\"]\n",
+        "sequenceDiagram\n  Note over A: <a href='../people/user.MD'>User</a>\n",
+    ],
+)
+def test_a_rendered_link_naming_local_markdown_is_refused(diagram: str) -> None:
+    found = list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n")))
+    assert [refusal.code for refusal in found] == ["E_UNSUPPORTED_CONSTRUCT"]
+    assert found[0].line == 3 + diagram.count("\n")
+
+
+@pytest.mark.parametrize(
+    "diagram",
+    [
+        "%%{init: {'kanban': {'ticketBaseUrl': 'https://t.example/#TICKET#.md'}}}%%\n"
+        "kanban\n  Todo\n    [Write]@{ ticket: user }\n",
+        "flowchart LR\n  A[\"<a href='https://example.com/user.md'>User</a>\"]\n",
+        "flowchart LR\n  A[\"<a href='//example.com/user.md'>User</a>\"]\n",
+        "flowchart LR\n  A[\"<a href='people/user.png'>User</a>\"]\n",
+        "flowchart LR\n  A[\"<a href='#user'>User</a>\"]\n",
+    ],
+)
+def test_a_rendered_link_naming_no_local_markdown_is_carried(diagram: str) -> None:
+    assert list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n"))) == []
