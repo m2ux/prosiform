@@ -13,6 +13,8 @@ It reads the corpus through W01's `workflow.py` and scores each session with W02
 | Artifact | What it holds |
 | --- | --- |
 | [W03 work item](w03.md) | The runner, its records, its cap and the stub agent |
+| [Validation](validation.md) | The checks run and their results |
+| [Change list](change-list.md) | Plan changes arising in delivery |
 
 ## Links
 
