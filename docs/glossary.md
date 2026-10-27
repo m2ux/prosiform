@@ -28,7 +28,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 | Term | Definition |
 | --- | --- |
-| **reference** | An authored Markdown link to a local document or section. |
+| **reference** | An authored Markdown link to a local document or section, or a `mermaid` diagram's click destination naming one. |
 | **entry reference** | A reference supplied as an argument. Traversal starts at each one. |
 | **target** | The document or section a reference resolves to, after path and fragment normalization. |
 | **dependency** | A target a reference resolves to under the allowed source root, where its author has not withheld it with a deferral or a dispatch operator. It is resolved, bundled and rewritten; a reference resolving outside the root cites the document it names and creates none. |

@@ -86,6 +86,7 @@ from prosiform.source import (
     HEADING_OPEN,
     HREF,
     IMAGE,
+    INLINE,
     LINK_OPEN,
     SRC,
     Source,
@@ -110,6 +111,7 @@ LINK_CLOSE = "link_close"
 CODE_BLOCKS = ("fence", "code_block")
 
 LINK = "link"
+CLICK = "click"
 
 UNSAFE_BUNDLE_BOUNDARY = "E_UNSAFE_BUNDLE_BOUNDARY"
 
@@ -181,11 +183,13 @@ class Unsafe(Exception):
 
 
 class Use:
-    """One link or image use, as the parts of it the bundle promises to carry.
+    """One link, image or diagram click use, as the parts of it the bundle carries.
 
     The destination is the one the parser resolved, so a reference-style
     use in a source and the inline use the bundle publishes for it arrive
-    in the same shape and are compared as the same thing.
+    in the same shape and are compared as the same thing. A diagram's
+    click destination is the text between its quotes, which no parser
+    resolves, and it shows no text and carries no title.
     """
 
     def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
@@ -284,6 +288,24 @@ def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
             )
 
 
+def carried(
+    tokens: Sequence[Token], span: Token
+) -> Iterator[tuple[Sequence[Token], int, Use]]:
+    """Every use one region carries, in source order, with its position.
+
+    An inline token's uses arrive as `uses` reads them. A diagram's click
+    destinations arrive in the order its fence writes them, each on no
+    run of inline events, because a click carries no link text for a
+    mark to open.
+    """
+    for token in within(tokens, [span]):
+        if token.type == INLINE:
+            yield from uses(token)
+        elif token.type == FENCE:
+            for click in clicks(token):
+                yield (), 0, Use(CLICK, "", "", click.destination)
+
+
 def intended(
     path: str,
     one: Use,
@@ -320,10 +342,15 @@ def intended(
     The run passed in is the one that carries the use, which is an
     image's alternative content where the use was written there, so
     the opening is read from the event the author wrote it on.
+
+    A diagram's click destination opens with nothing, so it is compiled
+    wherever it resolves to a Markdown document under the root and is
+    never withheld. The anchor it takes is the one the bundle writes
+    between its quotes, which no parser normalizes.
     """
-    if one.kind != LINK:
+    if one.kind == IMAGE:
         return one
-    opening = opening_text(children, at)
+    opening = "" if one.kind == CLICK else opening_text(children, at)
     found = bundled(path, one.destination, opening, root)
     if found is None:
         withheld = withholding_target(path, one.destination, opening, root)
@@ -342,11 +369,12 @@ def intended(
             f"the reference {one.destination!r} in {path!r} was assigned no "
             f"destination",
         )
+    anchor = f"{ANCHOR}{assigned}"
     return Use(
         one.kind,
         one.text,
         one.title,
-        normalizeLink(f"{ANCHOR}{assigned}"),
+        anchor if one.kind == CLICK else normalizeLink(anchor),
     )
 
 
@@ -955,23 +983,20 @@ def references(
     targets: Mapping[tuple[str, str | None], str],
     root: str = "",
 ) -> None:
-    """Hold one region's link and image uses to the uses its source wrote.
+    """Hold one region's uses, diagram clicks among them, to those its source wrote.
 
-    A use count that grew is text the author wrote as literal brackets
-    read as a reference, and a use that differs in what it shows, in
-    its title or in where it points is a reference the bundle did not
-    preserve.
+    A use count that differs is text the author wrote as literal
+    brackets read as a reference, or a click line the bundle added or
+    dropped, and a use that differs in what it shows, in its title or
+    in where it points is a reference the bundle did not preserve. A
+    diagram's click destinations are the characters of a code example
+    preservation sets aside, so this is where each is held.
     """
     expected = [
         intended(path, one, at, children, targets, root)
-        for inline in inlines(source.tokens, [source.span])
-        for children, at, one in uses(inline)
+        for children, at, one in carried(source.tokens, source.span)
     ]
-    found = [
-        one
-        for inline in inlines(published.tokens, [published.span])
-        for _, _at, one in uses(inline)
-    ]
+    found = [one for _, _at, one in carried(published.tokens, published.span)]
     if len(found) != len(expected):
         raise Invalid(
             NO_NEW_LINKS,
