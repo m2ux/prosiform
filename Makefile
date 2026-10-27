@@ -34,6 +34,11 @@
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
 #
+# `make render` draws the diagrams of the corpus's diagram-link fixtures with
+# mermaid-cli, which `MERMAID_CLI` names, and fails without one. mermaid-cli
+# and the headless browser it drives are no dependency of the build, so
+# `make check` leaves it out.
+#
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
 
@@ -41,7 +46,7 @@ UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render
 
 check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
@@ -89,3 +94,6 @@ conformance:
 
 independence:
 	$(UV_RUN) python checks/independence.py
+
+render:
+	python3 checks/render.py
