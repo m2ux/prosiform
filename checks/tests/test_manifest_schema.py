@@ -227,7 +227,7 @@ def carrying_text() -> dict[str, Any]:
     manifest["expected"]["exit_status"] = 0
     manifest["expected"]["diagnostics"] = []
     del manifest["expected"]["stdout"]
-    manifest["expected"]["stdout_contains"] = ["prosiform ", "(skill-markdown-v2)"]
+    manifest["expected"]["stdout_contains"] = ["prosiform ", "(skill-markdown-v3)"]
     return manifest
 
 

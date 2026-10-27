@@ -1,4 +1,4 @@
-"""The `skill-markdown-v2` profile: the parser it configures and what it refuses.
+"""The `skill-markdown-v3` profile: the parser it configures and what it refuses.
 
 The profile is CommonMark with pipe tables and double-tilde strikethrough
 enabled, source task-list markers preserved as the text the source wrote,
@@ -10,9 +10,11 @@ enabled by name, and leaving the task-list plugin out is what keeps a
 marker the three characters the source spelled.
 
 A link the parser produces is a use, and a code span or a code block
-carries none, with one exception the source model reads: a `click` line
-in a fence whose info string opens with `mermaid` names a destination a
-reader of the rendered diagram follows, so each such destination is a
+carries none, with one exception the source model reads: a diagram link
+line in a fence whose info string opens with `mermaid` — a `click` line,
+a class diagram's `link` line, or a sequence diagram's `link` or `links`
+participant menu, its keywords in any letter case — names a destination
+a reader of the rendered diagram follows, so each such destination is a
 use although the parser reads the fence as text.
 
 A reference definition can otherwise turn `[x]` at the head of a list item

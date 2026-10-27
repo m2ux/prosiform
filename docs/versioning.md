@@ -31,7 +31,7 @@ A build's major and minor are the contract revision it implements. Its patch is 
 
 ## The profile identifier
 
-`skill-markdown-v2` names the Markdown grammar the parser accepts, and `-v` reports it beside the version. It is an opaque identifier rather than a semantic version: it changes when the accepted grammar changes, which is itself a change of contract major. What Markdown is read and what contract is implemented are separate statements, and one identifier states each.
+`skill-markdown-v3` names the Markdown grammar the parser accepts, and `-v` reports it beside the version. It is an opaque identifier rather than a semantic version: it changes when the accepted grammar changes, which is itself a change of contract major. What Markdown is read and what contract is implemented are separate statements, and one identifier states each.
 
 ## Below 1.0.0
 

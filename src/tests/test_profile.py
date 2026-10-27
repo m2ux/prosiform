@@ -1,6 +1,6 @@
 """Assert the build's configured parser supplies every clause of the profile.
 
-`skill-markdown-v2` is CommonMark with pipe tables and double-tilde
+`skill-markdown-v3` is CommonMark with pipe tables and double-tilde
 strikethrough enabled, source task-list markers preserved as text,
 typographic substitution disabled, and raw HTML recognized as a token of
 its own so a run can refuse it. Each clause here names the configuration
