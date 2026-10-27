@@ -1,0 +1,14 @@
+description = "A click line in a fence holding no diagram, and a diagram click calling script, are emitted as authored and open nothing: each names a document the source tree lacks, and the run succeeds carrying the fences as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

@@ -116,6 +116,7 @@ The names the Markdown the contract binds carries, and the encodings and address
 | **atx** | the heading form written with number signs. |
 | **backtick** | the character a code span and a fence are written with. |
 | **brace** | the curly bracket a placeholder is written with. |
+| **click** | the diagram line that links a node to a destination. |
 | **crlf** | the line ending of a carriage return and a line feed together. |
 | **dash** | the dash character, em and en alike. |
 | **dot** | the full stop a path or a delimiter carries. |
