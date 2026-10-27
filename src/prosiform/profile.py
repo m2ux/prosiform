@@ -53,6 +53,13 @@ A Mermaid sequence diagram's `links` line whose JSON object holds a value
 that is no string names a link Mermaid renders opening nothing, so it is
 refused as an unsupported construct naming its line rather than bundled
 around the gap.
+
+A Kanban ticket's link and an HTML anchor in a node label are links
+Mermaid renders that the diagram link reader does not follow. One naming
+a local Markdown document would ship a link to a file the bundle does not
+hold, so it is refused as an unsupported construct naming its line, as raw
+HTML is, and the author writes it as a `click` line. One naming a remote
+address is carried as written.
 """
 
 import re
@@ -70,7 +77,7 @@ from markdown_it.utils import EnvType
 
 from prosiform import PROFILE
 from prosiform.limits import NESTING
-from prosiform.source import FENCE, linking
+from prosiform.source import FENCE, external, linking
 
 PRESET = "commonmark"
 ENABLED = ("table", "strikethrough")
@@ -458,9 +465,25 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
         )
 
 
-def menu_refusals(fence: Token) -> Iterator[Refusal]:
-    """Each `links` line one diagram carries holding a value that is no string."""
-    for at in linking(fence).broken:
+def local_markdown(destination: str) -> bool:
+    """Whether a destination names a Markdown document by a local path.
+
+    A local path carries no scheme and no authority, and the path is
+    what the destination writes before its query or fragment.
+    """
+    path = destination.partition("#")[0].partition("?")[0]
+    return not external(path) and is_markdown(path)
+
+
+def diagram_refusals(fence: Token) -> Iterator[Refusal]:
+    """Each line one diagram carries that the profile refuses, in written order.
+
+    A `links` line holding a value that is no string is refused, and so
+    is a link Mermaid renders that the reader does not follow, where it
+    names a local Markdown document.
+    """
+    read = linking(fence)
+    for at in read.broken:
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,
             message=(
@@ -470,6 +493,21 @@ def menu_refusals(fence: Token) -> Iterator[Refusal]:
             ),
             remedy="write each value of the links object as a string",
             line=at,
+        )
+    for link in read.unfollowed:
+        if not local_markdown(link.destination):
+            continue
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the diagram's {link.form} names the local Markdown document "
+                f"{link.destination!r}, which Mermaid renders as a link the "
+                f"{PROFILE} profile does not follow, so the bundle would carry "
+                f"a link to a document it does not hold"
+            ),
+            remedy="write the link as a click line naming the document",
+            line=link.line,
+            reference=link.destination,
         )
 
 
@@ -490,6 +528,6 @@ def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
             opening = next(iter(token.content.strip().splitlines()), token.content)
             yield html_refusal(opening, line(token))
         elif token.type == FENCE:
-            yield from menu_refusals(token)
+            yield from diagram_refusals(token)
         elif token.type == INLINE:
             yield from inline_refusals(token, heading)

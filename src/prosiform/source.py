@@ -108,6 +108,8 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 
 from markdown_it.token import Token
+from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
 
 from prosiform.limits import FILE_BYTES, NESTING
 from prosiform.metadata import (
@@ -177,7 +179,23 @@ DIRECTIVE = re.compile(
 COMMENT = re.compile(r"\s*%%.*\n")
 CLASS_DIAGRAM = "classDiagram"
 SEQUENCE_DIAGRAM = "sequenceDiagram"
-DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM)
+KANBAN = "kanban"
+DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM, KANBAN)
+INITIALIZING = ("init", "initialize")
+CONFIG = "config"
+TICKET_BASE_URL = "ticketBaseUrl"
+TICKET_PLACEHOLDER = "#TICKET#"
+TICKET = "ticket"
+NODE_METADATA = re.compile(r"@(\{.*\})\s*$")
+HTML_ANCHOR = re.compile(
+    r"<a\s[^>]*?\bhref\s*=\s*(?:\"(?P<double>[^\"]*)\"|'(?P<single>[^']*)'|(?P<bare>[^\s>]+))",
+    re.IGNORECASE,
+)
+COMMENT_LINE = re.compile(r"\s*%%")
+KANBAN_TICKET = "Kanban ticket's link"
+LABEL_ANCHOR = "HTML anchor in a node label"
+AUTHORITY = "//"
+SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]+:")
 DIAGRAM_READ = "diagram links"
 TEXT = "text"
 CODE_INLINE = "code_inline"
@@ -601,17 +619,36 @@ class Click:
 
 
 @dataclass(frozen=True)
+class Unfollowed:
+    """One link Mermaid renders from a form the diagram link reader does not follow.
+
+    The form names it: a Kanban ticket's link, which Mermaid builds by
+    putting the ticket in place of `#TICKET#` in the diagram's
+    `ticketBaseUrl`, or an HTML anchor in a node label. The destination
+    is the URL Mermaid renders, and the line is the line of this content
+    that writes the ticket or the anchor.
+    """
+
+    form: str
+    destination: str
+    line: int
+
+
+@dataclass(frozen=True)
 class Diagram:
     """What one fence's diagram links to.
 
     The clicks are its link destinations in written order. A broken line
     is a line of this content holding a `links` object one of whose
     values is no string, which Mermaid renders as a link opening
-    nothing; it names no destination.
+    nothing; it names no destination. The unfollowed links are the
+    links Mermaid renders that no diagram link line writes, in written
+    order; none is a use.
     """
 
     clicks: tuple[Click, ...] = ()
     broken: tuple[int, ...] = ()
+    unfollowed: tuple[Unfollowed, ...] = ()
 
 
 class BrokenMenu(Exception):
@@ -628,8 +665,9 @@ def diagram_type(content: str) -> str:
 
     Mermaid sets aside a leading front matter block, every directive and
     every comment line, and reads the type from the word the remaining
-    text opens on. Only a class and a sequence diagram write a link form
-    of their own, so every other diagram is named by the empty string.
+    text opens on. Only a class diagram, a sequence diagram and a Kanban
+    diagram write a link form of their own, so every other diagram is
+    named by the empty string.
     """
     text = FRONT_MATTER.sub("", content, count=1)
     text = COMMENT.sub(LINE_FEED, DIRECTIVE.sub("", text))
@@ -673,16 +711,24 @@ def read_diagram(fence: Token) -> Diagram:
     target. A click naming a callback, or a `call` form, runs script and
     names no destination, so it yields nothing, and neither does any line
     of a fence holding no diagram.
+
+    A Kanban ticket's link and an HTML anchor in a node label are links
+    Mermaid renders that the reader does not follow, so each is read as
+    unfollowed rather than as a click.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
     form = diagram_type(fence.content)
+    base = ticket_base(fence.content) if form == KANBAN else None
     first = fence.map[0] + 2
     found: list[Click] = []
     broken: list[int] = []
+    unfollowed: list[Unfollowed] = []
     for at, physical in enumerate(lines(fence.content)):
+        line = bare(physical)
+        unfollowed.extend(rendered(line, base, first + at))
         try:
-            named = linked(bare(physical), form)
+            named = linked(line, form)
         except BrokenMenu:
             broken.append(first + at)
             continue
@@ -693,7 +739,79 @@ def read_diagram(fence: Token) -> Diagram:
                 else written
             )
             found.append(Click(destination, first + at, offset, anchor, written))
-    return Diagram(tuple(found), tuple(broken))
+    return Diagram(tuple(found), tuple(broken), tuple(unfollowed))
+
+
+def rendered(line: str, base: str | None, at: int) -> Iterator[Unfollowed]:
+    """Each link one diagram line renders that no diagram link line writes.
+
+    A comment line renders nothing. A line writing a ticket in a Kanban
+    diagram whose ticket base URL is `base` renders the link Mermaid
+    builds from them, and each HTML anchor a line carries renders its
+    `href`.
+    """
+    if COMMENT_LINE.match(line):
+        return
+    if base:
+        ticket = ticket_of(line)
+        if ticket:
+            destination = base.replace(TICKET_PLACEHOLDER, ticket, 1)
+            yield Unfollowed(KANBAN_TICKET, destination, at)
+    for anchor in HTML_ANCHOR.finditer(line):
+        destination = next(group for group in anchor.groups() if group is not None)
+        yield Unfollowed(LABEL_ANCHOR, destination, at)
+
+
+def yaml_mapping(text: str) -> dict[object, object]:
+    """One YAML text as the mapping it holds, or an empty one where it holds none."""
+    try:
+        loaded = YAML(typ="safe", pure=True).load(text)
+    except YAMLError:
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def ticket_base(content: str) -> str | None:
+    """The `ticketBaseUrl` one Kanban diagram's own configuration sets.
+
+    Mermaid reads it from the front matter's `config` mapping, and an
+    `init` directive's configuration replaces it, so the last
+    directive setting it decides.
+    """
+    base: object = None
+    matter = FRONT_MATTER.match(content)
+    if matter is not None:
+        base = configured(yaml_mapping(matter.group(2)).get(CONFIG))
+    for directive in DIRECTIVE.finditer(content):
+        kind = directive.group(1) or directive.group(2) or ""
+        if kind.lower() not in INITIALIZING or directive.group(4) is None:
+            continue
+        set_here = configured(yaml_mapping(directive.group(4)))
+        if set_here is not None:
+            base = set_here
+    return base if isinstance(base, str) else None
+
+
+def configured(configuration: object) -> object:
+    """The `ticketBaseUrl` one Mermaid configuration mapping sets, if any."""
+    if not isinstance(configuration, dict):
+        return None
+    kanban = configuration.get(KANBAN)
+    return kanban.get(TICKET_BASE_URL) if isinstance(kanban, dict) else None
+
+
+def ticket_of(line: str) -> str | None:
+    """The ticket one Kanban node line's metadata names, if it names one."""
+    metadata = NODE_METADATA.search(line)
+    if metadata is None:
+        return None
+    ticket = yaml_mapping(metadata.group(1)).get(TICKET)
+    return None if ticket is None or ticket == "" else str(ticket)
+
+
+def external(path: str) -> bool:
+    """Whether a reference carries a scheme or an authority."""
+    return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
 
 
 def linked(line: str, form: str) -> list[tuple[str, int, str]]:
