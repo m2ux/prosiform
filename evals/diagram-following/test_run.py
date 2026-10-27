@@ -13,13 +13,11 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from report import REPORT_JSON, RUN, SESSION, TIMEOUT
 from run import (
     BUNDLE,
     FORMS,
     PROSE_BUNDLE,
-    RUN,
-    SESSION,
-    TIMEOUT,
     TRANSCRIPT,
     TREE,
     Session,
@@ -204,6 +202,26 @@ def test_a_failing_session_is_recorded_with_its_failure(
     verdict = record["verdict"]
     assert verdict["failure"] == "unfinished"
     assert verdict["actual"] == ["Plan"]
+
+
+def test_a_run_ends_by_writing_its_report(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
+    eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
+        *("--budget-usd", "1"),
+    )
+    written = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
+    [cell] = written["cells"]
+    assert (cell["model"], cell["form"], cell["scenario"]) == (
+        "stub-model",
+        BUNDLE,
+        "straight-through",
+    )
+    assert (cell["sessions"], cell["passed"], cell["cost_usd"]) == (2, 2, 0.125)
+    assert written["cost_usd"] == 0.25 and written["not_started"] == []
 
 
 def test_a_run_stops_before_its_cost_would_pass_its_cap(
