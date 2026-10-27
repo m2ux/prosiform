@@ -1,6 +1,6 @@
 # W01–W03 Validation
 
-**Branch:** `i05/e02/w01-class-link-form-and` at `cc192743`, cut from `i05/e02/main` at `ad2e7338`. **Pull request:** [#340](https://github.com/m2ux/prosiform/pull/340).
+**Branch:** `i05/e02/w01-class-link-form-and` at `cc192743`, cut from `i05/e02/main` at `ad2e7338`. **Pull request:** [#340](https://github.com/m2ux/prosiform/pull/340), merged into `i05/e02/main` as `7195b0a0` once its Checks run passed.
 
 Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The design the checks read is `e04d0886` on `engineering`, which the README's design link names.
 
@@ -76,5 +76,5 @@ A search of the branch for `skill-markdown-v2` finds no statement; the version-h
 
 ## Findings
 
-- **Mermaid reads `#` as a comment in a sequence diagram.** The sequence lexer ends a `link` or `links` line's text at `#`, so a renderer drawing the bundle's diagram drops a rewritten entry's `#<slug>` destination and fails to parse a rewritten `links` object, which Mermaid logs and skips. The bundle's text carries the anchor. Raised as an arising issue.
+- **Mermaid reads `#` as a comment in a sequence diagram.** The sequence lexer ends a `link` or `links` line's text at `#`, so a renderer drawing the bundle's diagram drops a rewritten entry's `#<slug>` destination and fails to parse a rewritten `links` object, which Mermaid logs and skips. The bundle's text carries the anchor. Raised as [#341](https://github.com/m2ux/prosiform/issues/341), placed as I05:E02 W04.
 - **Flowchart and class keywords are lowercase in Mermaid.** Mermaid 11.16.0's flowchart and class lexers match `click`, `href` and `link` in lowercase alone; its state, Gantt and sequence lexers match any case. prosiform matches any case in every diagram, so a mixed-case line in a flowchart or class diagram, which Mermaid fails to parse, is still bundled.
