@@ -29,8 +29,9 @@ agent printed; `stderr.log` when it printed any; the final workspace's
 `trace.log` and `actions/`; and `session.json`, holding the session's
 identity, exit status, duration, the stream's `result` message with its
 `usage` and `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's options, its recorded cost, and the sessions it did not
-start.
+holds the run's date, options, recorded cost, and the sessions it did not
+start. Once `run.json` is written, `report.py` writes the run's report
+beside it, compared with the committed baseline.
 
 A session runs for at most `--session-timeout-seconds`. On expiry its
 process group, the agent and every process it started, is killed; its exit
@@ -63,6 +64,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO
 
+from report import BASELINE, RUN, SESSION, TIMEOUT, names, write
 from score import ACTIONS, TRACE, score
 from workflow import (
     DIAGRAM,
@@ -81,8 +83,6 @@ RESULTS = ROOT / "results"
 INPUTS = "inputs"
 TRANSCRIPT = "transcript.jsonl"
 STDERR = "stderr.log"
-SESSION = "session.json"
-RUN = "run.json"
 EVAL_ROOT = Path("~/projects/eval/prosiform")
 CONFIG = "config"
 WORKSPACES = "workspaces"
@@ -103,7 +103,6 @@ DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
 DEFAULT_SESSION_BUDGET = 0.50
 DEFAULT_SESSION_TIMEOUT = 600.0
-TIMEOUT = "timeout"
 
 
 @dataclass(frozen=True)
@@ -197,11 +196,6 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--run-id", help="the results directory's name")
     return parser.parse_args(argv)
-
-
-def names(value: str) -> list[str]:
-    """A comma-separated option's names."""
-    return [name.strip() for name in value.split(",") if name.strip()]
 
 
 def matrix(
@@ -407,7 +401,8 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         if form in BUNDLED
     }
     sessions = matrix(corpus, names(arguments.models), forms, arguments.repetitions)
-    run_id = arguments.run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    began = datetime.now(UTC)
+    run_id = arguments.run_id or began.strftime("%Y%m%dT%H%M%SZ")
     run_directory = arguments.results / run_id
     run_directory.mkdir(parents=True)
     workspaces = eval_root / WORKSPACES / run_id
@@ -444,6 +439,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     shutil.rmtree(workspaces, ignore_errors=True)
     record = {
         "run_id": run_id,
+        "date": began.isoformat(timespec="seconds"),
         "options": {
             key: str(value) if isinstance(value, Path) else value
             for key, value in vars(arguments).items()
@@ -459,6 +455,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         ],
     }
     (run_directory / RUN).write_text(json.dumps(record, indent=2) + "\n")
+    write(run_directory, BASELINE)
     return record
 
 
