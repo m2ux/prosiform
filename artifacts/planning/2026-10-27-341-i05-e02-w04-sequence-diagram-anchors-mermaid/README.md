@@ -12,6 +12,7 @@ The finding that raised it is in the [W01–W03 validation](../2026-10-27-339-i0
 
 | Artifact | What it holds |
 | --- | --- |
+| [w04.md](w04.md) | W04's plan: the `#35;<slug>` spelling of a rewritten sequence destination, and where it lives. |
 
 ## Links
 
