@@ -13,6 +13,13 @@ The evidence that raised both rows is in the [W05–W08 record](../2026-10-27-33
 - **Gantt proven by a click.** Chosen over restating AC16 without Gantt and over carrying a Gantt `click` as written ([#346](https://github.com/m2ux/prosiform/issues/346)).
 - **Kanban ticket and label anchors refused.** Chosen over following them and over leaving them as written ([#347](https://github.com/m2ux/prosiform/issues/347)).
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [w09.md](w09.md) | W09's plan: each Gantt task clicked in a running page and the URL it opens held. |
+| [w10.md](w10.md) | W10's plan: a Kanban ticket link or an HTML label anchor naming local Markdown refused. |
+
 ## Links
 
 | Resource | Link |
