@@ -71,7 +71,9 @@ whose info string opens with `mermaid`, a diagram link line names a
 destination a reader of the rendered diagram follows: a `click` line,
 a class diagram's `link` line, and a sequence diagram's participant
 menu, written one entry to a `link` line or several to a `links` line.
-Each destination is a use, on the line it is written, and opens with
+Each form is read in the diagram that writes it, the diagram's type
+read as Mermaid detects it, and each is read where Mermaid's lexer
+ends it. Each destination is a use, on the line it is written, and opens with
 nothing, because a diagram gives a link no text to carry a mark. A
 click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
@@ -147,19 +149,36 @@ HEADING_OPEN = "heading_open"
 INLINE = "inline"
 FENCE = "fence"
 DIAGRAM = "mermaid"
-QUOTED_LINK = re.compile(
-    r'\s*(?:click\s+[^\s"]+\s+(?:href\s+)?|link\s+[^\s"]+\s+)"(?P<destination>[^"]*)"'
-    r'(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*',
-    re.IGNORECASE,
+QUOTED = (
+    r'"(?P<destination>[^"]*)"(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?'
+    r"\s*;?\s*"
 )
-MENU_ENTRY = re.compile(
-    r"\s*link\s+[^:]+:[^@]*@\s*(?P<destination>.*?)\s*;?\s*", re.IGNORECASE
-)
-MENU = re.compile(r"\s*links\s+[^:]+:\s*(?P<menu>.*?)\s*;?\s*", re.IGNORECASE)
+CLICK_LINE = re.compile(rf'\s*click\s+[^\s"]+\s+(?:href\s+)?{QUOTED}', re.IGNORECASE)
+CLASS_LINK = re.compile(rf'\s*link\s+[^\s"]+\s+{QUOTED}', re.IGNORECASE)
+MENU_ENTRY = re.compile(r"\s*link\s+[^:]+:", re.IGNORECASE)
+MENU = re.compile(r"\s*links\s+[^:]+:", re.IGNORECASE)
+ENTRY_SEPARATOR = "@"
 ANCHOR = "#"
 ENTITY_ANCHOR = "#35;"
-DECODER = json.JSONDecoder()
+ENTITY = re.compile(r"#[A-Za-z0-9_]+;")
+STATEMENT_END = ";"
 JSON_SPACE = " \t\r\n"
+JSON_STRING = re.compile(r'"(?:[^"\\]|\\.)*"')
+JSON_OPEN = "{["
+JSON_CLOSE = "}]"
+JSON_MEMBER_END = ",}"
+FRONT_MATTER = re.compile(
+    r"^([^\S\n\r]*)-{3}\s*[\n\r](.*?)[\n\r]\1-{3}\s*[\n\r]+", re.DOTALL
+)
+DIRECTIVE = re.compile(
+    r"%{2}{\s*(?:(\w+)\s*:|(\w+))\s*(?:(\w+)|((?:(?!}%{2}).|\r?\n)*))?\s*(?:}%{2})?",
+    re.IGNORECASE,
+)
+COMMENT = re.compile(r"\s*%%.*\n")
+CLASS_DIAGRAM = "classDiagram"
+SEQUENCE_DIAGRAM = "sequenceDiagram"
+DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM)
+DIAGRAM_READ = "diagram links"
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
@@ -556,24 +575,47 @@ class Click:
 
     The line is the line of this content the link is written on. The
     offset is where the destination's first character sits in that line
-    as the fence carries it, so the destination spans `offset` to
-    `offset + len(destination)`. One line can name several, each at its
-    own offset. A fence carries a line
-    without the container markers and the indent its document line
+    as the fence carries it, and the written text is what the line holds
+    from there, so the link spans `offset` to `offset + len(written)`.
+    One line can name several, each at its own offset. A fence carries a
+    line without the container markers and the indent its document line
     opens with, so the line the fence carries is the trailing text of
     the line the document holds.
 
+    The destination is what the written text names. A sequence diagram's
+    menu entry writes `#35;` for the `#` a fragment opens with, since
+    Mermaid renders that entity as `#`, so each `#35;` it holds names a
+    `#`; every other form names its written text.
+
     The anchor is how the line's form spells the `#` a heading anchor
     opens with. A quoted destination writes `#`. A sequence diagram's
-    menu entry writes `#35;`, the entity Mermaid decodes to `#` in the
-    rendered menu, because its lexer reads a bare `#` on that line as
-    opening a comment, which takes the destination with it.
+    menu entry writes `#35;`, because its lexer reads a bare `#` on that
+    line as opening a comment, which takes the destination with it.
     """
 
     destination: str
     line: int
     offset: int
     anchor: str
+    written: str
+
+
+@dataclass(frozen=True)
+class Diagram:
+    """What one fence's diagram links to.
+
+    The clicks are its link destinations in written order. A broken line
+    is a line of this content holding a `links` object one of whose
+    values is no string, which Mermaid renders as a link opening
+    nothing; it names no destination.
+    """
+
+    clicks: tuple[Click, ...] = ()
+    broken: tuple[int, ...] = ()
+
+
+class BrokenMenu(Exception):
+    """A `links` object one of whose values is no string."""
 
 
 def diagram(fence: Token) -> bool:
@@ -581,17 +623,51 @@ def diagram(fence: Token) -> bool:
     return fence.info.split(maxsplit=1)[:1] == [DIAGRAM]
 
 
-def clicks(fence: Token) -> Iterator[Click]:
-    """Each destination one fence's diagram links to, in written order.
+def diagram_type(content: str) -> str:
+    """The type one diagram declares, where it is a type whose links differ.
+
+    Mermaid sets aside a leading front matter block, every directive and
+    every comment line, and reads the type from the word the remaining
+    text opens on. Only a class and a sequence diagram write a link form
+    of their own, so every other diagram is named by the empty string.
+    """
+    text = FRONT_MATTER.sub("", content, count=1)
+    text = COMMENT.sub(LINE_FEED, DIRECTIVE.sub("", text))
+    opening = text.lstrip()
+    return next((one for one in DIAGRAM_TYPES if opening.startswith(one)), "")
+
+
+def clicks(fence: Token) -> tuple[Click, ...]:
+    """Each destination one fence's diagram links to, in written order."""
+    return linking(fence).clicks
+
+
+def linking(fence: Token) -> Diagram:
+    """What one fence's diagram links to, read once for the fence.
+
+    The read is kept on the fence's token, so discovery, the budget, the
+    refusals, emission and candidate validation each take the read the
+    first of them made rather than reading the diagram again.
+    """
+    held = fence.meta.get(DIAGRAM_READ)
+    if not isinstance(held, Diagram):
+        held = read_diagram(fence)
+        fence.meta[DIAGRAM_READ] = held
+    return held
+
+
+def read_diagram(fence: Token) -> Diagram:
+    """What one fence's diagram links to, read from its text.
 
     A line links when it is one of these, its keywords in any letter case:
 
-    - `click <node> href "<destination>"` or `click <node> "<destination>"`;
-    - a class diagram's `link <class> "<destination>"`;
-    - a sequence diagram's `link <actor>: <label> @ <destination>`, the
+    - in any diagram, `click <node> href "<destination>"` or
+      `click <node> "<destination>"`;
+    - in a class diagram, `link <class> "<destination>"`;
+    - in a sequence diagram, `link <actor>: <label> @ <destination>`, the
       destination being the trimmed text after the first `@`;
-    - a sequence diagram's `links <actor>: {…}`, each string value of the
-      JSON object being one destination.
+    - in a sequence diagram, `links <actor>: {…}`, each string value of
+      the JSON object being one destination.
 
     A quoted destination may be followed by a quoted tooltip and a link
     target. A click naming a callback, or a `call` form, runs script and
@@ -599,59 +675,171 @@ def clicks(fence: Token) -> Iterator[Click]:
     of a fence holding no diagram.
     """
     if fence.map is None or not diagram(fence):
-        return
+        return Diagram()
+    form = diagram_type(fence.content)
     first = fence.map[0] + 2
+    found: list[Click] = []
+    broken: list[int] = []
     for at, physical in enumerate(lines(fence.content)):
-        for destination, offset, anchor in linked(bare(physical)):
-            yield Click(destination, first + at, offset, anchor)
+        try:
+            named = linked(bare(physical), form)
+        except BrokenMenu:
+            broken.append(first + at)
+            continue
+        for written, offset, anchor in named:
+            destination = (
+                written.replace(ENTITY_ANCHOR, ANCHOR)
+                if anchor == ENTITY_ANCHOR
+                else written
+            )
+            found.append(Click(destination, first + at, offset, anchor, written))
+    return Diagram(tuple(found), tuple(broken))
 
 
-def linked(line: str) -> list[tuple[str, int, str]]:
-    """Each destination one diagram line names, in written order.
+def linked(line: str, form: str) -> list[tuple[str, int, str]]:
+    """Each destination one line of a diagram of one type names, in written order.
 
-    Each comes with its offset and the anchor spelling its form writes.
+    Each comes as written, with its offset and the anchor spelling its
+    form writes.
     """
-    for form, anchor in ((QUOTED_LINK, ANCHOR), (MENU_ENTRY, ENTITY_ANCHOR)):
-        written = form.fullmatch(line)
-        if written is not None:
-            return [
-                (written.group("destination"), written.start("destination"), anchor)
-            ]
-    menu = MENU.fullmatch(line)
+    quoted = CLICK_LINE.fullmatch(line)
+    if quoted is None and form == CLASS_DIAGRAM:
+        quoted = CLASS_LINK.fullmatch(line)
+    if quoted is not None:
+        return [(quoted.group("destination"), quoted.start("destination"), ANCHOR)]
+    if form != SEQUENCE_DIAGRAM:
+        return []
+    entry = MENU_ENTRY.match(line)
+    if entry is not None:
+        end = statement_end(line, entry.end())
+        at = line.find(ENTRY_SEPARATOR, entry.end(), end)
+        if at < 0:
+            return []
+        start, stop = trimmed(line, at + 1, end)
+        return [] if start == stop else [(line[start:stop], start, ENTITY_ANCHOR)]
+    menu = MENU.match(line)
     if menu is None:
         return []
+    start, stop = trimmed(line, menu.end(), statement_end(line, menu.end()))
     return [
-        (destination, offset, ENTITY_ANCHOR)
-        for destination, offset in entries(line, menu.start("menu"), menu.end("menu"))
+        (value, offset, ENTITY_ANCHOR) for value, offset in entries(line, start, stop)
     ]
 
 
+def statement_end(line: str, at: int) -> int:
+    """Where a sequence statement's text begun at `at` ends.
+
+    Mermaid's sequence lexer ends the text at a `;`, which closes the
+    statement, or a `#`, which opens a comment. Mermaid first replaces
+    every entity, `#<word>;`, with a placeholder, so neither the `#` nor
+    the `;` of an entity ends anything.
+    """
+    while at < len(line):
+        if line[at] == ANCHOR:
+            entity = ENTITY.match(line, at)
+            if entity is None:
+                return at
+            at = entity.end()
+        elif line[at] == STATEMENT_END:
+            return at
+        else:
+            at += 1
+    return len(line)
+
+
+def trimmed(line: str, start: int, end: int) -> tuple[int, int]:
+    """The span `start` to `end` of a line with its surrounding whitespace left out."""
+    text = line[start:end]
+    begin = start + len(text) - len(text.lstrip())
+    return begin, max(begin, start + len(text.rstrip()))
+
+
 def entries(line: str, start: int, end: int) -> list[tuple[str, int]]:
-    """Each string value of the JSON object one line holds, with its offset.
+    """Each destination the JSON object one line holds names, with its offset.
 
     The object spans `start` to `end` of the line, and a span holding
-    anything else names nothing. A value whose written text differs from
+    anything else names nothing. It is read as `JSON.parse` reads it: a
+    key written twice keeps its last value, so an earlier value names
+    nothing, and a value that is no string is a broken menu, which
+    `BrokenMenu` raises. A string value whose written text differs from
     the string it decodes to, such as one holding an escape, is left out,
     because the characters a rewrite replaces are the destination's own.
     """
     try:
-        whole, past = DECODER.raw_decode(line[:end], start)
+        members = decoded(line[start:end])
     except ValueError:
         return []
-    if not isinstance(whole, dict) or past != end:
+    if not isinstance(members, tuple):
         return []
+    last = {key: at for at, (key, _value) in enumerate(members)}
     found = []
-    at = skipped(line, start + 1)
-    while line[at] != "}":
-        _key, at = DECODER.raw_decode(line, at)
-        at = skipped(line, skipped(line, at) + 1)
-        value, past = DECODER.raw_decode(line, at)
-        if isinstance(value, str) and line[at + 1 : past - 1] == value:
-            found.append((value, at + 1))
-        at = skipped(line, past)
-        if line[at] == ",":
-            at = skipped(line, at + 1)
+    for at, ((key, value), (begin, past)) in enumerate(
+        zip(members, spans(line, start), strict=True)
+    ):
+        if last[key] != at:
+            continue
+        if not isinstance(value, str):
+            raise BrokenMenu
+        if line[begin + 1 : past - 1] == value:
+            found.append((value, begin + 1))
     return found
+
+
+def refused_constant(name: str) -> object:
+    """Refuse a constant `JSON.parse` does not read, such as `NaN`."""
+    raise ValueError(name)
+
+
+MENU_DECODER = json.JSONDecoder(
+    object_pairs_hook=tuple, parse_constant=refused_constant
+)
+
+
+def decoded(text: str) -> object:
+    """One `links` object's text decoded, each object as its members in order."""
+    return MENU_DECODER.decode(text)
+
+
+def spans(line: str, start: int) -> Iterator[tuple[int, int]]:
+    """Where each member's value sits in the JSON object opening at `start`.
+
+    The object has already decoded, so the walk reads its text lexically:
+    a key is a string, and a value runs to the `,` or `}` outside every
+    string and every nested value.
+    """
+    at = skipped(line, start + 1)
+    while line[at] != JSON_MEMBER_END[1]:
+        key = JSON_STRING.match(line, at)
+        assert key is not None
+        at = skipped(line, skipped(line, key.end()) + 1)
+        past = value_end(line, at)
+        yield at, past
+        at = skipped(line, past)
+        if line[at] == JSON_MEMBER_END[0]:
+            at = skipped(line, at + 1)
+
+
+def value_end(line: str, at: int) -> int:
+    """Where the JSON value opening at `at` of one line ends."""
+    depth = 0
+    while at < len(line):
+        if line[at] == '"':
+            string = JSON_STRING.match(line, at)
+            assert string is not None
+            at = string.end()
+            if depth == 0:
+                return at
+            continue
+        if depth == 0 and (line[at] in JSON_MEMBER_END or line[at] in JSON_SPACE):
+            return at
+        if line[at] in JSON_OPEN:
+            depth += 1
+        elif line[at] in JSON_CLOSE:
+            depth -= 1
+            if depth == 0:
+                return at + 1
+        at += 1
+    return at
 
 
 def skipped(line: str, at: int) -> int:
