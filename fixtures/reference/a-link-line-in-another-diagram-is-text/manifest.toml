@@ -1,0 +1,14 @@
+description = "A state diagram line beginning link that holds a colon and an at sign naming a document, and one written as a class diagram's link line, are no diagram link of a state diagram, so each is emitted as authored and compiles nothing."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["lifecycle.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
