@@ -1,6 +1,6 @@
 # W05–W08 Validation
 
-**Branch:** `i05/e02/w05-link-forms-as-mermaid` at `69b44aec`, cut from `i05/e02/main` at `c61e9150`. **Pull request:** [#345](https://github.com/m2ux/prosiform/pull/345).
+**Branch:** `i05/e02/w05-link-forms-as-mermaid` at `69b44aec`, cut from `i05/e02/main` at `c61e9150`. **Pull request:** [#345](https://github.com/m2ux/prosiform/pull/345), merged into `i05/e02/main` as `b3e1df15` once its Checks run passed.
 
 Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The design the checks read is `6c053d71` on `engineering`, which the README's design link names. The render ran with `MERMAID_CLI=<npx-cache>/node_modules/.bin/mmdc`: mermaid-cli 11.16.0 (Mermaid 11.16.0) and Chromium 150.0.7871.24 from the puppeteer cache.
 

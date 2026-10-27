@@ -18,6 +18,7 @@ The findings that raised these rows are in [review.md](review.md). The epic's pl
 | [w07.md](w07.md) | W07's plan: one home for the anchor spellings and one read per fence. |
 | [w08.md](w08.md) | W08's plan: every diagram link form rendered end to end, and the boundary carried as written. |
 | [validation.md](validation.md) | The checks and the render run on the pull request head and their results. |
+| [change-list.md](change-list.md) | The plan changes this delivery session applied and held. |
 
 ## Links
 
