@@ -131,6 +131,7 @@ from prosiform.provenance import (
 )
 from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
+    ANCHOR,
     FENCE,
     HREF,
     LINE_FEED,
@@ -167,8 +168,6 @@ ENDINGS = (f"{CARRIAGE_RETURN}{TERMINATOR}", TERMINATOR, CARRIAGE_RETURN)
 ATX = "#"
 SPACE = " "
 HEADING_OPEN = "heading_open"
-
-ANCHOR = "#"
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -427,9 +426,9 @@ def clicked(physical: str, held: str, click: Click, given: str) -> str:
     the end of the line, which both carry alike, its terminator aside:
     a CRLF the document wrote reaches the fence as a line feed.
     """
-    after = len(bare(held)) - click.offset - len(click.destination)
+    after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
-    return f"{physical[: end - len(click.destination)]}{given}{physical[end:]}"
+    return f"{physical[: end - len(click.written)]}{given}{physical[end:]}"
 
 
 def target(

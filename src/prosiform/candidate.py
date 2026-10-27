@@ -82,6 +82,7 @@ from prosiform.provenance import (
     Record,
 )
 from prosiform.source import (
+    ANCHOR,
     FENCE,
     HEADING_OPEN,
     HREF,
@@ -105,7 +106,6 @@ from prosiform.source import (
     within,
 )
 
-ANCHOR = "#"
 TITLE = "title"
 LINK_CLOSE = "link_close"
 CODE_BLOCKS = ("fence", "code_block")
@@ -188,28 +188,17 @@ class Use:
     The destination is the one the parser resolved, so a reference-style
     use in a source and the inline use the bundle publishes for it arrive
     in the same shape and are compared as the same thing. A diagram's
-    link destination is the text its line writes, which no parser
-    resolves, and it shows no text and carries no title.
-
-    The anchor is the spelling its form writes a heading anchor's `#`
-    with, which a diagram's sequence menu entry writes as an entity. It
-    is no part of the comparison, because the destination already holds
-    it.
+    link destination is the one its line names, which a sequence diagram's
+    menu entry writes with an entity for its `#`, so a destination the
+    bundle rewrote reads as `#<slug>` whatever form wrote it. It shows no
+    text and carries no title.
     """
 
-    def __init__(
-        self,
-        kind: str,
-        text: str,
-        title: str,
-        destination: str,
-        anchor: str = ANCHOR,
-    ) -> None:
+    def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
         self.kind = kind
         self.text = text
         self.title = title
         self.destination = destination
-        self.anchor = anchor
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Use) and self.parts() == other.parts()
@@ -316,7 +305,7 @@ def carried(
             yield from uses(token)
         elif token.type == FENCE:
             for click in clicks(token):
-                yield (), 0, Use(CLICK, "", "", click.destination, click.anchor)
+                yield (), 0, Use(CLICK, "", "", click.destination)
 
 
 def intended(
@@ -359,8 +348,8 @@ def intended(
     A diagram's link destination opens with nothing, so it is compiled
     wherever it resolves to a Markdown document under the root and is
     never withheld. The anchor it takes is the one the bundle writes in
-    the line, which no parser normalizes, spelled as the line's form
-    spells it.
+    the line, which no parser normalizes, read as the destination it
+    names: `#<slug>`, whichever spelling the line's form writes.
     """
     if one.kind == IMAGE:
         return one
@@ -383,7 +372,7 @@ def intended(
             f"the reference {one.destination!r} in {path!r} was assigned no "
             f"destination",
         )
-    anchor = f"{one.anchor}{assigned}"
+    anchor = f"{ANCHOR}{assigned}"
     return Use(
         one.kind,
         one.text,
@@ -475,7 +464,7 @@ def undestined(example: Token) -> str:
     for click in reversed(list(clicks(example))):
         at = click.line - first
         line = held[at]
-        held[at] = line[: click.offset] + line[click.offset + len(click.destination) :]
+        held[at] = line[: click.offset] + line[click.offset + len(click.written) :]
     return "".join(held)
 
 
