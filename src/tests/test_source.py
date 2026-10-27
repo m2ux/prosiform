@@ -528,6 +528,125 @@ def test_a_click_offset_spans_its_destination_in_the_fence_line() -> None:
     assert written[click.offset : click.offset + len(click.destination)] == "a.md"
 
 
+def diagram_links(written: str, kind: str = "flowchart LR") -> list[tuple[str, int]]:
+    """Each destination one diagram line names, with its offset in that line."""
+    fence = next(
+        token
+        for token in parse(f"```mermaid\n{kind}\n{written}\n```\n")
+        if token.type == "fence"
+    )
+    return [(click.destination, click.offset) for click in clicks(fence)]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'link Cls "a.md"',
+        'link Cls "a.md" "the tooltip"',
+        'link Cls "a.md" "the tooltip" _blank',
+        'link Cls "a.md" _self',
+        'link Cls "a.md";',
+    ],
+)
+def test_a_class_link_names_its_quoted_destination(written: str) -> None:
+    assert diagram_links(written, "classDiagram") == [("a.md", 10)]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'Click A HREF "a.md"',
+        'CLICK A "a.md" "the tooltip" _BLANK',
+        'cLiCk A hReF "a.md"',
+        'LINK A "a.md"',
+        'Link A "a.md" _Self',
+    ],
+)
+def test_a_diagram_link_keyword_matches_in_any_case(written: str) -> None:
+    assert [one for one, _at in diagram_links(written)] == ["a.md"]
+
+
+def test_a_class_link_takes_no_href() -> None:
+    assert diagram_links('link Cls href "a.md"', "classDiagram") == []
+
+
+@pytest.mark.parametrize(
+    ("written", "destination"),
+    [
+        ("link Alice: Spec @ docs/spec.md", "docs/spec.md"),
+        ("link Alice: Spec @docs/spec.md   ", "docs/spec.md"),
+        ("LINK Alice: Spec @ docs/spec.md;", "docs/spec.md"),
+        ("link Alice: Spec @ docs/a@b.md", "docs/a@b.md"),
+        ("Link Alice Smith: The spec @ docs/spec.md", "docs/spec.md"),
+    ],
+)
+def test_a_sequence_menu_entry_names_the_text_after_its_first_at(
+    written: str, destination: str
+) -> None:
+    [(found, at)] = diagram_links(written, "sequenceDiagram")
+    assert found == destination
+    assert written[at : at + len(found)] == destination
+
+
+def test_a_sequence_menu_line_names_each_string_value_in_written_order() -> None:
+    written = 'links Alice: {"Spec": "docs/spec.md", "Notes":"docs/notes.md"}'
+    found = diagram_links(written, "sequenceDiagram")
+    assert [one for one, _at in found] == ["docs/spec.md", "docs/notes.md"]
+    assert [written[at : at + len(one)] for one, at in found] == [
+        "docs/spec.md",
+        "docs/notes.md",
+    ]
+
+
+def test_a_sequence_menu_line_keyword_matches_in_any_case() -> None:
+    written = 'LINKS Alice: {"Spec": "docs/spec.md"};'
+    assert [one for one, _at in diagram_links(written)] == ["docs/spec.md"]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'links Alice: ["docs/spec.md"]',
+        'links Alice: "docs/spec.md"',
+        'links Alice: {"Spec": "docs/spec.md"',
+        'links Alice: {"Spec": "docs/spec.md"} trailing',
+        "links Alice: docs/spec.md",
+    ],
+)
+def test_a_sequence_menu_line_holding_no_json_object_names_nothing(
+    written: str,
+) -> None:
+    assert diagram_links(written, "sequenceDiagram") == []
+
+
+def test_a_sequence_menu_value_holding_an_escape_names_nothing() -> None:
+    written = 'links Alice: {"Spec": "docs\\/spec.md", "Notes": "docs/notes.md"}'
+    found = diagram_links(written, "sequenceDiagram")
+    assert [one for one, _at in found] == ["docs/notes.md"]
+
+
+def test_a_sequence_menu_value_that_is_no_string_names_nothing() -> None:
+    written = 'links Alice: {"Count": 2, "Nested": {"a": "x.md"}, "Spec": "s.md"}'
+    assert [one for one, _at in diagram_links(written)] == ["s.md"]
+
+
+def test_each_sequence_menu_destination_is_one_use_on_its_line() -> None:
+    text = (
+        "```mermaid\n"
+        "sequenceDiagram\n"
+        "link Alice: Spec @ spec.md\n"
+        'links Bob: {"A": "a.md", "B": "b.md"}\n'
+        "```\n"
+    )
+    assert [(one.destination, one.line) for one in selected(text)] == [
+        ("spec.md", 3),
+        ("a.md", 4),
+        ("b.md", 4),
+    ]
+    tokens = parse(text)
+    assert occurrences(tokens, list(regions(tokens))) == 3
+
+
 def test_diagram_and_inline_uses_arrive_in_source_order() -> None:
     text = '[a](a.md)\n\n```mermaid\nclick A "b.md"\n```\n\n[c](c.md)\n'
     assert [one.destination for one in selected(text)] == ["a.md", "b.md", "c.md"]

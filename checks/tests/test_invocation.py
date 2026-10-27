@@ -64,9 +64,9 @@ exit statuses:
   2  invalid usage or option combination
 """
 
-VERSION = "tool 0.1.0 (skill-markdown-v2)\n"
+VERSION = "tool 0.1.0 (skill-markdown-v3)\n"
 
-PROFILE = "skill-markdown-v2"
+PROFILE = "skill-markdown-v3"
 
 
 def canned(directory: Path) -> str:

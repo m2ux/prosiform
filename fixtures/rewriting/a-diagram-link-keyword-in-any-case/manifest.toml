@@ -1,0 +1,16 @@
+description = "A diagram click whose keywords are written in a letter case other than lowercase, as `Click … HREF` and `CLICK`, compiles the document it names and is rewritten as a lowercase click is: the destination between its quotes takes the destination of that document's heading, and every other byte of the fence, the keywords' case among them, is carried as written."
+
+clauses = [
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["lifecycle.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
