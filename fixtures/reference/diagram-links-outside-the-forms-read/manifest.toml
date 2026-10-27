@@ -1,4 +1,4 @@
-description = "A C4 diagram's link, a Kanban ticket, an HTML anchor in a node label and a diagram type with no link syntax each name a document the source tree holds, and each fence is emitted as authored and compiles nothing."
+description = "A C4 diagram's link and a diagram type with no link syntax each name a document the source tree holds, and each fence is emitted as authored and compiles nothing."
 
 clauses = [
   "Link classification and resource handling — Examples",
