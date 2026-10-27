@@ -12,6 +12,11 @@ The epic's plan, its work items and the Mermaid 11.16.0 survey are in the [epic 
 
 | Artifact | What it holds |
 | --- | --- |
+| [w01.md](w01.md) | W01's plan: the class `link` form and any-case keywords. |
+| [w02.md](w02.md) | W02's plan: the sequence `link` and `links` participant menus. |
+| [w03.md](w03.md) | W03's plan: the `skill-markdown-v3` profile and the rule that states it. |
+| [validation.md](validation.md) | The checks run on the pull request head and their results. |
+| [change-list.md](change-list.md) | The plan changes this delivery session applied and held. |
 
 ## Links
 
