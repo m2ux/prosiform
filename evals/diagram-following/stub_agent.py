@@ -12,7 +12,8 @@ The environment scripts it:
 - `STUB_AGENT_COST`: the cost its `result` message reports, in USD;
 - `STUB_AGENT_STOP`: a number of states after which it stops walking;
 - `STUB_AGENT_LOG`: a directory to which it writes, per session, the files
-  its workspace held on starting, its arguments and its prompt;
+  its workspace held on starting, its arguments, its prompt, the names of
+  its environment's variables and its `CLAUDE_CONFIG_DIR`;
 - `STUB_AGENT_SILENT`: when set, it prints no `result` message;
 - `STUB_AGENT_HANG`: a file the first session to find it absent creates,
   then hangs after writing its trace, printing nothing more.
@@ -47,8 +48,11 @@ def main() -> int:
     prompt = sys.stdin.read()
     files = held(workspace)
     if log := os.environ.get("STUB_AGENT_LOG"):
-        entry = {"workspace": str(workspace), "files": files, "argv": sys.argv[1:]}
+        entry: dict[str, object] = {"workspace": str(workspace), "files": files}
+        entry["argv"] = sys.argv[1:]
         entry["prompt"] = prompt
+        entry["variables"] = sorted(os.environ)
+        entry["config"] = os.environ.get("CLAUDE_CONFIG_DIR")
         (Path(log) / f"{uuid.uuid4()}.json").write_text(json.dumps(entry))
     headings = {
         heading

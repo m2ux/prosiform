@@ -15,7 +15,6 @@ from typing import Any
 import pytest
 from run import (
     BUNDLE,
-    CREDENTIAL,
     FORMS,
     PROSE_BUNDLE,
     RUN,
@@ -33,6 +32,14 @@ from workflow import DIAGRAM, ENTRY, CorpusError, workflows
 
 STUB = Path(__file__).resolve().parent / "stub_agent.py"
 CORPUS = {workflow.name: workflow for workflow in workflows()}
+CALLER_VARIABLES = (
+    "CLAUDECODE",
+    "CLAUDE_CODE_ENTRYPOINT",
+    "CLAUDE_CONFIG_DIR",
+    "ANTHROPIC_API_KEY",
+    "ANTHROPIC_AUTH_TOKEN",
+    "ANTHROPIC_BASE_URL",
+)
 SESSIONS_PER_REPETITION = sum(len(item.scenarios) for item in CORPUS.values()) * 3
 
 
@@ -42,7 +49,11 @@ def log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     directory = tmp_path / "log"
     directory.mkdir()
     monkeypatch.setenv("STUB_AGENT_LOG", str(directory))
-    monkeypatch.setenv(CREDENTIAL, "stub")
+    for name in CALLER_VARIABLES:
+        monkeypatch.setenv(name, "caller")
+    login = tmp_path / "eval" / "config" / ".credentials.json"
+    login.parent.mkdir(parents=True)
+    login.touch()
     return directory
 
 
@@ -59,6 +70,8 @@ def eval_run(tmp_path: Path, *extra: str) -> dict[str, Any]:
                 str(tmp_path / "results"),
                 "--run-id",
                 "test",
+                "--eval-root",
+                str(tmp_path / "eval"),
                 *extra,
             ]
         )
@@ -101,6 +114,7 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
         tmp_path, "--repetitions", "2", "--budget-usd", "100", "--parallel", "3"
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
+    workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
     assert record["started"] == len(sessions) == 2 * SESSIONS_PER_REPETITION
     entries = seen(log)
     assert len(entries) == len(sessions)
@@ -110,10 +124,19 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     for entry in entries:
         argv = entry["argv"]
         assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep"
-        assert "--bare" in argv and "--allowedTools" not in argv
-        assert "Bash" not in " ".join(argv)
+        assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
+        assert "--mcp-config" not in argv and "--bare" not in argv
+        assert "--allowedTools" not in argv and "Bash" not in " ".join(argv)
         assert ENTRY in entry["prompt"]
+        assert Path(entry["workspace"]).is_relative_to(workspaces)
         assert not Path(entry["workspace"]).exists()
+        assert entry["config"] == str(tmp_path / "eval" / "config")
+        variables = set(entry["variables"])
+        assert not variables & (set(CALLER_VARIABLES) - {"CLAUDE_CONFIG_DIR"})
+        assert not any(
+            name.startswith(("CLAUDE_CODE_", "ANTHROPIC_")) for name in variables
+        )
+    assert not workspaces.exists()
 
 
 def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
@@ -239,11 +262,9 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
     assert all(item["cost_usd"] is None for item in records(tmp_path))
 
 
-def test_a_run_without_a_credential_starts_no_session(
-    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.delenv(CREDENTIAL)
-    with pytest.raises(CorpusError, match=CREDENTIAL):
+def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:
+    (tmp_path / "eval" / "config" / ".credentials.json").unlink()
+    with pytest.raises(CorpusError, match="holds no login.*claude`, then `/login`"):
         eval_run(tmp_path, "--budget-usd", "1")
     assert seen(log) == []
     assert not (tmp_path / "results").exists()

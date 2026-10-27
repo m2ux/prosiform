@@ -11,10 +11,17 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
-searching files. `--bare` keeps the caller's settings, hooks, memory and
-`CLAUDE.md` out of it, so its authentication is `ANTHROPIC_API_KEY` alone,
-and a run without that key fails before it starts a session. `acceptEdits`
-lets it change files only within its workspace.
+searching files, with no MCP server and no skill. `acceptEdits` lets it
+change files only within its workspace.
+
+Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
+eval's own Claude configuration directory, holding its login, settings and
+memory apart from the caller's; each session receives it as
+`CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
+`ANTHROPIC_*` variable. A run whose configuration directory holds no login
+fails before it starts a session, naming the one-time login command.
+`<root>/workspaces/<run-id>/` holds the run's workspaces, each at its
+session's place in the matrix and removed once its records are kept.
 
 Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
@@ -46,7 +53,6 @@ import shlex
 import shutil
 import signal
 import sys
-import tempfile
 import threading
 import time
 from collections.abc import Sequence
@@ -77,7 +83,12 @@ TRANSCRIPT = "transcript.jsonl"
 STDERR = "stderr.log"
 SESSION = "session.json"
 RUN = "run.json"
-CREDENTIAL = "ANTHROPIC_API_KEY"
+EVAL_ROOT = Path("~/projects/eval/prosiform")
+CONFIG = "config"
+WORKSPACES = "workspaces"
+LOGIN = ".credentials.json"
+CONFIG_VARIABLE = "CLAUDE_CONFIG_DIR"
+SCRUBBED = ("CLAUDE", "ANTHROPIC_")
 
 BUNDLE = "bundle"
 TREE = "tree"
@@ -178,6 +189,12 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "--agent-command", default="claude", help="the agent's command line"
     )
     parser.add_argument("--results", type=Path, default=RESULTS)
+    parser.add_argument(
+        "--eval-root",
+        type=Path,
+        default=EVAL_ROOT,
+        help="the directory holding the eval's configuration and workspaces",
+    )
     parser.add_argument("--run-id", help="the results directory's name")
     return parser.parse_args(argv)
 
@@ -234,7 +251,6 @@ def agent_argv(agent: list[str], model: str, session_cap: float) -> list[str]:
     return [
         *agent,
         "-p",
-        "--bare",
         "--model",
         model,
         "--output-format",
@@ -245,6 +261,8 @@ def agent_argv(agent: list[str], model: str, session_cap: float) -> list[str]:
         "--permission-mode",
         "acceptEdits",
         "--no-session-persistence",
+        "--strict-mcp-config",
+        "--disable-slash-commands",
         "--max-budget-usd",
         str(session_cap),
     ]
@@ -271,13 +289,38 @@ def keep(workspace: Path, records: Path) -> None:
         shutil.copytree(workspace / ACTIONS, records / ACTIONS)
 
 
+def environment(config: Path) -> dict[str, str]:
+    """The caller's environment without its Claude variables, naming `config`."""
+    kept = {
+        name: value
+        for name, value in os.environ.items()
+        if not name.startswith(SCRUBBED)
+    }
+    return {**kept, CONFIG_VARIABLE: str(config)}
+
+
+def preflight(config: Path) -> None:
+    """Refuse a run whose configuration directory holds no login."""
+    if not (config / LOGIN).is_file():
+        raise CorpusError(
+            f"{config} holds no login; log in once with "
+            f"`{CONFIG_VARIABLE}={config} claude`, then `/login`"
+        )
+
+
 def converse(
-    argv: list[str], workspace: Path, prompt: str, transcript: IO[bytes], timeout: float
+    argv: list[str],
+    workspace: Path,
+    env: dict[str, str],
+    prompt: str,
+    transcript: IO[bytes],
+    timeout: float,
 ) -> tuple[int | str, bytes]:
     """Run the agent to its exit or its timeout; give its status and stderr."""
     process = Popen(
         argv,
         cwd=workspace,
+        env=env,
         stdin=PIPE,
         stdout=transcript,
         stderr=PIPE,
@@ -300,21 +343,27 @@ def start(
     prompt: str,
     bundles: dict[tuple[str, str], bytes],
     records: Path,
+    workspace: Path,
+    env: dict[str, str],
     timeout: float,
 ) -> float | None:
     """Run one session in a fresh workspace, record it, and return its cost."""
     records.mkdir(parents=True)
-    with tempfile.TemporaryDirectory(prefix="diagram-following-") as directory:
-        workspace = Path(directory)
+    workspace.mkdir(parents=True)
+    try:
         prepare(workspace, workflow, scenario, session.form, bundles)
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
-            exit_status, stderr = converse(argv, workspace, prompt, transcript, timeout)
+            exit_status, stderr = converse(
+                argv, workspace, env, prompt, transcript, timeout
+            )
         duration = time.monotonic() - began
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
         verdict = score(workflow, scenario, workspace)
+    finally:
+        shutil.rmtree(workspace)
     result = result_message(records / TRANSCRIPT)
     cost = result.get("total_cost_usd") if result else None
     cost = float(cost) if isinstance(cost, int | float) else None
@@ -337,8 +386,10 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     agent = shlex.split(arguments.agent_command)
     if not agent or shutil.which(agent[0]) is None:
         raise CorpusError(f"no agent command {arguments.agent_command!r} is found")
-    if not os.environ.get(CREDENTIAL):
-        raise CorpusError(f"no {CREDENTIAL} is set for a bare session to run with")
+    eval_root = arguments.eval_root.expanduser()
+    config = eval_root / CONFIG
+    preflight(config)
+    env = environment(config)
     corpus = workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
@@ -359,6 +410,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     run_id = arguments.run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     run_directory = arguments.results / run_id
     run_directory.mkdir(parents=True)
+    workspaces = eval_root / WORKSPACES / run_id
     prompt = instruction(ENTRY)
     ledger = Ledger(arguments.budget_usd, arguments.session_budget_usd)
 
@@ -379,6 +431,8 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                 prompt,
                 bundles,
                 session.directory(run_directory),
+                session.directory(workspaces),
+                env,
                 arguments.session_timeout_seconds,
             )
         finally:
@@ -387,6 +441,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
 
     with ThreadPoolExecutor(max_workers=max(1, arguments.parallel)) as pool:
         started = list(pool.map(attempt, sessions))
+    shutil.rmtree(workspaces, ignore_errors=True)
     record = {
         "run_id": run_id,
         "options": {
