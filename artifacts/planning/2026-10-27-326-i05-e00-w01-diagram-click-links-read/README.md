@@ -13,6 +13,8 @@ It is the first row of the Mermaid Links epic. W02 rewrites the destinations thi
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | The fence reader and its use in discovery and the budget |
+| [Validation](validation.md) | The evidence for each Test Plan row |
+| [Change list](change-list.md) | Plan changes applied and held in delivery |
 
 ## Links
 
