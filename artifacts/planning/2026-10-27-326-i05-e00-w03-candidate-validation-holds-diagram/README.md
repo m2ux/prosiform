@@ -14,6 +14,8 @@ They are the last rows of the Mermaid Links epic; once they land, the epic base 
 | --- | --- |
 | [W03 work item](w03.md) | Diagram uses held by candidate validation |
 | [W04 work item](w04.md) | The `skill-markdown-v2` profile and its bundling rule |
+| [Validation](validation.md) | The evidence for each Test Plan row |
+| [Change list](change-list.md) | Plan changes applied and held in delivery |
 
 ## Links
 
@@ -21,4 +23,6 @@ They are the last rows of the Mermaid Links epic; once they land, the epic base 
 | --- | --- |
 | Epic | [I05:E00 Mermaid Links](https://github.com/m2ux/prosiform/issues/326) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
+| Pull request | [#330 Diagram Validation and Profile v2](https://github.com/m2ux/prosiform/pull/330) |
+| Design commit | [`e1b82283` Examples rule](https://github.com/m2ux/prosiform/commit/e1b82283825281279069188f575806dd11d4be3d) |
 | Prior row | [W02 record](../2026-10-27-326-i05-e00-w02-diagram-destinations-rewritten-to/README.md) |
