@@ -1,0 +1,16 @@
+description = "A diagram click naming a document under the allowed source root compiles that document into the bundle, and the click destination is rewritten to the destination of that document's heading while every other byte of the fence is carried as written."
+
+clauses = [
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["lifecycle.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
