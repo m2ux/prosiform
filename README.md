@@ -1,4 +1,4 @@
-# 🧩 Prosiform
+# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Profile: skill-markdown-v2](https://img.shields.io/badge/profile-skill--markdown--v2-blue.svg)](https://github.com/m2ux/prosiform/blob/e1b82283825281279069188f575806dd11d4be3d/artifacts/planning/2026-10-17-prosiform-v1/design.md)
