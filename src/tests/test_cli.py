@@ -2334,3 +2334,37 @@ def test_a_dispatch_a_run_set_holds_is_checked_as_a_procedure(root: Path) -> Non
     written(root, "a.md", "# A\n\nNo step.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert [one["code"] for one in run.diagnostics()] == [DISPATCH_NOT_PROCEDURAL]
+
+
+def test_each_diagram_fence_is_read_once_per_parse_of_a_run(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from markdown_it.token import Token
+
+    from prosiform import source as source_module
+    from prosiform.source import Diagram
+
+    calls: dict[int, int] = {}
+    read = source_module.read_diagram
+    fences: list[Token] = []
+
+    def counted(fence: Token) -> Diagram:
+        calls[id(fence)] = calls.get(id(fence), 0) + 1
+        fences.append(fence)
+        return read(fence)
+
+    monkeypatch.setattr(source_module, "read_diagram", counted)
+    written(
+        root,
+        "guide.md",
+        "# Guide\n\n```mermaid\nsequenceDiagram\n"
+        "link A: Note @ docs/note.md\n"
+        'links B: {"Note": "docs/note.md", "Guide": "guide.md"}\n```\n\n'
+        '```mermaid\nflowchart LR\nclick A href "docs/note.md"\n```\n',
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert "@ #35;note" in run.stdout
+    assert set(calls.values()) == {1}
+    sources = [fence for fence in fences if "docs/note.md" in fence.content]
+    assert len(sources) == 2
