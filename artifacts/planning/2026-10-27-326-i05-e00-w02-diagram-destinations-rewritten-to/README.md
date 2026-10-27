@@ -13,6 +13,8 @@ W01 reads the destinations this row rewrites. W03 holds them in candidate valida
 | Artifact | What it holds |
 | --- | --- |
 | [W02 work item](w02.md) | Diagram destinations rewritten on emission |
+| [Validation](validation.md) | The evidence for each Test Plan row |
+| [Change list](change-list.md) | Plan changes applied and held in delivery |
 
 ## Links
 
