@@ -216,6 +216,16 @@ def test_an_informational_response_needs_no_source_root() -> None:
 
 
 @pytest.mark.parametrize(
+    ("short", "long"),
+    [("-C", "--codes"), ("-v", "--version"), ("-h", "--help")],
+)
+def test_an_informational_long_option_responds_as_its_short_form(
+    short: str, long: str
+) -> None:
+    assert invoke(long) == invoke(short)
+
+
+@pytest.mark.parametrize(
     "option",
     [
         "--root",
@@ -233,9 +243,9 @@ def test_an_informational_response_needs_no_source_root() -> None:
         "--max-links",
         "--max-nesting",
         "--max-expansion-depth",
-        "--codes",
-        "--version",
-        "--help",
+        "--cod",
+        "--vers",
+        "--he",
     ],
 )
 def test_long_options_are_invalid_usage(option: str) -> None:
