@@ -1,0 +1,17 @@
+description = "A sequence diagram's link line and links line naming a section of a document with the number sign spelled as the entity a renderer decodes to one compile that section, and each destination is rewritten to the anchor of the section's heading while every other byte of the fence is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["exchange.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

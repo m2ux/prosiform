@@ -1,0 +1,17 @@
+description = "A sequence diagram's link and links lines whose keywords are written in a letter case other than lowercase compile the documents they name and are rewritten as lowercase lines are, each destination taking the anchor of its document's heading while every other byte of the fence, the keywords' case among them, is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["exchange.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []

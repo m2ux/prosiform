@@ -328,15 +328,21 @@ def test_a_candidate_carrying_rewritten_sequence_menu_destinations_validates() -
     assert 'links Open: {"Note": "#35;note"}' in one.bundled
 
 
-def test_a_sequence_menu_entry_spelling_its_anchor_bare_fails() -> None:
+def test_a_sequence_menu_entry_spelling_its_anchor_bare_names_nothing() -> None:
     one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
     one.bundled = one.bundled.replace("@ #35;note", "@ #note")
-    assert refused(one).invariant == REFERENCE_PRESERVATION
+    assert refused(one).invariant == NO_NEW_LINKS
 
 
-def test_a_sequence_menu_value_spelling_its_anchor_bare_fails() -> None:
+def test_a_sequence_menu_value_spelling_its_anchor_bare_names_nothing() -> None:
     one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
     one.bundled = one.bundled.replace('"#35;note"', '"#note"')
+    assert refused(one).invariant == NO_NEW_LINKS
+
+
+def test_a_sequence_menu_entry_naming_another_heading_fails() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace("@ #35;note", "@ #35;guide")
     assert refused(one).invariant == REFERENCE_PRESERVATION
 
 
