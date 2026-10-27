@@ -17,6 +17,7 @@ The findings that raised these rows are in [review.md](review.md). The epic's pl
 | [w06.md](w06.md) | W06's plan: a `links` object read as `JSON.parse` reads it. |
 | [w07.md](w07.md) | W07's plan: one home for the anchor spellings and one read per fence. |
 | [w08.md](w08.md) | W08's plan: every diagram link form rendered end to end, and the boundary carried as written. |
+| [validation.md](validation.md) | The checks and the render run on the pull request head and their results. |
 
 ## Links
 
@@ -25,3 +26,4 @@ The findings that raised these rows are in [review.md](review.md). The epic's pl
 | Epic | [I05:E02 Link Forms](https://github.com/m2ux/prosiform/issues/339) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic pull request | [#342](https://github.com/m2ux/prosiform/pull/342) |
+| Task pull request | [#345](https://github.com/m2ux/prosiform/pull/345) |
