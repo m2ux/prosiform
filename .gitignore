@@ -4,3 +4,6 @@ __pycache__/
 
 # Compiled bundles, written wherever pf is run.
 *.bundle.md
+
+# The diagram-following eval's session records, written by each run.
+evals/diagram-following/results/

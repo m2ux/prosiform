@@ -34,10 +34,11 @@
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
 #
-# `make harness` also holds the diagram-following eval's workflow corpus and
-# its scorer. Its tests bundle each workflow form with the `pf` the locked
-# environment installs and score hand-made traces, so they need no configured
-# build and start no agent session.
+# `make harness` also holds the diagram-following eval's workflow corpus, its
+# scorer and its runner. Its tests bundle each workflow form with the `pf` the
+# locked environment installs, score hand-made traces, and run the runner
+# against a stub agent, so they need no configured build and start no paid
+# agent session.
 #
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
