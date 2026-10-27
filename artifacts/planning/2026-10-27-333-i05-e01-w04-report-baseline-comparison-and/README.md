@@ -13,6 +13,8 @@ It reads the session records W03's runner writes; W05 runs the default matrix th
 | Artifact | What it holds |
 | --- | --- |
 | [W04 work item](w04.md) | The report, the baseline comparison, the command and the documentation |
+| [Validation](validation.md) | The checks run and their results |
+| [Change list](change-list.md) | Plan changes arising in delivery |
 
 ## Links
 
