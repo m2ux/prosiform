@@ -13,6 +13,8 @@ It reads the corpus W01 delivered through `workflow.py`; W03's runner calls it o
 | Artifact | What it holds |
 | --- | --- |
 | [W02 work item](w02.md) | The scorer, its failure classes and verdict schema |
+| [Validation](validation.md) | The checks run and their results |
+| [Change list](change-list.md) | Plan changes arising in delivery |
 
 ## Links
 
