@@ -13,6 +13,8 @@ Every later row of the epic reads this corpus: the scorer checks traces against 
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | The workflows, their forms, scenarios and corpus tests |
+| [Validation](validation.md) | The checks run and their results |
+| [Change list](change-list.md) | Plan changes arising in delivery |
 
 ## Links
 
