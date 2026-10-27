@@ -13,6 +13,10 @@ The findings that raised these rows are in [review.md](review.md). The epic's pl
 | Artifact | What it holds |
 | --- | --- |
 | [review.md](review.md) | The review of PR #342 whose findings these rows correct. |
+| [w05.md](w05.md) | W05's plan: each form in its own diagram, the sequence statement's end and the entity anchor. |
+| [w06.md](w06.md) | W06's plan: a `links` object read as `JSON.parse` reads it. |
+| [w07.md](w07.md) | W07's plan: one home for the anchor spellings and one read per fence. |
+| [w08.md](w08.md) | W08's plan: every diagram link form rendered end to end, and the boundary carried as written. |
 
 ## Links
 
