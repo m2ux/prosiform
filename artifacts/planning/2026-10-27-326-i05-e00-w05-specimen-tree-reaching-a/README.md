@@ -13,6 +13,8 @@ The fixture is the specimen run against `i05/e00/main` on 2026-10-27, kept in th
 | Artifact | What it holds |
 | --- | --- |
 | [W05 work item](w05.md) | The specimen fixture's source, expected output and checks |
+| [Validation](validation.md) | The evidence for each Test Plan row |
+| [Change list](change-list.md) | Plan changes applied and held in delivery |
 
 ## Links
 
@@ -21,3 +23,4 @@ The fixture is the specimen run against `i05/e00/main` on 2026-10-27, kept in th
 | Epic | [I05:E00 Mermaid Links](https://github.com/m2ux/prosiform/issues/326) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Specimen | [Specimen source and bundle](../2026-10-27-326-i05-e00-mermaid-links/specimen/) |
+| Pull request | [#332](https://github.com/m2ux/prosiform/pull/332) |
