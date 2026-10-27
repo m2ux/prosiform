@@ -20,6 +20,7 @@ The evidence that raised both rows is in the [W05–W08 record](../2026-10-27-33
 | [w09.md](w09.md) | W09's plan: each Gantt task clicked in a running page and the URL it opens held. |
 | [w10.md](w10.md) | W10's plan: a Kanban ticket link or an HTML label anchor naming local Markdown refused. |
 | [validation.md](validation.md) | The checks and the render run on the pull request head and their results. |
+| [change-list.md](change-list.md) | The plan changes this delivery session applied and held. |
 
 ## Links
 
@@ -28,3 +29,4 @@ The evidence that raised both rows is in the [W05–W08 record](../2026-10-27-33
 | Epic | [I05:E02 Link Forms](https://github.com/m2ux/prosiform/issues/339) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic pull request | [#342](https://github.com/m2ux/prosiform/pull/342) |
+| Task pull request | [#348](https://github.com/m2ux/prosiform/pull/348) |

@@ -1,6 +1,6 @@
 # W09–W10 Validation
 
-**Branch:** `i05/e02/w09-gantt-links-clicked-in` at `edcbe3b2`, cut from `i05/e02/main` at `b3e1df15`.
+**Branch:** `i05/e02/w09-gantt-links-clicked-in` at `edcbe3b2`, cut from `i05/e02/main` at `b3e1df15`. **Pull request:** [#348](https://github.com/m2ux/prosiform/pull/348), merged into `i05/e02/main` as `d5196941` once its Checks run passed.
 
 Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The design the checks read is `21f4687d` on `engineering`, which the README's design link names. The render ran with `MERMAID_CLI=<npx-cache>/node_modules/.bin/mmdc`: mermaid-cli 11.16.0 (Mermaid 11.16.0), puppeteer 25.3.0 and Chromium 150.0.7871.24 from the puppeteer cache, under Node 20.19.4.
 
