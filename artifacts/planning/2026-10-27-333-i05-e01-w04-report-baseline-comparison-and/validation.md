@@ -1,6 +1,6 @@
 # W04 Validation
 
-**Branch:** `i05/e01/w04-report-baseline-comparison-and` at `f06ef18d`, cut from `i05/e01/main` at `befb47ed`.
+**Branch:** `i05/e01/w04-report-baseline-comparison-and` at `f06ef18d`, cut from `i05/e01/main` at `befb47ed`. **Pull request:** [#338](https://github.com/m2ux/prosiform/pull/338).
 
 Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The report tests are `evals/diagram-following/test_report.py`, run by `make harness`; 8 pass, alongside the runner's 11, the scorer's 23 and the corpus's 26. They read a hand-made run: a `run.json` and ten `session.json` records over two models and four cells — passes; `unfinished`, `loop_miscount`, `skipped_state` and `missing_action` failures; one session ended at its timeout with no usage or cost — and two sessions not started, against a baseline holding two of those cells and one the run lacks. No live session ran.
 
