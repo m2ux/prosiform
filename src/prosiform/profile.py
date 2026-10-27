@@ -48,6 +48,11 @@ heading syntax: a wiki link, its transclusion form, a footnote reference,
 and a heading-attribute suffix at the end of a heading. A directive
 written in a templating language the profile does not read is ordinary
 prose, and so is a brace block anywhere but the end of a heading.
+
+A Mermaid sequence diagram's `links` line whose JSON object holds a value
+that is no string names a link Mermaid renders opening nothing, so it is
+refused as an unsupported construct naming its line rather than bundled
+around the gap.
 """
 
 import re
@@ -65,6 +70,7 @@ from markdown_it.utils import EnvType
 
 from prosiform import PROFILE
 from prosiform.limits import NESTING
+from prosiform.source import FENCE, linking
 
 PRESET = "commonmark"
 ENABLED = ("table", "strikethrough")
@@ -452,6 +458,21 @@ def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
         )
 
 
+def menu_refusals(fence: Token) -> Iterator[Refusal]:
+    """Each `links` line one diagram carries holding a value that is no string."""
+    for at in linking(fence).broken:
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the sequence diagram's links line holds a value that is not a "
+                f"string, which Mermaid renders as a link opening nothing, so the "
+                f"{PROFILE} profile cannot carry it"
+            ),
+            remedy="write each value of the links object as a string",
+            line=at,
+        )
+
+
 def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
     """Every construct the profile refuses, in the order the run carries them.
 
@@ -468,5 +489,7 @@ def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
         if token.type == HTML_BLOCK:
             opening = next(iter(token.content.strip().splitlines()), token.content)
             yield html_refusal(opening, line(token))
+        elif token.type == FENCE:
+            yield from menu_refusals(token)
         elif token.type == INLINE:
             yield from inline_refusals(token, heading)
