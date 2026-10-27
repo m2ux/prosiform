@@ -66,12 +66,14 @@ link inside a code span or a code block is example content the parser
 produces no use for, so none reaches a caller asking what this content
 references.
 
-A Mermaid diagram is the one code block whose content links: a `click`
-line in a fence whose info string opens with `mermaid` names a
-destination a reader of the rendered diagram follows. Each such
-destination is a use, on the line the click is written, and opens with
-nothing, because a diagram gives a click no link text to carry a mark.
-A click naming a callback runs script rather than following a
+A Mermaid diagram is the one code block whose content links. In a fence
+whose info string opens with `mermaid`, a diagram link line names a
+destination a reader of the rendered diagram follows: a `click` line,
+a class diagram's `link` line, and a sequence diagram's participant
+menu, written one entry to a `link` line or several to a `links` line.
+Each destination is a use, on the line it is written, and opens with
+nothing, because a diagram gives a link no text to carry a mark. A
+click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
 is a use.
 
@@ -93,11 +95,12 @@ wherever its author put it.
 
 The document also counts what a budget is declared over: the container
 blocks it nests at its deepest point, which is what a nesting budget
-bounds, and the link, image and diagram click occurrences a run of
+bounds, and the link, image and diagram link occurrences a run of
 regions carries, each counted once where the source wrote it.
 """
 
 import hashlib
+import json
 import re
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
@@ -144,10 +147,17 @@ HEADING_OPEN = "heading_open"
 INLINE = "inline"
 FENCE = "fence"
 DIAGRAM = "mermaid"
-CLICK = re.compile(
-    r'\s*click\s+[^\s"]+\s+(?:href\s+)?"(?P<destination>[^"]*)"'
-    r'(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*'
+QUOTED_LINK = re.compile(
+    r'\s*(?:click\s+[^\s"]+\s+(?:href\s+)?|link\s+[^\s"]+\s+)"(?P<destination>[^"]*)"'
+    r'(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*',
+    re.IGNORECASE,
 )
+MENU_ENTRY = re.compile(
+    r"\s*link\s+[^:]+:[^@]*@\s*(?P<destination>.*?)\s*;?\s*", re.IGNORECASE
+)
+MENU = re.compile(r"\s*links\s+[^:]+:\s*(?P<menu>.*?)\s*;?\s*", re.IGNORECASE)
+DECODER = json.JSONDecoder()
+JSON_SPACE = " \t\r\n"
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
@@ -540,12 +550,13 @@ def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Toke
 
 @dataclass(frozen=True)
 class Click:
-    """One destination a diagram's click line names.
+    """One destination a diagram link line names.
 
-    The line is the line of this content the click is written on. The
+    The line is the line of this content the link is written on. The
     offset is where the destination's first character sits in that line
-    as the fence carries it, inside the quotes, so the destination spans
-    `offset` to `offset + len(destination)`. A fence carries a line
+    as the fence carries it, so the destination spans `offset` to
+    `offset + len(destination)`. One line can name several, each at its
+    own offset. A fence carries a line
     without the container markers and the indent its document line
     opens with, so the line the fence carries is the trailing text of
     the line the document holds.
@@ -564,21 +575,73 @@ def diagram(fence: Token) -> bool:
 def clicks(fence: Token) -> Iterator[Click]:
     """Each destination one fence's diagram links to, in written order.
 
-    A line links when it is `click <node> href "<destination>"` or
-    `click <node> "<destination>"`, optionally followed by a quoted
-    tooltip and a link target. A click naming a callback, or a `call`
-    form, runs script and names no destination, so it yields nothing,
-    and neither does any line of a fence holding no diagram.
+    A line links when it is one of these, its keywords in any letter case:
+
+    - `click <node> href "<destination>"` or `click <node> "<destination>"`;
+    - a class diagram's `link <class> "<destination>"`;
+    - a sequence diagram's `link <actor>: <label> @ <destination>`, the
+      destination being the trimmed text after the first `@`;
+    - a sequence diagram's `links <actor>: {…}`, each string value of the
+      JSON object being one destination.
+
+    A quoted destination may be followed by a quoted tooltip and a link
+    target. A click naming a callback, or a `call` form, runs script and
+    names no destination, so it yields nothing, and neither does any line
+    of a fence holding no diagram.
     """
     if fence.map is None or not diagram(fence):
         return
     first = fence.map[0] + 2
     for at, physical in enumerate(lines(fence.content)):
-        written = CLICK.fullmatch(bare(physical))
+        for destination, offset in linked(bare(physical)):
+            yield Click(destination, first + at, offset)
+
+
+def linked(line: str) -> list[tuple[str, int]]:
+    """Each destination one diagram line names, with its offset, in written order."""
+    for form in (QUOTED_LINK, MENU_ENTRY):
+        written = form.fullmatch(line)
         if written is not None:
-            yield Click(
-                written.group("destination"), first + at, written.start("destination")
-            )
+            return [(written.group("destination"), written.start("destination"))]
+    menu = MENU.fullmatch(line)
+    if menu is None:
+        return []
+    return entries(line, menu.start("menu"), menu.end("menu"))
+
+
+def entries(line: str, start: int, end: int) -> list[tuple[str, int]]:
+    """Each string value of the JSON object one line holds, with its offset.
+
+    The object spans `start` to `end` of the line, and a span holding
+    anything else names nothing. A value whose written text differs from
+    the string it decodes to, such as one holding an escape, is left out,
+    because the characters a rewrite replaces are the destination's own.
+    """
+    try:
+        whole, past = DECODER.raw_decode(line[:end], start)
+    except ValueError:
+        return []
+    if not isinstance(whole, dict) or past != end:
+        return []
+    found = []
+    at = skipped(line, start + 1)
+    while line[at] != "}":
+        _key, at = DECODER.raw_decode(line, at)
+        at = skipped(line, skipped(line, at) + 1)
+        value, past = DECODER.raw_decode(line, at)
+        if isinstance(value, str) and line[at + 1 : past - 1] == value:
+            found.append((value, at + 1))
+        at = skipped(line, past)
+        if line[at] == ",":
+            at = skipped(line, at + 1)
+    return found
+
+
+def skipped(line: str, at: int) -> int:
+    """The first position from `at` past the JSON whitespace one line holds there."""
+    while at < len(line) and line[at] in JSON_SPACE:
+        at += 1
+    return at
 
 
 def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
@@ -593,8 +656,8 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     opens on, which is as near the use as the parser records a
     position.
 
-    A diagram's click destination is a link written on its own line of
-    the fence, so it is located at that line and opens with nothing.
+    A diagram's link destination is written on its own line of the
+    fence, so it is located at that line and opens with nothing.
     """
     for token in within(tokens, selected):
         if token.type == FENCE:
@@ -646,7 +709,7 @@ def events(
 
 
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
-    """How many link, image and click uses the given regions of one source carry.
+    """How many link, image and diagram link uses the given regions of one source carry.
 
     A budget over references is declared over what an author wrote, so
     the count is of occurrences in the source rather than of the
@@ -654,7 +717,7 @@ def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     occurrences, and an image is one of them because opening a resource
     costs what opening a document costs. A use written inside an
     image's alternative content is one the author wrote, so it is
-    counted where it sits, and so is each click destination a diagram
+    counted where it sits, and so is each destination a diagram link
     names.
     """
     return sum(1 for _ in uses(tokens, selected))

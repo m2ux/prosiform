@@ -45,7 +45,7 @@ it. Inside a
 region nothing is touched but the lines a link-reference definition
 occupies and the links the bundle rewrites, so an indented thematic
 break keeps its indent, a delimiter keeps its trailing spaces and a
-code example keeps every byte but a diagram's click destinations. A
+code example keeps every byte but a diagram's link destinations. A
 terminator belongs to the line it terminates and is content as the rest
 of the line is, so a region ends with the newline its source spelled on
 the line that ends it, and every heading the bundle generates ends with
@@ -87,11 +87,11 @@ is scoped to the whole bundle, so a reference from one group to another
 is spelled as one inside a group is. A mark goes with the rewrite,
 because a reader of the bundle has no use for authoring syntax.
 
-A Mermaid diagram's click destination is a link written inside a code
+A Mermaid diagram's link destination is a link written inside a code
 example, and the bundle rewrites it as it rewrites any other: the
-characters between its quotes take the destination its target was
-given, and every other byte of the fence is carried as written. A
-click destination the bundle compiled nothing for, such as one outside
+destination's characters take the destination its target was given,
+and every other byte of the fence is carried as written. A diagram
+link destination the bundle compiled nothing for, such as one outside
 the root or one naming no Markdown document, keeps the text its author
 wrote.
 
@@ -390,8 +390,9 @@ def rewrite(
     A source declaring no definition carries no reference-style use, so
     a token holding no link is the text its source wrote.
 
-    A diagram's click destination is replaced in the one line the click
-    is written on, between its quotes, so the line count holds there too.
+    A diagram's link destination is replaced in the one line it is
+    written on, so the line count holds there too. Several destinations
+    on one line are replaced in written order.
     """
     written = list(physical)
     for inline in inlines(tokens, selected):
@@ -415,7 +416,7 @@ def rewrite(
 
 
 def clicked(physical: str, held: str, click: Click, given: str) -> str:
-    """One physical line with a diagram click's destination replaced.
+    """One physical line with one diagram link destination replaced.
 
     The fence holds the line without the container markers and indent
     the document line opens with, so the line the fence holds is the
