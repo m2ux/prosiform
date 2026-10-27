@@ -34,12 +34,16 @@
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
 #
+# `make harness` also holds the diagram-following eval's workflow corpus. Its
+# tests bundle each workflow form with the `pf` the locked environment
+# installs, so they need no configured build and start no agent session.
+#
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
 
 UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
-PYTHON_SOURCES := src/prosiform src/tests checks
+PYTHON_SOURCES := src/prosiform src/tests checks evals
 
 .PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence
 
@@ -49,7 +53,7 @@ test:
 	cd src && uv run --frozen pytest
 
 harness:
-	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests
+	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests evals/diagram-following
 
 corpus:
 	$(UV_RUN) python checks/corpus.py
