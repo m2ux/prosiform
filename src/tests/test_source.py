@@ -980,13 +980,9 @@ def test_a_content_hash_is_taken_over_the_bytes_the_file_held() -> None:
 def unfollowed(content: str) -> list[tuple[str, str, int]]:
     """Each link one diagram renders that no diagram link line writes."""
     fence = next(
-        token
-        for token in parse(f"```mermaid\n{content}```\n")
-        if token.type == "fence"
+        token for token in parse(f"```mermaid\n{content}```\n") if token.type == "fence"
     )
-    return [
-        (one.form, one.destination, one.line) for one in linking(fence).unfollowed
-    ]
+    return [(one.form, one.destination, one.line) for one in linking(fence).unfollowed]
 
 
 KANBAN_TICKET = "Kanban ticket's link"
