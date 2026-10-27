@@ -25,6 +25,11 @@ identity, exit status, duration, the stream's `result` message with its
 holds the run's options, its recorded cost, and the sessions it did not
 start.
 
+A session runs for at most `--session-timeout-seconds`. On expiry its
+process group, the agent and every process it started, is killed; its exit
+status is recorded as `timeout`, and what its workspace holds by then is
+kept and scored like any other session's.
+
 The spending cap holds a run's recorded cost within `--budget-usd`. A
 session starts only when the recorded cost, plus the session cap reserved
 for each session in flight, plus its own session cap, is within the
@@ -39,6 +44,7 @@ import json
 import os
 import shlex
 import shutil
+import signal
 import sys
 import tempfile
 import threading
@@ -48,8 +54,8 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from subprocess import PIPE
-from subprocess import run as run_process
+from subprocess import PIPE, Popen, TimeoutExpired
+from typing import IO
 
 from score import ACTIONS, TRACE, score
 from workflow import (
@@ -85,6 +91,8 @@ DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
 DEFAULT_SESSION_BUDGET = 0.50
+DEFAULT_SESSION_TIMEOUT = 600.0
+TIMEOUT = "timeout"
 
 
 @dataclass(frozen=True)
@@ -154,6 +162,12 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
         type=float,
         default=DEFAULT_SESSION_BUDGET,
         help="each session's spending cap",
+    )
+    parser.add_argument(
+        "--session-timeout-seconds",
+        type=float,
+        default=DEFAULT_SESSION_TIMEOUT,
+        help="how long a session runs before it is ended",
     )
     parser.add_argument("--models", default=",".join(DEFAULT_MODELS))
     parser.add_argument("--repetitions", type=int, default=DEFAULT_REPETITIONS)
@@ -257,6 +271,27 @@ def keep(workspace: Path, records: Path) -> None:
         shutil.copytree(workspace / ACTIONS, records / ACTIONS)
 
 
+def converse(
+    argv: list[str], workspace: Path, prompt: str, transcript: IO[bytes], timeout: float
+) -> tuple[int | str, bytes]:
+    """Run the agent to its exit or its timeout; give its status and stderr."""
+    process = Popen(
+        argv,
+        cwd=workspace,
+        stdin=PIPE,
+        stdout=transcript,
+        stderr=PIPE,
+        start_new_session=True,
+    )
+    try:
+        _, stderr = process.communicate(prompt.encode(), timeout=timeout)
+    except TimeoutExpired:
+        os.killpg(process.pid, signal.SIGKILL)
+        _, stderr = process.communicate()
+        return TIMEOUT, stderr
+    return process.returncode, stderr
+
+
 def start(
     session: Session,
     workflow: Workflow,
@@ -265,6 +300,7 @@ def start(
     prompt: str,
     bundles: dict[tuple[str, str], bytes],
     records: Path,
+    timeout: float,
 ) -> float | None:
     """Run one session in a fresh workspace, record it, and return its cost."""
     records.mkdir(parents=True)
@@ -273,17 +309,10 @@ def start(
         prepare(workspace, workflow, scenario, session.form, bundles)
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
-            finished = run_process(
-                argv,
-                cwd=workspace,
-                input=prompt.encode(),
-                stdout=transcript,
-                stderr=PIPE,
-                check=False,
-            )
+            exit_status, stderr = converse(argv, workspace, prompt, transcript, timeout)
         duration = time.monotonic() - began
-        if finished.stderr:
-            (records / STDERR).write_bytes(finished.stderr)
+        if stderr:
+            (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
         verdict = score(workflow, scenario, workspace)
     result = result_message(records / TRANSCRIPT)
@@ -292,7 +321,7 @@ def start(
     record = {
         **asdict(session),
         "command": argv,
-        "exit_status": finished.returncode,
+        "exit_status": exit_status,
         "duration_seconds": round(duration, 3),
         "usage": result.get("usage") if result else None,
         "cost_usd": cost,
@@ -350,6 +379,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                 prompt,
                 bundles,
                 session.directory(run_directory),
+                arguments.session_timeout_seconds,
             )
         finally:
             ledger.settle(ledger.session_cap if cost is None else cost)

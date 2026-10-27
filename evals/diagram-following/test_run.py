@@ -8,6 +8,7 @@ the test chooses.
 
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +20,7 @@ from run import (
     PROSE_BUNDLE,
     RUN,
     SESSION,
+    TIMEOUT,
     TRANSCRIPT,
     TREE,
     Session,
@@ -245,3 +247,26 @@ def test_a_run_without_a_credential_starts_no_session(
         eval_run(tmp_path, "--budget-usd", "1")
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
+
+
+def test_a_session_past_its_timeout_is_ended_scored_and_charged(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("STUB_AGENT_HANG", str(tmp_path / "hung"))
+    monkeypatch.setenv("STUB_AGENT_STOP", "2")
+    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
+    began = time.monotonic()
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
+        *("--parallel", "1", "--session-timeout-seconds", "1"),
+        *("--budget-usd", "1", "--session-budget-usd", "0.25"),
+    )
+    assert time.monotonic() - began < 60
+    assert record["started"] == 2 and record["not_started"] == []
+    assert record["cost_usd"] == 0.25 + 0.125
+    hung, finished = sorted(records(tmp_path), key=lambda item: item["repetition"])
+    assert hung["exit_status"] == TIMEOUT and hung["cost_usd"] is None
+    assert hung["verdict"]["failure"] == "unfinished"
+    assert hung["verdict"]["actual"] == ["Plan", "Build"]
+    assert finished["exit_status"] == 0 and finished["cost_usd"] == 0.125

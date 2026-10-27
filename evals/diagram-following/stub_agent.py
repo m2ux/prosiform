@@ -13,13 +13,16 @@ The environment scripts it:
 - `STUB_AGENT_STOP`: a number of states after which it stops walking;
 - `STUB_AGENT_LOG`: a directory to which it writes, per session, the files
   its workspace held on starting, its arguments and its prompt;
-- `STUB_AGENT_SILENT`: when set, it prints no `result` message.
+- `STUB_AGENT_SILENT`: when set, it prints no `result` message;
+- `STUB_AGENT_HANG`: a file the first session to find it absent creates,
+  then hangs after writing its trace, printing nothing more.
 """
 
 import json
 import os
 import re
 import sys
+import time
 import uuid
 from pathlib import Path
 
@@ -64,6 +67,10 @@ def main() -> int:
             trace.write(f"{state}\n")
             name, value = workflow.sections[DIAGRAM][state].action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
+    hang = os.environ.get("STUB_AGENT_HANG")
+    if hang and not Path(hang).exists():
+        Path(hang).touch()
+        time.sleep(3600)
     print(json.dumps({"type": "system", "subtype": "init", "cwd": str(workspace)}))
     print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
     if not os.environ.get("STUB_AGENT_SILENT"):
