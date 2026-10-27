@@ -31,6 +31,7 @@ from prosiform.source import (
     Unterminated,
     Use,
     bare,
+    clicks,
     content,
     decode,
     fragments,
@@ -447,6 +448,91 @@ def test_an_apparent_link_inside_a_code_block_is_no_link() -> None:
     assert selected("~~~\n[¬ the rules](rules.md)\n~~~\n") == []
 
 
+DIAGRAM = (
+    "# Lifecycle\n"
+    "\n"
+    "```mermaid\n"
+    "flowchart LR\n"
+    "    Open --> Closed\n"
+    '    click Open href "states/open.md"\n'
+    '    click Closed "states/closed.md"\n'
+    "```\n"
+)
+
+
+def test_a_diagram_href_click_is_a_use_on_the_line_it_is_written() -> None:
+    found = selected(DIAGRAM)
+    assert (found[0].destination, found[0].line) == ("states/open.md", 6)
+
+
+def test_a_diagram_short_click_is_a_use_on_the_line_it_is_written() -> None:
+    found = selected(DIAGRAM)
+    assert (found[1].destination, found[1].line) == ("states/closed.md", 7)
+
+
+def test_each_diagram_click_is_one_link_use_opening_with_nothing() -> None:
+    assert [(one.opening, one.resource) for one in selected(DIAGRAM)] == [
+        ("", False),
+        ("", False),
+    ]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'click A href "a.md" "the tooltip"',
+        'click A href "a.md" "the tooltip" _blank',
+        'click A href "a.md" _self',
+        'click A "a.md" "the tooltip" _parent',
+        'click A "a.md" _top',
+        'click A "a.md";',
+    ],
+)
+def test_a_click_s_trailing_tooltip_and_target_leave_its_destination(
+    written: str,
+) -> None:
+    found = selected(f"```mermaid\nflowchart LR\n    {written}\n```\n")
+    assert [(one.destination, one.line) for one in found] == [("a.md", 3)]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'click A callback "the tooltip"',
+        "click A callback",
+        'click A call callback("a.md")',
+        'click A href "a.md" trailing',
+        "A --> B[\"click A href 'a.md'\"]",
+    ],
+)
+def test_a_line_naming_no_click_destination_is_no_use(written: str) -> None:
+    assert selected(f"```mermaid\nflowchart LR\n    {written}\n```\n") == []
+
+
+@pytest.mark.parametrize("info", ["", "text", "mermaid-like", "graph"])
+def test_a_click_in_a_fence_holding_no_diagram_is_no_use(info: str) -> None:
+    assert selected(f'```{info}\nclick A href "a.md"\n```\n') == []
+
+
+def test_a_diagram_fence_reads_its_info_string_s_first_word() -> None:
+    found = selected('~~~ mermaid title\nflowchart LR\nclick A "a.md"\n~~~\n')
+    assert [one.destination for one in found] == ["a.md"]
+
+
+def test_a_click_offset_spans_its_destination_in_the_fence_line() -> None:
+    tokens = parse('- item\n\n  ```mermaid\n  click A href "a.md" "tip"\n  ```\n')
+    fence = next(token for token in tokens if token.type == "fence")
+    [click] = list(clicks(fence))
+    written = fence.content.splitlines()[0]
+    assert click.line == 4
+    assert written[click.offset : click.offset + len(click.destination)] == "a.md"
+
+
+def test_diagram_and_inline_uses_arrive_in_source_order() -> None:
+    text = '[a](a.md)\n\n```mermaid\nclick A "b.md"\n```\n\n[c](c.md)\n'
+    assert [one.destination for one in selected(text)] == ["a.md", "b.md", "c.md"]
+
+
 def test_an_image_is_a_use_naming_a_resource() -> None:
     found = selected("![a diagram](diagram.png)\n")
     assert [(one.destination, one.opening, one.resource) for one in found] == [
@@ -537,6 +623,19 @@ def test_link_and_image_uses_are_counted_once_per_occurrence() -> None:
 def test_a_use_inside_image_alternative_content_is_counted() -> None:
     text = "# Guide\n\nA picture ![of the [¬ rules](rules.md) it names](plan.png).\n"
     assert occurrences(parse(text), tuple(regions(parse(text)))) == 2
+
+
+def test_each_diagram_click_is_counted_once_per_occurrence() -> None:
+    tokens = parse(DIAGRAM + "\nSee [open](states/open.md).\n")
+    assert occurrences(tokens, tuple(regions(tokens))) == 3
+
+
+def test_a_diagram_click_outside_the_given_regions_is_not_counted() -> None:
+    text = '# One\n\n```mermaid\nclick A "a.md"\n```\n\n# Two\n\nPlain.\n'
+    tokens = parse(text)
+    chosen = section(tokens, "two")
+    assert chosen is not None
+    assert occurrences(tokens, chosen) == 0
 
 
 def test_a_use_outside_the_given_regions_is_not_counted() -> None:

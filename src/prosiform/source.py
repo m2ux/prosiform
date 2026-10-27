@@ -66,6 +66,15 @@ link inside a code span or a code block is example content the parser
 produces no use for, so none reaches a caller asking what this content
 references.
 
+A Mermaid diagram is the one code block whose content links: a `click`
+line in a fence whose info string opens with `mermaid` names a
+destination a reader of the rendered diagram follows. Each such
+destination is a use, on the line the click is written, and opens with
+nothing, because a diagram gives a click no link text to carry a mark.
+A click naming a callback runs script rather than following a
+destination, and a line in any other fence is example text, so neither
+is a use.
+
 That later decision is the section below. A document is a run of
 maximal regions, each a block the document itself carries, and a
 container is one region whatever it holds. Only a heading that is such
@@ -84,8 +93,8 @@ wherever its author put it.
 
 The document also counts what a budget is declared over: the container
 blocks it nests at its deepest point, which is what a nesting budget
-bounds, and the link and image occurrences a run of regions carries,
-each counted once where the source wrote it.
+bounds, and the link, image and diagram click occurrences a run of
+regions carries, each counted once where the source wrote it.
 """
 
 import hashlib
@@ -133,6 +142,12 @@ CODES = (
 
 HEADING_OPEN = "heading_open"
 INLINE = "inline"
+FENCE = "fence"
+DIAGRAM = "mermaid"
+CLICK = re.compile(
+    r'\s*click\s+[^\s"]+\s+(?:href\s+)?"(?P<destination>[^"]*)"'
+    r'(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*'
+)
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
@@ -523,6 +538,49 @@ def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Toke
     return (token for token in within(tokens, selected) if token.type == INLINE)
 
 
+@dataclass(frozen=True)
+class Click:
+    """One destination a diagram's click line names.
+
+    The line is the line of this content the click is written on. The
+    offset is where the destination's first character sits in that line
+    as the fence carries it, inside the quotes, so the destination spans
+    `offset` to `offset + len(destination)`. A fence carries a line
+    without the container markers and the indent its document line
+    opens with, so the line the fence carries is the trailing text of
+    the line the document holds.
+    """
+
+    destination: str
+    line: int
+    offset: int
+
+
+def diagram(fence: Token) -> bool:
+    """Whether one fence holds a Mermaid diagram, as its info string opens."""
+    return fence.info.split(maxsplit=1)[:1] == [DIAGRAM]
+
+
+def clicks(fence: Token) -> Iterator[Click]:
+    """Each destination one fence's diagram links to, in written order.
+
+    A line links when it is `click <node> href "<destination>"` or
+    `click <node> "<destination>"`, optionally followed by a quoted
+    tooltip and a link target. A click naming a callback, or a `call`
+    form, runs script and names no destination, so it yields nothing,
+    and neither does any line of a fence holding no diagram.
+    """
+    if fence.map is None or not diagram(fence):
+        return
+    first = fence.map[0] + 2
+    for at, physical in enumerate(lines(fence.content)):
+        written = CLICK.fullmatch(bare(physical))
+        if written is not None:
+            yield Click(
+                written.group("destination"), first + at, written.start("destination")
+            )
+
+
 def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     """Every reference use the given regions of one source carry, in source order.
 
@@ -534,8 +592,17 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     written. The line is the line of this content the use's own block
     opens on, which is as near the use as the parser records a
     position.
+
+    A diagram's click destination is a link written on its own line of
+    the fence, so it is located at that line and opens with nothing.
     """
-    for token in inlines(tokens, selected):
+    for token in within(tokens, selected):
+        if token.type == FENCE:
+            for click in clicks(token):
+                yield Use(click.destination, "", click.line, resource=False)
+            continue
+        if token.type != INLINE:
+            continue
         line = None if token.map is None else token.map[0] + 1
         for children, at, child in events(token.children or []):
             if child.type == LINK_OPEN:
@@ -579,7 +646,7 @@ def events(
 
 
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
-    """How many link and image uses the given regions of one source carry.
+    """How many link, image and click uses the given regions of one source carry.
 
     A budget over references is declared over what an author wrote, so
     the count is of occurrences in the source rather than of the
@@ -587,11 +654,10 @@ def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     occurrences, and an image is one of them because opening a resource
     costs what opening a document costs. A use written inside an
     image's alternative content is one the author wrote, so it is
-    counted where it sits.
+    counted where it sits, and so is each click destination a diagram
+    names.
     """
-    return sum(
-        1 for token in inlines(tokens, selected) for _ in events(token.children or [])
-    )
+    return sum(1 for _ in uses(tokens, selected))
 
 
 def nesting(tokens: Sequence[Token]) -> int:
