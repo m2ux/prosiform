@@ -156,6 +156,8 @@ MENU_ENTRY = re.compile(
     r"\s*link\s+[^:]+:[^@]*@\s*(?P<destination>.*?)\s*;?\s*", re.IGNORECASE
 )
 MENU = re.compile(r"\s*links\s+[^:]+:\s*(?P<menu>.*?)\s*;?\s*", re.IGNORECASE)
+ANCHOR = "#"
+ENTITY_ANCHOR = "#35;"
 DECODER = json.JSONDecoder()
 JSON_SPACE = " \t\r\n"
 TEXT = "text"
@@ -560,11 +562,18 @@ class Click:
     without the container markers and the indent its document line
     opens with, so the line the fence carries is the trailing text of
     the line the document holds.
+
+    The anchor is how the line's form spells the `#` a heading anchor
+    opens with. A quoted destination writes `#`. A sequence diagram's
+    menu entry writes `#35;`, the entity Mermaid decodes to `#` in the
+    rendered menu, because its lexer reads a bare `#` on that line as
+    opening a comment, which takes the destination with it.
     """
 
     destination: str
     line: int
     offset: int
+    anchor: str
 
 
 def diagram(fence: Token) -> bool:
@@ -593,20 +602,28 @@ def clicks(fence: Token) -> Iterator[Click]:
         return
     first = fence.map[0] + 2
     for at, physical in enumerate(lines(fence.content)):
-        for destination, offset in linked(bare(physical)):
-            yield Click(destination, first + at, offset)
+        for destination, offset, anchor in linked(bare(physical)):
+            yield Click(destination, first + at, offset, anchor)
 
 
-def linked(line: str) -> list[tuple[str, int]]:
-    """Each destination one diagram line names, with its offset, in written order."""
-    for form in (QUOTED_LINK, MENU_ENTRY):
+def linked(line: str) -> list[tuple[str, int, str]]:
+    """Each destination one diagram line names, in written order.
+
+    Each comes with its offset and the anchor spelling its form writes.
+    """
+    for form, anchor in ((QUOTED_LINK, ANCHOR), (MENU_ENTRY, ENTITY_ANCHOR)):
         written = form.fullmatch(line)
         if written is not None:
-            return [(written.group("destination"), written.start("destination"))]
+            return [
+                (written.group("destination"), written.start("destination"), anchor)
+            ]
     menu = MENU.fullmatch(line)
     if menu is None:
         return []
-    return entries(line, menu.start("menu"), menu.end("menu"))
+    return [
+        (destination, offset, ENTITY_ANCHOR)
+        for destination, offset in entries(line, menu.start("menu"), menu.end("menu"))
+    ]
 
 
 def entries(line: str, start: int, end: int) -> list[tuple[str, int]]:
