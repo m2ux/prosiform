@@ -1,0 +1,18 @@
+description = "An entry document linking a document whose diagram links further documents bundles every one of them: the diagram is carried whole, each click naming a document under the allowed source root is rewritten to the destination of that document's heading, and a click naming a section, a click calling script and a click naming a web address are carried as written."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Examples",
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
