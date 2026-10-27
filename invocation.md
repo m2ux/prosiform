@@ -27,9 +27,9 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | `-L N` | authored link and image occurrences in selected content; positive decimal integer, default 32768 |
 | `-N N` | levels of container nesting and, independently, YAML collection nesting in one source; positive decimal integer, default 64 |
 | `-E N` | link hops from the nearest entry reference; positive decimal integer, default 8 |
-| `-C` | list this build's error and warning codes |
-| `-v` | tool version and profile identifier |
-| `-h` | usage, defaults and exit statuses |
+| `-C, --codes` | list this build's error and warning codes |
+| `-v, --version` | tool version and profile identifier |
+| `-h, --help` | usage, defaults and exit statuses |
 
 ## Examples
 
