@@ -121,13 +121,21 @@ The names the Markdown the contract binds carries, and the encodings and address
 | **dash** | the dash character, em and en alike. |
 | **dot** | the full stop a path or a delimiter carries. |
 | **em** | the width an em dash and an em space are named for. |
+| **flowchart** | the Mermaid diagram of nodes and edges a click links from. |
+| **gantt** | the Mermaid diagram of scheduled tasks a click links from. |
 | **github** | the renderer whose source-heading slugs the profile matches. |
+| **href** | the keyword a diagram click names its destination after. |
 | **hyphen** | the character a compound and a delimiter are written with. |
 | **indentation** | the leading space a block carries. |
+| **kanban** | the Mermaid board diagram whose ticket links are built from configuration. |
+| **menu** | the list of links a sequence diagram's participant opens. |
 | **placeholder** | the braced name a template leaves to be filled. |
 | **protocol** | the scheme part of an address, which a protocol-relative URL omits. |
+| **semicolon** | the character a sequence diagram's statement ends at. |
 | **setext** | the heading form written with an underline. |
+| **swimlanes** | the Mermaid flowchart drawn in lanes, which a click links from. |
 | **toml** | the format a fixture manifest is written in. |
+| **tooltip** | the quoted text a diagram link shows on hover. |
 | **underline** | the rule of characters a Setext heading is written under. |
 | **unencoded** | written with no percent escape where one was expected. |
 | **unescaped** | written with no escape where one was expected. |
