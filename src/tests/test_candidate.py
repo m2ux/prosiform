@@ -267,6 +267,49 @@ def test_an_unmarked_link_pointing_elsewhere_fails() -> None:
     assert refused(one).invariant == REFERENCE_PRESERVATION
 
 
+DIAGRAMMED = """# Guide
+
+```mermaid
+flowchart LR
+    Open([Open]) --> Note([Note])
+    %% the note links nowhere yet
+    click Open href "note.md"
+```
+"""
+
+
+def test_a_candidate_carrying_a_rewritten_diagram_destination_validates() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.validate()
+    assert 'click Open href "#note"' in one.bundled
+
+
+def test_a_diagram_destination_pointing_elsewhere_fails() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('href "#note"', 'href "#guide"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_diagram_destination_left_as_its_source_wrote_it_fails() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('href "#note"', 'href "note.md"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_dropped_diagram_click_fails() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('click Open href "#note"', "%% no click")
+    assert refused(one).invariant == NO_NEW_LINKS
+
+
+def test_an_added_diagram_click_fails() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace(
+        "%% the note links nowhere yet", 'click Note href "#note"'
+    )
+    assert refused(one).invariant == NO_NEW_LINKS
+
+
 def test_reformatted_untouched_bytes_fail() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
     one.bundled = one.bundled.replace(
