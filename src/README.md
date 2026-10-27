@@ -67,7 +67,7 @@ Run these from the repository root alongside the [repository checks](../checks/R
 | Command | Runs |
 | --- | --- |
 | `make test` | `pytest` over `src/tests/`; empty discovery fails with exit status 5. |
-| `make harness` | `pytest` over `checks/tests/` and `evals/diagram-following/`, validating fixture manifests, the corpus runner and the diagram-following corpus. |
+| `make harness` | `pytest` over `checks/tests/` and `evals/diagram-following/`, validating fixture manifests, the corpus runner and the diagram-following corpus and its scorer. |
 | `make corpus` | `checks/corpus.py` over every fixture against the command in `PROSIFORM_BUILD`. Use `pf` to test this build's console entry point. |
 | `make lint` | `ruff check` over the package, its tests, and `checks/`. |
 | `make format-check` | `ruff format --check` over the same files; reports formatting without applying it. |
