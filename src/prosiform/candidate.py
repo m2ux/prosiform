@@ -82,6 +82,7 @@ from prosiform.provenance import (
     Record,
 )
 from prosiform.source import (
+    FENCE,
     HEADING_OPEN,
     HREF,
     IMAGE,
@@ -89,6 +90,7 @@ from prosiform.source import (
     SRC,
     Source,
     bare,
+    clicks,
     events,
     fragments,
     headings,
@@ -99,6 +101,7 @@ from prosiform.source import (
     regions,
     shown,
     visible,
+    within,
 )
 
 ANCHOR = "#"
@@ -348,18 +351,22 @@ def intended(
 
 
 def carrying(tokens: Sequence[Token], span: Token) -> set[int]:
-    """Each line one region's use-bearing inline tokens occupy.
+    """Each line one region's link, image and diagram click uses occupy.
 
-    A line the bundle edits is a heading's line or a line of an inline
-    token carrying a link or an image: reference-use conversion and
-    destination rewriting reach nowhere else. Every other line of a
-    selected region is bytes the bundle carries as its source wrote
-    them, which is what the preservation comparison holds it to.
+    A line the bundle edits is a heading's line, a line of an inline
+    token carrying a link or an image, or a line a diagram's click
+    destination is written on: reference-use conversion and destination
+    rewriting reach nowhere else. Every other line of a selected region
+    is bytes the bundle carries as its source wrote them, which is what
+    the preservation comparison holds it to.
     """
     held: set[int] = set()
     for inline in inlines(tokens, [span]):
         if inline.map is not None and any(True for _ in uses(inline)):
             held.update(range(*inline.map))
+    for fence in within(tokens, [span]):
+        if fence.type == FENCE:
+            held.update(click.line - 1 for click in clicks(fence))
     return held
 
 
@@ -401,16 +408,29 @@ def code(tokens: Sequence[Token], span: Token) -> list[tuple[str, str, str]]:
     """Each code example one region holds, as the parser read it.
 
     A code block's content carries the blank lines inside it, which the
-    line comparison passes over, so the example is compared whole.
+    line comparison passes over, so the example is compared whole. A
+    diagram's click destinations are the characters of it the bundle
+    rewrites, so the example is compared without them.
     """
     start, end = span.map or (0, 0)
     return [
-        (token.type, token.info, token.content)
+        (token.type, token.info, undestined(token))
         for token in tokens
         if token.type in CODE_BLOCKS
         and token.map is not None
         and start <= token.map[0] < end
     ]
+
+
+def undestined(example: Token) -> str:
+    """One code example's content with each diagram click destination taken out."""
+    held = lines(example.content)
+    first = 0 if example.map is None else example.map[0] + 2
+    for click in clicks(example):
+        at = click.line - first
+        line = held[at]
+        held[at] = line[: click.offset] + line[click.offset + len(click.destination) :]
+    return "".join(held)
 
 
 def prose(tokens: Sequence[Token], span: Token) -> list[Token]:

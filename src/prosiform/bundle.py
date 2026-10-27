@@ -43,8 +43,9 @@ line each part opens on is a figure the assembly states and candidate
 validation reads back to prove that no part landed inside the one above
 it. Inside a
 region nothing is touched but the lines a link-reference definition
-occupies, so an indented thematic break keeps its indent, a delimiter
-keeps its trailing spaces and a code example keeps its bytes. A
+occupies and the links the bundle rewrites, so an indented thematic
+break keeps its indent, a delimiter keeps its trailing spaces and a
+code example keeps every byte but a diagram's click destinations. A
 terminator belongs to the line it terminates and is content as the rest
 of the line is, so a region ends with the newline its source spelled on
 the line that ends it, and every heading the bundle generates ends with
@@ -86,6 +87,14 @@ is scoped to the whole bundle, so a reference from one group to another
 is spelled as one inside a group is. A mark goes with the rewrite,
 because a reader of the bundle has no use for authoring syntax.
 
+A Mermaid diagram's click destination is a link written inside a code
+example, and the bundle rewrites it as it rewrites any other: the
+characters between its quotes take the destination its target was
+given, and every other byte of the fence is carried as written. A
+click destination the bundle compiled nothing for, such as one outside
+the root or one naming no Markdown document, keeps the text its author
+wrote.
+
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
 where an earlier heading already took that slug. The ordinal is assigned
@@ -119,12 +128,15 @@ from prosiform.provenance import (
 )
 from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
+    FENCE,
     HREF,
     LINE_FEED,
     LINK_OPEN,
     TEXT,
+    Click,
     Selection,
     bare,
+    clicks,
     headings,
     inlines,
     level,
@@ -134,6 +146,7 @@ from prosiform.source import (
     shown,
     slug,
     visible,
+    within,
 )
 
 MAX_LEVEL = 6
@@ -376,6 +389,9 @@ def rewrite(
 
     A source declaring no definition carries no reference-style use, so
     a token holding no link is the text its source wrote.
+
+    A diagram's click destination is replaced in the one line the click
+    is written on, between its quotes, so the line count holds there too.
     """
     written = list(physical)
     for inline in inlines(tokens, selected):
@@ -385,7 +401,31 @@ def rewrite(
         start, end = inline.map
         targets = [target(path, one, opening, assigned, root) for one, opening in found]
         written[start:end] = rewritten(written[start:end], inline, targets, defined)
+    for fence in within(tokens, selected):
+        if fence.type != FENCE:
+            continue
+        held = lines(fence.content)
+        first = 0 if fence.map is None else fence.map[0] + 1
+        for click in clicks(fence):
+            given = target(path, click.destination, "", assigned, root)
+            if given is not None:
+                at = click.line - 1
+                written[at] = clicked(written[at], held[at - first], click, given)
     return written
+
+
+def clicked(physical: str, held: str, click: Click, given: str) -> str:
+    """One physical line with a diagram click's destination replaced.
+
+    The fence holds the line without the container markers and indent
+    the document line opens with, so the line the fence holds is the
+    trailing text of the physical one. The destination is located from
+    the end of the line, which both carry alike, its terminator aside:
+    a CRLF the document wrote reaches the fence as a line feed.
+    """
+    after = len(bare(held)) - click.offset - len(click.destination)
+    end = len(bare(physical)) - after
+    return f"{physical[: end - len(click.destination)]}{given}{physical[end:]}"
 
 
 def target(

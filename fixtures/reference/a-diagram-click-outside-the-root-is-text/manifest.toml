@@ -1,0 +1,15 @@
+description = "A diagram click whose destination resolves outside the allowed source root is emitted as authored and its target is never opened: the document above the root names a document that does not exist, and the run succeeds carrying the fence as written."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Resolution sequence — step 7",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["lifecycle.md"]
+
+[expected]
+exit_status = 0
+stdout = "expected/stdout.md"
+diagnostics = []
