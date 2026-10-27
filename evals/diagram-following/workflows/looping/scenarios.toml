@@ -1,0 +1,17 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+
+[[scenario]]
+name = "no-rework"
+path = ["Draft", "Review", "Publish"]
+inputs = { "rounds.txt" = "0" }
+
+[[scenario]]
+name = "two-rounds"
+path = [
+  "Draft", "Review",
+  "Revise", "Check", "Review",
+  "Revise", "Check", "Review",
+  "Publish",
+]
+inputs = { "rounds.txt" = "2" }
