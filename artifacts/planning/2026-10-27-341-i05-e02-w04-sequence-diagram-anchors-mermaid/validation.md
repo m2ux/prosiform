@@ -1,6 +1,6 @@
 # W04 Validation
 
-**Branch:** `i05/e02/w04-sequence-diagram-anchors-mermaid` at `84a11524`, cut from `i05/e02/main` at `7195b0a0`.
+**Branch:** `i05/e02/w04-sequence-diagram-anchors-mermaid` at `84a11524`, cut from `i05/e02/main` at `7195b0a0`. **Pull request:** [#343](https://github.com/m2ux/prosiform/pull/343), merged into `i05/e02/main` as `c61e9150` once its Checks run passed.
 
 Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The design the checks read is `dcb342d6` on `engineering`, which the README's design link names.
 
