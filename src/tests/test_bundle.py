@@ -19,6 +19,7 @@ from prosiform.bundle import (
     group,
     heading_text,
     openings,
+    rewrite,
     title_cased,
 )
 from prosiform.profile import parse
@@ -456,3 +457,76 @@ def test_an_ancestor_at_the_sixth_level_overflows_on_what_it_places() -> None:
         selecting("guide.md", text, "six")
     assert refused.value.heading == "Six"
     assert refused.value.level == MAX_LEVEL + 1
+
+
+def rewritten_lines(text: str) -> list[str]:
+    """One document's lines as the bundle publishes them, `open.md` bundled."""
+    tokens = parse(text)
+    return rewrite(
+        lines(text),
+        tokens,
+        list(regions(tokens)),
+        {("open.md", None): "open"},
+        "lifecycle.md",
+        {},
+    )
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            '```mermaid\nflowchart LR\n    click Open href "open.md"\n```\n',
+            '```mermaid\nflowchart LR\n    click Open href "#open"\n```\n',
+        ),
+        (
+            "   ```mermaid\n   flowchart LR\n"
+            '     click Open "open.md" _blank\n   ```\n',
+            '   ```mermaid\n   flowchart LR\n     click Open "#open" _blank\n   ```\n',
+        ),
+        (
+            "- Item\n\n  > ```mermaid\n  > flowchart LR\n"
+            '  >   click Open href "open.md" "Open"\n  > ```\n',
+            "- Item\n\n  > ```mermaid\n  > flowchart LR\n"
+            '  >   click Open href "#open" "Open"\n  > ```\n',
+        ),
+        (
+            '```mermaid\r\nflowchart LR\r\n  click Open "open.md";\r\n```\r\n',
+            '```mermaid\r\nflowchart LR\r\n  click Open "#open";\r\n```\r\n',
+        ),
+    ],
+    ids=["document-level", "indented-fence", "nested-containers", "crlf"],
+)
+def test_a_diagram_click_destination_is_rewritten_between_its_quotes(
+    text: str, expected: str
+) -> None:
+    assert "".join(rewritten_lines(text)) == expected
+
+
+def test_a_diagram_click_rewrite_keeps_one_entry_per_source_line() -> None:
+    text = (
+        '```mermaid\nflowchart LR\n  click Open "open.md"\n  click Shut "shut.svg"\n'
+        "```\n"
+    )
+    published = rewritten_lines(text)
+    assert len(published) == len(lines(text))
+    assert published[2] == '  click Open "#open"\n'
+    assert published[3] == '  click Shut "shut.svg"\n'
+
+
+def test_a_diagram_click_outside_the_selection_keeps_its_source_path() -> None:
+    text = (
+        '# Kept\n\n```mermaid\nflowchart LR\n  click Open "open.md"\n```\n\n'
+        '# Left\n\n```mermaid\nflowchart LR\n  click Open "open.md"\n```\n'
+    )
+    tokens = parse(text)
+    published = rewrite(
+        lines(text),
+        tokens,
+        list(section(tokens, "kept") or ()),
+        {("open.md", None): "open"},
+        "lifecycle.md",
+        {},
+    )
+    assert published[4] == '  click Open "#open"\n'
+    assert published[11] == '  click Open "open.md"\n'
