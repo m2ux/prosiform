@@ -15,3 +15,11 @@ Plan changes arising in delivery. Allowance: none, so every non-trivial change i
 | The design's Examples clause (`Link classification and resource handling — Examples`, in `2026-10-17-prosiform-v1/design.md`) says fenced code blocks are never followed, which a `mermaid` click now contradicts. | The design names no diagram rule. W04 carries `invocation.md` and the profile only; the design clause needs an owner, likely W04 or a new row. |
 | A diagram click naming a non-Markdown file under the root, such as `diagram.png`, is now a link use, so the published bundle raises the resource warning as an inline link to it does. | AC6 (W02) states such a click is published as written and opens nothing; whether it also warns is for W02's fixture to settle. |
 | `Click.offset` is relative to the line the fence holds, which omits the container markers and fence indent of the document line. | W02 maps it onto the physical line it rewrites: the fence line is the trailing text of the document line. |
+
+## Resolved
+
+| Held change | Decision |
+| --- | --- |
+| The design's Examples clause | W04 owns it: AC9 on #326 now holds both `invocation.md` and the design's Examples rule. |
+| The resource warning on a non-Markdown click | The warning stays, as for an inline link; W02's fixture records it. |
+| `Click.offset` coordinates | W02's work item states the mapping onto the physical line. |
