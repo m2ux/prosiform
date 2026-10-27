@@ -1,8 +1,8 @@
 # W02 Validation
 
-**Branch:** `i05/e01/w02-trace-scorer-and-failure` at `c4f213f2`, cut from `i05/e01/main` at `d35ef693`. **Pull request:** [#336](https://github.com/m2ux/prosiform/pull/336).
+**Branch:** `i05/e01/w02-trace-scorer-and-failure` at `035a2854`, cut from `i05/e01/main` at `d35ef693`. **Pull request:** [#336](https://github.com/m2ux/prosiform/pull/336).
 
-Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The scorer tests are `evals/diagram-following/test_score.py`, beside the corpus reader and run by `make harness`; 17 pass, alongside the corpus's 26.
+Every check ran in the task worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. The scorer tests are `evals/diagram-following/test_score.py`, beside the corpus reader and run by `make harness`; 23 pass, alongside the corpus's 26.
 
 ## T1 A run walking its scenario path with every action done passes
 
@@ -21,11 +21,12 @@ One hand-made trace per class, each with every entered state's action done, give
 | wrong branch | branching, high-severity | Intake, Triage, Queue, Resolve | 2 |
 | skipped state | linear, straight-through | Plan, Test, Ship | 1 |
 | invented state | linear, straight-through | Plan, Build, Deploy, Ship | 2 |
+| invalid transition | linear, straight-through | Plan, Build, Plan | 2 |
 | loop miscount | looping, two-rounds | Draft, Review, Revise, Check, Review, Publish | 5 |
 | missing action | linear, straight-through | the path, `build.txt` absent and `ship.txt` holding other content | 1 |
 | unfinished | linear, straight-through | Plan, Build | 2 |
 
-Loop miscount is also reached by taking the loop once more than `no-rework` requires (divergence 2), and stands apart from wrong branch because the decision it diverges at counts `trace.log` lines. Unfinished is also reached by an absent `trace.log` and an empty one (divergence 0). A state entered after the terminal one (`Ship` then `Plan`) and a step back no walk reaches (`Build` then `Plan`) are invented states.
+Invalid transition is also reached by a state after the terminal one (`linear` `Ship` then `Plan`, index 4; `looping` `Publish` then `Review`, index 3), a step back (`looping` `Check` then `Draft`, index 4) and an immediate repeat (`linear` `Build` twice, index 2; `looping` `Review` twice, index 2). The `looping` repeat is reachable around the cycle and is still not a skipped state, while `Review` then `Check` on `looping`, omitting `Revise`, is (index 2). Loop miscount is also reached by taking the loop once more than `no-rework` requires (index 2), and stands apart from wrong branch because the decision it diverges at counts `trace.log` lines. Unfinished is also reached by an absent `trace.log` and an empty one (index 0).
 
 ## T3 Trace reading and the verdict record
 
@@ -37,4 +38,4 @@ Loop miscount is also reached by taking the loop once more than `no-rework` requ
 
 **Covers:** none. **Result:** ✓
 
-`make check` exits `0` at `c4f213f2`: lock, lint, format and typecheck (over `evals`, the scorer included), `test` (1176 passed), `harness` (704 passed), `corpus`, smoke, layout (`evals/` — 44 tracked files), tables, links, vocabulary, invocation, conformance and independence.
+`make check` exits `0` at `035a2854`: lock, lint, format and typecheck (over `evals`, the scorer included), `test` (1176 passed), `harness` (710 passed), `corpus`, smoke, layout (`evals/` — 44 tracked files), tables, links, vocabulary, invocation, conformance and independence.
