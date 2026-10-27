@@ -13,6 +13,8 @@ The finding that raised it is in the [W01–W03 validation](../2026-10-27-339-i0
 | Artifact | What it holds |
 | --- | --- |
 | [w04.md](w04.md) | W04's plan: the `#35;<slug>` spelling of a rewritten sequence destination, and where it lives. |
+| [validation.md](validation.md) | The decision, the Mermaid 11.16.0 render evidence and the checks run on the pull request head. |
+| [render-menus.py](render-menus.py) | The script that renders a bundle's diagrams with mermaid-cli and reports each participant's menu. |
 
 ## Links
 
