@@ -90,7 +90,10 @@ because a reader of the bundle has no use for authoring syntax.
 A Mermaid diagram's link destination is a link written inside a code
 example, and the bundle rewrites it as it rewrites any other: the
 destination's characters take the destination its target was given,
-and every other byte of the fence is carried as written. A diagram
+and every other byte of the fence is carried as written. The anchor is
+spelled as the line's form spells it: a quoted destination opens it
+with `#`, and a sequence diagram's menu entry with `#35;`, the entity
+Mermaid renders as `#` where a bare one would open a comment. A diagram
 link destination the bundle compiled nothing for, such as one outside
 the root or one naming no Markdown document, keeps the text its author
 wrote.
@@ -408,7 +411,7 @@ def rewrite(
         held = lines(fence.content)
         first = 0 if fence.map is None else fence.map[0] + 1
         for click in clicks(fence):
-            given = target(path, click.destination, "", assigned, root)
+            given = target(path, click.destination, "", assigned, root, click.anchor)
             if given is not None:
                 at = click.line - 1
                 written[at] = clicked(written[at], held[at - first], click, given)
@@ -435,12 +438,15 @@ def target(
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
     root: str = "",
+    anchor: str = ANCHOR,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
     because the closure selected what the link named and the group
-    emitting it recorded the target it answers to.
+    emitting it recorded the target it answers to. Its destination is
+    that heading's slug behind the anchor spelling the link's form
+    writes, `#` wherever the link is not a sequence diagram's menu entry.
 
     A withheld link under the allowed source root takes its target's
     path from the invocation working directory, so the run that
@@ -455,7 +461,7 @@ def target(
     """
     found = bundled(path, destination, opening, root)
     if found is not None:
-        return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
+        return f"{anchor}{assigned[(found.path, found.fragment)]}"
     deferred = withholding_target(path, destination, opening, root)
     if deferred is None:
         return None

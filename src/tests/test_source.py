@@ -630,6 +630,28 @@ def test_a_sequence_menu_value_that_is_no_string_names_nothing() -> None:
     assert [one for one, _at in diagram_links(written)] == ["s.md"]
 
 
+@pytest.mark.parametrize(
+    ("written", "kind", "anchor"),
+    [
+        ('click A href "a.md"', "flowchart LR", "#"),
+        ('link Cls "a.md"', "classDiagram", "#"),
+        ("link Alice: Spec @ a.md", "sequenceDiagram", "#35;"),
+        ('links Alice: {"Spec": "a.md", "Notes": "b.md"}', "sequenceDiagram", "#35;"),
+    ],
+)
+def test_each_diagram_link_form_spells_its_anchor(
+    written: str, kind: str, anchor: str
+) -> None:
+    fence = next(
+        token
+        for token in parse(f"```mermaid\n{kind}\n{written}\n```\n")
+        if token.type == "fence"
+    )
+    found = list(clicks(fence))
+    assert found
+    assert {click.anchor for click in found} == {anchor}
+
+
 def test_each_sequence_menu_destination_is_one_use_on_its_line() -> None:
     text = (
         "```mermaid\n"

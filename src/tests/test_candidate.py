@@ -310,6 +310,42 @@ def test_an_added_diagram_click_fails() -> None:
     assert refused(one).invariant == NO_NEW_LINKS
 
 
+SEQUENCED = """# Guide
+
+```mermaid
+sequenceDiagram
+    participant Open
+    link Open: The note @ note.md
+    links Open: {"Note": "note.md"}
+```
+"""
+
+
+def test_a_candidate_carrying_rewritten_sequence_menu_destinations_validates() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.validate()
+    assert "link Open: The note @ #35;note\n" in one.bundled
+    assert 'links Open: {"Note": "#35;note"}' in one.bundled
+
+
+def test_a_sequence_menu_entry_spelling_its_anchor_bare_fails() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace("@ #35;note", "@ #note")
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_sequence_menu_value_spelling_its_anchor_bare_fails() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('"#35;note"', '"#note"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_click_spelling_its_anchor_as_an_entity_fails() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('href "#note"', 'href "#35;note"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
 def test_reformatted_untouched_bytes_fail() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md"])
     one.bundled = one.bundled.replace(

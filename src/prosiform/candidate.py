@@ -190,13 +190,26 @@ class Use:
     in the same shape and are compared as the same thing. A diagram's
     link destination is the text its line writes, which no parser
     resolves, and it shows no text and carries no title.
+
+    The anchor is the spelling its form writes a heading anchor's `#`
+    with, which a diagram's sequence menu entry writes as an entity. It
+    is no part of the comparison, because the destination already holds
+    it.
     """
 
-    def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
+    def __init__(
+        self,
+        kind: str,
+        text: str,
+        title: str,
+        destination: str,
+        anchor: str = ANCHOR,
+    ) -> None:
         self.kind = kind
         self.text = text
         self.title = title
         self.destination = destination
+        self.anchor = anchor
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Use) and self.parts() == other.parts()
@@ -303,7 +316,7 @@ def carried(
             yield from uses(token)
         elif token.type == FENCE:
             for click in clicks(token):
-                yield (), 0, Use(CLICK, "", "", click.destination)
+                yield (), 0, Use(CLICK, "", "", click.destination, click.anchor)
 
 
 def intended(
@@ -345,8 +358,9 @@ def intended(
 
     A diagram's link destination opens with nothing, so it is compiled
     wherever it resolves to a Markdown document under the root and is
-    never withheld. The anchor it takes is the one the bundle writes
-    between its quotes, which no parser normalizes.
+    never withheld. The anchor it takes is the one the bundle writes in
+    the line, which no parser normalizes, spelled as the line's form
+    spells it.
     """
     if one.kind == IMAGE:
         return one
@@ -369,7 +383,7 @@ def intended(
             f"the reference {one.destination!r} in {path!r} was assigned no "
             f"destination",
         )
-    anchor = f"{ANCHOR}{assigned}"
+    anchor = f"{one.anchor}{assigned}"
     return Use(
         one.kind,
         one.text,
