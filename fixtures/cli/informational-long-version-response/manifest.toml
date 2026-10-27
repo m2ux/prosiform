@@ -1,0 +1,16 @@
+description = "The version response to the long option is the response to -v: it reports the tool and the profile identifier, and the version between them is the build's own, so the response is stated as the text it carries rather than as bytes."
+
+clauses = [
+  "CLI contract — -v, report tool version and profile identifier",
+  "Markdown and source-heading profile, skill-markdown-v2",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--version"]
+
+[expected]
+exit_status = 0
+stdout_contains = ["pf ", "(skill-markdown-v2)"]
+diagnostics = []
