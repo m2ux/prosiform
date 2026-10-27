@@ -16,6 +16,9 @@ The epic is four tasks. W01 reads diagram links and counts them against the budg
 | [W02 work item](w02.md) | Diagram destinations rewritten on emission |
 | [W03 work item](w03.md) | Diagram uses held by candidate validation |
 | [W04 work item](w04.md) | The `skill-markdown-v2` profile and its bundling rule |
+| [W05 work item](w05.md) | The end-to-end specimen: a diagram reached through a linked document |
+| [Specimen](specimen/) | The specimen source tree and the bundle `pf guide.md` published from `i05/e00/main` |
+| [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
 
 ## Decisions
 
