@@ -19,6 +19,7 @@ The evidence that raised both rows is in the [W05–W08 record](../2026-10-27-33
 | --- | --- |
 | [w09.md](w09.md) | W09's plan: each Gantt task clicked in a running page and the URL it opens held. |
 | [w10.md](w10.md) | W10's plan: a Kanban ticket link or an HTML label anchor naming local Markdown refused. |
+| [validation.md](validation.md) | The checks and the render run on the pull request head and their results. |
 
 ## Links
 
