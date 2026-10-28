@@ -16,9 +16,17 @@ The theme or proposals board the request names.
 
 **Inputs:** Board owner and either a theme name or the proposals-board selection.
 
-1. Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
-2. Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
-3. Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
+#### 1. Find the Named Board
+
+Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+
+#### 2. Report a Missing Board Selection
+
+Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
+
+#### 3. Return the Selected Board Number
+
+Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
 
 ### *Copy* Project Board
 
@@ -26,10 +34,15 @@ A missing theme board, or a missing proposals board.
 
 **Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
 
-1. When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
-2. When the selected theme board is absent:
-   - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
-   - Require the new theme's label and board before an initiative takes that theme.
+#### 1. Create an Absent Proposals Board
+
+When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
+
+#### 2. Create an Absent Theme Board
+
+When the selected theme board is absent:
+- Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
+- Require the new theme's label and board before an initiative takes that theme.
 
 ### *Ensure* Project Board
 
@@ -37,13 +50,21 @@ The theme or proposals board the request names, created when it is absent.
 
 **Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
 
-1. Apply [Select Project Board](#select-project-board) with the owner and the theme name or proposals selection.
-   - On a missing-selection result, return it to the caller and stop.
-   - On a selected board, return its owner and number and stop.
-2. When the board is absent:
-   - For a theme a proposal derives, apply [Read Tracker Issue](issue.md#read-tracker-issue) for the originating proposal's identity. Return unresolved provenance and stop when it cannot be read.
-   - Apply [Copy Project Board](#copy-project-board) with the owner, repository, selected board kind, theme title and that proposal record when applicable.
-3. Return the owner and the board number the copy created.
+#### 1. Select the Requested Board
+
+Apply [Select Project Board](#select-project-board) with the owner and the theme name or proposals selection.
+- On a missing-selection result, return it to the caller and stop.
+- On a selected board, return its owner and number and stop.
+
+#### 2. Copy an Absent Requested Board
+
+When the board is absent:
+- For a theme a proposal derives, apply [Read Tracker Issue](issue.md#read-tracker-issue) for the originating proposal's identity. Return unresolved provenance and stop when it cannot be read.
+- Apply [Copy Project Board](#copy-project-board) with the owner, repository, selected board kind, theme title and that proposal record when applicable.
+
+#### 3. Return the Copied Board Number
+
+Return the owner and the board number the copy created.
 
 ### *Create* Proposals Board
 
@@ -51,12 +72,29 @@ A new proposals board linked to the supplied repository.
 
 **Inputs:** Board owner and repository.
 
-1. Run [Find Board Template](#find-board-template) with the owner and the exact title `Proposals Template`.
-2. Use the returned number as the copy source.
-3. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title `Proposals`.
-4. Retain the new board number. The copy meets [Proposals](#proposals).
-5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
-6. Return the new board number after linking succeeds.
+#### 1. Find the Proposals Template
+
+Run [Find Board Template](#find-board-template) with the owner and the exact title `Proposals Template`.
+
+#### 2. Use the Proposals Template as Source
+
+Use the returned number as the copy source.
+
+#### 3. Copy the Proposals Template
+
+Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title `Proposals`.
+
+#### 4. Retain the Proposals Board Number
+
+Retain the new board number. The copy meets [Proposals](#proposals).
+
+#### 5. Link the Proposals Board to the Repository
+
+Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+
+#### 6. Return the Proposals Board Number
+
+Return the new board number after linking succeeds.
 
 ### *Create* Theme Board
 
@@ -64,13 +102,33 @@ A new theme board linked to the supplied repository.
 
 **Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
 
-1. Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
-2. Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
-3. Use the returned number as the copy source.
-4. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
-5. Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
-6. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
-7. Return the new board number after linking succeeds.
+#### 1. Require the Originating Proposal
+
+Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
+
+#### 2. Find the Initiative Template
+
+Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+
+#### 3. Use the Initiative Template as Source
+
+Use the returned number as the copy source.
+
+#### 4. Copy the Initiative Template
+
+Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
+
+#### 5. Retain the Theme Board Number
+
+Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+
+#### 6. Link the Theme Board to the Repository
+
+Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+
+#### 7. Return the Theme Board Number
+
+Return the new board number after linking succeeds.
 
 ### *Place* Issue on Board
 
@@ -78,11 +136,25 @@ One issue's membership and initial status.
 
 **Inputs:** Board owner and number, repository, issue number, output file and selected initial status.
 
-1. Apply [Read Tracker Issue](issue.md#read-tracker-issue) with the repository, issue number and output file for the complete JSON, and take the issue id from it.
-2. Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the supplied board.
-3. Run [Add Issue to Board](#add-issue-to-board) with that issue id.
-4. Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
-5. Run [Fetch Board Item](#fetch-board-item) for the saved item.
+#### 1. Read the Issue to Place
+
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) with the repository, issue number and output file for the complete JSON, and take the issue id from it.
+
+#### 2. Fetch the Placement Status Options
+
+Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the supplied board.
+
+#### 3. Add the Issue to the Board
+
+Run [Add Issue to Board](#add-issue-to-board) with that issue id.
+
+#### 4. Set the Placed Item Status
+
+Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
+
+#### 5. Confirm the Placed Board Item
+
+Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
 ### *Read* Board State
 
@@ -90,9 +162,17 @@ The selected board's items and status fields.
 
 **Inputs:** Existing board owner and number, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns them, whether the caller ran that operation or carries its result.
 
-1. Run [Find Status Field](#find-status-field) for the board number.
-2. Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
-3. Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
+#### 1. Find the Board Status Field
+
+Run [Find Status Field](#find-status-field) for the board number.
+
+#### 2. Fetch Board Items with Status
+
+Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
+
+#### 3. Return the Board State
+
+Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
 ### *Read* Board Assignee
 
@@ -100,8 +180,13 @@ The authenticated login available for board assignments.
 
 **Inputs:** Authenticated repository access.
 
-1. Run [Find User](#find-user).
-2. Return its login for the caller's assignment decisions.
+#### 1. Find the Board User
+
+Run [Find User](#find-user).
+
+#### 2. Return the Assignee Login
+
+Return its login for the caller's assignment decisions.
 
 ### *Read* Board Configuration
 
@@ -109,9 +194,17 @@ One board's field definitions and requested item state.
 
 **Inputs:** Board owner and number, output paths and optional item identity.
 
-1. Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
-2. When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
-3. Return the field definitions and requested current item.
+#### 1. Fetch the Configured Board Fields
+
+Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
+
+#### 2. Fetch the Requested Board Item
+
+When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
+
+#### 3. Return the Board Configuration
+
+Return the field definitions and requested current item.
 
 ### *Update* Item Status
 
@@ -119,9 +212,17 @@ One board item with a confirmed status selection applied.
 
 **Inputs:** Board and item identities, current Status field and option ids, selected status and request body file.
 
-1. Run [Set Item Status](#set-item-status) with the supplied selection and ids.
-2. Read the item through [Fetch Board Item](#fetch-board-item).
-3. Return its confirmed state or a discrepancy for the caller to resolve.
+#### 1. Set the Requested Item Status
+
+Run [Set Item Status](#set-item-status) with the supplied selection and ids.
+
+#### 2. Re-Read the Updated Board Item
+
+Read the item through [Fetch Board Item](#fetch-board-item).
+
+#### 3. Return the Confirmed Item Status
+
+Return its confirmed state or a discrepancy for the caller to resolve.
 
 ## Fields
 

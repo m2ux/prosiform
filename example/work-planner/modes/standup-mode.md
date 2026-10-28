@@ -10,31 +10,42 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 ## Procedure
 
-1. **Select the scope.**
-   Apply [Select Project Board](../artifacts/board.md#select-project-board) for the requested board, each requested board when the scope is all, or the theme board of the named initiative.
-   - Retain the selected window and initiative filter.
-   - Complete steps 2–6 separately for each selected board.
-2. **Bring delivery current.**
-   - Use the delivery results and board state a caller passed in, where this run follows one that already brought the board current. A request made directly by the user supplies none, so the checkpoint is absent.
-   - If the checkpoint is absent:
-     - Read the board through [Read Board State](../artifacts/board.md#read-board-state).
-     - Treat each selected initiative's delivery state as needing refresh.
-   - For initiatives with known delivery changes or unknown freshness, follow [⇉ Sync Mode](sync-mode.md) for the affected initiatives on that board.
-   - Resume the read step after their delivery results are saved.
-   - Report a blocker that prevents a current summary.
-   - Retain it as a gap if presenting a partial report.
-3. **Read the evidence.**
-   Apply [Read Board Delivery Evidence](../artifacts/delivery-evidence.md#read-board-delivery-evidence) with the selected board owner and number, authenticated access, output paths and destination snapshot files.
-   - Retain incomplete evidence as a gap.
-4. **Compose.**
-   Apply [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the returned board items, pull request records and complete issue-link snapshot, the selected window and initiative filter, and output paths.
-5. **Repair.**
-   For an epic the report names with an unreadable Work Breakdown, apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) as the validator and its further inputs, the epic identity, current JSON and output body path, the [epic template](../artifacts/epic-issue-body.md#template) and required related evidence.
-   - If it confirms a saved correction, repeat steps 3–6, retaining the selected board, window and initiative filter.
-   - If it reports a blocker or no correction, carry the unresolved finding to the report without repeating the same repair.
-6. **Report.**
-   Present the returned report verbatim in a fenced block for copying.
-   - Put unresolved findings and gaps beneath it.
+### 1. Select the Scope
+
+Apply [Select Project Board](../artifacts/board.md#select-project-board) for the requested board, each requested board when the scope is all, or the theme board of the named initiative.
+- Retain the selected window and initiative filter.
+- Complete [2. Bring Delivery Current](#2-bring-delivery-current) through [6. Report](#6-report) separately for each selected board.
+
+### 2. Bring Delivery Current
+
+- Use the delivery results and board state a caller passed in, where this run follows one that already brought the board current. A request made directly by the user supplies none, so the checkpoint is absent.
+- If the checkpoint is absent:
+  - Read the board through [Read Board State](../artifacts/board.md#read-board-state).
+  - Treat each selected initiative's delivery state as needing refresh.
+- For initiatives with known delivery changes or unknown freshness, follow [⇉ Sync Mode](sync-mode.md) for the affected initiatives on that board.
+- Resume [3. Read the Evidence](#3-read-the-evidence) after their delivery results are saved.
+- Report a blocker that prevents a current summary.
+- Retain it as a gap if presenting a partial report.
+
+### 3. Read the Evidence
+
+Apply [Read Board Delivery Evidence](../artifacts/delivery-evidence.md#read-board-delivery-evidence) with the selected board owner and number, authenticated access, output paths and destination snapshot files.
+- Retain incomplete evidence as a gap.
+
+### 4. Compose
+
+Apply [Compose Standup Report](../artifacts/standup-report.md#compose-standup-report) with the returned board items, pull request records and complete issue-link snapshot, the selected window and initiative filter, and output paths.
+
+### 5. Repair
+
+For an epic the report names with an unreadable Work Breakdown, apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) as the validator and its further inputs, the epic identity, current JSON and output body path, the [epic template](../artifacts/epic-issue-body.md#template) and required related evidence.
+- If it confirms a saved correction, repeat [3. Read the Evidence](#3-read-the-evidence) through [6. Report](#6-report), retaining the selected board, window and initiative filter.
+- If it reports a blocker or no correction, carry the unresolved finding to the report without repeating the same repair.
+
+### 6. Report
+
+Present the returned report verbatim in a fenced block for copying.
+- Put unresolved findings and gaps beneath it.
 
 ## Outcomes
 

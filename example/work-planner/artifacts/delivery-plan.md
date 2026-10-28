@@ -16,13 +16,21 @@ One delivery plan from supplied board and delivery evidence.
 
 **Inputs:** Board items, pull request records, project checkout, epic-base names, resolved off-board issue files, output directory and optional record date.
 
-1. Run [Compute Available Work](#compute-available-work), mapping each supplied input to its named command parameter.
-2. For each unresolved issue reference the plan returns:
-   - Apply [Read Tracker Issue](issue.md#read-tracker-issue) with its repository and number into a file in the output directory.
-   - Add the returned file to the resolved off-board issue files.
-   - Run Compute Available Work again with every resolved off-board issue file, retaining the other inputs.
-   - Repeat while a reference remains that no read has failed. An unavailable issue stays an unresolved reference.
-3. Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch.
+#### 1. Compute the Available Work
+
+Run [Compute Available Work](#compute-available-work), mapping each supplied input to its named command parameter.
+
+#### 2. Resolve Each Unresolved Reference
+
+For each unresolved issue reference the plan returns:
+- Apply [Read Tracker Issue](issue.md#read-tracker-issue) with its repository and number into a file in the output directory.
+- Add the returned file to the resolved off-board issue files.
+- Run Compute Available Work again with every resolved off-board issue file, retaining the other inputs.
+- Repeat while a reference remains that no read has failed. An unavailable issue stays an unresolved reference.
+
+#### 3. Return the Available Work Plan
+
+Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch.
 
 ## Fields
 

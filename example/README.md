@@ -8,14 +8,15 @@ Run the commands from the repository root after [installation](../README.md#inst
 
 ### Input
 
-The [planning procedure](work-planner/modes/plan-mode.md) links the documents its publish step reaches:
+The [planning procedure](work-planner/modes/plan-mode.md) links the documents its step [6. Publish](work-planner/modes/plan-mode.md#6-publish) reaches:
 
 ```markdown
-6. **Publish.**
-   Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [interview](../rules.md), the proposal the recommended answer.
-   - Take the positive integer the user confirms for each epic.
-   - Follow [Initiative Publication](../protocols/initiative-publication.md) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](../artifacts/board-queue.md#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
-   - Put each blocker it returns to the user.
+### 6. Publish
+
+Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [interview](../rules.md), the proposal the recommended answer.
+- Take the positive integer the user confirms for each epic.
+- Follow [Initiative Publication](../protocols/initiative-publication.md) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](../artifacts/board-queue.md#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
+- Put each blocker it returns to the user.
 ```
 
 ### Command
@@ -47,14 +48,16 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 ```
 
-Its publish step reads:
+Its step [6. Publish](work-planner/modes/plan-mode.md#6-publish) reads:
 
 ```markdown
-6. **Publish.**
-   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
-   - Take the positive integer the user confirms for each epic.
-   - Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
-   - Put each blocker it returns to the user.
+### 6. Publish
+
+Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
+
+- Take the positive integer the user confirms for each epic.
+- Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
+- Put each blocker it returns to the user.
 ```
 
 The four documents the step links arrive in the bundle, and their headings are destinations its links point at. A link to a whole document points at the heading the bundle gives it, here `Rules` and `Initiative Publication`.
@@ -73,15 +76,17 @@ The bundle shows each of these constructs:
 - **A dispatched link.** The `⇉` mark is dropped, the link points at a sub-section of its step naming the Sync Mode bundle the run publishes beside this one, and Sync Mode contributes no content here:
 
   ```markdown
-  9. **Record delivered work.**
-     When work has landed:
-     - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
-     - For each unplaced task row it returns pending:
-       - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
-       - Repeat Sync Mode with the refreshed epic.
-     - Return the saved delivery state or blockers.
+  ### 9. Record Delivered Work
 
-  ### Dispatch Sync Mode
+  When work has landed:
+
+  - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
+  - For each unplaced task row it returns pending:
+    - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
+    - Repeat Sync Mode with the refreshed epic.
+  - Return the saved delivery state or blockers.
+
+  #### Dispatch Sync Mode
 
   Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
   ```
@@ -152,8 +157,9 @@ The selection retains its structural ancestors and rewrites the links the operat
 The [revision procedure](work-planner/modes/revise-mode.md) opens on a step that marks the skill guidelines with `¬`:
 
 ```markdown
-1. **Read the guidelines.**
-   Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md) whole before the first edit.
+### 1. Read the Guidelines
+
+Read the [shared skill guidelines](../../guidelines.md) and [¬ skill guidelines](../guidelines.md) whole before the first edit.
 ```
 
 ### Command
@@ -168,8 +174,9 @@ pf modes/revise-mode.md
 The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) carries the step with the deferral mark removed:
 
 ```markdown
-1. **Read the guidelines.**
-   Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
+### 1. Read the Guidelines
+
+Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
 ```
 
 The deferred link's destination names the guidelines from the working directory, so `pf guidelines.md` run from that directory compiles them. The guidelines contribute no content to this bundle. The shared guidelines lie outside the root, so their link keeps its authored destination.
@@ -180,13 +187,18 @@ The deferred link's destination names the guidelines from the working directory,
 
 ### Input
 
-The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step that links its `Board Reads` section, whose reads are numbered step sub-sections, in the order their results are taken:
+The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step sub-section that links its `Run Board Reads` section, whose reads are step sub-sections of their own, in the order their results are taken:
 
 ```markdown
-1. Apply the [board reads](#board-reads).
-2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+#### 1. Apply the Board Reads
 
-#### Board Reads
+Apply the [board reads](#run-board-reads).
+
+#### 2. Return the Board Delivery Evidence
+
+Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+#### Run Board Reads
 
 ##### 1. Read Board State
 
@@ -199,7 +211,7 @@ Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-
 
 ### Command
 
-The [board procedure](work-planner/modes/advance-mode.md) applies that operation in its read step:
+The [board procedure](work-planner/modes/advance-mode.md) applies that operation in its step [3. Read the Evidence](work-planner/modes/advance-mode.md#3-read-the-evidence):
 
 ```bash
 cd example/work-planner
@@ -208,13 +220,18 @@ pf modes/advance-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) points the link at the compiled `Board Reads` section, whose steps sit one level below it and whose calls point at their headings in the bundle:
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) points the link at the compiled `Run Board Reads` section, whose steps sit one level below it and whose calls point at their headings in the bundle:
 
 ```markdown
-1. Apply the [board reads](#board-reads).
-2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+##### 1. Apply the Board Reads
 
-##### Board Reads
+Apply the [board reads](#run-board-reads).
+
+##### 2. Return the Board Delivery Evidence
+
+Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+##### Run Board Reads
 
 ###### 1. Read Board State
 
@@ -251,7 +268,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's step [1. Fetch](work-planner/modes/hoist-mode.md#1-fetch) applies leads:
 
 ```markdown
 # Artifacts

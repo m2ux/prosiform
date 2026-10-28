@@ -27,10 +27,15 @@ The component and test row one task's plan declares.
 
 **Inputs:** Task id and the planning folder whose README registers that task's work item.
 
-1. Read the task's file in that folder, named as [Identity](#identity) states.
-   - Report a missing file to the caller.
-2. Return its [Component](#component) declaration and the Test row of its Work Breakdown.
-   - Report a missing declaration or Test row to the caller.
+#### 1. Read the Task Work-Item File
+
+Read the task's file in that folder, named as [Identity](#identity) states.
+- Report a missing file to the caller.
+
+#### 2. Return the Component and Test Row
+
+Return its [Component](#component) declaration and the Test row of its Work Breakdown.
+- Report a missing declaration or Test row to the caller.
 
 ## Fields
 

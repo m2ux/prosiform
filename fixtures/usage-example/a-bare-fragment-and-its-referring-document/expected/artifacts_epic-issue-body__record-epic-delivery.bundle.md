@@ -10,9 +10,15 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+##### 1. Run Sync Epic
+
+Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+
+- Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
+
+##### 2. Return the Epic Delivery Findings
+
+Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 ### Fields
 

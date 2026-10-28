@@ -8,30 +8,45 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ### Procedure
 
-1. **Open the review.**
-   For each epic base the epic's [Delivery Findings](#delivery-findings) name as unmerged with no open pull request, follow [Review Pull Request](#review-pull-request) with the repository, that epic base, those findings, the actual task merges into it, the epic's issue, the confirmed repository setting and the current epic and task-merge records.
-2. **Integrate each base.**
-   For each open epic pull request, follow [Epic Integration](#epic-integration) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, the epic base, the review pull request number and the run's verification evidence.
-   - Add the verification evidence it returns to the run's, which starts as the criterion verification evidence the caller supplied.
-   - Keep a draft awaiting the user's ready mark, or a blocker, as pending.
-   - While any epic base remains unmerged, continue at step 6.
-3. **Refresh the records.**
-   Apply [Read Delivery Evidence](#read-delivery-evidence) with the repositories and initiative prefix, the epic's current JSON, authenticated access and destination snapshot files.
-   - Apply [Record Epic Delivery](#record-epic-delivery) with the epic JSON, the returned pull request records and complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
-4. **Close the epic.**
-   Follow [Issue Closure](#issue-closure) for the epic with the confirmed repository setting, the run's verification evidence and project checkout.
-5. **Record the initiative.**
-   Apply [Read Tracker Issue](#read-tracker-issue) for the initiative and every epic it links.
-   - Apply [Record Initiative Delivery](#record-initiative-delivery) with the initiative JSON, every linked epic's current JSON and an output body file.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
-   - Apply [Record Verified Criteria](#record-verified-criteria) with the repository, the criteria its [Delivery Findings](#delivery-findings-1) name as ready to verify, the saved initiative JSON and body, those findings, delivery revisions, named instruments, project checkout, the run's verification evidence, output body file and every linked epic record.
-   - Add the verification evidence it returns to the run's.
-6. **Return the initiative's findings.**
-   Every exit from this procedure, a blocker a followed protocol returns included, continues here.
-   - Apply [Read Tracker Issue](#read-tracker-issue) for the initiative and every epic it links.
-   - Apply [Record Initiative Delivery](#record-initiative-delivery) with the initiative JSON and every linked epic's current JSON, without an output body file.
-   - Return to the caller the epic's closure result when step 4 ran, the initiative's identity, its verified criteria, the run's verification evidence with the revision each was taken on, the initiative's current [Delivery Findings](#delivery-findings-1) Record Initiative Delivery returned, and each pending finding and blocker.
+#### 1. Open the Review
+
+For each epic base the epic's [Delivery Findings](#delivery-findings) name as unmerged with no open pull request, follow [Review Pull Request](#review-pull-request) with the repository, that epic base, those findings, the actual task merges into it, the epic's issue, the confirmed repository setting and the current epic and task-merge records.
+
+#### 2. Integrate Each Base
+
+For each open epic pull request, follow [Epic Integration](#epic-integration) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, the epic base, the review pull request number and the run's verification evidence.
+
+- Add the verification evidence it returns to the run's, which starts as the criterion verification evidence the caller supplied.
+- Keep a draft awaiting the user's ready mark, or a blocker, as pending.
+- While any epic base remains unmerged, continue at [6. Return the Initiative's Findings](#6-return-the-initiatives-findings).
+
+#### 3. Refresh the Records
+
+Apply [Read Delivery Evidence](#read-delivery-evidence) with the repositories and initiative prefix, the epic's current JSON, authenticated access and destination snapshot files.
+
+- Apply [Record Epic Delivery](#record-epic-delivery) with the epic JSON, the returned pull request records and complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
+- Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
+
+#### 4. Close the Epic
+
+Follow [Issue Closure](#issue-closure) for the epic with the confirmed repository setting, the run's verification evidence and project checkout.
+
+#### 5. Record the Initiative
+
+Apply [Read Tracker Issue](#read-tracker-issue) for the initiative and every epic it links.
+
+- Apply [Record Initiative Delivery](#record-initiative-delivery) with the initiative JSON, every linked epic's current JSON and an output body file.
+- Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
+- Apply [Record Verified Criteria](#record-verified-criteria) with the repository, the criteria its [Delivery Findings](#delivery-findings-1) name as ready to verify, the saved initiative JSON and body, those findings, delivery revisions, named instruments, project checkout, the run's verification evidence, output body file and every linked epic record.
+- Add the verification evidence it returns to the run's.
+
+#### 6. Return the Initiative's Findings
+
+Every exit from this procedure, a blocker a followed protocol returns included, continues here.
+
+- Apply [Read Tracker Issue](#read-tracker-issue) for the initiative and every epic it links.
+- Apply [Record Initiative Delivery](#record-initiative-delivery) with the initiative JSON and every linked epic's current JSON, without an output body file.
+- Return to the caller the epic's closure result when [4. Close the Epic](#4-close-the-epic) ran, the initiative's identity, its verified criteria, the run's verification evidence with the revision each was taken on, the initiative's current [Delivery Findings](#delivery-findings-1) Record Initiative Delivery returned, and each pending finding and blocker.
 
 ## Review Pull Request
 
@@ -41,23 +56,33 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Find.**
-   Use the review number in the supplied delivery findings.
-   - When it is absent:
-     - Apply [Locate Review Pull Request](#locate-review-pull-request) with the repository and epic base as head.
-     - Use its returned number or absence result.
-   - Fetch an existing review through [Read Pull Request State](#read-pull-request-state).
-2. **Populate.**
-   Pass the existing body when present and the actual task merges into the base to [Populate Review Body](#populate-review-body).
-3. **Publish.**
-   For an existing review, or a base whose [State](#state) calls for one, pass the returned file to [Publish Pull Request](#publish-pull-request).
-   - For an existing review, supply its number.
-   - For a new review, supply the epic kind, the epic base as head with the target [Other Pull Requests](#other-pull-requests) gives it, the epic's issue, the repository setting the caller confirmed and a link-snapshot destination.
-   - Return a discrepancy Publish Pull Request reports to the caller.
-   - When the base has no review and its State calls for none, return the absence result to the caller.
-4. **Record.**
-   Apply [Record Epic Delivery](#record-epic-delivery) with the current epic and the task-merge records, including the review state Publish Pull Request returned.
-   - Return its updated body and [Delivery Findings](#delivery-findings) with the review identity to the caller.
+#### 1. Find
+
+Use the review number in the supplied delivery findings.
+
+- When it is absent:
+  - Apply [Locate Review Pull Request](#locate-review-pull-request) with the repository and epic base as head.
+  - Use its returned number or absence result.
+- Fetch an existing review through [Read Pull Request State](#read-pull-request-state).
+
+#### 2. Populate
+
+Pass the existing body when present and the actual task merges into the base to [Populate Review Body](#populate-review-body).
+
+#### 3. Publish
+
+For an existing review, or a base whose [State](#state) calls for one, pass the returned file to [Publish Pull Request](#publish-pull-request).
+
+- For an existing review, supply its number.
+- For a new review, supply the epic kind, the epic base as head with the target [Other Pull Requests](#other-pull-requests) gives it, the epic's issue, the repository setting the caller confirmed and a link-snapshot destination.
+- Return a discrepancy Publish Pull Request reports to the caller.
+- When the base has no review and its State calls for none, return the absence result to the caller.
+
+#### 4. Record
+
+Apply [Record Epic Delivery](#record-epic-delivery) with the current epic and the task-merge records, including the review state Publish Pull Request returned.
+
+- Return its updated body and [Delivery Findings](#delivery-findings) with the review identity to the caller.
 
 ## Epic Integration
 
@@ -67,34 +92,45 @@ Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Prepare the review.**
-   - Apply [Confirm Repository Auto-Close](#confirm-repository-auto-close) for the repository.
-   - Follow [Review Pull Request](#review-pull-request) with the actual task merges, the epic's issue and that confirmed setting.
-   - Follow [Change Overview](#change-overview) with the repository, the project checkout and the review pull request number.
-     - On a changed-head finding, follow it again with the same inputs.
-   - Read the pull request through [Read Pull Request State](#read-pull-request-state).
-   - When it is a draft, put the ready mark [State](#state) leaves to the user as an [interview](#rules), naming the epic standing in review on its board.
-   - Return a draft still awaiting that decision to the caller, open.
-2. **Refresh the evidence.**
-   - Apply [Update Epic Base](#update-epic-base) with the project checkout and the epic base.
-     - Return a conflict or failure to the caller.
-   - Apply [Read Delivery Evidence](#read-delivery-evidence) with the repository, initiative prefix and current epic JSON.
-   - Apply [Record Verified Criteria](#record-verified-criteria) for the epic, with its criterion ids, current issue JSON and body, the delivery findings, pull request records and complete issue-link snapshot Read Delivery Evidence returned, the updated epic base as delivery revision, the named instruments, the project checkout, the verification evidence the caller supplied and any this protocol took, and an output body file.
-     - Return the verification evidence it returns, with the revision each was taken on, to the caller with every result this protocol returns from here on.
-   - When Update Epic Base merged new content into the base:
-     - Repeat Review Pull Request with the current task merges.
-     - Repeat Change Overview with the repository, the project checkout and the same pull request number, which reads the updated head.
-3. **Check readiness.**
-   - Apply [Check Epic Readiness](#check-epic-readiness) with the current epic JSON, pull request records, complete issue-link snapshot and the verification evidence Record Verified Criteria returned.
-   - Apply [Fetch Merge Readiness](#fetch-merge-readiness) with the review pull request identity, delivery kind epic, the epic base, the long-lived branch [Epic Bases](#epic-bases) names for it as target, and output paths.
-   - Return to the caller each blocker the two report, leaving the pull request open.
-4. **Merge or hand off.**
-   Pass the confirmed epic readiness, the verified head and target requirements Fetch Merge Readiness returned, the repository setting and the passing evidence to [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind epic, without asking for further confirmation.
-   - Return its handoff to the caller when a human reviewer must merge.
-   - On a refusal, repeat steps 2 and 3 once with refreshed inputs, then this step. Return a second refusal to the caller.
-5. **Confirm the result.**
-   Apply [Read Pull Request State](#read-pull-request-state) for the merged pull request.
-   - Return its merged state, head, target and merge commit to the caller.
+#### 1. Prepare the Review
+
+- Apply [Confirm Repository Auto-Close](#confirm-repository-auto-close) for the repository.
+- Follow [Review Pull Request](#review-pull-request) with the actual task merges, the epic's issue and that confirmed setting.
+- Follow [Change Overview](#change-overview) with the repository, the project checkout and the review pull request number.
+  - On a changed-head finding, follow it again with the same inputs.
+- Read the pull request through [Read Pull Request State](#read-pull-request-state).
+- When it is a draft, put the ready mark [State](#state) leaves to the user as an [interview](#rules), naming the epic standing in review on its board.
+- Return a draft still awaiting that decision to the caller, open.
+
+#### 2. Refresh the Evidence
+
+- Apply [Update Epic Base](#update-epic-base) with the project checkout and the epic base.
+  - Return a conflict or failure to the caller.
+- Apply [Read Delivery Evidence](#read-delivery-evidence) with the repository, initiative prefix and current epic JSON.
+- Apply [Record Verified Criteria](#record-verified-criteria) for the epic, with its criterion ids, current issue JSON and body, the delivery findings, pull request records and complete issue-link snapshot Read Delivery Evidence returned, the updated epic base as delivery revision, the named instruments, the project checkout, the verification evidence the caller supplied and any this protocol took, and an output body file.
+  - Return the verification evidence it returns, with the revision each was taken on, to the caller with every result this protocol returns from here on.
+- When Update Epic Base merged new content into the base:
+  - Repeat Review Pull Request with the current task merges.
+  - Repeat Change Overview with the repository, the project checkout and the same pull request number, which reads the updated head.
+
+#### 3. Check Readiness
+
+- Apply [Check Epic Readiness](#check-epic-readiness) with the current epic JSON, pull request records, complete issue-link snapshot and the verification evidence Record Verified Criteria returned.
+- Apply [Fetch Merge Readiness](#fetch-merge-readiness) with the review pull request identity, delivery kind epic, the epic base, the long-lived branch [Epic Bases](#epic-bases) names for it as target, and output paths.
+- Return to the caller each blocker the two report, leaving the pull request open.
+
+#### 4. Merge or Hand Off
+
+Pass the confirmed epic readiness, the verified head and target requirements Fetch Merge Readiness returned, the repository setting and the passing evidence to [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind epic, without asking for further confirmation.
+
+- Return its handoff to the caller when a human reviewer must merge.
+- On a refusal, repeat [2. Refresh the Evidence](#2-refresh-the-evidence) and [3. Check Readiness](#3-check-readiness) once with refreshed inputs, then this step. Return a second refusal to the caller.
+
+#### 5. Confirm the Result
+
+Apply [Read Pull Request State](#read-pull-request-state) for the merged pull request.
+
+- Return its merged state, head, target and merge commit to the caller.
 
 ## Issue Closure
 
@@ -104,18 +140,27 @@ Follow the [Procedure](#procedure-3), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Issue.**
-   - Apply [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
-   - Apply [Capture Issue Development](#capture-issue-development) for that issue.
-2. **Pull requests.**
-   Apply [Read Pull Request State](#read-pull-request-state) for every captured link, across repositories and all states.
-3. **Check delivery completion.**
-   Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, current JSON, complete Development snapshot, those pull request records and criterion verification evidence, adding the task's delivery result for a task and the project checkout for an epic.
-   - Return an incomplete or failed result to the caller before closure.
-4. **Close.**
-   Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
-   - On a changed link set or missing evidence, repeat from the issue step for the same issue.
-   - Report any unmerged link or unmet criterion.
+#### 1. Issue
+
+- Apply [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
+- Apply [Capture Issue Development](#capture-issue-development) for that issue.
+
+#### 2. Pull Requests
+
+Apply [Read Pull Request State](#read-pull-request-state) for every captured link, across repositories and all states.
+
+#### 3. Check Delivery Completion
+
+Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, current JSON, complete Development snapshot, those pull request records and criterion verification evidence, adding the task's delivery result for a task and the project checkout for an epic.
+
+- Return an incomplete or failed result to the caller before closure.
+
+#### 4. Close
+
+Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
+
+- On a changed link set or missing evidence, repeat from [1. Issue](#1-issue) for the same issue.
+- Report any unmerged link or unmet criterion.
 
 ## Change Overview
 
@@ -125,28 +170,41 @@ Follow the [Procedure](#procedure-4), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Prepare the evidence.**
-   Apply [Read Pull Request State](#read-pull-request-state) with the supplied repository and pull request number for its identity, title, base and head.
-   - Apply [Create Pull Request Worktree](#create-pull-request-worktree) with the repository, its checkout, the pull request number and that head.
-   - Return a changed-head finding to the caller.
-   - Apply [Measure Repository Change](#measure-repository-change) with the returned worktree, its head and the pull request's base.
-   - Return a freshness blocker to the caller before writing the overview.
-2. **Locate the record.**
-   Apply [Locate Planning Record](#locate-planning-record) with the pull request number.
-   - **Record found.**
-     - Take the returned folder path and its record identity.
-   - **No record.**
-     - Take a new overview record's identity and folder path, meeting [Layout](#layout), from the pull request's number and title.
-   - Apply [Populate Planning Record](#populate-planning-record) with that record identity and folder path.
-3. **Write the overview.**
-   Apply [Populate Architecture Overview](#populate-architecture-overview) with the measured structure and flows, the head from step 1, pinned code permalinks and an overview path in the record's folder.
-4. **Register the overview.**
-   Apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the returned overview file and the pull request link, meeting [Artifacts](#artifacts-1), and a commit message file naming that folder, asking it to publish.
-   - Return a publication discrepancy to the caller.
-5. **Link the pull request.**
-   Apply [Link Architecture Overview](#link-architecture-overview) with the current body, the published overview URL and an output body path.
-   - Apply [Publish Pull Request](#publish-pull-request) with the repository, pull request number and returned body file.
-   - Return the pull request, record folder, published overview, diagrams and References row to the caller.
+#### 1. Prepare the Evidence
+
+Apply [Read Pull Request State](#read-pull-request-state) with the supplied repository and pull request number for its identity, title, base and head.
+
+- Apply [Create Pull Request Worktree](#create-pull-request-worktree) with the repository, its checkout, the pull request number and that head.
+- Return a changed-head finding to the caller.
+- Apply [Measure Repository Change](#measure-repository-change) with the returned worktree, its head and the pull request's base.
+- Return a freshness blocker to the caller before writing the overview.
+
+#### 2. Locate the Record
+
+Apply [Locate Planning Record](#locate-planning-record) with the pull request number.
+
+- **Record found.**
+  - Take the returned folder path and its record identity.
+- **No record.**
+  - Take a new overview record's identity and folder path, meeting [Layout](#layout), from the pull request's number and title.
+- Apply [Populate Planning Record](#populate-planning-record) with that record identity and folder path.
+
+#### 3. Write the Overview
+
+Apply [Populate Architecture Overview](#populate-architecture-overview) with the measured structure and flows, the head from [1. Prepare the Evidence](#1-prepare-the-evidence), pinned code permalinks and an overview path in the record's folder.
+
+#### 4. Register the Overview
+
+Apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the returned overview file and the pull request link, meeting [Artifacts](#artifacts-1), and a commit message file naming that folder, asking it to publish.
+
+- Return a publication discrepancy to the caller.
+
+#### 5. Link the Pull Request
+
+Apply [Link Architecture Overview](#link-architecture-overview) with the current body, the published overview URL and an output body path.
+
+- Apply [Publish Pull Request](#publish-pull-request) with the repository, pull request number and returned body file.
+- Return the pull request, record folder, published overview, diagrams and References row to the caller.
 
 # Rules
 
@@ -197,8 +255,13 @@ The delivery findings for one epic from supplied evidence.
 
 **Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
 
-1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
-2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
+##### 1. Match Epic Pull Requests
+
+Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
+
+##### 2. Return the Inspected Delivery Findings
+
+Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
 #### *Check* Epic Readiness
 
@@ -206,9 +269,17 @@ The epic's eligibility for integration from current delivery and criterion evide
 
 **Inputs:** Current epic JSON, pull request records, complete issue-link snapshot and criterion verification evidence for the current delivery revisions.
 
-1. Apply [Inspect Epic Delivery](#inspect-epic-delivery) with the supplied epic JSON, pull request records and complete issue-link snapshot.
-2. Confirm every task is delivered, every epic criterion is verified and ticked, and no open question or unresolved delivery discrepancy remains. An unmerged epic base awaiting integration is expected at this stage. Missing or stale verification leaves readiness unconfirmed.
-3. Return the integration readiness in [Delivery State](#delivery-state), with the evidence revisions and each blocker. Readiness establishes the epic's content conditions; the caller supplies pull-request review, target and head-check evidence for the merge.
+##### 1. Inspect the Epic Delivery
+
+Apply [Inspect Epic Delivery](#inspect-epic-delivery) with the supplied epic JSON, pull request records and complete issue-link snapshot.
+
+##### 2. Confirm Epic Integration Conditions
+
+Confirm every task is delivered, every epic criterion is verified and ticked, and no open question or unresolved delivery discrepancy remains. An unmerged epic base awaiting integration is expected at this stage. Missing or stale verification leaves readiness unconfirmed.
+
+##### 3. Return the Epic Integration Readiness
+
+Return the integration readiness in [Delivery State](#delivery-state), with the evidence revisions and each blocker. Readiness establishes the epic's content conditions; the caller supplies pull-request review, target and head-check evidence for the merge.
 
 #### *Check* Epic Completion
 
@@ -216,10 +287,21 @@ The epic's normal delivery result before tracker closure.
 
 **Inputs:** Current epic JSON, pull request records, complete issue-link snapshot, current criterion verification evidence, complete expected base list and each base's merge evidence.
 
-1. Apply [Check Epic Readiness](#check-epic-readiness) with the current epic, pull request records, issue-link snapshot and criterion verification evidence.
-2. Reconcile the expected bases with the task delivery targets.
-3. Confirm every base has merged into its corresponding long-lived branch. An unknown or incomplete base list, or missing merge evidence, leaves completion unconfirmed even when every task is delivered and every criterion is ticked.
-4. Return the completion result in [Delivery State](#delivery-state), identifying remaining blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
+##### 1. Check the Epic Readiness
+
+Apply [Check Epic Readiness](#check-epic-readiness) with the current epic, pull request records, issue-link snapshot and criterion verification evidence.
+
+##### 2. Reconcile Epic Bases with Task Targets
+
+Reconcile the expected bases with the task delivery targets.
+
+##### 3. Confirm Every Epic Base Merged
+
+Confirm every base has merged into its corresponding long-lived branch. An unknown or incomplete base list, or missing merge evidence, leaves completion unconfirmed even when every task is delivered and every criterion is ticked.
+
+##### 4. Return the Epic Completion Result
+
+Return the completion result in [Delivery State](#delivery-state), identifying remaining blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
 
 ### Fields
 
@@ -279,16 +361,29 @@ The pull requests and issue links that establish current delivery.
 
 **Inputs:** Selected repositories and initiative prefix, fetched epic JSON, authenticated access and destination snapshot files.
 
-1. Fetch the pull requests and their links.
-   - Apply [Read Initiative Pull Requests](#read-initiative-pull-requests).
-   - Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links).
-   - Use [Access Development Links](#access-development-links) for the actual complete link sets.
-2. Apply [Inspect Epic Delivery](#inspect-epic-delivery) with the epic JSON, pull request records and complete issue-link snapshot.
-   - Route the returned [Delivery Findings](#delivery-findings) to matching, verification or user decisions.
-   - Fetch any linked pull request absent from the input with [Read Pull Request State](#read-pull-request-state).
-   - Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
-3. Name each pull request whose issue links reach an epic or one of its task issues and whose title omits that epic's reference as an [unnamed delivery](#unnamed-deliveries).
-4. Return the current pull request records, complete issue-link snapshot, per-epic findings and unnamed deliveries to the caller, reporting incomplete evidence as a blocker.
+##### 1. Fetch Pull Requests and Links
+
+Fetch the pull requests and their links.
+
+- Apply [Read Initiative Pull Requests](#read-initiative-pull-requests).
+- Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links).
+- Use [Access Development Links](#access-development-links) for the actual complete link sets.
+
+##### 2. Inspect the Epic Delivery
+
+Apply [Inspect Epic Delivery](#inspect-epic-delivery) with the epic JSON, pull request records and complete issue-link snapshot.
+
+- Route the returned [Delivery Findings](#delivery-findings) to matching, verification or user decisions.
+- Fetch any linked pull request absent from the input with [Read Pull Request State](#read-pull-request-state).
+- Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
+
+##### 3. Name the Unnamed Deliveries
+
+Name each pull request whose issue links reach an epic or one of its task issues and whose title omits that epic's reference as an [unnamed delivery](#unnamed-deliveries).
+
+##### 4. Return the Delivery Evidence
+
+Return the current pull request records, complete issue-link snapshot, per-epic findings and unnamed deliveries to the caller, reporting incomplete evidence as a blocker.
 
 ### Fields
 
@@ -306,9 +401,15 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+##### 1. Run Sync Epic
+
+Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+
+- Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
+
+##### 2. Return the Epic Delivery Findings
+
+Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 #### *Record* Epic Criteria
 
@@ -316,8 +417,13 @@ Verified criteria and completed rows in one epic body.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
 
-1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
-2. Return the body and refused criteria. Complete rows receive Done ticks.
+##### 1. Run Tick Epic Criteria
+
+Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+
+##### 2. Return the Epic Body and Refused Criteria
+
+Return the body and refused criteria. Complete rows receive Done ticks.
 
 ### Fields
 
@@ -437,8 +543,13 @@ The current issue, its saved body and discussion.
 
 **Inputs:** Repository, issue number and output files; whether discussion is needed.
 
-1. Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
-2. Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
+##### 1. Fetch the Tracker Issue
+
+Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
+
+##### 2. Fetch the Issue Comments
+
+Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
 
 #### *Save* Tracker Issue
 
@@ -446,14 +557,35 @@ One populated body and its metadata, written to the tracker.
 
 **Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
 
-1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
-2. Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
-   - Return an unknown label definition to the caller before any write.
-3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
-4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
-5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
-6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
-7. Compare the saved fields with the intended body and metadata.
+##### 1. Take the Issue Body and Metadata
+
+Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
+
+##### 2. Ensure the Issue Labels
+
+Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
+
+- Return an unknown label definition to the caller before any write.
+
+##### 3. Create New Issue
+
+For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
+
+##### 4. Update the Existing Issue
+
+For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
+
+##### 5. Comment on the Saved Issue
+
+Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
+
+##### 6. Re-Read the Saved Issue
+
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+
+##### 7. Compare the Saved Issue Fields
+
+Compare the saved fields with the intended body and metadata.
 
 #### *Check* Issue Completion
 
@@ -461,17 +593,23 @@ The normal delivery result of one task, epic or initiative before tracker closur
 
 **Inputs:** Issue kind, current issue JSON, complete Development snapshot, fresh linked pull request records and criterion verification evidence; for a task, the delivery result its delivering pull request established; for an epic, its project checkout.
 
-1. Select the check by the issue's kind:
-   - **Task.**
-     - Retain the task delivery result its delivering pull request established.
-   - **Epic.**
-     - Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and epic identity for the complete expected bases.
-     - Apply [Read Pull Request State](#read-pull-request-state) for each base's merge evidence.
-     - Apply [Check Epic Completion](#check-epic-completion) with the current epic JSON, linked pull request records, complete issue-link snapshot, criterion verification evidence and those base records.
-   - **Initiative.**
-     - Apply [Read Tracker Issue](#read-tracker-issue) for every linked epic.
-     - Apply [Check Initiative Completion](#check-initiative-completion) with the current initiative JSON, all linked epic records, criterion verification evidence and the Development snapshot and linked pull request records.
-2. Return the completion result; an incomplete or failed result is a blocker to closure.
+##### 1. Select the Completion Check
+
+Select the check by the issue's kind:
+
+- **Task.**
+  - Retain the task delivery result its delivering pull request established.
+- **Epic.**
+  - Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and epic identity for the complete expected bases.
+  - Apply [Read Pull Request State](#read-pull-request-state) for each base's merge evidence.
+  - Apply [Check Epic Completion](#check-epic-completion) with the current epic JSON, linked pull request records, complete issue-link snapshot, criterion verification evidence and those base records.
+- **Initiative.**
+  - Apply [Read Tracker Issue](#read-tracker-issue) for every linked epic.
+  - Apply [Check Initiative Completion](#check-initiative-completion) with the current initiative JSON, all linked epic records, criterion verification evidence and the Development snapshot and linked pull request records.
+
+##### 2. Return the Completion Result
+
+Return the completion result; an incomplete or failed result is a blocker to closure.
 
 #### *Close* Tracker Issue
 
@@ -479,16 +617,32 @@ Verified completion of an issue and its linked delivery.
 
 **Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
 
-1. Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
-2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
-   - Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
-   - Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
-   - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
-3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
-4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
-   - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
-   - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
-5. Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
+##### 1. Capture the Issue Development
+
+Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
+
+##### 2. Take Fresh Pull Request Records
+
+Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
+
+- Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
+- Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
+- Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
+
+##### 3. Run the Closure Check
+
+Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
+
+##### 4. Require the Closure Gate
+
+Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+
+- Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
+- Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
+
+##### 5. Close the Issue as Completed
+
+Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
 #### *Comment* on Issue
 
@@ -496,11 +650,20 @@ The supplied discussion text saved on one issue.
 
 **Inputs:** Repository, issue number and exact comment text or file; reviewer identity and addressed feedback when replying to a review.
 
-1. When replying to feedback already folded into the body, compose a precise, factual reply addressing each point and mentioning the reviewer, with no thanks or filler. Name what the body now says, by criterion id where one carries it, or the issue that takes the point.
-2. Publish the supplied comment:
-   - For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
-   - For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
-3. Return the saved comment URL.
+##### 1. Compose the Feedback Reply
+
+When replying to feedback already folded into the body, compose a precise, factual reply addressing each point and mentioning the reviewer, with no thanks or filler. Name what the body now says, by criterion id where one carries it, or the issue that takes the point.
+
+##### 2. Publish the Issue Comment
+
+Publish the supplied comment:
+
+- For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
+- For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
+
+##### 3. Return the Comment URL
+
+Return the saved comment URL.
 
 #### *Close* as Completed
 
@@ -508,12 +671,29 @@ An issue closed after its final evidence check.
 
 **Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
 
-1. Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
-2. Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
-3. Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
-4. Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
-5. Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
-6. Return the saved state or failure.
+##### 1. Capture Development Before Closure
+
+Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
+
+##### 2. Compare the Development Links
+
+Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
+
+##### 3. Run the Completion Gate
+
+Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
+
+##### 4. Require the Completion Gate to Pass
+
+Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
+
+##### 5. Set the Completed State
+
+Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
+
+##### 6. Return the Completed State
+
+Return the saved state or failure.
 
 #### *Capture* Issue Development
 
@@ -521,11 +701,23 @@ The issue's current content and complete Development snapshot.
 
 **Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
 
-1. Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
-2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
-   - Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
-3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
-4. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
+##### 1. Read the Development Field
+
+Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
+
+##### 2. Write the Development Snapshot
+
+Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
+
+- Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
+
+##### 3. Fetch the Issue Snapshot
+
+Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
+
+##### 4. Return the Development Files
+
+Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
 #### *Read* Issue Development
 
@@ -533,8 +725,13 @@ The Development links observed for one issue through authenticated GitHub.
 
 **Inputs:** Issue identity and authenticated access.
 
-1. Read every page and state, across repositories, recording each linked pull request's identity.
-2. Return the observed links and whether the entire field was readable.
+##### 1. Read Every Development Link
+
+Read every page and state, across repositories, recording each linked pull request's identity.
+
+##### 2. Return the Observed Development Links
+
+Return the observed links and whether the entire field was readable.
 
 #### *Confirm* Repository Auto-Close
 
@@ -542,9 +739,17 @@ Whether the repository auto-closes issues whose linked pull requests merge, esta
 
 **Inputs:** Repository and authenticated access.
 
-1. Read the setting where the authenticated API exposes it, and take a read value as the answer.
-2. Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
-3. Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
+##### 1. Read the Auto-Close Setting
+
+Read the setting where the authenticated API exposes it, and take a read value as the answer.
+
+##### 2. Ask the User for Auto-Close
+
+Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
+
+##### 3. Return the Confirmed Auto-Close Setting
+
+Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
 
 ### Fields
 
@@ -797,8 +1002,13 @@ One initiative body with its epic delivery recorded.
 
 **Inputs:** Initiative JSON, every linked epic's current JSON and optional output body file.
 
-1. Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
-2. Return the body and [Delivery Findings](#delivery-findings-1) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](#delivery-state-1).
+##### 1. Run Sync Initiative
+
+Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
+
+##### 2. Return the Initiative Delivery Findings
+
+Return the body and [Delivery Findings](#delivery-findings-1) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](#delivery-state-1).
 
 #### *Record* Initiative Criteria
 
@@ -806,8 +1016,13 @@ Verified criteria and completed rows in one initiative body.
 
 **Inputs:** Initiative JSON, every linked epic's current JSON, verified criterion ids and output body file.
 
-1. Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
-2. Return the body and refused criteria. Complete rows receive Done ticks.
+##### 1. Run Tick Initiative Criteria
+
+Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+
+##### 2. Return the Initiative Body and Refused Criteria
+
+Return the body and refused criteria. Complete rows receive Done ticks.
 
 ### Commands
 
@@ -859,14 +1074,25 @@ The verification evidence for a supplied set of criteria whose delivery is ready
 
 **Inputs:** Criterion ids, current issue body, delivery findings, delivery revisions, named instruments, the project checkout to run them in, and the [verification evidence](#verification-evidence) the run has already taken, when it has any.
 
-1. Confirm the supplied delivery findings establish [Readiness](#readiness) for each selected criterion.
-   - Return an undelivered or unreadable dependency as a blocker for that criterion.
-2. Check out each branch the delivering pull requests merged into, in the supplied project checkout, meeting [Instrument Checkout](#instrument-checkout).
-   - Keep the supplied evidence of each criterion taken on the revision now checked out, meeting [Verification Evidence](#verification-evidence).
-   - Run the named instrument of each other criterion there.
-   - Record the result against the tested revisions, meeting [Instrument Result](#instrument-result).
-3. Return the verification evidence of each selected criterion, kept or taken, the verified criterion ids, and each unresolved criterion with what is missing.
-   - Leave body publication and further planning to the caller.
+##### 1. Confirm Criterion Readiness
+
+Confirm the supplied delivery findings establish [Readiness](#readiness) for each selected criterion.
+
+- Return an undelivered or unreadable dependency as a blocker for that criterion.
+
+##### 2. Check Out the Delivered Branches
+
+Check out each branch the delivering pull requests merged into, in the supplied project checkout, meeting [Instrument Checkout](#instrument-checkout).
+
+- Keep the supplied evidence of each criterion taken on the revision now checked out, meeting [Verification Evidence](#verification-evidence).
+- Run the named instrument of each other criterion there.
+- Record the result against the tested revisions, meeting [Instrument Result](#instrument-result).
+
+##### 3. Return the Criteria Verification Evidence
+
+Return the verification evidence of each selected criterion, kept or taken, the verified criterion ids, and each unresolved criterion with what is missing.
+
+- Leave body publication and further planning to the caller.
 
 #### *Tick* Verified Criteria
 
@@ -874,10 +1100,16 @@ The confirmed criteria and completed rows recorded in an epic or initiative body
 
 **Inputs:** Issue JSON, verified criterion ids, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
 
-1. Record the criteria, meeting [Tick State](#tick-state).
-   - For an epic, apply [Record Epic Criteria](#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
-   - For an initiative, apply [Record Initiative Criteria](#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
-2. Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
+##### 1. Record the Criterion Ticks
+
+Record the criteria, meeting [Tick State](#tick-state).
+
+- For an epic, apply [Record Epic Criteria](#record-epic-criteria) with the issue JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
+- For an initiative, apply [Record Initiative Criteria](#record-initiative-criteria) with the issue JSON, every linked epic record, verified criterion ids and output body file.
+
+##### 2. Return the Ticked Body
+
+Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
 
 #### *Record* Verified Criteria
 
@@ -885,11 +1117,23 @@ The verified criteria of one epic or initiative, ticked and saved to its issue.
 
 **Inputs:** Repository, criterion ids, current issue JSON and body, delivery findings, delivery revisions, named instruments, the project checkout, the verification evidence the run has already taken when it has any, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
 
-1. Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments, project checkout and the run's verification evidence.
-   - When it returns no verified id, continue at step 4.
-2. Pass only its returned verified ids to [Tick Verified Criteria](#tick-verified-criteria) with the issue JSON and output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
-3. When the returned body differs from the current issue body, apply [Save Tracker Issue](#save-tracker-issue) with the repository, issue number and output body file.
-4. Return the verified ids, the verification evidence Verify Selected Criteria returned, the ids refused as not ready to verify, and each unverified criterion with what it is missing. A refused or unverified criterion stays unticked.
+##### 1. Verify the Selected Criteria
+
+Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments, project checkout and the run's verification evidence.
+
+- When it returns no verified id, continue at [4. Return the Recorded Verification](#4-return-the-recorded-verification).
+
+##### 2. Tick the Verified Criteria
+
+Pass only its returned verified ids to [Tick Verified Criteria](#tick-verified-criteria) with the issue JSON and output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
+
+##### 3. Save the Ticked Issue Body
+
+When the returned body differs from the current issue body, apply [Save Tracker Issue](#save-tracker-issue) with the repository, issue number and output body file.
+
+##### 4. Return the Recorded Verification
+
+Return the verified ids, the verification evidence Verify Selected Criteria returned, the ids refused as not ready to verify, and each unverified criterion with what it is missing. A refused or unverified criterion stays unticked.
 
 ### Fields
 
@@ -923,9 +1167,17 @@ The initiative's normal delivery result before tracker closure.
 
 **Inputs:** Current initiative JSON, every linked epic's current JSON, criterion verification evidence and the current complete Development-link and linked pull-request records.
 
-1. Evaluate the supplied evidence against [Delivery State](#delivery-state-1).
-2. Identify each missing, open or cancelled epic, each unverified or unticked criterion, and each unmerged or unreadable Development-linked pull request. Incomplete link evidence leaves completion unconfirmed.
-3. Return the completion result and its supporting issue identities, evidence revisions and blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
+##### 1. Evaluate Initiative Delivery Evidence
+
+Evaluate the supplied evidence against [Delivery State](#delivery-state-1).
+
+##### 2. Identify Initiative Completion Blockers
+
+Identify each missing, open or cancelled epic, each unverified or unticked criterion, and each unmerged or unreadable Development-linked pull request. Incomplete link evidence leaves completion unconfirmed.
+
+##### 3. Return the Initiative Completion Result
+
+Return the completion result and its supporting issue identities, evidence revisions and blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
 
 ### Fields
 
@@ -964,15 +1216,25 @@ One task or epic pull request's merge result, or its handoff for human approval.
 
 **Inputs:** Pull request identity, delivery kind, verified head, target requirements, current passing readiness evidence and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](#close-tracker-issue).
 
-1. Read the supplied target branch's current required reviews and checks alongside the verified head. A branch whose protection or active rules require an approving review takes that review from a person. An agent cannot approve a pull request it opened; on such a branch, the merge belongs to the reviewer even when every other condition holds.
-   - Report the pull request as ready for approval, naming what was verified.
-   - Stop merge attempts. This handoff is a finished outcome.
-   - Keep approval with that reviewer. Another account, an administrative bypass or a setting change cannot supply it. Changing repository protection requires the user's explicit authorization, asked for separately.
-   - For example, workflow-server's `main` requires one approving review, so carry an epic to ready and stop.
-2. When approval permits the agent to merge:
-   - Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
-   - If the merge is refused, return the refusal to the caller for fresh verification.
-3. Return the merge result, including its merge commit when supplied, for the caller's readback.
+##### 1. Read Target Review Requirements
+
+Read the supplied target branch's current required reviews and checks alongside the verified head. A branch whose protection or active rules require an approving review takes that review from a person. An agent cannot approve a pull request it opened; on such a branch, the merge belongs to the reviewer even when every other condition holds.
+
+- Report the pull request as ready for approval, naming what was verified.
+- Stop merge attempts. This handoff is a finished outcome.
+- Keep approval with that reviewer. Another account, an administrative bypass or a setting change cannot supply it. Changing repository protection requires the user's explicit authorization, asked for separately.
+- For example, workflow-server's `main` requires one approving review, so carry an epic to ready and stop.
+
+##### 2. Merge the Approved Pull Request
+
+When approval permits the agent to merge:
+
+- Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
+- If the merge is refused, return the refusal to the caller for fresh verification.
+
+##### 3. Return the Delivery Merge Result
+
+Return the merge result, including its merge commit when supplied, for the caller's readback.
 
 #### *Access* Development Links
 
@@ -980,17 +1242,35 @@ The observed or updated Development relation for a pull request.
 
 **Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
 
-1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
-2. Return the complete relation for a read-only request.
-3. For a link edit:
-   - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
-   - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
-   - For removal of an abandoned or incorrect link:
-     - Require the supplied user decision.
-     - Run [Remove Development Link](#remove-development-link) with those identities.
-4. Run [Read Development Links](#read-development-links) again for the same pull request.
-5. Compare the field with the intended edit.
-6. Return the verified relation or discrepancy.
+##### 1. Read the Pull Request Development Links
+
+Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
+
+##### 2. Return the Read-Only Relation
+
+Return the complete relation for a read-only request.
+
+##### 3. Edit the Development Links
+
+For a link edit:
+
+- Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
+- For removal of an abandoned or incorrect link:
+  - Require the supplied user decision.
+  - Run [Remove Development Link](#remove-development-link) with those identities.
+
+##### 4. Re-Read the Pull Request Development Links
+
+Run [Read Development Links](#read-development-links) again for the same pull request.
+
+##### 5. Compare the Field with the Edit
+
+Compare the field with the intended edit.
+
+##### 6. Return the Verified Link Relation
+
+Return the verified relation or discrepancy.
 
 #### *Fetch* Pull Request Issue Links
 
@@ -998,11 +1278,25 @@ The complete issue-link snapshot for a supplied set of pull requests.
 
 **Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
 
-1. For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
-2. Repeat that read after a link changes.
-3. If any relation is unreadable, return the incomplete result.
-4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
-5. Return the snapshot for the scripts' `--links` input.
+##### 1. Read Links for Each Pull Request
+
+For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+
+##### 2. Re-Read Links After a Change
+
+Repeat that read after a link changes.
+
+##### 3. Return an Incomplete Link Fetch
+
+If any relation is unreadable, return the incomplete result.
+
+##### 4. Write the Links Snapshot
+
+Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
+
+##### 5. Return the Links Snapshot
+
+Return the snapshot for the scripts' `--links` input.
 
 #### *Link* Pull Request to Issue
 
@@ -1010,10 +1304,21 @@ The verified delivery-issue relation for a pull request.
 
 **Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](#close-tracker-issue).
 
-1. Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
-2. Stop on a blocker or an unverified edit.
-3. Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
-4. Return the verified relation and refreshed snapshot.
+##### 1. Add the Development Link
+
+Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+
+##### 2. Stop on an Unverified Link Edit
+
+Stop on a blocker or an unverified edit.
+
+##### 3. Refresh the Links Snapshot
+
+Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
+
+##### 4. Return the Verified Link and Snapshot
+
+Return the verified relation and refreshed snapshot.
 
 #### *Merge* Epic Pull Request
 
@@ -1021,11 +1326,25 @@ The epic's verified merge into its long-lived target.
 
 **Inputs:** Pull request identity, verified head SHA, target requirements, current passing readiness evidence and confirmed authorization for the agent to merge.
 
-1. Require the supplied target requirements, readiness evidence and authorization.
-2. Run [Submit Epic Merge](#submit-epic-merge) with the exact head whose checks and target requirements were verified; return a refusal without continuing.
-3. Run [Read Merge Result](#read-merge-result) for that pull request.
-4. Confirm the merged state, merge commit, verified head and target.
-5. Return the result or discrepancy.
+##### 1. Require Epic Merge Authorization
+
+Require the supplied target requirements, readiness evidence and authorization.
+
+##### 2. Submit the Epic Merge
+
+Run [Submit Epic Merge](#submit-epic-merge) with the exact head whose checks and target requirements were verified; return a refusal without continuing.
+
+##### 3. Read the Epic Merge Result
+
+Run [Read Merge Result](#read-merge-result) for that pull request.
+
+##### 4. Confirm the Merged Epic State
+
+Confirm the merged state, merge commit, verified head and target.
+
+##### 5. Return the Epic Merge Result
+
+Return the result or discrepancy.
 
 #### *Read* Initiative Pull Requests
 
@@ -1033,8 +1352,13 @@ The current delivery pull requests for one initiative.
 
 **Inputs:** Repository, initiative prefix and destination collection file.
 
-1. Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
-2. Return the collection or an incomplete-fetch finding.
+##### 1. Fetch the Initiative Pull Requests
+
+Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
+
+##### 2. Return the Initiative Collection
+
+Return the collection or an incomplete-fetch finding.
 
 #### *Read* Pull Request State
 
@@ -1042,9 +1366,17 @@ One current pull request and its requested supporting records.
 
 **Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
 
-1. Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
-2. Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
-3. Return the snapshots or missing evidence.
+##### 1. Fetch the Pull Request Snapshot
+
+Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
+
+##### 2. Fetch Requested Files or Reviews
+
+Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
+
+##### 3. Return the Pull Request Snapshots
+
+Return the snapshots or missing evidence.
 
 #### *Publish* Pull Request
 
@@ -1052,11 +1384,23 @@ One pull request created or updated from supplied content and metadata.
 
 **Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
 
-1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
-   - For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
-2. For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
-3. Re-read through [Read Pull Request State](#read-pull-request-state).
-4. Return the saved state or discrepancy.
+##### 1. Open a New Pull Request
+
+For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
+
+- For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+
+##### 2. Update the Existing Pull Request
+
+For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
+
+##### 3. Re-Read the Published Pull Request
+
+Re-read through [Read Pull Request State](#read-pull-request-state).
+
+##### 4. Return the Published State
+
+Return the saved state or discrepancy.
 
 #### *Locate* Review Pull Request
 
@@ -1064,8 +1408,13 @@ The review pull request for a supplied epic base.
 
 **Inputs:** Repository and epic-base head.
 
-1. Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
-2. Return its number or an absent-review finding.
+##### 1. Find the Review Pull Request
+
+Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
+
+##### 2. Return the Review Pull Request Number
+
+Return its number or an absent-review finding.
 
 #### *Read* Head Evidence
 
@@ -1073,9 +1422,17 @@ The check-run and status evidence for one literal head commit.
 
 **Inputs:** Repository, verified head SHA and destination files.
 
-1. Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
-2. Run [Fetch Head Status](#fetch-head-status) for the same SHA.
-3. Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
+##### 1. Fetch the Head Check Runs
+
+Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
+
+##### 2. Fetch the Head Commit Status
+
+Run [Fetch Head Status](#fetch-head-status) for the same SHA.
+
+##### 3. Return the Head Evidence Snapshots
+
+Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 
 #### *Fetch* Merge Readiness
 
@@ -1083,17 +1440,32 @@ The current pull request's readiness against its target requirements and head ch
 
 **Inputs:** Pull request identity, delivery kind, its target branch, for an epic pull request its epic base, and the protection, rules, check and status output paths.
 
-1. Apply [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
-   - Retain the literal head SHA and target branch for the evidence calls.
-   - For an epic pull request, report it as not ready when its head is not the supplied epic base, or its target is not that base's long-lived branch, as [Epic Bases](#epic-bases) names it.
-2. Apply [Read Target Requirements](#read-target-requirements) with the repository, target and protection/rules output paths.
-   - Carry any unresolved requirement into the readiness result.
-3. Read the head evidence.
-   - Apply [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
-   - Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A conflict, a failed, missing or pending check, a blocked merge state or an unmet required review leaves readiness unresolved.
-4. Apply [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
-   - Compare its head with the retained SHA; a changed head requires fresh evidence.
-   - Return the verified head, target requirements and readiness result, including unresolved conditions.
+##### 1. Snapshot the Pull Request State
+
+Apply [Read Pull Request State](#read-pull-request-state) with the pull request identity and destination `epic-pr.json`.
+
+- Retain the literal head SHA and target branch for the evidence calls.
+- For an epic pull request, report it as not ready when its head is not the supplied epic base, or its target is not that base's long-lived branch, as [Epic Bases](#epic-bases) names it.
+
+##### 2. Read the Merge Target Requirements
+
+Apply [Read Target Requirements](#read-target-requirements) with the repository, target and protection/rules output paths.
+
+- Carry any unresolved requirement into the readiness result.
+
+##### 3. Read the Readiness Head Evidence
+
+Read the head evidence.
+
+- Apply [Read Head Evidence](#read-head-evidence) with the exact head SHA and check/status output paths.
+- Request reviews through [Read Pull Request State](#read-pull-request-state) with the pull request identity and reviews output path. A conflict, a failed, missing or pending check, a blocked merge state or an unmet required review leaves readiness unresolved.
+
+##### 4. Re-Read the Pull Request State
+
+Apply [Read Pull Request State](#read-pull-request-state) again with the same identity and destination.
+
+- Compare its head with the retained SHA; a changed head requires fresh evidence.
+- Return the verified head, target requirements and readiness result, including unresolved conditions.
 
 ### Fields
 
@@ -1472,12 +1844,22 @@ The current change carried by one epic base.
 
 **Inputs:** Current base change, supplied task-merge evidence and optional existing review body.
 
-1. Populate the review body from the [Template](#template) using the actual task merges into the base.
-   - All populated fields must meet [Fields](#fields-8), including the review-specific requirements in [Review Body](#review-body).
-2. For a later task merge:
-   - Add its functional change under the corresponding area.
-   - Cite the merged task pull request as the next reference.
-3. Return the complete updated body file to the caller.
+##### 1. Populate the Review Template
+
+Populate the review body from the [Template](#template) using the actual task merges into the base.
+
+- All populated fields must meet [Fields](#fields-8), including the review-specific requirements in [Review Body](#review-body).
+
+##### 2. Update for a Later Task Merge
+
+For a later task merge:
+
+- Add its functional change under the corresponding area.
+- Cite the merged task pull request as the next reference.
+
+##### 3. Return the Updated Review Body
+
+Return the complete updated body file to the caller.
 
 #### *Link* Architecture Overview
 
@@ -1485,14 +1867,21 @@ One pull request body referencing its published overview.
 
 **Inputs:** Current body, published overview URL on the engineering branch and output body path.
 
-1. Add the Architecture Overview reference to the body's References section, creating that section in its [Template](#template) position when absent.
-2. Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
+##### 1. Add the Overview Reference
 
-      ```markdown
-      - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.
-      ```
+Add the Architecture Overview reference to the body's References section, creating that section in its [Template](#template) position when absent.
 
-3. Return the complete updated body file for publication.
+##### 2. Preserve an Existing Overview Row
+
+Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
+
+   ```markdown
+   - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.
+   ```
+
+##### 3. Return the Linked Pull Request Body
+
+Return the complete updated body file for publication.
 
 ### Fields
 
@@ -1577,14 +1966,32 @@ The current long-lived target merged into an epic base.
 
 **Inputs:** Project checkout and epic base branch.
 
-1. Take the long-lived target and the worktree path from the base name, meeting [Epic Bases](#epic-bases).
-2. Run [Fetch Remote Branch](#fetch-remote-branch) in the project checkout with that epic base; stop on failure.
-3. Run [Add Epic Base Worktree](#add-epic-base-worktree) for an absent worktree, and reuse an existing one; stop on failure, which a base checked out elsewhere returns.
-4. Run [Fetch Remote Branch](#fetch-remote-branch) in that worktree with the long-lived target, such as `main`; stop on failure.
-5. Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the target branch name, such as `main`, to merge `origin/main`. A conflict stops the update, leaves the pull request open and is reported.
-6. After a successful merge:
-   - Run [Push Epic Base](#push-epic-base) in the same worktree.
-   - Return the updated branch or the failure.
+##### 1. Derive the Epic Base Target and Worktree
+
+Take the long-lived target and the worktree path from the base name, meeting [Epic Bases](#epic-bases).
+
+##### 2. Fetch the Epic Base
+
+Run [Fetch Remote Branch](#fetch-remote-branch) in the project checkout with that epic base; stop on failure.
+
+##### 3. Add or Reuse the Epic Base Worktree
+
+Run [Add Epic Base Worktree](#add-epic-base-worktree) for an absent worktree, and reuse an existing one; stop on failure, which a base checked out elsewhere returns.
+
+##### 4. Fetch the Long-Lived Target
+
+Run [Fetch Remote Branch](#fetch-remote-branch) in that worktree with the long-lived target, such as `main`; stop on failure.
+
+##### 5. Merge the Long-Lived Target
+
+Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the target branch name, such as `main`, to merge `origin/main`. A conflict stops the update, leaves the pull request open and is reported.
+
+##### 6. Push the Updated Epic Base
+
+After a successful merge:
+
+- Run [Push Epic Base](#push-epic-base) in the same worktree.
+- Return the updated branch or the failure.
 
 #### *Create* Pull Request Worktree
 
@@ -1592,21 +1999,46 @@ The detached worktree where the graph reads the reviewed change.
 
 **Inputs:** Repository, repository checkout, pull request number and verified head commit.
 
-1. Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
-2. Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
-3. If it differs from the verified head:
-   - Apply [Read Pull Request State](#read-pull-request-state) for the same pull request, and take its head as the verified head.
-   - Repeat steps 1 and 2 once.
-   - If the fetched head still differs, return a changed-head finding before creating a worktree.
-4. Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
-5. If that worktree already exists:
-   - Run Read Checkout Revision there for `HEAD`.
-   - Run [Read Checkout Status](#read-checkout-status) there.
-   - Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
-   - Otherwise retain it and select an unused path suffixed with the verified commit.
-6. For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
-7. Confirm its HEAD through Read Checkout Revision.
-8. Return the selected detached worktree path and head, or the discrepancy before measuring.
+##### 1. Fetch the Review Head
+
+Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
+
+##### 2. Read the Fetched Revision
+
+Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
+
+##### 3. Recheck a Differing Fetched Head
+
+If it differs from the verified head:
+
+- Apply [Read Pull Request State](#read-pull-request-state) for the same pull request, and take its head as the verified head.
+- Repeat [1. Fetch the Review Head](#1-fetch-the-review-head) and [2. Read the Fetched Revision](#2-read-the-fetched-revision) once.
+- If the fetched head still differs, return a changed-head finding before creating a worktree.
+
+##### 4. Derive the Review Worktree Path
+
+Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
+
+##### 5. Check an Existing Review Worktree
+
+If that worktree already exists:
+
+- Run Read Checkout Revision there for `HEAD`.
+- Run [Read Checkout Status](#read-checkout-status) there.
+- Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
+- Otherwise retain it and select an unused path suffixed with the verified commit.
+
+##### 6. Add the Review Worktree
+
+For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
+
+##### 7. Confirm the Review Worktree Head
+
+Confirm its HEAD through Read Checkout Revision.
+
+##### 8. Return the Review Worktree
+
+Return the selected detached worktree path and head, or the discrepancy before measuring.
 
 #### *Read* Target Requirements
 
@@ -1614,9 +2046,17 @@ The protection and active rules governing one target branch.
 
 **Inputs:** Repository, target branch and output files.
 
-1. Run [Fetch Branch Protection](#fetch-branch-protection) for the supplied target.
-2. Run [Fetch Active Branch Rules](#fetch-active-branch-rules) for the same target.
-3. Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
+##### 1. Fetch the Target Branch Protection
+
+Run [Fetch Branch Protection](#fetch-branch-protection) for the supplied target.
+
+##### 2. Fetch the Target Active Rules
+
+Run [Fetch Active Branch Rules](#fetch-active-branch-rules) for the same target.
+
+##### 3. Return the Target Requirement Records
+
+Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
 
 #### *Read* Delivery Branches
 
@@ -1624,9 +2064,17 @@ The configured long-lived branches and existing epic bases.
 
 **Inputs:** Project checkout and epic identity.
 
-1. Run [List Long-Lived Branches](#list-long-lived-branches) with the supplied checkout. Missing or empty configuration leaves branch names unevaluable.
-2. Run [List Epic Bases](#list-epic-bases) for the supplied epic.
-3. Return both collections and any missing configuration.
+##### 1. Read the Long-Lived Branch Configuration
+
+Run [List Long-Lived Branches](#list-long-lived-branches) with the supplied checkout. Missing or empty configuration leaves branch names unevaluable.
+
+##### 2. Read the Epic Base Names
+
+Run [List Epic Bases](#list-epic-bases) for the supplied epic.
+
+##### 3. Return the Delivery Branch Collections
+
+Return both collections and any missing configuration.
 
 ### Fields
 
@@ -1860,10 +2308,21 @@ The required label definitions available for issue publication.
 
 **Inputs:** Repository and required label names, colours and descriptions.
 
-1. Run [List Labels](#list-labels) for the repository.
-2. Compare the returned labels with the supplied required names.
-3. Run [Create Label](#create-label) for each absent required definition.
-4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+##### 1. List the Repository Labels
+
+Run [List Labels](#list-labels) for the repository.
+
+##### 2. Compare Required Label Names
+
+Compare the returned labels with the supplied required names.
+
+##### 3. Create Absent Required Labels
+
+Run [Create Label](#create-label) for each absent required definition.
+
+##### 4. Return the Available Labels
+
+Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
 
 ### Commands
 
@@ -1897,19 +2356,41 @@ Current graph evidence for the supplied change.
 
 **Inputs:** Worktree, verified head commit and base branch.
 
-1. Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
-2. If the repository is unindexed or behind the verified head:
-   - Run [Index Repository](#index-repository).
-   - Confirm freshness.
-3. Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
-4. For each changed symbol, run [Symbol Context](#symbol-context).
-5. For each reported flow, run [Flow Trace](#flow-trace).
-6. Inspect the staleness block on every response. For a behind index:
-   - Discard its measurements.
-   - Run [Index Repository](#index-repository).
-   - Repeat steps 1 to 5 once with the updated index.
-   - If a response is still behind, return a freshness blocker.
-7. Return only evidence current with the supplied head, meeting [Fields](#fields-11), or a freshness blocker.
+##### 1. Check the Graph Index Status
+
+Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
+
+##### 2. Refresh a Stale Graph Index
+
+If the repository is unindexed or behind the verified head:
+
+- Run [Index Repository](#index-repository).
+- Confirm freshness.
+
+##### 3. Measure the Change Surface
+
+Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
+
+##### 4. Read Each Changed Symbol Context
+
+For each changed symbol, run [Symbol Context](#symbol-context).
+
+##### 5. Trace Each Reported Flow
+
+For each reported flow, run [Flow Trace](#flow-trace).
+
+##### 6. Re-Measure on a Stale Index
+
+Inspect the staleness block on every response. For a behind index:
+
+- Discard its measurements.
+- Run [Index Repository](#index-repository).
+- Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index.
+- If a response is still behind, return a freshness blocker.
+
+##### 7. Return the Current Graph Evidence
+
+Return only evidence current with the supplied head, meeting [Fields](#fields-11), or a freshness blocker.
 
 ### Fields
 
@@ -2015,21 +2496,34 @@ One planning directory and its artifact inventory.
 
 **Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
-1. Prepare the selected record:
-   - For a new record:
-     - Create the folder with [Add Planning Record](#add-planning-record).
-     - Populate README.md from the [Template](#template-1).
-   - For an existing record:
-     - Read its README, retaining its creation date, other artifacts and links.
-     - Update only the supplied content.
-   - The folder must meet [Layout](#layout).
-   - All populated README fields must meet [Fields](#fields-12).
-2. Register the artifact files supplied by the caller, using their chosen names.
-   - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts-1).
-   - File content remains supplied by the caller; this operation does not author that artifact's content.
-   - Delete each artifact the caller names as removed, with its row.
-3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
-4. Return the folder path, and the publication result when it published.
+##### 1. Prepare the Selected Planning Record
+
+Prepare the selected record:
+
+- For a new record:
+  - Create the folder with [Add Planning Record](#add-planning-record).
+  - Populate README.md from the [Template](#template-1).
+- For an existing record:
+  - Read its README, retaining its creation date, other artifacts and links.
+  - Update only the supplied content.
+- The folder must meet [Layout](#layout).
+- All populated README fields must meet [Fields](#fields-12).
+
+##### 2. Register the Supplied Artifact Files
+
+Register the artifact files supplied by the caller, using their chosen names.
+
+- Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts-1).
+- File content remains supplied by the caller; this operation does not author that artifact's content.
+- Delete each artifact the caller names as removed, with its row.
+
+##### 3. Publish the Populated Planning Record
+
+When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
+
+##### 4. Return the Planning Record Folder
+
+Return the folder path, and the publication result when it published.
 
 #### *Publish* Planning Record
 
@@ -2037,11 +2531,21 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 **Inputs:** Planning-folder path, the files written into it and a commit message file.
 
-1. Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
-2. Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
-   - Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
-3. Run [Push Engineering Branch](#push-engineering-branch).
-   - Report a push that will not fast-forward rather than rewriting the branch.
+##### 1. Find the Publishing Worktree
+
+Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
+
+##### 2. Commit the Planning Record Folder
+
+Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
+
+- Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
+
+##### 3. Push the Engineering Branch
+
+Run [Push Engineering Branch](#push-engineering-branch).
+
+- Report a push that will not fast-forward rather than rewriting the branch.
 
 #### *Locate* Planning Record
 
@@ -2049,10 +2553,16 @@ The existing planning folder whose reference is one issue or pull request number
 
 **Inputs:** Issue or pull request number.
 
-1. Run [Find Engineering Worktree](#find-engineering-worktree).
-2. Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
-   - Return each folder path it lists.
-   - When it lists none, return that no record has that reference.
+##### 1. Find the Engineering Worktree
+
+Run [Find Engineering Worktree](#find-engineering-worktree).
+
+##### 2. List the Matching Planning Records
+
+Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
+
+- Return each folder path it lists.
+- When it lists none, return that no record has that reference.
 
 ### Fields
 
@@ -2219,13 +2729,27 @@ One architecture overview from supplied measurements.
 
 **Inputs:** Measured structure and flows, pull request head, code permalinks and the output path.
 
-1. Take the graph measurements supplied by the caller and check the proposed diagrams.
-   - The diagrams must meet [Measured Structure](#measured-structure) and [Diagrams](#diagrams).
-2. Populate the overview from the [Template](#template-2) at the supplied output path.
-   - All populated fields must meet [Fields](#fields-13), including the required [Sections](#sections).
-3. Pin each code reference.
-   - Each reference must meet [Code References](#code-references).
-4. Return the file for the caller to register in its planning record.
+##### 1. Check the Proposed Diagrams
+
+Take the graph measurements supplied by the caller and check the proposed diagrams.
+
+- The diagrams must meet [Measured Structure](#measured-structure) and [Diagrams](#diagrams).
+
+##### 2. Populate the Overview Template
+
+Populate the overview from the [Template](#template-2) at the supplied output path.
+
+- All populated fields must meet [Fields](#fields-13), including the required [Sections](#sections).
+
+##### 3. Pin Each Code Reference
+
+Pin each code reference.
+
+- Each reference must meet [Code References](#code-references).
+
+##### 4. Return the Overview File
+
+Return the file for the caller to register in its planning record.
 
 ### Fields
 

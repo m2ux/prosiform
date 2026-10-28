@@ -16,10 +16,21 @@ The placement options for one orphan, from the supplied orphan and candidate des
 
 **Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
 
-1. Identify each option among an existing task, a new task, a new epic, a new initiative, and Leave.
-2. For each option, record the destination and the work it takes, meeting [Fields](#fields).
-3. For each option, record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
-4. Return the options for the caller to offer and apply, each a [Placement](#placement-record) with its draft issue changes, in the order that field states.
+#### 1. Identify the Placement Options
+
+Identify each option among an existing task, a new task, a new epic, a new initiative, and Leave.
+
+#### 2. Record Each Placement Destination
+
+For each option, record the destination and the work it takes, meeting [Fields](#fields).
+
+#### 3. Record Each Orphan Disposition
+
+For each option, record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
+
+#### 4. Return the Placement Options
+
+Return the options for the caller to offer and apply, each a [Placement](#placement-record) with its draft issue changes, in the order that field states.
 
 ### *Find* Placement Candidates
 
@@ -27,8 +38,13 @@ The issue candidates and available destinations from supplied records.
 
 **Inputs:** Complete repository issue collection.
 
-1. Run [List Orphans](#list-orphans) with the supplied issue file.
-2. Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
+#### 1. List the Orphan Issues
+
+Run [List Orphans](#list-orphans) with the supplied issue file.
+
+#### 2. Return the Placement Candidates
+
+Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
 
 ### *Apply* Issue Placement
 
@@ -36,28 +52,36 @@ The destination bodies one confirmed placement populates, as local files.
 
 **Inputs:** Confirmed placement, current source and destination records, the affected initiative and epic bodies, and an output path for each body the placement changes.
 
-1. Populate only the branch matching the confirmed destination, each body at its supplied output path:
-   - **Existing task.**
-     - Add the orphan's outcomes to the task criteria.
-     - Add its design to Proposal.
-     - When they exceed the epic's criteria, add epic criteria cited by the task row.
-   - **New task.**
-     - Apply [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
-     - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
-     - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](epic-issue-body.md#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
-     - Number the row where it can start.
-   - **New epic.**
-     - Apply [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body).
-     - Populate the covering row through [Draft Initiative Issue Body](initiative-issue-body.md#draft-initiative-issue-body), with a temporary link standing for the epic's issue until it is saved.
-   - **New initiative.**
-     - Apply [Populate Initiative Issue Body](initiative-issue-body.md#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
-   - **Leave.**
-     - Use the source issue as the destination with disposition Leave, changing no destination body.
-2. For a subsumed orphan, carry its work in the destination body.
-   - Make each outcome a criterion of one invariant.
-   - Put the design in Proposal.
-   - Cite the orphan and any planning record in References.
-3. Return each populated body file with its issue identity, or with its title and labels for a new issue; each temporary link; the destination, including the epic and row for a new task; and the confirmed disposition.
+#### 1. Populate the Confirmed Destination Body
+
+Populate only the branch matching the confirmed destination, each body at its supplied output path:
+- **Existing task.**
+  - Add the orphan's outcomes to the task criteria.
+  - Add its design to Proposal.
+  - When they exceed the epic's criteria, add epic criteria cited by the task row.
+- **New task.**
+  - Apply [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body) with the confirmed task scope, current epic context and output path.
+  - Add the epic criteria the row's Coverage needs where the orphan's outcomes exceed the epic's, as [Destination Work](#destination-work) states.
+  - Link the kept orphan's issue in the row's Task cell, as [Task Delivery](epic-issue-body.md#task-delivery) states for a task with its own issue. A subsumed orphan leaves the cell holding the row id alone until the work is planned and the row gains its work-item file.
+  - Number the row where it can start.
+- **New epic.**
+  - Apply [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body).
+  - Populate the covering row through [Draft Initiative Issue Body](initiative-issue-body.md#draft-initiative-issue-body), with a temporary link standing for the epic's issue until it is saved.
+- **New initiative.**
+  - Apply [Populate Initiative Issue Body](initiative-issue-body.md#populate-initiative-issue-body) from the orphan's scoped problem and confirmed goal.
+- **Leave.**
+  - Use the source issue as the destination with disposition Leave, changing no destination body.
+
+#### 2. Carry Subsumed Orphan Work
+
+For a subsumed orphan, carry its work in the destination body.
+- Make each outcome a criterion of one invariant.
+- Put the design in Proposal.
+- Cite the orphan and any planning record in References.
+
+#### 3. Return the Populated Placement Bodies
+
+Return each populated body file with its issue identity, or with its title and labels for a new issue; each temporary link; the destination, including the epic and row for a new task; and the confirmed disposition.
 
 ### *Rewrite* Orphan Issue
 
@@ -65,15 +89,23 @@ The selected layout, with the original wording preserved for readers.
 
 **Inputs:** Source issue identity, selected destination kind, and the evidence and design the body carries.
 
-1. Fetch the body and discussion live with [Read Tracker Issue](issue.md#read-tracker-issue).
-   - Post the body word for word through [Comment on Issue](issue.md#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
-   - Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
-2. Use the selected [Populate Task Body](task-body.md#populate-task-body), [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body), [Populate Initiative Issue Body](initiative-issue-body.md#populate-initiative-issue-body) or [Populate Standalone Body](standalone-body.md#populate-standalone-body) body.
-   - Carry evidence into Problem and design into Proposal.
-3. Apply [Check Round of Edits](issue-body.md#check-round-of-edits) with the populated body and selected kind conditions before publishing.
-   - Resolve findings.
-   - Apply [Save Tracker Issue](issue.md#save-tracker-issue) with the validated body, title and labels.
-   - Return the saved identity to the caller.
+#### 1. Fetch the Orphan Issue Live
+
+Fetch the body and discussion live with [Read Tracker Issue](issue.md#read-tracker-issue).
+- Post the body word for word through [Comment on Issue](issue.md#comment-on-issue), preceded by the line in [Original Body](#original-body) and a blank line.
+- Skip the comment where the discussion already carries one, since a second hoist of the same issue would otherwise repeat it.
+
+#### 2. Populate the Selected Orphan Body
+
+Use the selected [Populate Task Body](task-body.md#populate-task-body), [Populate Epic Issue Body](epic-issue-body.md#populate-epic-issue-body), [Populate Initiative Issue Body](initiative-issue-body.md#populate-initiative-issue-body) or [Populate Standalone Body](standalone-body.md#populate-standalone-body) body.
+- Carry evidence into Problem and design into Proposal.
+
+#### 3. Check the Rewritten Orphan Body
+
+Apply [Check Round of Edits](issue-body.md#check-round-of-edits) with the populated body and selected kind conditions before publishing.
+- Resolve findings.
+- Apply [Save Tracker Issue](issue.md#save-tracker-issue) with the validated body, title and labels.
+- Return the saved identity to the caller.
 
 ### *Subsume* Orphan Work
 
@@ -81,9 +113,14 @@ The orphan closed, its work tracked by the taking issue.
 
 **Inputs:** Orphan identity and the saved destination evidence that carries its work and cites it.
 
-1. Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
-2. Apply [Close Transferred Work](issue.md#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
-   - Return the confirmed closure or blocker to the caller.
+#### 1. Prepare the Subsumption Comment
+
+Prepare the comment file naming the taking issue and task, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
+
+#### 2. Close the Subsumed Orphan
+
+Apply [Close Transferred Work](issue.md#close-transferred-work) with the orphan identity, confirmed destination evidence and closure comment file, retaining the orphan's body.
+- Return the confirmed closure or blocker to the caller.
 
 ## Fields
 

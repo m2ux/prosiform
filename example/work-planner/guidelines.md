@@ -14,6 +14,7 @@ The rules this skill's files follow alongside the [shared skill guidelines](../g
   - Each part of a hyphenated word is capitalized.
 - **Action titles.**
   Operation, command and mode procedure titles name the action and subject directly, without articles such as a, an or the. Use meaningful subject words to meet the procedure title length.
+  - A [step sub-section](#procedure)'s heading is not a procedure title. Its action is the step's instruction in short, articles included where the instruction reads with them: `#### 1. Read the Brief`.
 - **Italicised verb.**
   An artifact operation's title italicises its leading verb, and nothing else: `### *Apply* Issue Placement`. The emphasis leaves the heading's anchor unchanged, so a link to it keeps its plain text and fragment.
   - The verb separates from the subject, so the anchors one procedure reaches read together as its input and output contract: `*Read*` and `*Fetch*` take evidence in, `*Populate*`, `*Record*` and `*Save*` put state out, `*Check*` and `*Validate*` assert against what they are given.
@@ -21,21 +22,27 @@ The rules this skill's files follow alongside the [shared skill guidelines](../g
 
 ## Procedure
 
-These rules apply to mode procedures and artifact operations.
+These rules apply to mode and protocol procedures and artifact operations.
 
 - **Explicit execution.**
   State the action, its inputs and any condition that selects it. Name the result used by the next step. Branches state where to continue or stop; retries name the repeated operation and refreshed inputs. Distinguish reading a definition from executing a procedure. Resolve timing, caller responsibility and return points in the instructions.
 - **Step verbs.**
-  A step applies an artifact operation and follows a mode, a protocol or a procedure subsection. It runs a command.
+  A step applies an artifact operation and follows a mode, a protocol or a procedure's child section. It runs a command.
 
-- **Subsection titles.**
-  A procedure subsection title contains at least three words and names the action and its subject.
-- **Numbered steps.**
-  A procedure with multiple steps uses consecutive numbers starting at `1.`. Supporting bullets and command blocks are indented beneath their step. A single-step procedure has no numbering or bold action label.
+- **Child section titles.**
+  A procedure's child section, which holds a sequence of its own, is titled with at least three words naming the action and its subject.
+- **Step sub-sections.**
+  A procedure with more than one step writes each step as a sub-section one heading level below the procedure's heading.
+  - The step sub-sections come in the order performed, ahead of the procedure's child sections.
+  - The heading is the step's position, a full stop and its action in title case: `### 6. Publish` under `## Procedure`, linked as `plan-mode.md#6-publish`.
+  - The instruction opens the sub-section. Its bullets, branches and command blocks follow beneath it.
+  - A single-step procedure is one paragraph or bullet, with no heading.
+- **Step anchors.**
+  A step's anchor carries its position, so inserting or removing a step renumbers the anchors of the steps below it. `pf`'s unresolved-link check reports a link left naming an old anchor.
 - **Sub-bullets.**
-  A sub-bullet under a numbered procedure step is in sentence case. The first word is capitalized, and a name keeps its own capitals.
+  A bullet within a step sub-section is in sentence case. The first word is capitalized, and a name keeps its own capitals.
 - **Separate actions.**
-  After a step's opening instruction or scope, put each sentence that advances the sequence in its own bullet, including sequences written as a paragraph. Split comma- and semicolon-separated actions the same way. Keep numbered steps as the outer sequence; use bullets for the actions within a step. Put a shared condition or iteration above its nested actions, preserving order, inputs, validation gates and return points. Keep an input list, action condition or explanatory sentence with the action it qualifies; these are not separate sequence elements.
+  After a step's opening instruction or scope, put each sentence that advances the sequence in its own bullet, including sequences written as a paragraph. Split comma- and semicolon-separated actions the same way. Keep step sub-sections as the outer sequence; use bullets for the actions within a step. Put a shared condition or iteration above its nested actions, preserving order, inputs, validation gates and return points. Keep an input list, action condition or explanatory sentence with the action it qualifies; these are not separate sequence elements.
 - **List introductions.**
   Within a procedure step, a line that introduces or governs one list is plain text at the enclosing level, with the governed items as bullets directly beneath it. Determine this relationship from the meaning of the instructions, regardless of the opening verb, punctuation or existing indentation. Apply the rule at every nesting level. Use bullets for peer actions, alternative branches and sibling groups. Give actions outside an introduction's scope an explicit continuation at the enclosing level.
 - **Dependent instructions.**
@@ -68,7 +75,7 @@ These rules apply to mode procedures and artifact operations.
 These rules govern command and access specifications. Procedural operations follow Procedure and Artifacts below.
 
 - **Spec layout.**
-  A command specification opens with one line on what it does. Its inputs and parameter conditions follow, then its command block or access instructions. Specifications have no numbered steps or bold action labels. The calling operation or mode procedure states when the command runs and what it passes; action preconditions and refusals belong to the governing step.
+  A command specification opens with one line on what it does. Its inputs and parameter conditions follow, then its command block or access instructions. A specification has no steps. The calling operation or mode procedure states when the command runs and what it passes; action preconditions and refusals belong to the governing step.
 - **One command.**
   Each specification exposes one command or access action. Put sequencing, branching, repetition and readback in an artifact operation or mode procedure. A working-directory prefix and output-filter pipeline belong to the command they serve. Optional flags for one command share its specification.
 - **One home.**
@@ -102,11 +109,11 @@ Read this before adding or changing a mode.
 - **No procedure in an outcome.**
   An outcome does not name a procedure, a step, or a command, and it does not link to one.
 - **Procedure.**
-  The top-level procedure is the main path. A short sequence that no other file references stays there. A subsection is an alternative path, a loop whose steps would otherwise be repeated, a unit another file references, or a sequence long enough that the top-level step only names it. Plan mode keeps review, and keeping the goal current, in that sequence. Keeping the goal current repeats the review. A subsection opens with one line on what it is for, and that line does not restate the steps. A step links to the user-goal outcome and does not restate it. A step applies the body artifact's operation rather than copying it.
+  The top-level procedure is the main path. A short sequence that no other file references stays there. A child section is an alternative path, a loop whose steps would otherwise be repeated, a unit another file references, or a sequence long enough that the top-level step only names it. Plan mode keeps review, and keeping the goal current, in that sequence. Keeping the goal current repeats the review. A child section opens with one line on what it is for, ahead of its step sub-sections, and that line does not restate the steps. A step links to the user-goal outcome and does not restate it. A step applies the body artifact's operation rather than copying it.
 - **Preamble.**
   The paragraphs after the title state what the mode does, and a paragraph of its own follows them: `Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md) and ensure all [Outcomes](#outcomes) are met.`
 - **Procedure steps.**
-  Each numbered step opens with a bold sentence-case action label, with its instructions on the next line. Mode procedures identify required context in their instructions and call sites, without a separate Inputs declaration.
+  Each step is a [step sub-section](#procedure) whose heading's action names what the step does, and its instructions open the sub-section. Mode procedures identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
@@ -133,7 +140,7 @@ Read this before adding or changing a protocol.
 - **Preamble.**
   The paragraphs after the title state what the protocol changes, and a paragraph of its own follows them: `Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conventions](../conventions.md).`
 - **Procedure.**
-  The steps follow the mode procedure rules: numbered, each opening with a bold sentence-case action label with its instructions on the next line. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
+  The steps follow the mode procedure rules: each is a [step sub-section](#procedure) whose heading's action names what the step does, and its instructions open the sub-section. Protocols identify required context in their instructions and call sites, without a separate Inputs declaration.
 - **No closing summary.**
   What a protocol changes, and what a blocker leaves unchanged, is stated by the step that changes it. A protocol carries no section restating the result; a reader following the procedure and its links has it already, and a summary goes stale against the steps it describes.
 - **No spare parts.**
@@ -177,9 +184,9 @@ Read this before adding or changing an artifact.
 - **Common file.**
   The common file names no kind. A kind's table, its title, and a check that applies only to that kind live on that kind's file. The common file holds the rules every body shares.
 - **Operations.**
-  Every procedural sequence occupies a named `###` subsection under Operations, including a kind's population path. Operations itself contains no steps; incorporate any overarching sequence into the named operations that perform its constituent work. Omit Operations when the artifact has only command specifications. Each subsection opens with one line on what it is for, followed by its **Inputs:** line and instructions. The opening line does not restate the steps. A step links to the shape it produces and does not restate it. A kind step links to the common procedure unit it uses and adds only the further population. It does not copy the shared rules.
+  Every procedural sequence occupies a named `###` subsection under Operations, including a kind's population path. Operations itself contains no steps; incorporate any overarching sequence into the named operations that perform its constituent work. Omit Operations when the artifact has only command specifications. Each subsection opens with one line on what it is for, followed by its **Inputs:** line, then its steps. The opening line does not restate the steps. A step links to the shape it produces and does not restate it. A kind step links to the common procedure unit it uses and adds only the further population. It does not copy the shared rules.
 - **Operation steps.**
-  Address instructions directly to the agent, leading each step with its action. Steps have no separate bold introductory label. Multiple steps use consecutive numbering; an operation with one step uses one bullet and counts as a procedure.
+  Address instructions directly to the agent, leading each step with its action. Multiple steps are [step sub-sections](#procedure), each headed by an action written from its leading instruction; an operation with one step uses one bullet and counts as a procedure.
 - **Returned output.**
   State what the operation returns within its instructions. Do not add a separate Result line.
 - **Population conditions.**
