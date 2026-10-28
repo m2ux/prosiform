@@ -12,6 +12,16 @@ A mode's steps are what a dispatching session, a guideline or a reviewer most of
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | Mode procedures as step sub-sections: scope, design and the checks it requires |
+| [Validation](validation.md) | The inspection against AC2 and the results of `make links`, `make corpus` and `make check` |
+| [Change list](change-list.md) | The plan changes this delivery session applied and held |
+
+## Decisions
+
+- **Action titles do not bind step headings.**
+  - W01 left open whether the no-articles Action titles rule binds a step heading.
+  - A step heading is not a procedure title, so its action keeps the step's label as written, articles included: `#### 1. Read the Brief`.
+  - `example/work-planner/guidelines.md` states it under Action titles. (Delivery session, under the brief's allowance, 2026-10-28.)
 
 ## Links
 
