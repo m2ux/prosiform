@@ -9,8 +9,8 @@
 # nothing. The corpus, invocation, conformance and independence checks reach
 # the build under test through the corpus runner, and the last two read the
 # corpus through the manifest reader beside it, which reads `jsonschema` from
-# that same group, so the four run through it. The smoke, layout, table, link
-# and vocabulary checks depend on the standard library alone and run under
+# that same group, so the four run through it. The smoke, layout, table, link,
+# vocabulary and step checks depend on the standard library alone and run under
 # `python3` directly.
 #
 # `make smoke` is the one check that does not run the build from this
@@ -47,9 +47,9 @@ UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps render
 
-check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps
 
 test:
 	cd src && uv run --frozen pytest
@@ -95,6 +95,9 @@ conformance:
 
 independence:
 	$(UV_RUN) python checks/independence.py
+
+steps:
+	python3 checks/steps.py
 
 render:
 	python3 checks/render.py
