@@ -12,6 +12,7 @@ Every corpus restated how to use pf in prose of its own. That prose now describe
 
 | Artifact | What it holds |
 | --- | --- |
+| [W09 work item](w09.md) | The bare-`pf` guide, the bootstrap retirement and the documentation sweep |
 
 ## Links
 
