@@ -1,0 +1,15 @@
+description = "A dispatched section of headings and bullets carries no numbered step, and a target's shape is the corpus's convention, so the section's bundle publishes beside the entry's with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan__fields.bundle.md"]
+diagnostics = []

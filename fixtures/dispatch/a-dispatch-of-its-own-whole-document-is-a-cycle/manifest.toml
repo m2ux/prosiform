@@ -1,0 +1,20 @@
+description = "A dispatched link in a selected section naming the whole document that writes it dispatches a bundle that carries the same link, so the chain returns to its own bundle and the run publishes nothing, refusing the cycle."
+
+clauses = [
+  "Link classification and resource handling — Dispatching its own document",
+  "Link classification and resource handling — Dispatch cycles",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md#steps"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_DISPATCH_CYCLE"
+reference = "guide.md"
+chain = ["guide.md#steps", "guide.md", "guide.md"]

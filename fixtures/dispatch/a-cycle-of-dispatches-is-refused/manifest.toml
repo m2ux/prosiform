@@ -1,0 +1,19 @@
+description = "A chain of dispatches returning to a target already on it would have its sub-agents dispatch one another without end, so the run publishes nothing and fails, naming the chain up to the hop that returns."
+
+clauses = [
+  "Link classification and resource handling — Dispatch cycles",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_DISPATCH_CYCLE"
+reference = "plan.md"
+chain = ["guide.md", "plan.md", "review.md", "plan.md"]

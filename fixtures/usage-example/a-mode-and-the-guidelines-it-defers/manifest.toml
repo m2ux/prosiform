@@ -3,7 +3,7 @@ description = "The usage example that compiles the Revise mode bundles that mode
 clauses = [
   "Usage examples",
   "Link classification and resource handling — The deferral mark",
-  "Link classification and resource handling — A withheld link's destination",
+  "Link classification and resource handling — A deferred link's destination",
   "Link classification and resource handling — Local Markdown links resolving outside the root",
 ]
 

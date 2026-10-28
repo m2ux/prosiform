@@ -1,7 +1,7 @@
 description = "A deferred link is published with its text and the target's path from the allowed source root although another source carried its target into the bundle, so what one author deferred is not changed by another author's reference."
 
 clauses = [
-  "Link classification and resource handling — A withheld link's destination",
+  "Link classification and resource handling — A deferred link's destination",
   "Bundle destinations — Internal links",
 ]
 

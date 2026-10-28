@@ -21,10 +21,13 @@ the working directory, or the folder the manifest's `-o` names.
 
 A difference names the expectation it belongs to and locates itself within
 it. Every file the run creates under the fixture or its working directory
-is what the run wrote. Each is read and removed, so every run starts from a
-directory holding no output, and is compared by name with the bundles the
-manifest declares: a declared bundle the run did not write and a file no
-declaration names are each a difference. A bundle is compared as bytes and
+is what the run wrote. A run writes its bundles into one folder of its own,
+named for its entry bundle, so each file is compared by its name within
+that folder with the bundles the manifest declares: a declared bundle the
+run did not write, a file no declaration names, a file written outside a
+folder of the run's own, and a folder named for no declared bundle are
+each a difference. Each file and folder is read and removed, so every run
+starts from a directory holding no output. A bundle is compared as bytes and
 located by byte offset, since the preservation invariant turns on newline
 spelling and the trailing newline; each rendered window spells its control
 bytes, so a CRLF against an LF is visible rather than invisible. Standard
@@ -80,6 +83,7 @@ FAULT = "fault"
 INVOCATION = "invocation"
 EXIT_STATUS = "expected.exit_status"
 BUNDLES = "expected.bundles"
+BUNDLE_SUFFIX = ".bundle.md"
 STDOUT_TEXT = "expected.stdout_contains"
 DIAGNOSTICS = "expected.diagnostics"
 
@@ -239,47 +243,87 @@ def compare_stdout(declared: Sequence[str], produced: bytes) -> list[Difference]
     return [Difference(STDOUT_TEXT, summary, tuple(detail))]
 
 
-def files(*directories: Path) -> set[Path]:
-    """Every file under the directories, a linked directory left unentered."""
+def entries(*directories: Path) -> set[Path]:
+    """Every file and folder under the directories, a linked one left unentered."""
     return {
         Path(walked, name)
         for directory in directories
-        for walked, _, names in os.walk(directory)
-        for name in names
+        for walked, folders, names in os.walk(directory)
+        for name in [*folders, *names]
     }
 
 
-def collected(created: set[Path]) -> list[tuple[str, bytes]]:
-    """Each file the run created, by name and bytes, removed once it is read."""
+@dataclass(frozen=True)
+class Written:
+    """One file a run created: the folder of the run it sits in, and its bytes."""
+
+    folder: str | None
+    name: str
+    data: bytes
+
+
+def collected(created: set[Path]) -> list[Written]:
+    """Each file the run created, by folder and name, removed with its folder."""
+    folders = {path for path in created if path.is_dir() and not path.is_symlink()}
     written = []
-    for path in sorted(created):
-        written.append((path.name, path.read_bytes()))
+    for path in sorted(created - folders):
+        owned = path.parent.name if path.parent in folders else None
+        written.append(Written(owned, path.name, path.read_bytes()))
         path.unlink()
+    for folder in sorted(folders, key=lambda one: len(one.parts), reverse=True):
+        folder.rmdir()
     return written
 
 
 def compare_bundles(
-    fixture: Path, declared: Sequence[str], written: Sequence[tuple[str, bytes]]
+    fixture: Path, declared: Sequence[str], written: Sequence[Written]
 ) -> list[Difference]:
-    """The files the run wrote against the bundles the manifest declares, by name."""
+    """The files the run wrote against the bundles the manifest declares, by name.
+
+    A declared bundle is matched by its name within the folder the run
+    wrote its bundles into, and that folder is named for one of them.
+    """
     expected = {Path(path).name: (fixture / path).read_bytes() for path in declared}
     produced: dict[str, bytes] = {}
     differences = []
-    for name, data in written:
-        if name in produced:
-            differences.append(Difference(BUNDLES, f"the run wrote {name} twice"))
-        elif name not in expected:
+    folders = sorted({one.folder for one in written if one.folder is not None})
+    if len(folders) > 1:
+        differences.append(
+            Difference(
+                BUNDLES, f"the run wrote into {len(folders)} folders", tuple(folders)
+            )
+        )
+    for folder in folders:
+        if expected and f"{folder}{BUNDLE_SUFFIX}" not in expected:
             differences.append(
                 Difference(
                     BUNDLES,
-                    f"the run wrote {name}, which the manifest declares no bundle for",
+                    f"the run wrote its bundles into {folder}, which names no "
+                    f"bundle the manifest declares",
+                )
+            )
+    for one in written:
+        if one.folder is None:
+            differences.append(
+                Difference(
+                    BUNDLES, f"the run wrote {one.name} outside a folder of its own"
+                )
+            )
+        if one.name in produced:
+            differences.append(Difference(BUNDLES, f"the run wrote {one.name} twice"))
+        elif one.name not in expected:
+            differences.append(
+                Difference(
+                    BUNDLES,
+                    f"the run wrote {one.name}, which the manifest declares no bundle "
+                    f"for",
                     (
-                        f"{count(len(data), 'byte')} written, "
-                        f"beginning {render(data[:WINDOW])}",
+                        f"{count(len(one.data), 'byte')} written, "
+                        f"beginning {render(one.data[:WINDOW])}",
                     ),
                 )
             )
-        produced[name] = data
+        produced[one.name] = one.data
     for name, data in expected.items():
         if name in produced:
             differences.extend(compare_bundle(name, data, produced[name]))
@@ -495,7 +539,7 @@ def run_fixture(fixture: Path) -> Result:
             *invocation["arguments"],
         ]
         held = (working, invoked_from) if invoked_from.is_dir() else (working,)
-        before = files(*held)
+        before = entries(*held)
         try:
             completed = subprocess.run(
                 argv,
@@ -513,7 +557,7 @@ def run_fixture(fixture: Path) -> Result:
             )
             return Result(name, (difference,), None, b"", b"")
         finally:
-            written = collected(files(*held) - before)
+            written = collected(entries(*held) - before)
 
         differences = [
             *compare_exit_status(expected["exit_status"], completed.returncode),

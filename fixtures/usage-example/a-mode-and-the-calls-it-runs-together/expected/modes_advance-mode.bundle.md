@@ -11,7 +11,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - Use the returned owner and board number for the sync and read steps.
    - Resolve a pending theme selection before continuing.
 2. **Sync.**
-   Follow [⇉ Sync Mode](modes/sync-mode.md) for each open initiative on the selected board, with the allowance the caller supplied.
+   Follow [Sync Mode](#dispatch-sync-mode) for each open initiative on the selected board, with the allowance the caller supplied.
    - Wait for its saved delivery results before the read step.
    - Return any blocker that prevents current delivery from being established.
 3. **Read the evidence.**
@@ -29,6 +29,10 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 6. **Report.**
    Report each move and each `order`, `ask`, `wait` and `next` line using [Report Lines](#report-lines).
    - Return the change list with the queue, so the caller reports each decision this mode made and each it held.
+
+### Dispatch Sync Mode
+
+Dispatch `modes_sync-mode.bundle.md` to a sub-agent.
 
 ## Outcomes
 

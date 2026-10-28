@@ -228,7 +228,7 @@
       }
     },
     "bundlePath": {
-      "description": "A bundle the fixture expects, held under expected/ and named as the run names it: each selection's name, the names joined with + when a run has several entries, then .bundle.md.",
+      "description": "A bundle the fixture expects, held under expected/ and named as the run names it in its folder: each selection's name, the names joined with + when a run has several entries, then .bundle.md.",
       "type": "string",
       "pattern": "^expected/[^/\\\\]+\\.bundle\\.md$"
     },
@@ -236,6 +236,8 @@
       "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
       "enum": [
         "E_AMBIGUOUS_SOURCE_HEADING",
+        "E_DISPATCH_CYCLE",
+        "E_HEADING_COLLISION",
         "E_HEADING_DEPTH_OVERFLOW",
         "E_INVALID_ENCODING",
         "E_INVALID_FRONTMATTER",
@@ -264,9 +266,7 @@
       "description": "The warning catalogue: the stable warning codes the design declares, each prefixed W_. A warning accompanies a successful run rather than deciding a failing one, so a fixture declaring one states what a run writes to standard error while still succeeding. A diagnostic whose severity is warning draws its code from here.",
       "enum": [
         "W_COINCIDENT_HEADING",
-        "W_DISPATCH_CYCLE",
         "W_DISPATCH_DEPTH",
-        "W_DISPATCH_NOT_PROCEDURAL",
         "W_DISPATCH_SELF",
         "W_RESOURCE_PORTABILITY",
         "W_RUN_SET_SHAPE"

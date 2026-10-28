@@ -1,0 +1,20 @@
+description = "A run whose folder, named for its entry, holds a document the run reached as a dependency is refused as invalid usage, so a run never publishes over a source it read."
+
+clauses = [
+  "CLI contract — -o DIR, a run folder holding any captured source is refused",
+  "Compile before publishing — step 4, discover the recursive dependency graph",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+  "CLI contract, one code for the form of the command line, and the message says which fault it was",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["guide/note.md"]

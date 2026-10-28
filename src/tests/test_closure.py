@@ -198,10 +198,11 @@ def test_operators_are_each_operator_one_text_opens_with() -> None:
     assert operators("the ¬ rules") == ()
 
 
-def test_an_unspaced_deferral_mark_is_published_as_written() -> None:
+def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
     assert unmarked("¬  the rules") == "the rules"
     assert unmarked("¬the rules") == "¬the rules"
-    assert unmarked("⇉ the rules") == "⇉ the rules"
+    assert unmarked("⇉ the rules") == "the rules"
+    assert unmarked("⫽ the rules") == "⫽ the rules"
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:

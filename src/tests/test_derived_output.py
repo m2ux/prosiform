@@ -1,16 +1,25 @@
-"""Entry-derived destinations through the real CLI and atomic publication gate."""
+"""Entry-derived folders and names through the real CLI and its atomic publication.
+
+A run writes its bundles into a folder under the output folder named for
+its entry, and the entry's bundle in it carries that name with the bundle
+suffix.
+"""
 
 import os
 from contextlib import chdir
 from io import StringIO
 from pathlib import Path
-from typing import Any
 
 import pytest
 from test_cli import Run, written
 from test_file_roots import rooted
 
 from prosiform import cli
+
+
+def bundle(folder: Path, name: str) -> Path:
+    """The entry bundle a run named so writes under one output folder."""
+    return folder / name / f"{name}.bundle.md"
 
 
 def invoke(root: Path, *arguments: str) -> Run:
@@ -28,9 +37,9 @@ def test_file_and_section_names_follow_the_working_directory_path(
     name = f"Skill/modes/Run_it{suffix}"
     written(tmp_path, name, rooted("..", "# Run\n\n## Part\n\nSelected.\n"))
     run = invoke(tmp_path, name + fragment)
-    output = "Skill_modes_Run_it" + ("__part" if fragment else "") + ".bundle.md"
+    output = "Skill_modes_Run_it" + ("__part" if fragment else "")
     assert run.status == 0 and run.stdout == ""
-    assert "Selected." in (tmp_path / output).read_text()
+    assert "Selected." in bundle(tmp_path, output).read_text()
 
 
 @pytest.mark.parametrize(
@@ -47,7 +56,7 @@ def test_equivalent_selections_share_one_derived_destination(
     written(tmp_path, "dir/a.md", "# A\n\n## Part\n\nContent.\n")
     run = invoke(tmp_path, *arguments)
     assert run.status == 0 and run.stdout == ""
-    assert len(list(tmp_path.glob("dir_a*.bundle.md"))) == 1
+    assert len(list(tmp_path.glob("dir_a*/dir_a*.bundle.md"))) == 1
 
 
 @pytest.mark.parametrize(
@@ -69,7 +78,7 @@ def test_distinct_selections_join_their_names_in_entry_order(
     flags = ["-c"] if check else []
     run = invoke(tmp_path, *flags, *references)
     assert run.status == 0 and run.stdout == ""
-    published = sorted(path.name for path in tmp_path.glob("*.bundle.md"))
+    published = sorted(path.name for path in tmp_path.glob("*/*.bundle.md"))
     assert published == ([] if check else [name])
 
 
@@ -78,7 +87,7 @@ def test_a_declared_root_does_not_rename_an_entry_s_output(tmp_path: Path) -> No
     written(tmp_path, "library/b.md", rooted(".", "# B\n"))
     run = invoke(tmp_path, "entries/a.md")
     assert run.status == 0
-    assert (tmp_path / "entries_a.bundle.md").is_file()
+    assert bundle(tmp_path, "entries_a").is_file()
 
 
 def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None:
@@ -86,64 +95,68 @@ def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None
     (tmp_path / "work").mkdir()
     run = invoke(tmp_path / "work", "../entries/a.md")
     assert run.status == 0
-    assert (tmp_path / "work" / ".._entries_a.bundle.md").is_file()
+    assert bundle(tmp_path / "work", ".._entries_a").is_file()
 
 
 def test_fragment_referrer_and_check_mode(tmp_path: Path) -> None:
     written(tmp_path, "dir/a.md", rooted(".", "# A\n\n## Part\n\nContent.\n"))
     assert invoke(tmp_path, "-c", "-f", "dir/a.md", "#part").status == 0
-    assert not (tmp_path / "dir_a__part.bundle.md").exists()
+    assert not (tmp_path / "dir_a__part").exists()
     assert invoke(tmp_path, "-f", "dir/a.md", "#part").status == 0
-    assert "Content." in (tmp_path / "dir_a__part.bundle.md").read_text()
+    assert "Content." in bundle(tmp_path, "dir_a__part").read_text()
 
 
 @pytest.mark.parametrize("deferred", [False, True])
 @pytest.mark.parametrize("check", [False, True])
-def test_derived_destination_cannot_overlap_any_captured_source(
+def test_derived_folder_cannot_hold_any_captured_source(
     tmp_path: Path, deferred: bool, check: bool
 ) -> None:
     mark = "¬ " if deferred else ""
-    written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a.bundle.md)\n")
-    written(tmp_path, "a.bundle.md", "# Captured\n\nPreserve.\n")
+    written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a/a.bundle.md)\n")
+    written(tmp_path, "a/a.bundle.md", "# Captured\n\nPreserve.\n")
     run = invoke(tmp_path, *(["-c"] if check else []), "a.md")
     assert run.status == 2 and run.stdout == ""
-    assert (tmp_path / "a.bundle.md").read_text() == "# Captured\n\nPreserve.\n"
+    assert bundle(tmp_path, "a").read_text() == "# Captured\n\nPreserve.\n"
 
 
-def test_derived_publication_is_one_atomic_replace(
+def test_derived_publication_swaps_the_folder_in_whole(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     written(tmp_path, "a.md", "# A\n\nComplete.\n")
-    written(tmp_path, "a.bundle.md", "Existing.")
-    original = os.replace
+    written(tmp_path, "a/a.bundle.md", "Existing.")
+    original = os.rename
     calls = []
 
-    def replace(source: Path, target: Path) -> None:
-        assert target.read_text() == "Existing."
-        assert "Complete." in source.read_text()
-        calls.append((source, target))
+    def rename(source: Path, target: Path) -> None:
+        calls.append((Path(source).name, Path(target).name))
         original(source, target)
 
-    monkeypatch.setattr(os, "replace", replace)
+    monkeypatch.setattr(os, "rename", rename)
     assert invoke(tmp_path, "a.md").status == 0
-    assert len(calls) == 1
-    assert not list(tmp_path.glob(".a.bundle.md.*"))
+    [(aside, moved), (staged, placed)] = calls
+    assert aside == "a" and moved.startswith(".a.old.")
+    assert staged.startswith(".a.new.") and placed == "a"
+    assert "Complete." in bundle(tmp_path, "a").read_text()
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a", "a.md"]
 
 
-def test_atomic_failure_preserves_existing_destination(
+def test_atomic_failure_preserves_existing_folder(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     written(tmp_path, "a.md", "# A\n")
-    written(tmp_path, "a.bundle.md", "Existing.")
+    written(tmp_path, "a/a.bundle.md", "Existing.")
+    original = os.rename
 
-    def refuse(*args: Any) -> None:
-        raise OSError("publication refused")
+    def refuse(source: Path, target: Path) -> None:
+        if ".new." in str(source):
+            raise OSError("publication refused")
+        original(source, target)
 
-    monkeypatch.setattr(os, "replace", refuse)
+    monkeypatch.setattr(os, "rename", refuse)
     run = invoke(tmp_path, "a.md")
     assert run.status == 3 and run.stdout == ""
-    assert (tmp_path / "a.bundle.md").read_text() == "Existing."
-    assert not list(tmp_path.glob(".a.bundle.md.*"))
+    assert bundle(tmp_path, "a").read_text() == "Existing."
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a", "a.md"]
 
 
 @pytest.mark.parametrize("flags", [("-x", "source-changed"), ("-O", "1")])
@@ -151,10 +164,10 @@ def test_failed_validation_preserves_existing_derived_output(
     tmp_path: Path, flags: tuple[str, ...]
 ) -> None:
     written(tmp_path, "a.md", "# A\n")
-    written(tmp_path, "a.bundle.md", "Existing.")
+    written(tmp_path, "a/a.bundle.md", "Existing.")
     run = invoke(tmp_path, *flags, "a.md")
     assert run.status == 1 and run.stdout == ""
-    assert (tmp_path / "a.bundle.md").read_text() == "Existing."
+    assert bundle(tmp_path, "a").read_text() == "Existing."
 
 
 def test_filename_length_failure_is_publication_failure(tmp_path: Path) -> None:

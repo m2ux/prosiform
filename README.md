@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v3](https://img.shields.io/badge/profile-skill--markdown--v3-blue.svg)](https://github.com/m2ux/prosiform/blob/906646ca1dd6d75e7620cc32a01a2a43c90be032/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v3](https://img.shields.io/badge/profile-skill--markdown--v3-blue.svg)](https://github.com/m2ux/prosiform/blob/a967754811fb00ba888fbac061d27ec2daaa00a2/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
@@ -49,7 +49,7 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. A run writes its bundle under its derived name into the working directory, or into the existing folder `-o` names, and several entries join their names with `+`. File and directory names use hyphens rather than underscores.
+Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry, in the working directory or in the existing folder `-o` names: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. File and directory names use hyphens rather than underscores.
 
 ### Bundle a Source and its Dependencies
 
