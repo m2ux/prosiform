@@ -12,6 +12,9 @@ Every later row of the epic publishes a set of bundles from one run: one for the
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | Validating a run's whole set of bundles before any write, `-c` over the set, and a rename refused part-way |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
