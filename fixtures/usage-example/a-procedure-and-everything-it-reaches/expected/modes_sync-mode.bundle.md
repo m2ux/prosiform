@@ -1,3 +1,9 @@
+# Prosiform
+
+## Dispatch
+
+Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+
 # Sync Mode
 
 Records delivery on an initiative, its epics, and their task issues. Each task that has a pull request is linked to that pull request, open or merged. Criteria that now hold are recorded, complete rows are marked done, complete issues are closed, and the initiative's theme board is brought up to date.
@@ -46,15 +52,15 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ### Dispatch Delivery Recording
 
-Dispatch `protocols_delivery-recording.bundle.md` to a sub-agent.
+Dispatch `protocols_delivery-recording.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ### Dispatch Epic Closure
 
-Dispatch `protocols_epic-closure.bundle.md` to a sub-agent.
+Dispatch `protocols_epic-closure.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ### Dispatch Understand Mode
 
-Dispatch `modes_understand-mode.bundle.md` to a sub-agent.
+Dispatch `modes_understand-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ## Outcomes
 

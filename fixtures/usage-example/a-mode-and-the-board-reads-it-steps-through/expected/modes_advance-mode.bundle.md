@@ -1,3 +1,9 @@
+# Prosiform
+
+## Dispatch
+
+Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+
 # Advance Mode
 
 Decides which initiatives and epics on a theme board are underway and which are next, from current recorded delivery.
@@ -32,7 +38,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ### Dispatch Sync Mode
 
-Dispatch `modes_sync-mode.bundle.md` to a sub-agent.
+Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ## Outcomes
 

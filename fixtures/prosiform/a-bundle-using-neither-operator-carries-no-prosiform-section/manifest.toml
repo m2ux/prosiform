@@ -1,0 +1,15 @@
+description = "A bundle whose links carry no dispatch operator and no parallel dispatch mark carries no Prosiform section, so it opens on its own first section as it did before."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

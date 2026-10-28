@@ -1,0 +1,15 @@
+description = "An entry opening on content above its title carries that content first, then the Prosiform section, then the dispatch sub-section the content takes, then its title."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md"]
+diagnostics = []
