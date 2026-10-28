@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["states.md"]
+arguments = ["-o", "..", "states.md"]
 
 [expected]
 exit_status = 0

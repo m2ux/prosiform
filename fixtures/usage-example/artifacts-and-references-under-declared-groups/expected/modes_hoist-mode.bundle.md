@@ -26,7 +26,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - A caller naming the placement, settled with the user before the hoist, has it applied rather than offered again.
    - Carry the updated change list into the next orphan.
 5. **Place.**
-   Follow [⇉ Issue Placement](protocols/issue-placement.md) once for each confirmed placement, with the placement, its current source and destination records, the affected initiative and epic bodies with an output path for each body it changes, the planning record that registered each task row, current pull request records, the confirmed numbering map when there is one, the caller's allowance when it has one, the run's change list, each label's colour and description, and the caller's commit message file when it asks to publish.
+   Follow [Issue Placement](#dispatch-issue-placement) once for each confirmed placement, with the placement, its current source and destination records, the affected initiative and epic bodies with an output path for each body it changes, the planning record that registered each task row, current pull request records, the confirmed numbering map when there is one, the caller's allowance when it has one, the run's change list, each label's colour and description, and the caller's commit message file when it asks to publish.
    - Carry the change list it returns into the next placement.
    - Keep each blocker and unresolved finding it returns for the report.
 6. **Set epic priority.**
@@ -45,6 +45,10 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 8. **Report.**
    Report each orphan's placement, the issues changed, created or closed, the priority labels saved, the orphans left, and each blocker and unresolved finding.
    - Return the [change list](#change-list) with it, so the caller reports each placement this mode made and each it held.
+
+### Dispatch Issue Placement
+
+Dispatch `protocols_issue-placement.bundle.md` to a sub-agent.
 
 ## Outcomes
 

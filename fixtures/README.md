@@ -79,13 +79,13 @@ chain = ["guide.md", "../outside.md"]
 | `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. Source metadata supplies dependency roots. |
 | `invocation.arguments` | The arguments of the invocation, in order. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
-| `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes, each named as the run names the bundle. A run writing no bundle declares none. |
+| `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes into its folder, each named as the run names the bundle. A run writing no bundle declares none. |
 | `expected.stdout_contains` | Optional. The text standard output must carry, where the whole of the response is a build's own. Standard output carries no bundle, so a fixture declaring none declares an empty stream. |
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
 | `fault` | Optional. The fault the run performs on itself, `source-changed` or `internal`, which the runner asks for as `-x NAME`. A fixture declaring none declares a run that meets no fault. |
 
-The runner uses the working directory the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language. The runner names no output folder, so a run writes its bundle where its own arguments send it: the working directory, or the folder an `-o` among them names.
+The runner uses the working directory the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language. The runner names no output folder, so a run writes its folder of bundles where its own arguments send it: the working directory, or the folder an `-o` among them names.
 
 ## The clause form
 
@@ -111,7 +111,7 @@ Two families are named by no fixture, each because the condition it turns on is 
 
 A published bundle is expected as a file rather than as text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
 
-A run's working directory is the fixture's own, so a bundle the run writes lands among the fixture's files. Every file the run creates under the fixture or its working directory is the run's output: it is compared by name with the bundles the manifest declares and removed, so a run writing a file no bundle names fails, and a validation-only run declares no bundle at all:
+A run's working directory is the fixture's own, so the folder a run writes its bundles into lands among the fixture's files. Every file the run creates under the fixture or its working directory is the run's output: it is compared by its name within the run's folder with the bundles the manifest declares and removed with that folder, so a run writing a file no bundle names fails, as does one writing a file outside a folder of its own or into a folder named for no declared bundle, and a validation-only run declares no bundle at all:
 
 ```toml
 [invocation]
@@ -153,7 +153,7 @@ code = "E_INVALID_USAGE"
 message_contains = ["#a-section", "-f"]
 ```
 
-`E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the bundle path that named an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
+`E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the run folder that held an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
 
 The contract gathers seven faults under the code, and each is a fixture, so what the corpus covers under one code is read from the corpus rather than assumed from the code:
 
@@ -164,7 +164,7 @@ The contract gathers seven faults under the code, and each is a fixture, so what
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
 | A fragment-only reference with no `-f` | [`cli/fragment-only-reference-without-from`](cli/fragment-only-reference-without-from/manifest.toml) |
-| A bundle path naming an input source | [`cli/output-naming-a-dependency-source`](cli/output-naming-a-dependency-source/manifest.toml) |
+| A run folder holding an input source | [`cli/run-folder-holding-a-dependency-source`](cli/run-folder-holding-a-dependency-source/manifest.toml) |
 | Standard output named as the output folder | [`cli/standard-output-named-as-the-output-folder`](cli/standard-output-named-as-the-output-folder/manifest.toml) |
 
 An entry reference whose own spelling the grammar does not admit — a query, an encoded separator, an over-long escape, an escape decoding to no UTF-8 — carries the same code, and the `normalization/` family states it where the clause under test is the resolution sequence rather than the command line's shape.
@@ -226,8 +226,10 @@ An error decides a failing run.
 | Code | Declared by |
 | --- | --- |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
+| `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
 | `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
-| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow — an emitted heading beyond H6. |
+| `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle. |
+| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow, and Link classification and resource handling, Dispatch sub-sections — an emitted heading beyond H6, a dispatch sub-section among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML, duplicate keys, or an invalid root. |
@@ -253,10 +255,8 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | Code | Declared by |
 | --- | --- |
 | `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
-| `W_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatches returning to a target already on it. |
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
-| `W_DISPATCH_NOT_PROCEDURAL` | Link classification and resource handling, Dispatched procedures — a dispatched target whose selected content carries no numbered step. |
-| `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path. |
+| `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 | `W_RUN_SET_SHAPE` | Link classification and resource handling, Run-set shape — a run-set link naming a target that holds anything but one bulleted list whose every item links a Markdown document or section under the root. |
 
@@ -280,7 +280,7 @@ The runner uses `invocation.cwd`, appends `-d json`, and `-x` where the manifest
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |
-| `expected.bundles` | Every file the run creates under the fixture or its working directory, by name against the bundles declared, then byte for byte. Each is removed once read, so the directory a fixture leaves behind is the one its manifest declares. | A declared bundle the run did not write; a file no bundle names, with the bytes it holds; and, for a bundle that differs, the offset of the first differing byte, the line and byte column it falls on, and a window of each side whose control bytes are spelled out, so a CRLF against an LF is visible. |
+| `expected.bundles` | Every file the run creates under the fixture or its working directory, by its name within the run's folder against the bundles declared, then byte for byte, the folder named for one of them. Each is removed with its folder once read, so the directory a fixture leaves behind is the one its manifest declares. | A declared bundle the run did not write; a file no bundle names, with the bytes it holds; a file written outside a folder of the run's own; a folder named for no declared bundle; and, for a bundle that differs, the offset of the first differing byte, the line and byte column it falls on, and a window of each side whose control bytes are spelled out, so a CRLF against an LF is visible. |
 | `expected.stdout_contains` | For each declared entry, that standard output carries it; with none declared, that standard output is empty. | Each entry the output is missing, or the bytes an empty stream carried, and the output it produced. |
 | `expected.exit_status` | As the integer the contract's categories declare. | The status expected and the status the run returned. |
 | `expected.diagnostics` | In order, each on the fields the manifest declares, so a diagnostic carrying a remedy the manifest does not name still matches. A declared `message_contains` holds the message to the text it names, and a diagnostic declaring none is matched without reading its message. | The position of a diagnostic missing, extra or carrying another code; both orders when the expected diagnostics arrive in another one; the field, with both values, when one differs; and each text a message is missing, with the message it carried. |

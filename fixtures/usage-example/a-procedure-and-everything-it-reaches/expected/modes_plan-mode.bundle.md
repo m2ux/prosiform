@@ -73,11 +73,15 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
    - Repeat goal and ordering review on changed bodies, as step 7 does, before returning readiness.
 9. **Record delivered work.**
    When work has landed:
-   - Follow [⇉ Sync Mode](modes/sync-mode.md) for the affected initiative.
+   - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
    - For each unplaced task row it returns pending:
      - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
      - Repeat Sync Mode with the refreshed epic.
    - Return the saved delivery state or blockers.
+
+### Dispatch Sync Mode
+
+Dispatch `modes_sync-mode.bundle.md` to a sub-agent.
 
 ## Outcomes
 

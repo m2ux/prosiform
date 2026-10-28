@@ -1,4 +1,4 @@
-description = "A dispatched link naming a section of the document that writes it through that document's own path is the same dispatch as one naming the section by fragment alone, so the bundle publishes and the run warns."
+description = "A dispatched link naming a section of the document that writes it through that document's own path is the same dispatch as one naming the section by fragment alone, so both bundles publish and the run warns."
 
 clauses = [
   "Link classification and resource handling — Dispatching its own document",
@@ -11,7 +11,7 @@ arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide.bundle.md"]
+bundles = ["expected/guide.bundle.md", "expected/guide__steps.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

@@ -6,5 +6,13 @@
 
 ### Reviews
 
-- [⇉ Review the source](source-review.md)
-- [⇉ Review the tests](test-review.md)
+- [Review the source](#dispatch-review-the-source)
+- [Review the tests](#dispatch-review-the-tests)
+
+#### Dispatch Review the source
+
+Dispatch `source-review.bundle.md` to a sub-agent.
+
+#### Dispatch Review the tests
+
+Dispatch `test-review.bundle.md` to a sub-agent.
