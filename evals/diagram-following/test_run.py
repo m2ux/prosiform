@@ -20,6 +20,7 @@ from run import (
     PROSE_BUNDLE,
     TRANSCRIPT,
     TREE,
+    Ledger,
     Session,
     matrix,
     options,
@@ -141,7 +142,7 @@ def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
     tmp_path: Path, log: Path
 ) -> None:
     eval_run(
-        tmp_path, "--workflows", "looping", "--repetitions", "1", "--budget-usd", "1"
+        tmp_path, "--workflows", "looping", "--repetitions", "1", "--budget-usd", "3"
     )
     by_form: dict[str, list[str]] = {}
     for entry in seen(log):
@@ -224,19 +225,37 @@ def test_a_run_ends_by_writing_its_report(
     assert written["cost_usd"] == 0.25 and written["not_started"] == []
 
 
-def test_a_run_stops_before_its_cost_would_pass_its_cap(
+def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
+    tmp_path: Path, log: Path
+) -> None:
+    with pytest.raises(
+        CorpusError,
+        match=r"--budget-usd 0\.5 does not cover the 9 sessions at "
+        r"--session-budget-usd 0\.5, which need USD 4\.5",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear,branching", "--repetitions", "1"),
+            "--budget-usd",
+            "0.5",
+        )
+    assert seen(log) == []
+    assert not (tmp_path / "results").exists()
+
+
+def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
+    monkeypatch.setenv("STUB_AGENT_COST", "0.5")
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1"),
-        *("--budget-usd", "1", "--session-budget-usd", "0.25"),
+        *("--budget-usd", "3.75", "--session-budget-usd", "0.25"),
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
-    assert record["started"] == 7
-    assert record["cost_usd"] == 0.875
-    assert len(seen(log)) == len(records(tmp_path)) == 7
+    assert record["started"] == 8
+    assert record["cost_usd"] == 4.0
+    assert len(seen(log)) == len(records(tmp_path)) == 8
     not_started = record["not_started"]
     assert not_started == [
         {
@@ -246,24 +265,20 @@ def test_a_run_stops_before_its_cost_would_pass_its_cap(
             "form": session.form,
             "repetition": session.repetition,
         }
-        for session in sessions[7:]
+        for session in sessions[8:]
     ]
     written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
     assert written["not_started"] == not_started
 
 
-def test_parallel_sessions_reserve_their_cap_within_the_budget(
-    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
-    record = eval_run(
-        tmp_path,
-        *("--repetitions", "2", "--parallel", "4"),
-        *("--budget-usd", "1", "--session-budget-usd", "0.25"),
-    )
-    assert record["cost_usd"] <= 1 < record["cost_usd"] + 0.25
-    assert record["started"] == len(records(tmp_path)) == 7
-    assert len(record["not_started"]) == 2 * SESSIONS_PER_REPETITION - 7
+def test_a_session_in_flight_holds_its_cap_against_the_budget() -> None:
+    ledger = Ledger(0.5, 0.25)
+    assert ledger.reserve() and ledger.reserve()
+    assert not ledger.fits()
+    ledger.settle(0.1)
+    assert not ledger.fits()
+    ledger.settle(0.1)
+    assert ledger.fits()
 
 
 def test_a_session_reporting_no_cost_is_charged_its_cap(
@@ -273,10 +288,10 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
-        *("--budget-usd", "0.5", "--session-budget-usd", "0.25"),
+        *("--budget-usd", "1.25", "--session-budget-usd", "0.25"),
     )
-    assert record["started"] == 2
-    assert record["cost_usd"] == 0.5
+    assert record["started"] == 5
+    assert record["cost_usd"] == 1.25
     assert all(item["cost_usd"] is None for item in records(tmp_path))
 
 

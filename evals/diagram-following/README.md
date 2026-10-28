@@ -48,7 +48,7 @@ The command starts paid agent sessions, so no other target depends on it and `ma
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--budget-usd` | 75 under `make eval-diagrams`; required otherwise | The run's spending cap. A later value in `ARGS` overrides the default. |
+| `--budget-usd` | 75 under `make eval-diagrams`; required otherwise | The run's spending cap, at least the sessions times `--session-budget-usd`. A later value in `ARGS` overrides the default. |
 | `--session-budget-usd` | 0.50 | Each session's spending cap. |
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
@@ -71,7 +71,7 @@ make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetiti
 
 The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the three forms; and five repetitions: 150 sessions. A session never spends more than its USD 0.50 cap, so a default run costs at most USD 75, the budget `make eval-diagrams` passes, and that budget starts every session of the default matrix. The measured cost of a default run is the `cost_usd` the committed baseline records for the run it was taken from.
 
-A run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
+A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
 
 ## Reading the report
 

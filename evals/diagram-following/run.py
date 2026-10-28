@@ -38,7 +38,11 @@ process group, the agent and every process it started, is killed; its exit
 status is recorded as `timeout`, and what its workspace holds by then is
 kept and scored like any other session's.
 
-The spending cap holds a run's recorded cost within `--budget-usd`. A
+The spending cap holds a run's recorded cost within `--budget-usd`. A run
+whose budget does not cover every session of its matrix at the session cap,
+`--session-budget-usd`, is refused before it starts a session, naming both.
+The agent checks its session cap between calls, so a session can record
+more than its cap, and the run guards its budget against that: a
 session starts only when the recorded cost, plus the session cap reserved
 for each session in flight, plus its own session cap, is within the
 budget; while it is not and a session is in flight, the next one waits for
@@ -404,6 +408,13 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         if form in BUNDLED
     }
     sessions = matrix(corpus, names(arguments.models), forms, arguments.repetitions)
+    covered = round(len(sessions) * arguments.session_budget_usd, 6)
+    if covered > arguments.budget_usd:
+        raise CorpusError(
+            f"--budget-usd {arguments.budget_usd} does not cover the "
+            f"{len(sessions)} sessions at --session-budget-usd "
+            f"{arguments.session_budget_usd}, which need USD {covered}"
+        )
     began = datetime.now(UTC)
     run_id = arguments.run_id or began.strftime("%Y%m%dT%H%M%SZ")
     run_directory = arguments.results / run_id
