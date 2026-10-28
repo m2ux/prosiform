@@ -40,7 +40,7 @@ DISPATCH = "\u21c9"
 DEFERRAL = "\u00ac"
 
 ERROR = "error"
-RULE = "| A dispatched target |"
+PROTOCOL = "\n## Dispatch\n"
 
 INSTRUCTION = re.compile(
     r"^Dispatch `([^`]+)` to a sub-agent, as \[Dispatch\]\(#dispatch\) states\.$",
@@ -358,7 +358,8 @@ def test_each_handoff_the_example_publishes_is_followed(tree: Tree) -> None:
         assert run.bundle, destination
 
 
-def test_a_mode_bundle_carries_the_dispatch_rule_once(tree: Tree) -> None:
-    """A mode bundle carries the bootstrap's dispatched-target symbol once."""
+def test_a_mode_bundle_carries_the_dispatch_protocol_once(tree: Tree) -> None:
+    """A dispatching mode bundle opens with its Prosiform section's one protocol."""
     bundle = tree.bundled("modes/plan-mode.md")
-    assert bundle.count(RULE) == 1, bundle
+    assert bundle.startswith("# Prosiform\n"), bundle
+    assert bundle.count(PROTOCOL) == 1, bundle
