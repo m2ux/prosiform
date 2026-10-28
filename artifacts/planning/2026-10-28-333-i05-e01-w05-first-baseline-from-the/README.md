@@ -12,6 +12,7 @@ Until one full run is recorded, the eval has no reference point, and its first f
 
 | Artifact | What it holds |
 | --- | --- |
+| [W05 work item](w05.md) | The run, the review of failures, the baseline and the measured cost |
 
 ## Decisions
 
