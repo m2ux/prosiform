@@ -60,8 +60,14 @@ Every mode of `example/work-planner` bundled with `main`'s `pf` and with the fix
 
 ## CI Runs
 
-The Checks workflow on the pull request's head, five consecutive runs.
+The Checks workflow on the pull request's head `04733a40`, [run 40725999417](https://github.com/m2ux/prosiform/actions/runs/40725999417), attempt 1 on push and attempts 2 to 5 as reruns, one after another. Each runs `make check` in full, the handoff round trip among it.
 
-| Run | Result |
-| --- | --- |
-| Pending | |
+| Attempt | Started (UTC) | Finished (UTC) | Result |
+| --- | --- | --- | --- |
+| [1](https://github.com/m2ux/prosiform/actions/runs/40725999417/attempts/1) | 2026-10-28 16:26:36 | 16:29:07 | success |
+| [2](https://github.com/m2ux/prosiform/actions/runs/40725999417/attempts/2) | 2026-10-28 16:29:32 | 16:31:18 | success |
+| [3](https://github.com/m2ux/prosiform/actions/runs/40725999417/attempts/3) | 2026-10-28 16:31:24 | 16:33:13 | success |
+| [4](https://github.com/m2ux/prosiform/actions/runs/40725999417/attempts/4) | 2026-10-28 16:33:16 | 16:35:02 | success |
+| [5](https://github.com/m2ux/prosiform/actions/runs/40725999417/attempts/5) | 2026-10-28 16:35:08 | 16:37:04 | success |
+
+Five consecutive passes on one head, each job under three minutes, so AC1 holds.

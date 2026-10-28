@@ -23,4 +23,4 @@ A Checks failure the change under review did not cause reads as a failing check 
 | Task issue | [#373 Handoff Round Trip](https://github.com/m2ux/prosiform/issues/373) |
 | Epic | [I05:E05 Deferred Debt](https://github.com/m2ux/prosiform/issues/374) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
-| Pull request | Pending |
+| Pull request | [#375 I05:E05 Handoff Round Trip Within Its Limit](https://github.com/m2ux/prosiform/pull/375) |
