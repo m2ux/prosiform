@@ -21,6 +21,7 @@ Board fields, labels and limits are written in more than one file, so changing a
 | Resource | Link |
 | --- | --- |
 | Epic | [I05:E06 Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
+| Pull request | [#381 Configuration Document for the Example's Bindings](https://github.com/m2ux/prosiform/pull/381) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Example Authoring planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
 | Prior task | [W01 Authoring Rules in the Corpus Guidelines](../2026-10-28-376-i05-e06-w01-authoring-rules-in-the/README.md) |
