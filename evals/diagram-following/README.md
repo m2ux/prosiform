@@ -42,7 +42,7 @@ then `/login`. A run whose configuration directory holds no login fails before i
 
 | Command | Runs |
 | --- | --- |
-| `make eval-diagrams` | The [runner](run.py) over the default matrix, within a budget of USD 75, then the report. `ARGS='...'` passes the runner's options through. |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. A default run costs about USD 4 and takes about 10 minutes; its budget is USD 75. `ARGS='...'` passes the runner's options through. |
 
 The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
@@ -69,7 +69,14 @@ make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetiti
 
 ### Default matrix and cost
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the three forms; and five repetitions: 150 sessions. A session never spends more than its USD 0.50 cap, so a default run costs at most USD 75, the budget `make eval-diagrams` passes, and that budget starts every session of the default matrix. The measured cost of a default run is the `cost_usd` the committed baseline records for the run it was taken from.
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the three forms; and five repetitions: 150 sessions. A default run costs about USD 4.01, the `cost_usd` the committed baseline records for its run, and takes about 10 minutes at four sessions at once. By model:
+
+| Model | Sessions | Mean cost per session (USD) | Run cost (USD) | Mean session duration |
+| --- | --- | --- | --- | --- |
+| `claude-haiku-5-5` | 75 | 0.0038 | 0.29 | 15 s |
+| `claude-sonnet-5-5` | 75 | 0.0496 | 3.72 | 18 s |
+
+The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 75, the 150 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
 
 A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
 
@@ -83,15 +90,16 @@ uv run --project src --frozen python evals/diagram-following/report.py evals/dia
 
 The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens (input, output, cache write and cache read) and the mean cost over the sessions recording them. The report opens with the run's cost and the count of sessions not started, and closes with those sessions listed.
 
-`baseline.json` beside this file is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
+`baseline.json` beside this file is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. [`report.md`](report.md) beside it is that run's report. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
 
 ## Refreshing the baseline
 
-Run the default matrix, review its report, then write its cells as the baseline and commit `baseline.json`:
+Run the default matrix, review its report, then write its cells as the baseline and commit `baseline.json` with the run's `report.md` beside it:
 
 ```bash
 make eval-diagrams
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --write-baseline
+cp evals/diagram-following/results/<run-id>/report.md evals/diagram-following/report.md
 ```
 
 The report written alongside is compared with the baseline being replaced, so it shows what the new baseline moves.
