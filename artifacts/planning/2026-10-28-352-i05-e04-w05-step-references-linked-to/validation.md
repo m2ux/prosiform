@@ -36,3 +36,7 @@ Each fragment link in a bundle lands on its heading. Result: ✓.
 
 - ruff `All checks passed!`; mypy no issues in 64 files; `src` pytest 1302 passed; `checks/tests` 731 passed; corpus 342 pass; smoke, layout, tables, links, vocabulary, invocation, conformance and independence all report ok.
 - Before the merge the same run passed with 1281 and 720 tests and 335 fixtures.
+
+## CI
+
+The repository's `Checks` run on `61aa618f` concluded success ([run 40702767943](https://github.com/m2ux/prosiform/actions/runs/40702767943)). `i05/e04/main` had not moved since `aa826060`, and [#371](https://github.com/m2ux/prosiform/pull/371) merged into it at `37c50a20`. Result: ✓.

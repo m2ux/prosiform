@@ -4,7 +4,9 @@ The plan changes this delivery session applied and held, under the deliver-mode 
 
 ## Applied
 
-None yet.
+None.
+
+The session also recorded delivery on [#352](https://github.com/m2ux/prosiform/issues/352) — W05 links [#371](https://github.com/m2ux/prosiform/pull/371), merged into `i05/e04/main` at `37c50a20`, with Done ticked, and AC5 is ticked — which is delivery, not a plan change. Task Merge found no task issue to close, and W06 still open, so E04 stays In Progress with no epic review or integration.
 
 ## Held
 
@@ -12,4 +14,4 @@ None yet.
 
 ## Deferred Debt and Arising Issues
 
-None yet.
+None created. Validation found no debt the unit defers, and nothing arose that warrants an issue of its own.
