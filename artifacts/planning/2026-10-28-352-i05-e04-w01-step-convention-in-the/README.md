@@ -31,3 +31,4 @@ A numbered list item roots no anchor. A link can therefore name a procedure but 
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Corpus Steps planning record](../2026-10-28-352-i05-e04-corpus-step-subsections/README.md) |
 | Upstream task | [I05:E03 W09](https://github.com/m2ux/prosiform/pull/363) |
+| Pull request | [I05:E04 W01 Step Convention in the Corpus Guidelines](https://github.com/m2ux/prosiform/pull/364) |
