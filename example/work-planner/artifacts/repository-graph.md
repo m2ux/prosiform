@@ -16,19 +16,39 @@ Current graph evidence for the supplied change.
 
 **Inputs:** Worktree, verified head commit and base branch.
 
-1. Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
-2. If the repository is unindexed or behind the verified head:
-   - Run [Index Repository](#index-repository).
-   - Confirm freshness.
-3. Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
-4. For each changed symbol, run [Symbol Context](#symbol-context).
-5. For each reported flow, run [Flow Trace](#flow-trace).
-6. Inspect the staleness block on every response. For a behind index:
-   - Discard its measurements.
-   - Run [Index Repository](#index-repository).
-   - Repeat steps 1 to 5 once with the updated index.
-   - If a response is still behind, return a freshness blocker.
-7. Return only evidence current with the supplied head, meeting [Fields](#fields), or a freshness blocker.
+#### 1. Check the Graph Index Status
+
+Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
+
+#### 2. Refresh a Stale Graph Index
+
+If the repository is unindexed or behind the verified head:
+- Run [Index Repository](#index-repository).
+- Confirm freshness.
+
+#### 3. Measure the Change Surface
+
+Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
+
+#### 4. Read Each Changed Symbol Context
+
+For each changed symbol, run [Symbol Context](#symbol-context).
+
+#### 5. Trace Each Reported Flow
+
+For each reported flow, run [Flow Trace](#flow-trace).
+
+#### 6. Re-Measure on a Stale Index
+
+Inspect the staleness block on every response. For a behind index:
+- Discard its measurements.
+- Run [Index Repository](#index-repository).
+- Repeat steps 1 to 5 once with the updated index.
+- If a response is still behind, return a freshness blocker.
+
+#### 7. Return the Current Graph Evidence
+
+Return only evidence current with the supplied head, meeting [Fields](#fields), or a freshness blocker.
 
 ## Fields
 

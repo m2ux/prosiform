@@ -16,16 +16,36 @@ One epic body and its local validation findings.
 
 **Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records, corpus branch and output path.
 
-1. Populate the body from the [Template](#template) at the supplied output path.
-   - Every section must meet [Fields](#fields).
-   - Shared content must meet the common [body conditions](issue-body.md#fields).
-2. Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table).
-3. Fill the epic-specific cells.
-   - Each row must meet [Work Breakdown](#work-breakdown).
-4. Apply [Build Body Snapshot](issue-body.md#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
-5. Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
-6. Identify unresolved publication links separately; they remain pending until tracker identities exist.
-7. Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
+#### 1. Draft the Epic Body
+
+Populate the body from the [Template](#template) at the supplied output path.
+- Every section must meet [Fields](#fields).
+- Shared content must meet the common [body conditions](issue-body.md#fields).
+
+#### 2. Write the Shared Epic Table
+
+Populate the shared table through [Write Issue Table](issue-body.md#write-issue-table).
+
+#### 3. Fill the Epic-Specific Cells
+
+Fill the epic-specific cells.
+- Each row must meet [Work Breakdown](#work-breakdown).
+
+#### 4. Build the Epic Body Snapshot
+
+Apply [Build Body Snapshot](issue-body.md#build-body-snapshot) with the draft body, title, labels and existing issue JSON when present.
+
+#### 5. Validate the Epic Draft
+
+Pass that snapshot, initiative context, available pull request records, corpus branch and output file to [Validate Epic Body](#validate-epic-body).
+
+#### 6. Identify Unresolved Epic Links
+
+Identify unresolved publication links separately; they remain pending until tracker identities exist.
+
+#### 7. Return the Epic Draft Rows
+
+Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
 ### *Record* Epic Delivery
 
@@ -33,9 +53,14 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+#### 1. Run Sync Epic
+
+Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+- Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
+
+#### 2. Return the Epic Delivery Findings
+
+Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 ### *Record* Epic Criteria
 
@@ -43,8 +68,13 @@ Verified criteria and completed rows in one epic body.
 
 **Inputs:** Epic JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
 
-1. Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
-2. Return the body and refused criteria. Complete rows receive Done ticks.
+#### 1. Run Tick Epic Criteria
+
+Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+
+#### 2. Return the Epic Body and Refused Criteria
+
+Return the body and refused criteria. Complete rows receive Done ticks.
 
 ### *Reserve* Task Rows
 
@@ -52,9 +82,17 @@ Task rows held for one confirmed delivery session.
 
 **Inputs:** Epic JSON, confirmed task ids, supplied planning-folder identity, planning-records base URL, record date and output body file.
 
-1. Require the caller's confirmed unit and existing planning folder. Refuse a row already held or linked to a pull request or commit.
-2. Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
-3. Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
+#### 1. Check the Rows to Reserve
+
+Require the caller's confirmed unit and existing planning folder. Refuse a row already held or linked to a pull request or commit.
+
+#### 2. Run Reserve Row
+
+Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
+
+#### 3. Return the Reserved Epic Body
+
+Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
 ### *Release* Task Rows
 
@@ -62,10 +100,21 @@ Held task rows returned to their work-item links.
 
 **Inputs:** Epic JSON, task ids, explicit user decision releasing the hold and output body file.
 
-1. Require the supplied release decision and refuse any row that is not held.
-2. Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
-3. Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
-4. Return the saved body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
+#### 1. Check the Rows to Release
+
+Require the supplied release decision and refuse any row that is not held.
+
+#### 2. Run Release Row
+
+Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
+
+#### 3. Publish the Released Epic Body
+
+Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+
+#### 4. Return the Saved Released Body
+
+Return the saved body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
 ### *Validate* Epic Body
 
@@ -73,10 +122,21 @@ The body's local format and field findings.
 
 **Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
 
-1. Apply [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
-2. Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
-3. Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
-4. Return the corrected body, mechanical diff and unresolved findings for the caller.
+#### 1. Validate the Epic Issue Body
+
+Apply [Validate Issue Body](issue-body.md#validate-issue-body) with the current body, local [Fields](#fields), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+
+#### 2. Read Epic Pull Request Reach
+
+Read reach from each epic pull request's base, through an epic base or initiative branch. Without both pull requests and the corpus branch, reach is unevaluable.
+
+#### 3. Report Corpus Audit and Coverage Gaps
+
+Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing epic and any epic criterion no task row delivers in the findings.
+
+#### 4. Return the Validated Epic Body
+
+Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### *Revise* Epic Rows
 
@@ -84,10 +144,15 @@ One epic body with confirmed task-grain and coverage corrections.
 
 **Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
 
-1. Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
-   - Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
-   - Split a task exceeding the allowed criterion grain into the confirmed tasks.
-2. Return the revised body and any cross-body numbering or dependency changes for the caller.
+#### 1. Apply the Confirmed Row Changes
+
+Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epic-issue-body), preserving unrelated content.
+- Description, Coverage, Depends on, Joins and task grain must meet [Work Breakdown](#work-breakdown).
+- Split a task exceeding the allowed criterion grain into the confirmed tasks.
+
+#### 2. Return the Revised Epic Body
+
+Return the revised body and any cross-body numbering or dependency changes for the caller.
 
 ### *Plan* Gap Task
 
@@ -95,18 +160,26 @@ The agreed disposition of criteria a delivered row left unmet.
 
 **Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
 
-1. Present each unmet criterion and its missing evidence to the user.
-   - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
-   - Record an unanswered decision as pending.
-   - If no criteria need further work, return the pending findings to the caller.
-   - Continue to the draft step with only the criteria the user confirms need further work.
-2. Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
-   - Confirm the draft with the user.
-   - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
-   - Return an unanswered draft as pending without continuing to the reconcile step.
-3. Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
-   - Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
-   - Return the saved row and criterion disposition to the caller. Done follows [Tables](issue-body.md#tables).
+#### 1. Present Unmet Epic Criteria
+
+Present each unmet criterion and its missing evidence to the user.
+- Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
+- Record an unanswered decision as pending.
+- If no criteria need further work, return the pending findings to the caller.
+- Continue to the draft step with only the criteria the user confirms need further work.
+
+#### 2. Draft the Gap Task
+
+Draft a further task for the criteria selected for further work, meeting [Work Breakdown](#work-breakdown).
+- Confirm the draft with the user.
+- On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
+- Return an unanswered draft as pending without continuing to the reconcile step.
+
+#### 3. Record the Revised Epic Delivery
+
+Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and the supplied delivery evidence.
+- Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+- Return the saved row and criterion disposition to the caller. Done follows [Tables](issue-body.md#tables).
 
 ### *Place* Unplaced Task Row
 
@@ -114,13 +187,30 @@ One epic body given the row its table lacks for a task issue of the epic.
 
 **Inputs:** Epic JSON, the unplaced task issue, the run's allowance and change list when supplied, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
 
-1. Draft the task issue's row, meeting [Work Breakdown](#work-breakdown).
-2. Apply [Settle Plan Change](plan-change.md#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
-   - Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
-3. Apply [Revise Epic Rows](#revise-epic-rows) with the row as applied.
-4. Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
-5. Apply [Record Epic Delivery](#record-epic-delivery) again with the saved epic JSON and refreshed task issue records, retaining the pull request records, complete issue-link snapshot, confirmed matches, project checkout and output body file.
-6. Return the recorded body, its [Delivery Findings](epic.md#delivery-findings) and the change list to the caller.
+#### 1. Draft the Unplaced Task Row
+
+Draft the task issue's row, meeting [Work Breakdown](#work-breakdown).
+
+#### 2. Settle the Row Placement
+
+Apply [Settle Plan Change](plan-change.md#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
+- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+
+#### 3. Revise Epic Rows with the Placed Row
+
+Apply [Revise Epic Rows](#revise-epic-rows) with the row as applied.
+
+#### 4. Save the Revised Epic Issue
+
+Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
+
+#### 5. Re-Record the Epic Delivery
+
+Apply [Record Epic Delivery](#record-epic-delivery) again with the saved epic JSON and refreshed task issue records, retaining the pull request records, complete issue-link snapshot, confirmed matches, project checkout and output body file.
+
+#### 6. Return the Recorded Epic Body
+
+Return the recorded body, its [Delivery Findings](epic.md#delivery-findings) and the change list to the caller.
 
 ## Fields
 
