@@ -12,5 +12,5 @@ arguments = ["middle.md#two", "alpha.md", "middle.md#one"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/middle__two+alpha+middle__one.bundle.md"]
 diagnostics = []

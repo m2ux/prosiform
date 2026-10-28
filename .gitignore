@@ -2,5 +2,7 @@
 __pycache__/
 *.py[cod]
 
-# Compiled bundles, written wherever pf is run.
+# Compiled bundles, written wherever pf is run. A fixture's expected bundles
+# are the corpus's declaration of what a run writes, so they are tracked.
 *.bundle.md
+!fixtures/**/expected/*.bundle.md

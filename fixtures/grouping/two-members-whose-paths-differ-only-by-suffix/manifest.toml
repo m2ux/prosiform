@@ -12,7 +12,7 @@ arguments = ["guide.md", "guide.markdown"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide+guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

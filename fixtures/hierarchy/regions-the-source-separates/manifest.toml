@@ -12,5 +12,5 @@ arguments = ["guide.md#gamma", "guide.md#alpha"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__gamma+guide__alpha.bundle.md"]
 diagnostics = []

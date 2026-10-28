@@ -10,5 +10,5 @@ arguments = ["lifecycle.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/lifecycle.bundle.md"]
 diagnostics = []

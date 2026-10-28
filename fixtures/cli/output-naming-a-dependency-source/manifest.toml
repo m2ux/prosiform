@@ -1,7 +1,7 @@
-description = "An output path naming a document the run reached as a dependency is refused as invalid usage, so a run never publishes over a source it read rather than only over one its entry references named."
+description = "A bundle whose derived path names a document the run reached as a dependency is refused as invalid usage, so a run never publishes over a source it read."
 
 clauses = [
-  "CLI contract — -o FILE, a path naming an input source is refused",
+  "CLI contract — -o DIR, a bundle path naming any captured source is refused",
   "Compile before publishing — step 4, discover the recursive dependency graph",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
   "CLI contract, one code for the form of the command line, and the message says which fault it was",
@@ -9,13 +9,12 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-o", "note.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 2
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["note.md"]
+message_contains = ["guide.bundle.md"]

@@ -15,5 +15,5 @@ arguments = ["references/design-flow.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/references_design-flow.bundle.md"]
 diagnostics = []

@@ -7,7 +7,6 @@ arguments = ["-r", "source", "guide.md"]
 
 [expected]
 exit_status = 2
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"

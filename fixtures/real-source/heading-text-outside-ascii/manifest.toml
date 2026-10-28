@@ -19,5 +19,5 @@ arguments = ["gitnexus-cli/SKILL.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/gitnexus-cli_SKILL.bundle.md"]
 diagnostics = []

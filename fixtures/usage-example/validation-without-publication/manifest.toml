@@ -13,5 +13,4 @@ arguments = ["-c", "artifacts/epic-issue-body.md#record-epic-delivery"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
 diagnostics = []

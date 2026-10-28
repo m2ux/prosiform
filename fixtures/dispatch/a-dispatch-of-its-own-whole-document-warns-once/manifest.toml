@@ -11,7 +11,7 @@ arguments = ["guide.md#steps"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__steps.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

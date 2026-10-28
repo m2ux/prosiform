@@ -1,0 +1,15 @@
+description = "A validation-only run naming an output folder validates the run and writes nothing into that folder, so nothing is published to a stream or to a file."
+
+clauses = [
+  "CLI contract — -c, accepts -o DIR and writes nothing into that folder",
+  "CLI contract — -o DIR, the folder each bundle is written to",
+  "Compile before publishing, no success output is published until the complete candidate has been constructed and validated",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-c", "-o", "..", "guide.md"]
+
+[expected]
+exit_status = 0
+diagnostics = []

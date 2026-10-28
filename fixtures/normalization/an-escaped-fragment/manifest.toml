@@ -13,5 +13,5 @@ arguments = ["guide.md#run%2Dit"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__run-it.bundle.md"]
 diagnostics = []

@@ -15,5 +15,5 @@ arguments = ["modes/hoist-mode.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/modes_hoist-mode.bundle.md"]
 diagnostics = []

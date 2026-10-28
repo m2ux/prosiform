@@ -12,5 +12,5 @@ arguments = ["manual.md#step"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/manual__step.bundle.md"]
 diagnostics = []

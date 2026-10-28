@@ -13,5 +13,4 @@ arguments = ["-c", "guide.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
 diagnostics = []

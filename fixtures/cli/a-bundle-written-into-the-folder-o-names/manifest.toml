@@ -1,0 +1,16 @@
+description = "A run naming an output folder writes its bundle into that folder under its derived name: the folder is named from the working directory, here the fixture directory above it, and standard output carries nothing."
+
+clauses = [
+  "CLI contract — -o DIR, the folder each bundle is written to",
+  "Automatic output names, a selection is named by its path",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-o", "..", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

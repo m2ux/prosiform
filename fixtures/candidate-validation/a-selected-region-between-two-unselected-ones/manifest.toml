@@ -12,5 +12,5 @@ arguments = ["guide.md#middle"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__middle.bundle.md"]
 diagnostics = []

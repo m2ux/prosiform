@@ -1,0 +1,20 @@
+description = "A run naming standard output as its output folder is refused as invalid usage and writes no bundle, since standard output carries no bundle."
+
+clauses = [
+  "CLI contract — -o DIR, - names standard output and is refused",
+  "CLI contract, a command line the grammar does not admit",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+  "CLI contract, one code for the form of the command line, and the message says which fault it was",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-o", "-", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["standard output"]

@@ -1,10 +1,9 @@
 """Run one corpus fixture and decide its result from the manifest alone.
 
-A fixture declares an invocation and the standard output, exit status and
-diagnostics that invocation must produce, and the paths it must leave
-absent. This module performs the run and compares each against the
-declaration, so a verdict comes from the manifest and the fixture's files
-and from nothing else.
+A fixture declares an invocation and the bundles, exit status and
+diagnostics that invocation must produce. This module performs the run and
+compares each against the declaration, so a verdict comes from the manifest
+and the fixture's files and from nothing else.
 
 The build under test is named by configuration and invoked as a
 subprocess: the environment variable `PROSIFORM_BUILD` holds its command
@@ -16,17 +15,23 @@ fixture is never reported as holding against a build that never ran.
 
 The runner uses the working directory the manifest names and asks
 for diagnostics as data through `-d json`. A manifest omits that option, so a
-diagnostic's code is compared as a value rather than as prose.
+diagnostic's code is compared as a value rather than as prose. The runner
+names no output folder, so a run writes where its own invocation sends it:
+the working directory, or the folder the manifest's `-o` names.
 
 A difference names the expectation it belongs to and locates itself within
-it. Standard output declared as bytes is compared as bytes and located by
-byte offset, since the preservation invariant turns on newline spelling and
-the trailing newline; each rendered window spells its control bytes, so a
-CRLF against an LF is visible rather than invisible. Diagnostics are
-compared in order on the fields the manifest declares, so one that is
-missing, extra or out of order is reported as what it is. A path declared
-absent is checked after the run, and a file found there is reported and
-removed, so a run leaves the fixture directory as the manifest declares it.
+it. Every file the run creates under the fixture or its working directory
+is what the run wrote. Each is read and removed, so every run starts from a
+directory holding no output, and is compared by name with the bundles the
+manifest declares: a declared bundle the run did not write and a file no
+declaration names are each a difference. A bundle is compared as bytes and
+located by byte offset, since the preservation invariant turns on newline
+spelling and the trailing newline; each rendered window spells its control
+bytes, so a CRLF against an LF is visible rather than invisible. Standard
+output carries no bundle, so it is empty unless the manifest declares the
+text it carries. Diagnostics are compared in order on the fields the
+manifest declares, so one that is missing, extra or out of order is
+reported as what it is.
 
 Two of the contract's outcomes are facts about the run rather than about
 any document it reads, so no source tree states them. A manifest names
@@ -63,7 +68,6 @@ from manifests import (
     errors,
     identity,
     missing_files,
-    present_files,
     read,
 )
 
@@ -75,10 +79,9 @@ MANIFEST = "manifest"
 FAULT = "fault"
 INVOCATION = "invocation"
 EXIT_STATUS = "expected.exit_status"
-STDOUT = "expected.stdout"
+BUNDLES = "expected.bundles"
 STDOUT_TEXT = "expected.stdout_contains"
 DIAGNOSTICS = "expected.diagnostics"
-ABSENT = "expected.absent"
 
 DECLARED_FIELDS = ("reference", "resolved", "source", "chain")
 MESSAGE_TEXT = "message_contains"
@@ -176,8 +179,8 @@ def compare_exit_status(expected: int, produced: int) -> list[Difference]:
     return [Difference(EXIT_STATUS, summary)]
 
 
-def compare_stdout(expected: bytes, produced: bytes) -> list[Difference]:
-    """Standard output against the expected bytes, located by byte offset."""
+def compare_bundle(name: str, expected: bytes, produced: bytes) -> list[Difference]:
+    """One written bundle against the expected bytes, located by byte offset."""
     if expected == produced:
         return []
     offset = first_difference(expected, produced)
@@ -195,7 +198,7 @@ def compare_stdout(expected: bytes, produced: bytes) -> list[Difference]:
     elif len(expected) < len(produced) and offset == len(expected):
         over = len(produced) - len(expected)
         detail.append(f"the run's output carries {count(over, 'byte')} beyond the end")
-    return [Difference(STDOUT, "the bytes differ", tuple(detail))]
+    return [Difference(BUNDLES, f"{name}: the bytes differ", tuple(detail))]
 
 
 def excerpt(data: bytes) -> str:
@@ -210,8 +213,23 @@ def absent_text(text: str, declared: Sequence[str]) -> list[str]:
     return [entry for entry in declared if entry not in text]
 
 
-def compare_stdout_text(declared: Sequence[str], produced: bytes) -> list[Difference]:
-    """Standard output against the text the manifest declares it carries."""
+def compare_stdout(declared: Sequence[str], produced: bytes) -> list[Difference]:
+    """Standard output against the text the manifest declares it carries.
+
+    A manifest declaring none declares an empty stream, since a run writes
+    its bundles to files and standard output carries only a response.
+    """
+    if not declared:
+        if not produced:
+            return []
+        return [
+            Difference(
+                STDOUT_TEXT,
+                f"standard output carries {count(len(produced), 'byte')} where "
+                "the manifest declares none",
+                (f"produced {excerpt(produced)}",),
+            )
+        ]
     missing = absent_text(produced.decode("utf-8", errors="replace"), declared)
     if not missing:
         return []
@@ -221,27 +239,52 @@ def compare_stdout_text(declared: Sequence[str], produced: bytes) -> list[Differ
     return [Difference(STDOUT_TEXT, summary, tuple(detail))]
 
 
-def compare_absent(fixture: Path, declared: Sequence[str]) -> list[Difference]:
-    """Each path the manifest declares the run must leave absent.
+def files(*directories: Path) -> set[Path]:
+    """Every file under the directories, a linked directory left unentered."""
+    return {
+        Path(walked, name)
+        for directory in directories
+        for walked, _, names in os.walk(directory)
+        for name in names
+    }
 
-    A file found at one of them is read for the report and then removed,
-    so the fixture directory after a run is the directory its manifest
-    declares, whatever the build did.
-    """
+
+def collected(created: set[Path]) -> list[tuple[str, bytes]]:
+    """Each file the run created, by name and bytes, removed once it is read."""
+    written = []
+    for path in sorted(created):
+        written.append((path.name, path.read_bytes()))
+        path.unlink()
+    return written
+
+
+def compare_bundles(
+    fixture: Path, declared: Sequence[str], written: Sequence[tuple[str, bytes]]
+) -> list[Difference]:
+    """The files the run wrote against the bundles the manifest declares, by name."""
+    expected = {Path(path).name: (fixture / path).read_bytes() for path in declared}
+    produced: dict[str, bytes] = {}
     differences = []
-    for name in declared:
-        created = fixture / name
-        if not created.exists():
-            continue
-        detail: tuple[str, ...] = ()
-        if created.is_file():
-            written = created.read_bytes()
-            created.unlink()
-            detail = (
-                f"{count(len(written), 'byte')} written, "
-                f"beginning {render(written[:WINDOW])}",
+    for name, data in written:
+        if name in produced:
+            differences.append(Difference(BUNDLES, f"the run wrote {name} twice"))
+        elif name not in expected:
+            differences.append(
+                Difference(
+                    BUNDLES,
+                    f"the run wrote {name}, which the manifest declares no bundle for",
+                    (
+                        f"{count(len(data), 'byte')} written, "
+                        f"beginning {render(data[:WINDOW])}",
+                    ),
+                )
             )
-        differences.append(Difference(ABSENT, f"the run created {name}", detail))
+        produced[name] = data
+    for name, data in expected.items():
+        if name in produced:
+            differences.extend(compare_bundle(name, data, produced[name]))
+        else:
+            differences.append(Difference(BUNDLES, f"the run wrote no {name}"))
     return differences
 
 
@@ -427,11 +470,7 @@ def run_fixture(fixture: Path) -> Result:
     """One fixture run against the configured build and compared with its manifest."""
     name = identity(fixture)
     manifest = read(fixture / MANIFEST_NAME)
-    malformed = (
-        errors(manifest)
-        + missing_files(fixture, manifest)
-        + present_files(fixture, manifest)
-    )
+    malformed = errors(manifest) + missing_files(fixture, manifest)
     if malformed:
         difference = Difference(
             MANIFEST,
@@ -450,13 +489,13 @@ def run_fixture(fixture: Path) -> Result:
         invoked_from = working if named is None else (working / named).resolve()
         argv = [
             *build_under_test(),
-            "-o",
-            "-",
             "-d",
             "json",
             *requested,
             *invocation["arguments"],
         ]
+        held = (working, invoked_from) if invoked_from.is_dir() else (working,)
+        before = files(*held)
         try:
             completed = subprocess.run(
                 argv,
@@ -473,19 +512,14 @@ def run_fixture(fixture: Path) -> Result:
                 (f"command {shlex.join(argv)}",),
             )
             return Result(name, (difference,), None, b"", b"")
+        finally:
+            written = collected(files(*held) - before)
 
-        stdout = (
-            compare_stdout(
-                (fixture / expected["stdout"]).read_bytes(), completed.stdout
-            )
-            if "stdout" in expected
-            else compare_stdout_text(expected["stdout_contains"], completed.stdout)
-        )
         differences = [
             *compare_exit_status(expected["exit_status"], completed.returncode),
-            *stdout,
+            *compare_bundles(fixture, expected.get("bundles", []), written),
+            *compare_stdout(expected.get("stdout_contains", []), completed.stdout),
             *compare_diagnostics(expected["diagnostics"], completed.stderr),
-            *compare_absent(working, expected.get("absent", [])),
         ]
     return Result(
         name,

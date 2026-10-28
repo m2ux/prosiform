@@ -14,5 +14,5 @@ arguments = ["article.md", "guide.md#run"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/article+guide__run.bundle.md"]
 diagnostics = []

@@ -13,5 +13,5 @@ arguments = ["states.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/states.bundle.md"]
 diagnostics = []
