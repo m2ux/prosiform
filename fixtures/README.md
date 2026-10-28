@@ -183,7 +183,7 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so neither arises from that declaration, and the contract declares `-x NAME` for a conformance run to reach them. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration, and the contract declares `-x NAME` for a conformance run to reach them. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"

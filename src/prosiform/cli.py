@@ -1839,13 +1839,15 @@ def publication(
     """Validate every bundle a run publishes, then publish the set whole or not at all.
 
     Each bundle is held to the output budget, every name is held to one
-    bundle, and the output folder is held to existing, before any is
-    written, so a set publication would refuse ends the run with its
+    bundle, the output folder is held to existing, and the run folder's
+    name and each bundle's are held to the length its filesystem allows,
+    before any is written, so a set publication would refuse ends the run with its
     diagnostic and nothing written, whether or not the run only
     validates. Every bundle's warnings follow, in turn, and then the set
     is published into the run's folder, unless the run only validates,
-    which writes nothing. A run asked to retain the earlier set is
-    refused its removal once the new set stands.
+    which writes nothing. A run asked to retain the earlier set stands
+    an empty one at its folder where nothing stands there, once every
+    check has passed, and is refused its removal once the new set stands.
     """
     for one in bundles:
         try:
@@ -1868,11 +1870,30 @@ def publication(
                 remedy="name an existing folder the run can write",
             ),
         )
+    longest = os.pathconf(folder.parent, "PC_NAME_MAX")
+    for one, name in [(bundles[0], folder.name), *((one, one.name) for one in bundles)]:
+        if len(os.fsencode(name)) > longest:
+            raise overlong(one, name, longest)
     for one in bundles:
         for warning in one.warnings:
             reporter.emit(warning)
     if not check:
         publish_folder(bundles, folder, reporter, retained)
+
+
+def overlong(one: Bundle, name: str, longest: int) -> Failure:
+    """A name the run derives for one selection that its filesystem refuses."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the run derives the name {name!r} for {one.selection!r}, "
+            f"{len(os.fsencode(name))} bytes, longer than the {longest} the "
+            f"output folder's filesystem allows",
+            code=PUBLICATION_FAILED,
+            remedy="shorten the source's path so its derived name fits",
+        ),
+    )
 
 
 def colliding(earlier: Bundle, later: Bundle) -> Failure:
@@ -1935,6 +1956,8 @@ def publish_folder(
     except OSError as refused:
         shutil.rmtree(staged, ignore_errors=True)
         raise refusal(staged / one.name, refused) from refused
+    if retained and not (folder.exists() or folder.is_symlink()):
+        folder.mkdir()
     aside = None
     if folder.exists() or folder.is_symlink():
         aside = sibling(folder, "old")
@@ -2223,11 +2246,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     recheck(root, captured)
     if options.fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
-    # The cleanup fault stands an empty earlier set at the run's folder,
-    # whose removal the publication then refuses.
-    retained = options.fault == CLEANUP_FAULT
-    if retained and not options.check and folder.parent.is_dir():
-        folder.mkdir(exist_ok=True)
     deep = analysed(first.hops, single, onward)
     bundles = [
         Bundle(
@@ -2241,7 +2259,14 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             for name, one in built.items()
         ),
     ]
-    publication(bundles, folder, budgets(options), reporter, options.check, retained)
+    publication(
+        bundles,
+        folder,
+        budgets(options),
+        reporter,
+        options.check,
+        options.fault == CLEANUP_FAULT,
+    )
     return SUCCESS
 
 

@@ -264,3 +264,38 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
     assert refused["code"] == cli.SOURCE_CHANGED
     assert "plan.md" in refused["message"]
     assert not (tmp_path / "a.bundles").exists()
+
+
+def test_a_failing_run_under_the_cleanup_fault_writes_nothing(tmp_path: Path) -> None:
+    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    run = invoke(tmp_path, "-x", "cleanup-refused", "-O", "1", "a.md")
+    assert run.status == 1 and run.stdout == ""
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
+
+
+def test_a_dangling_link_under_the_cleanup_fault_is_retained_and_warned(
+    tmp_path: Path,
+) -> None:
+    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    (tmp_path / "a.bundles").symlink_to("nowhere")
+    run = invoke(tmp_path, "-d", "json", "-x", "cleanup-refused", "a.md")
+    assert run.status == 0 and run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [cli.EARLIER_SET_RETAINED]
+    assert "Complete." in bundle(tmp_path, "a").read_text()
+    assert not (tmp_path / "nowhere").exists()
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_a_derived_name_longer_than_the_filesystem_allows_names_its_selection(
+    tmp_path: Path, check: bool
+) -> None:
+    name = "n" * 247
+    written(tmp_path, f"{name}.md", "# Long\n")
+    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), f"{name}.md")
+    assert run.status == 3 and run.stdout == ""
+    [refused] = run.diagnostics()
+    assert refused["code"] == cli.PUBLICATION_FAILED
+    assert f"'{name}.md'" in refused["message"]
+    assert f"'{name}.bundle.md'" in refused["message"]
+    assert ".pf." not in refused["message"]
+    assert sorted(path.name for path in tmp_path.iterdir()) == [f"{name}.md"]
