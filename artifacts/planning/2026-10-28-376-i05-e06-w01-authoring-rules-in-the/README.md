@@ -22,11 +22,14 @@ Every later row of the epic changes the example to meet these rules. Stating the
 | --- | --- |
 | [W01 work item](w01.md) | The authoring rules section by section, the rules they retire, and the component |
 | [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held, and retired wording left to later rows |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I05:E06 Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
+| Pull request | [#377 Authoring Rules in the Corpus Guidelines](https://github.com/m2ux/prosiform/pull/377) |
+| Arising issue | [#378 Shared Skill Guidelines](https://github.com/m2ux/prosiform/issues/378) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Example Authoring planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
