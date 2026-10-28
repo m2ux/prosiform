@@ -40,3 +40,7 @@ Each check the work item's test row names, in execution order, with the revision
 
 - `make conformance`: 300 clauses, 0 declarations naming no clause, 0 declared codes the build reports nowhere, 0 reported codes the contract declares nowhere.
 - `make invocation`: 28 statements of `invocation.md`, each held to the build's help.
+
+## Continuous integration
+
+`Checks` ran `make check` on the pull request head `cfbbf607` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40669721567/job/122753126488)). #359 merged into `i05/e03/main` as `4fdaf8a2`.

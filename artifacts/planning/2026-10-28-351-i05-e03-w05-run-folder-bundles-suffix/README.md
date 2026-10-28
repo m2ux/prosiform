@@ -25,4 +25,5 @@ The user chose the suffix on 2026-10-28; the row depends on W04 and stands ahead
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior task | [W03+W04 Dispatched Bundles and Their Refusals](../2026-10-28-351-i05-e03-w03-dispatched-bundles-sub-sections/README.md) |
+| Pull request | [#359 Run Folder Named With a Bundles Suffix](https://github.com/m2ux/prosiform/pull/359) |
 | Review pull request | [#355](https://github.com/m2ux/prosiform/pull/355) |

@@ -14,7 +14,7 @@ The plan changes this delivery session made, and those it held.
 
 ## Held
 
-- **Arising issue [#358](https://github.com/m2ux/prosiform/issues/358), placement held.** A run folder named for its entry coincides with a same-named source directory beside it (`states.md` beside `states/`), so such a layout needs `-o`, and an unrelated directory of that name is replaced whole. Its fix chooses how the user-confirmed run folder is named, which is the user's decision. Recommended: place it as a new I05:E03 task ahead of W09, naming the folder `<entry name>.bundles/`.
+- **Arising issue [#358](https://github.com/m2ux/prosiform/issues/358), placement held, since settled.** The user chose `<entry name>.bundles/`; #358 was placed as I05:E03 W05 and delivered by #359. A run folder named for its entry coincides with a same-named source directory beside it (`states.md` beside `states/`), so such a layout needs `-o`, and an unrelated directory of that name is replaced whole. Its fix chooses how the user-confirmed run folder is named, which is the user's decision. Recommended: place it as a new I05:E03 task ahead of W09, naming the folder `<entry name>.bundles/`.
 
 ## Deferred debt and arising issues
 
