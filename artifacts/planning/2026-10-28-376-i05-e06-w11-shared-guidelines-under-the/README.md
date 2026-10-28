@@ -14,6 +14,7 @@ The shared guidelines apply alongside the work-planner example's own. Until they
 | --- | --- |
 | [W11 work item](w11.md) | Each shared rule the work-planner guidelines retire, its replacement and the state-or-link choice, and the component |
 | [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
@@ -21,6 +22,7 @@ The shared guidelines apply alongside the work-planner example's own. Until they
 | --- | --- |
 | Epic | [I05:E06 Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
 | Task issue | [I05:E06:W11 #378](https://github.com/m2ux/prosiform/issues/378) |
+| Pull request | [#383 Shared Guidelines Under the Authoring Rules](https://github.com/m2ux/prosiform/pull/383) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Example Authoring planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
 | Prior task | [W04 Shared Conventions Stated Once](../2026-10-28-376-i05-e06-w04-shared-conventions-stated-once/README.md) |
