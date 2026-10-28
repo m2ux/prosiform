@@ -23,4 +23,6 @@ Nothing observes the step convention otherwise. A numbered list added to a proce
 | Epic | [I05:E04 Corpus Steps](https://github.com/m2ux/prosiform/issues/352) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Corpus Steps planning record](../2026-10-28-352-i05-e04-corpus-step-subsections/README.md) |
+| Pull request | [I05:E04 Step-Shape Guard Under make check](https://github.com/m2ux/prosiform/pull/370) |
+| Review pull request | [I05:E04 Corpus Steps](https://github.com/m2ux/prosiform/pull/372) |
 | Prior task | [W04 Artifact Operations as Step Sub-sections](../2026-10-28-352-i05-e04-w04-artifact-operations-as-step/README.md) |
