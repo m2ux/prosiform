@@ -1,0 +1,552 @@
+{
+  "run_id": "20261028T165414Z",
+  "date": "2026-10-28T16:54:14+00:00",
+  "models": [
+    "claude-haiku-5-5",
+    "claude-sonnet-5-5"
+  ],
+  "repetitions": 5,
+  "cost_usd": 4.006788,
+  "cells": [
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "branching",
+      "scenario": "high-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "branching",
+      "scenario": "low-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "linear",
+      "scenario": "straight-through",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "looping",
+      "scenario": "no-rework",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "looping",
+      "scenario": "two-rounds",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "prose",
+      "workflow": "branching",
+      "scenario": "high-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "prose",
+      "workflow": "branching",
+      "scenario": "low-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "prose",
+      "workflow": "linear",
+      "scenario": "straight-through",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "prose",
+      "workflow": "looping",
+      "scenario": "no-rework",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "prose",
+      "workflow": "looping",
+      "scenario": "two-rounds",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "branching",
+      "scenario": "high-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "branching",
+      "scenario": "low-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "linear",
+      "scenario": "straight-through",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "looping",
+      "scenario": "no-rework",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "looping",
+      "scenario": "two-rounds",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "bundle",
+      "workflow": "branching",
+      "scenario": "high-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "bundle",
+      "workflow": "branching",
+      "scenario": "low-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "bundle",
+      "workflow": "linear",
+      "scenario": "straight-through",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "bundle",
+      "workflow": "looping",
+      "scenario": "no-rework",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "bundle",
+      "workflow": "looping",
+      "scenario": "two-rounds",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "prose",
+      "workflow": "branching",
+      "scenario": "high-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "prose",
+      "workflow": "branching",
+      "scenario": "low-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "prose",
+      "workflow": "linear",
+      "scenario": "straight-through",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "prose",
+      "workflow": "looping",
+      "scenario": "no-rework",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "prose",
+      "workflow": "looping",
+      "scenario": "two-rounds",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "tree",
+      "workflow": "branching",
+      "scenario": "high-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "tree",
+      "workflow": "branching",
+      "scenario": "low-severity",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "tree",
+      "workflow": "linear",
+      "scenario": "straight-through",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "tree",
+      "workflow": "looping",
+      "scenario": "no-rework",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "form": "tree",
+      "workflow": "looping",
+      "scenario": "two-rounds",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0
+      }
+    }
+  ]
+}
