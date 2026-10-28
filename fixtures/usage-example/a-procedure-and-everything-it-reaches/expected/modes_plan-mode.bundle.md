@@ -12,80 +12,103 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ## Procedure
 
-1. **Take the proposal.**
-   - When the user names a proposal, its associated issue body defines the problem scope.
-   - When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
-   - When neither a proposal nor an existing initiative is named:
-     - Follow [Propose Mode](#propose-mode) with the user's goal.
-     - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
-2. **Prepare the planning record.**
-   - For an initiative, epic or complex plan, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder and supplied evidence files.
-   - For initiative or epic planning:
-     - Populate a discussion body through [Populate Pull Request Body](#populate-pull-request-body).
-     - Apply [Publish Pull Request](#publish-pull-request) as a draft with the planning branch, target, title and body file. Only the user decides to merge that discussion pull request.
-3. **Draft each initiative body.**
-   - For a new initiative, obtain its proposed prefix through [Select Tracker Number](#select-tracker-number) with the initiative prefix letter.
-   - Apply [Draft Initiative Issue Body](#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
-4. **Populate the epics.**
-   Apply [Populate Epic Issue Body](#populate-epic-issue-body) for each epic and each new task row.
-   - Apply [Populate Work Item](#populate-work-item) for each task with its scope, design, the component its implementation extends, criteria and test requirements.
-   - Apply Populate Planning Record with the record identity, folder path and each returned work-item file.
-   - Apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the initiative and epic drafts, the planning record, current pull request records, confirmed numbering maps when any, no allowance and the run's change list.
-   - Apply Populate Planning Record with the record identity, folder path and the returned longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map as its [Dependency Check](#dependency-check).
-   - Return each checked epic draft and its format results to the review step.
-5. **Review the drafts.**
-   Apply [Review Initiative Goal](#review-initiative-goal) with the initiative and epic drafts, confirmed goal clauses, marked sources and the epic format results.
-   - Apply Populate Planning Record with the record identity, folder path and the returned trace table as its [Goal Trace](#goal-trace). With no planning record, give the trace table to the user.
-   - Apply [Report Review Finding](#report-review-finding) for each returned finding, with its scope, evidence and proposed resolution.
-   - Apply each confirmed resolution to the drafts:
-     - For a local epic finding, apply Populate Epic Issue Body with the confirmed Proposal, row and criterion changes, including every new or renumbered criterion in Coverage.
-     - For a confirmed distinct concern:
-       - Apply Populate Epic Issue Body for its own epic.
-       - Apply Draft Initiative Issue Body with the epic summaries that include it.
-       - Repeat Check Dependencies and Numbering for the new epic and initiative row, and record its result as step 4 does.
-   - Apply Populate Planning Record with the record identity, folder path and each finding, resolution and decision.
-   - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
-6. **Publish.**
-   Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
-   - Take the positive integer the user confirms for each epic.
-   - Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
-   - Put each blocker it returns to the user.
-7. **Keep the goal current.**
-   When the goal, a criterion, a Problem, a Proposal or an epic changes:
-   - Repeat Review Initiative Goal with the revised bodies and current sources, and record its trace table as step 5 does.
-   - Apply Report Review Finding for each finding.
-   - Apply confirmed resolutions as step 5 does.
-   - Repeat that review until clear.
-   - After each round, apply [Check Round of Edits](#check-round-of-edits) to affected bodies.
-   - Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as step 4 does.
-     - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
-     - Apply [Save Tracker Issue](#save-tracker-issue) with each confirmed change as that epic's [priority label](#priority-sets), with its colour and description.
-   - Apply Save Tracker Issue with each affected body, its title matching current numbers.
-   - Keep local body files as the source for the next pass.
-   - Apply Populate Work Item for each added or renamed task.
-   - Apply Populate Pull Request Body with the discussion pull request's current body.
-   - Apply Publish Pull Request with the discussion pull request's number and the returned body file.
-   - Apply Populate Planning Record with the record identity, folder path, each added or renamed task's work-item file, each removed task's work-item file as removed, and a commit message file, asking it to publish.
-8. **Prepare epic delivery.**
-   Before any task starts:
-   - Apply [Resolve Open Questions](#resolve-open-questions) for each affected issue with its identity, current JSON, its kind's template and field conditions, related context and an output body path.
-     - Apply Populate Planning Record with each decision it returns.
-     - Stop on a question it leaves open.
-   - Apply [Apply Body Corrections](#apply-body-corrections) to each body with a criterion joining several conditions, with the split criteria at the end of the list and their Coverage as [Shared Acceptance Criteria](#shared-acceptance-criteria) states.
-     - Apply Save Tracker Issue with each returned body.
-   - Follow [Delivery Base Preparation](#delivery-base-preparation) with the initiative's epics, the current initiative and epic bodies, prerequisite issue and base-merge records, project checkout, changed long-lived branches, repository and initiative prefix.
-     - Stop on a prerequisite finding it returns.
-     - Put each conflict and pull request awaiting a decision it returns to the user.
-   - Repeat goal and ordering review on changed bodies, as step 7 does, before returning readiness.
-9. **Record delivered work.**
-   When work has landed:
-   - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
-   - For each unplaced task row it returns pending:
-     - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
-     - Repeat Sync Mode with the refreshed epic.
-   - Return the saved delivery state or blockers.
+### 1. Take the Proposal
 
-### Dispatch Sync Mode
+- When the user names a proposal, its associated issue body defines the problem scope.
+- When the user names an initiative that already exists, fetch its body with [Read Tracker Issue](#read-tracker-issue). That body defines the problem scope, and no proposal is raised for work it already carries.
+- When neither a proposal nor an existing initiative is named:
+  - Follow [Propose Mode](#propose-mode) with the user's goal.
+  - Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
+
+### 2. Prepare the Planning Record
+
+- For an initiative, epic or complex plan, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder and supplied evidence files.
+- For initiative or epic planning:
+  - Populate a discussion body through [Populate Pull Request Body](#populate-pull-request-body).
+  - Apply [Publish Pull Request](#publish-pull-request) as a draft with the planning branch, target, title and body file. Only the user decides to merge that discussion pull request.
+
+### 3. Draft Each Initiative Body
+
+- For a new initiative, obtain its proposed prefix through [Select Tracker Number](#select-tracker-number) with the initiative prefix letter.
+- Apply [Draft Initiative Issue Body](#draft-initiative-issue-body) for each initiative with the scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+
+### 4. Populate the Epics
+
+Apply [Populate Epic Issue Body](#populate-epic-issue-body) for each epic and each new task row.
+
+- Apply [Populate Work Item](#populate-work-item) for each task with its scope, design, the component its implementation extends, criteria and test requirements.
+- Apply Populate Planning Record with the record identity, folder path and each returned work-item file.
+- Apply [Check Dependencies and Numbering](#check-dependencies-and-numbering) with the initiative and epic drafts, the planning record, current pull request records, confirmed numbering maps when any, no allowance and the run's change list.
+- Apply Populate Planning Record with the record identity, folder path and the returned longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map as its [Dependency Check](#dependency-check).
+- Return each checked epic draft and its format results to the review step.
+
+### 5. Review the Drafts
+
+Apply [Review Initiative Goal](#review-initiative-goal) with the initiative and epic drafts, confirmed goal clauses, marked sources and the epic format results.
+
+- Apply Populate Planning Record with the record identity, folder path and the returned trace table as its [Goal Trace](#goal-trace). With no planning record, give the trace table to the user.
+- Apply [Report Review Finding](#report-review-finding) for each returned finding, with its scope, evidence and proposed resolution.
+- Apply each confirmed resolution to the drafts:
+  - For a local epic finding, apply Populate Epic Issue Body with the confirmed Proposal, row and criterion changes, including every new or renumbered criterion in Coverage.
+  - For a confirmed distinct concern:
+    - Apply Populate Epic Issue Body for its own epic.
+    - Apply Draft Initiative Issue Body with the epic summaries that include it.
+    - Repeat Check Dependencies and Numbering for the new epic and initiative row, and record its result as step 4 does.
+- Apply Populate Planning Record with the record identity, folder path and each finding, resolution and decision.
+- Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
+
+### 6. Publish
+
+Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
+
+- Take the positive integer the user confirms for each epic.
+- Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
+- Put each blocker it returns to the user.
+
+### 7. Keep the Goal Current
+
+When the goal, a criterion, a Problem, a Proposal or an epic changes:
+
+- Repeat Review Initiative Goal with the revised bodies and current sources, and record its trace table as step 5 does.
+- Apply Report Review Finding for each finding.
+- Apply confirmed resolutions as step 5 does.
+- Repeat that review until clear.
+- After each round, apply [Check Round of Edits](#check-round-of-edits) to affected bodies.
+- Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as step 4 does.
+  - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
+  - Apply [Save Tracker Issue](#save-tracker-issue) with each confirmed change as that epic's [priority label](#priority-sets), with its colour and description.
+- Apply Save Tracker Issue with each affected body, its title matching current numbers.
+- Keep local body files as the source for the next pass.
+- Apply Populate Work Item for each added or renamed task.
+- Apply Populate Pull Request Body with the discussion pull request's current body.
+- Apply Publish Pull Request with the discussion pull request's number and the returned body file.
+- Apply Populate Planning Record with the record identity, folder path, each added or renamed task's work-item file, each removed task's work-item file as removed, and a commit message file, asking it to publish.
+
+### 8. Prepare Epic Delivery
+
+Before any task starts:
+
+- Apply [Resolve Open Questions](#resolve-open-questions) for each affected issue with its identity, current JSON, its kind's template and field conditions, related context and an output body path.
+  - Apply Populate Planning Record with each decision it returns.
+  - Stop on a question it leaves open.
+- Apply [Apply Body Corrections](#apply-body-corrections) to each body with a criterion joining several conditions, with the split criteria at the end of the list and their Coverage as [Shared Acceptance Criteria](#shared-acceptance-criteria) states.
+  - Apply Save Tracker Issue with each returned body.
+- Follow [Delivery Base Preparation](#delivery-base-preparation) with the initiative's epics, the current initiative and epic bodies, prerequisite issue and base-merge records, project checkout, changed long-lived branches, repository and initiative prefix.
+  - Stop on a prerequisite finding it returns.
+  - Put each conflict and pull request awaiting a decision it returns to the user.
+- Repeat goal and ordering review on changed bodies, as step 7 does, before returning readiness.
+
+### 9. Record Delivered Work
+
+When work has landed:
+
+- Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
+- For each unplaced task row it returns pending:
+  - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
+  - Repeat Sync Mode with the refreshed epic.
+- Return the saved delivery state or blockers.
+
+#### Dispatch Sync Mode
 
 Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
@@ -2774,37 +2797,57 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
 
 ## Procedure
 
-1. **Understand the problem.**
-   Ask the user until the friction and the boundary are clear.
-   - State the goal back as clauses meeting [Goal](#goal).
-   - Have the user confirm those clauses.
-2. **Gather evidence.**
-   - Measure the current state: counts, paths, and file:line.
-   - Delegate broad sweeps to parallel sub-agents.
-   - Spot-check what they return before recording it.
-3. **Draft the body.**
-   Apply [Populate Proposal Body](#populate-proposal-body) with the confirmed problem, evidence, goal clauses, boundary and output body path. The local file is the source for the issue.
-   - Obtain the proposal's number through [Select Tracker Number](#select-tracker-number) with the proposal prefix letter, and carry it in the title.
-   - The goal clauses are the clauses the user confirmed. The Non-Goals are the boundary.
-   - The design, the acceptance criteria, and the breakdown belong to a later goal.
-4. **Validate.**
-   Apply [Build Body Snapshot](#build-body-snapshot) with the body file, title, labels and a JSON path.
-   - Apply [Validate Proposal Body](#validate-proposal-body) with the returned JSON and the output file.
-   - Resolve each finding it leaves unresolved in the problem, evidence, goal clauses or boundary, and repeat Populate Proposal Body with them and the same output path.
-   - Repeat Build Body Snapshot and Validate Proposal Body with the revised body and the same paths. Proceed to publication only when validation passes.
-5. **Publish.**
-   Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the validated body file, its title, the proposal's labels and each label's colour and description, leaving it unassigned.
-6. **Confirm placement.**
-   Ask whether to add the issue to the proposals board.
-   - On acceptance, continue to the place step.
-   - On a decline, skip placement and continue to the report step with the issue URL.
-   - Wait for an unanswered decision.
-7. **Place.**
-   Apply [Ensure Project Board](#ensure-project-board) with the board owner, the repository and the proposals-board selection.
-   - Apply [Place Issue on Board](#place-issue-on-board) with the returned owner and board number, the repository, the saved issue number, an output file and initial status Suggested.
-   - Leave the issue unassigned.
-8. **Report.**
-   Give the issue's URL, and the board's when the issue was placed.
+### 1. Understand the Problem
+
+Ask the user until the friction and the boundary are clear.
+
+- State the goal back as clauses meeting [Goal](#goal).
+- Have the user confirm those clauses.
+
+### 2. Gather Evidence
+
+- Measure the current state: counts, paths, and file:line.
+- Delegate broad sweeps to parallel sub-agents.
+- Spot-check what they return before recording it.
+
+### 3. Draft the Body
+
+Apply [Populate Proposal Body](#populate-proposal-body) with the confirmed problem, evidence, goal clauses, boundary and output body path. The local file is the source for the issue.
+
+- Obtain the proposal's number through [Select Tracker Number](#select-tracker-number) with the proposal prefix letter, and carry it in the title.
+- The goal clauses are the clauses the user confirmed. The Non-Goals are the boundary.
+- The design, the acceptance criteria, and the breakdown belong to a later goal.
+
+### 4. Validate
+
+Apply [Build Body Snapshot](#build-body-snapshot) with the body file, title, labels and a JSON path.
+
+- Apply [Validate Proposal Body](#validate-proposal-body) with the returned JSON and the output file.
+- Resolve each finding it leaves unresolved in the problem, evidence, goal clauses or boundary, and repeat Populate Proposal Body with them and the same output path.
+- Repeat Build Body Snapshot and Validate Proposal Body with the revised body and the same paths. Proceed to publication only when validation passes.
+
+### 5. Publish
+
+Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the validated body file, its title, the proposal's labels and each label's colour and description, leaving it unassigned.
+
+### 6. Confirm Placement
+
+Ask whether to add the issue to the proposals board.
+
+- On acceptance, continue to the place step.
+- On a decline, skip placement and continue to the report step with the issue URL.
+- Wait for an unanswered decision.
+
+### 7. Place
+
+Apply [Ensure Project Board](#ensure-project-board) with the board owner, the repository and the proposals-board selection.
+
+- Apply [Place Issue on Board](#place-issue-on-board) with the returned owner and board number, the repository, the saved issue number, an output file and initial status Suggested.
+- Leave the issue unassigned.
+
+### 8. Report
+
+Give the issue's URL, and the board's when the issue was placed.
 
 ## Outcomes
 

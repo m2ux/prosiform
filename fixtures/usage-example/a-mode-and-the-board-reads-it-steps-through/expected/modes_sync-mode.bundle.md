@@ -12,55 +12,75 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ## Procedure
 
-1. **Select.**
-   Select an initiative with its open epics, or the epics the user names.
-   - Apply [Read Tracker Issue](#read-tracker-issue) for the initiative, each selected epic and each task issue under it, titled as [Titles](#titles) states.
-   - Apply [Repair Issue Format](#repair-issue-format) once per kind, with that kind's validator — [Validate Initiative Body](#validate-initiative-body), [Validate Epic Body](#validate-epic-body), or [Validate Issue Body](#validate-issue-body) with the task [Fields](#fields-1) — its further inputs, each fetched body with its identity, current JSON and output body path, the kind template and required related evidence.
-     - Use the saved bodies it returns in the following steps.
-     - Return a remaining format failure as a blocker.
-   - Apply [Confirm Repository Auto-Close](#confirm-repository-auto-close) for the repository holding the issues, and pass the confirmed setting to every protocol this run follows.
-2. **Record delivery.**
-   Follow [Delivery Recording](#dispatch-delivery-recording) with the selected repositories and initiative prefix, the fetched epic JSON and task issue records, the project checkout, named instruments, the confirmed setting, the allowance the caller supplied, the run's [change list](#change-list), and output body and comment files.
-   - Route what it returns:
-     - **Unnamed deliveries.**
-       - Put each [unnamed delivery](#unnamed-deliveries) to the user as an [interview](#rules).
-       - For each the user confirms, apply [Publish Pull Request](#publish-pull-request) with its repository and number and the title [Named Delivery](#named-delivery) states.
-       - Follow Delivery Recording again with the same inputs.
-     - **Incomplete evidence.**
-       - Return it as a blocker.
-     - **Pending matches, rows and open questions.**
-       - Report each as pending; the epic it concerns stays open.
-     - **Conflicts and disagreements.**
-       - Report each as unresolved with its pull request and row.
-3. **Close each epic.**
-   For each selected epic, follow [Epic Closure](#dispatch-epic-closure) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its latest Delivery Findings, task issue records, confirmed matches and the task-merge records among the pull request records, the confirmed setting, and the verification evidence Delivery Recording and each earlier Epic Closure of this run returned.
-   - Report a draft awaiting the user's ready mark, a blocker and each initiative Delivery Finding it returns as pending.
-4. **Close the initiative.**
-   Follow [Issue Closure](#issue-closure) for the initiative with the confirmed setting, the verification evidence the last Epic Closure returned and the project checkout.
-   - Report an incomplete result with its unmet criteria and open epics.
-5. **Sync the board.**
-   Apply [Ensure Project Board](#ensure-project-board) with the owner, repository, the initiative's theme name and title, and the originating proposal's identity its [References](#references-1) name when a proposal derives the theme.
-   - Return a missing selection or unresolved provenance as a blocker.
-   - Apply [Record Board Delivery](#record-board-delivery) with the saved initiative, epic and task identities, the returned board identity and an output directory.
-6. **Explain each change entering review.**
-   For each task or epic Record Board Delivery newly moves to In Review, follow [Understand Mode](#dispatch-understand-mode) with the task's open pull request or each epic review pull request, one run per base, where [Ownership](#ownership) gives the overview to this run.
-   - Complete each overview before continuing.
-7. **Report.**
-   Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
-   - Report queue decisions unevaluated by this run.
-   Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
+### 1. Select
 
-### Dispatch Delivery Recording
+Select an initiative with its open epics, or the epics the user names.
+
+- Apply [Read Tracker Issue](#read-tracker-issue) for the initiative, each selected epic and each task issue under it, titled as [Titles](#titles) states.
+- Apply [Repair Issue Format](#repair-issue-format) once per kind, with that kind's validator — [Validate Initiative Body](#validate-initiative-body), [Validate Epic Body](#validate-epic-body), or [Validate Issue Body](#validate-issue-body) with the task [Fields](#fields-1) — its further inputs, each fetched body with its identity, current JSON and output body path, the kind template and required related evidence.
+  - Use the saved bodies it returns in the following steps.
+  - Return a remaining format failure as a blocker.
+- Apply [Confirm Repository Auto-Close](#confirm-repository-auto-close) for the repository holding the issues, and pass the confirmed setting to every protocol this run follows.
+
+### 2. Record Delivery
+
+Follow [Delivery Recording](#dispatch-delivery-recording) with the selected repositories and initiative prefix, the fetched epic JSON and task issue records, the project checkout, named instruments, the confirmed setting, the allowance the caller supplied, the run's [change list](#change-list), and output body and comment files.
+
+- Route what it returns:
+  - **Unnamed deliveries.**
+    - Put each [unnamed delivery](#unnamed-deliveries) to the user as an [interview](#rules).
+    - For each the user confirms, apply [Publish Pull Request](#publish-pull-request) with its repository and number and the title [Named Delivery](#named-delivery) states.
+    - Follow Delivery Recording again with the same inputs.
+  - **Incomplete evidence.**
+    - Return it as a blocker.
+  - **Pending matches, rows and open questions.**
+    - Report each as pending; the epic it concerns stays open.
+  - **Conflicts and disagreements.**
+    - Report each as unresolved with its pull request and row.
+
+#### Dispatch Delivery Recording
 
 Dispatch `protocols_delivery-recording.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
-### Dispatch Epic Closure
+### 3. Close Each Epic
+
+For each selected epic, follow [Epic Closure](#dispatch-epic-closure) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, its latest Delivery Findings, task issue records, confirmed matches and the task-merge records among the pull request records, the confirmed setting, and the verification evidence Delivery Recording and each earlier Epic Closure of this run returned.
+
+- Report a draft awaiting the user's ready mark, a blocker and each initiative Delivery Finding it returns as pending.
+
+#### Dispatch Epic Closure
 
 Dispatch `protocols_epic-closure.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
-### Dispatch Understand Mode
+### 4. Close the Initiative
+
+Follow [Issue Closure](#issue-closure) for the initiative with the confirmed setting, the verification evidence the last Epic Closure returned and the project checkout.
+
+- Report an incomplete result with its unmet criteria and open epics.
+
+### 5. Sync the Board
+
+Apply [Ensure Project Board](#ensure-project-board) with the owner, repository, the initiative's theme name and title, and the originating proposal's identity its [References](#references-1) name when a proposal derives the theme.
+
+- Return a missing selection or unresolved provenance as a blocker.
+- Apply [Record Board Delivery](#record-board-delivery) with the saved initiative, epic and task identities, the returned board identity and an output directory.
+
+### 6. Explain Each Change Entering Review
+
+For each task or epic Record Board Delivery newly moves to In Review, follow [Understand Mode](#dispatch-understand-mode) with the task's open pull request or each epic review pull request, one run per base, where [Ownership](#ownership) gives the overview to this run.
+
+- Complete each overview before continuing.
+
+#### Dispatch Understand Mode
 
 Dispatch `modes_understand-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+
+### 7. Report
+
+Return saved delivery results and unresolved findings to the caller, or present them to the user for a direct request.
+
+- Report queue decisions unevaluated by this run.
+Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](#coverage-reports).
 
 ## Outcomes
 
