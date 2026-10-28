@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-The dispatch (`⇉`) and parallel dispatch (`⫽`) operators are prosiform grammar: `pf` compiles what each states into the bundles it publishes, so an agent follows a bundle without an authored symbol table. Every dispatched target compiles to a bundle of its own beside the bundle that dispatches it. A `⇉` link points at a local sub-section instructing its dispatch; the `⫽` links in one section form a set, and point at one local sub-section instructing their dispatch together. Each bundle opens with a `# Prosiform` section stating the protocols it uses. `pf --guide` serves what remains of the corpus bootstrap, so a skill's bootstrap is one instruction to call it.
+The dispatch (`⇉`) and parallel dispatch (`⫽`) operators are prosiform grammar: `pf` compiles what each states into the bundles it publishes, so an agent follows a bundle without an authored symbol table. Every dispatched target compiles to a bundle of its own beside the bundle that dispatches it. A `⇉` link points at a local sub-section instructing its dispatch; the `⫽` links in one section form a set, and point at one local sub-section instructing their dispatch together. Each bundle opens with a `# Prosiform` section stating the protocols it uses. A bare `pf` serves what remains of the corpus bootstrap, so a skill's bootstrap is one instruction to run it.
 
 The epic is I05:E03: ten task rows delivered as eight pull requests, each leaving a working `pf`, with one edge outside it: the eval row waits on I05:E01's baseline.
 
@@ -19,7 +19,7 @@ The epic is I05:E03: ten task rows delivered as eight pull requests, each leavin
 | [W05 work item](w05.md) | Parallel dispatch sets and their sub-section |
 | [W06 work item](w06.md) | Board Reads as numbered step sub-sections |
 | [W07 work item](w07.md) | The Prosiform section, its protocols and profile v4 |
-| [W08 work item](w08.md) | `--guide`, bootstrap retirement and the documentation |
+| [W08 work item](w08.md) | The guide a bare `pf` prints, bootstrap retirement and the documentation |
 | [W09 work item](w09.md) | Layout-permutation fixtures for the bundle set |
 | [W10 work item](w10.md) | Dispatch scenarios in the diagram-following eval and their baseline |
 | [Joins](joins.md) | Independent row pairs that take separate pull requests, and why |
@@ -61,13 +61,13 @@ The epic is I05:E03: ten task rows delivered as eight pull requests, each leavin
 
 ### Guide
 
-- **`pf -g` / `--guide`** prints the guide to standard output and exits 0. It states the compile step (`pf -o <folder> <destination>` from the skill directory; a non-zero exit stops the run and reports diagnostics), the `↳` inline-target rule, and that a bundle opening with a Prosiform section is followed from there.
-- **The corpus bootstrap is one instruction:** run `pf --guide` and follow it. `bootstrap.md` is retired.
+- **`pf` with no arguments** prints the guide to standard output and exits 0; `pf -h` says so. It states the compile step (`pf -o <folder> <destination>` from the skill directory; a non-zero exit stops the run and reports diagnostics), the `↳` inline-target rule, and that a bundle opening with a Prosiform section is followed from there.
+- **The corpus bootstrap is one instruction:** run `pf` and follow it. `bootstrap.md` is retired.
 
 ### Evaluation
 
 - **Correctness is proven end to end.** Corpus fixtures compile source trees to their expected bundle sets under `make check`. They cover each layout permutation: a dispatch in a section, a nested section and the preamble; one target dispatched from two sections; chains of depth one to three and past the limit; a refused cycle and a refused level-6 dispatch; a parallel set in one section, in sibling and nested sections, and beside a `⇉` link; one target named twice in a set; several joined entries.
-- **Navigation is measured by agents.** A dispatch and parallel-dispatch scenario set extends the I05:E01 eval: its headless runner follows each scenario's bundle set from `pf --guide`, and its trace scorer checks that each bundle is dispatched to a sub-agent, a set's bundles are dispatched together, questions are relayed rather than asked, and the run completes. Each scenario also runs in the bootstrap-driven form the current corpus uses, so the report states whether compiled protocols improve on authored ones. The report is compared against a committed baseline.
+- **Navigation is measured by agents.** A dispatch and parallel-dispatch scenario set extends the I05:E01 eval: its headless runner follows each scenario's bundle set from the guide a bare `pf` prints, and its trace scorer checks that each bundle is dispatched to a sub-agent, a set's bundles are dispatched together, questions are relayed rather than asked, and the run completes. Each scenario also runs in the bootstrap-driven form the current corpus uses, so the report states whether compiled protocols improve on authored ones. The report is compared against a committed baseline.
 
 ## Delivery
 
@@ -82,12 +82,13 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 | W05 | Parallel dispatch sets and their sub-section; the run-set shape rule retired | 4 |
 | W06 | Board Reads rewritten as sequential numbered step sub-sections | 4 |
 | W07 | The `# Prosiform` section and its protocols; profile v4 | 5 |
-| W08 | `--guide`; bootstrap retirement; docs, glossary and invocation | 6 |
+| W08 | The guide from a bare `pf`; bootstrap retirement; docs, glossary and invocation | 6 |
 | W09 | Layout-permutation corpus fixtures for the bundle set | 7 |
 | W10 | Dispatch and parallel-dispatch scenarios in the E01 eval, and their first baseline | 8 |
 
 ## Decisions
 
+- **A bare `pf` is the guide.** One path prints it, so no option duplicates it; the bootstrap reads "run `pf` and follow it".
 - **Whole chain in one run.** The agent reads bundles that exist rather than compiling at run time.
 - **One bundle per target.** Matches the bundle's include-once rule and keeps a cycle finite at compile time.
 - **Cycle refused, depth warned.** A cycle cannot finish; a deep chain finishes slowly.
