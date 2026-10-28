@@ -6,7 +6,7 @@
 
 The dispatch (`⇉`) and parallel dispatch (`⫽`) operators are prosiform grammar: `pf` compiles what each states into the bundles it publishes, so an agent follows a bundle without an authored symbol table. Every dispatched target compiles to a bundle of its own beside the bundle that dispatches it. A `⇉` link points at a local sub-section instructing its dispatch; the `⫽` links in one section form a set, and point at one local sub-section instructing their dispatch together. Each bundle opens with a `# Prosiform` section stating the protocols it uses. `pf --guide` serves what remains of the corpus bootstrap, so a skill's bootstrap is one instruction to call it.
 
-The epic is I05:E03, eight layered tasks each leaving a working `pf`, with one edge outside it: the eval task waits on I05:E01's baseline. The draft epic body, its review and the priority it proposes are below; nothing is published yet.
+The epic is I05:E03: ten task rows delivered as eight pull requests, each leaving a working `pf`, with one edge outside it: the eval row waits on I05:E01's baseline.
 
 ## Artifacts
 
@@ -14,12 +14,14 @@ The epic is I05:E03, eight layered tasks each leaving a working `pf`, with one e
 | --- | --- |
 | [W01 work item](w01.md) | The output folder, joined derived names and the corpus runner reading the folder |
 | [W02 work item](w02.md) | All-or-nothing publication of a bundle set |
-| [W03 work item](w03.md) | Dispatched bundles, dispatch sub-sections, per-bundle budgets and the refusals |
-| [W04 work item](w04.md) | Parallel dispatch sets, their sub-section, and Board Reads as steps |
-| [W05 work item](w05.md) | The Prosiform section, its protocols and profile v4 |
-| [W06 work item](w06.md) | `--guide`, bootstrap retirement and the documentation |
-| [W07 work item](w07.md) | Layout-permutation fixtures for the bundle set |
-| [W08 work item](w08.md) | Dispatch scenarios in the diagram-following eval and their baseline |
+| [W03 work item](w03.md) | Dispatched bundles, dispatch sub-sections and per-bundle budgets |
+| [W04 work item](w04.md) | Dispatch refusals and the retired step warning |
+| [W05 work item](w05.md) | Parallel dispatch sets and their sub-section |
+| [W06 work item](w06.md) | Board Reads as numbered step sub-sections |
+| [W07 work item](w07.md) | The Prosiform section, its protocols and profile v4 |
+| [W08 work item](w08.md) | `--guide`, bootstrap retirement and the documentation |
+| [W09 work item](w09.md) | Layout-permutation fixtures for the bundle set |
+| [W10 work item](w10.md) | Dispatch scenarios in the diagram-following eval and their baseline |
 | [Joins](joins.md) | Independent row pairs that take separate pull requests, and why |
 
 ## Design
@@ -69,18 +71,20 @@ The epic is I05:E03, eight layered tasks each leaving a working `pf`, with one e
 
 ## Delivery
 
-Layered tasks, each leaving a working `pf`:
+Layered tasks, each leaving a working `pf`. Rows sharing a pull request are joined.
 
-| Row | Task |
-| --- | --- |
-| W01 | `-o` names a folder; joined derived names for several entries |
-| W02 | All-or-nothing publication of several bundles |
-| W03 | Dispatched bundles, `Dispatch` sub-sections and the cycle error; `W_DISPATCH_NOT_PROCEDURAL` retired |
-| W04 | Parallel dispatch sets and their sub-section; the run-set shape rule retired; Board Reads rewritten as sequential step sub-sections |
-| W05 | The `# Prosiform` section and its protocols |
-| W06 | `--guide`; bootstrap retirement; docs, glossary and invocation |
-| W07 | Layout-permutation corpus fixtures for the bundle set |
-| W08 | Dispatch and parallel-dispatch scenarios in the E01 eval, and their first baseline |
+| Row | Task | Pull request |
+| --- | --- | --- |
+| W01 | `-o` names a folder; joined derived names for several entries | 1 |
+| W02 | All-or-nothing publication of several bundles | 2 |
+| W03 | Dispatched bundles, `Dispatch` sub-sections and per-bundle budgets | 3 |
+| W04 | The cycle, level-6 and heading-collision refusals; `W_DISPATCH_NOT_PROCEDURAL` retired | 3 |
+| W05 | Parallel dispatch sets and their sub-section; the run-set shape rule retired | 4 |
+| W06 | Board Reads rewritten as sequential numbered step sub-sections | 4 |
+| W07 | The `# Prosiform` section and its protocols; profile v4 | 5 |
+| W08 | `--guide`; bootstrap retirement; docs, glossary and invocation | 6 |
+| W09 | Layout-permutation corpus fixtures for the bundle set | 7 |
+| W10 | Dispatch and parallel-dispatch scenarios in the E01 eval, and their first baseline | 8 |
 
 ## Decisions
 
@@ -92,11 +96,15 @@ Layered tasks, each leaving a working `pf`:
 - **Steps are sub-sections, by corpus convention.** A step a heading roots is a precise link destination. Converting the work-planner corpus is its own epic; this epic writes Board Reads in that form.
 - **Protocols first.** A step can be acted on before later text is read.
 - **Profile v4.** The same source bundles differently, as with v3.
-- **Navigation extends E01.** One runner, scorer and baseline serve every agent eval; W08 takes an edge on I05:E01.
+- **Navigation extends E01.** One runner, scorer and baseline serve every agent eval; W10 takes an edge on I05:E01 W05.
 - **Breaking, without compatibility.** `-o FILE`, standard-output publication, the run-set target shape and the bootstrap symbol rows for `⇉` and `⫽` are removed.
-- **Profile v4 lands with the Prosiform section.** W05 changes what every dispatching bundle opens with and fixes the protocol wording as a profile constant, so the profile bump is its criterion. (Planning, 2026-10-28.)
-- **Each pf task carries its own contract edits.** `make conformance` reads the design from `engineering` at the README's pin and holds the build's codes to it, and `make invocation` holds the help text to `invocation.md`, so W01–W05 each edit their design clauses, the pin and their `invocation.md` rows; W06 sweeps the remaining prose. (Planning, 2026-10-28.)
+- **Profile v4 lands with the Prosiform section.** W07 changes what every dispatching bundle opens with and fixes the protocol wording as a profile constant, so the profile bump is its criterion. (Planning, 2026-10-28.)
+- **Each pf task carries its own contract edits.** `make conformance` reads the design from `engineering` at the README's pin and holds the build's codes to it, and `make invocation` holds the help text to `invocation.md`, so W01–W05 and W07 each edit their design clauses, the pin and their `invocation.md` rows; W08 sweeps the remaining prose. (Planning, 2026-10-28.)
 - **The stdout consumers move with W01.** The corpus runner, the manifest schema, the 308 `expected/stdout.md` files, `checks/render.py`, `checks/smoke.py` and the delivery wrapper all read a bundle from standard output; W01 moves or removes each, so `make check` holds on its revision. (Planning, 2026-10-28.)
+- **Ten rows, eight pull requests.** The dispatched-bundles and parallel-sets tasks each exceeded three criteria, so each is split into two joined rows sharing one pull request: W03 with W04, W05 with W06. (User, 2026-10-28.)
+- **Priority 8, beside E01.** The collision rule would rank this epic 7, behind I05:E01, because W10 and E01 W01 both write `evals/diagram-following/workflows`. The user overrode it ("I want this work now"): W10's edge on E01 W05 already holds the only shared folder until E01's eval is written, so nothing else waits. (User, 2026-10-28.)
+- **Step headings carry their number.** A step sub-section is headed by its position and action, as `### 6. Publish`; Board Reads (W06) is written that way first, and Corpus Steps' first row states the convention. Inserting a step renumbers the anchors below it, and `pf`'s unresolved-link check reports a link left naming an old one. (User, 2026-10-28.)
+- **No discussion pull request.** The records pushed to `engineering` are the discussion, as for I05's earlier epics. (User, 2026-10-28.)
 
 ## Component Map
 
@@ -107,11 +115,13 @@ Each row's declared component, and every other path its pull request writes. The
 | W01 | `src/prosiform/cli.py` | `src/prosiform/delivery.py` (removed), `src/tests`, `checks/runner.py`, `checks/render.py`, `checks/smoke.py`, `checks/tests`, `fixtures/manifest.schema.json`, every `fixtures/**/expected/`, `fixtures/README.md`, `invocation.md`, `README.md` (pin), `example/README.md`; `design.md` on `engineering` |
 | W02 | `src/prosiform/cli.py` | `src/tests`, `fixtures/cli`, `README.md` (pin); `design.md` |
 | W03 | `src/prosiform/dispatch.py` | `cli.py`, `bundle.py`, `rewrite.py`, `closure.py`, `src/tests`, `fixtures/dispatch`, `fixtures/usage-example/*/expected/`, `invocation.md`, `README.md` (pin); `design.md` |
-| W04 | `src/prosiform/run_set.py` | `cli.py`, `bundle.py`, `src/tests`, `fixtures/run-set`, `fixtures/usage-example/*/expected/`, `example/work-planner/artifacts/delivery-evidence.md`, `example/work-planner/guidelines.md`, `example/work-planner/rules.md`, `invocation.md`, `README.md` (pin); `design.md` |
-| W05 | `src/prosiform/bundle.py` | `__init__.py`, `profile.py`, `src/tests`, `fixtures/`, `fixtures/cli` (version), `fixtures/usage-example/*/expected/`, `README.md` (pin); `design.md` |
-| W06 | `src/prosiform/cli.py` | `src/tests`, `fixtures/cli`, `fixtures/usage-example/*/expected/`, `example/work-planner/bootstrap.md` (removed), `example/work-planner/SKILL.md`, `example/work-planner/rules.md`, `example/work-planner/guidelines.md`, `invocation.md`, `docs/glossary.md`, `README.md`; `design.md` |
-| W07 | `fixtures/dispatch` | `fixtures/run-set` |
-| W08 | `evals/diagram-following/workflows` | `evals/diagram-following/score.py`, `run.py`, `stub_agent.py`, `report.py`, `baseline.json`, `README.md` |
+| W04 | `src/prosiform/dispatch.py` | `cli.py`, `src/tests`, `fixtures/dispatch`, `invocation.md`, `README.md` (pin); `design.md` |
+| W05 | `src/prosiform/run_set.py` | `cli.py`, `bundle.py`, `src/tests`, `fixtures/run-set`, `example/work-planner/guidelines.md`, `example/work-planner/rules.md`, `invocation.md`, `README.md` (pin); `design.md` |
+| W06 | `example/work-planner/artifacts/delivery-evidence.md` | `fixtures/usage-example/*/expected/` |
+| W07 | `src/prosiform/bundle.py` | `__init__.py`, `profile.py`, `src/tests`, `fixtures/`, `fixtures/cli` (version), `fixtures/usage-example/*/expected/`, `README.md` (pin); `design.md` |
+| W08 | `src/prosiform/cli.py` | `src/tests`, `fixtures/cli`, `fixtures/usage-example/*/expected/`, `example/work-planner/bootstrap.md` (removed), `example/work-planner/SKILL.md`, `example/work-planner/rules.md`, `example/work-planner/guidelines.md`, `invocation.md`, `docs/glossary.md`, `README.md`; `design.md` |
+| W09 | `fixtures/dispatch` | `fixtures/run-set` |
+| W10 | `evals/diagram-following/workflows` | `evals/diagram-following/score.py`, `run.py`, `stub_agent.py`, `report.py`, `baseline.json`, `README.md` |
 
 ## Collision Surface
 
@@ -120,9 +130,9 @@ Checked against the in-flight I05 epics, the open pull requests and the open epi
 - **I05:E02 Link Forms (#339).**
   Every row is merged and its base reached `main` through #342 and the v0.15.0 release; the epic awaits closure. No collision.
 - **I05:E01 Diagram Following (#333).**
-  `i05/e01/main` is unmerged and holds `evals/diagram-following/`, `Makefile`, `checks.md`, `checks/layout.py` and `src/README.md`; its W05 (the baseline run) waits on the user's eval login. W08 writes the same eval and takes an edge on E01 W05; no other row touches E01's paths. `deps.py` reports E01:W01 and E03:W08 both extending `evals/diagram-following/workflows`.
-- **I05:E04 Corpus Steps (planned beside this epic).**
-  W04 and W06 write `example/work-planner/` (`delivery-evidence.md`, `guidelines.md`, `rules.md`, `SKILL.md`) and the usage-example bundles, which every E04 row also writes. The declared components do not show it, so `deps.py` does not report it.
+  `i05/e01/main` is unmerged and holds `evals/diagram-following/`, `Makefile`, `checks.md`, `checks/layout.py` and `src/README.md`; its W05 (the baseline run) waits on the user's eval login. W10 writes the same eval and takes an edge on E01 W05; no other row touches E01's paths. `deps.py` reports E01:W01 and E03:W10 both extending `evals/diagram-following/workflows`, which the user accepted at the same priority.
+- **I05:E04 Corpus Steps.**
+  W05, W06 and W08 write `example/work-planner/` (`delivery-evidence.md`, `guidelines.md`, `rules.md`, `SKILL.md`) and the usage-example bundles, which every E04 row also writes. E04's first row depends on W08 and the epic sits one number below.
 - **I01:E00 Findings Ledger (#21, draft pull request #325).**
   Changes `Makefile`, `checks.md` and `checks/README.md`; no row here writes those, though W01 changes `checks/`.
 - **I01:E03 Repository Checks (#187).**
@@ -132,19 +142,9 @@ Checked against the in-flight I05 epics, the open pull requests and the open epi
 
 ## Epic Priority
 
-`deps.py` over I05's body with E03 and E04 added, every I05 work item and the joins records:
+`deps.py` over I05's body with E03 and E04 added, the work items and the joins records proposes E03 one below E01 and E02 from the E01:W01 / E03:W10 contention. Confirmed: E03 `priority: 8` beside E01 and E02, at the user's request; E04 `priority: 7`.
 
-```text
-2 E00
-2 E01
-2 E02
-2 E04
-1 E03
-```
-
-On the board's scale (E01 and E02 carry `priority: 8`) that is E03 at 7, from the E01:W01 / E03:W08 contention. E04 at 8 is an artefact of declared components: its rows write the files W04 and W06 write and depend on W06, so it belongs below E03. The proposed map is E03 `priority: 7`, E04 `priority: 6`, E01 and E02 unchanged; it is pending the user's answer.
-
-Longest chains: 6, each of 9 steps, every one running E03 W01–W06 then E04 W01.
+Longest chains: 24, each of 9 steps, every one running E03 W01, W02, W07 and W08 then E04 W01.
 
 ## Review
 
@@ -153,15 +153,17 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
 - **Goal trace.**
   I05's goal clauses (tests, rules, passing checks) map to its AC1–AC3. E03 delivers AC1 through its end-to-end fixture criteria (AC1–AC3, AC7, AC8, AC10–AC14, AC16, AC19, AC22), AC2 through AC18 (`pf -v`) and AC21 (`invocation.md`), and AC3 through every row's `make check` and `make corpus`. I05 marks no source, so no source alignment applies.
 - **Folded without a decision.**
-  Profile v4 assigned to W05; each pf row's design, pin and `invocation.md` edits; the stdout consumers moved in W01; the delivery wrapper removed in W01 under the no-compatibility decision; AC10 restated as one refusal condition over three causes; AC22 kept as one condition over its list of layouts.
-- **Pending a decision.**
-  W03 delivers five criteria and W04 four, past the three-criterion grain `format.py` enforces; the eval contention's priority; the Board Reads step form; the discussion pull request.
+  Profile v4 assigned to W07; each pf row's design, pin and `invocation.md` edits; the stdout consumers moved in W01; the delivery wrapper removed in W01 under the no-compatibility decision; AC10 restated as one refusal condition over three causes; AC22 kept as one condition over its list of layouts, which `format.py` flags as possibly several.
+- **Settled by the user.**
+  The row split, the priority, the step heading form and the discussion pull request, as Decisions records.
+- **Second pass.**
+  After the split, `deps.py` reports no problem and no unaccounted pair, and `format.py` reports only the AC22 flag above.
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
-| Epic | I05:E03 Dispatch Bundles (not yet published) |
+| Epic | [I05:E03 Dispatch Bundles](https://github.com/m2ux/prosiform/issues/351) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Prerequisite epic | [I05:E01 Diagram Following](https://github.com/m2ux/prosiform/issues/333) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |

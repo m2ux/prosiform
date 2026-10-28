@@ -24,9 +24,13 @@ The corpus holds 564 numbered steps across 142 procedures in 53 files. The epic 
 ## Decisions
 
 - **Corpus only.** `pf` gains no rule on a procedure's shape; the guard is a repository check, not a build diagnostic.
-- **One task per directory.** Modes, protocols and artifacts are each a reviewable pull request; the artifacts' 423 steps need a title written for each, which is the bulk of the work.
+- **One task per directory.** Modes, protocols and artifacts are each a reviewable pull request; the artifacts' 423 steps need an action written for each, which is the bulk of the work.
 - **Fixtures move with each task.** The seven usage-example fixtures compile this tree, so each task regenerates the expected bundles its files reach.
-- **After Dispatch Bundles.** W01 depends on E03 W06: E03 retires `W_DISPATCH_NOT_PROCEDURAL`, which would warn on every converted dispatched target, rewrites the run-set and bootstrap rules in the same guidelines file, and writes Board Reads as steps.
+- **After Dispatch Bundles.** W01 depends on E03 W08: E03 retires `W_DISPATCH_NOT_PROCEDURAL`, which would warn on every converted dispatched target, rewrites the run-set and bootstrap rules in the same guidelines file, and writes Board Reads as steps.
+- **Step headings carry their number.** A step is headed by its position and action, as `### 6. Publish`; W01 states the convention and E03's Board Reads row writes it first. Inserting a step renumbers the anchors below it, and `pf`'s unresolved-link check reports a link left naming an old one. (User, 2026-10-28.)
+- **The workspace skill's corpus is out of scope.** `.claude/skills/work-planner` mirrors this example but has diverged from it; its conversion is a later change in its home repository, the `workspace` branch of m2ux/workflow-server. (User, 2026-10-28.)
+- **The guard stays.** W06 holds the convention under `make check`. (User, 2026-10-28.)
+- **No discussion pull request.** The records pushed to `engineering` are the discussion. (User, 2026-10-28.)
 
 ## Component Map
 
@@ -42,7 +46,7 @@ The corpus holds 564 numbered steps across 142 procedures in 53 files. The epic 
 ## Collision Surface
 
 - **I05:E03 Dispatch Bundles.**
-  Its W04 writes `delivery-evidence.md`, `guidelines.md` and `rules.md`; its W06 writes `SKILL.md`, `rules.md`, `guidelines.md` and removes `bootstrap.md`; W01 renames and W03–W06 regenerate the usage-example bundles. Every row here writes those bundles, W01 writes `guidelines.md` and W04 writes `delivery-evidence.md`.
+  Its W05 writes `guidelines.md` and `rules.md`, its W06 `delivery-evidence.md`, and its W08 `SKILL.md`, `rules.md`, `guidelines.md` and removes `bootstrap.md`; its W01 renames and W03 and W06–W08 regenerate the usage-example bundles. Every row here writes those bundles, W01 writes `guidelines.md` and W04 writes `delivery-evidence.md`.
 - **I05:E01 Diagram Following.**
   Its unmerged base writes `Makefile` and `checks.md`, which W06 writes too.
 - **I01:E00 Findings Ledger (draft #325).**
@@ -50,7 +54,7 @@ The corpus holds 564 numbered steps across 142 procedures in 53 files. The epic 
 
 ## Epic Priority
 
-`deps.py` proposes E04 at the same number as E01 and E02, because no declared component is shared. The files above are shared, and W01 depends on E03 W06, so the proposed number is one below E03: `priority: 6` with E03 at 7. Pending the user's answer.
+`deps.py` proposes E04 above E03, because no declared component is shared. The files above are shared, and W01 depends on E03 W08, so E04 sits one below E03. Confirmed: `priority: 7`, with E03 at 8.
 
 ## Review
 
@@ -62,13 +66,16 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
   `format.py` reports nothing to fix or decide on the draft body.
 - **Corpus audit.**
   The criterion applies to workflow definitions; this corpus is example material, so the epic carries none.
-- **Pending a decision.**
-  The step heading's title form, the workspace skill's corpus, the guard row, and the discussion pull request.
+- **Settled by the user.**
+  The step heading form, the workspace skill's corpus, the guard row and the discussion pull request, as Decisions records.
+- **Second pass.**
+  With the heading form applied, `deps.py` reports no problem and `format.py` nothing to fix or decide.
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
-| Epic | I05:E04 Corpus Steps (not yet published) |
+| Epic | [I05:E04 Corpus Steps](https://github.com/m2ux/prosiform/issues/352) |
+| Prerequisite epic | [I05:E03 Dispatch Bundles](https://github.com/m2ux/prosiform/issues/351) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
