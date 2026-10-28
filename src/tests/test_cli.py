@@ -14,6 +14,11 @@ whole run whose source is written as the run reads it, which publishes
 nothing to either stream or to a named file. The faults the contract
 declares are held here too, each on the status and the diagnostic it
 returns.
+
+Publication is held over sets of bundles each test constructs: a set is
+validated whole before any member is written, a validation-only run
+writes none of it, a rename refused part-way names its path, and a file
+in the folder the run does not produce is left as it was.
 """
 
 import json
@@ -66,14 +71,17 @@ from prosiform.cli import (
     UNEXPECTED_INTERNAL_ERROR,
     UNSUPPORTED_ENTRY_SUFFIX,
     USAGE_FAILURE,
+    Bundle,
     Failure,
     entry,
     main,
     parser,
+    publication,
     read_document,
     recheck,
 )
 from prosiform.closure import resolve
+from prosiform.diagnostics import WARNING, Diagnostic, Reporter
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
     DISPATCH_CYCLE,
@@ -85,6 +93,7 @@ from prosiform.limits import (
     BUDGETS,
     FILES,
     NESTING,
+    OUTPUT_BYTES,
     RESOURCE_LIMIT,
     Limits,
 )
@@ -1166,6 +1175,126 @@ def test_an_output_path_the_run_cannot_write_is_a_publication_failure(
     run = invoke("-d", "json", "-o", str(tmp_path / "absent"), "guide.md", cwd=root)
     assert run.status == PUBLICATION_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
+
+
+def outputs(budget: int) -> Limits:
+    """Every budget at its default, the output budget at the one supplied."""
+    return Limits({b: budget if b is OUTPUT_BYTES else b.default for b in BUDGETS})
+
+
+def bundle_set(folder: Path, *texts: str) -> list[Bundle]:
+    """One bundle for each text, named in turn and each raising one warning."""
+    return [
+        Bundle(
+            text,
+            folder / f"member{at}.bundle.md",
+            [Diagnostic(WARNING, f"member {at} warns", code=COINCIDENT_HEADING)],
+        )
+        for at, text in enumerate(texts)
+    ]
+
+
+def contents(folder: Path) -> dict[str, bytes]:
+    """Every entry of a folder by name, a directory's bytes taken as empty."""
+    return {
+        one.name: b"" if one.is_dir() else one.read_bytes() for one in folder.iterdir()
+    }
+
+
+def test_a_set_whose_member_fails_validation_writes_no_bundle(tmp_path: Path) -> None:
+    bundles = bundle_set(tmp_path, "# One\n", "# Two, over the budget\n", "# Three\n")
+    err = StringIO()
+    with pytest.raises(Failure) as refused:
+        publication(bundles, outputs(16), Reporter(err), check=False)
+    assert refused.value.diagnostic.code == RESOURCE_LIMIT
+    assert list(tmp_path.iterdir()) == []
+    assert err.getvalue() == ""
+
+
+def test_a_set_whose_member_cannot_be_written_writes_no_bundle(tmp_path: Path) -> None:
+    bundles = bundle_set(tmp_path, "# One\n", "# Two\n", "# Three\n")
+    bundles[2] = Bundle("# Three\n", tmp_path / "absent" / "member2.bundle.md", [])
+    with pytest.raises(Failure) as refused:
+        publication(bundles, outputs(1024), Reporter(StringIO()), check=False)
+    assert refused.value.diagnostic.code == PUBLICATION_FAILED
+    assert str(tmp_path / "absent" / "member2.bundle.md") in (
+        refused.value.diagnostic.message
+    )
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_a_set_is_published_whole_once_every_member_validates(tmp_path: Path) -> None:
+    bundles = bundle_set(tmp_path, "# One\n", "# Two\n", "# Three\n")
+    err = StringIO()
+    publication(bundles, outputs(1024), Reporter(err), check=False)
+    assert contents(tmp_path) == {
+        "member0.bundle.md": b"# One\n",
+        "member1.bundle.md": b"# Two\n",
+        "member2.bundle.md": b"# Three\n",
+    }
+    assert err.getvalue().splitlines() == [
+        f"{COINCIDENT_HEADING}: member {at} warns" for at in range(3)
+    ]
+
+
+def test_a_validation_only_set_validates_every_member_and_writes_none(
+    tmp_path: Path,
+) -> None:
+    passing = bundle_set(tmp_path, "# One\n", "# Two\n", "# Three\n")
+    publication(passing, outputs(1024), Reporter(StringIO()), check=True)
+    assert list(tmp_path.iterdir()) == []
+    failing = bundle_set(tmp_path, "# One\n", "# Two\n", "# Three, over the budget\n")
+    with pytest.raises(Failure) as refused:
+        publication(failing, outputs(16), Reporter(StringIO()), check=True)
+    assert refused.value.diagnostic.code == RESOURCE_LIMIT
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_a_set_leaves_every_file_it_does_not_produce_as_it_was(tmp_path: Path) -> None:
+    (tmp_path / "notes.md").write_text("# Notes\n")
+    (tmp_path / "other.bundle.md").write_text("another run's bundle\n")
+    (tmp_path / ".member0.bundle.md.kept").write_text("a hidden file\n")
+    before = contents(tmp_path)
+    bundles = bundle_set(tmp_path, "# One\n", "# Two\n")
+    publication(bundles, outputs(1024), Reporter(StringIO()), check=False)
+    after = contents(tmp_path)
+    assert {name: after[name] for name in before} == before
+    assert sorted(set(after) - set(before)) == [
+        "member0.bundle.md",
+        "member1.bundle.md",
+    ]
+
+
+def test_a_run_leaves_every_file_in_its_folder_it_does_not_produce(
+    root: Path, tmp_path: Path
+) -> None:
+    folder = tmp_path / "published"
+    folder.mkdir()
+    (folder / "notes.md").write_text("# Notes\n")
+    (folder / "docs_note.bundle.md").write_text("another run's bundle\n")
+    before = contents(folder)
+    assert invoke("-o", str(folder), "guide.md", cwd=root).status == SUCCESS
+    after = contents(folder)
+    assert {name: after[name] for name in before} == before
+    assert sorted(set(after) - set(before)) == ["guide.bundle.md"]
+
+
+def test_a_rename_refused_after_earlier_ones_is_a_publication_failure(
+    tmp_path: Path,
+) -> None:
+    bundles = bundle_set(tmp_path, "# One\n", "# Two\n", "# Three\n")
+    (tmp_path / "member1.bundle.md").mkdir()
+    (tmp_path / "member2.bundle.md").write_text("earlier bytes\n")
+    with pytest.raises(Failure) as refused:
+        publication(bundles, outputs(1024), Reporter(StringIO()), check=False)
+    assert refused.value.status == PUBLICATION_FAILURE
+    assert refused.value.diagnostic.code == PUBLICATION_FAILED
+    assert str(tmp_path / "member1.bundle.md") in refused.value.diagnostic.message
+    assert contents(tmp_path) == {
+        "member0.bundle.md": b"# One\n",
+        "member1.bundle.md": b"",
+        "member2.bundle.md": b"earlier bytes\n",
+    }
 
 
 def test_a_validation_only_run_bundles_and_publishes_nothing(root: Path) -> None:
