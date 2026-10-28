@@ -16,10 +16,15 @@ The shared table, before a kind fills its cells.
 
 **Inputs:** Current body, the kind's table columns and supplied row data.
 
-1. Populate the shared Done, Coverage and Depends on cells from the supplied row data.
-   - The columns must match the kind's table.
-   - The shared cells must meet [Tables](#tables).
-2. Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
+#### 1. Populate the Shared Table Cells
+
+Populate the shared Done, Coverage and Depends on cells from the supplied row data.
+- The columns must match the kind's table.
+- The shared cells must meet [Tables](#tables).
+
+#### 2. Read the Finished Issue Table
+
+Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
 
 ### *Check* Round of Edits
 
@@ -27,8 +32,13 @@ The shared check after a round of edits.
 
 **Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
 
-1. Check each section of the issue against the field conditions for its kind and against [Fields](#fields) in this file.
-2. Run [Check Body Format](#check-body-format) on every issue the round changed.
+#### 1. Check Each Section Against Fields
+
+Check each section of the issue against the field conditions for its kind and against [Fields](#fields) in this file.
+
+#### 2. Check the Changed Body Formats
+
+Run [Check Body Format](#check-body-format) on every issue the round changed.
 
 ### *Validate* Issue Body
 
@@ -36,9 +46,17 @@ One body checked against its supplied kind and template.
 
 **Inputs:** Issue JSON, kind field conditions, required related evidence and output body file.
 
-1. Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
-2. Review the body against the supplied field conditions.
-3. Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
+#### 1. Run the Body Format Check
+
+Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
+
+#### 2. Review the Body Field Conditions
+
+Review the body against the supplied field conditions.
+
+#### 3. Return the Body Validation Findings
+
+Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
 
 ### *Apply* Body Corrections
 
@@ -46,14 +64,34 @@ One body rewritten from confirmed local findings.
 
 **Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
 
-1. Populate missing sections from the supplied issue and related context.
-2. Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template.
-3. Record a required tracker-kind change for the caller.
-4. Restate historical narration as the current design.
-5. Apply confirmed criterion changes.
-   - The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
-6. Validate the body through [Validate Issue Body](#validate-issue-body).
-7. Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
+#### 1. Populate Missing Body Sections
+
+Populate missing sections from the supplied issue and related context.
+
+#### 2. Apply Extra-Section Decisions
+
+Apply each confirmed decision to keep, fold or remove an extra section, and rewrite a wrong-kind body in the selected template.
+
+#### 3. Record the Tracker-Kind Change
+
+Record a required tracker-kind change for the caller.
+
+#### 4. Restate Historical Narration
+
+Restate historical narration as the current design.
+
+#### 5. Apply Confirmed Criterion Changes
+
+Apply confirmed criterion changes.
+- The body must meet [Body](#body), [Shared Acceptance Criteria](#shared-acceptance-criteria) and the supplied kind conditions.
+
+#### 6. Validate the Corrected Body
+
+Validate the body through [Validate Issue Body](#validate-issue-body).
+
+#### 7. Return the Corrected Body
+
+Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
 ### *Build* Body Snapshot
 
@@ -61,10 +99,21 @@ A local issue-shaped record for body validation.
 
 **Inputs:** Current body file, title, labels, optional existing issue JSON and destination JSON path.
 
-1. Write the body's exact text, title and labels to the destination as JSON.
-2. Preserve the existing issue's identity and state when supplied.
-3. For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
-4. Return the JSON path for validation. No tracker issue is created by this operation.
+#### 1. Write the Body Snapshot JSON
+
+Write the body's exact text, title and labels to the destination as JSON.
+
+#### 2. Preserve the Issue Identity
+
+Preserve the existing issue's identity and state when supplied.
+
+#### 3. Mark an Unpublished Draft
+
+For an unpublished draft, use `number: null` and `state: "open"`; labels are strings or objects with a name.
+
+#### 4. Return the Snapshot Path
+
+Return the JSON path for validation. No tracker issue is created by this operation.
 
 ### *Repair* Issue Format
 
@@ -72,18 +121,29 @@ The saved format corrections for a set of issues of one kind and any unresolved 
 
 **Inputs:** The kind's validator, either its body file's Validate operation or [Validate Issue Body](#validate-issue-body) with the kind's field conditions; that validator's further inputs; a set of issue bodies, each with its identity, current JSON and output body path; kind template and required related evidence.
 
-1. Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
-   - Return an unreadable source as a blocker before editing.
-2. Review each returned diff.
-   - Publish wording-preserving format, title and label corrections through [Save Tracker Issue](issue.md#save-tracker-issue), without asking.
-   - Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
-3. Resolve a non-mechanical finding confined to one body.
-   - Obtain the user's decision.
-   - Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
-   - Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
-4. Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue.
-   - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
-   - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
+#### 1. Apply the Format Validator
+
+Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
+- Return an unreadable source as a blocker before editing.
+
+#### 2. Review Each Format Diff
+
+Review each returned diff.
+- Publish wording-preserving format, title and label corrections through [Save Tracker Issue](issue.md#save-tracker-issue), without asking.
+- Retain content decisions and cross-body findings separately; do not publish them as mechanical fixes.
+
+#### 3. Resolve Single-Body Findings
+
+Resolve a non-mechanical finding confined to one body.
+- Obtain the user's decision.
+- Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, confirmed resolution and output path.
+- Publish through Save Tracker Issue. An unanswered decision or a finding requiring changes to other issues returns to the caller as a blocker.
+
+#### 4. Re-Read Each Repaired Issue
+
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue.
+- Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
+- Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
 ### *Resolve* Open Questions
 
@@ -91,11 +151,25 @@ The answers to an issue's Open Questions saved in its body, and the questions th
 
 **Inputs:** Issue identity, current JSON, kind template and field conditions, related context and output body path.
 
-1. Put each question in the body's Open Questions section to the user as an [interview](../rules.md).
-2. Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, each confirmed answer and output path, removing each settled question from Open Questions.
-3. Publish the corrected body through [Save Tracker Issue](issue.md#save-tracker-issue).
-4. Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
-5. Return the saved body, each decision taken and the questions still open in its Open Questions section. A question still open is a blocker to work that depends on it.
+#### 1. Interview on Open Questions
+
+Put each question in the body's Open Questions section to the user as an [interview](../rules.md).
+
+#### 2. Apply the Question Answers
+
+Apply [Apply Body Corrections](#apply-body-corrections) with the current body, kind template and conditions, related context, each confirmed answer and output path, removing each settled question from Open Questions.
+
+#### 3. Publish the Answered Body
+
+Publish the corrected body through [Save Tracker Issue](issue.md#save-tracker-issue).
+
+#### 4. Re-Read the Answered Issue
+
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
+
+#### 5. Return the Question Decisions
+
+Return the saved body, each decision taken and the questions still open in its Open Questions section. A question still open is a blocker to work that depends on it.
 
 ## Fields
 

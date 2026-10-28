@@ -16,9 +16,14 @@ One debt item sorted into the class that decides whether the unit fixes or defer
 
 **Inputs:** The debt item, the evidence that shows it, and the criteria the unit's Coverage carries.
 
-1. Match the item to one class against the supplied criteria, deciding it yourself rather than putting it to the user.
-   - Test [Blocking](#blocking) first, then [Trivial](#trivial) and [Non-trivial](#non-trivial).
-2. Return the item with its class to the caller.
+#### 1. Match the Debt Class
+
+Match the item to one class against the supplied criteria, deciding it yourself rather than putting it to the user.
+- Test [Blocking](#blocking) first, then [Trivial](#trivial) and [Non-trivial](#non-trivial).
+
+#### 2. Return the Classified Debt Item
+
+Return the item with its class to the caller.
 
 ## Fields
 

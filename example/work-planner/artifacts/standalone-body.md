@@ -27,8 +27,13 @@ One standalone body with its confirmed boundary integrated.
 
 **Inputs:** Current body, confirmed content and boundary decisions, and output path.
 
-1. Populate the body through [Populate Standalone Body](#populate-standalone-body), folding any Non-Goals into Proposal as a closing boundary.
-2. Return the revised file for publication.
+#### 1. Populate the Standalone Body
+
+Populate the body through [Populate Standalone Body](#populate-standalone-body), folding any Non-Goals into Proposal as a closing boundary.
+
+#### 2. Return the Revised Standalone Body
+
+Return the revised file for publication.
 
 ## Fields
 
