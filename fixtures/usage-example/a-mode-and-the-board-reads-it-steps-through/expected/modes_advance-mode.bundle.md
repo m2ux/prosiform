@@ -12,33 +12,50 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ## Procedure
 
-1. **Select the board.**
-   Apply [Select Project Board](#select-project-board) with the requested theme or board identity.
-   - Use the returned owner and board number for the sync and read steps.
-   - Resolve a pending theme selection before continuing.
-2. **Sync.**
-   Follow [Sync Mode](#dispatch-sync-mode) for each open initiative on the selected board, with the allowance the caller supplied.
-   - Wait for its saved delivery results before the read step.
-   - Return any blocker that prevents current delivery from being established.
-3. **Read the evidence.**
-   Apply [Read Board Delivery Evidence](#read-board-delivery-evidence) with the selected board owner and number, authenticated access, output paths and destination snapshot files.
-   - Return incomplete evidence as a blocker.
-4. **Apply the queue.**
-   Apply [Apply Board Queue](#apply-board-queue) with the board identity, the returned board items with Status, initiative pull request records, board fields and assignee login, an output directory such as `board/`, every resolved off-board issue file and every confirmed unplanned initiative identity.
-   - Return a reference it reports as missing evidence as a blocker; the queue stays pending.
-   - When it returns pending decisions, settle them in the decide step, then return to the read step.
-5. **Decide.**
-   For each pending `order` or `ask` line, a re-prioritisation as [Report Lines](#report-lines) states, apply [Settle Plan Change](#settle-plan-change) with the line, the initiatives it names, its [recommended decision](#recommended-decisions), those initiatives' identities, the allowance the caller supplied and the run's [change list](#change-list).
-   - For each initiative an applied option or answer numbers, apply [Save Tracker Issue](#save-tracker-issue) with its identity and the [priority label](#priority-sets) that number names, with the label's colour and description.
-   - Add each initiative an `ask` answer leaves with no number to the confirmed unplanned initiative identities.
-   - A held or unanswered line leaves the queue pending: report it and continue at the report step.
-6. **Report.**
-   Report each move and each `order`, `ask`, `wait` and `next` line using [Report Lines](#report-lines).
-   - Return the change list with the queue, so the caller reports each decision this mode made and each it held.
+### 1. Select the Board
 
-### Dispatch Sync Mode
+Apply [Select Project Board](#select-project-board) with the requested theme or board identity.
+
+- Use the returned owner and board number for [2. Sync](#2-sync) and [3. Read the Evidence](#3-read-the-evidence).
+- Resolve a pending theme selection before continuing.
+
+### 2. Sync
+
+Follow [Sync Mode](#dispatch-sync-mode) for each open initiative on the selected board, with the allowance the caller supplied.
+
+- Wait for its saved delivery results before [3. Read the Evidence](#3-read-the-evidence).
+- Return any blocker that prevents current delivery from being established.
+
+#### Dispatch Sync Mode
 
 Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+
+### 3. Read the Evidence
+
+Apply [Read Board Delivery Evidence](#read-board-delivery-evidence) with the selected board owner and number, authenticated access, output paths and destination snapshot files.
+
+- Return incomplete evidence as a blocker.
+
+### 4. Apply the Queue
+
+Apply [Apply Board Queue](#apply-board-queue) with the board identity, the returned board items with Status, initiative pull request records, board fields and assignee login, an output directory such as `board/`, every resolved off-board issue file and every confirmed unplanned initiative identity.
+
+- Return a reference it reports as missing evidence as a blocker; the queue stays pending.
+- When it returns pending decisions, settle them in [5. Decide](#5-decide), then return to [3. Read the Evidence](#3-read-the-evidence).
+
+### 5. Decide
+
+For each pending `order` or `ask` line, a re-prioritisation as [Report Lines](#report-lines) states, apply [Settle Plan Change](#settle-plan-change) with the line, the initiatives it names, its [recommended decision](#recommended-decisions), those initiatives' identities, the allowance the caller supplied and the run's [change list](#change-list).
+
+- For each initiative an applied option or answer numbers, apply [Save Tracker Issue](#save-tracker-issue) with its identity and the [priority label](#priority-sets) that number names, with the label's colour and description.
+- Add each initiative an `ask` answer leaves with no number to the confirmed unplanned initiative identities.
+- A held or unanswered line leaves the queue pending: report it and continue at [6. Report](#6-report).
+
+### 6. Report
+
+Report each move and each `order`, `ask`, `wait` and `next` line using [Report Lines](#report-lines).
+
+- Return the change list with the queue, so the caller reports each decision this mode made and each it held.
 
 ## Outcomes
 
@@ -98,9 +115,17 @@ The theme or proposals board the request names.
 
 **Inputs:** Board owner and either a theme name or the proposals-board selection.
 
-1. Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
-2. Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
-3. Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
+##### 1. Find the Named Board
+
+Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+
+##### 2. Report a Missing Board Selection
+
+Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
+
+##### 3. Return the Selected Board Number
+
+Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
 
 #### *Copy* Project Board
 
@@ -108,10 +133,16 @@ A missing theme board, or a missing proposals board.
 
 **Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
 
-1. When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
-2. When the selected theme board is absent:
-   - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
-   - Require the new theme's label and board before an initiative takes that theme.
+##### 1. Create an Absent Proposals Board
+
+When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
+
+##### 2. Create an Absent Theme Board
+
+When the selected theme board is absent:
+
+- Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
+- Require the new theme's label and board before an initiative takes that theme.
 
 #### *Create* Proposals Board
 
@@ -119,12 +150,29 @@ A new proposals board linked to the supplied repository.
 
 **Inputs:** Board owner and repository.
 
-1. Run [Find Board Template](#find-board-template) with the owner and the exact title `Proposals Template`.
-2. Use the returned number as the copy source.
-3. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title `Proposals`.
-4. Retain the new board number. The copy meets [Proposals](#proposals).
-5. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
-6. Return the new board number after linking succeeds.
+##### 1. Find the Proposals Template
+
+Run [Find Board Template](#find-board-template) with the owner and the exact title `Proposals Template`.
+
+##### 2. Use the Proposals Template as Source
+
+Use the returned number as the copy source.
+
+##### 3. Copy the Proposals Template
+
+Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title `Proposals`.
+
+##### 4. Retain the Proposals Board Number
+
+Retain the new board number. The copy meets [Proposals](#proposals).
+
+##### 5. Link the Proposals Board to the Repository
+
+Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+
+##### 6. Return the Proposals Board Number
+
+Return the new board number after linking succeeds.
 
 #### *Create* Theme Board
 
@@ -132,13 +180,33 @@ A new theme board linked to the supplied repository.
 
 **Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
 
-1. Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
-2. Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
-3. Use the returned number as the copy source.
-4. Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
-5. Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
-6. Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
-7. Return the new board number after linking succeeds.
+##### 1. Require the Originating Proposal
+
+Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
+
+##### 2. Find the Initiative Template
+
+Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+
+##### 3. Use the Initiative Template as Source
+
+Use the returned number as the copy source.
+
+##### 4. Copy the Initiative Template
+
+Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
+
+##### 5. Retain the Theme Board Number
+
+Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+
+##### 6. Link the Theme Board to the Repository
+
+Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+
+##### 7. Return the Theme Board Number
+
+Return the new board number after linking succeeds.
 
 #### *Read* Board State
 
@@ -146,9 +214,17 @@ The selected board's items and status fields.
 
 **Inputs:** Existing board owner and number, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns them, whether the caller ran that operation or carries its result.
 
-1. Run [Find Status Field](#find-status-field) for the board number.
-2. Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
-3. Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
+##### 1. Find the Board Status Field
+
+Run [Find Status Field](#find-status-field) for the board number.
+
+##### 2. Fetch Board Items with Status
+
+Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
+
+##### 3. Return the Board State
+
+Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
 #### *Read* Board Assignee
 
@@ -156,8 +232,13 @@ The authenticated login available for board assignments.
 
 **Inputs:** Authenticated repository access.
 
-1. Run [Find User](#find-user).
-2. Return its login for the caller's assignment decisions.
+##### 1. Find the Board User
+
+Run [Find User](#find-user).
+
+##### 2. Return the Assignee Login
+
+Return its login for the caller's assignment decisions.
 
 #### *Read* Board Configuration
 
@@ -165,9 +246,17 @@ One board's field definitions and requested item state.
 
 **Inputs:** Board owner and number, output paths and optional item identity.
 
-1. Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
-2. When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
-3. Return the field definitions and requested current item.
+##### 1. Fetch the Configured Board Fields
+
+Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
+
+##### 2. Fetch the Requested Board Item
+
+When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
+
+##### 3. Return the Board Configuration
+
+Return the field definitions and requested current item.
 
 ### Fields
 
@@ -357,10 +446,15 @@ The board snapshot and pull request records that establish current delivery acro
 
 **Inputs:** Board owner and number, authenticated access, output paths and destination snapshot files.
 
-1. Apply the [board reads](#board-reads).
-2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+##### 1. Apply the Board Reads
 
-##### Board Reads
+Apply the [board reads](#run-board-reads).
+
+##### 2. Return the Board Delivery Evidence
+
+Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+##### Run Board Reads
 
 ###### 1. Read Board State
 
@@ -398,13 +492,20 @@ Derives the queue from supplied board and delivery snapshots and confirmed decis
 
 **Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities. The caller supplies the delivery state.
 
-1. Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
-   - The queue must meet [Fields](#fields-2).
-   - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
-2. Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
-   - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
-   - Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
-   - The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
+##### 1. Compute the Board Queue
+
+Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
+
+- The queue must meet [Fields](#fields-2).
+- Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
+
+##### 2. Return the Proposed Queue Calls
+
+Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
+
+- Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
+- Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
+- The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
 
 #### *Apply* Board Queue
 
@@ -412,22 +513,42 @@ The board's initiative and epic Status and assignees, moved to the queue and con
 
 **Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
 
-1. Apply [Plan Board Queue](#plan-board-queue) with the supplied snapshots, board identity, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
-2. For each unresolved issue reference the queue returns:
-   - Apply [Read Tracker Issue](#read-tracker-issue) into a file.
-   - Add the returned file to the resolved off-board issue files.
-   - Apply Plan Board Queue again with the same inputs and every resolved off-board issue file.
-   - Repeat while references remain unresolved. On an unavailable issue, return the queue with that reference as missing evidence and stop.
-3. When the queue carries an `order` or `ask` line, return the queue with those lines as pending decisions and stop. The caller settles them and applies this operation again with its confirmed priorities saved and each initiative it confirms unplanned.
-4. Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](#assignees) states.
-   - For each Status call, apply [Read Board Configuration](#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
-   - If that item still shows the preceding status:
-     - Repeat its write.
-     - Repeat the same item read. The item list can lag a write.
-5. Apply [Read Board State](#read-board-state) for the refreshed board items.
-   - Apply Plan Board Queue with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
-   - Continue from step 2 until the refreshed queue is [complete](#completeness) and contains no further call.
-6. Return each move applied and the converged queue's `wait` and `next` lines.
+##### 1. Plan the Board Queue to Apply
+
+Apply [Plan Board Queue](#plan-board-queue) with the supplied snapshots, board identity, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
+
+##### 2. Resolve Off-Board Issue References
+
+For each unresolved issue reference the queue returns:
+
+- Apply [Read Tracker Issue](#read-tracker-issue) into a file.
+- Add the returned file to the resolved off-board issue files.
+- Apply Plan Board Queue again with the same inputs and every resolved off-board issue file.
+- Repeat while references remain unresolved. On an unavailable issue, return the queue with that reference as missing evidence and stop.
+
+##### 3. Return Pending Queue Decisions
+
+When the queue carries an `order` or `ask` line, return the queue with those lines as pending decisions and stop. The caller settles them and applies this operation again with its confirmed priorities saved and each initiative it confirms unplanned.
+
+##### 4. Run the Proposed Queue Calls
+
+Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](#assignees) states.
+
+- For each Status call, apply [Read Board Configuration](#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
+- If that item still shows the preceding status:
+  - Repeat its write.
+  - Repeat the same item read. The item list can lag a write.
+
+##### 5. Re-Read the Queued Board State
+
+Apply [Read Board State](#read-board-state) for the refreshed board items.
+
+- Apply Plan Board Queue with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
+- Continue from [2. Resolve Off-Board Issue References](#2-resolve-off-board-issue-references) until the refreshed queue is [complete](#completeness) and contains no further call.
+
+##### 6. Return the Converged Queue
+
+Return each move applied and the converged queue's `wait` and `next` lines.
 
 ### Fields
 
@@ -538,11 +659,20 @@ One pending change assessed against the run's allowance.
 
 **Inputs:** The pending change, its subject, the option recommended for it, and the allowance the caller was supplied.
 
-1. Match the change to one kind in [Change Kinds](#change-kinds).
-2. Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
-3. Return it as [held](#held-change) otherwise.
-   - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
-   - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
+##### 1. Match the Plan Change Kind
+
+Match the change to one kind in [Change Kinds](#change-kinds).
+
+##### 2. Return an Automatic Plan Change
+
+Return it as automatic where the supplied allowance names that kind, with the supplied recommendation as the option the caller applies.
+
+##### 3. Return a Held Plan Change
+
+Return it as [held](#held-change) otherwise.
+
+- A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
+- An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
 
 #### *Record* Plan Change
 
@@ -550,8 +680,13 @@ One entry in the run's list, for a change it applied or held.
 
 **Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
 
-1. Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
-2. Return the updated list for the caller to publish and report.
+##### 1. Add the Plan Change Entry
+
+Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list), marked applied or held.
+
+##### 2. Return the Updated Change List
+
+Return the updated list for the caller to publish and report.
 
 #### *Settle* Plan Change
 
@@ -559,20 +694,29 @@ One pending change carried to its outcome: applied, held, or answered by the use
 
 **Inputs:** The pending change, its subject, the option recommended for it, the affected issue identities, the allowance the caller was supplied, and the run's current [Change List](#change-list).
 
-1. Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) with the change, its subject, the recommended option and the supplied allowance.
-2. Settle the change by what it returns:
-   - **Automatic.**
-     - Take the recommended option as the applied option.
-     - Apply [Record Plan Change](#record-plan-change) with the change, its kind, that option, the affected issue identities and the current list, marked applied.
-   - **Held, with an allowance supplied.**
-     - Leave the change unapplied, meeting [Held Change](#held-change).
-     - Apply Record Plan Change with the change, its kind, the recommended option, the affected issue identities and the current list, marked held.
-     - Ask nothing, since the work the run was dispatched for does not wait on an answer.
-   - **Held, with no allowance supplied.**
-     - Put the change to the user as an [interview](#rules), with the recommended option marked, and wait for the answer.
-     - Where the answer applies a change, apply Record Plan Change with the change, its kind, the option the user chose, the affected issue identities and the current list, marked applied.
-     - An answer leaving the work where it is takes no entry, as [Change Kinds](#change-kinds) states.
-3. Return the applied option, held, or the user's answer, with the updated change list.
+##### 1. Check the Plan Change Autonomy
+
+Apply [Check Plan Change Autonomy](#check-plan-change-autonomy) with the change, its subject, the recommended option and the supplied allowance.
+
+##### 2. Settle by the Autonomy Result
+
+Settle the change by what it returns:
+
+- **Automatic.**
+  - Take the recommended option as the applied option.
+  - Apply [Record Plan Change](#record-plan-change) with the change, its kind, that option, the affected issue identities and the current list, marked applied.
+- **Held, with an allowance supplied.**
+  - Leave the change unapplied, meeting [Held Change](#held-change).
+  - Apply Record Plan Change with the change, its kind, the recommended option, the affected issue identities and the current list, marked held.
+  - Ask nothing, since the work the run was dispatched for does not wait on an answer.
+- **Held, with no allowance supplied.**
+  - Put the change to the user as an [interview](#rules), with the recommended option marked, and wait for the answer.
+  - Where the answer applies a change, apply Record Plan Change with the change, its kind, the option the user chose, the affected issue identities and the current list, marked applied.
+  - An answer leaving the work where it is takes no entry, as [Change Kinds](#change-kinds) states.
+
+##### 3. Return the Settled Plan Change
+
+Return the applied option, held, or the user's answer, with the updated change list.
 
 ### Fields
 
@@ -618,8 +762,13 @@ The current issue, its saved body and discussion.
 
 **Inputs:** Repository, issue number and output files; whether discussion is needed.
 
-1. Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
-2. Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
+##### 1. Fetch the Tracker Issue
+
+Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
+
+##### 2. Fetch the Issue Comments
+
+Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
 
 #### *Save* Tracker Issue
 
@@ -627,14 +776,35 @@ One populated body and its metadata, written to the tracker.
 
 **Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
 
-1. Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
-2. Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
-   - Return an unknown label definition to the caller before any write.
-3. For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
-4. For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
-5. Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
-6. Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
-7. Compare the saved fields with the intended body and metadata.
+##### 1. Take the Issue Body and Metadata
+
+Take the supplied body and metadata, preserving each field the caller does not change for an existing issue.
+
+##### 2. Ensure the Issue Labels
+
+Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the save assigns and its colour and description.
+
+- Return an unknown label definition to the caller before any write.
+
+##### 3. Create New Issue
+
+For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
+
+##### 4. Update the Existing Issue
+
+For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
+
+##### 5. Comment on the Saved Issue
+
+Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
+
+##### 6. Re-Read the Saved Issue
+
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+
+##### 7. Compare the Saved Issue Fields
+
+Compare the saved fields with the intended body and metadata.
 
 #### *Close* Tracker Issue
 
@@ -642,16 +812,32 @@ Verified completion of an issue and its linked delivery.
 
 **Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
 
-1. Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
-2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
-   - Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
-   - Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
-   - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
-3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
-4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
-   - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
-   - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
-5. Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
+##### 1. Capture the Issue Development
+
+Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
+
+##### 2. Take Fresh Pull Request Records
+
+Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
+
+- Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
+- Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
+- Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
+
+##### 3. Run the Closure Check
+
+Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
+
+##### 4. Require the Closure Gate
+
+Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+
+- Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
+- Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
+
+##### 5. Close the Issue as Completed
+
+Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
 #### *Comment* on Issue
 
@@ -659,11 +845,20 @@ The supplied discussion text saved on one issue.
 
 **Inputs:** Repository, issue number and exact comment text or file; reviewer identity and addressed feedback when replying to a review.
 
-1. When replying to feedback already folded into the body, compose a precise, factual reply addressing each point and mentioning the reviewer, with no thanks or filler. Name what the body now says, by criterion id where one carries it, or the issue that takes the point.
-2. Publish the supplied comment:
-   - For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
-   - For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
-3. Return the saved comment URL.
+##### 1. Compose the Feedback Reply
+
+When replying to feedback already folded into the body, compose a precise, factual reply addressing each point and mentioning the reviewer, with no thanks or filler. Name what the body now says, by criterion id where one carries it, or the issue that takes the point.
+
+##### 2. Publish the Issue Comment
+
+Publish the supplied comment:
+
+- For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
+- For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
+
+##### 3. Return the Comment URL
+
+Return the saved comment URL.
 
 #### *Close* as Completed
 
@@ -671,12 +866,29 @@ An issue closed after its final evidence check.
 
 **Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
 
-1. Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
-2. Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
-3. Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
-4. Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
-5. Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
-6. Return the saved state or failure.
+##### 1. Capture Development Before Closure
+
+Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
+
+##### 2. Compare the Development Links
+
+Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
+
+##### 3. Run the Completion Gate
+
+Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
+
+##### 4. Require the Completion Gate to Pass
+
+Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
+
+##### 5. Set the Completed State
+
+Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
+
+##### 6. Return the Completed State
+
+Return the saved state or failure.
 
 #### *Capture* Issue Development
 
@@ -684,11 +896,23 @@ The issue's current content and complete Development snapshot.
 
 **Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
 
-1. Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
-2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
-   - Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
-3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
-4. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
+##### 1. Read the Development Field
+
+Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
+
+##### 2. Write the Development Snapshot
+
+Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
+
+- Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
+
+##### 3. Fetch the Issue Snapshot
+
+Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
+
+##### 4. Return the Development Files
+
+Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
 #### *Read* Issue Development
 
@@ -696,8 +920,13 @@ The Development links observed for one issue through authenticated GitHub.
 
 **Inputs:** Issue identity and authenticated access.
 
-1. Read every page and state, across repositories, recording each linked pull request's identity.
-2. Return the observed links and whether the entire field was readable.
+##### 1. Read Every Development Link
+
+Read every page and state, across repositories, recording each linked pull request's identity.
+
+##### 2. Return the Observed Development Links
+
+Return the observed links and whether the entire field was readable.
 
 #### *Confirm* Repository Auto-Close
 
@@ -705,9 +934,17 @@ Whether the repository auto-closes issues whose linked pull requests merge, esta
 
 **Inputs:** Repository and authenticated access.
 
-1. Read the setting where the authenticated API exposes it, and take a read value as the answer.
-2. Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
-3. Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
+##### 1. Read the Auto-Close Setting
+
+Read the setting where the authenticated API exposes it, and take a read value as the answer.
+
+##### 2. Ask the User for Auto-Close
+
+Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
+
+##### 3. Return the Confirmed Auto-Close Setting
+
+Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
 
 ### Fields
 
@@ -960,17 +1197,35 @@ The observed or updated Development relation for a pull request.
 
 **Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
 
-1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
-2. Return the complete relation for a read-only request.
-3. For a link edit:
-   - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
-   - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
-   - For removal of an abandoned or incorrect link:
-     - Require the supplied user decision.
-     - Run [Remove Development Link](#remove-development-link) with those identities.
-4. Run [Read Development Links](#read-development-links) again for the same pull request.
-5. Compare the field with the intended edit.
-6. Return the verified relation or discrepancy.
+##### 1. Read the Pull Request Development Links
+
+Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
+
+##### 2. Return the Read-Only Relation
+
+Return the complete relation for a read-only request.
+
+##### 3. Edit the Development Links
+
+For a link edit:
+
+- Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
+- For removal of an abandoned or incorrect link:
+  - Require the supplied user decision.
+  - Run [Remove Development Link](#remove-development-link) with those identities.
+
+##### 4. Re-Read the Pull Request Development Links
+
+Run [Read Development Links](#read-development-links) again for the same pull request.
+
+##### 5. Compare the Field with the Edit
+
+Compare the field with the intended edit.
+
+##### 6. Return the Verified Link Relation
+
+Return the verified relation or discrepancy.
 
 #### *Fetch* Pull Request Issue Links
 
@@ -978,11 +1233,25 @@ The complete issue-link snapshot for a supplied set of pull requests.
 
 **Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
 
-1. For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
-2. Repeat that read after a link changes.
-3. If any relation is unreadable, return the incomplete result.
-4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
-5. Return the snapshot for the scripts' `--links` input.
+##### 1. Read Links for Each Pull Request
+
+For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+
+##### 2. Re-Read Links After a Change
+
+Repeat that read after a link changes.
+
+##### 3. Return an Incomplete Link Fetch
+
+If any relation is unreadable, return the incomplete result.
+
+##### 4. Write the Links Snapshot
+
+Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
+
+##### 5. Return the Links Snapshot
+
+Return the snapshot for the scripts' `--links` input.
 
 #### *Fetch* All Initiative Pull Requests
 
@@ -990,11 +1259,25 @@ The pull request collection covering every supplied board repository.
 
 **Inputs:** Ordered repository list and destination JSON-lines file.
 
-1. Run [Fetch Repository Initiative Pull Requests](#fetch-repository-initiative-pull-requests) for the first repository and destination `prs.json`. This replaces the destination with a fresh collection.
-2. Stop on failure.
-3. Run [Append Repository Initiative Pull Requests](#append-repository-initiative-pull-requests) for each further repository, passing the same destination.
-4. If any fetch failed, return incomplete evidence.
-5. Return the complete collection only after every fetch succeeds.
+##### 1. Fetch the First Repository Pull Requests
+
+Run [Fetch Repository Initiative Pull Requests](#fetch-repository-initiative-pull-requests) for the first repository and destination `prs.json`. This replaces the destination with a fresh collection.
+
+##### 2. Stop on a First Fetch Failure
+
+Stop on failure.
+
+##### 3. Append Further Repository Pull Requests
+
+Run [Append Repository Initiative Pull Requests](#append-repository-initiative-pull-requests) for each further repository, passing the same destination.
+
+##### 4. Return Incomplete Pull Request Evidence
+
+If any fetch failed, return incomplete evidence.
+
+##### 5. Return the Complete Pull Request Collection
+
+Return the complete collection only after every fetch succeeds.
 
 ### Fields
 
@@ -1134,10 +1417,21 @@ The required label definitions available for issue publication.
 
 **Inputs:** Repository and required label names, colours and descriptions.
 
-1. Run [List Labels](#list-labels) for the repository.
-2. Compare the returned labels with the supplied required names.
-3. Run [Create Label](#create-label) for each absent required definition.
-4. Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+##### 1. List the Repository Labels
+
+Run [List Labels](#list-labels) for the repository.
+
+##### 2. Compare Required Label Names
+
+Compare the returned labels with the supplied required names.
+
+##### 3. Create Absent Required Labels
+
+Run [Create Label](#create-label) for each absent required definition.
+
+##### 4. Return the Available Labels
+
+Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
 
 ### Commands
 

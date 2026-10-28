@@ -112,6 +112,7 @@ from prosiform.source import (
     lines,
     opening_text,
     regions,
+    runs,
     shown,
     visible,
     within,
@@ -1005,7 +1006,7 @@ def leakage(environment: Mapping[str, Any]) -> None:
 
 @dataclass(frozen=True)
 class Side:
-    """One side of a region comparison: its tokens, its lines and the region."""
+    """One side of a region comparison: its region's tokens, its lines, the region."""
 
     tokens: Sequence[Token]
     physical: Sequence[str]
@@ -1195,6 +1196,8 @@ def validate(
     leakage(environment)
     outline(tokens, groups)
     served = {} if dispatching is None else dispatching
+    emitted = runs(tokens)
+    sourced = {path: runs(one) for path, one in parsed.items()}
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
     dispatches(reached, served)
@@ -1208,12 +1211,13 @@ def validate(
         if isinstance(part, Generated):
             continue
         carried = part
+        wrote = located(parsed[carried.path], carried.lines)
         source = Side(
-            parsed[carried.path],
+            sourced[carried.path][id(wrote)],
             lines(read[carried.path].text),
-            located(parsed[carried.path], carried.lines),
+            wrote,
         )
-        published = Side(tokens, physical, span)
+        published = Side(emitted[id(span)], physical, span)
         references(
             carried.path,
             source,

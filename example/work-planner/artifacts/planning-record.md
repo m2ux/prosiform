@@ -16,22 +16,32 @@ One planning directory and its artifact inventory.
 
 **Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
-1. Prepare the selected record:
-   - For a new record:
-     - Create the folder with [Add Planning Record](#add-planning-record).
-     - Populate README.md from the [Template](#template).
-   - For an existing record:
-     - Read its README, retaining its creation date, other artifacts and links.
-     - Update only the supplied content.
-   - The folder must meet [Layout](#layout).
-   - All populated README fields must meet [Fields](#fields).
-2. Register the artifact files supplied by the caller, using their chosen names.
-   - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts).
-   - File content remains supplied by the caller; this operation does not author that artifact's content.
-   - Delete each artifact the caller names as removed, with its row.
-3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
-4. Return the folder path, and the publication result when it published.
+#### 1. Prepare the Selected Planning Record
 
+Prepare the selected record:
+- For a new record:
+  - Create the folder with [Add Planning Record](#add-planning-record).
+  - Populate README.md from the [Template](#template).
+- For an existing record:
+  - Read its README, retaining its creation date, other artifacts and links.
+  - Update only the supplied content.
+- The folder must meet [Layout](#layout).
+- All populated README fields must meet [Fields](#fields).
+
+#### 2. Register the Supplied Artifact Files
+
+Register the artifact files supplied by the caller, using their chosen names.
+- Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts).
+- File content remains supplied by the caller; this operation does not author that artifact's content.
+- Delete each artifact the caller names as removed, with its row.
+
+#### 3. Publish the Populated Planning Record
+
+When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
+
+#### 4. Return the Planning Record Folder
+
+Return the folder path, and the publication result when it published.
 
 ### *Publish* Planning Record
 
@@ -39,11 +49,19 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 **Inputs:** Planning-folder path, the files written into it and a commit message file.
 
-1. Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
-2. Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
-   - Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
-3. Run [Push Engineering Branch](#push-engineering-branch).
-   - Report a push that will not fast-forward rather than rewriting the branch.
+#### 1. Find the Publishing Worktree
+
+Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
+
+#### 2. Commit the Planning Record Folder
+
+Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
+- Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
+
+#### 3. Push the Engineering Branch
+
+Run [Push Engineering Branch](#push-engineering-branch).
+- Report a push that will not fast-forward rather than rewriting the branch.
 
 ### *Locate* Planning Record
 
@@ -51,10 +69,15 @@ The existing planning folder whose reference is one issue or pull request number
 
 **Inputs:** Issue or pull request number.
 
-1. Run [Find Engineering Worktree](#find-engineering-worktree).
-2. Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
-   - Return each folder path it lists.
-   - When it lists none, return that no record has that reference.
+#### 1. Find the Engineering Worktree
+
+Run [Find Engineering Worktree](#find-engineering-worktree).
+
+#### 2. List the Matching Planning Records
+
+Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
+- Return each folder path it lists.
+- When it lists none, return that no record has that reference.
 
 ## Fields
 

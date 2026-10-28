@@ -16,10 +16,21 @@ The evidence required before starting an epic's work.
 
 **Inputs:** Current initiative and epic bodies, and current issue and base-merge records for every prerequisite the initiative row names.
 
-1. Identify each prerequisite the supplied initiative row names.
-2. Apply the initiative's [whole-epic dependency rule](initiative-issue-body.md#work-breakdown); a task row's reference to a row of another epic gates that row rather than this epic.
-3. Confirm each prerequisite epic is closed as completed and every one of its bases has merged. Missing records leave the prerequisite unconfirmed.
-4. Return the [Prerequisite Evidence](#prerequisite-evidence), identifying each confirmed prerequisite and missing condition. Only a confirmed result permits an unstarted epic to be marked Ready, its bases to be created or its task to be dispatched.
+#### 1. Identify Epic Prerequisites
+
+Identify each prerequisite the supplied initiative row names.
+
+#### 2. Apply the Whole-Epic Dependency Rule
+
+Apply the initiative's [whole-epic dependency rule](initiative-issue-body.md#work-breakdown); a task row's reference to a row of another epic gates that row rather than this epic.
+
+#### 3. Confirm Prerequisite Epics Completed
+
+Confirm each prerequisite epic is closed as completed and every one of its bases has merged. Missing records leave the prerequisite unconfirmed.
+
+#### 4. Return the Prerequisite Evidence
+
+Return the [Prerequisite Evidence](#prerequisite-evidence), identifying each confirmed prerequisite and missing condition. Only a confirmed result permits an unstarted epic to be marked Ready, its bases to be created or its task to be dispatched.
 
 ### *Inspect* Epic Delivery
 
@@ -27,8 +38,13 @@ The delivery findings for one epic from supplied evidence.
 
 **Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
 
-1. Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
-2. Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
+#### 1. Match Epic Pull Requests
+
+Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
+
+#### 2. Return the Inspected Delivery Findings
+
+Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
 ### *Match* Delivery to Tasks
 
@@ -36,10 +52,21 @@ The tasks each delivering pull request works on.
 
 **Inputs:** Epic JSON, and the pull requests to match with their changes and descriptions.
 
-1. Read each pull request's changes and description against the Descriptions of the epic's task rows.
-2. Name the tasks it works on: one task, or tasks that name each other in [Joins](epic-issue-body.md#work-breakdown).
-3. Put each match that is not clear to the user as an [interview](../rules.md). An unanswered match stays pending.
-4. Return the confirmed matches as task-to-pull-request pairs, and the pending ones, to the caller.
+#### 1. Read Pull Requests Against Task Rows
+
+Read each pull request's changes and description against the Descriptions of the epic's task rows.
+
+#### 2. Name the Matched Tasks
+
+Name the tasks it works on: one task, or tasks that name each other in [Joins](epic-issue-body.md#work-breakdown).
+
+#### 3. Interview on Unclear Matches
+
+Put each match that is not clear to the user as an [interview](../rules.md). An unanswered match stays pending.
+
+#### 4. Return the Task Matches
+
+Return the confirmed matches as task-to-pull-request pairs, and the pending ones, to the caller.
 
 ### *Check* Epic Readiness
 
@@ -47,9 +74,17 @@ The epic's eligibility for integration from current delivery and criterion evide
 
 **Inputs:** Current epic JSON, pull request records, complete issue-link snapshot and criterion verification evidence for the current delivery revisions.
 
-1. Apply [Inspect Epic Delivery](#inspect-epic-delivery) with the supplied epic JSON, pull request records and complete issue-link snapshot.
-2. Confirm every task is delivered, every epic criterion is verified and ticked, and no open question or unresolved delivery discrepancy remains. An unmerged epic base awaiting integration is expected at this stage. Missing or stale verification leaves readiness unconfirmed.
-3. Return the integration readiness in [Delivery State](#delivery-state), with the evidence revisions and each blocker. Readiness establishes the epic's content conditions; the caller supplies pull-request review, target and head-check evidence for the merge.
+#### 1. Inspect the Epic Delivery
+
+Apply [Inspect Epic Delivery](#inspect-epic-delivery) with the supplied epic JSON, pull request records and complete issue-link snapshot.
+
+#### 2. Confirm Epic Integration Conditions
+
+Confirm every task is delivered, every epic criterion is verified and ticked, and no open question or unresolved delivery discrepancy remains. An unmerged epic base awaiting integration is expected at this stage. Missing or stale verification leaves readiness unconfirmed.
+
+#### 3. Return the Epic Integration Readiness
+
+Return the integration readiness in [Delivery State](#delivery-state), with the evidence revisions and each blocker. Readiness establishes the epic's content conditions; the caller supplies pull-request review, target and head-check evidence for the merge.
 
 ### *Check* Epic Completion
 
@@ -57,10 +92,21 @@ The epic's normal delivery result before tracker closure.
 
 **Inputs:** Current epic JSON, pull request records, complete issue-link snapshot, current criterion verification evidence, complete expected base list and each base's merge evidence.
 
-1. Apply [Check Epic Readiness](#check-epic-readiness) with the current epic, pull request records, issue-link snapshot and criterion verification evidence.
-2. Reconcile the expected bases with the task delivery targets.
-3. Confirm every base has merged into its corresponding long-lived branch. An unknown or incomplete base list, or missing merge evidence, leaves completion unconfirmed even when every task is delivered and every criterion is ticked.
-4. Return the completion result in [Delivery State](#delivery-state), identifying remaining blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
+#### 1. Check the Epic Readiness
+
+Apply [Check Epic Readiness](#check-epic-readiness) with the current epic, pull request records, issue-link snapshot and criterion verification evidence.
+
+#### 2. Reconcile Epic Bases with Task Targets
+
+Reconcile the expected bases with the task delivery targets.
+
+#### 3. Confirm Every Epic Base Merged
+
+Confirm every base has merged into its corresponding long-lived branch. An unknown or incomplete base list, or missing merge evidence, leaves completion unconfirmed even when every task is delivered and every criterion is ticked.
+
+#### 4. Return the Epic Completion Result
+
+Return the completion result in [Delivery State](#delivery-state), identifying remaining blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
 
 ## Fields
 

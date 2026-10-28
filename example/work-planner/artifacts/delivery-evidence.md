@@ -16,16 +16,27 @@ The pull requests and issue links that establish current delivery.
 
 **Inputs:** Selected repositories and initiative prefix, fetched epic JSON, authenticated access and destination snapshot files.
 
-1. Fetch the pull requests and their links.
-   - Apply [Read Initiative Pull Requests](pull-request.md#read-initiative-pull-requests).
-   - Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links).
-   - Use [Access Development Links](pull-request.md#access-development-links) for the actual complete link sets.
-2. Apply [Inspect Epic Delivery](epic.md#inspect-epic-delivery) with the epic JSON, pull request records and complete issue-link snapshot.
-   - Route the returned [Delivery Findings](epic.md#delivery-findings) to matching, verification or user decisions.
-   - Fetch any linked pull request absent from the input with [Read Pull Request State](pull-request.md#read-pull-request-state).
-   - Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
-3. Name each pull request whose issue links reach an epic or one of its task issues and whose title omits that epic's reference as an [unnamed delivery](#unnamed-deliveries).
-4. Return the current pull request records, complete issue-link snapshot, per-epic findings and unnamed deliveries to the caller, reporting incomplete evidence as a blocker.
+#### 1. Fetch Pull Requests and Links
+
+Fetch the pull requests and their links.
+- Apply [Read Initiative Pull Requests](pull-request.md#read-initiative-pull-requests).
+- Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links).
+- Use [Access Development Links](pull-request.md#access-development-links) for the actual complete link sets.
+
+#### 2. Inspect the Epic Delivery
+
+Apply [Inspect Epic Delivery](epic.md#inspect-epic-delivery) with the epic JSON, pull request records and complete issue-link snapshot.
+- Route the returned [Delivery Findings](epic.md#delivery-findings) to matching, verification or user decisions.
+- Fetch any linked pull request absent from the input with [Read Pull Request State](pull-request.md#read-pull-request-state).
+- Repeat Inspect Epic Delivery with the same epic JSON, refreshed pull request records and complete issue-link snapshot.
+
+#### 3. Name the Unnamed Deliveries
+
+Name each pull request whose issue links reach an epic or one of its task issues and whose title omits that epic's reference as an [unnamed delivery](#unnamed-deliveries).
+
+#### 4. Return the Delivery Evidence
+
+Return the current pull request records, complete issue-link snapshot, per-epic findings and unnamed deliveries to the caller, reporting incomplete evidence as a blocker.
 
 ### *Read* Board Delivery Evidence
 
@@ -33,10 +44,15 @@ The board snapshot and pull request records that establish current delivery acro
 
 **Inputs:** Board owner and number, authenticated access, output paths and destination snapshot files.
 
-1. Apply the [board reads](#board-reads).
-2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+#### 1. Apply the Board Reads
 
-#### Board Reads
+Apply the [board reads](#run-board-reads).
+
+#### 2. Return the Board Delivery Evidence
+
+Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+#### Run Board Reads
 
 ##### 1. Read Board State
 
