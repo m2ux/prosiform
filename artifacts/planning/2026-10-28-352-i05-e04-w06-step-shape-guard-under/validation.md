@@ -51,6 +51,8 @@ table check: 18 command(s) and 8 declaration(s), each declared by the project an
 - `make smoke`, `make layout`, `make tables`, `make links` (106 documents), `make vocabulary`, `make invocation`, `make conformance`, `make independence`: each passed.
 - `make steps`: 58 documents.
 
+`i05/e04/main` moved to `aa826060` before the merge, carrying I05:E03 through `main`. The task branch merged it at `a869dfbf91df5f7f181494c36848f4b1cba7f09b` with no conflict, and `make check` ran again there, exit 0: `make test` 1302 passed, `make harness` 743 passed, `make corpus` 342 of 342 fixtures, every other check passed, and `make steps` passed over 58 documents.
+
 ## Scope Finding
 
 The guard reads `example/work-planner/`, not all of `example/`. `example/my-skill/procedure.md` lines 7–8 write two numbered steps; it is the README's small demo skill, which E04 did not convert and the repository README's diagram example uses. Every other document under `example/` already passes: run over all of `example/`, the rules find those two lines and nothing else. The change list holds the AC6 wording question.
