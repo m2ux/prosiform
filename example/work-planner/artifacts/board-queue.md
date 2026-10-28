@@ -81,7 +81,7 @@ A parallel work map assigns a positive integer to each ranked initiative. Every 
 
 The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+A priority label carries a set's number, with the name, colour and description [Priority Labels](../configuration.md#priority-labels) sets. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 ### Initiative Status
 

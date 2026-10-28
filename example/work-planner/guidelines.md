@@ -57,7 +57,7 @@ These rules apply to mode and protocol procedures and artifact operations.
 - **One home per rule.**
   A rule is stated once, and every other file links it, never naming it in code font. Its home is the contract or outcome it constrains, the procedure step it binds, [Rules](rules.md) or [Conventions](conventions.md) when it binds every mode, or the Modes, Protocols, Artifacts, or References section below when it governs how that kind of file is written.
 - **Bindings.**
-  A value fixed per deployment or per run, such as a repository, a label, a board field or a limit, is stated once in the configuration document beside the entry point, which the entry point links, and every use links it.
+  A value fixed per deployment or per run, such as a repository, a label, a board field or a limit, is stated once in [Configuration](configuration.md) beside the entry point, which the entry point links, and every use links it.
   - A loop or batch limit names the configured value.
   - A helper script takes each binding as an argument.
 - **Shared conventions.**

@@ -51,7 +51,7 @@ Return the report and separate unresolved findings.
 
 ### Scope
 
-The default window opens a week before today. A supplied start date selects another window, such as the previous working day for a daily standup. An initiative filter names one initiative, qualified by repository when its number is ambiguous.
+The default window opens as the [Standup Window](../configuration.md#standup-window) sets. A supplied start date selects another window, such as the previous working day for a daily standup. An initiative filter names one initiative, qualified by repository when its number is ambiguous.
 
 Each repository numbers its own initiatives, and an initiative's epics and task issues may live in other repositories. Each item's place follows the Work Breakdown links, or for a task issue the pull request whose Development field links it. A pull request counts towards the epic of its reference in the epic's repository or its initiative's.
 
@@ -66,7 +66,7 @@ The management paragraph is set off by blank lines, with the board's link beneat
 - **In progress.**
   Epics and task issues In Progress or In Review, each epic with its open pull requests, or else its next task.
 - **Next.**
-  The five Ready items, each epic with its next task, and a count of the rest.
+  The Ready items the [Standup Ready Count](../configuration.md#standup-ready-count) sets, each epic with its next task, and a count of the rest.
   - They rank by the priority label of the initiative their epic belongs to, then by their epic's own.
   - An epic is placed ahead of any listed epic naming it, so a supplier reads before the work drawing on it. An epic names another when a task row names one of its rows or the initiative row names it whole.
 - **Key.**
@@ -89,7 +89,7 @@ Prints the standup from supplied board items, pull request records and their iss
 **Inputs:** Board items, pull request records and link snapshot; optional window start, initiative filter, off-board initiative records and management paragraph file.
 
 - `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
-- `--since` opens the window on another date than a week before today.
+- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
 - `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
 - `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
 - `--summary` gives the paragraph for management.

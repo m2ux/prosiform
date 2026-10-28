@@ -251,7 +251,7 @@ Return the recorded body, its [Delivery Findings](epic.md#delivery-findings) and
 ### Titles
 
 - The title is `[I07:E00] Name: Subtitle`. Its prefix matches its row in the initiative table.
-- Labels are `type:epic` and its initiative's `theme:*`.
+- Labels are the epic [kind label](../configuration.md#kind-labels) and its initiative's [theme label](../configuration.md#theme-labels).
 - `E` is the epic within its initiative. Epics count from `00`.
 - The prefix separates levels with colons, then a short name, a colon, and a subtitle: `[I07:E06] Reliability Evaluation: Briefs, Measures and the Thresholds That Define Reliable`.
 
@@ -402,7 +402,7 @@ Holds each named task row for one session, by setting its record folder as the r
 - `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
 - The caller supplies the planned folder identity; `--date` is the day it is opened.
 
-`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` identifies the planning records folder.
+`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](../configuration.md#engineering-branch) on the engineering branch.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'

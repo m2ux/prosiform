@@ -67,7 +67,7 @@ Return the corrected body, mechanical diff and unresolved findings for the calle
 ### Titles
 
 - The title is `[P00] Name: Subtitle`.
-- The label is `type:proposal`.
+- The label is the proposal [kind label](../configuration.md#kind-labels).
 - `P` is the proposal number. Proposals count from `00`.
 
 ### Problem

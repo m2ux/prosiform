@@ -68,7 +68,7 @@ Return the revised file for publication.
 ### Titles
 
 - The title is `Name: Subtitle`, with no prefix.
-- A standalone issue carries no `type:*` label.
+- A standalone issue carries no [kind label](../configuration.md#kind-labels).
 
 ### Sections
 

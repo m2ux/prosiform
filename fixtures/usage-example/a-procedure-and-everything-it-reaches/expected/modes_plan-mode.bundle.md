@@ -684,7 +684,7 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 ##### 1. Find the Publishing Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
+Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on, with the [engineering branch](#engineering-branch) name.
 
 ##### 2. Commit the Planning Record Folder
 
@@ -774,12 +774,12 @@ External references only: a tracker issue, a parent epic, a pull request. An art
 
 Prints the checkout holding the engineering branch, which is where every planning record is written.
 
-**Inputs:** Any checkout of the project.
+**Inputs:** Any checkout of the project and the [engineering branch](#engineering-branch) name.
 
 - The engineering branch has one long-lived worktree and takes no further one.
 
 ```bash
-git worktree list | grep '\[engineering\]'
+git worktree list | grep '\[<engineering-branch>\]'
 ```
 
 #### Commit Planning Record
@@ -819,7 +819,7 @@ Adds the folder for one planning record on the long-lived engineering worktree.
 
 **Inputs:** Engineering worktree and planning-folder path composed from the date, optional issue or pull request number, and slug.
 
-- `<planning-folder-path>` is `artifacts/planning/<yyyy-mm-dd>[-<ref>]-<slug>/`. The date is the day the record is opened.
+- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](#engineering-branch). The date is the day the record is opened.
 - `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
 - The slug is lowercase words separated by hyphens, a short name of the work.
 - The folder's files are the [planning layout](#layout).
@@ -1543,7 +1543,7 @@ Return each source's contents and identity with those findings.
 #### Titles
 
 - The title is `[I07] Name: Subtitle`.
-- Labels are `type:initiative` and a `theme:*`.
+- Labels are the initiative [kind label](#kind-labels) and one [theme label](#theme-labels).
 - `I` is the initiative number. Initiatives count from `00`.
 
 #### Problem
@@ -1814,7 +1814,7 @@ Return the recorded body, its [Delivery Findings](#delivery-findings) and the ch
 #### Titles
 
 - The title is `[I07:E00] Name: Subtitle`. Its prefix matches its row in the initiative table.
-- Labels are `type:epic` and its initiative's `theme:*`.
+- Labels are the epic [kind label](#kind-labels) and its initiative's [theme label](#theme-labels).
 - `E` is the epic within its initiative. Epics count from `00`.
 - The prefix separates levels with colons, then a short name, a colon, and a subtitle: `[I07:E06] Reliability Evaluation: Briefs, Measures and the Thresholds That Define Reliable`.
 
@@ -2332,7 +2332,7 @@ A parallel work map assigns a positive integer to each ranked initiative. Every 
 
 The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+A priority label carries a set's number, with the name, colour and description [Priority Labels](#priority-labels) sets. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 ## Issue Body
 
@@ -2852,7 +2852,7 @@ Return the corrected body, mechanical diff and unresolved findings for the calle
 #### Titles
 
 - The title is `[P00] Name: Subtitle`.
-- The label is `type:proposal`.
+- The label is the proposal [kind label](#kind-labels).
 - `P` is the proposal number. Proposals count from `00`.
 
 #### Problem
@@ -2885,7 +2885,7 @@ The theme or proposals board the request names.
 
 ##### 1. Find the Named Board
 
-Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) with the [proposals board](#proposals-board) title when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
 
 ##### 2. Report a Missing Board Selection
 
@@ -2903,7 +2903,7 @@ A missing theme board, or a missing proposals board.
 
 ##### 1. Create an Absent Proposals Board
 
-When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
+When no open board carries the [proposals board](#proposals-board) title, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
 
 ##### 2. Create an Absent Theme Board
 
@@ -2944,7 +2944,7 @@ A new proposals board linked to the supplied repository.
 
 ##### 1. Find the Proposals Template
 
-Run [Find Board Template](#find-board-template) with the owner and the exact title `Proposals Template`.
+Run [Find Board Template](#find-board-template) with the owner and the proposals board's [template title](#board-templates).
 
 ##### 2. Use the Proposals Template as Source
 
@@ -2952,7 +2952,7 @@ Use the returned number as the copy source.
 
 ##### 3. Copy the Proposals Template
 
-Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title `Proposals`.
+Run [Copy Board Template](#copy-board-template) with that template number, the owner and the [proposals board](#proposals-board) title.
 
 ##### 4. Retain the Proposals Board Number
 
@@ -2978,7 +2978,7 @@ Require the originating proposal record for a proposal-derived board; return a m
 
 ##### 2. Find the Initiative Template
 
-Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+Run [Find Board Template](#find-board-template) with the owner and the theme board's [template title](#board-templates).
 
 ##### 3. Use the Initiative Template as Source
 
@@ -2990,7 +2990,7 @@ Run [Copy Board Template](#copy-board-template) with that template number, the o
 
 ##### 5. Retain the Theme Board Number
 
-Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+Retain the new board number. The copy carries the template's theme board [Status options](#status-field).
 
 ##### 6. Link the Theme Board to the Repository
 
@@ -3030,16 +3030,7 @@ Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
 #### Themes
 
-Every initiative belongs to one theme, and each theme has one project board. Each project names its own themes.
-
-- **Example.**  workflow-server's themes.
-
-| Theme | Label | Description |
-| --- | --- | --- |
-| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
-| Language | `theme:language` | The Definition Language and Its Rules |
-| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
-| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+Every initiative belongs to one theme, and each theme has one project board. Each project names its own themes, with their labels, in [Theme Labels](#theme-labels).
 
 #### One Board Per Theme
 
@@ -3049,18 +3040,19 @@ Every initiative belongs to one theme, and each theme has one project board. Eac
 
 #### Proposals
 
-- The board is titled `Proposals`. It holds proposal issues, the incoming funnel for work that may become an initiative.
-- Its copy source is the open board titled `Proposals Template`. That template carries Priority: High, Medium and Low, and its view is a board grouped by Status.
-- **Suggested.**
-  Raised, and nobody has taken it up. A new proposal lands here, with no assignee.
-- **Considering.**
-  Someone is weighing the goal, the evidence and the criteria. That person is the assignee.
-- **Approved.**
-  Qualified to become an initiative. The assignee is the user.
-- **Held.**
-  Not now. It stays on the board, with no assignee.
-- **Declined.**
-  It will not become an initiative. It has no assignee.
+- The board carries the [proposals board](#proposals-board) title. It holds proposal issues, the incoming funnel for work that may become an initiative.
+- Its copy source is the open board with the proposals board's [template title](#board-templates). That template carries the [Proposals Priority Field](#proposals-priority-field), and its view is a board grouped by Status.
+- Its [Status options](#status-field) mean:
+  - **Suggested.**
+    Raised, and nobody has taken it up. A new proposal lands here, with no assignee.
+  - **Considering.**
+    Someone is weighing the goal, the evidence and the criteria. That person is the assignee.
+  - **Approved.**
+    Qualified to become an initiative. The assignee is the user.
+  - **Held.**
+    Not now. It stays on the board, with no assignee.
+  - **Declined.**
+    It will not become an initiative. It has no assignee.
 
 ### Commands
 
@@ -3098,12 +3090,12 @@ gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
 
 #### Find Proposals Board
 
-Prints the number of the open board titled `Proposals`.
+Prints the number of the open board with the supplied title.
 
-**Inputs:** Board owner.
+**Inputs:** Board owner and the [proposals board](#proposals-board) title.
 
 ```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Proposals") | .number'
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<proposals-board-title>") | .number'
 ```
 
 #### Add Issue to Board
@@ -3451,7 +3443,7 @@ A coverage disagreement identifies the pull request and row, a criterion absent 
 
 # Propose Mode
 
-Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the board titled `Proposals`.
+Scopes one problem: the friction, the evidence, and the boundary, and states the goal as clauses the user confirms. It raises one proposal on the [proposals board](#proposals-board).
 
 Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes-1) are met.
 
@@ -3604,6 +3596,73 @@ Return to the caller:
 - The bases created and each epic's prerequisite findings.
 - The long-lived branches and epic bases Read Delivery Branches returned.
 - The retargeted pull requests, updated task branches, conflicts and pull requests awaiting a decision that Align Pull Request Base returned.
+
+# Configuration
+
+### Labels
+
+#### Kind Labels
+
+The label naming an agent-engineering issue's kind.
+
+| Kind | Label |
+| --- | --- |
+| Proposal | `type:proposal` |
+| Initiative | `type:initiative` |
+| Epic | `type:epic` |
+| Task | `type:task` |
+
+#### Theme Labels
+
+The label naming the theme an initiative and its epics belong to: `theme:` and the theme's name in lowercase. This deployment's themes:
+
+| Theme | Label | Description |
+| --- | --- | --- |
+| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
+| Language | `theme:language` | The Definition Language and Its Rules |
+| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
+| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+
+#### Priority Labels
+
+The label carrying a priority set: `priority:` and a positive integer `<n>`.
+
+- **Colour.**  `BFD4F2`.
+- **Description.**  `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+
+### Boards
+
+#### Proposals Board
+
+The board holding proposal issues, titled `Proposals`.
+
+#### Board Templates
+
+The open boards a new board is copied from, by exact title.
+
+| Board | Template title |
+| --- | --- |
+| Proposals board | `Proposals Template` |
+| Theme board | `Initiative Template` |
+
+#### Status Field
+
+The single-select field a board item's status is read from and written to, named `Status`.
+
+- **Theme board options.**  Backlog, Ready, In Progress, In Review and Done.
+- **Proposals board options.**  Suggested, Considering, Approved, Held and Declined.
+
+#### Proposals Priority Field
+
+The single-select field `Priority` on the proposals board, with the options High, Medium and Low.
+
+### Planning Records
+
+#### Engineering Branch
+
+The long-lived branch holding every planning record, named `engineering`, checked out in one worktree.
+
+- **Records folder.**  `artifacts/planning/`, relative to that worktree.
 
 # References
 

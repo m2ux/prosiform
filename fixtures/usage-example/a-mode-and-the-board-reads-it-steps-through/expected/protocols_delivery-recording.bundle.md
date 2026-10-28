@@ -587,7 +587,7 @@ Return the recorded body, its [Delivery Findings](#delivery-findings) and the ch
 #### Titles
 
 - The title is `[I07:E00] Name: Subtitle`. Its prefix matches its row in the initiative table.
-- Labels are `type:epic` and its initiative's `theme:*`.
+- Labels are the epic [kind label](#kind-labels) and its initiative's [theme label](#theme-labels).
 - `E` is the epic within its initiative. Epics count from `00`.
 - The prefix separates levels with colons, then a short name, a colon, and a subtitle: `[I07:E06] Reliability Evaluation: Briefs, Measures and the Thresholds That Define Reliable`.
 
@@ -2443,6 +2443,32 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
 ```
+
+# Configuration
+
+### Labels
+
+#### Kind Labels
+
+The label naming an agent-engineering issue's kind.
+
+| Kind | Label |
+| --- | --- |
+| Proposal | `type:proposal` |
+| Initiative | `type:initiative` |
+| Epic | `type:epic` |
+| Task | `type:task` |
+
+#### Theme Labels
+
+The label naming the theme an initiative and its epics belong to: `theme:` and the theme's name in lowercase. This deployment's themes:
+
+| Theme | Label | Description |
+| --- | --- | --- |
+| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
+| Language | `theme:language` | The Definition Language and Its Rules |
+| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
+| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
 
 # References
 
