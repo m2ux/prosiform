@@ -20,6 +20,7 @@ Each earlier task proves the rule it adds. Nothing yet proves those rules togeth
 
 | Artifact | What it holds |
 | --- | --- |
+| [W10 work item](w10.md) | The layouts the bundle set takes, the fixture covering each, and the four fixtures this task adds |
 
 ## Links
 
