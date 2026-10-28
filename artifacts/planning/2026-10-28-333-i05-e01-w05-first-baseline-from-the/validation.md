@@ -1,6 +1,6 @@
 # W05 Validation
 
-**Branch:** `i05/e01/w05-first-baseline-from-the` at `b3a6d106`, cut from `i05/e01/main` at `22ae0f2e`.
+**Branch:** `i05/e01/w05-first-baseline-from-the` at `b3a6d106`, cut from `i05/e01/main` at `22ae0f2e`. **Pull request:** [#379](https://github.com/m2ux/prosiform/pull/379), merged as `961df526`.
 
 Every check ran in the task worktree. `make check` ran with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`.
 
