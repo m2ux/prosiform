@@ -12,7 +12,7 @@ The plan changes this delivery session made under the deliver-mode allowance, an
 
 ## Held
 
-None.
+- **Review pull request, I05:E03.** Task Merge opens a draft review pull request from `i05/e03/main` into `main` on the epic's first task merge; the delivery brief forbids this session opening one, so none exists. Recommended: open the draft review linked to #351 when the user chooses.
 
 ## Deferred debt and arising issues
 
