@@ -133,17 +133,35 @@ The observed or updated Development relation for a pull request.
 
 **Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
 
-1. Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
-2. Return the complete relation for a read-only request.
-3. For a link edit:
-   - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
-   - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
-   - For removal of an abandoned or incorrect link:
-     - Require the supplied user decision.
-     - Run [Remove Development Link](#remove-development-link) with those identities.
-4. Run [Read Development Links](#read-development-links) again for the same pull request.
-5. Compare the field with the intended edit.
-6. Return the verified relation or discrepancy.
+##### 1. Read the Pull Request Development Links
+
+Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
+
+##### 2. Return the Read-Only Relation
+
+Return the complete relation for a read-only request.
+
+##### 3. Edit the Development Links
+
+For a link edit:
+
+- Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
+- For removal of an abandoned or incorrect link:
+  - Require the supplied user decision.
+  - Run [Remove Development Link](#remove-development-link) with those identities.
+
+##### 4. Re-Read the Pull Request Development Links
+
+Run [Read Development Links](#read-development-links) again for the same pull request.
+
+##### 5. Compare the Field with the Edit
+
+Compare the field with the intended edit.
+
+##### 6. Return the Verified Link Relation
+
+Return the verified relation or discrepancy.
 
 #### *Fetch* Pull Request Issue Links
 
@@ -151,11 +169,25 @@ The complete issue-link snapshot for a supplied set of pull requests.
 
 **Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
 
-1. For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
-2. Repeat that read after a link changes.
-3. If any relation is unreadable, return the incomplete result.
-4. Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
-5. Return the snapshot for the scripts' `--links` input.
+##### 1. Read Links for Each Pull Request
+
+For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+
+##### 2. Re-Read Links After a Change
+
+Repeat that read after a link changes.
+
+##### 3. Return an Incomplete Link Fetch
+
+If any relation is unreadable, return the incomplete result.
+
+##### 4. Write the Links Snapshot
+
+Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
+
+##### 5. Return the Links Snapshot
+
+Return the snapshot for the scripts' `--links` input.
 
 #### *Link* Pull Request to Issue
 
@@ -163,10 +195,21 @@ The verified delivery-issue relation for a pull request.
 
 **Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](#close-tracker-issue).
 
-1. Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
-2. Stop on a blocker or an unverified edit.
-3. Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
-4. Return the verified relation and refreshed snapshot.
+##### 1. Add the Development Link
+
+Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+
+##### 2. Stop on an Unverified Link Edit
+
+Stop on a blocker or an unverified edit.
+
+##### 3. Refresh the Links Snapshot
+
+Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the current records and destination after the edit.
+
+##### 4. Return the Verified Link and Snapshot
+
+Return the verified relation and refreshed snapshot.
 
 #### *Read* Pull Request State
 
@@ -174,9 +217,17 @@ One current pull request and its requested supporting records.
 
 **Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
 
-1. Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
-2. Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
-3. Return the snapshots or missing evidence.
+##### 1. Fetch the Pull Request Snapshot
+
+Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
+
+##### 2. Fetch Requested Files or Reviews
+
+Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
+
+##### 3. Return the Pull Request Snapshots
+
+Return the snapshots or missing evidence.
 
 #### *Publish* Pull Request
 
@@ -184,11 +235,23 @@ One pull request created or updated from supplied content and metadata.
 
 **Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
 
-1. For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
-   - For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
-2. For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
-3. Re-read through [Read Pull Request State](#read-pull-request-state).
-4. Return the saved state or discrepancy.
+##### 1. Open a New Pull Request
+
+For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
+
+- For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+
+##### 2. Update the Existing Pull Request
+
+For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
+
+##### 3. Re-Read the Published Pull Request
+
+Re-read through [Read Pull Request State](#read-pull-request-state).
+
+##### 4. Return the Published State
+
+Return the saved state or discrepancy.
 
 ### Fields
 
@@ -435,21 +498,46 @@ The detached worktree where the graph reads the reviewed change.
 
 **Inputs:** Repository, repository checkout, pull request number and verified head commit.
 
-1. Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
-2. Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
-3. If it differs from the verified head:
-   - Apply [Read Pull Request State](#read-pull-request-state) for the same pull request, and take its head as the verified head.
-   - Repeat steps 1 and 2 once.
-   - If the fetched head still differs, return a changed-head finding before creating a worktree.
-4. Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
-5. If that worktree already exists:
-   - Run Read Checkout Revision there for `HEAD`.
-   - Run [Read Checkout Status](#read-checkout-status) there.
-   - Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
-   - Otherwise retain it and select an unused path suffixed with the verified commit.
-6. For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
-7. Confirm its HEAD through Read Checkout Revision.
-8. Return the selected detached worktree path and head, or the discrepancy before measuring.
+##### 1. Fetch the Review Head
+
+Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
+
+##### 2. Read the Fetched Revision
+
+Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
+
+##### 3. Recheck a Differing Fetched Head
+
+If it differs from the verified head:
+
+- Apply [Read Pull Request State](#read-pull-request-state) for the same pull request, and take its head as the verified head.
+- Repeat steps 1 and 2 once.
+- If the fetched head still differs, return a changed-head finding before creating a worktree.
+
+##### 4. Derive the Review Worktree Path
+
+Take the worktree path from the pull request number, meeting [Review Worktrees](#review-worktrees).
+
+##### 5. Check an Existing Review Worktree
+
+If that worktree already exists:
+
+- Run Read Checkout Revision there for `HEAD`.
+- Run [Read Checkout Status](#read-checkout-status) there.
+- Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
+- Otherwise retain it and select an unused path suffixed with the verified commit.
+
+##### 6. Add the Review Worktree
+
+For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
+
+##### 7. Confirm the Review Worktree Head
+
+Confirm its HEAD through Read Checkout Revision.
+
+##### 8. Return the Review Worktree
+
+Return the selected detached worktree path and head, or the discrepancy before measuring.
 
 ### Fields
 
@@ -520,19 +608,41 @@ Current graph evidence for the supplied change.
 
 **Inputs:** Worktree, verified head commit and base branch.
 
-1. Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
-2. If the repository is unindexed or behind the verified head:
-   - Run [Index Repository](#index-repository).
-   - Confirm freshness.
-3. Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
-4. For each changed symbol, run [Symbol Context](#symbol-context).
-5. For each reported flow, run [Flow Trace](#flow-trace).
-6. Inspect the staleness block on every response. For a behind index:
-   - Discard its measurements.
-   - Run [Index Repository](#index-repository).
-   - Repeat steps 1 to 5 once with the updated index.
-   - If a response is still behind, return a freshness blocker.
-7. Return only evidence current with the supplied head, meeting [Fields](#fields-3), or a freshness blocker.
+##### 1. Check the Graph Index Status
+
+Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
+
+##### 2. Refresh a Stale Graph Index
+
+If the repository is unindexed or behind the verified head:
+
+- Run [Index Repository](#index-repository).
+- Confirm freshness.
+
+##### 3. Measure the Change Surface
+
+Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
+
+##### 4. Read Each Changed Symbol Context
+
+For each changed symbol, run [Symbol Context](#symbol-context).
+
+##### 5. Trace Each Reported Flow
+
+For each reported flow, run [Flow Trace](#flow-trace).
+
+##### 6. Re-Measure on a Stale Index
+
+Inspect the staleness block on every response. For a behind index:
+
+- Discard its measurements.
+- Run [Index Repository](#index-repository).
+- Repeat steps 1 to 5 once with the updated index.
+- If a response is still behind, return a freshness blocker.
+
+##### 7. Return the Current Graph Evidence
+
+Return only evidence current with the supplied head, meeting [Fields](#fields-3), or a freshness blocker.
 
 ### Fields
 
@@ -638,21 +748,34 @@ One planning directory and its artifact inventory.
 
 **Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
 
-1. Prepare the selected record:
-   - For a new record:
-     - Create the folder with [Add Planning Record](#add-planning-record).
-     - Populate README.md from the [Template](#template).
-   - For an existing record:
-     - Read its README, retaining its creation date, other artifacts and links.
-     - Update only the supplied content.
-   - The folder must meet [Layout](#layout).
-   - All populated README fields must meet [Fields](#fields-4).
-2. Register the artifact files supplied by the caller, using their chosen names.
-   - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts-1).
-   - File content remains supplied by the caller; this operation does not author that artifact's content.
-   - Delete each artifact the caller names as removed, with its row.
-3. When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
-4. Return the folder path, and the publication result when it published.
+##### 1. Prepare the Selected Planning Record
+
+Prepare the selected record:
+
+- For a new record:
+  - Create the folder with [Add Planning Record](#add-planning-record).
+  - Populate README.md from the [Template](#template).
+- For an existing record:
+  - Read its README, retaining its creation date, other artifacts and links.
+  - Update only the supplied content.
+- The folder must meet [Layout](#layout).
+- All populated README fields must meet [Fields](#fields-4).
+
+##### 2. Register the Supplied Artifact Files
+
+Register the artifact files supplied by the caller, using their chosen names.
+
+- Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts-1).
+- File content remains supplied by the caller; this operation does not author that artifact's content.
+- Delete each artifact the caller names as removed, with its row.
+
+##### 3. Publish the Populated Planning Record
+
+When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
+
+##### 4. Return the Planning Record Folder
+
+Return the folder path, and the publication result when it published.
 
 #### *Publish* Planning Record
 
@@ -660,11 +783,21 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 **Inputs:** Planning-folder path, the files written into it and a commit message file.
 
-1. Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
-2. Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
-   - Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
-3. Run [Push Engineering Branch](#push-engineering-branch).
-   - Report a push that will not fast-forward rather than rewriting the branch.
+##### 1. Find the Publishing Worktree
+
+Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
+
+##### 2. Commit the Planning Record Folder
+
+Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
+
+- Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
+
+##### 3. Push the Engineering Branch
+
+Run [Push Engineering Branch](#push-engineering-branch).
+
+- Report a push that will not fast-forward rather than rewriting the branch.
 
 #### *Locate* Planning Record
 
@@ -672,10 +805,16 @@ The existing planning folder whose reference is one issue or pull request number
 
 **Inputs:** Issue or pull request number.
 
-1. Run [Find Engineering Worktree](#find-engineering-worktree).
-2. Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
-   - Return each folder path it lists.
-   - When it lists none, return that no record has that reference.
+##### 1. Find the Engineering Worktree
+
+Run [Find Engineering Worktree](#find-engineering-worktree).
+
+##### 2. List the Matching Planning Records
+
+Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
+
+- Return each folder path it lists.
+- When it lists none, return that no record has that reference.
 
 ### Fields
 
@@ -842,13 +981,27 @@ One architecture overview from supplied measurements.
 
 **Inputs:** Measured structure and flows, pull request head, code permalinks and the output path.
 
-1. Take the graph measurements supplied by the caller and check the proposed diagrams.
-   - The diagrams must meet [Measured Structure](#measured-structure) and [Diagrams](#diagrams).
-2. Populate the overview from the [Template](#template-1) at the supplied output path.
-   - All populated fields must meet [Fields](#fields-5), including the required [Sections](#sections).
-3. Pin each code reference.
-   - Each reference must meet [Code References](#code-references).
-4. Return the file for the caller to register in its planning record.
+##### 1. Check the Proposed Diagrams
+
+Take the graph measurements supplied by the caller and check the proposed diagrams.
+
+- The diagrams must meet [Measured Structure](#measured-structure) and [Diagrams](#diagrams).
+
+##### 2. Populate the Overview Template
+
+Populate the overview from the [Template](#template-1) at the supplied output path.
+
+- All populated fields must meet [Fields](#fields-5), including the required [Sections](#sections).
+
+##### 3. Pin Each Code Reference
+
+Pin each code reference.
+
+- Each reference must meet [Code References](#code-references).
+
+##### 4. Return the Overview File
+
+Return the file for the caller to register in its planning record.
 
 ### Fields
 
@@ -1010,14 +1163,21 @@ One pull request body referencing its published overview.
 
 **Inputs:** Current body, published overview URL on the engineering branch and output body path.
 
-1. Add the Architecture Overview reference to the body's References section, creating that section in its [Template](#template-2) position when absent.
-2. Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
+##### 1. Add the Overview Reference
 
-      ```markdown
-      - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.
-      ```
+Add the Architecture Overview reference to the body's References section, creating that section in its [Template](#template-2) position when absent.
 
-3. Return the complete updated body file for publication.
+##### 2. Preserve an Existing Overview Row
+
+Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
+
+   ```markdown
+   - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.
+   ```
+
+##### 3. Return the Linked Pull Request Body
+
+Return the complete updated body file for publication.
 
 ### Fields
 
@@ -1062,16 +1222,32 @@ Verified completion of an issue and its linked delivery.
 
 **Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
 
-1. Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
-2. Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
-   - Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
-   - Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
-   - Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
-3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
-4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
-   - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
-   - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
-5. Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
+##### 1. Capture the Issue Development
+
+Apply [Capture Issue Development](#capture-issue-development) for the issue's complete links and confirmed repository setting.
+
+##### 2. Take Fresh Pull Request Records
+
+Take the caller's fresh records for every linked pull request, across repositories and states; return missing evidence to the caller.
+
+- Return a repository setting that is unconfirmed or fails [Auto-Close Setting](#auto-close-setting) to the caller as a blocker.
+- Take the records only from a fresh destination file, so an earlier snapshot cannot supply membership.
+- Use the issue's entire Development field to establish membership. Titles, branch names, body mentions and a list filtered to one initiative do not establish completeness. An explicitly empty field adds no pull request requirement.
+
+##### 3. Run the Closure Check
+
+Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
+
+##### 4. Require the Closure Gate
+
+Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+
+- Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
+- Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
+
+##### 5. Close the Issue as Completed
+
+Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
 #### *Close* as Completed
 
@@ -1079,12 +1255,29 @@ An issue closed after its final evidence check.
 
 **Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
 
-1. Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
-2. Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
-3. Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
-4. Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
-5. Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
-6. Return the saved state or failure.
+##### 1. Capture Development Before Closure
+
+Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
+
+##### 2. Compare the Development Links
+
+Compare its links with the supplied fresh pull request records; return a changed link set or missing evidence to the caller for refresh.
+
+##### 3. Run the Completion Gate
+
+Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
+
+##### 4. Require the Completion Gate to Pass
+
+Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
+
+##### 5. Set the Completed State
+
+Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
+
+##### 6. Return the Completed State
+
+Return the saved state or failure.
 
 #### *Capture* Issue Development
 
@@ -1092,11 +1285,23 @@ The issue's current content and complete Development snapshot.
 
 **Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
 
-1. Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
-2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
-   - Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
-3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
-4. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
+##### 1. Read the Development Field
+
+Apply [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
+
+##### 2. Write the Development Snapshot
+
+Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
+
+- Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
+
+##### 3. Fetch the Issue Snapshot
+
+Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
+
+##### 4. Return the Development Files
+
+Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
 #### *Read* Issue Development
 
@@ -1104,8 +1309,13 @@ The Development links observed for one issue through authenticated GitHub.
 
 **Inputs:** Issue identity and authenticated access.
 
-1. Read every page and state, across repositories, recording each linked pull request's identity.
-2. Return the observed links and whether the entire field was readable.
+##### 1. Read Every Development Link
+
+Read every page and state, across repositories, recording each linked pull request's identity.
+
+##### 2. Return the Observed Development Links
+
+Return the observed links and whether the entire field was readable.
 
 #### *Confirm* Repository Auto-Close
 
@@ -1113,9 +1323,17 @@ Whether the repository auto-closes issues whose linked pull requests merge, esta
 
 **Inputs:** Repository and authenticated access.
 
-1. Read the setting where the authenticated API exposes it, and take a read value as the answer.
-2. Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
-3. Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
+##### 1. Read the Auto-Close Setting
+
+Read the setting where the authenticated API exposes it, and take a read value as the answer.
+
+##### 2. Ask the User for Auto-Close
+
+Where no API field carries it, put the setting to the user and take their explicit answer, meeting [Auto-Close Setting](#auto-close-setting).
+
+##### 3. Return the Confirmed Auto-Close Setting
+
+Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
 
 ### Fields
 

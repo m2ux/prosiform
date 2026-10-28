@@ -187,13 +187,18 @@ The deferred link's destination names the guidelines from the working directory,
 
 ### Input
 
-The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step that links its `Board Reads` section, whose reads are numbered step sub-sections, in the order their results are taken:
+The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step sub-section that links its `Run Board Reads` section, whose reads are step sub-sections of their own, in the order their results are taken:
 
 ```markdown
-1. Apply the [board reads](#board-reads).
-2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+#### 1. Apply the Board Reads
 
-#### Board Reads
+Apply the [board reads](#run-board-reads).
+
+#### 2. Return the Board Delivery Evidence
+
+Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+#### Run Board Reads
 
 ##### 1. Read Board State
 
@@ -215,13 +220,18 @@ pf modes/advance-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) points the link at the compiled `Board Reads` section, whose steps sit one level below it and whose calls point at their headings in the bundle:
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) points the link at the compiled `Run Board Reads` section, whose steps sit one level below it and whose calls point at their headings in the bundle:
 
 ```markdown
-1. Apply the [board reads](#board-reads).
-2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+##### 1. Apply the Board Reads
 
-##### Board Reads
+Apply the [board reads](#run-board-reads).
+
+##### 2. Return the Board Delivery Evidence
+
+Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
+
+##### Run Board Reads
 
 ###### 1. Read Board State
 
