@@ -32,4 +32,5 @@ Each earlier task proves the rule it adds. Nothing yet proves those rules togeth
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior task | [W08 Prosiform Section and Its Protocols](../2026-10-28-351-i05-e03-w08-prosiform-section-and-its/README.md) |
+| Pull request | [#362 Layout-Permutation Fixtures for the Bundle Set](https://github.com/m2ux/prosiform/pull/362) |
 | Review pull request | [#355](https://github.com/m2ux/prosiform/pull/355) |

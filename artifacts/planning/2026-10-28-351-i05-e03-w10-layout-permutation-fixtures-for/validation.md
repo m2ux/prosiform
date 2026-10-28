@@ -50,3 +50,7 @@ Each passes.
 ## T5 make check
 
 `PROSIFORM_BUILD=<pf> make check` exited 0: lock check, lint, format check, type check, 1275 unit tests, 717 harness tests, the corpus, the installed-wheel smoke run, layout, tables, links, vocabulary, invocation, conformance and independence. `make independence` read 334 fixtures and found every word of every declaration one the contract states.
+
+## Continuous integration
+
+`Checks` ran `make check` on the pull request head `490b3ce1` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40682643268/job/122796957806)). `i05/e03/main` had not moved from `c285144f`, so no update of the task branch was needed. [#362](https://github.com/m2ux/prosiform/pull/362) merged into `i05/e03/main` at `b7935828`.
