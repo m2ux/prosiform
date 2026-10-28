@@ -1,3 +1,3 @@
 # Guide
 
-Guide body, which needs [the note](guide/note.md).
+Guide body, which needs [the note](guide.bundles/note.md).

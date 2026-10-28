@@ -1,8 +1,8 @@
 """Entry-derived folders and names through the real CLI and its atomic publication.
 
 A run writes its bundles into a folder under the output folder named for
-its entry, and the entry's bundle in it carries that name with the bundle
-suffix.
+its entry with the `.bundles` suffix, and the entry's bundle in it carries
+that name with the bundle suffix.
 """
 
 import os
@@ -19,7 +19,7 @@ from prosiform import cli
 
 def bundle(folder: Path, name: str) -> Path:
     """The entry bundle a run named so writes under one output folder."""
-    return folder / name / f"{name}.bundle.md"
+    return folder / f"{name}.bundles" / f"{name}.bundle.md"
 
 
 def invoke(root: Path, *arguments: str) -> Run:
@@ -56,7 +56,7 @@ def test_equivalent_selections_share_one_derived_destination(
     written(tmp_path, "dir/a.md", "# A\n\n## Part\n\nContent.\n")
     run = invoke(tmp_path, *arguments)
     assert run.status == 0 and run.stdout == ""
-    assert len(list(tmp_path.glob("dir_a*/dir_a*.bundle.md"))) == 1
+    assert len(list(tmp_path.glob("dir_a*.bundles/dir_a*.bundle.md"))) == 1
 
 
 @pytest.mark.parametrize(
@@ -101,7 +101,7 @@ def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None
 def test_fragment_referrer_and_check_mode(tmp_path: Path) -> None:
     written(tmp_path, "dir/a.md", rooted(".", "# A\n\n## Part\n\nContent.\n"))
     assert invoke(tmp_path, "-c", "-f", "dir/a.md", "#part").status == 0
-    assert not (tmp_path / "dir_a__part").exists()
+    assert not (tmp_path / "dir_a__part.bundles").exists()
     assert invoke(tmp_path, "-f", "dir/a.md", "#part").status == 0
     assert "Content." in bundle(tmp_path, "dir_a__part").read_text()
 
@@ -112,8 +112,8 @@ def test_derived_folder_cannot_hold_any_captured_source(
     tmp_path: Path, deferred: bool, check: bool
 ) -> None:
     mark = "¬ " if deferred else ""
-    written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a/a.bundle.md)\n")
-    written(tmp_path, "a/a.bundle.md", "# Captured\n\nPreserve.\n")
+    written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a.bundles/a.bundle.md)\n")
+    written(tmp_path, "a.bundles/a.bundle.md", "# Captured\n\nPreserve.\n")
     run = invoke(tmp_path, *(["-c"] if check else []), "a.md")
     assert run.status == 2 and run.stdout == ""
     assert bundle(tmp_path, "a").read_text() == "# Captured\n\nPreserve.\n"
@@ -123,7 +123,7 @@ def test_derived_publication_swaps_the_folder_in_whole(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     written(tmp_path, "a.md", "# A\n\nComplete.\n")
-    written(tmp_path, "a/a.bundle.md", "Existing.")
+    written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     original = os.rename
     calls = []
 
@@ -134,17 +134,17 @@ def test_derived_publication_swaps_the_folder_in_whole(
     monkeypatch.setattr(os, "rename", rename)
     assert invoke(tmp_path, "a.md").status == 0
     [(aside, moved), (staged, placed)] = calls
-    assert aside == "a" and moved.startswith(".a.old.")
-    assert staged.startswith(".a.new.") and placed == "a"
+    assert aside == "a.bundles" and moved.startswith(".a.bundles.old.")
+    assert staged.startswith(".a.bundles.new.") and placed == "a.bundles"
     assert "Complete." in bundle(tmp_path, "a").read_text()
-    assert sorted(path.name for path in tmp_path.iterdir()) == ["a", "a.md"]
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
 
 
 def test_atomic_failure_preserves_existing_folder(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     written(tmp_path, "a.md", "# A\n")
-    written(tmp_path, "a/a.bundle.md", "Existing.")
+    written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     original = os.rename
 
     def refuse(source: Path, target: Path) -> None:
@@ -156,7 +156,7 @@ def test_atomic_failure_preserves_existing_folder(
     run = invoke(tmp_path, "a.md")
     assert run.status == 3 and run.stdout == ""
     assert bundle(tmp_path, "a").read_text() == "Existing."
-    assert sorted(path.name for path in tmp_path.iterdir()) == ["a", "a.md"]
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
 
 
 @pytest.mark.parametrize("flags", [("-x", "source-changed"), ("-O", "1")])
@@ -164,7 +164,7 @@ def test_failed_validation_preserves_existing_derived_output(
     tmp_path: Path, flags: tuple[str, ...]
 ) -> None:
     written(tmp_path, "a.md", "# A\n")
-    written(tmp_path, "a/a.bundle.md", "Existing.")
+    written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     run = invoke(tmp_path, *flags, "a.md")
     assert run.status == 1 and run.stdout == ""
     assert bundle(tmp_path, "a").read_text() == "Existing."

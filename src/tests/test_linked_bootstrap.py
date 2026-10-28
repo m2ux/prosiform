@@ -62,7 +62,7 @@ SKILL = (
 
 def run_bundle(folder: Path, name: str) -> Path:
     """The entry bundle a run named so writes under one output folder."""
-    return folder / name / f"{name}.bundle.md"
+    return folder / f"{name}.bundles" / f"{name}.bundle.md"
 
 
 def document(
@@ -466,7 +466,9 @@ class Stack:
         assert result.stdout == ""
         [run] = sorted(folder.iterdir())
         written = sorted(run.iterdir())
-        assert [one.name for one in written] == [f"{run.name}.bundle.md"], written
+        assert [one.name for one in written] == [
+            f"{run.name.removesuffix('.bundles')}.bundle.md"
+        ], written
         output = written[0].read_text(encoding="utf-8")
         assert "WRONG_ROOT_MARKER" not in output
         assert "Linked Instruction Bootstrap" not in output

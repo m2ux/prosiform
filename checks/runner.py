@@ -22,12 +22,13 @@ the working directory, or the folder the manifest's `-o` names.
 A difference names the expectation it belongs to and locates itself within
 it. Every file the run creates under the fixture or its working directory
 is what the run wrote. A run writes its bundles into one folder of its own,
-named for its entry bundle, so each file is compared by its name within
-that folder with the bundles the manifest declares: a declared bundle the
-run did not write, a file no declaration names, a file written outside a
-folder of the run's own, and a folder named for no declared bundle are
-each a difference. Each file and folder is read and removed, so every run
-starts from a directory holding no output. A bundle is compared as bytes and
+named for its entry bundle with the `.bundles` suffix, so each file is
+compared by its name within that folder with the bundles the manifest
+declares: a declared bundle the run did not write, a file no declaration
+names, a file written outside a folder of the run's own, and a folder
+named for no declared bundle are each a difference. Each file and folder
+is read and removed, so every run starts from a directory holding no
+output. A bundle is compared as bytes and
 located by byte offset, since the preservation invariant turns on newline
 spelling and the trailing newline; each rendered window spells its control
 bytes, so a CRLF against an LF is visible rather than invisible. Standard
@@ -84,6 +85,7 @@ INVOCATION = "invocation"
 EXIT_STATUS = "expected.exit_status"
 BUNDLES = "expected.bundles"
 BUNDLE_SUFFIX = ".bundle.md"
+RUN_FOLDER_SUFFIX = ".bundles"
 STDOUT_TEXT = "expected.stdout_contains"
 DIAGNOSTICS = "expected.diagnostics"
 
@@ -281,7 +283,8 @@ def compare_bundles(
     """The files the run wrote against the bundles the manifest declares, by name.
 
     A declared bundle is matched by its name within the folder the run
-    wrote its bundles into, and that folder is named for one of them.
+    wrote its bundles into, and that folder is named for one of them with
+    the `.bundles` suffix.
     """
     expected = {Path(path).name: (fixture / path).read_bytes() for path in declared}
     produced: dict[str, bytes] = {}
@@ -294,7 +297,8 @@ def compare_bundles(
             )
         )
     for folder in folders:
-        if expected and f"{folder}{BUNDLE_SUFFIX}" not in expected:
+        named = folder.removesuffix(RUN_FOLDER_SUFFIX)
+        if expected and (named == folder or f"{named}{BUNDLE_SUFFIX}" not in expected):
             differences.append(
                 Difference(
                     BUNDLES,

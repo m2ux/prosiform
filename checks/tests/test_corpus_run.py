@@ -87,7 +87,10 @@ def replaying(directory: Path, bundle: bytes) -> str:
     canned.mkdir(parents=True, exist_ok=True)
     written = canned / "bundle"
     written.write_bytes(bundle)
-    script = f"mkdir guide; cat {shlex.quote(str(written))} > guide/guide.bundle.md"
+    script = (
+        f"mkdir guide.bundles; "
+        f"cat {shlex.quote(str(written))} > guide.bundles/guide.bundle.md"
+    )
     return shlex.join(["/bin/sh", "-c", script])
 
 

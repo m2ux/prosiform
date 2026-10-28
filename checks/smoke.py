@@ -182,19 +182,24 @@ def derived(entry: str) -> str:
 
     The entry's separators are written as underscores, so an entry above
     the working directory keeps its parent segments as filename text. The
-    run's folder carries the name, and its bundle the name and the bundle
-    suffix.
+    run's folder carries the name and the run folder suffix, and its bundle
+    the name and the bundle suffix.
     """
     return str(Path(entry).with_suffix("")).replace(os.sep, "_")
+
+
+def run_folder(name: str) -> str:
+    """The folder a run named so writes its bundles into."""
+    return f"{name}.bundles"
 
 
 def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     """A reference bundled from a source root the repository does not hold.
 
-    The folder `-o` names holds the run's folder under the entry's derived
-    name and nothing else, that folder holds the bundle and nothing else,
-    and both streams carry nothing, so the installed command's output
-    split is the one the contract names.
+    The folder `-o` names holds the run's folder, named by the entry's
+    derived name and the run folder suffix, and nothing else; that folder
+    holds the bundle and nothing else; and both streams carry nothing, so
+    the installed command's output split is the one the contract names.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
     folder = elsewhere.parent / "bundles"
@@ -202,8 +207,8 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     run = invoke(environment, elsewhere, "-o", str(folder), entry)
     if reported(run, f"{COMMAND} -o {folder} {entry}"):
         raise Failed("standard output carries text, and a run writes its bundle")
-    named = derived(entry)
-    name = f"{named}.bundle.md"
+    named = run_folder(derived(entry))
+    name = f"{derived(entry)}.bundle.md"
     held = sorted(path.name for path in folder.iterdir())
     written = sorted(path.name for path in (folder / named).glob("*")) if held else []
     if held != [named] or written != [name]:
@@ -235,10 +240,10 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
-        destination = elsewhere / published / f"{published}.bundle.md"
+        destination = elsewhere / run_folder(published) / f"{published}.bundle.md"
         if run.stdout or destination.read_text() != expected:
             raise Failed("derived output differs from the installed bundle")
-        shutil.rmtree(elsewhere / published)
+        shutil.rmtree(elsewhere / run_folder(published))
     run = invoke(environment, elsewhere, "-c", entry)
     succeeded(run, "check mode")
     if list(elsewhere.iterdir()) or run.stdout:
@@ -246,9 +251,10 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     run = invoke(environment, elsewhere, entry, entry + "#guide")
     succeeded(run, "joined selections")
     joined = f"{name}+{name}__guide"
-    if run.stdout or not (elsewhere / joined / f"{joined}.bundle.md").is_file():
+    held = elsewhere / run_folder(joined) / f"{joined}.bundle.md"
+    if run.stdout or not held.is_file():
         raise Failed("joined selections publish no bundle under the joined name")
-    shutil.rmtree(elsewhere / joined)
+    shutil.rmtree(elsewhere / run_folder(joined))
     run = invoke(environment, elsewhere, "-o", "-", entry)
     if run.returncode != 2 or run.stdout or list(elsewhere.iterdir()):
         raise Failed("standard output named as the output folder is not refused")
@@ -256,7 +262,7 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     folder.mkdir()
     run = invoke(environment, elsewhere, "-o", "out", entry)
     succeeded(run, "-o out")
-    if run.stdout or not (folder / name / f"{name}.bundle.md").is_file():
+    if run.stdout or not (folder / run_folder(name) / f"{name}.bundle.md").is_file():
         raise Failed("the folder -o names does not hold the run's folder")
     shutil.rmtree(folder)
     run = invoke(environment, elsewhere, "-o", "missing", entry)
