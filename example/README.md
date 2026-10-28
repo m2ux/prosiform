@@ -31,7 +31,7 @@ It writes the bundle to `modes_plan-mode.bundle.md` in that directory, the [deri
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens on the mode's own title and preamble, which tell the agent what to follow:
+The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) opens on the mode's own title and preamble, which tell the agent what to follow:
 
 ```markdown
 # Plan Mode
@@ -105,7 +105,7 @@ pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
+The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
 
 ```markdown
 # Artifacts
@@ -153,7 +153,7 @@ pf modes/revise-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) carries the step with the deferral mark removed:
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) carries the step with the deferral mark removed:
 
 ```markdown
 1. **Read the guidelines.**
@@ -194,7 +194,7 @@ pf modes/advance-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/stdout.md) publishes the `⫽` mark and points the link at the compiled `Board Reads` section, whose calls point at their headings in the bundle:
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/modes_advance-mode.bundle.md) publishes the `⫽` mark and points the link at the compiled `Board Reads` section, whose calls point at their headings in the bundle:
 
 ```markdown
 1. Apply the [⫽ board reads](#board-reads).
@@ -237,7 +237,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
 
 ```markdown
 # Artifacts
@@ -265,7 +265,7 @@ The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated
 
 ```bash
 cd example/my-skill
-pf -o - procedure.md rules/common.md
+pf procedure.md rules/common.md
 ```
 
 The grouped portion is:
@@ -296,13 +296,13 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 
 | Example | Invocation fixture | Expected output |
 | --- | --- | --- |
-| Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) |
-| Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
-| Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
-| Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) |
-| Run calls together with `⫽` | [Manifest](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/stdout.md) |
-| Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) |
-| Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
+| Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) |
+| Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) |
+| Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/artifacts_epic-issue-body__record-epic-delivery+artifacts_epic__delivery-findings.bundle.md) |
+| Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) |
+| Run calls together with `⫽` | [Manifest](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/modes_advance-mode.bundle.md) |
+| Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) |
+| Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | None: the run writes no bundle |
 
 ## Source and validation
 

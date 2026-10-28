@@ -1,4 +1,4 @@
-description = "A successful run writes the bundle to standard output and nothing to the diagnostic stream, and the bundle arranges its groups in the order the command line names the entries: the two entries are named in reverse path order and bundled in that order."
+description = "A successful run writes the bundle into its folder under its joined name and nothing to either stream, and the bundle arranges its groups in the order the command line names the entries: the two entries are named in reverse path order and bundled in that order."
 
 clauses = [
   "Agent delivery contract — Clean Markdown",
