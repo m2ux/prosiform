@@ -2320,18 +2320,27 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Issue.**
-   - Apply [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
-   - Apply [Capture Issue Development](#capture-issue-development) for that issue.
-2. **Pull requests.**
-   Apply [Read Pull Request State](#read-pull-request-state) for every captured link, across repositories and all states.
-3. **Check delivery completion.**
-   Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, current JSON, complete Development snapshot, those pull request records and criterion verification evidence, adding the task's delivery result for a task and the project checkout for an epic.
-   - Return an incomplete or failed result to the caller before closure.
-4. **Close.**
-   Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
-   - On a changed link set or missing evidence, repeat from the issue step for the same issue.
-   - Report any unmerged link or unmet criterion.
+#### 1. Issue
+
+- Apply [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
+- Apply [Capture Issue Development](#capture-issue-development) for that issue.
+
+#### 2. Pull Requests
+
+Apply [Read Pull Request State](#read-pull-request-state) for every captured link, across repositories and all states.
+
+#### 3. Check Delivery Completion
+
+Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, current JSON, complete Development snapshot, those pull request records and criterion verification evidence, adding the task's delivery result for a task and the project checkout for an epic.
+
+- Return an incomplete or failed result to the caller before closure.
+
+#### 4. Close
+
+Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
+
+- On a changed link set or missing evidence, repeat from the issue step for the same issue.
+- Report any unmerged link or unmet criterion.
 
 # References
 
