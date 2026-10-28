@@ -57,3 +57,11 @@ The review search at the tested revision finds no `bootstrap.md`, `run-set` or `
 
 - `make conformance`: 303 clauses, 0 declarations naming no clause, 0 declared codes the build reports nowhere, 0 reported codes the contract declares nowhere; `Guide` is covered by 1 fixture.
 - `make invocation`: 29 statements of `invocation.md`, each held to the build's help, "a bare command prints the guide" among them.
+
+## Epic base update
+
+`i05/e03/main` moved to `b7935828` (the merge of #362, W10's fixtures) before the merge. It was merged into the task branch at `2ef408bb` without conflict. On that head `make corpus` reported `335 fixture(s), 335 pass, 0 fail`, and `make conformance`, `make invocation`, `make independence` and `make vocabulary` held as above.
+
+## Continuous integration
+
+`Checks` ran `make check` on `0503ae73` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40683264794/job/122799099282)), and again on the merged head `2ef408bb` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40684254614/job/122802481812)).
