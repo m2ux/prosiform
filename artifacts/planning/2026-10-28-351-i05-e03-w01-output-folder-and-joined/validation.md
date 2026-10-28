@@ -3,7 +3,7 @@
 Each check the work item's test row names, in execution order, with the revision it ran on and what it observed.
 
 - **Branch.** `i05/e03/w01-output-folder-and-joined`, cut from `i05/e03/main` at `9851615028ea489c48f6b3fa5ddbe0d917438cf2`.
-- **Tested revision.** `3ed32a0666b6de609179b73d64a5f8849aaf4da3` for every check below. The two later commits, `dfa94f71` and `3d2a8eaa`, relabel the README diagrams and one sentence of `example/README.md`; `make links`, `make tables`, `make layout` and `make vocabulary` were rerun on `3d2a8eaa` and hold.
+- **Tested revision.** `3ed32a0666b6de609179b73d64a5f8849aaf4da3` for every local check below, and `518dccd00cc70e8e74539a841165f9eb1d21967c`, the merged head, for continuous integration's `make check`. The two later commits, `dfa94f71` and `3d2a8eaa`, relabel the README diagrams and one sentence of `example/README.md`; `make links`, `make tables`, `make layout` and `make vocabulary` were rerun on `3d2a8eaa` and hold.
 - **Build under test.** `PROSIFORM_BUILD` named the worktree's locked environment's `pf`.
 - **Contract.** The README pins the design at `034b65365b3be7ba19bf83cf84939f1153052d32` on `engineering`.
 
@@ -57,6 +57,8 @@ The runner reports a file no bundle names, so each fixture declaring no bundle a
 `PROSIFORM_BUILD=<pf> make check` exited 0: lock check, lint, format check, type check, 1252 unit tests, 697 harness tests, the corpus, the installed-wheel smoke run, layout, tables, links (online), vocabulary, invocation, conformance and independence.
 
 The smoke run bundles into a folder `-o` names, writes derived names into its working directory, joins a document and its section into one bundle under the joined name, refuses `-o -` with exit 2, holds a directory destination to the bundle, and refuses a missing folder with exit 3 and no temporary file.
+
+Continuous integration ran `make check` on each pushed head. On `3d2a8eaa` it failed one fixture, `cli/output-naming-a-dependency-source`: `.gitignore` ignored `*.bundle.md` outside `expected/`, so the fixture's `source/guide.bundle.md` was never committed and the run reported `E_TARGET_NOT_FOUND`. `518dccd0` tracks every bundle-named file under `fixtures/`, and CI's `make check` passed on it ([run](https://github.com/m2ux/prosiform/actions?query=branch%3Ai05%2Fe03%2Fw01-output-folder-and-joined)).
 
 ## T5 make corpus
 
