@@ -1,0 +1,15 @@
+description = "A parallel link's text names its item in the Dispatch in parallel sub-section, so text wrapped across lines or ending in a space is listed with each run of whitespace as one space, while the published link keeps the text its source wrote."
+
+clauses = [
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/review.bundle.md", "expected/rules.bundle.md"]
+diagnostics = []

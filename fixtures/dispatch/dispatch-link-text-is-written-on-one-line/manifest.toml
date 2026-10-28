@@ -1,0 +1,15 @@
+description = "A dispatched link's text names its sub-section, so text wrapped across lines, broken by a hard line break or ending in a space is written in the heading with each run of whitespace as one space, while the published link keeps the text its source wrote."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review.bundle.md", "expected/rules.bundle.md"]
+diagnostics = []

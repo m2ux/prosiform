@@ -58,6 +58,11 @@ shape is the corpus's convention, so a dispatch states no rule on it.
 A chain is deeper than the limit where it reaches a hop past it, and
 the search for one stops there. A target already on a chain is not
 followed again, so both searches terminate on any graph of dispatches.
+The dispatches a bundle carries name each target once, at the first
+link naming it, so each search follows each target once from a bundle.
+
+A dispatched link's text names its sub-section, so the text is written
+with each run of whitespace, a line break among them, as one space.
 """
 
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
@@ -207,26 +212,10 @@ class Hop:
 
 
 Onward = Callable[[Reference], Sequence[Hop]]
+"""The dispatches the bundle of one target carries, each target once."""
 
 
-class Graph:
-    """The dispatches each target's own bundle carries, read once per target."""
-
-    def __init__(self, onward: Onward) -> None:
-        self.onward = onward
-        self.read: dict[str, tuple[Hop, ...]] = {}
-
-    def beyond(self, hop: Hop) -> tuple[Hop, ...]:
-        """Each distinct dispatch the bundle of one hop's target carries."""
-        if hop.name not in self.read:
-            distinct: dict[str, Hop] = {}
-            for one in self.onward(hop.target):
-                distinct.setdefault(one.name, one)
-            self.read[hop.name] = tuple(distinct.values())
-        return self.read[hop.name]
-
-
-def deepest(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] | None:
+def deepest(onward: Onward, first: Hop, entries: Collection[str]) -> list[Hop] | None:
     """The first chain from one hop that reaches a hop past the limit.
 
     A chain is followed in the order each bundle writes its dispatches,
@@ -234,7 +223,7 @@ def deepest(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] | N
     """
     chain = [first]
     on = {*entries, first.name}
-    pending: list[Iterator[Hop]] = [iter(graph.beyond(first))]
+    pending: list[Iterator[Hop]] = [iter(onward(first.target))]
     while pending:
         if len(chain) > LIMIT:
             return chain
@@ -247,11 +236,11 @@ def deepest(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] | N
             continue
         chain.append(following)
         on.add(following.name)
-        pending.append(iter(graph.beyond(following)))
+        pending.append(iter(onward(following.target)))
     return None
 
 
-def returning(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] | None:
+def returning(onward: Onward, first: Hop, entries: Collection[str]) -> list[Hop] | None:
     """The first chain from one hop whose last hop names a target already on it.
 
     The entries stand on every chain, so a dispatch naming the run's own
@@ -263,7 +252,7 @@ def returning(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] |
     chain = [first]
     on = {*entries, first.name}
     done: set[str] = set()
-    pending: list[Iterator[Hop]] = [iter(graph.beyond(first))]
+    pending: list[Iterator[Hop]] = [iter(onward(first.target))]
     while pending:
         following = next(pending[-1], None)
         if following is None:
@@ -278,7 +267,7 @@ def returning(graph: Graph, first: Hop, entries: Collection[str]) -> list[Hop] |
             continue
         chain.append(following)
         on.add(following.name)
-        pending.append(iter(graph.beyond(following)))
+        pending.append(iter(onward(following.target)))
     return None
 
 
@@ -312,23 +301,14 @@ def reported(
     )
 
 
-def distinct(hops: Sequence[Hop]) -> list[Hop]:
-    """Each target the hops name, at the first hop naming it."""
-    found: dict[str, Hop] = {}
-    for hop in hops:
-        found.setdefault(hop.name, hop)
-    return list(found.values())
-
-
 def cycle(hops: Sequence[Hop], entries: Collection[str], onward: Onward) -> None:
     """Refuse the first chain of the run's dispatches returning to a target on it.
 
     Each distinct target the entry dispatches is followed from the first
     link naming it, in the order the entry's bundle wrote them.
     """
-    graph = Graph(onward)
-    for first in distinct(hops):
-        loop = returning(graph, first, entries)
+    for first in hops:
+        loop = returning(onward, first, entries)
         if loop is None:
             continue
         entry = first.target.chain[0] if first.target.chain else first.name
@@ -355,10 +335,9 @@ def analysed(
     link naming it, and raises at most one warning: for the first chain
     from it reaching a hop past the limit.
     """
-    graph = Graph(onward)
     found: list[Diagnostic] = []
-    for first in distinct(hops):
-        deep = deepest(graph, first, entries)
+    for first in hops:
+        deep = deepest(onward, first, entries)
         if deep is None:
             continue
         entry = first.target.chain[0] if first.target.chain else first.name
@@ -397,11 +376,17 @@ def selfward(hop: Hop) -> Diagnostic:
 class Link:
     """One dispatched link a region writes: its target, text and position."""
 
-    target: Target
+    reference: Reference
     text: str
     written: str
     location: Location
     parallel: bool
+    opening: str
+
+    @property
+    def target(self) -> Target:
+        """The document and section the link names."""
+        return (self.reference.path, self.reference.fragment)
 
     @property
     def served(self) -> Served:
@@ -443,11 +428,12 @@ def written_in(
                 continue
             found.append(
                 Link(
-                    (target.path, target.fragment),
-                    unmarked(link_text(children, at)),
+                    target,
+                    " ".join(unmarked(link_text(children, at)).split()),
                     destination,
                     Location(path, 1 if line is None else line, 1),
                     parallel(opening),
+                    opening,
                 )
             )
     return found
@@ -683,7 +669,7 @@ def authored(record: Record) -> Iterator[tuple[Emitted, Location | None]]:
 
 def collisions(groups: Sequence[Group]) -> None:
     """Refuse an authored heading whose text equals one pf emits in the bundle."""
-    emitted = {PROSIFORM, PARALLEL} | {
+    emitted = {
         one.text
         for group in groups
         for one in group.record.headings
