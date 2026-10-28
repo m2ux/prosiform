@@ -21,3 +21,7 @@
   - W10 adds `authoring` to `make check`.
   - It adds a `make authoring` row to the `checks.md` table and drops "`authoring.py` and" from the `checks/README.md` sentence on what `make check` runs.
   - The tests already include a failing file for each rule.
+
+## Blocked
+
+- **Task merge.** CI passed on #380 at `256a032f` and the base `i05/e06/main` is unmoved at `6dc691dd`. The merge was refused by the session's permission classifier, so #380 stays open. AC2 and W02's Done are left unticked until it merges.
