@@ -37,7 +37,7 @@ Apply [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-i
 - Apply Populate Planning Record with the record identity, folder path and each returned work-item file.
 - Apply [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering) with the initiative and epic drafts, the planning record, current pull request records, confirmed numbering maps when any, no allowance and the run's change list.
 - Apply Populate Planning Record with the record identity, folder path and the returned longest chains, contending pairs and proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map as its [Dependency Check](../artifacts/planning-record.md#dependency-check).
-- Return each checked epic draft and its format results to the review step.
+- Return each checked epic draft and its format results to [5. Review the Drafts](#5-review-the-drafts).
 
 ### 5. Review the Drafts
 
@@ -49,7 +49,7 @@ Apply [Review Initiative Goal](../artifacts/goal-trace.md#review-initiative-goal
   - For a confirmed distinct concern:
     - Apply Populate Epic Issue Body for its own epic.
     - Apply Draft Initiative Issue Body with the epic summaries that include it.
-    - Repeat Check Dependencies and Numbering for the new epic and initiative row, and record its result as step 4 does.
+    - Repeat Check Dependencies and Numbering for the new epic and initiative row, and record its result as [4. Populate the Epics](#4-populate-the-epics) does.
 - Apply Populate Planning Record with the record identity, folder path and each finding, resolution and decision.
 - Repeat Review Initiative Goal with the revised initiative and epic bodies and retained goal clauses and sources. No issue is created while a content or structural finding remains. Unresolved links to unpublished issues are recorded with their intended row identities and resolved during publication; no other finding is deferred.
 
@@ -63,12 +63,12 @@ Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority)
 ### 7. Keep the Goal Current
 
 When the goal, a criterion, a Problem, a Proposal or an epic changes:
-- Repeat Review Initiative Goal with the revised bodies and current sources, and record its trace table as step 5 does.
+- Repeat Review Initiative Goal with the revised bodies and current sources, and record its trace table as [5. Review the Drafts](#5-review-the-drafts) does.
 - Apply Report Review Finding for each finding.
-- Apply confirmed resolutions as step 5 does.
+- Apply confirmed resolutions as [5. Review the Drafts](#5-review-the-drafts) does.
 - Repeat that review until clear.
 - After each round, apply [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits) to affected bodies.
-- Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as step 4 does.
+- Whenever tasks, edges or a work item's component change, repeat Check Dependencies and Numbering, and record its result as [4. Populate the Epics](#4-populate-the-epics) does.
   - Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
   - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with each confirmed change as that epic's [priority label](../artifacts/board-queue.md#priority-sets), with its colour and description.
 - Apply Save Tracker Issue with each affected body, its title matching current numbers.
@@ -89,7 +89,7 @@ Before any task starts:
 - Follow [Delivery Base Preparation](../protocols/delivery-base-preparation.md) with the initiative's epics, the current initiative and epic bodies, prerequisite issue and base-merge records, project checkout, changed long-lived branches, repository and initiative prefix.
   - Stop on a prerequisite finding it returns.
   - Put each conflict and pull request awaiting a decision it returns to the user.
-- Repeat goal and ordering review on changed bodies, as step 7 does, before returning readiness.
+- Repeat goal and ordering review on changed bodies, as [7. Keep the Goal Current](#7-keep-the-goal-current) does, before returning readiness.
 
 ### 9. Record Delivered Work
 

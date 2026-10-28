@@ -29,5 +29,5 @@ Apply [Check Issue Completion](../artifacts/issue.md#check-issue-completion) wit
 ### 4. Close
 
 Apply [Close Tracker Issue](../artifacts/issue.md#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
-- On a changed link set or missing evidence, repeat from the issue step for the same issue.
+- On a changed link set or missing evidence, repeat from [1. Issue](#1-issue) for the same issue.
 - Report any unmerged link or unmet criterion.

@@ -30,7 +30,7 @@ When the placement adds a task or an epic, apply [Check Dependencies and Numberi
 
 #### 4. Record the Graph
 
-When step 2 ran and the initiative has a planning record, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map that Check Dependencies and Numbering returned as its [Dependency Check](#dependency-check), the saved destination issue links, and the caller's commit message file when it asks to publish.
+When [2. Check the Graph](#2-check-the-graph) ran and the initiative has a planning record, apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](#epic-priority) map that Check Dependencies and Numbering returned as its [Dependency Check](#dependency-check), the saved destination issue links, and the caller's commit message file when it asks to publish.
 
 #### 5. Settle the Orphan
 
@@ -1300,7 +1300,7 @@ Present each unmet criterion and its missing evidence to the user.
 - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
 - Record an unanswered decision as pending.
 - If no criteria need further work, return the pending findings to the caller.
-- Continue to the draft step with only the criteria the user confirms need further work.
+- Continue to [2. Draft the Gap Task](#2-draft-the-gap-task) with only the criteria the user confirms need further work.
 
 ##### 2. Draft the Gap Task
 
@@ -1308,7 +1308,7 @@ Draft a further task for the criteria selected for further work, meeting [Work B
 
 - Confirm the draft with the user.
 - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
-- Return an unanswered draft as pending without continuing to the reconcile step.
+- Return an unanswered draft as pending without continuing to [3. Record the Revised Epic Delivery](#3-record-the-revised-epic-delivery).
 
 ##### 3. Record the Revised Epic Delivery
 
@@ -1331,7 +1331,7 @@ Draft the task issue's row, meeting [Work Breakdown](#work-breakdown-1).
 
 Apply [Settle Plan Change](#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
 
-- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to [3. Revise Epic Rows with the Placed Row](#3-revise-epic-rows-with-the-placed-row).
 
 ##### 3. Revise Epic Rows with the Placed Row
 

@@ -31,7 +31,7 @@ Apply [Locate Planning Record](../artifacts/planning-record.md#locate-planning-r
 
 ### 3. Write the Overview
 
-Apply [Populate Architecture Overview](../artifacts/architecture-overview.md#populate-architecture-overview) with the measured structure and flows, the head from step 1, pinned code permalinks and an overview path in the record's folder.
+Apply [Populate Architecture Overview](../artifacts/architecture-overview.md#populate-architecture-overview) with the measured structure and flows, the head from [1. Prepare the Evidence](#1-prepare-the-evidence), pinned code permalinks and an overview path in the record's folder.
 
 ### 4. Register the Overview
 

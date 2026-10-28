@@ -14,7 +14,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 Apply [Select Project Board](../artifacts/board.md#select-project-board) for the requested board, each requested board when the scope is all, or the theme board of the named initiative.
 - Retain the selected window and initiative filter.
-- Complete steps 2–6 separately for each selected board.
+- Complete [2. Bring Delivery Current](#2-bring-delivery-current) through [6. Report](#6-report) separately for each selected board.
 
 ### 2. Bring Delivery Current
 
@@ -23,7 +23,7 @@ Apply [Select Project Board](../artifacts/board.md#select-project-board) for the
   - Read the board through [Read Board State](../artifacts/board.md#read-board-state).
   - Treat each selected initiative's delivery state as needing refresh.
 - For initiatives with known delivery changes or unknown freshness, follow [⇉ Sync Mode](sync-mode.md) for the affected initiatives on that board.
-- Resume the read step after their delivery results are saved.
+- Resume [3. Read the Evidence](#3-read-the-evidence) after their delivery results are saved.
 - Report a blocker that prevents a current summary.
 - Retain it as a gap if presenting a partial report.
 
@@ -39,7 +39,7 @@ Apply [Compose Standup Report](../artifacts/standup-report.md#compose-standup-re
 ### 5. Repair
 
 For an epic the report names with an unreadable Work Breakdown, apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format) with [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body) as the validator and its further inputs, the epic identity, current JSON and output body path, the [epic template](../artifacts/epic-issue-body.md#template) and required related evidence.
-- If it confirms a saved correction, repeat steps 3–6, retaining the selected board, window and initiative filter.
+- If it confirms a saved correction, repeat [3. Read the Evidence](#3-read-the-evidence) through [6. Report](#6-report), retaining the selected board, window and initiative filter.
 - If it reports a blocker or no correction, carry the unresolved finding to the report without repeating the same repair.
 
 ### 6. Report

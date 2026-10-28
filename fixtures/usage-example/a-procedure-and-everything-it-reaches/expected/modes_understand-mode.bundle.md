@@ -98,7 +98,7 @@ Apply [Locate Planning Record](#locate-planning-record) with the pull request nu
 
 #### 3. Write the Overview
 
-Apply [Populate Architecture Overview](#populate-architecture-overview) with the measured structure and flows, the head from step 1, pinned code permalinks and an overview path in the record's folder.
+Apply [Populate Architecture Overview](#populate-architecture-overview) with the measured structure and flows, the head from [1. Prepare the Evidence](#1-prepare-the-evidence), pinned code permalinks and an overview path in the record's folder.
 
 #### 4. Register the Overview
 
@@ -511,7 +511,7 @@ Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout
 If it differs from the verified head:
 
 - Apply [Read Pull Request State](#read-pull-request-state) for the same pull request, and take its head as the verified head.
-- Repeat steps 1 and 2 once.
+- Repeat [1. Fetch the Review Head](#1-fetch-the-review-head) and [2. Read the Fetched Revision](#2-read-the-fetched-revision) once.
 - If the fetched head still differs, return a changed-head finding before creating a worktree.
 
 ##### 4. Derive the Review Worktree Path
@@ -637,7 +637,7 @@ Inspect the staleness block on every response. For a behind index:
 
 - Discard its measurements.
 - Run [Index Repository](#index-repository).
-- Repeat steps 1 to 5 once with the updated index.
+- Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index.
 - If a response is still behind, return a freshness blocker.
 
 ##### 7. Return the Current Graph Evidence

@@ -128,7 +128,7 @@ Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, c
 
 Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
 
-- On a changed link set or missing evidence, repeat from the issue step for the same issue.
+- On a changed link set or missing evidence, repeat from [1. Issue](#1-issue) for the same issue.
 - Report any unmerged link or unmet criterion.
 
 ## Review Pull Request
@@ -499,7 +499,7 @@ Present each unmet criterion and its missing evidence to the user.
 - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
 - Record an unanswered decision as pending.
 - If no criteria need further work, return the pending findings to the caller.
-- Continue to the draft step with only the criteria the user confirms need further work.
+- Continue to [2. Draft the Gap Task](#2-draft-the-gap-task) with only the criteria the user confirms need further work.
 
 ##### 2. Draft the Gap Task
 
@@ -507,7 +507,7 @@ Draft a further task for the criteria selected for further work, meeting [Work B
 
 - Confirm the draft with the user.
 - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
-- Return an unanswered draft as pending without continuing to the reconcile step.
+- Return an unanswered draft as pending without continuing to [3. Record the Revised Epic Delivery](#3-record-the-revised-epic-delivery).
 
 ##### 3. Record the Revised Epic Delivery
 
@@ -530,7 +530,7 @@ Draft the task issue's row, meeting [Work Breakdown](#work-breakdown).
 
 Apply [Settle Plan Change](#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
 
-- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to [3. Revise Epic Rows with the Placed Row](#3-revise-epic-rows-with-the-placed-row).
 
 ##### 3. Revise Epic Rows with the Placed Row
 
@@ -1958,7 +1958,7 @@ The verified criteria of one epic or initiative, ticked and saved to its issue.
 
 Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments, project checkout and the run's verification evidence.
 
-- When it returns no verified id, continue at step 4.
+- When it returns no verified id, continue at [4. Return the Recorded Verification](#4-return-the-recorded-verification).
 
 ##### 2. Tick the Verified Criteria
 
