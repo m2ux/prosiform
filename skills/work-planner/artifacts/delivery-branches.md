@@ -132,10 +132,10 @@ A project states its long-lived branches in `config/branches` at its root, one n
 
 ### Review Worktrees
 
-A reviewed pull request is read in a detached worktree, named by its number under the worktree directory of the repository's main working tree.
+A reviewed pull request is read in a detached worktree, named by its number under the `pr` folder of the worktree directory of the repository's main working tree.
 
 - **Example.**
-  Pull request 950 is read at `.worktrees/pr-950`.
+  Pull request 950 is read at `.worktrees/pr/950`.
 
 ### Task Branches
 
@@ -250,7 +250,7 @@ git worktree add '<worktree-path>' -b '<task-branch>' 'origin/<epic-base>'
 **Example:**
 
 ```bash
-git worktree add .worktrees/i07-e00-w01 -b i07/e00/w01-queue-plan origin/i07/e00/main
+git worktree add .worktrees/i07/e00/w01-queue-plan -b i07/e00/w01-queue-plan origin/i07/e00/main
 ```
 
 ### Fetch Review Head
