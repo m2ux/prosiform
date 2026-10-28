@@ -12,6 +12,9 @@ An agent reading a bundle top-down meets each protocol before the step that uses
 
 | Artifact | What it holds |
 | --- | --- |
+| [W08 work item](w08.md) | The Prosiform section, its protocol sub-sections and profile v4 |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
