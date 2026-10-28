@@ -63,7 +63,6 @@ from prosiform.closure import (
     Reference,
     components,
     conflicting,
-    dispatched,
     identity,
     inside,
     operators,
@@ -93,6 +92,7 @@ from prosiform.dispatch import (
     cycle,
     selfward,
     subsections,
+    written_in,
 )
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
@@ -1108,26 +1108,27 @@ def dispatches(
     """Every dispatched link the selected content of one source carries.
 
     A dispatch is a withheld link whose target the run compiles as a
-    bundle of its own, so what is yielded is the target `withheld`
-    yields for it, with the place the link is written: the hop a chain
-    of dispatches takes from here.
+    bundle of its own, so what is yielded is the target the link names,
+    with the place the link is written: the hop a chain of dispatches
+    takes from here. The links are those the bundle's dispatch
+    sub-sections are placed for, read by the one reader that places
+    them, so every hop the run follows has its sub-section.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
-    for use in uses(tokens, selected):
-        if use.resource or not dispatched(use.opening):
-            continue
-        found = withholding_target(path, use.destination, use.opening, source.root)
-        if found is None:
-            continue
-        line = source.line(use.line)
-        yield Hop(
-            replace(
-                found,
-                origin=location(path, line),
-                chain=(*chain, identity(found)),
-            ),
-            Location(path, 1 if line is None else line, 1),
-        )
+    for region in selected:
+        try:
+            links = written_in(path, source, tokens, region)
+        except Refused as refused:
+            raise Failure(INPUT_FAILURE, refused.diagnostic) from refused
+        for link in links:
+            yield Hop(
+                replace(
+                    link.reference,
+                    origin=location(path, link.location.line),
+                    chain=(*chain, identity(link.reference)),
+                ),
+                link.location,
+            )
 
 
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
@@ -1308,10 +1309,11 @@ def confirm(
     tokens: Sequence[Token],
     one: Reference,
 ) -> None:
-    """Hold one deferred reference to naming a document and a heading that exist.
+    """Hold one withheld reference to naming a document and a heading that exist.
 
     A deferral says that the material is reached in a run of its own,
-    not that nobody is answerable for it, so the document is read and
+    and a dispatch that a sub-agent reaches it, not that nobody is
+    answerable for it, so the document is read and
     the fragment is looked up. A reference the root does not carry is
     refused by the read, and one naming no heading of the document it
     resolves to is refused here, each with the code and the route a
@@ -1324,14 +1326,14 @@ def confirm(
     target is there to be found.
 
     The caller supplies the cached index from the source's captured read.
-    A deferred-only source contributes no content to a group.
+    A withheld-only source contributes no content to a group.
     """
     if one.fragment is None:
         return
     if any(heading.fragment == one.fragment for heading in index(tokens)):
         return
     raise input_failure(
-        f"the reference {one.original!r} names no heading of the document it defers",
+        f"the reference {one.original!r} names no heading of the document it withholds",
         code=TARGET_NOT_FOUND,
         remedy="name a heading the document carries",
         reference=one.original,

@@ -1762,7 +1762,8 @@ def test_an_authored_heading_equal_to_one_pf_emits_is_refused(
     written(
         root,
         "guide.md",
-        f"# Guide\n\nRun [\u21c9 plan](plan.md).\n\n## {heading}\n\nText.\n",
+        f"# Guide\n\nRun [\u21c9 plan](plan.md) and [\u2afd plan](plan.md).\n\n"
+        f"## {heading}\n\nText.\n",
     )
     written(root, "plan.md", "# Plan\n\n1. Go.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -1772,6 +1773,25 @@ def test_an_authored_heading_equal_to_one_pf_emits_is_refused(
     assert diagnostic["code"] == HEADING_COLLISION
     assert heading in diagnostic["message"]
     assert diagnostic["location"] == {"file": "guide.md", "line": 5, "column": 1}
+
+
+@pytest.mark.parametrize(
+    ("link", "heading"),
+    [
+        ("", "Prosiform"),
+        ("", "Dispatch in parallel"),
+        ("Run [\u21c9 plan](plan.md).", "Dispatch in parallel"),
+    ],
+)
+def test_a_heading_pf_does_not_emit_in_the_bundle_publishes(
+    root: Path, link: str, heading: str
+) -> None:
+    written(root, "guide.md", f"# Guide\n\n{link}\n\n## {heading}\n\nText.\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+    assert f"## {heading}\n\nText.\n" in run.bundle
 
 
 def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
@@ -2459,6 +2479,15 @@ def test_a_dispatch_a_compiled_dependency_carries_is_a_hop(root: Path) -> None:
     written(root, "shared.md", "# Shared\n\nRun [⇉ d](d.md).\n")
     written(root, "d.md", "# d.md\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
+    assert [one["code"] for one in run.diagnostics()] == [DISPATCH_DEPTH]
+
+
+def test_two_links_dispatching_one_deep_target_warn_once(root: Path) -> None:
+    dispatching(root, ["a.md", "b.md", "c.md", "d.md"])
+    written(root, "d.md", "# d.md\n")
+    written(root, "guide.md", "# Guide\n\n1. Run [⇉ a](a.md).\n2. Again [⇉ a](a.md).\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
     assert [one["code"] for one in run.diagnostics()] == [DISPATCH_DEPTH]
 
 
