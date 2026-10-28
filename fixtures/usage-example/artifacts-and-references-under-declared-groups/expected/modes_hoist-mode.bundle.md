@@ -69,7 +69,7 @@ Apply [Repair Issue Format](#repair-issue-format) once for each kind among the i
 - **Epic.**
   - [Validate Epic Body](#validate-epic-body), with the initiative JSON, current pull request records and the corpus branch as its further inputs.
 - **Task or standalone.**
-  - [Validate Issue Body](#validate-issue-body), with the [task](#fields-7) or [standalone](#fields-8) field conditions.
+  - [Validate Issue Body](#validate-issue-body), with the [task](#fields-8) or [standalone](#fields-9) field conditions.
 - Keep each blocker and unresolved finding it returns for the report.
 
 ### 8. Report
@@ -215,6 +215,22 @@ Run [Fetch All Issues](#fetch-all-issues), saving the complete collection.
 ##### 2. Return the Repository Issues
 
 Return it with pull requests distinguishable from issues.
+
+### Fields
+
+- **Identity.** The issue has its repository, number and URL.
+- **Content.** The saved title, body and labels equal the supplied values.
+- **Discussion.** A saved comment preserves the supplied text.
+- **State.**
+  The issue is open or closed with its recorded completion reason. Completed work satisfies its criteria and delivery checks; transferred work identifies the issue tracking it.
+
+#### Auto-Close Setting
+
+GitHub's **Auto-close issues with merged linked pull requests** repository setting, which must be disabled before a delivery pull request is linked or merged, so that closure follows the criteria rather than the merge.
+
+- The setting is confirmed per repository and holds for the session; it is not inferred from an issue that stayed open.
+- No REST field and no GraphQL field of `gh` 2.46 carries it, so on such a host the user's explicit answer is the only source.
+- An enabled setting closes issues on merge whatever their criteria. Where it cannot be disabled, each affected issue's state is read after every merge and reopened where its criteria are unmet.
 
 ### Commands
 
@@ -402,92 +418,41 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > issues.
 
 ### Operations
 
-#### *Draft* Issue Placement
+#### Draft Issue Placement
 
-The placement options for one orphan, from the supplied orphan and candidate destinations.
+The placement options for one orphan, from the orphan and its candidate destinations.
 
-**Inputs:** Current orphan body, candidate destinations, proposed work and supplied planning-record references.
+**Inputs:** [Orphan](#orphan), [Candidate destinations](#candidate-destinations)
+
+**Outputs:** [Placement options](#placement-record), [Draft bodies](#draft-bodies)
 
 ##### 1. Identify the Placement Options
 
-Identify each option among an existing task, a new task, a new epic, a new initiative, and Leave.
+Identify each destination in [Placement Record](#placement-record) that could take the orphan's work, among the candidate destinations, Leave included.
 
 ##### 2. Record Each Placement Destination
 
-For each option, record the destination and the work it takes, meeting [Fields](#fields).
+For each option, record the destination and the work it takes, meeting [Destination](#destination).
 
 ##### 3. Record Each Orphan Disposition
 
-For each option, record whether the orphan is kept, subsumed or left, meeting [Disposition Conditions](#disposition-conditions), including the reason, the original-body preservation requirement and any planning record reference.
+For each option, record the orphan's disposition, meeting [Disposition](#disposition).
 
 ##### 4. Return the Placement Options
 
-Return the options for the caller to offer and apply, each a [Placement](#placement-record) with its draft issue changes, in the order that field states.
+Return the options for the caller to offer and apply, each a [placement](#placement-record) with its [draft bodies](#draft-bodies), in the order that contract states.
 
-#### *Find* Placement Candidates
+#### Find Placement Candidates
 
-The issue candidates and available destinations from supplied records.
+The issue candidates and available destinations, from the repository's issues.
 
-**Inputs:** Complete repository issue collection.
+**Inputs:** [Repository issues](#fields)
+
+**Outputs:** [Candidate issues](#candidate-issues), [Candidate destinations](#candidate-destinations)
 
 ##### 1. List the Orphan Issues
 
-Run [List Orphans](#list-orphans) with the supplied issue file.
-
-##### 2. Return the Placement Candidates
-
-Return the [Candidate Issues](#candidate-issues) and open initiative and epic destinations for the caller to investigate.
-
-### Fields
-
-- **Source.** The orphan's repository, issue number and current body.
-- **Destination.** The selected issue or proposed work, with the criteria and design it takes.
-- **Disposition.**
-  Kept, subsumed or left, with a reason. A referenced planning record is carried with the source reference.
-- **Draft bodies.**
-  Each proposed body meets its own kind's shape and states the result. It carries no account of how the work arrived. A source reference says what detail it holds.
-- **Links.**
-  An initiative row identifies its epic issue. A task issue has its delivery link through Development.
-- **Preservation.**
-  A kept or left issue has the complete original-body comment ready before its rewrite. A subsumed issue retains its body.
-
-#### Placement Record
-
-| Destination | Work | Issue Disposition |
-| --- | --- | --- |
-| Existing task | Criteria and design in a task that has its own issue | Subsumed |
-| New task | A row in an existing epic, with its criteria | Kept or subsumed |
-| New epic | An epic in an existing initiative | Kept or subsumed |
-| New initiative | An initiative | Kept or subsumed |
-| Leave | Work outside the initiative structure | Left open |
-
-Placement options are offered best first, the destination that most nearly holds the orphan's work leading, with Leave last.
-
-#### Original Body
-
-The comment starts with `The body before this issue took the [I07:E01:W04] layout:` for a kept issue, or `The body before this issue took the standalone layout:` for one left in place. A blank line separates that lead from the complete original body.
-
-#### Disposition Conditions
-
-A source with a planning-record reference is subsumed, with that folder cited beside the source in the destination. Otherwise the source is kept when its work needs its own discussion or evidence, and subsumed when its detail fits in rows, criteria and a reference. Work an existing criterion already states is subsumed into the issue holding that criterion, without a new row; for cited standalone work this is usually the citing issue.
-
-#### Candidate Issues
-
-Candidates are open issues without an agent-engineering prefix. Orphans have no incoming link from an open initiative, epic or task. Cited standalone issues have such a link in prose or References; their records include labels, citing issues and any linked planning folder. An investigation cited by an epic is a candidate, with disposition determined from supplied criteria.
-
-#### Destination Work
-
-An existing-epic option identifies the row to add, with Description, criteria, Depends on and Joins, or the existing task already delivering the work. Leave applies when no initiative goal covers it or it is not planned work. Each option names whether the source is kept or subsumed.
-
-### Commands
-
-#### List Orphans
-
-Lists the hoist candidates, and the open initiatives and epics they could join.
-
-**Inputs:** Complete supplied repository issue collection.
-
-Runs as [Helper invocation](#conventions) states.
+From `<workspace>`, run the orphans helper with the repository issues' JSON file as `<issues-json-file>`. Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py '<issues-json-file>'
@@ -498,6 +463,65 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py issues.json
 ```
+
+##### 2. Return the Placement Candidates
+
+By the helper's exit code:
+
+- **Nonzero.**
+  - Return its error output to the caller as a blocker.
+- **Zero.**
+  - Return the orphans and cited standalone issues it prints as [Candidate Issues](#candidate-issues), and the open initiatives and epics it prints as [Candidate Destinations](#candidate-destinations), for the caller to investigate.
+
+### Fields
+
+#### Orphan
+
+The orphan: a [tracker issue](#fields) with its repository, number, current body and discussion, the evidence, design and work its body proposes, and any planning-record reference it carries.
+
+#### Candidate Issues
+
+Candidates are open issues without an agent-engineering prefix. Orphans have no incoming link from an open initiative, epic or task. Cited standalone issues have such a link in prose or References; their records include labels, citing issues and any linked planning folder. An investigation cited by an epic is a candidate, its disposition meeting [Disposition](#disposition).
+
+#### Candidate Destinations
+
+The open initiatives and epics an orphan's work could join, each with its [theme labels](#theme-labels) and its current [initiative body](#template) or [epic body](#template-1).
+
+#### Placement Record
+
+One option for an orphan: its destination, the work it takes, and the disposition the destination allows.
+
+| Destination | Work | Issue Disposition |
+| --- | --- | --- |
+| Existing task | Criteria and design in a task that has its own issue | Subsumed |
+| New task | A row in an existing epic, with its criteria | Kept or subsumed |
+| New epic | An epic in an existing initiative | Kept or subsumed |
+| New initiative | An initiative | Kept or subsumed |
+| Leave | Work outside the initiative structure | Left open |
+
+Placement options are ordered best first, the destination that most nearly holds the orphan's work leading, with Leave last.
+
+#### Destination
+
+The selected issue or proposed work, of a kind in [Placement Record](#placement-record), with the criteria and design it takes.
+
+- An existing-epic option identifies the row to add, with Description, criteria, Depends on and Joins, or the existing task already delivering the work.
+- Leave applies when no initiative goal covers the work or it is not planned work.
+
+#### Disposition
+
+Kept, subsumed or left, with a reason; [Placement Record](#placement-record) gives the dispositions each destination allows.
+
+- An orphan with a planning-record reference is subsumed, with that folder cited beside the orphan in the destination.
+- Otherwise the orphan is kept when its work needs its own discussion or evidence, and subsumed when its detail fits in rows, criteria and a reference.
+- Work an existing criterion already states is subsumed into the issue holding that criterion, without a new row; for cited standalone work this is usually the citing issue.
+
+#### Draft Bodies
+
+One local body file for each issue a placement changes or creates, each with its path and the issue identity it saves to, or its title and labels for a new issue, and each temporary link it holds.
+
+- Each body meets its own kind's shape and states the result. It carries no account of how the work arrived. A source reference says what detail it holds.
+- An initiative row identifies its epic issue. A task issue has its delivery link through Development.
 
 ## Plan Change
 
@@ -923,7 +947,7 @@ The body's local format and field findings.
 
 ##### 1. Validate the Initiative Issue Body
 
-Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-5), supplied related evidence and output file, supplying each linked epic as `--epic`.
+Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-6), supplied related evidence and output file, supplying each linked epic as `--epic`.
 
 ##### 2. Title the Initiative Row
 
@@ -1081,8 +1105,8 @@ One epic body and its local validation findings.
 
 Populate the body from the [Template](#template-1) at the supplied output path.
 
-- Every section must meet [Fields](#fields-6).
-- Shared content must meet the common [body conditions](#fields-4).
+- Every section must meet [Fields](#fields-7).
+- Shared content must meet the common [body conditions](#fields-5).
 
 ##### 2. Write the Shared Epic Table
 
@@ -1188,7 +1212,7 @@ The body's local format and field findings.
 
 ##### 1. Validate the Epic Issue Body
 
-Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-6), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-7), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
 
 ##### 2. Read Epic Pull Request Reach
 
