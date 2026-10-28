@@ -27,7 +27,7 @@ cd example/work-planner
 pf modes/plan-mode.md
 ```
 
-It writes the bundle to `modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
+It writes the bundle to `modes_plan-mode/modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, beside a bundle for each target its dispatches reach, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
 
 ### Output
 
@@ -63,15 +63,20 @@ The bundle shows each of these constructs:
 - **Dependency order.** Rules and Conventions follow the entry's own sections, in the order its preamble links them.
 - **Compiled links.** Every link to a document or section under the root points at a heading in the bundle.
 - **Distinct destinations for coinciding headings.** The `Procedure` headings of Propose Mode and Initiative Publication take `#procedure-1` and `#procedure-2`, the destinations their preambles link.
-- **A dispatched link.** The `⇉` mark is published, the destination names Sync Mode from the working directory, and Sync Mode contributes no content:
+- **A dispatched link.** The `⇉` mark is dropped, the link points at a sub-section of its step naming the Sync Mode bundle the run publishes beside this one, and Sync Mode contributes no content here:
 
   ```markdown
   9. **Record delivered work.**
      When work has landed:
-     - Follow [⇉ Sync Mode](modes/sync-mode.md) for the affected initiative.
+     - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
      - For each unplaced task row it returns pending:
        - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
        - Repeat Sync Mode with the refreshed epic.
+     - Return the saved delivery state or blockers.
+
+  ### Dispatch Sync Mode
+
+  Dispatch `modes_sync-mode.bundle.md` to a sub-agent.
   ```
 
 - **An outside-root link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.
