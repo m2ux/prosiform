@@ -12,6 +12,9 @@ A numbered list item roots no anchor. A link can therefore name a procedure but 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The step convention in the corpus guidelines: scope, design and the checks it requires |
+| [Validation](validation.md) | The inspection against AC1 and the results of `make links`, `make corpus` and `make check` |
+| [Change list](change-list.md) | The plan changes this delivery session applied and held |
 
 ## Decisions
 
