@@ -30,10 +30,10 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 
 ## Base Updates
 
-- **2026-10-28, main merged into `i05/e01/main` at `dcfc0c8d`.** The base predated I05:E02 and I05:E03; merge `780fea54` brought them in. Conflicts in `.gitignore`, `Makefile` and `checks.md` kept both sides: the eval results ignore beside the fixture bundle exception, and `make render` beside `make eval-diagrams`.
+- **2026-10-28, main merged into `i05/e01/main` at `22ae0f2e`.** The base predated I05:E02 and I05:E03; merge `780fea54` brought them in, and `22ae0f2e` then brought #375 and #372, keeping `make steps` beside `make render` and `make eval-diagrams`. Conflicts in `.gitignore`, `Makefile` and `checks.md` kept both sides: the eval results ignore beside the fixture bundle exception, and `make render` beside `make eval-diagrams`.
   - `4faf0120` bundles each eval form with `pf -o <scratch folder>` and reads `workflow.bundles/workflow.bundle.md`, since pf skill-markdown-v4 refuses `-o -`. The corpus test holds that bundle to be the whole set: no form dispatches.
   - `dcfc0c8d` refuses a run whose `--budget-usd` is less than its sessions × `--session-budget-usd`. A calibration of 9 Haiku sessions at `--budget-usd 0.50` had started one and skipped eight, each reserving the USD 0.50 cap against a measured USD 0.003. The default cap stays at USD 0.50, since Sonnet's per-session cost is unmeasured and a session that reaches its cap is ended.
-  - Verified with the worktree's pf 0.15.0: `make check` passes, and a stub-agent run over every workflow and form starts and passes 15 of 15. Review PR #353's Changes and References record both commits.
+  - Verified at `22ae0f2e` with the worktree's pf 0.15.0: `make check` and CI pass, and a stub-agent run over every workflow and form starts and passes 15 of 15. Review PR #353's Changes and References record both commits.
 
 ## Links
 
