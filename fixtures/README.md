@@ -258,7 +258,6 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
-| `W_RUN_SET_SHAPE` | Link classification and resource handling, Run-set shape — a run-set link naming a target that holds anything but one bulleted list whose every item links a Markdown document or section under the root. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
 

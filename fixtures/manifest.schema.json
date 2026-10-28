@@ -268,8 +268,7 @@
         "W_COINCIDENT_HEADING",
         "W_DISPATCH_DEPTH",
         "W_DISPATCH_SELF",
-        "W_RESOURCE_PORTABILITY",
-        "W_RUN_SET_SHAPE"
+        "W_RESOURCE_PORTABILITY"
       ]
     }
   }
