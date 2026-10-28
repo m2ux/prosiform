@@ -1763,41 +1763,94 @@ def publish(text: str, stream: IO[str]) -> None:
         ) from refused
 
 
-def publish_file(text: str, destination: Path) -> None:
-    """Write one validated bundle to a named file, atomically.
+@dataclass(frozen=True)
+class Bundle:
+    """One composed bundle, the file it is published to and the warnings it raises."""
 
-    The bytes go to a temporary file beside the destination and that file
-    is renamed onto it, which is one filesystem operation, so a reader of
-    the destination sees the bytes that were there before or the whole
-    bundle and never a partial one. A write the destination refuses
-    leaves the temporary file behind no longer than the attempt.
+    text: str
+    destination: Path
+    warnings: Sequence[Diagnostic]
+
+
+def publication(
+    bundles: Sequence[Bundle], limits: Limits, reporter: Reporter, check: bool
+) -> None:
+    """Validate every bundle a run publishes, then write them all or none.
+
+    Each bundle is held to the output budget before any is written, so a
+    bundle the budget refuses ends the run with its diagnostic and
+    nothing written. Every bundle's warnings follow, in turn, and then
+    every bundle is written, unless the run only validates, which writes
+    none.
     """
-    written = None
-    try:
-        handle = tempfile.NamedTemporaryFile(
-            "w",
-            encoding=ENCODING,
-            newline="",
-            dir=destination.parent,
-            prefix=f".{destination.name}.",
-            delete=False,
-        )
-        written = Path(handle.name)
-        with handle:
-            handle.write(text)
-        os.replace(written, destination)
-    except OSError as refused:
-        if written is not None:
-            written.unlink(missing_ok=True)
-        raise Failure(
-            PUBLICATION_FAILURE,
-            Diagnostic(
-                ERROR,
-                f"the output path {str(destination)!r} refused the bundle: {refused}",
-                code=PUBLICATION_FAILED,
-                remedy="name an existing folder the run can write",
-            ),
-        ) from refused
+    for one in bundles:
+        try:
+            limits.hold(OUTPUT_BYTES, len(one.text.encode(ENCODING)))
+        except Crossed as crossed:
+            raise crossing(crossed) from crossed
+    for one in bundles:
+        for warning in one.warnings:
+            reporter.emit(warning)
+    if not check:
+        publish_files(bundles)
+
+
+def publish_files(bundles: Sequence[Bundle]) -> None:
+    """Write every validated bundle of a run to its file, each atomically.
+
+    Every bundle's bytes go to a temporary file beside its destination
+    before any destination is touched, so a write refused while they are
+    written leaves every destination as it was. Each temporary file is
+    then renamed onto its destination, one filesystem operation apiece,
+    so a reader of a destination sees the bytes that were there before
+    or the whole bundle and never a partial one. A rename refused after
+    earlier ones leaves those bundles published and the refused
+    destination and every later one as they were. No temporary file
+    outlives the run, and no file in the folder that the run does not
+    produce is touched.
+    """
+    staged: list[Path] = []
+    for one in bundles:
+        try:
+            handle = tempfile.NamedTemporaryFile(
+                "w",
+                encoding=ENCODING,
+                newline="",
+                dir=one.destination.parent,
+                prefix=f".{one.destination.name}.",
+                delete=False,
+            )
+            staged.append(Path(handle.name))
+            with handle:
+                handle.write(one.text)
+        except OSError as refused:
+            discard(staged)
+            raise refusal(one.destination, refused) from refused
+    for at, one in enumerate(bundles):
+        try:
+            os.replace(staged[at], one.destination)
+        except OSError as refused:
+            discard(staged[at:])
+            raise refusal(one.destination, refused) from refused
+
+
+def discard(staged: Sequence[Path]) -> None:
+    """Remove every temporary file a publication staged and did not rename."""
+    for written in staged:
+        written.unlink(missing_ok=True)
+
+
+def refusal(destination: Path, refused: OSError) -> Failure:
+    """One output path that refused its bundle, as the publication failure it is."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the output path {str(destination)!r} refused the bundle: {refused}",
+            code=PUBLICATION_FAILED,
+            remedy="name an existing folder the run can write",
+        ),
+    )
 
 
 def derived_name(referrer: Reference | None, requested: Sequence[Reference]) -> str:
@@ -1967,25 +2020,14 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     recheck(root, captured)
     if options.fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
-    try:
-        limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
-    except Crossed as crossed:
-        raise crossing(crossed) from crossed
-    for warning in coinciding:
-        reporter.emit(warning)
-    for warning in unperformable(hops, parsed):
-        reporter.emit(warning)
-    for hop in hops:
-        if hop.own:
-            reporter.emit(selfward(hop))
-    for warning in analysed(
+    warnings = [*coinciding, *unperformable(hops, parsed)]
+    warnings += [selfward(hop) for hop in hops if hop.own]
+    warnings += analysed(
         hops, {one.chain[0] for one in requested}, onward(root, limits)
-    ):
-        reporter.emit(warning)
-    for warning in misshaped(running, read, parsed):
-        reporter.emit(warning)
+    )
+    warnings += misshaped(running, read, parsed)
     if resourced(bundled, limits.of(NESTING)):
-        reporter.emit(
+        warnings.append(
             Diagnostic(
                 WARNING,
                 "the bundle names at least one resource, which it carries as the "
@@ -1994,8 +2036,9 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 code=RESOURCE_PORTABILITY,
             )
         )
-    if not options.check:
-        publish_file(bundled, destination)
+    publication(
+        [Bundle(bundled, destination, warnings)], limits, reporter, options.check
+    )
     return SUCCESS
 
 
