@@ -12,6 +12,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **bundle** (n.) | One validated document a run produces: the entry's, or one dispatched target's. |
 | **candidate** | A bundle before it has passed validation. Nothing is published while a check fails. |
 | **profile** | The named, versioned Markdown grammar and option set a run declares. |
+| **guide** | What `pf` run with no arguments prints to standard output: the compile step, `pf -o <folder> <destination>` from the skill's directory; the rule that a link whose text opens with `↳` names an inline target, compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. It is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. |
 
 ## Sources
 
@@ -77,7 +78,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **provenance** | The record of which source region produced which span of the candidate, kept separately from generated structure. |
 | **invariant** | A property validation establishes, such as exactly-once coverage or one intended destination per rewritten reference. |
 | **diagnostic** | One message a run emits to standard error, carrying a severity, a stable code, the reference or location it concerns, the identity that reference resolved to and the chain of references that reached it where it has them, and a remedy where one is accurate. |
-| **publication** | Writing every bundle a run produces, once every one has validated, into a folder of the run's own, named for its entry with the `.bundles` suffix, under the output folder, built beside it and swapped in whole. |
+| **publication** | Writing every bundle a run produces — the entry's and each dispatched bundle, its bundle set — once every one has validated, into a folder of the run's own, named for its entry with the `.bundles` suffix, under the output folder, built beside it and swapped in whole. |
 | **delivery** | Transporting a published bundle to the caller. A successful build does not establish a successful delivery. |
 
 ## Terms deliberately not used
