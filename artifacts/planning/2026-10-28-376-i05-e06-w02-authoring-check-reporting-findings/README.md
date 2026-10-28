@@ -12,6 +12,10 @@ At present the extent of the change is a hand count, and nothing stops a regress
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The finding kinds, how the check reads the example, its placement and the component |
+| [Findings scan](findings.md) | The first report over the example by area, kind and file, with the size report |
+| [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held, and notes for later rows |
 
 ## Links
 
