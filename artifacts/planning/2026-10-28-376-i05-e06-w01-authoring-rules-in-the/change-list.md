@@ -3,6 +3,7 @@
 ## Applied
 
 - **Delivery record.** #376 W01 row links [#377](https://github.com/m2ux/prosiform/pull/377) in place of this folder, from a fresh read; no other row or criterion changed.
+- **Task merge.** #377 merged into `i05/e06/main` at `6dc691dd` after CI passed on `3c2b6a58`; the merged tree equals the tested head. #376 AC1 ticked and W01 Done, from a fresh read.
 
 ## Held
 
