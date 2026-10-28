@@ -32,6 +32,7 @@ from independence import (
     vocabulary,
     words,
 )
+from manifests import MANIFEST_NAME, errors, read
 
 DESIGN = """# A design
 
@@ -117,7 +118,6 @@ def manifest(description: str, clause: str = "Block boundaries") -> dict[str, An
         "invocation": {"cwd": "source", "arguments": ["guide.md"]},
         "expected": {
             "exit_status": 0,
-            "stdout": "expected/stdout.md",
             "diagnostics": [],
         },
     }
@@ -135,7 +135,6 @@ def as_toml(declared: dict[str, Any]) -> str:
     lines += [
         "[expected]",
         f"exit_status = {declared['expected']['exit_status']}",
-        'stdout = "expected/stdout.md"',
         "diagnostics = []",
     ]
     return "\n".join(lines) + "\n"
@@ -309,3 +308,8 @@ def test_the_tree_a_declaration_names_is_not_read_as_words(
     declared["invocation"]["arguments"] = ["modules/guide.md#alpha"]
     corpus = fixture(tmp_path / "fixtures", "a-boundary", declared)
     assert corpus_references(corpus, stated) == []
+
+
+def test_every_manifest_a_test_writes_is_one_the_schema_accepts(clean: Path) -> None:
+    [written] = sorted(clean.rglob(MANIFEST_NAME))
+    assert errors(read(written)) == []
