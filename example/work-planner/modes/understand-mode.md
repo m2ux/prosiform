@@ -10,14 +10,19 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 ## Procedure
 
-1. **Select the change.**
-   Require the pull request number or URL.
-   - Ask and stop when none is supplied. Do not infer it from the current branch.
-   - For several supplied pull requests, complete one overview per pull request. An initiative has no overview of its own.
-2. **Explain each change.**
-   Follow [Change Overview](../protocols/change-overview.md) for each selected pull request, with its repository, that repository's checkout and the pull request number, resuming with what it returns.
-3. **Report.**
-   Report the pull request, record folder, diagrams and References row of each overview.
+### 1. Select the Change
+
+Require the pull request number or URL.
+- Ask and stop when none is supplied. Do not infer it from the current branch.
+- For several supplied pull requests, complete one overview per pull request. An initiative has no overview of its own.
+
+### 2. Explain Each Change
+
+Follow [Change Overview](../protocols/change-overview.md) for each selected pull request, with its repository, that repository's checkout and the pull request number, resuming with what it returns.
+
+### 3. Report
+
+Report the pull request, record folder, diagrams and References row of each overview.
 
 ## Outcomes
 

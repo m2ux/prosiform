@@ -6,38 +6,55 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ## Procedure
 
-1. **Read the guidelines.**
-   Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
-2. **Understand the request.**
-   Interview the user, putting each question as the [Rules](#rules) state, until the change and its scope are clear.
-   - Find every file the change touches: the rule's home, each file that cites it, and any script, docstring or test that states it.
-3. **Work in a worktree.**
-   Branch a worktree for the change.
-   - Commit each distinct change as its own commit.
-4. **Revise.**
-   Make the change in the rule's one home.
-   - Link to it from every other file that needs it.
-   - Write it to the guidelines' layout, prose, link and command rules as it is written, not in a later pass.
-   - When the user states a new writing rule, add it to the applicable shared or skill-specific guidelines before validation and delivery.
-5. **Check against the guidelines.**
-   Read every changed file against the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md), checking:
-   - The [description](../../guidelines.md#frontmatter), when the skill's reach changed.
-   - [Layout](../../guidelines.md#layout).
-   - [Prose](../../guidelines.md#prose), with the skill's own [Prose](guidelines.md#prose), and [stale claims](../../guidelines.md#changes).
-   - [Commands](../../guidelines.md#commands).
-   - [Links](../../guidelines.md#links).
-   - [Progressive disclosure](../../guidelines.md#progressive-disclosure).
-   - Fix each departure.
-6. **Verify.**
-   - Run [Run Tests](#run-tests) when an executable script, its consumed template or a test changed.
-   - When SKILL.md changes, confirm its frontmatter opens and closes with `---` and holds `name` and `description`.
-   - Run [Check Skill Files](#check-skill-files) for every affected skill.
-   - Apply [disclosure verification](../../guidelines.md#disclosure-verification) with the skill's [representative scenarios](guidelines.md#progressive-disclosure).
-   - Resolve every required file, command and heading without an implicit external dependency.
-7. **Deliver.**
-   - Commit.
-   - Push.
-   - Report what changed in each file.
+### 1. Read the Guidelines
+
+Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
+
+### 2. Understand the Request
+
+Interview the user, putting each question as the [Rules](#rules) state, until the change and its scope are clear.
+
+- Find every file the change touches: the rule's home, each file that cites it, and any script, docstring or test that states it.
+
+### 3. Work in a Worktree
+
+Branch a worktree for the change.
+
+- Commit each distinct change as its own commit.
+
+### 4. Revise
+
+Make the change in the rule's one home.
+
+- Link to it from every other file that needs it.
+- Write it to the guidelines' layout, prose, link and command rules as it is written, not in a later pass.
+- When the user states a new writing rule, add it to the applicable shared or skill-specific guidelines before validation and delivery.
+
+### 5. Check Against the Guidelines
+
+Read every changed file against the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md), checking:
+
+- The [description](../../guidelines.md#frontmatter), when the skill's reach changed.
+- [Layout](../../guidelines.md#layout).
+- [Prose](../../guidelines.md#prose), with the skill's own [Prose](guidelines.md#prose), and [stale claims](../../guidelines.md#changes).
+- [Commands](../../guidelines.md#commands).
+- [Links](../../guidelines.md#links).
+- [Progressive disclosure](../../guidelines.md#progressive-disclosure).
+- Fix each departure.
+
+### 6. Verify
+
+- Run [Run Tests](#run-tests) when an executable script, its consumed template or a test changed.
+- When SKILL.md changes, confirm its frontmatter opens and closes with `---` and holds `name` and `description`.
+- Run [Check Skill Files](#check-skill-files) for every affected skill.
+- Apply [disclosure verification](../../guidelines.md#disclosure-verification) with the skill's [representative scenarios](guidelines.md#progressive-disclosure).
+- Resolve every required file, command and heading without an implicit external dependency.
+
+### 7. Deliver
+
+- Commit.
+- Push.
+- Report what changed in each file.
 
 ## Outcomes
 
