@@ -65,6 +65,9 @@ DISPATCH_SECTION = "dispatch sub-section"
 
 Target = tuple[str, str | None]
 
+Served = tuple[Target, bool]
+"""A dispatched link's target, and whether the link dispatches it in parallel."""
+
 
 @dataclass(frozen=True)
 class Origin:
@@ -171,14 +174,18 @@ class Range:
 
 @dataclass(frozen=True)
 class Instruction:
-    """One line the bundle wrote itself beneath a heading it generated.
+    """One block the bundle wrote itself beneath a heading it generated.
 
     A dispatch sub-section carries one: the instruction naming the
-    bundle a sub-agent is handed. It carries no source range, so it can
-    never stand in for selected body content a group failed to emit.
+    bundle a sub-agent is handed. A `Dispatch in parallel` sub-section
+    carries two: the instruction, and the bulleted list of the bundles
+    it hands out together. It carries no source range, so it can never
+    stand in for selected body content a group failed to emit. A listed
+    instruction is a bulleted list, and every other one a paragraph.
     """
 
     text: str
+    listed: bool = False
 
     @property
     def kind(self) -> str:

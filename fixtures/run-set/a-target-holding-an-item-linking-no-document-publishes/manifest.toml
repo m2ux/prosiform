@@ -1,0 +1,15 @@
+description = "A parallel link's target holding a bulleted item linking no document compiles to a bundle of its own with no diagnostic, since a set states nothing about its targets' shape."
+
+clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan__reviews.bundle.md"]
+diagnostics = []

@@ -118,6 +118,7 @@ from markdown_it.token import Token
 from prosiform.closure import (
     bundled,
     dispatched,
+    parallel,
     rebased,
     unmarked,
     withholding_target,
@@ -133,6 +134,7 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
+    Served,
     Target,
 )
 from prosiform.rewrite import Definition, destinations, rewritten
@@ -379,7 +381,7 @@ def rewrite(
     path: str,
     defined: Mapping[str, Definition],
     root: str = "",
-    dispatching: Mapping[tuple[str, int], Mapping[Target, str]] | None = None,
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -454,7 +456,7 @@ def target(
     assigned: Mapping[tuple[str, str | None], str],
     root: str = "",
     anchor: str = ANCHOR,
-    dispatched_to: Mapping[Target, str] | None = None,
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -485,7 +487,8 @@ def target(
         return None
     if dispatched(opening):
         held = {} if dispatched_to is None else dispatched_to
-        return f"{anchor}{held[(deferred.path, deferred.fragment)]}"
+        served = ((deferred.path, deferred.fragment), parallel(opening))
+        return f"{anchor}{held[served]}"
     return rebased(deferred, destination)
 
 
@@ -738,7 +741,7 @@ def group(
     assigned: dict[tuple[str, str | None], str] | None = None,
     root: str = "",
     situate: bool = False,
-    dispatching: Mapping[tuple[str, int], Mapping[Target, str]] | None = None,
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 

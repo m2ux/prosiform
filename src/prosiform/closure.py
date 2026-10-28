@@ -6,15 +6,15 @@ references permit parent bootstrap. Canonical source identities are relative
 to the invocation working directory, independent of the discovering parent.
 
 Three operators open a link's text, each a mark followed by a space, and
-one link states one of them. Two withhold the same compilation from the
-bundle carrying the link: one states when the material is compiled, the
-other who follows it. A deferred link's destination is the target's path,
-which no compiled link carries, so the deferral is stated there; a
-dispatched link points at a sub-section naming the bundle the run
-compiles for its target, which states the dispatch. Either mark is
-therefore authoring syntax, and the bundle drops it. The third, the run-set mark,
-withholds nothing: its target is compiled like any link's, and the mark
-is content stating how the calls the target holds are run."""
+one link states one of them. Each withholds the same compilation from the
+bundle carrying the link: a deferral states when the material is
+compiled, a dispatch that a sub-agent follows it, and a parallel dispatch
+that a sub-agent follows it together with the section's other parallel
+dispatches. A deferred link's destination is the target's path, which no
+compiled link carries, so the deferral is stated there; a dispatched link
+points at a sub-section naming the bundle the run compiles for its
+target, which states the dispatch. Every mark is therefore authoring
+syntax, and the bundle drops it."""
 
 import posixpath
 import re
@@ -27,7 +27,7 @@ from prosiform.source import ENCODING, external
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
-RUN_SET_MARK = "⫽"
+PARALLEL_MARK = "⫽"
 
 SPACE = " "
 BLANKS = " \t"
@@ -50,7 +50,7 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 PATH_PART = "path segment"
 FRAGMENT_PART = "fragment"
 
-OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, RUN_SET_MARK)
+OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK)
 
 
 class Unresolvable(Exception):
@@ -251,9 +251,9 @@ def conflicting(opening: str) -> bool:
     """Whether a link's text opens with more than one operator.
 
     Each operator states how one compilation is carried out — by a later
-    run, by a sub-agent, or by this run as a run-set — so a link stating
-    two states two contradictory things and the run says so rather than
-    choosing.
+    run, by a sub-agent, or by a sub-agent alongside others — so a link
+    stating two states two contradictory things and the run says so
+    rather than choosing.
     """
     return len(set(operators(opening))) > 1
 
@@ -268,19 +268,17 @@ def dispatched(opening: str) -> bool:
 
     A dispatch and a deferral withhold the same compilation from the
     bundle carrying the link: a deferral leaves it to a later run, and a
-    dispatch has the run compile it as a bundle of its own.
+    dispatch has the run compile it as a bundle of its own. A parallel
+    dispatch is a dispatch, whose sub-agent runs beside the others its
+    section names.
     """
-    return DISPATCH_MARK in operators(opening)
+    found = operators(opening)
+    return DISPATCH_MARK in found or PARALLEL_MARK in found
 
 
-def run_set(opening: str) -> bool:
-    """Whether a link states that the calls its target holds run concurrently.
-
-    A run-set withholds nothing: the target is compiled into the bundle
-    like any link's, because the agent reads the calls it holds, and the
-    mark is content stating how those calls are run.
-    """
-    return RUN_SET_MARK in operators(opening)
+def parallel(opening: str) -> bool:
+    """Whether a link states that its dispatch runs beside its section's others."""
+    return PARALLEL_MARK in operators(opening)
 
 
 def withholding(opening: str) -> bool:
@@ -291,25 +289,24 @@ def withholding(opening: str) -> bool:
     recognize and a renderer knowing nothing of this tool shows the
     link.
 
-    Neither mark reaches the bundle: a deferral's destination states
-    when the material is compiled, and a dispatch's sub-section states
-    who compiles it. A run-set withholds nothing.
+    No mark reaches the bundle: a deferral's destination states when
+    the material is compiled, and a dispatch's sub-section states who
+    compiles it.
     """
     return deferred(opening) or dispatched(opening)
 
 
 def unmarked(text: str) -> str:
-    """One link's text as the bundle publishes it, with a withholding mark taken off.
+    """One link's text as the bundle publishes it, with its operator's mark taken off.
 
     A deferral states when the material is compiled, and its destination
     states that already; a dispatch states who compiles it, and the
-    sub-section its link points at states that. Either mark is authoring
+    sub-section its link points at states that. Every mark is authoring
     syntax rather than content, so it goes with the blanks written
     around it, which are its spacing.
 
-    Text opening with neither operator is the author's prose and is
-    returned as written. A run-set's mark states how the calls it names
-    are run, so it stays.
+    Text opening with no operator is the author's prose and is returned
+    as written.
 
     The caller applies it where the bundle gave the link a destination
     of its own, which is where that destination states the withholding.
@@ -317,7 +314,7 @@ def unmarked(text: str) -> str:
     at = 0
     while at < len(text) and text[at] in BLANKS:
         at += 1
-    if not opens(text, at) or text[at] not in (DEFERRAL_MARK, DISPATCH_MARK):
+    if not opens(text, at):
         return text
     at += 1
     while at < len(text) and text[at] in BLANKS:

@@ -1,23 +1,30 @@
 """Dispatch: the bundles a run's dispatches name, and where each is handed off.
 
-A `⇉` link states that a sub-agent follows its target, so a run compiles
-every target its dispatches reach, transitively, each distinct document
-and fragment once as its own entry, and publishes each as a bundle of its
-own beside the one that dispatches it. A *dispatch depth* is the number
-of dispatch hops along one chain of those bundles, counted from the
-run's entry: a dispatch the entry carries is the first hop, a dispatch
-that target's bundle carries is the second, and so on.
+A `⇉` link states that a sub-agent follows its target, and a `⫽` link
+that a sub-agent follows it together with the other `⫽` links of its
+section, so a run compiles every target either reaches, transitively,
+each distinct document and fragment once as its own entry, and
+publishes each as a bundle of its own beside the one that dispatches
+it. A *dispatch depth* is the number of dispatch hops along one chain
+of those bundles, counted from the run's entry: a dispatch the entry
+carries is the first hop, a dispatch that target's bundle carries is
+the second, and so on.
 
-A dispatched link publishes no mark. It points at a *dispatch
+A dispatched link publishes no mark. A `⇉` link points at a *dispatch
 sub-section* of the section holding it: a heading `Dispatch <link
 text>` one level below that section, after the section's own content
 and before its child sections, whose one line names the target's
-bundle file. A dispatch above the group's first heading takes that
-heading's level. Links in one section naming one target share its
-sub-section, and each section dispatching a target carries its own.
-The sub-sections are inserted into a group once it is built, before the
-bundle's destinations are assigned, so the ordinal a renderer gives a
-repeated heading counts them as it counts every other heading.
+bundle file. The `⫽` links in a section's own content are one *set*,
+and every one of them points at the section's one `Dispatch in
+parallel` sub-section, placed after its dispatch sub-sections, which
+lists each target's bundle file once with its link text. A set states
+no order. A dispatch above the group's first heading takes that
+heading's level. Links in one section naming one target with one
+operator share its sub-section, and each section dispatching a target
+carries its own. The sub-sections are inserted into a group once it is
+built, before the bundle's destinations are assigned, so the ordinal a
+renderer gives a repeated heading counts them as it counts every other
+heading.
 
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so three dispatches publish nothing:
@@ -55,7 +62,7 @@ from prosiform.bundle import (
     carried_headings,
     escaped,
 )
-from prosiform.closure import Reference, dispatched, identity, unmarked
+from prosiform.closure import Reference, dispatched, identity, parallel, unmarked
 from prosiform.closure import withholding_target as withheld
 from prosiform.diagnostics import (
     ERROR,
@@ -75,6 +82,7 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
+    Served,
     Target,
 )
 from prosiform.source import (
@@ -97,6 +105,7 @@ CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 PROSIFORM = "Prosiform"
 PARALLEL = "Dispatch in parallel"
 DISPATCH = "Dispatch"
+TOGETHER = "Dispatch these bundles together, each to a sub-agent:"
 
 LINK_CLOSE = "link_close"
 
@@ -114,17 +123,17 @@ CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching 
 LEVEL_REMEDY = "move the dispatch to a section above the sixth level"
 COLLISION_REMEDY = "retitle the authored heading"
 
-Placed = dict[tuple[str, int], dict[Target, int]]
-"""Each dispatch sub-section's heading, by the region and target it serves.
+Placed = dict[tuple[str, int], dict[Served, int]]
+"""Each dispatch sub-section's heading, by the region and link it serves.
 
 A region is the document and the first line of content it opens on, so
-every link one region writes naming one target reaches one sub-section,
-and the value is that heading's position among every heading the bundle
-emits.
+every link one region writes naming one target with one operator
+reaches one sub-section, and the value is that heading's position among
+every heading the bundle emits.
 """
 
-Anchors = Mapping[tuple[str, int], Mapping[Target, str]]
-"""The destination each region's dispatched links take, by target."""
+Anchors = Mapping[tuple[str, int], Mapping[Served, str]]
+"""The destination each region's dispatched links take, by link."""
 
 
 class Refused(Exception):
@@ -348,6 +357,12 @@ class Link:
     text: str
     written: str
     location: Location
+    parallel: bool
+
+    @property
+    def served(self) -> Served:
+        """The sub-section the link points at, as its target and operator."""
+        return (self.target, self.parallel)
 
 
 def link_text(children: Sequence[Token], at: int) -> str:
@@ -388,6 +403,7 @@ def written_in(
                     unmarked(link_text(children, at)),
                     destination,
                     Location(path, 1 if line is None else line, 1),
+                    parallel(opening),
                 )
             )
     return found
@@ -396,6 +412,11 @@ def written_in(
 def instruction(bundle_file: str) -> str:
     """The one line a dispatch sub-section carries."""
     return f"Dispatch `{bundle_file}` to a sub-agent."
+
+
+def listing(entries: Sequence[tuple[str, str]]) -> str:
+    """The list a `Dispatch in parallel` sub-section carries, one bundle an item."""
+    return "\n".join(f"- `{file}` ({escaped(text)})" for file, text in entries)
 
 
 class Placing:
@@ -415,12 +436,28 @@ class Placing:
         self.emitted: list[str] = []
         self.parts: list[Part] = []
         self.headings: list[Emitted] = []
-        self.pending: dict[Target, Link] = {}
-        self.serving: list[tuple[tuple[str, int], Target]] = []
+        self.pending: dict[Served, Link] = {}
+        self.serving: list[tuple[tuple[str, int], Served]] = []
         self.level: int | None = None
 
+    def heading(self, text: str, depth: int, body: Sequence[Instruction]) -> int:
+        """Emit one sub-section, returning its heading's position in the bundle."""
+        at = self.at + len(self.headings)
+        self.emitted.append(f"{ATX * depth} {escaped(text)}")
+        self.parts.append(Generated(text, depth, DISPATCH_SECTION))
+        self.headings.append(Generated(text, depth, DISPATCH_SECTION))
+        for one in body:
+            self.emitted.append(one.text)
+            self.parts.append(one)
+        return at
+
     def flush(self, following: int | None) -> None:
-        """Emit the sub-sections the section just closed carries."""
+        """Emit the sub-sections the section just closed carries.
+
+        Each `⇉` target takes a sub-section of its own, in the order its
+        first link is written, and the section's `⫽` set takes one after
+        them.
+        """
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
@@ -438,18 +475,24 @@ class Placing:
                     location=first.location,
                 )
             )
-        serving: dict[Target, int] = {}
-        for target, link in self.pending.items():
-            text = f"{DISPATCH} {link.text}"
-            body = instruction(self.bundle_file(target))
-            serving[target] = self.at + len(self.headings)
-            self.emitted.append(f"{ATX * depth} {escaped(text)}")
-            self.parts.append(Generated(text, depth, DISPATCH_SECTION))
-            self.headings.append(Generated(text, depth, DISPATCH_SECTION))
-            self.emitted.append(body)
-            self.parts.append(Instruction(body))
-        for key, target in self.serving:
-            self.placed.setdefault(key, {})[target] = serving[target]
+        serving: dict[Served, int] = {}
+        together: list[Link] = []
+        for served, link in self.pending.items():
+            if link.parallel:
+                together.append(link)
+                continue
+            body = Instruction(instruction(self.bundle_file(link.target)))
+            serving[served] = self.heading(f"{DISPATCH} {link.text}", depth, [body])
+        if together:
+            listed = listing(
+                [(self.bundle_file(link.target), link.text) for link in together]
+            )
+            at = self.heading(
+                PARALLEL, depth, [Instruction(TOGETHER), Instruction(listed, True)]
+            )
+            serving.update((link.served, at) for link in together)
+        for key, served in self.serving:
+            self.placed.setdefault(key, {})[served] = serving[served]
         self.pending = {}
         self.serving = []
 
@@ -478,9 +521,9 @@ class Placing:
                 at += held
                 key = (part.path, part.lines[0])
                 for link in written_in(part.path, self.read[part.path], tokens, region):
-                    self.pending.setdefault(link.target, link)
-                    if (key, link.target) not in self.serving:
-                        self.serving.append((key, link.target))
+                    self.pending.setdefault(link.served, link)
+                    if (key, link.served) not in self.serving:
+                        self.serving.append((key, link.served))
             self.emitted.append(text)
             self.parts.append(part)
         self.flush(None)
@@ -553,9 +596,9 @@ def collisions(groups: Sequence[Group]) -> None:
 
 def anchors(
     placed: Placed, assigned: Sequence[str]
-) -> dict[tuple[str, int], dict[Target, str]]:
-    """The destination each region's dispatched links take, by target."""
+) -> dict[tuple[str, int], dict[Served, str]]:
+    """The destination each region's dispatched links take, by link."""
     return {
-        key: {target: assigned[at] for target, at in served.items()}
+        key: {link: assigned[at] for link, at in served.items()}
         for key, served in placed.items()
     }
