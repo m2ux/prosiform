@@ -33,6 +33,7 @@ from prosiform.candidate import (
     UNSAFE_BUNDLE_BOUNDARY,
     Invalid,
     Unsafe,
+    protocols,
     validate,
 )
 from prosiform.cli import (
@@ -42,9 +43,19 @@ from prosiform.cli import (
 from prosiform.closure import Reference
 from prosiform.limits import BUDGETS, NESTING, Limits
 from prosiform.profile import REFERENCES, parse
-from prosiform.provenance import Ancestor, Carried, Generated, Origin, Range
+from prosiform.provenance import (
+    FILENAME_WRAPPER,
+    PROSIFORM_SECTION,
+    Ancestor,
+    Carried,
+    Generated,
+    Instruction,
+    Origin,
+    Range,
+    Record,
+)
 from prosiform.rewrite import Definition, definitions
-from prosiform.source import Source, fragments, lines
+from prosiform.source import Source, fragments, lines, regions
 
 BUDGET = Limits({budget: budget.default for budget in BUDGETS}).of(NESTING)
 
@@ -700,3 +711,39 @@ def test_a_link_inside_image_alternative_content_the_bundle_altered_fails() -> N
         "[shared rules](#rules)", "[other rules](#rules)", 1
     )
     assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def instructing(destination: str) -> None:
+    """Hold one instruction linking one destination to the Prosiform protocols."""
+    line = (
+        f"Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch]({destination}) "
+        "states."
+    )
+    text = f"# Prosiform\n\n## Dispatch\n\nProtocol.\n\n# Guide\n\n{line}\n"
+    tokens = parse(text, BUDGET)
+    headings = (
+        Generated("Prosiform", 1, PROSIFORM_SECTION),
+        Generated("Dispatch", 2, PROSIFORM_SECTION),
+        Generated("Guide", 1, FILENAME_WRAPPER),
+    )
+    record = Record("guide.md", None, headings, ())
+    reached = {
+        fragment: (record, heading)
+        for fragment, heading in zip(
+            ["prosiform", "dispatch", "guide"], headings, strict=True
+        )
+    }
+    protocols(reached, Instruction(line), list(regions(tokens))[-1], tokens)
+
+
+def test_an_instruction_linking_its_protocol_holds() -> None:
+    instructing("#dispatch")
+
+
+@pytest.mark.parametrize("destination", ["#guide", "#nowhere"])
+def test_an_instruction_linking_no_protocol_of_the_prosiform_section_is_invalid(
+    destination: str,
+) -> None:
+    with pytest.raises(Invalid) as caught:
+        instructing(destination)
+    assert caught.value.invariant == TARGET_INTEGRITY

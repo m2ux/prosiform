@@ -18,13 +18,25 @@ bundle file. The `⫽` links in a section's own content are one *set*,
 and every one of them points at the section's one `Dispatch in
 parallel` sub-section, placed after its dispatch sub-sections, which
 lists each target's bundle file once with its link text. A set states
-no order. A dispatch above the group's first heading takes that
-heading's level. Links in one section naming one target with one
-operator share its sub-section, and each section dispatching a target
+no order. Each sub-section's instruction links the protocol it follows.
+A dispatch above the group's first heading takes that heading's level.
+Links in one section naming one target with one operator share its
+sub-section, and each section dispatching a target
 carries its own. The sub-sections are inserted into a group once it is
 built, before the bundle's destinations are assigned, so the ordinal a
 renderer gives a repeated heading counts them as it counts every other
 heading.
+
+A bundle that dispatches opens with a *Prosiform section*: a heading
+`Prosiform`, then a `Dispatch` protocol sub-section whenever the bundle
+dispatches at all, and a `Parallel dispatch` one when it carries a set,
+each stating its protocol in wording the profile fixes. The section is
+the bundle's first heading, ahead of a file heading and of any
+sub-section content above the first heading takes, so its protocols
+take the destinations their slugs name and an agent reading top-down
+meets each before the instruction that invokes it. Its levels are
+fixed, so each protocol sub-section is the same bytes in every bundle
+carrying it. A bundle that dispatches nothing carries none.
 
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so three dispatches publish nothing:
@@ -34,8 +46,8 @@ place, so three dispatches publish nothing:
   the run's own single selection closes the shortest one.
 - A dispatch in a level-6 section leaves no level for its sub-section.
 - An authored heading whose text equals one pf emits in the same bundle
-  — `Prosiform`, `Dispatch in parallel` or a sub-section's — would give
-  two sections one name.
+  — `Prosiform`, `Dispatch in parallel`, a protocol sub-section's or a
+  dispatch sub-section's — would give two sections one name.
 
 A chain deeper than the limit still publishes, and warns: flattening it
 is the author's optimisation rather than a defect. A dispatch naming
@@ -74,6 +86,7 @@ from prosiform.diagnostics import (
 from prosiform.provenance import (
     DISPATCH_SECTION,
     FILENAME_WRAPPER,
+    PROSIFORM_SECTION,
     Ancestor,
     Carried,
     Emitted,
@@ -93,6 +106,7 @@ from prosiform.source import (
     opening_text,
     regions,
     shown,
+    slug,
 )
 
 DISPATCH_DEPTH = "W_DISPATCH_DEPTH"
@@ -105,7 +119,37 @@ CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 PROSIFORM = "Prosiform"
 PARALLEL = "Dispatch in parallel"
 DISPATCH = "Dispatch"
-TOGETHER = "Dispatch these bundles together, each to a sub-agent:"
+PARALLEL_DISPATCH = "Parallel dispatch"
+
+DISPATCH_PROTOCOL = (
+    "Hand the named bundle to one sub-agent, with the inputs the invoking step "
+    "names, to follow from its start, and continue with the result it returns. "
+    "A dispatched run puts no question to the user: it returns each question, "
+    "with its context paragraph and options, unanswered. The dispatching "
+    "session puts each returned question to the user, or returns it in turn "
+    "when itself dispatched, then dispatches again with the answers."
+)
+
+
+def protocol_link(name: str) -> str:
+    """A link to one protocol sub-section of the Prosiform section."""
+    return f"[{name}](#{slug(name)})"
+
+
+PARALLEL_PROTOCOL = (
+    "Dispatch every listed bundle at once, each to a sub-agent of its own as "
+    f"{protocol_link(DISPATCH)} states; an item the invoking step applies "
+    '"for each" of several values is dispatched once per value, together. '
+    "Continue when every item has returned. A failed item cancels nothing: the "
+    "set returns every failure together as blockers. Questions items return "
+    "are put to the user together once every item has returned, and only the "
+    "items that asked are dispatched again."
+)
+
+TOGETHER = (
+    "Dispatch these bundles together, each to a sub-agent, as "
+    f"{protocol_link(PARALLEL_DISPATCH)} states:"
+)
 
 LINK_CLOSE = "link_close"
 
@@ -411,7 +455,9 @@ def written_in(
 
 def instruction(bundle_file: str) -> str:
     """The one line a dispatch sub-section carries."""
-    return f"Dispatch `{bundle_file}` to a sub-agent."
+    return (
+        f"Dispatch `{bundle_file}` to a sub-agent, as {protocol_link(DISPATCH)} states."
+    )
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:
@@ -419,18 +465,31 @@ def listing(entries: Sequence[tuple[str, str]]) -> str:
     return "\n".join(f"- `{file}` ({escaped(text)})" for file, text in entries)
 
 
+def region_of(tokens: Sequence[Token], part: Range) -> Token:
+    """The region of a parse one selected range holds."""
+    return next(one for one in regions(tokens) if one.map == list(part.lines))
+
+
 class Placing:
-    """One bundle's groups rebuilt with a sub-section after each dispatching section."""
+    """One bundle's groups rebuilt with its Prosiform section and its sub-sections.
+
+    The operators are those the bundle's dispatched links carry, `False`
+    for `⇉` and `True` for `⫽`, which decide the protocols the
+    Prosiform section states.
+    """
 
     def __init__(
         self,
         parsed: Mapping[str, Sequence[Token]],
         read: Mapping[str, Source],
         bundle_file: Callable[[Target], str],
+        operators: Collection[bool],
     ) -> None:
         self.parsed = parsed
         self.read = read
         self.bundle_file = bundle_file
+        self.operators = operators
+        self.opened = False
         self.placed: Placed = {}
         self.at = 0
         self.emitted: list[str] = []
@@ -440,24 +499,53 @@ class Placing:
         self.serving: list[tuple[tuple[str, int], Served]] = []
         self.level: int | None = None
 
-    def heading(self, text: str, depth: int, body: Sequence[Instruction]) -> int:
-        """Emit one sub-section, returning its heading's position in the bundle."""
+    def heading(
+        self,
+        text: str,
+        depth: int,
+        body: Sequence[Instruction],
+        kind: str = DISPATCH_SECTION,
+    ) -> int:
+        """Emit one generated section, returning its heading's bundle position."""
         at = self.at + len(self.headings)
         self.emitted.append(f"{ATX * depth} {escaped(text)}")
-        self.parts.append(Generated(text, depth, DISPATCH_SECTION))
-        self.headings.append(Generated(text, depth, DISPATCH_SECTION))
+        self.parts.append(Generated(text, depth, kind))
+        self.headings.append(Generated(text, depth, kind))
         for one in body:
             self.emitted.append(one.text)
             self.parts.append(one)
         return at
+
+    def open(self) -> bool:
+        """Emit the Prosiform section once, where the bundle dispatches.
+
+        It is called ahead of the bundle's first heading, and reports
+        whether it emitted the section there.
+        """
+        if self.opened or not self.operators:
+            return False
+        self.opened = True
+        self.heading(PROSIFORM, 1, [], PROSIFORM_SECTION)
+        self.heading(DISPATCH, 2, [Instruction(DISPATCH_PROTOCOL)], PROSIFORM_SECTION)
+        if True in self.operators:
+            self.heading(
+                PARALLEL_DISPATCH,
+                2,
+                [Instruction(PARALLEL_PROTOCOL)],
+                PROSIFORM_SECTION,
+            )
+        return True
 
     def flush(self, following: int | None) -> None:
         """Emit the sub-sections the section just closed carries.
 
         Each `⇉` target takes a sub-section of its own, in the order its
         first link is written, and the section's `⫽` set takes one after
-        them.
+        them. Ahead of the bundle's first heading, and ahead of content
+        above it that dispatches, the Prosiform section comes first.
         """
+        if self.level is None and (following is not None or self.pending):
+            self.open()
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
@@ -497,12 +585,26 @@ class Placing:
         self.serving = []
 
     def group(self, one: Group) -> Group:
-        """One group with its sub-sections, the headings before it counted."""
+        """One group with its sub-sections, the headings before it counted.
+
+        A file heading the Prosiform section precedes is a part of the
+        group rather than the heading it opens on.
+        """
         offset = 1 if one.wrapped else 0
-        self.emitted = list(one.parts[:offset])
+        wrapped = one.wrapped
+        self.emitted = []
         self.parts = []
-        self.headings = list(one.record.headings[:offset])
-        self.level = 1 if one.wrapped else None
+        self.headings = []
+        self.level = None
+        if one.wrapped:
+            wrapper = one.record.headings[0]
+            assert isinstance(wrapper, Generated)
+            if self.open():
+                wrapped = False
+                self.parts.append(wrapper)
+            self.emitted.append(one.parts[0])
+            self.headings.append(wrapper)
+            self.level = 1
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
             if isinstance(part, Ancestor | Generated):
@@ -512,7 +614,7 @@ class Placing:
                 at += 1
             elif isinstance(part, Range):
                 tokens = self.parsed[part.path]
-                region = next(t for t in regions(tokens) if t.map == list(part.lines))
+                region = region_of(tokens, part)
                 held = len(carried_headings(tokens, region))
                 if region.type == HEADING_OPEN:
                     self.flush(one.record.headings[at].level)
@@ -532,7 +634,7 @@ class Placing:
             tuple(self.emitted),
             replace(one.record, headings=tuple(self.headings), parts=tuple(self.parts)),
             one.order,
-            wrapped=one.wrapped,
+            wrapped=wrapped,
         )
 
 
@@ -542,16 +644,29 @@ def subsections(
     read: Mapping[str, Source],
     bundle_file: Callable[[Target], str],
 ) -> tuple[list[Group], Placed]:
-    """Every group with its dispatch sub-sections, and where each one stands.
+    """Every group with the bundle's generated sections, and where each one stands.
 
     A group's sections are read in the order it emits them: a heading
     part closes the section above it, and the sub-sections that section
     collected are emitted ahead of the heading. A wrapped group's file
     heading opens its first section; a group the parent's title opens
     has no section above that title, so a dispatch there takes the
-    level of the heading that follows it.
+    level of the heading that follows it. The operators the bundle's
+    links carry are read first, because the Prosiform section stating
+    their protocols precedes every one of them.
     """
-    placing = Placing(parsed, read, bundle_file)
+    operators = {
+        link.parallel
+        for one in groups
+        for part in one.record.ranges
+        for link in written_in(
+            part.path,
+            read[part.path],
+            parsed[part.path],
+            region_of(parsed[part.path], part),
+        )
+    }
+    placing = Placing(parsed, read, bundle_file, operators)
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.placed
 
@@ -572,7 +687,8 @@ def collisions(groups: Sequence[Group]) -> None:
         one.text
         for group in groups
         for one in group.record.headings
-        if isinstance(one, Generated) and one.kind == DISPATCH_SECTION
+        if isinstance(one, Generated)
+        and one.kind in (DISPATCH_SECTION, PROSIFORM_SECTION)
     }
     for group in groups:
         for one, at in authored(group.record):

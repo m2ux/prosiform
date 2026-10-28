@@ -82,6 +82,7 @@ from prosiform.closure import (
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     DISPATCH_SECTION,
+    PROSIFORM_SECTION,
     Ancestor,
     Emitted,
     Generated,
@@ -915,7 +916,7 @@ def levels(record: Record) -> None:
         if one.level == 1 and any(
             isinstance(heading, Generated)
             and heading.level == 1
-            and heading.kind != DISPATCH_SECTION
+            and heading.kind not in (DISPATCH_SECTION, PROSIFORM_SECTION)
             for heading in record.headings
         ):
             raise Invalid(
@@ -1136,6 +1137,32 @@ def dispatches(
                 )
 
 
+def protocols(
+    reached: Mapping[str, tuple[Record, Emitted]],
+    part: Instruction,
+    span: Token,
+    tokens: Sequence[Token],
+) -> None:
+    """Hold each link an instruction carries to a protocol of the Prosiform section.
+
+    An instruction is the bundle's own text, so the only link it writes
+    names the protocol it follows, and that link reaches the protocol
+    sub-section the bundle's Prosiform section carries.
+    """
+    for inline in inlines(tokens, [span]):
+        for _children, _at, use in uses(inline):
+            found = reached.get(use.destination.removeprefix(ANCHOR))
+            if found is None or not (
+                isinstance(found[1], Generated) and found[1].kind == PROSIFORM_SECTION
+            ):
+                raise Invalid(
+                    TARGET_INTEGRITY,
+                    f"the destination {use.destination!r} the instruction "
+                    f"{part.text!r} links reaches no protocol of the Prosiform "
+                    f"section",
+                )
+
+
 def validate(
     bundled: str,
     groups: Sequence[Group],
@@ -1175,7 +1202,10 @@ def validate(
         if isinstance(part, Ancestor):
             structural(record, part, span, tokens)
             continue
-        if isinstance(part, Generated | Instruction):
+        if isinstance(part, Instruction):
+            protocols(reached, part, span, tokens)
+            continue
+        if isinstance(part, Generated):
             continue
         carried = part
         source = Side(

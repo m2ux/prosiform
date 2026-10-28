@@ -1,0 +1,15 @@
+description = "A bundle whose only operator is the dispatch operator opens with a Prosiform section holding the Dispatch protocol and no Parallel dispatch protocol, and its dispatch sub-section links the protocol it follows; the dispatched bundle, which dispatches nothing, carries no Prosiform section."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md"]
+diagnostics = []

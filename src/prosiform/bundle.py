@@ -236,7 +236,9 @@ class Group:
     part for each selected source region — rather than as the Markdown
     those parts join into, because the separation between two of them is
     the bundle's own and the bundle states it in one place. A group the
-    parent's own title opens has no file heading ahead of those regions.
+    parent's own title opens has no file heading ahead of those regions,
+    and a group the Prosiform section opens carries its file heading as
+    a part after that section.
     The text the group publishes is those parts with one blank line
     between each.
 
@@ -255,6 +257,14 @@ class Group:
     record: Record
     order: str
     wrapped: bool = True
+
+    @property
+    def filed(self) -> bool:
+        """Whether the group carries the file heading the bundle writes for it."""
+        return any(
+            isinstance(one, Generated) and one.kind == FILENAME_WRAPPER
+            for one in self.record.headings
+        )
 
     @property
     def text(self) -> str:

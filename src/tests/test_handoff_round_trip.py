@@ -42,7 +42,10 @@ DEFERRAL = "\u00ac"
 ERROR = "error"
 RULE = "| A dispatched target |"
 
-INSTRUCTION = re.compile(r"^Dispatch `([^`]+)` to a sub-agent\.$", re.MULTILINE)
+INSTRUCTION = re.compile(
+    r"^Dispatch `([^`]+)` to a sub-agent, as \[Dispatch\]\(#dispatch\) states\.$",
+    re.MULTILINE,
+)
 
 LINK = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,}).*?^ {0,3}\1", re.MULTILINE | re.DOTALL)

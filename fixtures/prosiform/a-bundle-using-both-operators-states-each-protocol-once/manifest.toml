@@ -1,0 +1,15 @@
+description = "A bundle dispatching from one section and dispatching in parallel from another opens with one Prosiform section holding each protocol once, before its first authored section."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review__source.bundle.md", "expected/review__tests.bundle.md"]
+diagnostics = []
