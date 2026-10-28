@@ -1,4 +1,4 @@
-description = "A run whose folder, named for its entry, holds a document the run reached as a dependency is refused as invalid usage, so a run never publishes over a source it read."
+description = "A run whose folder, named for its entry with the .bundles suffix, holds a document the run reached as a dependency is refused as invalid usage, so a run never replaces a source it read."
 
 clauses = [
   "CLI contract — -o DIR, a run folder holding any captured source is refused",
@@ -17,4 +17,4 @@ exit_status = 2
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["guide/note.md"]
+message_contains = ["guide.bundles/note.md"]
