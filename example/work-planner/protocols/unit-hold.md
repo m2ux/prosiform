@@ -25,7 +25,7 @@ Apply [Populate Planning Record](../artifacts/planning-record.md#populate-planni
 
 ### 3. Reserve the Rows
 
-Apply [Reserve Task Rows](../artifacts/epic-issue-body.md#reserve-task-rows) with the epic JSON, the unit's task ids, the folder identity from step 2, the planning-records base URL, the record date and an output body file.
+Apply [Reserve Task Rows](../artifacts/epic-issue-body.md#reserve-task-rows) with the epic JSON, the unit's task ids, the folder identity from [2. Add the Record](#2-add-the-record), the planning-records base URL, the record date and an output body file.
 - Return a refused row to the caller.
 - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the repository, the epic number and the returned body file.
 

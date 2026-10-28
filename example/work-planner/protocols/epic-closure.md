@@ -21,7 +21,7 @@ For each epic base the epic's [Delivery Findings](../artifacts/epic.md#delivery-
 For each open epic pull request, follow [Epic Integration](epic-integration.md) with the repository, initiative prefix and project checkout, the epic JSON, issue and body with its criterion ids and named instruments, the epic base, the review pull request number and the run's verification evidence.
 - Add the verification evidence it returns to the run's, which starts as the criterion verification evidence the caller supplied.
 - Keep a draft awaiting the user's ready mark, or a blocker, as pending.
-- While any epic base remains unmerged, continue at step 6.
+- While any epic base remains unmerged, continue at [6. Return the Initiative's Findings](#6-return-the-initiatives-findings).
 
 ### 3. Refresh the Records
 
@@ -46,4 +46,4 @@ Apply [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the ini
 Every exit from this procedure, a blocker a followed protocol returns included, continues here.
 - Apply [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue) for the initiative and every epic it links.
 - Apply [Record Initiative Delivery](../artifacts/initiative-issue-body.md#record-initiative-delivery) with the initiative JSON and every linked epic's current JSON, without an output body file.
-- Return to the caller the epic's closure result when step 4 ran, the initiative's identity, its verified criteria, the run's verification evidence with the revision each was taken on, the initiative's current [Delivery Findings](../artifacts/initiative.md#delivery-findings) Record Initiative Delivery returned, and each pending finding and blocker.
+- Return to the caller the epic's closure result when [4. Close the Epic](#4-close-the-epic) ran, the initiative's identity, its verified criteria, the run's verification evidence with the revision each was taken on, the initiative's current [Delivery Findings](../artifacts/initiative.md#delivery-findings) Record Initiative Delivery returned, and each pending finding and blocker.

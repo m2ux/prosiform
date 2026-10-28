@@ -18,9 +18,9 @@ Apply [Select Project Board](../artifacts/board.md#select-project-board) with th
 ### 2. Advance
 
 Follow [⇉ Advance Mode](advance-mode.md) for the selected board, with the [allowance](../artifacts/plan-change.md#allowance) this run applies.
-- Continue to the fetch step only after it returns a complete applied queue.
+- Continue to [3. Fetch](#3-fetch) only after it returns a complete applied queue.
 - Report an unavailable dependency, and a queue decision it recorded rather than asked, before dispatch. An incomplete queue means no initiative is under way, so the run has no work to offer.
-- Carry the [change list](../artifacts/plan-change.md#change-list) it returns into the report step.
+- Carry the [change list](../artifacts/plan-change.md#change-list) it returns into [9. Report](#9-report).
 
 ### 3. Fetch
 
@@ -30,16 +30,16 @@ Apply [Read Board Delivery Evidence](../artifacts/delivery-evidence.md#read-boar
 
 ### 4. Survey
 
-Follow [Delivery Base Preparation](../protocols/delivery-base-preparation.md) with the candidate epics, their current initiative and epic bodies, all prerequisite issue and base-merge records, the project checkout, changed long-lived branches, the repository, initiative prefix and the pull request records the fetch step returned.
-- Carry each prerequisite finding and conflict it returns into the report step; an epic with a prerequisite finding has no base and offers no unit.
-- Carry each pull request awaiting a decision into the confirm step's interview.
+Follow [Delivery Base Preparation](../protocols/delivery-base-preparation.md) with the candidate epics, their current initiative and epic bodies, all prerequisite issue and base-merge records, the project checkout, changed long-lived branches, the repository, initiative prefix and the pull request records [3. Fetch](#3-fetch) returned.
+- Carry each prerequisite finding and conflict it returns into [9. Report](#9-report); an epic with a prerequisite finding has no base and offers no unit.
+- Carry each pull request awaiting a decision into the interview of [6. Confirm](#6-confirm).
 - Apply [Plan Available Work](../artifacts/delivery-plan.md#plan-available-work) with the board items, pull request records, project checkout, the epic bases Delivery Base Preparation returned, an output directory and the selected record date.
 - For delivery discrepancies:
   - Apply [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence) for the affected initiative and epics.
   - Resume the survey with its returned records.
 - Handle the returned availability findings:
   - **Held work.**
-    - Carry each `hold` line to the confirm step, with the record it links and whether a session is still running.
+    - Carry each `hold` line to [6. Confirm](#6-confirm), with the record it links and whether a session is still running.
   - **Blocked work.**
     - Report a `blocked` or `unresolvable` line, and an unresolved issue reference, without asking. Its dependencies decide when it becomes available.
 - Use the returned [Work Units](../artifacts/delivery-plan.md#work-units) as the units of confirmation and dispatch.
@@ -49,7 +49,7 @@ Follow [Delivery Base Preparation](../protocols/delivery-base-preparation.md) wi
 Apply [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-auto-close) for each repository a `merge` line names.
 - For each `merge` line, follow [⇉ Task Merge](../protocols/task-merge.md) with the pull request and epic base it names, that confirmed setting as the repository prerequisite, the passing test-plan evidence its pull request record carries, its head branch and the worktree [Task Branches](../artifacts/delivery-branches.md#task-branches) places for that branch, the repository, initiative prefix and project checkout, the epic issue its tasks belong to with its criterion ids and named instruments, the selected board identity, the run's verification evidence, and output body and comment files.
 - Add the verification evidence it returns to the run's, which starts empty, before the next `merge` line.
-- Carry each merge, handoff, refusal, conflict, epic review and pending finding it returns into the report step.
+- Carry each merge, handoff, refusal, conflict, epic review and pending finding it returns into [9. Report](#9-report).
 
 ### 6. Confirm
 
@@ -68,8 +68,8 @@ Show each `unit` line, with its tasks, coverage, record, branch, base and worktr
 
 For each confirmed unit, before its session starts, follow [Unit Hold](../protocols/unit-hold.md) with the unit line's task ids, record identity and folder path, the epic JSON and number, the repository, the planning-records base URL, the record date, the selected board identity, and each task's and the epic's item ids with the Status field and option ids from the board snapshot.
 - Report a unit whose hold returns a missing work item, a discrepancy or a refused row, and dispatch no session for it, as [Task Delivery](../artifacts/epic-issue-body.md#task-delivery) holds require.
-- Carry each held unit's record folder, and the component and Test row of each task, to the dispatch step.
-- Retain the queue decisions returned by the completed advance step.
+- Carry each held unit's record folder, and the component and Test row of each task, to [8. Dispatch](#8-dispatch).
+- Retain the queue decisions [2. Advance](#2-advance) returned.
 
 ### 8. Dispatch
 
@@ -79,7 +79,7 @@ For each held unit:
 - Resolve any returned gap before dispatch.
 - Start each unit's session through the sub-agent dispatch this session provides, following [Run Delivery Session](#run-delivery-session) with the unit's brief, in the unit's worktree, with the engineering worktree in reach for the planning record. No unit's session starts any other way.
 - When this session provides no sub-agent dispatch, report that and stop before any unit begins.
-- Continue to the report step without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
+- Continue to [9. Report](#9-report) without waiting for unit completion; the dispatched session owns the implementation, debt and arising-issue work its brief carries.
 
 ### 9. Report
 
@@ -133,7 +133,7 @@ Apply [Confirm Repository Auto-Close](../artifacts/issue.md#confirm-repository-a
 Apply Populate Pull Request Body with the check results and the current body, following [Test Plan](../artifacts/pull-request-body.md#test-plan).
 - Apply Publish Pull Request with the pull request number and the returned body file.
 - Follow [⇉ Task Merge](../protocols/task-merge.md) with the task pull request and its epic base, the confirmed setting as the repository prerequisite, the passing test-plan evidence, the unit's worktree and branch, the repository and initiative prefix, the unit's worktree as project checkout, the epic issue with its criterion ids and named instruments, the board identity the brief names, and output body and comment files.
-- Carry a returned handoff, refusal, conflict or pending finding into the session result, and continue to the debt step.
+- Carry a returned handoff, refusal, conflict or pending finding into the session result, and continue to [8. Classify and Defer the Debt](#8-classify-and-defer-the-debt).
 
 #### 8. Classify and Defer the Debt
 
@@ -142,7 +142,7 @@ For each item this unit's validation finds, apply [Classify Technical Debt](../a
   - Fix it in this unit.
 - **Non-trivial.**
   - Follow [Hoist Arising Issue](#hoist-arising-issue) with the item and its placement as a new task in this initiative's [deferred-debt epic](../artifacts/initiative-issue-body.md#deferred-debt). Where the initiative has no such epic, the placement raises it as a new epic, carrying the criterion its initiative row covers.
-- Resume the arising-issues step with each saved placement or reported blocker.
+- Resume [9. Arising Issues](#9-arising-issues) with each saved placement or reported blocker.
 
 #### 9. Arising Issues
 

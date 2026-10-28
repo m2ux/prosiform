@@ -85,7 +85,7 @@ Run each emitted call, including the assignee calls, which act on the issue rath
 
 #### 4. Re-Read the Delivery Evidence
 
-Read the issues and the board's delivery evidence again, as step 1 does.
+Read the issues and the board's delivery evidence again, as [1. Read the Delivery Evidence](#1-read-the-delivery-evidence) does.
 - Apply [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
 - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 

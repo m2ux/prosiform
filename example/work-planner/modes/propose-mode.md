@@ -43,8 +43,8 @@ Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue) with the re
 ### 6. Confirm Placement
 
 Ask whether to add the issue to the proposals board.
-- On acceptance, continue to the place step.
-- On a decline, skip placement and continue to the report step with the issue URL.
+- On acceptance, continue to [7. Place](#7-place).
+- On a decline, skip placement and continue to [8. Report](#8-report) with the issue URL.
 - Wait for an unanswered decision.
 
 ### 7. Place

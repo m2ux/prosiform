@@ -97,7 +97,7 @@ The verified criteria of one epic or initiative, ticked and saved to its issue.
 #### 1. Verify the Selected Criteria
 
 Apply [Verify Selected Criteria](#verify-selected-criteria) with the criterion ids, current issue body, delivery findings, delivery revisions, named instruments, project checkout and the run's verification evidence.
-- When it returns no verified id, continue at step 4.
+- When it returns no verified id, continue at [4. Return the Recorded Verification](#4-return-the-recorded-verification).
 
 #### 2. Tick the Verified Criteria
 

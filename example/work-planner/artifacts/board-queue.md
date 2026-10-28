@@ -63,7 +63,7 @@ Run each proposed Status and assignee call. An assignee call acts on the issue, 
 
 Apply [Read Board State](board.md#read-board-state) for the refreshed board items.
 - Apply Plan Board Queue with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
-- Continue from step 2 until the refreshed queue is [complete](#completeness) and contains no further call.
+- Continue from [2. Resolve Off-Board Issue References](#2-resolve-off-board-issue-references) until the refreshed queue is [complete](#completeness) and contains no further call.
 
 #### 6. Return the Converged Queue
 
