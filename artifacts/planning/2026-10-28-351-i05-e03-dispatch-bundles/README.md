@@ -29,9 +29,9 @@ The epic is I05:E03: eleven task rows delivered as nine pull requests, each leav
 
 ### Output
 
-- **`-o DIR` names the root.** The default is the working directory. A run writes its whole bundle set — the entry's bundle and every bundle it dispatches — into `DIR/<entry name>/`, the entry's derived name without `.bundle.md`. No bundle is written to standard output.
-- **Every bundle takes the derived name.** A selection's name is its working-directory path with `/` as `_`, plus `__<fragment>` for a section, then `.bundle.md`. A run of several entries joins each entry's name with `+`, which names both its folder and its entry bundle: `procedure+rules_common/procedure+rules_common.bundle.md`.
-- **Publication is all-or-nothing.** Every bundle is validated before any is written. The set is written into a fresh hidden folder beside the run's folder and renamed onto it; an older run folder is renamed aside first and removed after, so a reader sees the whole old set or the whole new set. A failure before the swap leaves `DIR` as it was. `-c` validates every bundle and writes none. Everything else under `DIR` is left as it is. (User, 2026-10-28, during W03.)
+- **`-o DIR` names the root.** The default is the working directory. A run writes its whole bundle set — the entry's bundle and every bundle it dispatches — into `DIR/<entry name>.bundles/`, the entry's derived name without `.bundle.md` and with the `.bundles` suffix, so an author folder named like the entry is never a run folder. No bundle is written to standard output.
+- **Every bundle takes the derived name.** A selection's name is its working-directory path with `/` as `_`, plus `__<fragment>` for a section, then `.bundle.md`. A run of several entries joins each entry's name with `+`, which names both its folder and its entry bundle: `procedure+rules_common.bundles/procedure+rules_common.bundle.md`.
+- **Publication is all-or-nothing.** Every bundle is validated before any is written. The set is written into a fresh hidden folder beside the run's folder and renamed onto it; an older run folder, only ever one carrying that `.bundles` name, is renamed aside first and removed after, so a reader sees the whole old set or the whole new set. A failure before the swap leaves `DIR` as it was. `-c` validates every bundle and writes none. Everything else under `DIR` is left as it is. (User, 2026-10-28, during W03.)
 
 ### Dispatched bundles
 
