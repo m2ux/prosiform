@@ -12,6 +12,10 @@ An agent follows a dispatch by handing a bundle that already exists to a sub-age
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03 work item](w03.md) | Dispatched bundles, dispatch sub-sections, per-bundle budgets and the run's sub-folder |
+| [W04 work item](w04.md) | The cycle, level-6 and heading-collision refusals, and the retired step warning |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
