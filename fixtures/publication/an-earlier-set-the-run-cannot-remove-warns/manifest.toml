@@ -1,0 +1,21 @@
+description = "A run whose earlier set, moved aside once the new set stands, cannot be removed is published: it exits 0 with its bundles in its folder and warns, naming the path that holds the earlier set."
+
+clauses = [
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 0",
+]
+
+fault = "cleanup-refused"
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_EARLIER_SET_RETAINED"
+message_contains = ["could not be removed"]
