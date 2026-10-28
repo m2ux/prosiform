@@ -19,8 +19,9 @@ and every one of them points at the section's one `Dispatch in
 parallel` sub-section, placed after its dispatch sub-sections, which
 lists each target's bundle file once with its link text. A set states
 no order. Each sub-section's instruction links the protocol it follows.
-A dispatch above the group's first heading takes that heading's level. Links in one section naming one target with one
-operator share its sub-section, and each section dispatching a target
+A dispatch above the group's first heading takes that heading's level.
+Links in one section naming one target with one operator share its
+sub-section, and each section dispatching a target
 carries its own. The sub-sections are inserted into a group once it is
 built, before the bundle's destinations are assigned, so the ordinal a
 renderer gives a repeated heading counts them as it counts every other
@@ -454,7 +455,9 @@ def written_in(
 
 def instruction(bundle_file: str) -> str:
     """The one line a dispatch sub-section carries."""
-    return f"Dispatch `{bundle_file}` to a sub-agent, as {protocol_link(DISPATCH)} states."
+    return (
+        f"Dispatch `{bundle_file}` to a sub-agent, as {protocol_link(DISPATCH)} states."
+    )
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:
@@ -503,7 +506,7 @@ class Placing:
         body: Sequence[Instruction],
         kind: str = DISPATCH_SECTION,
     ) -> int:
-        """Emit one generated section, returning its heading's position in the bundle."""
+        """Emit one generated section, returning its heading's bundle position."""
         at = self.at + len(self.headings)
         self.emitted.append(f"{ATX * depth} {escaped(text)}")
         self.parts.append(Generated(text, depth, kind))
@@ -523,9 +526,7 @@ class Placing:
             return False
         self.opened = True
         self.heading(PROSIFORM, 1, [], PROSIFORM_SECTION)
-        self.heading(
-            DISPATCH, 2, [Instruction(DISPATCH_PROTOCOL)], PROSIFORM_SECTION
-        )
+        self.heading(DISPATCH, 2, [Instruction(DISPATCH_PROTOCOL)], PROSIFORM_SECTION)
         if True in self.operators:
             self.heading(
                 PARALLEL_DISPATCH,
@@ -596,11 +597,13 @@ class Placing:
         self.headings = []
         self.level = None
         if one.wrapped:
+            wrapper = one.record.headings[0]
+            assert isinstance(wrapper, Generated)
             if self.open():
                 wrapped = False
-                self.parts.append(one.record.headings[0])
+                self.parts.append(wrapper)
             self.emitted.append(one.parts[0])
-            self.headings.append(one.record.headings[0])
+            self.headings.append(wrapper)
             self.level = 1
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
@@ -641,7 +644,7 @@ def subsections(
     read: Mapping[str, Source],
     bundle_file: Callable[[Target], str],
 ) -> tuple[list[Group], Placed]:
-    """Every group with its Prosiform section and dispatch sub-sections, and where each one stands.
+    """Every group with the bundle's generated sections, and where each one stands.
 
     A group's sections are read in the order it emits them: a heading
     part closes the section above it, and the sub-sections that section

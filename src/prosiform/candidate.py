@@ -1153,8 +1153,7 @@ def protocols(
         for _children, _at, use in uses(inline):
             found = reached.get(use.destination.removeprefix(ANCHOR))
             if found is None or not (
-                isinstance(found[1], Generated)
-                and found[1].kind == PROSIFORM_SECTION
+                isinstance(found[1], Generated) and found[1].kind == PROSIFORM_SECTION
             ):
                 raise Invalid(
                     TARGET_INTEGRITY,

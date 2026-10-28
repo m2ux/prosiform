@@ -85,12 +85,12 @@ from prosiform.diagnostics import WARNING, Diagnostic, Reporter
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
     DISPATCH_CYCLE,
-    DISPATCH_PROTOCOL,
-    PARALLEL_PROTOCOL,
-    TOGETHER,
     DISPATCH_DEPTH,
+    DISPATCH_PROTOCOL,
     DISPATCH_SELF,
     HEADING_COLLISION,
+    PARALLEL_PROTOCOL,
+    TOGETHER,
 )
 from prosiform.limits import (
     BUDGETS,
@@ -121,6 +121,11 @@ from prosiform.source import (
     UNTERMINATED_FRONTMATTER,
     Capture,
 )
+
+
+def instructed(bundle_file: str) -> str:
+    """The line a dispatch sub-section carries for one bundle file."""
+    return f"Dispatch `{bundle_file}` to a sub-agent, as [Dispatch](#dispatch) states."
 
 
 DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"
@@ -1602,7 +1607,7 @@ def test_a_dispatched_link_points_at_its_sub_section_without_its_mark(
     assert run.status == SUCCESS
     assert run.bundle == (
         f"{DISPATCHING}# Guide\n\nSee [the rules](#dispatch-the-rules).\n\n"
-        "## Dispatch the rules\n\nDispatch `rules.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n"
+        f"## Dispatch the rules\n\n{instructed('rules.bundle.md')}\n"
     )
 
 
@@ -1623,10 +1628,10 @@ def test_a_run_publishes_a_bundle_for_each_target_its_dispatches_reach(
         "plan__steps.bundle.md",
         "review.bundle.md",
     ]
-    assert "Dispatch `plan__steps.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states." in run.bundle
+    assert instructed("plan__steps.bundle.md") in run.bundle
     assert run.bundles["plan__steps.bundle.md"] == (
         f"{DISPATCHING}# Plan\n\n### Steps\n\n1. Review [review](#dispatch-review).\n\n"
-        "#### Dispatch review\n\nDispatch `review.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n"
+        f"#### Dispatch review\n\n{instructed('review.bundle.md')}\n"
     )
     assert run.bundles["review.bundle.md"] == "# Review\n\n1. Read.\n"
 
@@ -1644,10 +1649,10 @@ def test_one_target_dispatched_from_two_sections_is_one_bundle(root: Path) -> No
     assert sorted(run.bundles) == ["guide.bundle.md", "plan.bundle.md"]
     assert run.bundle == (
         f"{DISPATCHING}# Guide\n\n## One\n\nRun [plan](#dispatch-plan).\n\n"
-        "### Dispatch plan\n\nDispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n\n"
+        f"### Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
         "## Two\n\n"
         "Run [plan](#dispatch-plan-1) and [the plan](#dispatch-plan-1).\n\n"
-        "### Dispatch plan\n\nDispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n"
+        f"### Dispatch plan\n\n{instructed('plan.bundle.md')}\n"
     )
 
 
@@ -1663,7 +1668,7 @@ def test_a_sub_section_precedes_the_child_sections_of_its_section(
     run = invoke("guide.md", cwd=root)
     assert run.bundle == (
         f"{DISPATCHING}# Guide\n\n## Run\n\nRun [plan](#dispatch-plan).\n\n"
-        "### Dispatch plan\n\nDispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n\n"
+        f"### Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
         "### Detail\n\nMore.\n"
     )
 
@@ -1675,7 +1680,7 @@ def test_a_dispatch_above_the_first_heading_takes_its_level(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.bundle == (
         f"Run [plan](#dispatch-plan).\n\n{DISPATCHING}"
-        "# Dispatch plan\n\nDispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n\n"
+        f"# Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
         "# Guide\n\nBody.\n"
     )
 
@@ -1690,7 +1695,7 @@ def test_a_dispatch_in_a_linked_document_sits_under_its_shifted_section(
     assert run.status == SUCCESS
     assert run.bundle.endswith(
         "# Notes\n\nRun [plan](#dispatch-plan).\n\n"
-        "## Dispatch plan\n\nDispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n"
+        f"## Dispatch plan\n\n{instructed('plan.bundle.md')}\n"
     )
 
 
@@ -2625,7 +2630,8 @@ def test_a_target_named_twice_in_one_set_is_listed_once(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{DISPATCHING_TOGETHER}# Guide\n\nRun [a](#dispatch-in-parallel), [b](#dispatch-in-parallel) "
+        f"{DISPATCHING_TOGETHER}# Guide\n\n"
+        "Run [a](#dispatch-in-parallel), [b](#dispatch-in-parallel) "
         "and [a again](#dispatch-in-parallel).\n\n"
         f"## Dispatch in parallel\n\n{TOGETHER}\n\n"
         "- `a.bundle.md` (a)\n- `b.bundle.md` (b)\n"
@@ -2643,7 +2649,8 @@ def test_a_child_sections_parallel_links_form_its_own_set(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{DISPATCHING_TOGETHER}# Guide\n\n## Run\n\nRun [a](#dispatch-in-parallel).\n\n"
+        f"{DISPATCHING_TOGETHER}# Guide\n\n## Run\n\n"
+        "Run [a](#dispatch-in-parallel).\n\n"
         f"### Dispatch in parallel\n\n{TOGETHER}\n\n- `a.bundle.md` (a)\n\n"
         "### Detail\n\nRun [b](#dispatch-in-parallel-1).\n\n"
         f"#### Dispatch in parallel\n\n{TOGETHER}\n\n- `b.bundle.md` (b)\n"
@@ -2677,7 +2684,7 @@ def test_a_section_carrying_both_operators_has_a_sub_section_for_each(
         "[tests](#dispatch-in-parallel).\n"
         "3. Plan again [plan](#dispatch-plan) and also "
         "[plan](#dispatch-in-parallel).\n\n"
-        "## Dispatch plan\n\nDispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.\n\n"
+        f"## Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
         f"## Dispatch in parallel\n\n{TOGETHER}\n\n"
         "- `code.bundle.md` (code)\n- `tests.bundle.md` (tests)\n"
         "- `plan.bundle.md` (plan)\n"
