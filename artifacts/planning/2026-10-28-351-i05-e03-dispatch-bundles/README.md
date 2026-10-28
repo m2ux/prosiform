@@ -28,9 +28,9 @@ The epic is I05:E03: ten task rows delivered as eight pull requests, each leavin
 
 ### Output
 
-- **`-o DIR` names a folder.** The default is the working directory. Every bundle a run publishes is written there. No bundle is written to standard output.
-- **Every bundle takes the derived name.** A selection's name is its working-directory path with `/` as `_`, plus `__<fragment>` for a section, then `.bundle.md`. A run of several entries joins each entry's name with `+`: `procedure+rules_common.bundle.md`.
-- **Publication is all-or-nothing.** Every bundle is validated before any is written, and each is written atomically. A failure writes none. `-c` validates every bundle and writes none. Files in the folder the run does not produce are left as they are.
+- **`-o DIR` names the root.** The default is the working directory. A run writes its whole bundle set — the entry's bundle and every bundle it dispatches — into `DIR/<entry name>/`, the entry's derived name without `.bundle.md`. No bundle is written to standard output.
+- **Every bundle takes the derived name.** A selection's name is its working-directory path with `/` as `_`, plus `__<fragment>` for a section, then `.bundle.md`. A run of several entries joins each entry's name with `+`, which names both its folder and its entry bundle: `procedure+rules_common/procedure+rules_common.bundle.md`.
+- **Publication is all-or-nothing.** Every bundle is validated before any is written. The set is written into a fresh hidden folder beside the run's folder and renamed onto it; an older run folder is renamed aside first and removed after, so a reader sees the whole old set or the whole new set. A failure before the swap leaves `DIR` as it was. `-c` validates every bundle and writes none. Everything else under `DIR` is left as it is. (User, 2026-10-28, during W03.)
 
 ### Dispatched bundles
 
@@ -92,7 +92,7 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 - **Whole chain in one run.** The agent reads bundles that exist rather than compiling at run time.
 - **One bundle per target.** Matches the bundle's include-once rule and keeps a cycle finite at compile time.
 - **Cycle refused, depth warned.** A cycle cannot finish; a deep chain finishes slowly.
-- **Folder output.** Several bundles need a folder, and the derived scheme names them all.
+- **Folder output.** Several bundles need a folder, and the derived scheme names them all. A run's set lands in a sub-folder named for its entry and swapped in whole, so a reader never meets a mixture of two runs' bundles. (User, 2026-10-28, during W03.)
 - **Parallelism is a property of dispatches.** `⫽` marks a link, not a target's shape, so any section's prose can run work together; a target holds no list of calls, and inline calls run in sequence.
 - **Steps are sub-sections, by corpus convention.** A step a heading roots is a precise link destination. Converting the work-planner corpus is its own epic; this epic writes Board Reads in that form.
 - **Protocols first.** A step can be acted on before later text is read.
