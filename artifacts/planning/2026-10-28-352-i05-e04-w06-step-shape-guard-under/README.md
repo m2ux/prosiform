@@ -13,6 +13,8 @@ Nothing observes the step convention otherwise. A numbered list added to a proce
 | Artifact | What it holds |
 | --- | --- |
 | [W06 work item](w06.md) | The step-shape guard: scope, rules, the my-skill scope decision and the checks it requires |
+| [Validation](validation.md) | The guard's tests, `make steps` on the corpus and on a planted step, `make tables` and `make check`, and the scope finding |
+| [Change list](change-list.md) | The plan changes this delivery session applied and held, and the integration notes |
 
 ## Links
 
