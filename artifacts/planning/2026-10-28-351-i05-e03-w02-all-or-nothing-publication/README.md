@@ -24,3 +24,4 @@ Every later row of the epic publishes a set of bundles from one run: one for the
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior task | [W01 Output Folder and Joined Derived Names](../2026-10-28-351-i05-e03-w01-output-folder-and-joined/README.md) |
+| Pull request | [#356 All-or-Nothing Publication](https://github.com/m2ux/prosiform/pull/356) |
