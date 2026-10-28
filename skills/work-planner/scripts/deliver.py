@@ -101,9 +101,10 @@ def names(tag: str, text: str, ref: int, when: str) -> dict[str, str]:
     """The record folder, branch and worktree one unit's first task id and Description give it."""
     stem = tag.lower().replace(':', '-')
     short = slug(text)
+    branch = tag.lower().replace(':', '/') + (f'-{short}' if short else '')
     return {'folder': f'{when}-{ref}-{stem}' + (f'-{short}' if short else ''),
-            'branch': tag.lower().replace(':', '/') + (f'-{short}' if short else ''),
-            'worktree': f'{WORKTREES}/{stem}'}
+            'branch': branch,
+            'worktree': f'{WORKTREES}/{branch}'}
 
 
 def joined(header: list[str], body: list[list[str]]) -> dict[str, set[str]]:
