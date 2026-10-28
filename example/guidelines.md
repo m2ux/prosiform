@@ -29,7 +29,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - A skill may add directories of its own, one for its modes among them, and keep its guidelines beside SKILL.md. Its guidelines state what those files carry and the sections they take, and `structure.json` beside SKILL.md declares those sections to the shared check.
   - Scripts and tests each have a folder of their own. Standalone templates use `templates/`.
 - **Shared.**
-  `skills/` holds this file beside the `scripts/` and `test/` folders for checks that every skill runs. A check binding one skill lives in that skill's own folders.
+  The folder holding the skills holds this file beside the folders of the checks every skill runs. A check binding one skill lives in that skill's own folders.
 
 ## SKILL.md structure
 
@@ -101,7 +101,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Selection links.**
   A link naming the next operation, section or route points wherever that content sits, forward included. The reader chooses from it rather than needing to hold it already.
 - **Prerequisite citation.**
-  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Audit Command Conventions](change-surface.md#audit-command-conventions) first.`
+  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Issue Fields](issue.md#fields) first.`
   - Within one file, position carries the requirement and the citation is dropped: conventions sit ahead of the procedures they govern.
   - A prerequisite citation pointing further down its own file is a defect, whatever its wording. A sequential reader meets it after the point it was meant to serve.
 - **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
@@ -163,4 +163,4 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Stale claims.**
   After a behaviour change, search the skill for any description of the old behaviour and restate it.
 - **Verified.**
-  The skill's tests and affected shared-checker or integration suites pass, `skills/scripts/check_skill_files.py` reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed. State which checks ran and distinguish local evidence from external workflow execution.
+  The skill's tests and affected shared-checker or integration suites pass, the shared skill check reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed. State which checks ran and distinguish local evidence from external workflow execution.
