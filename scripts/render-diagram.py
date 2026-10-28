@@ -317,8 +317,9 @@ def main():
         patch.object(cli, "read_source", side_effect=record),
     ):
         status = cli.main(["-o", folder, *arguments], stdout=stdout, stderr=stderr)
-        written = sorted(Path(folder).iterdir())
-        body = written[0].read_bytes().decode() if written else ""
+        written = sorted(Path(folder).glob("*/*.bundle.md"))
+        entry = [one for one in written if one.parent.name + ".bundle.md" == one.name]
+        body = entry[0].read_bytes().decode() if entry else ""
     diagnostics = stderr.getvalue()
     inputs = {
         path: data.decode("utf-8", errors="replace")

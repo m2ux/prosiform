@@ -178,10 +178,12 @@ def version(environment: Path, elsewhere: Path) -> str:
 
 
 def derived(entry: str) -> str:
-    """The name a run gives one entry's bundle, from its working-directory path.
+    """The name a run gives one entry's folder and bundle, from its path.
 
     The entry's separators are written as underscores, so an entry above
-    the working directory keeps its parent segments as filename text.
+    the working directory keeps its parent segments as filename text. The
+    run's folder carries the name, and its bundle the name and the bundle
+    suffix.
     """
     return str(Path(entry).with_suffix("")).replace(os.sep, "_")
 
@@ -189,9 +191,10 @@ def derived(entry: str) -> str:
 def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     """A reference bundled from a source root the repository does not hold.
 
-    The folder `-o` names holds the bundle under its derived name and
-    nothing else, and both streams carry nothing, so the installed
-    command's output split is the one the contract names.
+    The folder `-o` names holds the run's folder under the entry's derived
+    name and nothing else, that folder holds the bundle and nothing else,
+    and both streams carry nothing, so the installed command's output
+    split is the one the contract names.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
     folder = elsewhere.parent / "bundles"
@@ -199,12 +202,17 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     run = invoke(environment, elsewhere, "-o", str(folder), entry)
     if reported(run, f"{COMMAND} -o {folder} {entry}"):
         raise Failed("standard output carries text, and a run writes its bundle")
-    name = f"{derived(entry)}.bundle.md"
-    written = sorted(path.name for path in folder.iterdir())
-    if written != [name]:
-        raise Failed(f"the output folder holds {written}, where the run writes {name}")
-    produced = (folder / name).read_text()
-    (folder / name).unlink()
+    named = derived(entry)
+    name = f"{named}.bundle.md"
+    held = sorted(path.name for path in folder.iterdir())
+    written = sorted(path.name for path in (folder / named).glob("*")) if held else []
+    if held != [named] or written != [name]:
+        raise Failed(
+            f"the output folder holds {held} and {written}, where the run writes "
+            f"{named}/{name}"
+        )
+    produced = (folder / named / name).read_text()
+    shutil.rmtree(folder / named)
     if produced != BUNDLE:
         raise Failed(
             f"the bundle differs from the one the source names\n"
@@ -215,32 +223,32 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
 def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     """Derived names, joined selections, folders and validation through the CLI.
 
-    A run naming no folder writes into its working directory, a folder
-    `-o` names holds the bundle, and a folder that does not exist refuses
-    the write and keeps no temporary file.
+    A run naming no folder writes its folder into its working directory, a
+    folder `-o` names holds the run's folder, and a folder that does not
+    exist refuses the write and keeps no temporary folder.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
     name = derived(entry)
     for reference, published, expected in (
-        (entry, f"{name}.bundle.md", BUNDLE),
-        (entry + "#guide", f"{name}__guide.bundle.md", BUNDLE),
+        (entry, name, BUNDLE),
+        (entry + "#guide", f"{name}__guide", BUNDLE),
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
-        destination = elsewhere / published
+        destination = elsewhere / published / f"{published}.bundle.md"
         if run.stdout or destination.read_text() != expected:
             raise Failed("derived output differs from the installed bundle")
-        destination.unlink()
+        shutil.rmtree(elsewhere / published)
     run = invoke(environment, elsewhere, "-c", entry)
     succeeded(run, "check mode")
     if list(elsewhere.iterdir()) or run.stdout:
         raise Failed("check mode published a bundle")
     run = invoke(environment, elsewhere, entry, entry + "#guide")
     succeeded(run, "joined selections")
-    joined = elsewhere / f"{name}+{name}__guide.bundle.md"
-    if run.stdout or not joined.is_file():
+    joined = f"{name}+{name}__guide"
+    if run.stdout or not (elsewhere / joined / f"{joined}.bundle.md").is_file():
         raise Failed("joined selections publish no bundle under the joined name")
-    joined.unlink()
+    shutil.rmtree(elsewhere / joined)
     run = invoke(environment, elsewhere, "-o", "-", entry)
     if run.returncode != 2 or run.stdout or list(elsewhere.iterdir()):
         raise Failed("standard output named as the output folder is not refused")
@@ -248,8 +256,8 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
     folder.mkdir()
     run = invoke(environment, elsewhere, "-o", "out", entry)
     succeeded(run, "-o out")
-    if run.stdout or [path.name for path in folder.iterdir()] != [f"{name}.bundle.md"]:
-        raise Failed("the folder -o names does not hold the bundle")
+    if run.stdout or not (folder / name / f"{name}.bundle.md").is_file():
+        raise Failed("the folder -o names does not hold the run's folder")
     shutil.rmtree(folder)
     run = invoke(environment, elsewhere, "-o", "missing", entry)
     if run.returncode != 3 or run.stdout or list(elsewhere.iterdir()):

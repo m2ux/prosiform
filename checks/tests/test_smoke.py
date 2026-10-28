@@ -26,13 +26,14 @@ def answering(
     response: CompletedProcess[str],
     bundle: str | None = None,
 ) -> None:
-    """A command answering every run alike, writing any bundle into its -o folder."""
+    """A command answering every run alike, writing any bundle into its run's folder."""
 
     def invoke(environment: Path, cwd: Path, *arguments: str) -> CompletedProcess[str]:
         if bundle is not None:
-            folder = Path(arguments[arguments.index("-o") + 1])
-            entry = arguments[-1]
-            (folder / f"{smoke.derived(entry)}.bundle.md").write_text(bundle)
+            named = smoke.derived(arguments[-1])
+            folder = Path(arguments[arguments.index("-o") + 1]) / named
+            folder.mkdir()
+            (folder / f"{named}.bundle.md").write_text(bundle)
         return response
 
     monkeypatch.setattr(smoke, "invoke", invoke)
@@ -95,7 +96,7 @@ def test_a_folder_holding_no_bundle_is_refused(
     answering(monkeypatch, run())
     with pytest.raises(smoke.Failed) as refused:
         smoke.bundles(tmp_path, tmp_path / "elsewhere", tmp_path)
-    assert "the output folder holds []" in str(refused.value)
+    assert "the output folder holds [] and []" in str(refused.value)
 
 
 def test_a_bundle_writing_to_standard_error_is_refused(

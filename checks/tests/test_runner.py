@@ -83,6 +83,7 @@ ROOT_NOT_FOUND = {
     "code": "E_ROOT_NOT_FOUND",
 }
 BUNDLE_NAME = "guide.bundle.md"
+RUN_FOLDER = "guide"
 
 
 def write_fixture(
@@ -168,8 +169,8 @@ def replaying(
 ) -> str:
     """A configured build that replays one canned result and nothing else.
 
-    A canned bundle is written into the directory the build runs in, under
-    the name the fixture declares.
+    A canned bundle is written into the run's folder in the directory the
+    build runs in, under the name the fixture declares.
     """
     canned = directory / "canned"
     canned.mkdir(parents=True, exist_ok=True)
@@ -181,14 +182,18 @@ def replaying(
     if bundle is not None:
         written = canned / "bundle"
         written.write_bytes(bundle)
-        script += f"cat {shlex.quote(str(written))} > {BUNDLE_NAME}; "
+        script += (
+            f"mkdir {RUN_FOLDER}; "
+            f"cat {shlex.quote(str(written))} > {RUN_FOLDER}/{BUNDLE_NAME}; "
+        )
     script += f"exit {status}"
     return shlex.join(["/bin/sh", "-c", script])
 
 
 def publishing(name: str, text: str) -> str:
-    """A configured build that writes one file into the directory it runs in."""
-    script = f"printf %s {shlex.quote(text)} > {shlex.quote(name)}"
+    """A configured build that writes one file, and the folder holding it."""
+    folder = shlex.quote(str(Path(name).parent))
+    script = f"mkdir -p {folder}; printf %s {shlex.quote(text)} > {shlex.quote(name)}"
     return shlex.join(["/bin/sh", "-c", script])
 
 
@@ -338,7 +343,7 @@ def test_a_file_no_bundle_declares_names_the_expectation(
 ) -> None:
     """A run that writes when its manifest declares no bundle fails."""
     fixture = write_fixture(tmp_path / "fixture", arguments=("-c", "guide.md"))
-    configure(monkeypatch, publishing("../bundle.md", "# Guide\n"))
+    configure(monkeypatch, publishing("../guide/bundle.md", "# Guide\n"))
     result = run_fixture(fixture)
     assert not result.passed
     detail = detail_of(result, BUNDLES)
@@ -351,9 +356,29 @@ def test_a_file_the_run_writes_is_removed(
 ) -> None:
     """A corpus run leaves the fixture directory as its manifest declares it."""
     fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
-    configure(monkeypatch, publishing("../bundle.md", "# Guide\n"))
+    configure(monkeypatch, publishing("../guide/bundle.md", "# Guide\n"))
     assert not run_fixture(fixture).passed
-    assert not (fixture / "bundle.md").exists()
+    assert not (fixture / "guide").exists()
+
+
+def test_a_file_written_outside_a_folder_of_the_run_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing(f"../{BUNDLE_NAME}", "# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert f"the run wrote {BUNDLE_NAME} outside a folder of its own" in detail
+    assert not (fixture / BUNDLE_NAME).exists()
+
+
+def test_a_folder_named_for_no_declared_bundle_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing(f"../other/{BUNDLE_NAME}", "# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert "into other, which names no bundle the manifest declares" in detail
+    assert not (fixture / "other").exists()
 
 
 def test_a_declared_bundle_the_run_does_not_write_is_reported(
@@ -372,10 +397,10 @@ def test_a_bundle_is_matched_by_name_wherever_the_run_writes_it(
     fixture = write_fixture(
         tmp_path / "fixture", arguments=("-o", "..", "guide.md"), bundle=b"# Guide\n"
     )
-    configure(monkeypatch, publishing(f"../{BUNDLE_NAME}", "# Guide\n"))
+    configure(monkeypatch, publishing(f"../{RUN_FOLDER}/{BUNDLE_NAME}", "# Guide\n"))
     result = run_fixture(fixture)
     assert result.passed, result.report()
-    assert not (fixture / BUNDLE_NAME).exists()
+    assert not (fixture / RUN_FOLDER).exists()
 
 
 def test_a_declared_bundle_path_the_fixture_does_not_hold_is_refused(

@@ -82,12 +82,12 @@ def write_fixture(
 
 
 def replaying(directory: Path, bundle: bytes) -> str:
-    """A configured build that writes one canned bundle and succeeds."""
+    """A configured build that writes one canned bundle into its folder and succeeds."""
     canned = directory / "canned"
     canned.mkdir(parents=True, exist_ok=True)
     written = canned / "bundle"
     written.write_bytes(bundle)
-    script = f"cat {shlex.quote(str(written))} > guide.bundle.md"
+    script = f"mkdir guide; cat {shlex.quote(str(written))} > guide/guide.bundle.md"
     return shlex.join(["/bin/sh", "-c", script])
 
 
