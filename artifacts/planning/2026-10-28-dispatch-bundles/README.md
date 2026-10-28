@@ -40,6 +40,11 @@ The dispatch (`⇉`) and run-set (`⫽`) operators are prosiform grammar: `pf` c
 - **`pf -g` / `--guide`** prints the guide to standard output and exits 0. It states the compile step (`pf -o <folder> <destination>` from the skill directory; a non-zero exit stops the run and reports diagnostics), the `↳` inline-target rule, and that a bundle opening with a Prosiform section is followed from there.
 - **The corpus bootstrap is one instruction:** run `pf --guide` and follow it. `bootstrap.md` is retired.
 
+### Evaluation
+
+- **Correctness is proven end to end.** Corpus fixtures compile source trees to their expected bundle sets under `make check`. They cover each layout permutation: a dispatch in a section, a nested section and the preamble; one target dispatched from two sections; chains of depth one to three and past the limit; a refused cycle and a refused level-6 dispatch; a run-set with and without lead-in prose; a dispatch inside a run-set; several joined entries.
+- **Navigation is measured by agents.** A dispatch and run-set scenario set extends the I05:E01 eval: its headless runner follows each scenario's bundle set from `pf --guide`, and its trace scorer checks that each bundle is dispatched to a sub-agent, run-set calls run concurrently, questions are relayed rather than asked, and the run completes. Each scenario also runs in the bootstrap-driven form the current corpus uses, so the report states whether compiled protocols improve on authored ones. The report is compared against a committed baseline.
+
 ## Delivery
 
 Layered tasks, each leaving a working `pf`:
@@ -51,7 +56,9 @@ Layered tasks, each leaving a working `pf`:
 | W03 | Dispatch bundles, dispatch sub-sections and the cycle error |
 | W04 | Run-set instruction injection and the lead-in shape rule |
 | W05 | The `# Prosiform` section and its protocols |
-| W06 | `--guide`; bootstrap retirement; docs, glossary, invocation and fixtures |
+| W06 | `--guide`; bootstrap retirement; docs, glossary and invocation |
+| W07 | Layout-permutation corpus fixtures for the bundle set |
+| W08 | Dispatch and run-set scenarios in the E01 eval, and their first baseline |
 
 ## Decisions
 
@@ -62,6 +69,7 @@ Layered tasks, each leaving a working `pf`:
 - **Instruction at the link for dispatch, at the target for a run-set.** A dispatched target is outside the bundle, so the link needs a local destination; a run-set target is inside it, so its own section carries the instruction.
 - **Protocols first.** A step can be acted on before later text is read.
 - **Profile v4.** The same source bundles differently, as with v3.
+- **Navigation extends E01.** One runner, scorer and baseline serve every agent eval; W08 takes an edge on I05:E01.
 - **Breaking, without compatibility.** `-o FILE`, standard-output publication and the bootstrap symbol rows for `⇉` and `⫽` are removed.
 
 ## Links
