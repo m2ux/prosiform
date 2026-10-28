@@ -19,6 +19,9 @@ The rules are new to the example. Applying them to 58 files before anyone has se
 
 | Artifact | What it holds |
 | --- | --- |
+| [W05 work item](w05.md) | The authoring check's findings for the sample, its operations, contracts and commands in the new shape, and the component |
+| [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
