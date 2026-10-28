@@ -13,8 +13,10 @@ share: a sentence repeated in two sections is two ranges, so repeated
 identical prose is not duplication and a count of occurrences is not a
 coverage test. A *generated* record names a heading the bundle wrote
 itself — the filename wrapper, and the group, overview and variant
-headings a metadata-declared group produces — which carries no source range and so
-can never stand in for selected body content a group failed to emit. A
+headings a metadata-declared group produces, and each dispatch
+sub-section with the one line of instruction beneath it — which carries
+no source range and so can never stand in for selected body content a
+group failed to emit. A
 *structural ancestor* names a heading the bundle emits to place a
 selected section in the outline its author gave it: it answers to a
 source heading, as a carried heading does, and carries no source range,
@@ -58,6 +60,8 @@ OVERVIEW_SECTION = "overview section"
 MEMBER_OVERVIEW = "member overview"
 VARIANT_HEADING = "variant heading"
 STRUCTURAL_ANCESTOR = "structural ancestor"
+INSTRUCTION = "instruction"
+DISPATCH_SECTION = "dispatch sub-section"
 
 Target = tuple[str, str | None]
 
@@ -165,7 +169,24 @@ class Range:
         return [at for at in range(*self.lines) if at not in self.removed]
 
 
-Part = Range | Ancestor | Generated
+@dataclass(frozen=True)
+class Instruction:
+    """One line the bundle wrote itself beneath a heading it generated.
+
+    A dispatch sub-section carries one: the instruction naming the
+    bundle a sub-agent is handed. It carries no source range, so it can
+    never stand in for selected body content a group failed to emit.
+    """
+
+    text: str
+
+    @property
+    def kind(self) -> str:
+        """What this part is, named as the record's own vocabulary names it."""
+        return INSTRUCTION
+
+
+Part = Range | Ancestor | Generated | Instruction
 
 
 @dataclass(frozen=True)

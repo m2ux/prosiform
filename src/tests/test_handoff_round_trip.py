@@ -1,10 +1,11 @@
-"""Round-trip evidence that the destinations a bundle publishes compile.
+"""Round-trip evidence that what a bundle hands off is there to be followed.
 
-Both operators state that material is compiled in a later run, and the corpus
-asserts only the form that material takes in the bundle. This suite bundles each
-mode of a copy of the work-planner example, reads the destinations each bundle
-published, and compiles each of them in a second run, so the handoff is held by
-runs rather than by a reading of the published bytes.
+A deferral states that material is compiled in a later run, and a dispatch
+that a sub-agent follows a bundle the run published beside it. The corpus
+asserts only the form each takes in the bundle. This suite bundles each mode
+of a copy of the work-planner example, compiles each deferred destination in
+a second run, and finds each dispatched bundle in the run's own folder, so the
+handoff is held by runs rather than by a reading of the published bytes.
 
 A destination is taken from the first bundle and never restated here. The
 authoring string states what the mode linked to, and compiling that string
@@ -40,6 +41,8 @@ DEFERRAL = "\u00ac"
 
 ERROR = "error"
 RULE = "| A dispatched target |"
+
+INSTRUCTION = re.compile(r"^Dispatch `([^`]+)` to a sub-agent\.$", re.MULTILINE)
 
 LINK = re.compile(r"\[([^\]]*)\]\(([^)]+)\)")
 FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,}).*?^ {0,3}\1", re.MULTILINE | re.DOTALL)
@@ -108,10 +111,9 @@ def withheld(bundle: str) -> list[tuple[str, str]]:
     outside the root and is carried as its author wrote it, which is a
     citation rather than a handoff.
 
-    A dispatch publishes its mark, because the mark is what tells a reader who
-    compiles the material. A deferral publishes its text without the mark, so
-    the destination is the whole of what states it and the label states
-    nothing.
+    A deferral publishes its text without the mark, so the destination is the
+    whole of what states it and the label states nothing. A dispatch points at
+    its sub-section, an anchor in the bundle itself.
 
     Code is published as its author wrote it, so a link a code block or span
     shows is an example of a link rather than one the bundle published.
@@ -124,13 +126,22 @@ def withheld(bundle: str) -> list[tuple[str, str]]:
     ]
 
 
+def dispatched(bundle: str) -> list[str]:
+    """Each bundle file a dispatch sub-section of the bundle names."""
+    return INSTRUCTION.findall(bundle)
+
+
 @dataclass(frozen=True)
 class Run:
-    """One invocation: its status, the bundle it wrote and its diagnostics."""
+    """One invocation: its status, the bundles it wrote and its diagnostics.
+
+    The bundle is the entry's, named for the run's own folder.
+    """
 
     status: int
     bundle: str
     diagnostics: list[dict[str, Any]]
+    bundles: dict[str, str]
 
     def errors(self) -> list[dict[str, Any]]:
         """The diagnostics reporting a fault rather than a warning."""
@@ -170,17 +181,29 @@ class Tree:
             )
             written = sorted(Path(folder).iterdir())
             assert len(written) <= 1, written
-            bundle = written[0].read_bytes().decode(ENCODING) if written else ""
+            bundles = (
+                {
+                    one.name: one.read_bytes().decode(ENCODING)
+                    for one in written[0].iterdir()
+                }
+                if written
+                else {}
+            )
+            bundle = bundles[f"{written[0].name}.bundle.md"] if written else ""
         assert result.stdout == ""
         diagnostics = [json.loads(line) for line in result.stderr.splitlines() if line]
-        return Run(result.returncode, bundle, diagnostics)
+        return Run(result.returncode, bundle, diagnostics, bundles)
 
-    def bundled(self, entry: str) -> str:
-        """The bundle one document publishes, which carries no error."""
+    def run(self, entry: str) -> Run:
+        """The bundles one document publishes, which carry no error."""
         run = self.invoke(entry)
         assert run.status == 0, run.diagnostics
         assert run.errors() == [], run.diagnostics
-        return run.bundle
+        return run
+
+    def bundled(self, entry: str) -> str:
+        """The bundle one document publishes, which carries no error."""
+        return self.run(entry).bundle
 
     def compiled(self, destination: str) -> Run:
         """A destination the first bundle published, compiled from this root."""
@@ -209,15 +232,13 @@ class Tree:
 
         A link landing outside the root stays as its author wrote it, so it
         names material no run from this root compiles and is a reference rather
-        than a handoff. Neither operator may name such material, so a
-        dispatched destination always names a document of this copy.
+        than a handoff.
         """
         found = []
         for label, destination in withheld(self.bundled(entry)):
             path = unquote(destination.partition("#")[0])
             target = (self.root / path).resolve()
             inside = target.is_relative_to(self.root.resolve()) and target.is_file()
-            assert inside or not label.startswith(DISPATCH), destination
             if inside:
                 found.append((label, destination))
         return found
@@ -250,16 +271,18 @@ def handoff(tree: Tree, entry: str) -> tuple[str, str]:
     return found[0]
 
 
-def test_a_dispatched_destination_compiles(tree: Tree) -> None:
-    """A dispatched link's published destination yields its selected section."""
+def test_a_dispatched_bundle_is_published_beside_the_entry(tree: Tree) -> None:
+    """A dispatched link names a bundle the run published, holding its section."""
     tree.write("artifacts/handoff.md", artifact("Handoff"))
     tree.write(
         "modes/handoff.md",
         mode(f"Run [{DISPATCH} Selection](../artifacts/handoff.md#selection)."),
     )
-    label, destination = handoff(tree, "modes/handoff.md")
-    assert label.startswith(DISPATCH), label
-    assert_published(tree.compiled(destination), SELECTED)
+    run = tree.run("modes/handoff.md")
+    assert tree.handoffs("modes/handoff.md") == []
+    assert dispatched(run.bundle) == ["artifacts_handoff__selection.bundle.md"]
+    assert run.bundles["artifacts_handoff__selection.bundle.md"] == SELECTED
+    assert_published(tree.compiled("artifacts/handoff.md#selection"), SELECTED)
 
 
 def test_a_deferred_destination_compiles(tree: Tree) -> None:
@@ -279,15 +302,15 @@ def test_an_escaped_destination_compiles(tree: Tree) -> None:
     tree.write("artifacts/caf\u00e9.md", artifact("Caf\u00e9"))
     tree.write(
         "modes/handoff.md",
-        mode(f"Run [{DISPATCH} Held](../artifacts/caf\u00e9.md#held)."),
+        mode(f"Run [{DEFERRAL} Held](../artifacts/caf\u00e9.md#held)."),
     )
     _, destination = handoff(tree, "modes/handoff.md")
     assert "%" in destination, destination
     assert_published(tree.compiled(destination), HELD)
 
 
-def test_both_destinations_of_one_bundle_compile(tree: Tree) -> None:
-    """One mode holding both operators publishes two destinations that compile."""
+def test_both_handoffs_of_one_bundle_are_followed(tree: Tree) -> None:
+    """One mode holding both operators hands off a bundle and a destination."""
     tree.write("artifacts/handoff.md", artifact("Handoff"))
     tree.write(
         "modes/handoff.md",
@@ -296,36 +319,34 @@ def test_both_destinations_of_one_bundle_compile(tree: Tree) -> None:
             f"Run [{DEFERRAL} Held](../artifacts/handoff.md#held).",
         ),
     )
-    found = tree.handoffs("modes/handoff.md")
-    assert len(found) == 2, found
-    labels = [label for label, _ in found]
-    assert sum(label.startswith(DISPATCH) for label in labels) == 1, labels
-    assert all(DEFERRAL not in label for label in labels), labels
-    compiled: dict[str, str] = {}
-    for _, destination in found:
-        path, _, fragment = destination.partition("#")
-        assert path == "artifacts/handoff.md", destination
-        assert fragment in SECTION, destination
-        run = tree.compiled(destination)
-        assert_published(run, SECTION[fragment])
-        compiled[fragment] = run.bundle
-    assert sorted(compiled) == sorted(SECTION), compiled
+    run = tree.run("modes/handoff.md")
+    assert run.bundles["artifacts_handoff__selection.bundle.md"] == SELECTED
+    label, destination = handoff(tree, "modes/handoff.md")
+    assert DEFERRAL not in label and DISPATCH not in label, label
+    path, _, fragment = destination.partition("#")
+    assert (path, fragment) == ("artifacts/handoff.md", "held"), destination
+    assert_published(tree.compiled(destination), SECTION[fragment])
 
 
-def test_each_destination_the_example_publishes_compiles(tree: Tree) -> None:
-    """Every destination a mode of the example publishes compiles in a second run.
+def test_each_handoff_the_example_publishes_is_followed(tree: Tree) -> None:
+    """Every handoff a mode of the example publishes can be followed.
 
-    Each mode is bundled as its own entry, and each distinct destination the
-    bundles published is compiled once. The example dispatches and defers, so
-    both operators' destinations are among them.
+    Each mode is bundled as its own entry. Each bundle a dispatch sub-section
+    names is in that run's folder, and each distinct deferred destination the
+    bundles published is compiled once in a second run. The example dispatches
+    and defers, so both handoffs are among them.
     """
     published: dict[str, str] = {}
+    named = 0
     for entry in tree.modes():
+        run = tree.run(entry)
+        for name in dispatched(run.bundle):
+            assert name in run.bundles, (entry, name)
+            named += 1
         for label, destination in tree.published(entry):
             published.setdefault(destination, label)
-    labels = list(published.values())
-    assert any(label.startswith(DISPATCH) for label in labels), published
-    assert any(not label.startswith(DISPATCH) for label in labels), published
+    assert named, "the example dispatches nothing"
+    assert published, "the example defers nothing"
     for destination in published:
         run = tree.compiled(destination)
         assert run.errors() == [], (destination, run.diagnostics)

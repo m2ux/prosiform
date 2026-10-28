@@ -532,13 +532,12 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
     the bundle assigned no destination is published with the bytes its
     author wrote.
 
-    The one exception is a withheld link's deferral mark, which is
-    authoring syntax rather than content: the bundle took a destination
-    for that link and the destination states the deferral, so the mark
-    and the blanks following it go. The edit reaches the prefix of the
-    label, which no nested use opens on, so it still overlaps nothing.
-    A dispatch keeps its mark, because nothing else about it states who
-    compiles the material.
+    The one exception is a withheld link's mark, which is authoring
+    syntax rather than content: the bundle took a destination for that
+    link, and the destination or the sub-section it names states the
+    withholding, so the mark and the blanks following it go. The edit
+    reaches the prefix of the label, which no nested use opens on, so it
+    still overlaps nothing.
 
     The destination arrives whole. Where a link points is the bundle's
     question, and this writes the answer, so a fragment of the bundle

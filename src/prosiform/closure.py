@@ -6,13 +6,13 @@ references permit parent bootstrap. Canonical source identities are relative
 to the invocation working directory, independent of the discovering parent.
 
 Three operators open a link's text, each a mark followed by a space, and
-one link states one of them. Two withhold the same compilation: one states
-when the material is compiled, the other who compiles it. Only the
-dispatch states what its destination does not: a withheld link's
-destination is the target's path, which no compiled link carries, so the
-deferral is stated there and its mark is authoring syntax. A dispatch has
-no such destination to tell a reader who compiles the material, so its
-mark is content and the bundle publishes it. The third, the run-set mark,
+one link states one of them. Two withhold the same compilation from the
+bundle carrying the link: one states when the material is compiled, the
+other who follows it. A deferred link's destination is the target's path,
+which no compiled link carries, so the deferral is stated there; a
+dispatched link points at a sub-section naming the bundle the run
+compiles for its target, which states the dispatch. Either mark is
+therefore authoring syntax, and the bundle drops it. The third, the run-set mark,
 withholds nothing: its target is compiled like any link's, and the mark
 is content stating how the calls the target holds are run."""
 
@@ -264,11 +264,11 @@ def deferred(opening: str) -> bool:
 
 
 def dispatched(opening: str) -> bool:
-    """Whether a link states that a sub-agent compiles its material.
+    """Whether a link states that a sub-agent follows its material.
 
-    A dispatch and a deferral withhold the same compilation and differ in
-    what they say about it, so everything a deferral withholds a dispatch
-    withholds and the published mark is the only thing between them.
+    A dispatch and a deferral withhold the same compilation from the
+    bundle carrying the link: a deferral leaves it to a later run, and a
+    dispatch has the run compile it as a bundle of its own.
     """
     return DISPATCH_MARK in operators(opening)
 
@@ -291,35 +291,33 @@ def withholding(opening: str) -> bool:
     recognize and a renderer knowing nothing of this tool shows the
     link.
 
-    Which of the two marks reaches the bundle is a separate decision for
-    each, read through `operators`: a dispatch states who compiles the
-    material, which only the mark can tell a reader, while a deferral
-    states when, which the destination already states. A run-set
-    withholds nothing.
+    Neither mark reaches the bundle: a deferral's destination states
+    when the material is compiled, and a dispatch's sub-section states
+    who compiles it. A run-set withholds nothing.
     """
     return deferred(opening) or dispatched(opening)
 
 
 def unmarked(text: str) -> str:
-    """One link's text as the bundle publishes it, with a deferral mark taken off.
+    """One link's text as the bundle publishes it, with a withholding mark taken off.
 
     A deferral states when the material is compiled, and its destination
-    states that already, so the mark that states it is authoring syntax
-    rather than content. The mark goes with the blanks written around
-    it, which are its spacing.
+    states that already; a dispatch states who compiles it, and the
+    sub-section its link points at states that. Either mark is authoring
+    syntax rather than content, so it goes with the blanks written
+    around it, which are its spacing.
 
-    Text opening with no deferral operator is the author's prose and is
-    returned as written. A dispatch's mark states who compiles the
-    material, which its destination does not, and a run-set's mark how
-    the calls it names are run, so each stays.
+    Text opening with neither operator is the author's prose and is
+    returned as written. A run-set's mark states how the calls it names
+    are run, so it stays.
 
-    The caller applies it where the bundle rebased the link's
-    destination, which is where the destination states the deferral.
+    The caller applies it where the bundle gave the link a destination
+    of its own, which is where that destination states the withholding.
     """
     at = 0
     while at < len(text) and text[at] in BLANKS:
         at += 1
-    if not opens(text, at) or text[at] != DEFERRAL_MARK:
+    if not opens(text, at) or text[at] not in (DEFERRAL_MARK, DISPATCH_MARK):
         return text
     at += 1
     while at < len(text) and text[at] in BLANKS:
@@ -477,12 +475,11 @@ def resolvable(document: str, text: str, root: str = "") -> Reference | None:
 
 
 def rebased(found: Reference, text: str) -> str:
-    """URI-escape a withheld target's canonical working-directory-relative path.
+    """URI-escape a deferred target's canonical working-directory-relative path.
 
-    A deferral and a dispatch publish the same destination: the path the
-    run that compiles the material follows from the working directory
-    the bundle was compiled in, with the fragment the link resolved
-    retained.
+    A deferral publishes the path the run that compiles the material
+    follows from the working directory the bundle was compiled in, with
+    the fragment the link resolved retained.
     """
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
     fragment = components(text).fragment

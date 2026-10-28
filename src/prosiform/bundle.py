@@ -115,7 +115,13 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
-from prosiform.closure import bundled, rebased, unmarked, withholding_target
+from prosiform.closure import (
+    bundled,
+    dispatched,
+    rebased,
+    unmarked,
+    withholding_target,
+)
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -315,14 +321,13 @@ def emitted_visible(path: str, inline: Token, root: str = "") -> str:
     """The text one inline token shows once the bundle has rewritten its links.
 
     A heading can carry a link, and one the run withholds a compilation
-    of publishes without its deferral mark. What the heading shows is
+    of publishes without its deferral or dispatch mark. What the heading shows is
     therefore what the renderer slugs, so the destination the heading
     takes names the heading a reader finds.
 
     A link the bundle took no destination for shows the text its author
-    wrote. That covers a markup or resource reference under the root, a
-    reference leaving the root and a dispatch, because only a deferred
-    link has its destination rebased to state the deferral.
+    wrote. That covers a markup or resource reference under the root and
+    a reference leaving the root.
     """
     children = inline.children or []
     carried: list[str] = []
@@ -344,7 +349,7 @@ def shown_text(path: str, tokens: Sequence[Token], root: str = "") -> dict[int, 
     """The visible text of each heading token, keyed by the token's identity.
 
     The text is the one the bundle emits for that heading, which is the
-    text its author wrote with a deferral mark taken off, so the
+    text its author wrote with a withholding mark taken off, so the
     destination the heading takes names what a reader finds.
     """
     return {
@@ -360,7 +365,7 @@ def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
     what a reference into that document resolved against. It is read
     from the authored text and not from the published one, because a
     reference naming this heading carries the fragment the author's text
-    produces: a heading whose deferral mark is dropped on emission is
+    produces: a heading whose withholding mark is dropped on emission is
     still reached by the fragment its source spelling slugs to.
     """
     return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
@@ -374,6 +379,7 @@ def rewrite(
     path: str,
     defined: Mapping[str, Definition],
     root: str = "",
+    dispatching: Mapping[tuple[str, int], Mapping[Target, str]] | None = None,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -395,15 +401,25 @@ def rewrite(
     A diagram's link destination is replaced in the one line it is
     written on, so the line count holds there too. Several destinations
     on one line are replaced in written order.
+
+    A dispatched link takes the destination of the sub-section its
+    region carries for its target, which the dispatch map holds by the
+    region's first line.
     """
     written = list(physical)
-    for inline in inlines(tokens, selected):
-        found = destinations(inline)
-        if inline.map is None or (not found and not defined):
-            continue
-        start, end = inline.map
-        targets = [target(path, one, opening, assigned, root) for one, opening in found]
-        written[start:end] = rewritten(written[start:end], inline, targets, defined)
+    served = {} if dispatching is None else dispatching
+    for region in selected:
+        here = served.get((path, (region.map or (0, 0))[0]), {})
+        for inline in inlines(tokens, [region]):
+            found = destinations(inline)
+            if inline.map is None or (not found and not defined):
+                continue
+            start, end = inline.map
+            targets = [
+                target(path, one, opening, assigned, root, dispatched_to=here)
+                for one, opening in found
+            ]
+            written[start:end] = rewritten(written[start:end], inline, targets, defined)
     for fence in within(tokens, selected):
         if fence.type != FENCE:
             continue
@@ -438,6 +454,7 @@ def target(
     assigned: Mapping[tuple[str, str | None], str],
     root: str = "",
     anchor: str = ANCHOR,
+    dispatched_to: Mapping[Target, str] | None = None,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -447,12 +464,14 @@ def target(
     that heading's slug behind the anchor spelling the link's form
     writes, `#` wherever the link is not a sequence diagram's menu entry.
 
-    A withheld link under the allowed source root takes its target's
+    A deferred link under the allowed source root takes its target's
     path from the invocation working directory, so the run that
-    compiles it later, from that directory, follows it as written. It is
-    never rewritten to a bundle destination, even where another reference
-    carried its target into the bundle: what one author withheld cannot be changed by
-    another author's reference.
+    compiles it later, from that directory, follows it as written. A
+    dispatched one takes the destination of the dispatch sub-section
+    its region carries for its target. Neither is rewritten to the
+    destination of the target's own heading, even where another
+    reference carried its target into the bundle: what one author
+    withheld cannot be changed by another author's reference.
 
     A link resolving outside the allowed source root, and one naming no
     Markdown document, is text the bundle carries and takes no
@@ -464,6 +483,9 @@ def target(
     deferred = withholding_target(path, destination, opening, root)
     if deferred is None:
         return None
+    if dispatched(opening):
+        held = {} if dispatched_to is None else dispatched_to
+        return f"{anchor}{held[(deferred.path, deferred.fragment)]}"
     return rebased(deferred, destination)
 
 
@@ -716,6 +738,7 @@ def group(
     assigned: dict[tuple[str, str | None], str] | None = None,
     root: str = "",
     situate: bool = False,
+    dispatching: Mapping[tuple[str, int], Mapping[Target, str]] | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -796,7 +819,9 @@ def group(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, environment, root)
+        else rewrite(
+            physical, tokens, chosen, assigned, path, environment, root, dispatching
+        )
     )
     for token in regions(tokens):
         if id(token) in needed:

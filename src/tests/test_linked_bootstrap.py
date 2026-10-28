@@ -60,6 +60,11 @@ SKILL = (
 )
 
 
+def run_bundle(folder: Path, name: str) -> Path:
+    """The entry bundle a run named so writes under one output folder."""
+    return folder / name / f"{name}.bundle.md"
+
+
 def document(
     body: str, *, root: str | None = None, group: str | None = None, depth: Any = None
 ) -> str:
@@ -390,7 +395,7 @@ class Stack:
             shutil.copyfile(bundle, produced)
         elif result.returncode == 0 and "-o" in arguments:
             folder = Path(arguments[arguments.index("-o") + 1])
-            written = sorted(folder.glob("*.bundle.md"))
+            written = sorted(folder.glob("*/*.bundle.md"))
             if len(written) == 1:
                 shutil.copyfile(written[0], produced)
         if produced.exists():
@@ -459,8 +464,9 @@ class Stack:
         result = self.invoke("-o", str(folder), *arguments, cwd=cwd)
         assert result.returncode == 0, result.stderr
         assert result.stdout == ""
-        written = sorted(folder.iterdir())
-        assert len(written) == 1, written
+        [run] = sorted(folder.iterdir())
+        written = sorted(run.iterdir())
+        assert [one.name for one in written] == [f"{run.name}.bundle.md"], written
         output = written[0].read_text(encoding="utf-8")
         assert "WRONG_ROOT_MARKER" not in output
         assert "Linked Instruction Bootstrap" not in output
@@ -588,13 +594,13 @@ def test_a_named_folder_and_the_working_directory_carry_one_bundle(
     """A named folder and the working directory carry one bundle under one name."""
     target = stack.entry("Assemble")
     expected = stack.compiled(target)
-    derived = stack.cwd / "skills_pf-bootstrap-specimen_modes_assemble.bundle.md"
+    derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble")
     published = stack.invoke(target, bundle=derived)
     assert published.returncode == 0, published.stderr
     assert published.stdout == ""
     assert derived.read_text(encoding="utf-8") == expected
-    fragment = (
-        stack.cwd / "skills_pf-bootstrap-specimen_modes_assemble__steps.bundle.md"
+    fragment = run_bundle(
+        stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble__steps"
     )
     selected = stack.invoke(stack.entry("Assemble", "steps"), bundle=fragment)
     assert selected.returncode == 0, selected.stderr
@@ -608,7 +614,7 @@ def test_repeated_target_is_included_once(stack: Stack) -> None:
     output = stack.compiled(target, target)
     assert output.count("DEFAULTS_MARKER") == 1
     assert output.count("RUN_LEAF_MARKER") == 1
-    derived = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
+    derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
     result = stack.invoke(target, target, bundle=derived)
     assert result.returncode == 0, result.stderr
     assert result.stdout == ""
@@ -688,7 +694,8 @@ def test_rewritten_destinations_are_stable(stack: Stack) -> None:
     assert "[Leaf](#leaf)" in first
     assert "[Tail](#tail)" in first
     assert "libraries/alpha/rules.md" not in first
-    derived = stack.cwd / "skills_pf-bootstrap-specimen_modes_assemble.bundle.md"
+    derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble")
+    derived.parent.mkdir()
     derived.write_text("STALE\n", encoding="utf-8")
     result = stack.invoke(target, bundle=derived)
     assert result.returncode == 0, result.stderr
@@ -705,7 +712,8 @@ def test_depth_conflict_preserves_existing_output(stack: Stack) -> None:
             depth=3,
         ),
     )
-    destination = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
+    destination = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
+    destination.parent.mkdir()
     destination.write_text("PRESERVE_ME\n", encoding="utf-8")
     result = stack.invoke(stack.entry("Defaults"))
     assert result.returncode == 1, result.stderr
@@ -725,7 +733,8 @@ def test_depth_conflict_preserves_existing_output(stack: Stack) -> None:
 def test_invalid_metadata_publishes_nothing(stack: Stack, depth: Any) -> None:
     """A depth the schema refuses leaves the existing output untouched."""
     stack.write("run/tail.md", document("# Tail\n", group="leaves", depth=depth))
-    destination = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
+    destination = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
+    destination.parent.mkdir()
     destination.write_text("PRESERVE_ME\n", encoding="utf-8")
     result = stack.invoke(stack.entry("Defaults"))
     assert result.returncode == 1, result.stderr
