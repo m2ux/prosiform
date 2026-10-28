@@ -100,6 +100,8 @@ Links each named task's id to a pull request naming the epic, open or merged, an
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
 ```
@@ -159,3 +161,27 @@ Work a pull request names keeps its number. Renumbering touches only a row no pu
 - A linked issue remains open until its criteria and delivery requirements hold and every Development-linked pull request is merged.
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
+
+# Conventions
+
+- **Session.**
+  Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
+- **Repository.**
+  `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
+- **Bodies.**
+  - Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
+  - Keep these files in a working directory outside the repository.
+- **Helper invocation.**
+  A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
+- **Write confirmation.**
+  Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
+- **Boards.**
+  A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
+- **Example values.**  Substitute the real ones:
+  - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
+  - `950` a pull request, `I07` and `I08` initiative numbers;
+  - board `9` a theme board, and `419167630` its Status field id;
+  - `1` the Initiative Template board, `13` a board copied from it;
+  - `14` the Proposals Template, `15` the Proposals board;
+  - `m2ux` the user.
+  - `<checkout>` any checkout of the project, a linked worktree included.

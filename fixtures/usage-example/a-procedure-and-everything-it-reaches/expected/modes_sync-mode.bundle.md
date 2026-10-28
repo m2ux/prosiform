@@ -116,17 +116,18 @@ Report per issue: tasks linked, criteria ticked, rows marked done, criteria left
 - **Repository.**
   `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
 - **Bodies.**
-  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
-  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
   - Keep these files in a working directory outside the repository.
-- **Scripts.**
-  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Helper invocation.**
+  A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
+- **Write confirmation.**
+  Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
 - **Boards.**
   A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
 - **Example values.**  Substitute the real ones:
   - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
   - `950` a pull request, `I07` and `I08` initiative numbers;
-  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - board `9` a theme board, and `419167630` its Status field id;
   - `1` the Initiative Template board, `13` a board copied from it;
   - `14` the Proposals Template, `15` the Proposals board;
   - `m2ux` the user.
@@ -182,7 +183,7 @@ Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body th
 
 ##### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](#conventions) states.
 
 ##### 7. Compare the Saved Issue Fields
 
@@ -505,6 +506,8 @@ Checks the issue criteria, the complete link snapshot and every linked pull requ
 - `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
 - Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
 ```
@@ -770,7 +773,7 @@ Resolve a non-mechanical finding confined to one body.
 
 ##### 4. Re-Read Each Repaired Issue
 
-Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue.
+Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue, as [Write confirmation](#conventions) states.
 
 - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
@@ -899,6 +902,8 @@ Checks one issue against its template, and with `--fix` writes the body with the
 
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
@@ -1434,6 +1439,8 @@ Links each named task's id to a pull request naming the epic, open or merged, an
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
 ```
@@ -1451,6 +1458,8 @@ Ticks confirmed epic criteria, refusing any not ready to verify, and ticks compl
 **Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -1473,6 +1482,8 @@ Holds each named task row for one session, by setting its record folder as the r
 
 `<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](#engineering-branch) on the engineering branch.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
 ```
@@ -1492,6 +1503,8 @@ Frees each named task row, by replacing the planning-folder link with its work-i
 - The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
 
 `<task-ids>` is a comma-separated list of task ids.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
@@ -1690,7 +1703,7 @@ For a link edit:
 
 ##### 4. Re-Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) again for the same pull request.
+Run [Read Development Links](#read-development-links) again for the same pull request, as [Write confirmation](#conventions) states.
 
 ##### 5. Compare the Field with the Edit
 
@@ -1712,7 +1725,7 @@ For every pull request in `prs.json`, apply [Access Development Links](#access-d
 
 ##### 2. Re-Read Links After a Change
 
-Repeat that read after a link changes.
+Repeat that read after a link changes, as [Write confirmation](#conventions) states.
 
 ##### 3. Return an Incomplete Link Fetch
 
@@ -1810,7 +1823,7 @@ For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-
 
 ##### 3. Re-Read the Published Pull Request
 
-Re-read through [Read Pull Request State](#read-pull-request-state).
+Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](#conventions) states.
 
 ##### 4. Return the Published State
 
@@ -2254,7 +2267,7 @@ Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
 
 ##### 2. Fetch the Requested Board Item
 
-When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
+When a single item is requested for [write confirmation](#conventions), run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
 
 ##### 3. Return the Board Configuration
 
@@ -2450,7 +2463,7 @@ Run [Compute Board Changes](#compute-board-changes), mapping the supplied record
 
 ##### 3. Return the Planned Board Calls
 
-Return the generated calls and unresolved references, meeting [Fields](#fields-9). The caller gathers missing evidence, applies changes and confirms their live state.
+Return the generated calls and unresolved references, meeting [Fields](#fields-9). The caller gathers missing evidence, applies changes and confirms them as [Write confirmation](#conventions) states.
 
 #### *Record* Board Delivery
 
@@ -2477,7 +2490,7 @@ Apply [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked
 
 Run each emitted call, including the assignee calls, which act on the issue rather than the board item.
 
-- Apply [Read Board Configuration](#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
+- Apply [Read Board Configuration](#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status, as [Write confirmation](#conventions) states.
 - If that item still shows the preceding status:
   - Repeat its write.
   - Repeat the same item read. The item list can lag a write.
@@ -2523,6 +2536,8 @@ Computes membership, Status and assignee calls from supplied delivery evidence.
 - `--others` supplies each resolved dependency issue.
 
 Pass each epic or task JSON file as a separate argument after its corresponding flag.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board.py '<initiative-json-file>' --epics '<epic-json-file>' --tasks '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --board '<board-identity>' --fields '<board-fields-file>' --items '<board-items-file>' --out '<output-directory>' --assignee '<assignee-login>'
@@ -2664,6 +2679,8 @@ Prints the long-lived branch names, one per line.
 - `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
 - A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
 ```
@@ -2763,6 +2780,8 @@ Reports an epic's delivery state against the pull requests that name it.
 **Inputs:** Epic JSON, pull request records and complete issue-link snapshot.
 
 - Results follow [Delivery Findings](#delivery-findings).
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'

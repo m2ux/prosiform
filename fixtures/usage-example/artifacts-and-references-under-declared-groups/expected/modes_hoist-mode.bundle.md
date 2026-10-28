@@ -108,17 +108,18 @@ Report each orphan's placement, the issues changed, created or closed, the prior
 - **Repository.**
   `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
 - **Bodies.**
-  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
-  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
   - Keep these files in a working directory outside the repository.
-- **Scripts.**
-  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Helper invocation.**
+  A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
+- **Write confirmation.**
+  Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
 - **Boards.**
   A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
 - **Example values.**  Substitute the real ones:
   - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
   - `950` a pull request, `I07` and `I08` initiative numbers;
-  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - board `9` a theme board, and `419167630` its Status field id;
   - `1` the Initiative Template board, `13` a board copied from it;
   - `14` the Proposals Template, `15` the Proposals board;
   - `m2ux` the user.
@@ -174,7 +175,7 @@ Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body th
 
 ##### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](#conventions) states.
 
 ##### 7. Compare the Saved Issue Fields
 
@@ -486,6 +487,8 @@ Lists the hoist candidates, and the open initiatives and epics they could join.
 
 **Inputs:** Complete supplied repository issue collection.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py '<issues-json-file>'
 ```
@@ -766,7 +769,7 @@ Resolve a non-mechanical finding confined to one body.
 
 ##### 4. Re-Read Each Repaired Issue
 
-Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue.
+Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue, as [Write confirmation](#conventions) states.
 
 - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
@@ -895,6 +898,8 @@ Checks one issue against its template, and with `--fix` writes the body with the
 
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
@@ -1430,6 +1435,8 @@ Links each named task's id to a pull request naming the epic, open or merged, an
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
 ```
@@ -1447,6 +1454,8 @@ Ticks confirmed epic criteria, refusing any not ready to verify, and ticks compl
 **Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -1469,6 +1478,8 @@ Holds each named task row for one session, by setting its record folder as the r
 
 `<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](#engineering-branch) on the engineering branch.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
 ```
@@ -1488,6 +1499,8 @@ Frees each named task row, by replacing the planning-folder link with its work-i
 - The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
 
 `<task-ids>` is a comma-separated list of task ids.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
