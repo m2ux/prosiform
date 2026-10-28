@@ -16,13 +16,24 @@ One architecture overview from supplied measurements.
 
 **Inputs:** Measured structure and flows, pull request head, code permalinks and the output path.
 
-1. Take the graph measurements supplied by the caller and check the proposed diagrams.
-   - The diagrams must meet [Measured Structure](#measured-structure) and [Diagrams](#diagrams).
-2. Populate the overview from the [Template](#template) at the supplied output path.
-   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
-3. Pin each code reference.
-   - Each reference must meet [Code References](#code-references).
-4. Return the file for the caller to register in its planning record.
+#### 1. Check the Proposed Diagrams
+
+Take the graph measurements supplied by the caller and check the proposed diagrams.
+- The diagrams must meet [Measured Structure](#measured-structure) and [Diagrams](#diagrams).
+
+#### 2. Populate the Overview Template
+
+Populate the overview from the [Template](#template) at the supplied output path.
+- All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
+
+#### 3. Pin Each Code Reference
+
+Pin each code reference.
+- Each reference must meet [Code References](#code-references).
+
+#### 4. Return the Overview File
+
+Return the file for the caller to register in its planning record.
 
 ## Fields
 
