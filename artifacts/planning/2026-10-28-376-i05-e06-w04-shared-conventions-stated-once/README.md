@@ -12,12 +12,16 @@ At present, operations restate how a helper runs and how a write is checked, eac
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | The two conventions' text, each restatement and the link replacing it, and the component |
+| [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I05:E06 Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
+| Pull request | [#382 Shared Conventions Stated Once](https://github.com/m2ux/prosiform/pull/382) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Example Authoring planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
 | Prior task | [W03 Configuration Document for the Example's Bindings](../2026-10-28-376-i05-e06-w03-configuration-document-for-the/README.md) |
