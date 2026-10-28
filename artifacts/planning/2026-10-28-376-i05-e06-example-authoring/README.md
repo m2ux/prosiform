@@ -22,6 +22,7 @@ The change is to the corpus, its guidelines and one repository check; `pf` is un
 | [W08 work item](w08.md) | Modes, protocols and entry files under the rules |
 | [W09 work item](w09.md) | One home per rule and one subject per file |
 | [W10 work item](w10.md) | The authoring guard under `make check` |
+| [W11 work item](w11.md) | The shared skill guidelines under the authoring rules |
 | [Joins](joins.md) | Independent row pairs that take separate pull requests, and why |
 | [Change list](change-list.md) | The plan changes this session applied and held |
 
@@ -61,6 +62,7 @@ Counted on the I05:E04 base, [`14d059d1`](https://github.com/m2ux/prosiform/tree
 | W08 | `example/work-planner` | `fixtures/usage-example/*/expected/` |
 | W09 | `example/work-planner` | `fixtures/usage-example/*/expected/` |
 | W10 | `Makefile` | `checks.md`, `checks/tests` |
+| W11 | `example/guidelines.md` | `fixtures/usage-example/*/expected/` |
 
 ## Collision Surface
 

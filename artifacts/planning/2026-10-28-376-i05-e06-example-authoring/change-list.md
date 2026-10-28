@@ -10,6 +10,7 @@ The plan changes this session applied and held. The user chose the placement und
 - **Re-prioritisation: #376 `priority: 8`.** E04 has merged, so E06 shares the number of I05's other open epics. (User.)
 - **Folded work: title headings.** Each file keeps its H1 as its heading in the bundle; #376's Problem and Proposal state it, W01 states the rule, and the open question is removed. (User.)
 - **Folded work: configuration home.** `example/work-planner/configuration.md`, linked from `SKILL.md`; #376's Proposal and AC3 name it, W03 creates it, and the open question is removed. (User.)
+- **Task creation, I05:E06 W11.** [#378](https://github.com/m2ux/prosiform/issues/378) is placed as W11, "Shared guidelines under the authoring rules", depending on W01; W10 depends on it; it covers a new AC14 taken from #378's AC1. #378 is rewritten in the task layout as `[I05:E06:W11]`, its original body kept in a comment. W11 starts after W03 merges. (User.)
 
 ## Held
 
