@@ -2,7 +2,9 @@
 
 ## Applied
 
-- **Delivery record.** #376 W04 row links the pull request in place of this folder, from a fresh read; no other row or criterion changed.
+- **Delivery record.** #376 W04 row links [#382](https://github.com/m2ux/prosiform/pull/382) in place of this folder, from a fresh read; no other row or criterion changed.
+- **Task merge.** #382 merged into `i05/e06/main` at `1a102cdb` after CI passed on `56494cf6`; the epic base had not moved since the branch was cut. #376 AC4 ticked and W04 Done, from a fresh read.
+- **Debt and arising issues.** None found; no issue created or hoisted.
 
 ## Held
 
