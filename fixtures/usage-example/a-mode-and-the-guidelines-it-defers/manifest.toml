@@ -1,4 +1,4 @@
-description = "The usage example that compiles the Revise mode bundles that mode with the Rules, Conventions and Bootstrap documents its links reach and the Plan Change artifact under the Artifacts heading. Its four deferred links to the skill guidelines are published with the mark removed and a destination naming the guidelines from the working directory, and the guidelines contribute no content. Its links to the shared guidelines resolve outside the root and keep their authored destinations."
+description = "The usage example that compiles the Revise mode bundles that mode with the Rules and Conventions documents its links reach and the Plan Change artifact under the Artifacts heading. Its four deferred links to the skill guidelines are published with the mark removed and a destination naming the guidelines from the working directory, and the guidelines contribute no content. Its links to the shared guidelines resolve outside the root and keep their authored destinations."
 
 clauses = [
   "Usage examples",

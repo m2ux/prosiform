@@ -42,8 +42,8 @@ These rules apply to mode procedures and artifact operations.
   Nest instructions that handle an action's specific output beneath that action. Keep peer actions at the enclosing list level. Name the returned object explicitly when a pronoun would leave its referent unclear.
 - **Branch headers.**
   Nest named findings and conditional branches as sub-bulleted headers beneath the action or scope that governs them. Each header is a bold label on its own line, with its instructions in child bullets. Mutually exclusive choices share one decision step. Place actions common to all branches after the branch group at the enclosing sequence level, including a shared return to the caller.
-- **Run-sets.**
-  A [run-set](bootstrap.md#symbols) is a `####` subsection under the operation, mode procedure or protocol procedure that links it, holding only one bulleted list whose every item is a call link. An item nested under another runs after it; an item that says "for each" runs once per item. Its items are reads, or dispatched work that writes no object another item writes.
+- **Parallel dispatch.**
+  A step's `⫽` links are dispatched together, wherever its prose writes them. Each is dispatched work that writes no object another one writes; a set states no order, so work depending on one item's result is a later step.
 
 ## Prose
 
@@ -110,7 +110,7 @@ Read this before adding or changing a mode.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
-  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential unless a step links a run-set: complete the called work, then resume the calling step with its result; a blocker returns to the caller. A call whose link is [dispatched](bootstrap.md#symbols) runs in a sub-agent, from any session, dispatched or not. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
+  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential: complete the called work, then resume the calling step with its result; a blocker returns to the caller. A call whose link opens with `⇉` runs in a sub-agent, from any session, dispatched or not, and a step's `⫽` calls run in sub-agents together, as the bundle's Prosiform section states. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
 - **No spare parts.**
   A mode does not carry an outcome, a procedure unit, or a command its procedure never uses.
 - **A new mode.**
@@ -216,7 +216,7 @@ Read this before adding or changing a reference.
 
 - **Opening.**  The bulleted list has one item for each issue type.
 - **Sections.**
-  Preamble, Modes, then Dependencies. Modes opens by linking [Bootstrap](bootstrap.md), which sits beside the entry point.
+  Preamble, Modes, then Dependencies. Modes opens with the one instruction to run `pf` and follow it.
 - **Issue bodies.**
   The skill's prose layout applies to its instructions. Issue bodies follow [Issue Body](artifacts/issue-body.md#fields); pull request bodies follow [Pull Request Body](artifacts/pull-request-body.md#fields).
 - **Rules and conventions.**
@@ -224,7 +224,7 @@ Read this before adding or changing a reference.
 
 ## Progressive Disclosure
 
-Apply the shared [progressive disclosure](../guidelines.md#progressive-disclosure) and [disclosure verification](../guidelines.md#disclosure-verification) rules to affected callers. A mode is followed from its bundle, which carries its rules, conventions and every section it links but a [dispatched](bootstrap.md#symbols) one, which is compiled for the sub-agent that follows it.
+Apply the shared [progressive disclosure](../guidelines.md#progressive-disclosure) and [disclosure verification](../guidelines.md#disclosure-verification) rules to affected callers. A mode is followed from its bundle, which carries its rules, conventions and every section it links but a dispatched one, which is compiled to a bundle of its own for the sub-agent that follows it.
 
 - **Mode routes.**
   Trace each affected mode through its common conventions, selected operations and supporting guides. Include cross-mode calls and explicit whole-file requirements.

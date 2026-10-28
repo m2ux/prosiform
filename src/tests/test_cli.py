@@ -54,6 +54,7 @@ from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
     GROUP_DEPTH_CONFLICT,
+    GUIDE,
     INPUT_FAILURE,
     INTERNAL_ERROR,
     INVALID_ENCODING,
@@ -209,6 +210,42 @@ def test_the_help_response_shows_usage_defaults_and_exit_statuses() -> None:
     for status in ("0", "1", "2", "3", "4"):
         assert f"\n  {status}  " in run.stdout
     assert run.stderr == ""
+
+
+def test_a_bare_command_prints_the_guide(tmp_path: Path) -> None:
+    out, err = StringIO(), StringIO()
+    with chdir(tmp_path):
+        status = main([], out, err)
+    assert status == SUCCESS
+    assert out.getvalue() == GUIDE
+    assert err.getvalue() == ""
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_the_guide_states_the_compile_step_the_inline_rule_and_the_section() -> None:
+    assert "pf -o <folder> <destination>" in GUIDE
+    assert "`SKILL.md`" in GUIDE
+    assert "A non-zero exit stops the run" in GUIDE
+    assert "`↳` names an inline target" in GUIDE
+    assert "A bundle that opens with a Prosiform section is followed from there" in (
+        GUIDE
+    )
+
+
+def test_the_help_response_names_the_bare_command() -> None:
+    assert "Run with no arguments, pf prints the guide" in " ".join(
+        invoke("-h").stdout.split()
+    )
+
+
+@pytest.mark.parametrize("arguments", [("-c",), ("-d", "json"), ("-o", ".")])
+def test_an_argument_naming_no_entry_reference_is_no_bare_command(
+    arguments: tuple[str, ...],
+) -> None:
+    out, err = StringIO(), StringIO()
+    assert main(arguments, out, err) == USAGE_FAILURE
+    assert out.getvalue() == ""
+    assert "entry reference" in err.getvalue()
 
 
 def test_the_codes_response_names_every_code_the_build_can_emit() -> None:

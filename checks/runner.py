@@ -15,7 +15,9 @@ fixture is never reported as holding against a build that never ran.
 
 The runner uses the working directory the manifest names and asks
 for diagnostics as data through `-d json`. A manifest omits that option, so a
-diagnostic's code is compared as a value rather than as prose. The runner
+diagnostic's code is compared as a value rather than as prose. A manifest
+declaring no argument and no fault is the bare command, which reports no
+diagnostic, so the runner invokes the build with nothing added. The runner
 names no output folder, so a run writes where its own invocation sends it:
 the working directory, or the folder the manifest's `-o` names.
 
@@ -535,11 +537,10 @@ def run_fixture(fixture: Path) -> Result:
     with worked(fixture, declared) as working:
         named = invocation.get("cwd")
         invoked_from = working if named is None else (working / named).resolve()
+        bare = not invocation["arguments"] and declared is None
         argv = [
             *build_under_test(),
-            "-d",
-            "json",
-            *requested,
+            *([] if bare else ["-d", "json", *requested]),
             *invocation["arguments"],
         ]
         held = (working, invoked_from) if invoked_from.is_dir() else (working,)

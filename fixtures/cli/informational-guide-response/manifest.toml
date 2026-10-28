@@ -1,0 +1,21 @@
+description = "A command line holding no argument prints the guide: the compile step, the inline target rule and that a bundle opening with a Prosiform section is followed from there. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
+
+clauses = [
+  "Guide",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = []
+
+[expected]
+exit_status = 0
+stdout_contains = [
+  "pf -o <folder> <destination>",
+  "SKILL.md",
+  "non-zero exit stops the run",
+  "↳",
+  "Prosiform section is followed from there",
+]
+diagnostics = []

@@ -31,9 +31,15 @@ It writes the bundle to `modes_plan-mode.bundles/modes_plan-mode.bundle.md` in t
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) opens on the mode's own title and preamble, which tell the agent what to follow:
+The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) opens with its Prosiform section, which states the Dispatch protocol its dispatch sub-section follows, then the mode's own title and preamble, which tell the agent what to follow:
 
 ```markdown
+# Prosiform
+
+## Dispatch
+
+Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+
 # Plan Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
@@ -57,8 +63,9 @@ The four documents the step links arrive in the bundle, and their headings are d
 
 The bundle shows each of these constructs:
 
-- **The entry's own content.** Plan Mode's title, preamble, `Procedure` and `Outcomes` open the bundle, without the entry's frontmatter.
-- **Whole documents under their titles.** Rules, Conventions, Propose Mode and Bootstrap declare no group, and each stands as an H1 headed by its own title.
+- **The Prosiform section.** The bundle dispatches, so it opens with `# Prosiform` and its `## Dispatch` protocol, in wording every bundle shares.
+- **The entry's own content.** Plan Mode's title, preamble, `Procedure` and `Outcomes` follow, without the entry's frontmatter.
+- **Whole documents under their titles.** Rules, Conventions and Propose Mode declare no group, and each stands as an H1 headed by its own title.
 - **Declared groups.** `Artifacts`, `Protocols` and `References` head their members in title case, each member's H1 an H2 beneath the group: the eighteen artifacts the bundle's links reach, two protocols and one reference.
 - **Dependency order.** Rules and Conventions follow the entry's own sections, in the order its preamble links them.
 - **Compiled links.** Every link to a document or section under the root points at a heading in the bundle.
@@ -76,7 +83,7 @@ The bundle shows each of these constructs:
 
   ### Dispatch Sync Mode
 
-  Dispatch `modes_sync-mode.bundle.md` to a sub-agent.
+  Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
   ```
 
 - **An outside-root link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.

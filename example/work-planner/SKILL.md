@@ -20,7 +20,7 @@ Each theme's project board shows where its items stand. The Proposals board hold
 
 ## Modes
 
-Read the [bootstrap](bootstrap.md) instructions then select the mode as appropriate to fulfill the user request:
+Run `pf` and follow it, then select the mode as appropriate to fulfill the user request:
 
 - **[↳ Propose](modes/propose-mode.md)**
   - Forward-looking, scoped to one problem
