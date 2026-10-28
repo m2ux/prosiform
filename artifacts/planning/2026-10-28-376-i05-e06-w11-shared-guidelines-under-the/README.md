@@ -12,6 +12,7 @@ The shared guidelines apply alongside the work-planner example's own. Until they
 
 | Artifact | What it holds |
 | --- | --- |
+| [W11 work item](w11.md) | Each shared rule the work-planner guidelines retire, its replacement and the state-or-link choice, and the component |
 
 ## Links
 
