@@ -117,7 +117,7 @@ The theme or proposals board the request names.
 
 ##### 1. Find the Named Board
 
-Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) with the [proposals board](#proposals-board) title when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
 
 ##### 2. Report a Missing Board Selection
 
@@ -135,7 +135,7 @@ A missing theme board, or a missing proposals board.
 
 ##### 1. Create an Absent Proposals Board
 
-When no open board is titled `Proposals`, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
+When no open board carries the [proposals board](#proposals-board) title, apply [Create Proposals Board](#create-proposals-board). The copy source and the title meet [Proposals](#proposals).
 
 ##### 2. Create an Absent Theme Board
 
@@ -152,7 +152,7 @@ A new proposals board linked to the supplied repository.
 
 ##### 1. Find the Proposals Template
 
-Run [Find Board Template](#find-board-template) with the owner and the exact title `Proposals Template`.
+Run [Find Board Template](#find-board-template) with the owner and the proposals board's [template title](#board-templates).
 
 ##### 2. Use the Proposals Template as Source
 
@@ -160,7 +160,7 @@ Use the returned number as the copy source.
 
 ##### 3. Copy the Proposals Template
 
-Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title `Proposals`.
+Run [Copy Board Template](#copy-board-template) with that template number, the owner and the [proposals board](#proposals-board) title.
 
 ##### 4. Retain the Proposals Board Number
 
@@ -186,7 +186,7 @@ Require the originating proposal record for a proposal-derived board; return a m
 
 ##### 2. Find the Initiative Template
 
-Run [Find Board Template](#find-board-template) with the owner and the exact title `Initiative Template`.
+Run [Find Board Template](#find-board-template) with the owner and the theme board's [template title](#board-templates).
 
 ##### 3. Use the Initiative Template as Source
 
@@ -198,7 +198,7 @@ Run [Copy Board Template](#copy-board-template) with that template number, the o
 
 ##### 5. Retain the Theme Board Number
 
-Retain the new board number. The copy carries the template's Status options: Backlog, Ready, In Progress, In Review and Done.
+Retain the new board number. The copy carries the template's theme board [Status options](#status-field).
 
 ##### 6. Link the Theme Board to the Repository
 
@@ -216,7 +216,7 @@ The selected board's items and status fields.
 
 ##### 1. Find the Board Status Field
 
-Run [Find Status Field](#find-status-field) for the board number.
+Run [Find Status Field](#find-status-field) for the board number and the [Status field](#status-field) name.
 
 ##### 2. Fetch Board Items with Status
 
@@ -262,16 +262,7 @@ Return the field definitions and requested current item.
 
 #### Themes
 
-Every initiative belongs to one theme, and each theme has one project board. Each project names its own themes.
-
-- **Example.**  workflow-server's themes.
-
-| Theme | Label | Description |
-| --- | --- | --- |
-| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
-| Language | `theme:language` | The Definition Language and Its Rules |
-| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
-| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+Every initiative belongs to one theme, and each theme has one project board. Each project names its own themes, with their labels, in [Theme Labels](#theme-labels).
 
 #### One Board Per Theme
 
@@ -289,18 +280,19 @@ An issue at Ready, In Progress, In Review or Done is assigned to the user; one i
 
 #### Proposals
 
-- The board is titled `Proposals`. It holds proposal issues, the incoming funnel for work that may become an initiative.
-- Its copy source is the open board titled `Proposals Template`. That template carries Priority: High, Medium and Low, and its view is a board grouped by Status.
-- **Suggested.**
-  Raised, and nobody has taken it up. A new proposal lands here, with no assignee.
-- **Considering.**
-  Someone is weighing the goal, the evidence and the criteria. That person is the assignee.
-- **Approved.**
-  Qualified to become an initiative. The assignee is the user.
-- **Held.**
-  Not now. It stays on the board, with no assignee.
-- **Declined.**
-  It will not become an initiative. It has no assignee.
+- The board carries the [proposals board](#proposals-board) title. It holds proposal issues, the incoming funnel for work that may become an initiative.
+- Its copy source is the open board with the proposals board's [template title](#board-templates). That template carries the [Proposals Priority Field](#proposals-priority-field), and its view is a board grouped by Status.
+- Its [Status options](#status-field) mean:
+  - **Suggested.**
+    Raised, and nobody has taken it up. A new proposal lands here, with no assignee.
+  - **Considering.**
+    Someone is weighing the goal, the evidence and the criteria. That person is the assignee.
+  - **Approved.**
+    Qualified to become an initiative. The assignee is the user.
+  - **Held.**
+    Not now. It stays on the board, with no assignee.
+  - **Declined.**
+    It will not become an initiative. It has no assignee.
 
 ### Commands
 
@@ -338,12 +330,12 @@ gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
 
 #### Find Proposals Board
 
-Prints the number of the open board titled `Proposals`.
+Prints the number of the open board with the supplied title.
 
-**Inputs:** Board owner.
+**Inputs:** Board owner and the [proposals board](#proposals-board) title.
 
 ```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "Proposals") | .number'
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<proposals-board-title>") | .number'
 ```
 
 #### Fetch Board Fields
@@ -382,10 +374,10 @@ gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.cl
 
 Prints the id of a board's Status field.
 
-**Inputs:** Board owner and number.
+**Inputs:** Board owner and number, and the [Status field](#status-field) name.
 
 ```bash
-gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" --jq '.[] | select(.name == "Status") | .id'
+gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" --jq '.[] | select(.name == "<status-field-name>") | .id'
 ```
 
 **Example:**
@@ -562,7 +554,7 @@ A parallel work map assigns a positive integer to each ranked initiative. Every 
 
 The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+A priority label carries a set's number, with the name, colour and description [Priority Labels](#priority-labels) sets. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 #### Initiative Status
 
@@ -1454,3 +1446,51 @@ Creates the label specified by its name, colour and description.
 ```bash
 gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
 ```
+
+# Configuration
+
+### Labels
+
+#### Theme Labels
+
+The label naming the theme an initiative and its epics belong to: `theme:` and the theme's name in lowercase. This deployment's themes:
+
+| Theme | Label | Description |
+| --- | --- | --- |
+| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
+| Language | `theme:language` | The Definition Language and Its Rules |
+| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
+| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+
+#### Priority Labels
+
+The label carrying a priority set: `priority:` and a positive integer `<n>`.
+
+- **Colour.**  `BFD4F2`.
+- **Description.**  `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+
+### Boards
+
+#### Proposals Board
+
+The board holding proposal issues, titled `Proposals`.
+
+#### Board Templates
+
+The open boards a new board is copied from, by exact title.
+
+| Board | Template title |
+| --- | --- |
+| Proposals board | `Proposals Template` |
+| Theme board | `Initiative Template` |
+
+#### Status Field
+
+The single-select field a board item's status is read from and written to, named `Status`.
+
+- **Theme board options.**  Backlog, Ready, In Progress, In Review and Done.
+- **Proposals board options.**  Suggested, Considering, Approved, Held and Declined.
+
+#### Proposals Priority Field
+
+The single-select field `Priority` on the proposals board, with the options High, Medium and Low.

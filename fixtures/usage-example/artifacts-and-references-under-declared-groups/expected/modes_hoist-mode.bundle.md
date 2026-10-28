@@ -638,7 +638,7 @@ A parallel work map assigns a positive integer to each ranked initiative. Every 
 
 The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+A priority label carries a set's number, with the name, colour and description [Priority Labels](#priority-labels) sets. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 ## Issue Body
 
@@ -976,7 +976,7 @@ Return the corrected body, mechanical diff and unresolved findings for the calle
 #### Titles
 
 - The title is `[I07] Name: Subtitle`.
-- Labels are `type:initiative` and a `theme:*`.
+- Labels are the initiative [kind label](#kind-labels) and one [theme label](#theme-labels).
 - `I` is the initiative number. Initiatives count from `00`.
 
 #### Problem
@@ -1315,7 +1315,7 @@ Return the recorded body, its [Delivery Findings](#delivery-findings) and the ch
 #### Titles
 
 - The title is `[I07:E00] Name: Subtitle`. Its prefix matches its row in the initiative table.
-- Labels are `type:epic` and its initiative's `theme:*`.
+- Labels are the epic [kind label](#kind-labels) and its initiative's [theme label](#theme-labels).
 - `E` is the epic within its initiative. Epics count from `00`.
 - The prefix separates levels with colons, then a short name, a colon, and a subtitle: `[I07:E06] Reliability Evaluation: Briefs, Measures and the Thresholds That Define Reliable`.
 
@@ -1467,7 +1467,7 @@ Holds each named task row for one session, by setting its record folder as the r
 - `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
 - The caller supplies the planned folder identity; `--date` is the day it is opened.
 
-`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` identifies the planning records folder.
+`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](#engineering-branch) on the engineering branch.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
@@ -1534,7 +1534,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 #### Titles
 
 - The title is `[I07:E00:W01] Name: Subtitle`.
-- The label is `type:task`.
+- The label is the task [kind label](#kind-labels).
 - `W` is the task within the epic. Tasks count from `W01`.
 
 #### Open Questions
@@ -1585,7 +1585,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 #### Titles
 
 - The title is `Name: Subtitle`, with no prefix.
-- A standalone issue carries no `type:*` label.
+- A standalone issue carries no [kind label](#kind-labels).
 
 #### Sections
 
@@ -1689,6 +1689,47 @@ A coverage disagreement identifies the pull request and row, a criterion absent 
 - A linked issue remains open until its criteria and delivery requirements hold and every Development-linked pull request is merged.
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
+
+# Configuration
+
+### Labels
+
+#### Kind Labels
+
+The label naming an agent-engineering issue's kind.
+
+| Kind | Label |
+| --- | --- |
+| Proposal | `type:proposal` |
+| Initiative | `type:initiative` |
+| Epic | `type:epic` |
+| Task | `type:task` |
+
+#### Theme Labels
+
+The label naming the theme an initiative and its epics belong to: `theme:` and the theme's name in lowercase. This deployment's themes:
+
+| Theme | Label | Description |
+| --- | --- | --- |
+| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
+| Language | `theme:language` | The Definition Language and Its Rules |
+| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
+| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+
+#### Priority Labels
+
+The label carrying a priority set: `priority:` and a positive integer `<n>`.
+
+- **Colour.**  `BFD4F2`.
+- **Description.**  `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+
+### Planning Records
+
+#### Engineering Branch
+
+The long-lived branch holding every planning record, named `engineering`, checked out in one worktree.
+
+- **Records folder.**  `artifacts/planning/`, relative to that worktree.
 
 # References
 
