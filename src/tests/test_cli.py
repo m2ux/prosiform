@@ -23,6 +23,7 @@ in the folder the run does not produce is left as it was.
 
 import json
 import os
+import shutil
 from collections.abc import Callable, Mapping, Sequence
 from contextlib import chdir
 from dataclasses import dataclass, field
@@ -53,6 +54,7 @@ from prosiform.candidate import (
 from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
+    EARLIER_SET_RETAINED,
     GROUP_DEPTH_CONFLICT,
     GUIDE,
     INPUT_FAILURE,
@@ -272,6 +274,7 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         UNSUPPORTED_ENTRY_SUFFIX,
         RESOURCE_PORTABILITY,
         COINCIDENT_HEADING,
+        EARLIER_SET_RETAINED,
     }
     for published in (
         BUNDLE_CODES,
@@ -1289,6 +1292,7 @@ def bundle_set(*texts: str) -> list[Bundle]:
             text,
             f"member{at}.bundle.md",
             [Diagnostic(WARNING, f"member {at} warns", code=COINCIDENT_HEADING)],
+            f"member{at}.md",
         )
         for at, text in enumerate(texts)
     ]
@@ -1313,7 +1317,7 @@ def test_a_set_whose_member_fails_validation_writes_no_bundle(tmp_path: Path) ->
 
 def test_a_set_whose_member_cannot_be_written_writes_no_bundle(tmp_path: Path) -> None:
     bundles = bundle_set("# One\n", "# Two\n", "# Three\n")
-    bundles[2] = Bundle("# Three\n", "absent/member2.bundle.md", [])
+    bundles[2] = Bundle("# Three\n", "absent/member2.bundle.md", [], "member2.md")
     (tmp_path / "run").mkdir()
     (tmp_path / "run" / "earlier.bundle.md").write_text("earlier bytes\n")
     with pytest.raises(Failure) as refused:
@@ -1326,14 +1330,39 @@ def test_a_set_whose_member_cannot_be_written_writes_no_bundle(tmp_path: Path) -
     assert contents(tmp_path / "run") == {"earlier.bundle.md": b"earlier bytes\n"}
 
 
-def test_two_bundles_deriving_one_name_publish_nothing(tmp_path: Path) -> None:
+@pytest.mark.parametrize("check", [False, True])
+def test_two_bundles_deriving_one_name_publish_nothing(
+    tmp_path: Path, check: bool
+) -> None:
     bundles = bundle_set("# One\n", "# Two\n")
-    bundles[1] = Bundle("# Two\n", "member0.bundle.md", [])
+    bundles[1] = Bundle("# Two\n", "member0.bundle.md", [], "member_0.md")
+    err = StringIO()
+    with pytest.raises(Failure) as refused:
+        publication(bundles, tmp_path / "run", outputs(1024), Reporter(err), check)
+    assert refused.value.status == PUBLICATION_FAILURE
+    assert refused.value.diagnostic.code == PUBLICATION_FAILED
+    assert "'member0.md'" in refused.value.diagnostic.message
+    assert "'member_0.md'" in refused.value.diagnostic.message
+    assert list(tmp_path.iterdir()) == []
+    assert err.getvalue() == ""
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_an_output_folder_that_does_not_exist_is_refused_before_any_write(
+    tmp_path: Path, check: bool
+) -> None:
+    bundles = bundle_set("# One\n")
     with pytest.raises(Failure) as refused:
         publication(
-            bundles, tmp_path / "run", outputs(1024), Reporter(StringIO()), False
+            bundles,
+            tmp_path / "absent" / "run",
+            outputs(1024),
+            Reporter(StringIO()),
+            check,
         )
+    assert refused.value.status == PUBLICATION_FAILURE
     assert refused.value.diagnostic.code == PUBLICATION_FAILED
+    assert str(tmp_path / "absent") in refused.value.diagnostic.message
     assert list(tmp_path.iterdir()) == []
 
 
@@ -1416,6 +1445,57 @@ def test_a_refused_swap_restores_the_earlier_folder(
     assert refused.value.diagnostic.code == PUBLICATION_FAILED
     assert [path.name for path in tmp_path.iterdir()] == ["run"]
     assert contents(earlier) == {"member0.bundle.md": b"earlier bytes\n"}
+
+
+def test_a_refused_swap_that_cannot_restore_names_where_the_earlier_set_is(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    earlier = tmp_path / "run"
+    earlier.mkdir()
+    (earlier / "member0.bundle.md").write_text("earlier bytes\n")
+    rename = os.rename
+
+    def refuse_into_place(source: Any, target: Any) -> None:
+        if Path(target) == earlier:
+            raise OSError(13, "Permission denied")
+        rename(source, target)
+
+    monkeypatch.setattr(os, "rename", refuse_into_place)
+    with pytest.raises(Failure) as refused:
+        publication(
+            bundle_set("# One\n"), earlier, outputs(1024), Reporter(StringIO()), False
+        )
+    assert refused.value.status == PUBLICATION_FAILURE
+    assert refused.value.diagnostic.code == PUBLICATION_FAILED
+    [aside] = [path for path in tmp_path.iterdir()]
+    assert aside.name.startswith(".pf.old.")
+    assert str(aside) in refused.value.diagnostic.message
+    assert str(aside) in (refused.value.diagnostic.remedy or "")
+    assert contents(aside) == {"member0.bundle.md": b"earlier bytes\n"}
+
+
+def test_an_earlier_set_that_cannot_be_removed_warns_on_a_published_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    earlier = tmp_path / "run"
+    earlier.mkdir()
+    (earlier / "member0.bundle.md").write_text("earlier bytes\n")
+    remove = shutil.rmtree
+
+    def refuse_aside(path: Any, *arguments: Any, **options: Any) -> None:
+        if Path(path).name.startswith(".pf.old."):
+            raise OSError(13, "Permission denied")
+        remove(path, *arguments, **options)
+
+    monkeypatch.setattr(shutil, "rmtree", refuse_aside)
+    err = StringIO()
+    publication(bundle_set("# One\n"), earlier, outputs(1024), Reporter(err), False)
+    assert contents(earlier) == {"member0.bundle.md": b"# One\n"}
+    [aside] = [path for path in tmp_path.iterdir() if path != earlier]
+    assert contents(aside) == {"member0.bundle.md": b"earlier bytes\n"}
+    [warned] = [line for line in err.getvalue().splitlines() if "earlier set" in line]
+    assert warned.startswith(f"{EARLIER_SET_RETAINED}: ")
+    assert str(aside) in warned
 
 
 def test_a_validation_only_run_bundles_and_publishes_nothing(root: Path) -> None:

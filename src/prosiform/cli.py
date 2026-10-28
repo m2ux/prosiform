@@ -7,6 +7,7 @@ publication rechecks every captured source and bound directory. Discovery,
 rewriting and candidate validation use the same per-source resolution context."""
 
 import argparse
+import errno
 import os
 import re
 import shutil
@@ -187,6 +188,7 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
+EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -211,6 +213,7 @@ CODES = tuple(
             UNSUPPORTED_ENTRY_SUFFIX,
             RESOURCE_PORTABILITY,
             COINCIDENT_HEADING,
+            EARLIER_SET_RETAINED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -223,7 +226,8 @@ CODES = tuple(
 
 SOURCE_CHANGED_FAULT = "source-changed"
 INTERNAL_FAULT = "internal"
-FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT)
+CLEANUP_FAULT = "cleanup-refused"
+FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 
 DECIMAL = re.compile(r"^[0-9]+$")
 
@@ -1803,11 +1807,16 @@ def publish(text: str, stream: IO[str]) -> None:
 
 @dataclass(frozen=True)
 class Bundle:
-    """One composed bundle, the file name it is published under and its warnings."""
+    """One composed bundle, the file name it is published under and its warnings.
+
+    The selection names what the bundle was compiled from, so a
+    diagnostic about the bundle can name its source.
+    """
 
     text: str
     name: str
     warnings: Sequence[Diagnostic]
+    selection: str
 
 
 def publication(
@@ -1816,46 +1825,90 @@ def publication(
     limits: Limits,
     reporter: Reporter,
     check: bool,
+    retained: bool = False,
 ) -> None:
     """Validate every bundle a run publishes, then publish the set whole or not at all.
 
-    Each bundle is held to the output budget before any is written, so a
-    bundle the budget refuses ends the run with its diagnostic and
-    nothing written. Every bundle's warnings follow, in turn, and then
-    the set is published into the run's folder, unless the run only
-    validates, which writes nothing.
+    Each bundle is held to the output budget, every name is held to one
+    bundle, and the output folder is held to existing, before any is
+    written, so a set publication would refuse ends the run with its
+    diagnostic and nothing written, whether or not the run only
+    validates. Every bundle's warnings follow, in turn, and then the set
+    is published into the run's folder, unless the run only validates,
+    which writes nothing. A run asked to retain the earlier set is
+    refused its removal once the new set stands.
     """
     for one in bundles:
         try:
             limits.hold(OUTPUT_BYTES, len(one.text.encode(ENCODING)))
         except Crossed as crossed:
             raise crossing(crossed) from crossed
+    named: dict[str, Bundle] = {}
+    for one in bundles:
+        earlier = named.setdefault(one.name, one)
+        if earlier is not one:
+            raise colliding(earlier, one)
+    if not folder.parent.is_dir():
+        raise Failure(
+            PUBLICATION_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"the output folder {str(folder.parent)!r} is not an existing "
+                f"folder, so the run's bundles cannot be written under it",
+                code=PUBLICATION_FAILED,
+                remedy="name an existing folder the run can write",
+            ),
+        )
     for one in bundles:
         for warning in one.warnings:
             reporter.emit(warning)
     if not check:
-        publish_folder(bundles, folder)
+        publish_folder(bundles, folder, reporter, retained)
+
+
+def colliding(earlier: Bundle, later: Bundle) -> Failure:
+    """Two bundles of one run whose selections derive one file name."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the bundles of {earlier.selection!r} and {later.selection!r} both "
+            f"derive the name {later.name!r}, so one would overwrite the other",
+            code=PUBLICATION_FAILED,
+            remedy="rename one of the two sources so their derived names differ",
+        ),
+    )
 
 
 def sibling(folder: Path, role: str) -> Path:
-    """A hidden path beside the run's folder that nothing else names."""
-    return folder.with_name(f".{folder.name}.{role}.{uuid.uuid4().hex}")
+    """A hidden path beside the run's folder that nothing else names.
+
+    Its length is fixed, whatever the run folder's name, so any run
+    folder the filesystem accepts can be staged beside.
+    """
+    return folder.with_name(f".pf.{role}.{uuid.uuid4().hex}")
 
 
-def publish_folder(bundles: Sequence[Bundle], folder: Path) -> None:
+def publish_folder(
+    bundles: Sequence[Bundle], folder: Path, reporter: Reporter, retained: bool
+) -> None:
     """Write a run's set of bundles as one folder, swapped in whole.
 
     Every bundle is written into a fresh folder beside the run's
     folder, which is then renamed onto it, so a reader sees the whole
     set the run produced or the whole set that was there before it,
-    never a mixture. A folder already standing there is renamed aside
-    first and removed once the new one is in place, so for a moment no
-    folder stands at that path. A failure before the new folder is in
-    place removes it and leaves everything else as it was, the earlier
-    folder restored where it was moved aside. Nothing else in the output
-    folder is touched. Each file is created fresh, so two bundles of one
-    run deriving one name refuse the second rather than overwrite the
-    first.
+    never a mixture. Whatever already stands at the run folder's path
+    is renamed aside first and removed once the new folder is in place,
+    so for a moment nothing stands at that path. The path is never
+    followed: a symbolic link standing there is renamed and removed as
+    the link it is, and whatever it names is left as it was.
+
+    A failure before the new folder is in place removes it and leaves
+    everything else as it was, the earlier set restored where it was
+    moved aside; one that cannot be restored is reported where it lies.
+    An earlier set that cannot be removed once the new folder stands
+    leaves the run published, and is reported where it lies. Nothing
+    else in the output folder is touched.
 
     The run's folder is the entry's derived name with the `.bundles`
     suffix, so the folder a run replaces is only ever one a run names,
@@ -1886,17 +1939,30 @@ def publish_folder(bundles: Sequence[Bundle], folder: Path) -> None:
     except OSError as refused:
         shutil.rmtree(staged, ignore_errors=True)
         if aside is not None:
-            os.rename(aside, folder)
+            try:
+                os.rename(aside, folder)
+            except OSError as stranded:
+                raise unrestored(folder, aside, stranded) from refused
         raise refusal(folder, refused) from refused
     if aside is None:
         return
     try:
+        if retained:
+            raise PermissionError(errno.EACCES, "the run was asked to refuse it")
         if aside.is_dir() and not aside.is_symlink():
             shutil.rmtree(aside)
         else:
             aside.unlink()
     except OSError as refused:
-        raise refusal(aside, refused) from refused
+        reporter.emit(
+            Diagnostic(
+                WARNING,
+                f"the run's bundles are published, and the earlier set moved "
+                f"aside to {str(aside)!r} could not be removed: {refused}",
+                code=EARLIER_SET_RETAINED,
+                remedy=f"remove {str(aside)!r}",
+            )
+        )
 
 
 def refusal(destination: Path, refused: OSError) -> Failure:
@@ -1908,6 +1974,20 @@ def refusal(destination: Path, refused: OSError) -> Failure:
             f"the output path {str(destination)!r} refused the bundle: {refused}",
             code=PUBLICATION_FAILED,
             remedy="name an existing folder the run can write",
+        ),
+    )
+
+
+def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
+    """A refused swap whose earlier set could not be put back where it stood."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the output path {str(folder)!r} refused the bundle, and the earlier "
+            f"set moved aside to {str(aside)!r} could not be restored: {refused}",
+            code=PUBLICATION_FAILED,
+            remedy=f"rename {str(aside)!r} to {str(folder)!r}",
         ),
     )
 
@@ -2045,6 +2125,35 @@ def dispatched_set(
     return built
 
 
+def target_name(target: Target) -> str:
+    """One selection as the document and the section it names."""
+    path, fragment = target
+    return path if fragment is None else f"{path}#{fragment}"
+
+
+def captured_once(captures: Iterator[Mapping[str, Capture]]) -> dict[str, Capture]:
+    """Every source the run's bundles read, each as one read of it.
+
+    Each bundle captures the sources it reads, so a source two bundles
+    read is captured twice. Two captures holding different bytes or
+    identities record a source written between the two reads, and the
+    run's bundles would carry two versions of it, so the run is refused
+    as one whose source changed.
+    """
+    found: dict[str, Capture] = {}
+    for one in captures:
+        for path, held in one.items():
+            earlier = found.setdefault(path, held)
+            if (earlier.digest, earlier.file_identity) != (
+                held.digest,
+                held.file_identity,
+            ):
+                raise changed(
+                    path, "changed between two of the run's reads", held.chain
+                )
+    return found
+
+
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
     if not arguments:
@@ -2086,7 +2195,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     requested = entered(referring, requested)
 
     selected = selections(referring, requested)
-    folder = Path(options.output, f"{run_name(selected)}{RUN_FOLDER_SUFFIX}").resolve()
+    folder = Path(options.output).resolve() / f"{run_name(selected)}{RUN_FOLDER_SUFFIX}"
     first = compiled(root, referring, requested, options, folder)
     single = {requested[0].chain[0]} if len(selected) == 1 else set()
     built = dispatched_set(root, first, single, options, folder)
@@ -2099,25 +2208,31 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         cycle(first.hops, single, onward)
     except Refused as refused:
         raise Failure(INPUT_FAILURE, refused.diagnostic) from refused
-    captured = {
-        path: held
-        for one in (first, *built.values())
-        for path, held in one.captured.items()
-    }
+    captured = captured_once(one.captured for one in (first, *built.values()))
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
     if options.fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
+    # The cleanup fault stands an empty earlier set at the run's folder,
+    # whose removal the publication then refuses.
+    retained = options.fault == CLEANUP_FAULT
+    if retained and not options.check and folder.parent.is_dir():
+        folder.mkdir(exist_ok=True)
     deep = analysed(first.hops, single, onward)
     bundles = [
-        Bundle(first.text, first.name, [*first.leading, *deep, *first.trailing]),
+        Bundle(
+            first.text,
+            first.name,
+            [*first.leading, *deep, *first.trailing],
+            " ".join(target_name(one) for one in selected),
+        ),
         *(
-            Bundle(one.text, one.name, [*one.leading, *one.trailing])
-            for one in built.values()
+            Bundle(one.text, one.name, [*one.leading, *one.trailing], name)
+            for name, one in built.items()
         ),
     ]
-    publication(bundles, folder, budgets(options), reporter, options.check)
+    publication(bundles, folder, budgets(options), reporter, options.check, retained)
     return SUCCESS
 
 

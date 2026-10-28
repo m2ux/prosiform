@@ -9,6 +9,7 @@ import os
 from contextlib import chdir
 from io import StringIO
 from pathlib import Path
+from typing import Any
 
 import pytest
 from test_cli import Run, written
@@ -134,8 +135,8 @@ def test_derived_publication_swaps_the_folder_in_whole(
     monkeypatch.setattr(os, "rename", rename)
     assert invoke(tmp_path, "a.md").status == 0
     [(aside, moved), (staged, placed)] = calls
-    assert aside == "a.bundles" and moved.startswith(".a.bundles.old.")
-    assert staged.startswith(".a.bundles.new.") and placed == "a.bundles"
+    assert aside == "a.bundles" and moved.startswith(".pf.old.")
+    assert staged.startswith(".pf.new.") and placed == "a.bundles"
     assert "Complete." in bundle(tmp_path, "a").read_text()
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
 
@@ -176,3 +177,90 @@ def test_filename_length_failure_is_publication_failure(tmp_path: Path) -> None:
     run = invoke(tmp_path, "-d", "json", name)
     assert run.status == 3 and run.stdout == ""
     assert run.diagnostics()[0]["code"] == cli.PUBLICATION_FAILED
+
+
+@pytest.mark.parametrize("dangling", [False, True])
+def test_a_link_at_the_run_folder_is_replaced_and_never_followed(
+    tmp_path: Path, dangling: bool
+) -> None:
+    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    precious = tmp_path / "precious"
+    if not dangling:
+        written(tmp_path, "precious/data.txt", "Keep.\n")
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "a.bundles").symlink_to("../precious")
+    run = invoke(tmp_path, "-o", "out", "a.md")
+    assert run.status == 0 and run.stdout == ""
+    folder = tmp_path / "out" / "a.bundles"
+    assert folder.is_dir() and not folder.is_symlink()
+    assert "Complete." in (folder / "a.bundle.md").read_text()
+    assert sorted(path.name for path in (tmp_path / "out").iterdir()) == ["a.bundles"]
+    if dangling:
+        assert not precious.exists()
+    else:
+        assert sorted(path.name for path in precious.iterdir()) == ["data.txt"]
+        assert (precious / "data.txt").read_text() == "Keep.\n"
+
+
+def test_a_run_folder_name_the_filesystem_accepts_publishes(tmp_path: Path) -> None:
+    name = "n" * 240
+    written(tmp_path, f"{name}.md", "# Long\n")
+    run = invoke(tmp_path, f"{name}.md")
+    assert run.status == 0 and run.stdout == ""
+    assert bundle(tmp_path, name).read_text() == "# Long\n"
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        f"{name}.bundles",
+        f"{name}.md",
+    ]
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_two_targets_deriving_one_name_are_refused_naming_both(
+    tmp_path: Path, check: bool
+) -> None:
+    written(tmp_path, "e.md", "# E\n\n1. [⇉ x](a/b.md)\n2. [⇉ y](a_b.md)\n")
+    written(tmp_path, "a/b.md", "# B\n")
+    written(tmp_path, "a_b.md", "# B too\n")
+    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "e.md")
+    assert run.status == 3 and run.stdout == ""
+    [refused] = run.diagnostics()
+    assert refused["code"] == cli.PUBLICATION_FAILED
+    assert "'a/b.md'" in refused["message"] and "'a_b.md'" in refused["message"]
+    assert "a_b.bundle.md" in refused["message"]
+    assert not (tmp_path / "e.bundles").exists()
+
+
+@pytest.mark.parametrize("check", [False, True])
+def test_an_output_folder_that_does_not_exist_fails_the_check_as_the_run(
+    tmp_path: Path, check: bool
+) -> None:
+    written(tmp_path, "a.md", "# A\n")
+    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "-o", "zz", "a.md")
+    assert run.status == 3 and run.stdout == ""
+    assert [one["code"] for one in run.diagnostics()] == [cli.PUBLICATION_FAILED]
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
+
+
+def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    written(tmp_path, "a.md", "# A\n\n[⇉ plan](plan.md)\n")
+    written(tmp_path, "plan.md", "# Plan\n")
+    original = cli.compiled
+    reads = []
+
+    def edit_after_the_entry(*arguments: Any, **options: Any) -> cli.Compiled:
+        one = original(*arguments, **options)
+        reads.append(one.name)
+        if len(reads) == 1:
+            (tmp_path / "plan.md").write_text("# Plan, edited\n")
+        return one
+
+    monkeypatch.setattr(cli, "compiled", edit_after_the_entry)
+    run = invoke(tmp_path, "-d", "json", "a.md")
+    assert reads == ["a.bundle.md", "plan.bundle.md"]
+    assert run.status == 1 and run.stdout == ""
+    [refused] = run.diagnostics()
+    assert refused["code"] == cli.SOURCE_CHANGED
+    assert "plan.md" in refused["message"]
+    assert not (tmp_path / "a.bundles").exists()

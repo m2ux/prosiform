@@ -367,7 +367,7 @@ def test_awaiting_as_a_flag_fails() -> None:
 
 
 def test_a_manifest_naming_a_fault_validates() -> None:
-    for named in ("source-changed", "internal"):
+    for named in ("source-changed", "internal", "cleanup-refused"):
         manifest = complete()
         manifest["fault"] = named
         assert errors(manifest) == [], f"{named!r} refused as a fault a run performs"

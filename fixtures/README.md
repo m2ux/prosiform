@@ -83,7 +83,7 @@ chain = ["guide.md", "../outside.md"]
 | `expected.stdout_contains` | Optional. The text standard output must carry, where the whole of the response is a build's own. Standard output carries no bundle, so a fixture declaring none declares an empty stream. |
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
-| `fault` | Optional. The fault the run performs on itself, `source-changed` or `internal`, which the runner asks for as `-x NAME`. A fixture declaring none declares a run that meets no fault. |
+| `fault` | Optional. The fault the run performs on itself, `source-changed`, `internal` or `cleanup-refused`, which the runner asks for as `-x NAME`. A fixture declaring none declares a run that meets no fault. |
 
 The runner uses the working directory the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language. The runner names no output folder, so a run writes its folder of bundles where its own arguments send it: the working directory, or the folder an `-o` among them names.
 
@@ -183,7 +183,7 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Two of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, and a run that fails in itself. A fixture declares a source tree, an invocation and a result, so neither arises from that declaration, and the contract declares `-x NAME` for a conformance run to reach them. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so neither arises from that declaration, and the contract declares `-x NAME` for a conformance run to reach them. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
@@ -204,12 +204,13 @@ code = "E_SOURCE_CHANGED"
 | --- | --- |
 | `source-changed` | Other bytes are written to each source the run read, once discovery has read them and before the recheck before publication, so the recheck meets a source that is no longer the source the run read. |
 | `internal` | The run fails in itself once the candidate is built and before anything publishes. |
+| `cleanup-refused` | An empty earlier set stands at the run's folder, and its removal once the new set stands is refused, so the run publishes and warns that the earlier set is retained. |
 
-The detection and the reporting are the run's own either way, which is what each outcome is about: the fault supplies the condition, and what the fixture compares is what the build did with it. A build that performs neither fault publishes a bundle and exits 0, so both fixtures fail it.
+The detection and the reporting are the run's own either way, which is what each outcome is about: the fault supplies the condition, and what the fixture compares is what the build did with it. A build that performs none of the faults publishes its bundles with no diagnostic, so each fixture fails it.
 
 A fault writes to the tree it runs over, so a fixture declaring one runs in a copy of itself and the corpus leaves the fixture as it found it.
 
-Two fixtures declare a fault: [`source-consistency/a-source-that-changes-during-compilation`](source-consistency/a-source-that-changes-during-compilation/manifest.toml) and [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml).
+Three fixtures declare a fault: [`source-consistency/a-source-that-changes-during-compilation`](source-consistency/a-source-that-changes-during-compilation/manifest.toml), [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml) and [`publication/an-earlier-set-the-run-cannot-remove-warns`](publication/an-earlier-set-the-run-cannot-remove-warns/manifest.toml).
 
 ## The schema
 
@@ -236,7 +237,7 @@ An error decides a failing run.
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
-| `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write. |
+| `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write, an output folder that does not exist, or two bundles of one run deriving one name. |
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
 | `E_ROOT_NOT_FOUND` | CLI contract — an allowed source root naming no directory. |
@@ -246,7 +247,7 @@ An error decides a failing run.
 | `E_TARGET_NOT_FOUND` | Link classification — a reference under the root naming no document, or no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, One operator per link and An operator's target — a link opening with more than one operator, or an operator naming no Markdown document or section under the root. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, One operator per link and An operator's target — a link opening with more than one operator, or an operator naming no Markdown document or section under the root; Dispatch sub-sections — a dispatched link with no text after its mark. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
@@ -257,6 +258,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
+| `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
