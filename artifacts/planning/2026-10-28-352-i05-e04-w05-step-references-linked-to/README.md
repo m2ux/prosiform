@@ -12,6 +12,9 @@ The step sub-sections W02–W04 introduced give every step an anchor, but the co
 
 | Artifact | What it holds |
 | --- | --- |
+| [W05 work item](w05.md) | Step references linked to their sub-sections: scope, design, each reference with its link, and the checks it requires |
+| [Validation](validation.md) | The inspection against AC5, the anchor sweep of the regenerated bundles, and the results of `make links`, `make corpus` and `make check` |
+| [Change list](change-list.md) | The plan changes this delivery session applied and held |
 
 ## Links
 
