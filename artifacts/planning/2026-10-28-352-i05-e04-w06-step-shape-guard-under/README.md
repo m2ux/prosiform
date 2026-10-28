@@ -12,6 +12,7 @@ Nothing observes the step convention otherwise. A numbered list added to a proce
 
 | Artifact | What it holds |
 | --- | --- |
+| [W06 work item](w06.md) | The step-shape guard: scope, rules, the my-skill scope decision and the checks it requires |
 
 ## Links
 
