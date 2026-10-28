@@ -105,6 +105,7 @@ CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 PROSIFORM = "Prosiform"
 PARALLEL = "Dispatch in parallel"
 DISPATCH = "Dispatch"
+TOGETHER = "Dispatch these bundles together, each to a sub-agent:"
 
 LINK_CLOSE = "link_close"
 
@@ -411,9 +412,6 @@ def written_in(
 def instruction(bundle_file: str) -> str:
     """The one line a dispatch sub-section carries."""
     return f"Dispatch `{bundle_file}` to a sub-agent."
-
-
-TOGETHER = "Dispatch these bundles together, each to a sub-agent:"
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:
