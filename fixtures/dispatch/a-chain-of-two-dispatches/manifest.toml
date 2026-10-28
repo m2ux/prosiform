@@ -1,0 +1,16 @@
+description = "A chain of two dispatches — the entry dispatching a target whose bundle dispatches once more — publishes one bundle for the entry and one for each target, each dispatching bundle opening with the Prosiform section, and is within the depth a chain is held to, so the run raises no warning."
+
+clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch depth",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review.bundle.md"]
+diagnostics = []
