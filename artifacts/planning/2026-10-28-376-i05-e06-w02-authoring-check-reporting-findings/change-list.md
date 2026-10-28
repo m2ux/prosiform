@@ -3,6 +3,7 @@
 ## Applied
 
 - **Delivery record.** On #376, the W02 row links the pull request in place of this folder. It was written from a fresh read, and no other row or criterion changed.
+- **Task merge.** The user merged #380 into `i05/e06/main` at `500aca85`, after CI passed on `256a032f`; the session's own merge had been refused by its permission classifier. #376 AC2 ticked and W02 Done, from a fresh read.
 
 ## Held
 
@@ -21,7 +22,3 @@
   - W10 adds `authoring` to `make check`.
   - It adds a `make authoring` row to the `checks.md` table and drops "`authoring.py` and" from the `checks/README.md` sentence on what `make check` runs.
   - The tests already include a failing file for each rule.
-
-## Blocked
-
-- **Task merge.** CI passed on #380 at `256a032f` and the base `i05/e06/main` is unmoved at `6dc691dd`. The merge was refused by the session's permission classifier, so #380 stays open. AC2 and W02's Done are left unticked until it merges.
