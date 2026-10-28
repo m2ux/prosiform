@@ -17,4 +17,6 @@ exit_status = 1
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["no text after its mark"]
-reference = "plan.md"
+reference = "⇉ "
+source = "guide.md:3"
+chain = ["guide.md", "plan.md"]

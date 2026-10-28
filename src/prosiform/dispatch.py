@@ -62,9 +62,7 @@ The dispatches a bundle carries name each target once, at the first
 link naming it, so each search follows each target once from a bundle.
 
 A dispatched link's text names its sub-section, so the text is written
-with each run of whitespace, a line break among them, as one space, and
-a link with no text after its mark, which would name nothing, is
-refused.
+with each run of whitespace, a line break among them, as one space.
 """
 
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
@@ -90,7 +88,6 @@ from prosiform.diagnostics import (
     Location,
     RelatedLocation,
 )
-from prosiform.profile import UNSUPPORTED_CONSTRUCT
 from prosiform.provenance import (
     DISPATCH_SECTION,
     FILENAME_WRAPPER,
@@ -174,7 +171,6 @@ SELF_REMEDY = (
 CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching it"
 LEVEL_REMEDY = "move the dispatch to a section above the sixth level"
 COLLISION_REMEDY = "retitle the authored heading"
-EMPTY_REMEDY = "write the link's text after its mark"
 
 Placed = dict[tuple[str, int], dict[Served, int]]
 """Each dispatch sub-section's heading, by the region and link it serves.
@@ -385,6 +381,7 @@ class Link:
     written: str
     location: Location
     parallel: bool
+    opening: str
 
     @property
     def target(self) -> Target:
@@ -415,11 +412,7 @@ def link_text(children: Sequence[Token], at: int) -> str:
 def written_in(
     path: str, source: Source, tokens: Sequence[Token], region: Token
 ) -> list[Link]:
-    """Every dispatched link one region writes, in written order.
-
-    A link with no text after its mark is refused, because the
-    sub-section it points at is named by that text.
-    """
+    """Every dispatched link one region writes, in written order."""
     found: list[Link] = []
     for inline in inlines(tokens, [region]):
         line = source.line(None if inline.map is None else inline.map[0] + 1)
@@ -433,21 +426,16 @@ def written_in(
             target = withheld(path, destination, opening, source.root)
             if target is None:
                 continue
-            text = " ".join(unmarked(link_text(children, at)).split())
-            at_line = Location(path, 1 if line is None else line, 1)
-            if not text:
-                raise Refused(
-                    Diagnostic(
-                        ERROR,
-                        f"the dispatch {destination!r} carries no text after its "
-                        f"mark, so no sub-section heading can name it",
-                        code=UNSUPPORTED_CONSTRUCT,
-                        reference=destination,
-                        remedy=EMPTY_REMEDY,
-                        location=at_line,
-                    )
+            found.append(
+                Link(
+                    target,
+                    " ".join(unmarked(link_text(children, at)).split()),
+                    destination,
+                    Location(path, 1 if line is None else line, 1),
+                    parallel(opening),
+                    opening,
                 )
-            found.append(Link(target, text, destination, at_line, parallel(opening)))
+            )
     return found
 
 

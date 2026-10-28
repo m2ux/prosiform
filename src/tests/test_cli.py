@@ -1874,6 +1874,20 @@ def test_a_heading_pf_does_not_emit_in_the_bundle_publishes(
     assert f"## {heading}\n\nText.\n" in run.bundle
 
 
+def test_an_empty_dispatch_reached_through_a_link_names_the_route(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [the steps](steps.md).\n")
+    written(root, "steps.md", "# Steps\n\nThen [\u21c9 ](plan.md).\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["reference"] == "\u21c9 "
+    assert diagnostic["source"] == "steps.md:3"
+    assert diagnostic["chain"] == ["guide.md", "steps.md", "plan.md"]
+
+
 def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nRead [\u00ac \u21c9 the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")

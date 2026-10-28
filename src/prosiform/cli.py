@@ -1116,15 +1116,24 @@ def dispatches(
     with the place the link is written: the hop a chain of dispatches
     takes from here. The links are those the bundle's dispatch
     sub-sections are placed for, read by the one reader that places
-    them, so every hop the run follows has its sub-section.
+    them, so every hop the run follows has its sub-section. A link with
+    no text after its mark leaves that sub-section nothing to be named
+    by, so it is refused as the operator refusals are, naming the route.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
-        try:
-            links = written_in(path, source, tokens, region)
-        except Refused as refused:
-            raise Failure(INPUT_FAILURE, refused.diagnostic) from refused
-        for link in links:
+        for link in written_in(path, source, tokens, region):
+            if not link.text:
+                raise input_failure(
+                    f"the link {link.opening!r} dispatches {link.written!r} with "
+                    f"no text after its mark, so no sub-section heading can "
+                    f"name it",
+                    code=UNSUPPORTED_CONSTRUCT,
+                    remedy="write the link's text after its mark",
+                    reference=link.opening,
+                    source=location(path, link.location.line),
+                    chain=(*chain, link.written),
+                )
             yield Hop(
                 replace(
                     link.reference,
