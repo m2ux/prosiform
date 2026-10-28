@@ -12,6 +12,9 @@ Artifact steps carry no label, so a mode or protocol could name an operation but
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | Artifact operations as step sub-sections: scope, design, the step titles per file and the checks it requires |
+| [Validation](validation.md) | The inspection against AC4, the anchor check of the regenerated bundles, and the results of `make links`, `make corpus` and `make check` |
+| [Change list](change-list.md) | The plan changes this delivery session applied and held |
 
 ## Links
 
@@ -21,3 +24,4 @@ Artifact steps carry no label, so a mode or protocol could name an operation but
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Corpus Steps planning record](../2026-10-28-352-i05-e04-corpus-step-subsections/README.md) |
 | Prior task | [W03 Protocol Procedures as Step Sub-sections](../2026-10-28-352-i05-e04-w03-protocol-procedures-as-step/README.md) |
+| Pull request | [I05:E04 Artifact Operations as Step Sub-sections](https://github.com/m2ux/prosiform/pull/368) |
