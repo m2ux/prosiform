@@ -1253,6 +1253,17 @@ def test_a_set_whose_member_cannot_be_written_writes_no_bundle(tmp_path: Path) -
     assert contents(tmp_path / "run") == {"earlier.bundle.md": b"earlier bytes\n"}
 
 
+def test_two_bundles_deriving_one_name_publish_nothing(tmp_path: Path) -> None:
+    bundles = bundle_set("# One\n", "# Two\n")
+    bundles[1] = Bundle("# Two\n", "member0.bundle.md", [])
+    with pytest.raises(Failure) as refused:
+        publication(
+            bundles, tmp_path / "run", outputs(1024), Reporter(StringIO()), False
+        )
+    assert refused.value.diagnostic.code == PUBLICATION_FAILED
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_a_set_is_published_whole_once_every_member_validates(tmp_path: Path) -> None:
     bundles = bundle_set("# One\n", "# Two\n", "# Three\n")
     err = StringIO()

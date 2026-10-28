@@ -386,8 +386,8 @@ def parser() -> Parser:
         allow_abbrev=False,
         usage=f"{NAME} [OPTIONS] REF [REF ...]",
         description=(
-            "Bundle the local Markdown closure of one or more entry references "
-            "into one validated document."
+            "Bundle the local Markdown closure of one or more entry references, "
+            "and of each target they dispatch, into validated bundles."
         ),
         epilog=EXIT_STATUSES,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -403,8 +403,8 @@ def parser() -> Parser:
         dest="output",
         metavar="DIR",
         default=CURRENT_FOLDER,
-        help="existing folder each bundle is written to atomically, under its "
-        "derived name; default: the working directory",
+        help="existing folder the run's own folder of bundles is written into, "
+        "swapped in whole; default: the working directory",
     )
     grammar.add_argument(
         "-c",
@@ -1856,7 +1856,9 @@ def publish_folder(bundles: Sequence[Bundle], folder: Path) -> None:
     folder stands at that path. A failure before the new folder is in
     place removes it and leaves everything else as it was, the earlier
     folder restored where it was moved aside. Nothing else in the output
-    folder is touched.
+    folder is touched. Each file is created fresh, so two bundles of one
+    run deriving one name refuse the second rather than overwrite the
+    first.
     """
     staged = sibling(folder, "new")
     try:
@@ -1865,7 +1867,7 @@ def publish_folder(bundles: Sequence[Bundle], folder: Path) -> None:
         raise refusal(folder, refused) from refused
     try:
         for one in bundles:
-            with (staged / one.name).open("w", encoding=ENCODING, newline="") as file:
+            with (staged / one.name).open("x", encoding=ENCODING, newline="") as file:
                 file.write(one.text)
     except OSError as refused:
         shutil.rmtree(staged, ignore_errors=True)
