@@ -235,6 +235,42 @@ EXIT_STATUSES = """exit statuses:
   4  unexpected internal error
 """
 
+GUIDE = """# Following a Skill with pf
+
+A skill's links name the documents to read. pf compiles a linked document, \
+and everything it reaches, into a bundle that is read whole.
+
+## Compile
+
+From the skill's directory, which holds `SKILL.md`, run:
+
+```bash
+pf -o <folder> <destination>
+```
+
+- `<destination>`  The link's destination as written.
+- `<folder>`  An existing working directory outside the repository.
+
+The run writes its bundles into `<folder>/<name>.bundles/`, where `<name>` is \
+the destination's path without its Markdown suffix, each `/` written as `_` \
+and a fragment added after `__`: `modes/plan-mode.md` compiles to \
+`modes_plan-mode.bundles/modes_plan-mode.bundle.md`, beside a bundle for each \
+target it dispatches.
+
+A non-zero exit stops the run and reports pf's diagnostics.
+
+## Inline Targets
+
+A link whose text opens with `↳` names an inline target: compile it, read the \
+whole bundle and follow it.
+
+## Following a Bundle
+
+A bundle that opens with a Prosiform section is followed from there: the \
+section states how each dispatched bundle in the run's folder is handed to a \
+sub-agent, and the steps after it name the bundles they dispatch.
+"""
+
 
 class Failure(Exception):
     """One outcome the contract names, and the status that outcome returns."""
@@ -384,7 +420,8 @@ def parser() -> Parser:
         usage=f"{NAME} [OPTIONS] REF [REF ...]",
         description=(
             "Bundle the local Markdown closure of one or more entry references, "
-            "and of each target they dispatch, into validated bundles."
+            "and of each target they dispatch, into validated bundles. Run with "
+            "no arguments, pf prints the guide to compiling and following them."
         ),
         epilog=EXIT_STATUSES,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -2008,6 +2045,9 @@ def dispatched_set(
 
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
+    if not arguments:
+        publish(GUIDE, stdout)
+        return SUCCESS
     grammar = parser()
     options = grammar.parse_args(list(arguments))
 
