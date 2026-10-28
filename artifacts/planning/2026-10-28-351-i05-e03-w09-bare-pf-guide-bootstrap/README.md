@@ -13,6 +13,8 @@ Every corpus restated how to use pf in prose of its own. That prose now describe
 | Artifact | What it holds |
 | --- | --- |
 | [W09 work item](w09.md) | The bare-`pf` guide, the bootstrap retirement and the documentation sweep |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
@@ -22,4 +24,5 @@ Every corpus restated how to use pf in prose of its own. That prose now describe
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior task | [W08 Prosiform Section and Its Protocols](../2026-10-28-351-i05-e03-w08-prosiform-section-and-its/README.md) |
+| Pull request | [#363 Bare-pf Guide, Bootstrap Retirement and Docs](https://github.com/m2ux/prosiform/pull/363) |
 | Review pull request | [#355](https://github.com/m2ux/prosiform/pull/355) |
