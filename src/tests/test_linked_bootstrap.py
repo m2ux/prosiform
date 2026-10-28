@@ -42,8 +42,9 @@ SKILL = (
     "\n"
     "Resolve each link target relative to this SKILL.md file. Keep the "
     "caller's working directory: absent source roots use that directory. "
-    'Invoke `pf -o - "ABSOLUTE_TARGET"` for each resolved target and read '
-    "all of its stdout. Preserve a link's fragment when present. A failed "
+    'Invoke `pf -o "FOLDER" "ABSOLUTE_TARGET"` for each resolved target and '
+    "read the whole bundle it writes into that folder. Preserve a link's "
+    "fragment when present. A failed "
     "command leaves that document's instructions unavailable; report its "
     "diagnostics and stop. SKILL.md is the entry point the agent already "
     "read, not a compiler input. These bundles are loaded once for this "
@@ -385,14 +386,13 @@ class Stack:
         (record / "stderr.jsonl").write_text(result.stderr, encoding="utf-8")
         produced = record / "bundle.md"
         absent = record / "bundle-absent.txt"
-        if result.returncode == 0 and result.stdout:
-            produced.write_text(result.stdout, encoding="utf-8")
-        elif result.returncode == 0 and bundle is not None:
+        if result.returncode == 0 and bundle is not None:
             shutil.copyfile(bundle, produced)
         elif result.returncode == 0 and "-o" in arguments:
-            destination = arguments[arguments.index("-o") + 1]
-            if destination != "-":
-                shutil.copyfile(destination, produced)
+            folder = Path(arguments[arguments.index("-o") + 1])
+            written = sorted(folder.glob("*.bundle.md"))
+            if len(written) == 1:
+                shutil.copyfile(written[0], produced)
         if produced.exists():
             bundle_name = produced.relative_to(self.installation.artifacts).as_posix()
             bundle_cell = f"[bundle.md]({bundle_name})"
@@ -453,14 +453,20 @@ class Stack:
         assert "compiler.json" in inventory
         assert self.installation.revision in inventory
 
-    def successful(self, result: subprocess.CompletedProcess[str]) -> str:
-        """A bundle the command published, carrying no decoy and no frontmatter."""
+    def compiled(self, *arguments: str, cwd: Path | None = None) -> str:
+        """The bundle one run writes into a fresh folder, with no decoy or metadata."""
+        folder = Path(tempfile.mkdtemp(prefix="pf-bundles-"))
+        result = self.invoke("-o", str(folder), *arguments, cwd=cwd)
         assert result.returncode == 0, result.stderr
-        assert "WRONG_ROOT_MARKER" not in result.stdout
-        assert "Linked Instruction Bootstrap" not in result.stdout
-        assert "prosiform:" not in result.stdout
-        assert "group-depth:" not in result.stdout
-        return result.stdout
+        assert result.stdout == ""
+        written = sorted(folder.iterdir())
+        assert len(written) == 1, written
+        output = written[0].read_text(encoding="utf-8")
+        assert "WRONG_ROOT_MARKER" not in output
+        assert "Linked Instruction Bootstrap" not in output
+        assert "prosiform:" not in output
+        assert "group-depth:" not in output
+        return output
 
     def assert_content(
         self, output: str, markers: list[str], groups: list[str]
@@ -540,7 +546,7 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
     }
     assert len(stack.targets()) >= 3
     for label in stack.targets():
-        output = stack.successful(stack.invoke("-o", "-", stack.entry(label)))
+        output = stack.compiled(stack.entry(label))
         markers, groups, absent = cases[label]
         stack.assert_content(
             output, [*markers, "RUN_LEAF_MARKER", "RUN_TAIL_MARKER"], groups
@@ -558,10 +564,8 @@ def test_absent_roots_are_bounded_by_the_invocation_directory(stack: Stack) -> N
     """A caller directory that does not hold the leaf leaves the link to it authored."""
     other = stack.tree / "skills"
     for label in stack.targets():
-        first = stack.successful(stack.invoke("-o", "-", stack.entry(label)))
-        second = stack.successful(
-            stack.invoke("-o", "-", stack.entry(label, cwd=other), cwd=other)
-        )
+        first = stack.compiled(stack.entry(label))
+        second = stack.compiled(stack.entry(label, cwd=other), cwd=other)
         assert "RUN_LEAF_MARKER" in first
         assert "RUN_LEAF_MARKER" not in second
         assert "run/leaf.md)" in second
@@ -569,7 +573,7 @@ def test_absent_roots_are_bounded_by_the_invocation_directory(stack: Stack) -> N
 
 def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
     """A fragment keeps the entry file's root and drops the unselected intro."""
-    output = stack.successful(stack.invoke("-o", "-", stack.entry("Assemble", "steps")))
+    output = stack.compiled(stack.entry("Assemble", "steps"))
     assert "ENTRY_INTRO" not in output
     stack.assert_content(
         output,
@@ -578,15 +582,12 @@ def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
     )
 
 
-def test_explicit_output_matches_stdout_and_derived_names(stack: Stack) -> None:
-    """Stdout, an explicit file and the derived filename carry one bundle."""
+def test_a_named_folder_and_the_working_directory_carry_one_bundle(
+    stack: Stack,
+) -> None:
+    """A named folder and the working directory carry one bundle under one name."""
     target = stack.entry("Assemble")
-    expected = stack.successful(stack.invoke("-o", "-", target))
-    destination = stack.cwd / "assembled.md"
-    result = stack.invoke("-o", str(destination), target)
-    stack.successful(result)
-    assert result.stdout == ""
-    assert destination.read_text(encoding="utf-8") == expected
+    expected = stack.compiled(target)
     derived = stack.cwd / "skills_pf-bootstrap-specimen_modes_assemble.bundle.md"
     published = stack.invoke(target, bundle=derived)
     assert published.returncode == 0, published.stderr
@@ -604,7 +605,7 @@ def test_explicit_output_matches_stdout_and_derived_names(stack: Stack) -> None:
 def test_repeated_target_is_included_once(stack: Stack) -> None:
     """Naming one linked target twice publishes its content once."""
     target = stack.entry("Defaults")
-    output = stack.successful(stack.invoke("-o", "-", target, target))
+    output = stack.compiled(target, target)
     assert output.count("DEFAULTS_MARKER") == 1
     assert output.count("RUN_LEAF_MARKER") == 1
     derived = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
@@ -660,7 +661,7 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
     assert 'root: "../../shared"' in alpha
     assert 'root: "../shared"' in portal
     assert "root:" not in (stack.tree / "shared/common.md").read_text(encoding="utf-8")
-    output = stack.successful(stack.invoke("-o", "-", "join.md"))
+    output = stack.compiled("join.md")
     for marker in (
         "JOIN_MARKER",
         "ALPHA_VIA_MARKER",
@@ -678,8 +679,8 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
 def test_rewritten_destinations_are_stable(stack: Stack) -> None:
     """A second compilation rewrites the same destinations and the same file."""
     target = stack.entry("Assemble")
-    first = stack.successful(stack.invoke("-o", "-", target))
-    second = stack.successful(stack.invoke("-o", "-", target))
+    first = stack.compiled(target)
+    second = stack.compiled(target)
     assert first == second
     assert "[Rules](#checks)" in first
     assert "[Checks](#checks-2)" in first
@@ -704,9 +705,9 @@ def test_depth_conflict_preserves_existing_output(stack: Stack) -> None:
             depth=3,
         ),
     )
-    destination = stack.cwd / "existing.md"
+    destination = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
     destination.write_text("PRESERVE_ME\n", encoding="utf-8")
-    result = stack.invoke("-o", str(destination), stack.entry("Defaults"))
+    result = stack.invoke(stack.entry("Defaults"))
     assert result.returncode == 1, result.stderr
     assert result.stdout == ""
     assert destination.read_text(encoding="utf-8") == "PRESERVE_ME\n"
@@ -724,9 +725,9 @@ def test_depth_conflict_preserves_existing_output(stack: Stack) -> None:
 def test_invalid_metadata_publishes_nothing(stack: Stack, depth: Any) -> None:
     """A depth the schema refuses leaves the existing output untouched."""
     stack.write("run/tail.md", document("# Tail\n", group="leaves", depth=depth))
-    destination = stack.cwd / "invalid.md"
+    destination = stack.cwd / "skills_pf-bootstrap-specimen_modes_defaults.bundle.md"
     destination.write_text("PRESERVE_ME\n", encoding="utf-8")
-    result = stack.invoke("-o", str(destination), stack.entry("Defaults"))
+    result = stack.invoke(stack.entry("Defaults"))
     assert result.returncode == 1, result.stderr
     assert result.stdout == ""
     assert destination.read_text(encoding="utf-8") == "PRESERVE_ME\n"
@@ -736,8 +737,7 @@ def test_invalid_metadata_publishes_nothing(stack: Stack, depth: Any) -> None:
 
 def test_inventory_links_each_retained_run(stack: Stack) -> None:
     """The published inventory links the compiler revision and one run's files."""
-    result = stack.invoke("-o", "-", stack.entry("Defaults"))
-    stack.successful(result)
+    stack.compiled(stack.entry("Defaults"))
     inventory = (stack.installation.artifacts / "inventory.md").read_text(
         encoding="utf-8"
     )

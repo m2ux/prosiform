@@ -95,9 +95,9 @@ def test_metadata_is_not_a_markdown_dependency(tmp_path: Path) -> None:
     )
     run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "Hidden" not in run.stdout
-    assert "missing" not in run.stdout
-    assert "Body." in run.stdout
+    assert "Hidden" not in run.bundle
+    assert "missing" not in run.bundle
+    assert "Body." in run.bundle
 
 
 @pytest.mark.parametrize("diagnostics", ["text", "json"])
@@ -107,11 +107,11 @@ def test_metadata_error_preserves_output_and_coordinates(
     (tmp_path / "a.md").write_bytes(
         b"\xef\xbb\xbf---\r\nprosiform: 7\r\n...\r\n# A\r\n"
     )
-    output = tmp_path / "out.md"
+    output = tmp_path / "a.bundle.md"
     output.write_text("existing\n")
-    run = invoke("-d", diagnostics, "-o", str(output), "a.md", cwd=tmp_path)
+    run = invoke("-d", diagnostics, "-o", str(tmp_path), "a.md", cwd=tmp_path)
     assert run.status == 1
-    assert run.stdout == ""
+    assert run.bundle == ""
     assert output.read_text() == "existing\n"
     if diagnostics == "json":
         diagnostic = run.diagnostics()[0]
@@ -157,7 +157,7 @@ def test_deferred_source_is_captured_once_and_contributes_nothing(
     monkeypatch.setattr(cli, "read_source", read)
     run = invoke("-F", "2", "a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "Hidden." not in run.stdout
+    assert "Hidden." not in run.bundle
     # One discovery read and one publication recheck for each captured source.
     assert reads.count("a.md") == 2
     assert reads.count("b.md") == 2
@@ -182,7 +182,7 @@ def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
     (tmp_path / "b.md").write_text("---\na: [\n---\n# B\n")
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
-    assert run.stdout == ""
+    assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == "E_INVALID_FRONTMATTER"
     assert run.diagnostics()[0]["location"]["file"] == "b.md"
 
@@ -205,7 +205,7 @@ def test_deferred_metadata_change_is_rechecked_with_its_chain(
     monkeypatch.setattr(cli, "read_source", read)
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
-    assert run.stdout == ""
+    assert run.bundle == ""
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == "E_SOURCE_CHANGED"
     assert diagnostic["chain"] == ["a.md", "b.md"]

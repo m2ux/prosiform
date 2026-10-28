@@ -28,11 +28,11 @@ def test_linked_destination_owns_its_settings(
     # A parent selected whole keeps its own H1; one selected by fragment is
     # entered beneath the group heading its declaration names.
     parent = "# A\n" if "#" not in references[0] else "# Entry\n"
-    assert parent in run.stdout and "# Target\n" in run.stdout
-    assert "[Target](#run-1)" in run.stdout
-    assert run.stdout.count("Target content.") == 1
-    assert "Not discovered." not in run.stdout
-    assert "group" not in run.stdout
+    assert parent in run.bundle and "# Target\n" in run.bundle
+    assert "[Target](#run-1)" in run.bundle
+    assert run.bundle.count("Target content.") == 1
+    assert "Not discovered." not in run.bundle
+    assert "group" not in run.bundle
 
 
 def test_diamond_cycle_and_unannotated_sibling_keep_source_ownership(
@@ -56,13 +56,13 @@ def test_diamond_cycle_and_unannotated_sibling_keep_source_ownership(
     )
     run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert run.stdout.count("Unique body.") == 1
+    assert run.bundle.count("Unique body.") == 1
     assert (
-        "# Shared\n" in run.stdout
-        and "# B\n" in run.stdout
-        and "# Entry\n" in run.stdout
+        "# Shared\n" in run.bundle
+        and "# B\n" in run.bundle
+        and "# Entry\n" in run.bundle
     )
-    assert "### A\n" in run.stdout and "### C\n" in run.stdout
+    assert "### A\n" in run.bundle and "### C\n" in run.bundle
 
 
 @pytest.mark.parametrize("active", [False, True])
@@ -82,26 +82,26 @@ def test_deferred_only_metadata_does_not_join_or_conflict(
     if active:
         assert run.diagnostics()[0]["code"] == "E_GROUP_DEPTH_CONFLICT"
     else:
-        assert "Later content." not in run.stdout
-        assert "[Later](b.md)" in run.stdout
+        assert "Later content." not in run.bundle
+        assert "[Later](b.md)" in run.bundle
 
 
-@pytest.mark.parametrize("mode", ["stdout", "file", "check"])
+@pytest.mark.parametrize("mode", ["file", "check"])
 @pytest.mark.parametrize("form", ["text", "json"])
 def test_conflicting_depths_are_stable_and_atomic(
     tmp_path: Path, mode: str, form: str
 ) -> None:
     written(tmp_path, "a.md", conversion("shared", 2) + "# A\n")
     written(tmp_path, "b.md", conversion("shared", 3) + "# B\n")
-    output = tmp_path / "output.md"
+    output = tmp_path / "a+b.bundle.md"
     output.write_text("preserved\n")
-    options = [] if mode == "stdout" else ["-o", str(output)]
+    options = ["-o", str(tmp_path)]
     if mode == "check":
         options.append("-c")
     forward = invoke("-d", form, *options, "a.md", "b.md", cwd=tmp_path)
     reverse = invoke("-d", form, *options, "b.md", "a.md", cwd=tmp_path)
     assert forward.status == reverse.status == 1
-    assert forward.stdout == reverse.stdout == ""
+    assert forward.bundle == reverse.bundle == ""
     assert forward.stderr == reverse.stderr
     assert output.read_text() == "preserved\n"
     if form == "json":
@@ -128,8 +128,8 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
         )
     run = invoke("x/notes.md", "y/notes.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert "### X Notes\n" in run.stdout and "### Y Notes\n" in run.stdout
-    assert "First." in run.stdout and "Second." in run.stdout
+    assert "### X Notes\n" in run.bundle and "### Y Notes\n" in run.bundle
+    assert "First." in run.bundle and "Second." in run.bundle
 
 
 def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> None:
@@ -140,9 +140,9 @@ def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> No
     # The parent emits its own H1 in place of the group heading its
     # declaration names, so the separate file's heading is the one
     # carrying that text and the link reaches it.
-    assert run.stdout.count("# Same\n") == 1
-    assert run.stdout.count("# A\n") == 1
-    assert "[Other](#same)" in run.stdout
+    assert run.bundle.count("# Same\n") == 1
+    assert run.bundle.count("# A\n") == 1
+    assert "[Other](#same)" in run.bundle
 
 
 def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
@@ -150,13 +150,13 @@ def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
         written(tmp_path, name + ".md", conversion(group, 2) + "# " + name + "\n")
     run = invoke("a.md", "b.md", "c.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert run.stdout.count("# Rules\n") == 2
-    assert "# a\n" in run.stdout
+    assert run.bundle.count("# Rules\n") == 2
+    assert "# a\n" in run.bundle
 
 
 @pytest.mark.parametrize("option", ["-g", "-grules:2", "--group"])
 def test_structural_cli_arguments_are_usage_errors(tmp_path: Path, option: str) -> None:
     run = invoke("-d", "json", option, "rules:2", "a.md", cwd=tmp_path)
     assert run.status == 2
-    assert run.stdout == ""
+    assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == "E_INVALID_USAGE"

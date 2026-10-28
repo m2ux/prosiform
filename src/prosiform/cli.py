@@ -159,6 +159,7 @@ PUBLICATION_FAILURE = 3
 INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
+CURRENT_FOLDER = "."
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
@@ -387,8 +388,10 @@ def parser() -> Parser:
     grammar.add_argument(
         "-o",
         dest="output",
-        metavar="FILE",
-        help="atomic validated output to FILE; -: stdout; default: derived filename",
+        metavar="DIR",
+        default=CURRENT_FOLDER,
+        help="existing folder each bundle is written to atomically, under its "
+        "derived name; default: the working directory",
     )
     grammar.add_argument(
         "-c",
@@ -1792,30 +1795,31 @@ def publish_file(text: str, destination: Path) -> None:
                 ERROR,
                 f"the output path {str(destination)!r} refused the bundle: {refused}",
                 code=PUBLICATION_FAILED,
-                remedy="name a path the run can write",
+                remedy="name an existing folder the run can write",
             ),
         ) from refused
 
 
-def derived_output(
-    read: Mapping[str, Source],
-    referrer: Reference | None,
-    requested: Sequence[Reference],
-) -> str:
-    """The basename of one normalized entry, from its working-directory path."""
-    selections = {
+def derived_name(referrer: Reference | None, requested: Sequence[Reference]) -> str:
+    """The bundle's file name, joined from each distinct selection's name.
+
+    A selection is named by its working-directory path, its Markdown
+    extension removed and each separator written as an underscore, and a
+    section adds two underscores and its fragment. The names are joined
+    with a plus sign in the order the command line first names each
+    selection, so equivalent references count once.
+    """
+    selections = dict.fromkeys(
         (one.path or (referrer.path if referrer else ""), one.fragment)
         for one in requested
-    }
-    if len(selections) != 1:
-        raise usage_failure(
-            "multiple distinct selections require an explicit -o destination"
-        )
-    path, fragment = next(iter(selections))
-    name = str(Path(path).with_suffix("")).replace(os.sep, "_")
-    if fragment is not None:
-        name += f"__{fragment}"
-    return f"{name}.bundle.md"
+    )
+    names = []
+    for path, fragment in selections:
+        name = str(Path(path).with_suffix("")).replace(os.sep, "_")
+        if fragment is not None:
+            name += f"__{fragment}"
+        names.append(name)
+    return f"{'+'.join(names)}.bundle.md"
 
 
 def unperformable(
@@ -1923,6 +1927,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     if not options.references:
         raise usage_failure("at least one entry reference is required")
+    if options.output == STANDARD_OUTPUT:
+        raise usage_failure(
+            "-o - names standard output, which carries no bundle; -o names the "
+            "folder the bundle is written to"
+        )
     requested = [entry(reference) for reference in options.references]
     if not options.referrer:
         for one in requested:
@@ -1945,13 +1954,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    output = options.output
-    if output is None:
-        output = derived_output(read, referring, requested)
-    if output != STANDARD_OUTPUT:
-        destination = Path(output).resolve()
-        if destination in sources(root, read):
-            raise usage_failure(f"the output path {output!r} names an input source")
+    destination = Path(options.output, derived_name(referring, requested)).resolve()
+    if destination in sources(root, read):
+        raise usage_failure(
+            f"the output path {str(destination)!r} names an input source"
+        )
     bundled, coinciding = compose(
         read, parsed, defined, referring, requested, found, limits
     )
@@ -1988,10 +1995,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             )
         )
     if not options.check:
-        if output == STANDARD_OUTPUT:
-            publish(bundled, stdout)
-        else:
-            publish_file(bundled, destination)
+        publish_file(bundled, destination)
     return SUCCESS
 
 
