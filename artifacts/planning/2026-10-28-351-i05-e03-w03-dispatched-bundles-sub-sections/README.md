@@ -25,4 +25,5 @@ An agent follows a dispatch by handing a bundle that already exists to a sub-age
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior task | [W02 All-or-Nothing Publication](../2026-10-28-351-i05-e03-w02-all-or-nothing-publication/README.md) |
+| Pull request | [#357 Dispatched Bundles and Their Refusals](https://github.com/m2ux/prosiform/pull/357) |
 | Review pull request | [#355](https://github.com/m2ux/prosiform/pull/355) |

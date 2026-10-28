@@ -90,3 +90,7 @@ Review bar:
 
 - `make conformance`: 300 clauses, 0 declarations naming no clause, 0 declared codes the build reports nowhere, 0 reported codes the contract declares nowhere; `pf -C` and the design declare the same codes, `E_DISPATCH_CYCLE` and `E_HEADING_COLLISION` among them and `W_DISPATCH_CYCLE` and `W_DISPATCH_NOT_PROCEDURAL` gone.
 - `make invocation`: 28 statements of `invocation.md`, the `-o DIR` row among them, each held to the build's help.
+
+## Continuous integration
+
+`Checks` ran `make check` on the pull request head `e91b406b` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40660343725/job/122721510214)). #357 merged into `i05/e03/main` as `f006e0b8`.
