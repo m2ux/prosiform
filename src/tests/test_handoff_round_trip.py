@@ -36,6 +36,11 @@ EXAMPLE = REPO / "example" / "work-planner"
 COMMAND = "pf"
 ENCODING = "utf-8"
 
+# The seconds one invocation is given. The example's costliest entry,
+# modes/deliver-mode.md, compiles nine bundles in about five seconds on a
+# developer machine, so the limit holds a runner several times slower.
+LIMIT = 60
+
 DISPATCH = "\u21c9"
 DEFERRAL = "\u00ac"
 
@@ -179,7 +184,7 @@ class Tree:
                 capture_output=True,
                 text=True,
                 encoding=ENCODING,
-                timeout=60,
+                timeout=LIMIT,
                 check=False,
             )
             written = sorted(Path(folder).iterdir())
@@ -231,15 +236,15 @@ class Tree:
             assert fragment, destination
         return found
 
-    def published(self, entry: str) -> list[tuple[str, str]]:
-        """The destinations one mode published that name a document of this copy.
+    def published(self, bundle: str) -> list[tuple[str, str]]:
+        """The destinations one bundle published that name a document of this copy.
 
         A link landing outside the root stays as its author wrote it, so it
         names material no run from this root compiles and is a reference rather
         than a handoff.
         """
         found = []
-        for label, destination in withheld(self.bundled(entry)):
+        for label, destination in withheld(bundle):
             path = unquote(destination.partition("#")[0])
             target = (self.root / path).resolve()
             inside = target.is_relative_to(self.root.resolve()) and target.is_file()
@@ -347,7 +352,7 @@ def test_each_handoff_the_example_publishes_is_followed(tree: Tree) -> None:
         for name in dispatched(run.bundle):
             assert name in run.bundles, (entry, name)
             named += 1
-        for label, destination in tree.published(entry):
+        for label, destination in tree.published(run.bundle):
             published.setdefault(destination, label)
     assert named, "the example dispatches nothing"
     assert published, "the example defers nothing"
