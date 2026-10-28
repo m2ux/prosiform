@@ -106,6 +106,7 @@ import json
 import re
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
+from itertools import pairwise
 
 from markdown_it.token import Token
 from ruamel.yaml import YAML
@@ -468,6 +469,23 @@ def regions(tokens: Sequence[Token]) -> Iterator[Token]:
         depth += token.nesting
 
 
+def runs(tokens: Sequence[Token]) -> dict[int, Sequence[Token]]:
+    """The tokens each region of the document carries, by its opening's identity.
+
+    A region's run begins at the token opening it and ends where the
+    next region opens, so it holds every token whose line falls inside
+    that region. A check reading one region of a long document reads its
+    run, which `within` narrows to the same tokens the whole document
+    gives it.
+    """
+    opening = {id(token) for token in regions(tokens)}
+    opened = [at for at, token in enumerate(tokens) if id(token) in opening]
+    return {
+        id(tokens[start]): tokens[start:end]
+        for start, end in pairwise([*opened, len(tokens)])
+    }
+
+
 def opens(tokens: Sequence[Token], opening: Token) -> int | None:
     """Where one token opens a region of this document, by position in its run.
 
@@ -578,8 +596,11 @@ def within(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token
     for token in tokens:
         if token.map is None:
             continue
-        if any(start <= token.map[0] < end for start, end in spans):
-            yield token
+        line = token.map[0]
+        for start, end in spans:
+            if start <= line < end:
+                yield token
+                break
 
 
 def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Token]:
