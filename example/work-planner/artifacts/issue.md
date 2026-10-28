@@ -53,7 +53,7 @@ Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body th
 
 #### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](../conventions.md) states.
 
 #### 7. Compare the Saved Issue Fields
 
@@ -133,7 +133,7 @@ Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
 
 #### 4. Re-Read the Transferred Issue
 
-Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
+Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) for its state and reason, as [Write confirmation](../conventions.md) states.
 
 ### *Comment* on Issue
 
@@ -448,6 +448,8 @@ Checks the issue criteria, the complete link snapshot and every linked pull requ
 
 - `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
 - Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'

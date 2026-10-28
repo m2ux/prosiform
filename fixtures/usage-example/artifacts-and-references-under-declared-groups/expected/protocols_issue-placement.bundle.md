@@ -63,17 +63,18 @@ By the returned disposition:
 - **Repository.**
   `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
 - **Bodies.**
-  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
-  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
   - Keep these files in a working directory outside the repository.
-- **Scripts.**
-  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Helper invocation.**
+  A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
+- **Write confirmation.**
+  Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
 - **Boards.**
   A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
 - **Example values.**  Substitute the real ones:
   - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
   - `950` a pull request, `I07` and `I08` initiative numbers;
-  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - board `9` a theme board, and `419167630` its Status field id;
   - `1` the Initiative Template board, `13` a board copied from it;
   - `14` the Proposals Template, `15` the Proposals board;
   - `m2ux` the user.
@@ -280,7 +281,6 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 **Inputs:** Initiative body file, each epic id with its body file, each task id with its work-item file, and each planning-record file accounting for independent pairs.
 
 - Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
-- The command runs in `<workspace>` while body files are kept outside the repository, so pass each one as an absolute path.
 
 - Initiative edges follow the [whole-epic prerequisite rule](#work-breakdown); narrower dependencies stay in the task graph.
 - It also reports dependencies listed twice or already implied, and Joins pairs.
@@ -291,6 +291,8 @@ Checks the task dependency graph across the epics given, and with `I=` the initi
 - It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
 - It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
 - It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
@@ -315,6 +317,8 @@ Renumbers one epic's tasks by the map given, in the files given.
 - Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
 - Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
 ```
@@ -333,6 +337,8 @@ Renumbers an initiative's epics across supplied body files.
 
 - The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
 - Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
@@ -392,7 +398,7 @@ Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body th
 
 ##### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](#conventions) states.
 
 ##### 7. Compare the Saved Issue Fields
 
@@ -418,7 +424,7 @@ Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
 
 ##### 4. Re-Read the Transferred Issue
 
-Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) to confirm its state and reason.
+Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) for its state and reason, as [Write confirmation](#conventions) states.
 
 #### *Comment* on Issue
 
@@ -984,7 +990,7 @@ Stages and commits one planning folder on the engineering worktree.
 **Inputs:** Engineering worktree, planning-folder path and a commit message file.
 
 - Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message through a file; the worktree is a linked one, so git writes here run unsandboxed.
+- Pass the message as [Bodies](#conventions) states. The worktree is a linked one, so git writes here run unsandboxed.
 
 ```bash
 cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
@@ -1503,6 +1509,8 @@ Links each named task's id to a pull request naming the epic, open or merged, an
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
 ```
@@ -1520,6 +1528,8 @@ Ticks confirmed epic criteria, refusing any not ready to verify, and ticks compl
 **Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -1542,6 +1552,8 @@ Holds each named task row for one session, by setting its record folder as the r
 
 `<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](#engineering-branch) on the engineering branch.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
 ```
@@ -1561,6 +1573,8 @@ Frees each named task row, by replacing the planning-folder link with its work-i
 - The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
 
 `<task-ids>` is a comma-separated list of task ids.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
@@ -1890,6 +1904,8 @@ Checks one issue against its template, and with `--fix` writes the body with the
 
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'

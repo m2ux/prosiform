@@ -26,7 +26,7 @@ Run [Compute Board Changes](#compute-board-changes), mapping the supplied record
 
 #### 3. Return the Planned Board Calls
 
-Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms their live state.
+Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms them as [Write confirmation](../conventions.md) states.
 
 ### *Record* Epic Review
 
@@ -50,7 +50,7 @@ Match the epic's issue to its board item.
 #### 4. Set the Epic Status to In Review
 
 Apply [Update Item Status](board.md#update-item-status) with the board and item identities, the Status field and In Review option ids, and that status in its request body file, meeting [Status Changes](#status-changes).
-- Repeat the write and read the item again when it still shows the preceding status. The item list can lag a write.
+- Confirm the write as [Write confirmation](../conventions.md) states. The item list can lag a write, so an item still showing the preceding status has the same write repeated and the item read again.
 
 #### 5. Return the Epic Review Status
 
@@ -78,7 +78,7 @@ Apply [Plan Board Changes](#plan-board-changes) with the initiative JSON, linked
 #### 3. Run the Delivery Board Calls
 
 Run each emitted call, including the assignee calls, which act on the issue rather than the board item.
-- Apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status.
+- Apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output paths and changed item identity to confirm its current status, as [Write confirmation](../conventions.md) states.
 - If that item still shows the preceding status:
   - Repeat its write.
   - Repeat the same item read. The item list can lag a write.
@@ -123,6 +123,8 @@ Computes membership, Status and assignee calls from supplied delivery evidence.
 - `--others` supplies each resolved dependency issue.
 
 Pass each epic or task JSON file as a separate argument after its corresponding flag.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board.py '<initiative-json-file>' --epics '<epic-json-file>' --tasks '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --board '<board-identity>' --fields '<board-fields-file>' --items '<board-items-file>' --out '<output-directory>' --assignee '<assignee-login>'

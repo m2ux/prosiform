@@ -286,6 +286,8 @@ Prints the long-lived branch names, one per line.
 - `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
 - A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
 ```

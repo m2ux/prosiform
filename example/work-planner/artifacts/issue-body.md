@@ -141,7 +141,7 @@ Resolve a non-mechanical finding confined to one body.
 
 #### 4. Re-Read Each Repaired Issue
 
-Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue.
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue, as [Write confirmation](../conventions.md) states.
 - Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
@@ -165,7 +165,7 @@ Publish the corrected body through [Save Tracker Issue](issue.md#save-tracker-is
 
 #### 4. Re-Read the Answered Issue
 
-Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue, as [Write confirmation](../conventions.md) states.
 
 #### 5. Return the Question Decisions
 
@@ -295,6 +295,8 @@ Checks one issue against its template, and with `--fix` writes the body with the
 
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'

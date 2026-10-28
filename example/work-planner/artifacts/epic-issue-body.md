@@ -366,6 +366,8 @@ Links each named task's id to a pull request naming the epic, open or merged, an
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
 ```
@@ -383,6 +385,8 @@ Ticks confirmed epic criteria, refusing any not ready to verify, and ticks compl
 **Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -404,6 +408,8 @@ Holds each named task row for one session, by setting its record folder as the r
 
 `<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](../configuration.md#engineering-branch) on the engineering branch.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
 ```
@@ -422,6 +428,8 @@ Frees each named task row, by replacing the planning-folder link with its work-i
 - The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
 
 `<task-ids>` is a comma-separated list of task ids.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'

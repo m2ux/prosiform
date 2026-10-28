@@ -171,6 +171,8 @@ Lists the hoist candidates, and the open initiatives and epics they could join.
 
 **Inputs:** Complete supplied repository issue collection.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py '<issues-json-file>'
 ```

@@ -54,7 +54,7 @@ When the queue carries an `order` or `ask` line, return the queue with those lin
 #### 4. Run the Proposed Queue Calls
 
 Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](board.md#assignees) states.
-- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
+- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status, as [Write confirmation](../conventions.md) states.
 - If that item still shows the preceding status:
   - Repeat its write.
   - Repeat the same item read. The item list can lag a write.
@@ -157,6 +157,8 @@ Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lin
 - `--assignee` is the login assigned to work from Ready.
 - `--others` is an issue file for an issue the rows depend on that is not on the board. Repeatable.
 - `--unplanned` is an initiative left with no priority, an issue number or `<owner>/<repo>#<issue-number>`. Repeatable.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>'

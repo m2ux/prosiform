@@ -110,10 +110,8 @@ These rules govern artifact operations, and every step that runs a command. Proc
   Command templates use descriptive `<input-name>` placeholders for variable identities, branches, paths, dates, filters and values, aligned with the inputs the step names. Quote shell arguments containing placeholders and escape substituted values for their shell, URL, query or payload context. Keep required literals, enum values, field names and installed script paths literal. State list separators, mapping syntax and repeated arguments beside the command. JSON templates preserve the required value types.
 - **Concrete examples.**
   Retain hard-coded values in explicitly labelled examples alongside the generic command or payload template so their shape remains clear. Examples illustrate input values; they do not supply defaults or identify the current target.
-- **Local scripts.**
-  `<workspace>` is the checkout holding the installed scripts. Run its scripts with the absolute `<workspace>/scripts/sbx` path from that checkout.
-- **Bodies.**
-  Pass a complete body or multiline comment through a file. The file holds the exact intended text.
+- **Helpers and bodies.**
+  A step running a helper links [Helper invocation](conventions.md), and one passing a body links [Bodies](conventions.md).
 
 ## Modes
 

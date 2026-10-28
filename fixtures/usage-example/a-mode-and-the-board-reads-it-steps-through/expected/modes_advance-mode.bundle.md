@@ -87,17 +87,18 @@ Report each move and each `order`, `ask`, `wait` and `next` line using [Report L
 - **Repository.**
   `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
 - **Bodies.**
-  - Bodies and long comments always go through a file (`-F body=@file`), never inline, which avoids quoting.
-  - **Example.**  workflow-server's dynamic-shell restrictions deny a body inlined in the command.
+  - Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
   - Keep these files in a working directory outside the repository.
-- **Scripts.**
-  Scripts run under `sbx`, invoked by its absolute path from `<workspace>`, the checkout holding this skill.
+- **Helper invocation.**
+  A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
+- **Write confirmation.**
+  Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
 - **Boards.**
   A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
 - **Example values.**  Substitute the real ones:
   - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
   - `950` a pull request, `I07` and `I08` initiative numbers;
-  - board `9`, workflow-server's Canon theme, and `419167630` its Status field id;
+  - board `9` a theme board, and `419167630` its Status field id;
   - `1` the Initiative Template board, `13` a board copied from it;
   - `14` the Proposals Template, `15` the Proposals board;
   - `m2ux` the user.
@@ -252,7 +253,7 @@ Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
 
 ##### 2. Fetch the Requested Board Item
 
-When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
+When a single item is requested for [write confirmation](#conventions), run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
 
 ##### 3. Return the Board Configuration
 
@@ -526,7 +527,7 @@ When the queue carries an `order` or `ask` line, return the queue with those lin
 
 Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](#assignees) states.
 
-- For each Status call, apply [Read Board Configuration](#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
+- For each Status call, apply [Read Board Configuration](#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status, as [Write confirmation](#conventions) states.
 - If that item still shows the preceding status:
   - Repeat its write.
   - Repeat the same item read. The item list can lag a write.
@@ -630,6 +631,8 @@ Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lin
 - `--assignee` is the login assigned to work from Ready.
 - `--others` is an issue file for an issue the rows depend on that is not on the board. Repeatable.
 - `--unplanned` is an initiative left with no priority, an issue number or `<owner>/<repo>#<issue-number>`. Repeatable.
+
+Runs as [Helper invocation](#conventions) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>'
@@ -792,7 +795,7 @@ Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body th
 
 ##### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue).
+Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](#conventions) states.
 
 ##### 7. Compare the Saved Issue Fields
 
@@ -1091,6 +1094,8 @@ Checks the issue criteria, the complete link snapshot and every linked pull requ
 - `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
 - Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
 
+Runs as [Helper invocation](#conventions) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
 ```
@@ -1209,7 +1214,7 @@ For a link edit:
 
 ##### 4. Re-Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) again for the same pull request.
+Run [Read Development Links](#read-development-links) again for the same pull request, as [Write confirmation](#conventions) states.
 
 ##### 5. Compare the Field with the Edit
 
@@ -1231,7 +1236,7 @@ For every pull request in `prs.json`, apply [Access Development Links](#access-d
 
 ##### 2. Re-Read Links After a Change
 
-Repeat that read after a link changes.
+Repeat that read after a link changes, as [Write confirmation](#conventions) states.
 
 ##### 3. Return an Incomplete Link Fetch
 
