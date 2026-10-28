@@ -12,6 +12,9 @@ A mode or another protocol often depends on one step of a protocol. Once each st
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03 work item](w03.md) | Protocol procedures as step sub-sections: scope, design and the checks it requires |
+| [Validation](validation.md) | The inspection against AC3, the anchor check of the regenerated bundles, and the results of `make links`, `make corpus` and `make check` |
+| [Change list](change-list.md) | The plan changes this delivery session applied and held |
 
 ## Links
 
