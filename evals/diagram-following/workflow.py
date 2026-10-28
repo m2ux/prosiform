@@ -32,7 +32,10 @@ value, and the path a correct run walks. A run writes each input to
 the file with surrounding whitespace removed.
 
 A form is bundled by the `pf` command the environment provides, run from
-the form's directory, so the bundle is the one this checkout builds.
+the form's directory, so the bundle is the one this checkout builds. `pf`
+writes its bundle set into `workflow.bundles/` under the output folder it is
+given, and the entry's bundle there is `workflow.bundle.md`. No form
+dispatches, so that bundle is the whole set.
 """
 
 import re
@@ -47,6 +50,7 @@ WORKFLOWS = ROOT / "workflows"
 INSTRUCTION = ROOT / "instruction.md"
 
 ENTRY = "workflow.md"
+ENTRY_BUNDLE = Path("workflow.bundles", "workflow.bundle.md")
 STATES = "states"
 SCENARIOS = "scenarios.toml"
 DIAGRAM = "diagram"
@@ -282,13 +286,16 @@ def instruction(entry: str) -> str:
     return blocks[0].replace(ENTRY_PLACEHOLDER, entry)
 
 
-def bundle(form_directory: Path) -> subprocess.CompletedProcess[bytes]:
-    """The `pf` run bundling one form from its entry document to stdout."""
+def bundle(form_directory: Path, output: Path) -> subprocess.CompletedProcess[bytes]:
+    """The `pf` run bundling one form from its entry document under `output`.
+
+    The entry's bundle is `output / ENTRY_BUNDLE` once the run succeeds.
+    """
     command = shutil.which("pf")
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, ENTRY, "-o", "-"],
+        [command, ENTRY, "-o", str(output)],
         cwd=form_directory,
         capture_output=True,
         check=False,

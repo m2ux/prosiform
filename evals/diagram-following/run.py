@@ -54,6 +54,7 @@ import shlex
 import shutil
 import signal
 import sys
+import tempfile
 import threading
 import time
 from collections.abc import Sequence
@@ -69,6 +70,7 @@ from score import ACTIONS, TRACE, score
 from workflow import (
     DIAGRAM,
     ENTRY,
+    ENTRY_BUNDLE,
     PROSE,
     ROOT,
     CorpusError,
@@ -213,14 +215,15 @@ def matrix(
 
 
 def bundled(workflow: Workflow, form: str) -> bytes:
-    """One bundled form's text, as `pf` writes it."""
-    built = bundle(workflow.form(FORMS[form]))
-    if built.returncode != 0 or built.stderr:
-        raise CorpusError(
-            f"{workflow.name}: pf bundled the {form} form with exit "
-            f"{built.returncode} and {built.stderr.decode()!r}"
-        )
-    return built.stdout
+    """One bundled form's entry bundle, as `pf` writes it."""
+    with tempfile.TemporaryDirectory() as output:
+        built = bundle(workflow.form(FORMS[form]), Path(output))
+        if built.returncode != 0 or built.stderr:
+            raise CorpusError(
+                f"{workflow.name}: pf bundled the {form} form with exit "
+                f"{built.returncode} and {built.stderr.decode()!r}"
+            )
+        return (Path(output) / ENTRY_BUNDLE).read_bytes()
 
 
 def prepare(

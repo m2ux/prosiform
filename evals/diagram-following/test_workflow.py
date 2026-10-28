@@ -17,6 +17,7 @@ import pytest
 from workflow import (
     DIAGRAM,
     ENTRY,
+    ENTRY_BUNDLE,
     FORMS,
     PROSE,
     STATES,
@@ -40,15 +41,20 @@ def document(state: str) -> str:
     return f"{STATES}/{state.lower()}.md"
 
 
-def bundle_faults(workflow: Workflow, form: str) -> list[str]:
-    """How one form's bundle falls short of a clean run carrying every state."""
-    run = bundle(workflow.form(form))
+def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
+    """How one form's bundle falls short of a clean run, written under
+    `output` as the one bundle of its set, carrying every state."""
+    run = bundle(workflow.form(form), output)
     faults = []
     if run.returncode != 0:
         faults.append(f"pf exited {run.returncode}")
     if run.stderr:
         faults.append(f"pf reported {run.stderr.decode()!r}")
-    carried = set(BUNDLED_HEADING.findall(run.stdout.decode()))
+    written = sorted(path for path in output.rglob("*") if path.is_file())
+    if written != [output / ENTRY_BUNDLE]:
+        faults.append(f"pf wrote {[str(p.relative_to(output)) for p in written]}")
+        return faults
+    carried = set(BUNDLED_HEADING.findall((output / ENTRY_BUNDLE).read_text()))
     for state in sorted(workflow.diagram.states - carried):
         faults.append(f"the {form} bundle carries no section for {state}")
     return faults
@@ -153,9 +159,9 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
 @pytest.mark.parametrize("form", FORMS)
 @pytest.mark.parametrize("workflow", CORPUS, ids=lambda workflow: workflow.name)
 def test_each_form_bundles_cleanly_carrying_every_state(
-    workflow: Workflow, form: str
+    workflow: Workflow, form: str, tmp_path: Path
 ) -> None:
-    assert bundle_faults(workflow, form) == []
+    assert bundle_faults(workflow, form, tmp_path) == []
 
 
 @pytest.mark.parametrize("workflow", CORPUS, ids=lambda workflow: workflow.name)
@@ -219,7 +225,9 @@ def test_a_state_the_bundle_does_not_reach_is_a_fault(tmp_path: Path) -> None:
         '    click Ship href "states/ship.md"\n',
         "",
     )
-    assert bundle_faults(workflow, DIAGRAM) == [
+    output = tmp_path / "output"
+    output.mkdir()
+    assert bundle_faults(workflow, DIAGRAM, output) == [
         "the diagram bundle carries no section for Ship"
     ]
 
