@@ -71,6 +71,8 @@ Runs the skill's script tests.
 
 **Inputs:** Workspace checkout containing the installed skill and its tests.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>/skills/work-planner" && "<workspace>/scripts/sbx" python3 -m unittest discover -s test
 ```
@@ -80,6 +82,8 @@ cd "<workspace>/skills/work-planner" && "<workspace>/scripts/sbx" python3 -m uni
 Checks the affected skill's Markdown structure and links.
 
 **Inputs:** Workspace checkout and affected skill directory; repeat the skill argument for additional affected skills.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/scripts/check_skill_files.py "<skill-directory>"

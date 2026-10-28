@@ -298,6 +298,8 @@ Reports an initiative's delivery state against its epics, and ticks Done on an e
 
 Pass every epic JSON file as a separate argument after `--epics`.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>'
 ```
@@ -315,6 +317,8 @@ Ticks confirmed initiative criteria, refusing any not ready to verify, and ticks
 **Inputs:** Current initiative JSON, every linked epic JSON, verified criterion ids and destination body file.
 
 Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'

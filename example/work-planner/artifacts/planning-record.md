@@ -170,7 +170,7 @@ Stages and commits one planning folder on the engineering worktree.
 **Inputs:** Engineering worktree, planning-folder path and a commit message file.
 
 - Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message through a file; the worktree is a linked one, so git writes here run unsandboxed.
+- Pass the message as [Bodies](../conventions.md) states. The worktree is a linked one, so git writes here run unsandboxed.
 
 ```bash
 cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'

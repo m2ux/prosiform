@@ -65,6 +65,8 @@ Computes available work from supplied board and delivery snapshots.
 
 `<epic-base-names>` is a comma-separated list of full epic-base branch names.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --items '<board-items-file>' --prs '<pull-request-records-file>' --project '<checkout>' --bases '<epic-base-names>'
 ```

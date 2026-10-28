@@ -99,6 +99,8 @@ Records the pull request that delivered a task issue, ticks its criteria, and re
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --pr '<pull-request-number>' --tick '<criterion-ids>' --fix '<output-body-file>'
 ```

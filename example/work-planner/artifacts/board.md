@@ -200,7 +200,7 @@ Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
 
 #### 2. Fetch the Requested Board Item
 
-When a single item is requested for write confirmation, run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
+When a single item is requested for [write confirmation](../conventions.md), run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
 
 #### 3. Return the Board Configuration
 
@@ -218,7 +218,7 @@ Run [Set Item Status](#set-item-status) with the supplied selection and ids.
 
 #### 2. Re-Read the Updated Board Item
 
-Read the item through [Fetch Board Item](#fetch-board-item).
+Read the item through [Fetch Board Item](#fetch-board-item), as [Write confirmation](../conventions.md) states.
 
 #### 3. Return the Confirmed Item Status
 

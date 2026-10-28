@@ -150,6 +150,8 @@ Reports an epic's delivery state against the pull requests that name it.
 
 - Results follow [Delivery Findings](#delivery-findings).
 
+Runs as [Helper invocation](../conventions.md) states.
+
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
 ```

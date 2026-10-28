@@ -32,7 +32,7 @@ When approval permits the agent to merge:
 
 #### 3. Return the Delivery Merge Result
 
-Return the merge result, including its merge commit when supplied, for the caller's readback.
+Return the merge result, including its merge commit when supplied, for the caller to confirm as [Write confirmation](../conventions.md) states.
 
 ### *Access* Development Links
 
@@ -59,7 +59,7 @@ For a link edit:
 
 #### 4. Re-Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) again for the same pull request.
+Run [Read Development Links](#read-development-links) again for the same pull request, as [Write confirmation](../conventions.md) states.
 
 #### 5. Compare the Field with the Edit
 
@@ -81,7 +81,7 @@ For every pull request in `prs.json`, apply [Access Development Links](#access-d
 
 #### 2. Re-Read Links After a Change
 
-Repeat that read after a link changes.
+Repeat that read after a link changes, as [Write confirmation](../conventions.md) states.
 
 #### 3. Return an Incomplete Link Fetch
 
@@ -218,7 +218,7 @@ For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-
 
 #### 3. Re-Read the Published Pull Request
 
-Re-read through [Read Pull Request State](#read-pull-request-state).
+Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](../conventions.md) states.
 
 #### 4. Return the Published State
 
