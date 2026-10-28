@@ -24,3 +24,4 @@ A mode or another protocol often depends on one step of a protocol. Once each st
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Corpus Steps planning record](../2026-10-28-352-i05-e04-corpus-step-subsections/README.md) |
 | Prior task | [W02 Mode Procedures as Step Sub-sections](../2026-10-28-352-i05-e04-w02-mode-procedures-as-step/README.md) |
+| Pull request | [I05:E04 Protocol Procedures as Step Sub-sections](https://github.com/m2ux/prosiform/pull/367) |

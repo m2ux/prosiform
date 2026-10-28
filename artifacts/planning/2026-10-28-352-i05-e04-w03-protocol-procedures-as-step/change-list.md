@@ -4,7 +4,7 @@ The plan changes this delivery session applied and held, under the deliver-mode 
 
 ## Applied
 
-None. Recording delivery on [#352](https://github.com/m2ux/prosiform/issues/352) is delivery, not a plan change.
+None. The session recorded delivery on [#352](https://github.com/m2ux/prosiform/issues/352) — W03 links [#367](https://github.com/m2ux/prosiform/pull/367), merged into `i05/e04/main` at `07574eff`, with Done ticked, and AC3 is ticked — which is delivery, not a plan change.
 
 ## Held
 
