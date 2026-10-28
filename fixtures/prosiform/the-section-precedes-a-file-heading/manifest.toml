@@ -1,4 +1,4 @@
-description = "A bundle opening on the file heading pf writes for a selected section carries the Prosiform section ahead of that file heading."
+description = "A bundle opening on the file heading pf writes for a selected section carries the Prosiform section before that file heading."
 
 clauses = [
   "Link classification and resource handling — The Prosiform section",

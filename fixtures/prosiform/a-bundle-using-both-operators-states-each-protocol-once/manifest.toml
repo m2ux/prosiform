@@ -1,4 +1,4 @@
-description = "A bundle dispatching from one section and dispatching in parallel from another opens with one Prosiform section holding each protocol once, ahead of its first authored section."
+description = "A bundle dispatching from one section and dispatching in parallel from another opens with one Prosiform section holding each protocol once, before its first authored section."
 
 clauses = [
   "Link classification and resource handling — The Prosiform section",
