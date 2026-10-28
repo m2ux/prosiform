@@ -86,10 +86,11 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
-Expose `pf` as the sole executable, with case-sensitive short operational flags and diagnostics on stderr. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: help, version and code-listing responses use it. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+Expose `pf` as the sole executable, with case-sensitive short operational flags and diagnostics on stderr. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: the guide and the help, version and code-listing responses use it. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
 pf [OPTIONS] REF [REF ...]
+pf
 ```
 
 | Option | Behavior |
@@ -105,7 +106,7 @@ Each resource budget adds one option of its own, declared with its default and i
 
 `-c` accepts `-o DIR`, validating every bundle of the run without writing into that folder. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
-A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: no entry reference, an undeclared option (including `-r` and `-g`), an invalid option value, a fragment-only entry without `-f`, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option (including `-r` and `-g`), an invalid option value, a fragment-only entry without `-f`, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
 ### Usage examples
 
@@ -135,6 +136,10 @@ prosiform:
   group-depth: 2
 ---
 ```
+
+### Guide
+
+`pf` with no arguments prints the *guide* to standard output and exits `0`: what an agent needs before it compiles anything. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. The guide is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. No option prints it, and `-h` states that a bare `pf` does.
 
 ### Automatic output names
 
@@ -529,7 +534,7 @@ Successful compilation establishes that the complete candidate passed validation
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
 - **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a *delivery* failure rather than a truncated apparent success.
-- **Clean Markdown:** Keep the bundle file limited to the bundle document. The bundle opens on its first group's content and carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
+- **Clean Markdown:** Keep the bundle file limited to the bundle document. The bundle opens on its Prosiform section where it dispatches, and otherwise on its first group's content, and carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
 - **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
 
