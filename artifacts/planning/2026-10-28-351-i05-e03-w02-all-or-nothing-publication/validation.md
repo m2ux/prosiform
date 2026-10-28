@@ -44,3 +44,7 @@ Review bar: every fixture is a single-bundle run, and each publishes the same by
 
 - `make conformance`: 298 clauses, 0 declarations naming no clause, 0 declared codes the build reports nowhere, 0 reported codes the contract declares nowhere.
 - `make invocation`: 28 statements of `invocation.md`, each held to the build's help.
+
+## Continuous integration
+
+`Checks` ran `make check` on the pull request head `3919f918` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40653342775/job/122698387718)).
