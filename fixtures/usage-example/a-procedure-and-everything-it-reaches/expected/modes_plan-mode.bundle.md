@@ -2868,27 +2868,43 @@ Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Number the initiative.**
-   For a new initiative, apply [Select Tracker Number](#select-tracker-number) with the repository, the initiative prefix letter and its existing titles.
-   - Use the confirmed number in the initiative's title.
-2. **Save the initiative.**
-   Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the reviewed initiative body file, its title and labels, and each label's colour and description.
-   - For an existing initiative, pass its issue number and the selected body and metadata changes.
-3. **Save the epics.**
-   For each reviewed epic, a prerequisite epic before the epics that depend on it:
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the epic body file, its title, its labels with the confirmed priority label among them, and each label's colour and description.
-   - For an existing epic, pass its issue number and the selected body and metadata changes.
-4. **Resolve the links.**
-   Apply [Resolve Placeholder Links](#resolve-placeholder-links) with the initiative body file, each epic body file and the saved issue identity of the initiative and of each epic.
-   - Return each temporary link left unresolved, with the file that holds it, to the caller as a blocker.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the body change for each rewritten body file.
-5. **Repair the format.**
-   - Apply [Repair Issue Format](#repair-issue-format) with [Validate Epic Body](#validate-epic-body) as the validator, the saved initiative JSON, current pull request records and corpus branch as its further inputs, the epic template, and every saved epic with its identity, current JSON and output body path.
-   - Apply [Repair Issue Format](#repair-issue-format) with [Validate Initiative Body](#validate-initiative-body) as the validator, every saved epic JSON and the requirement sources as its further inputs, the initiative template, and the saved initiative with its identity, current JSON and output body path.
-   - Return each blocker either repair returns to the caller.
-6. **Record the publication.**
-   Apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the saved initiative and epic issue links, the evidence and decisions the caller supplies, and the caller's commit message file, asking it to publish.
-   - Return the saved initiative and epic identities, the publication result and any blocker to the caller.
+#### 1. Number the Initiative
+
+For a new initiative, apply [Select Tracker Number](#select-tracker-number) with the repository, the initiative prefix letter and its existing titles.
+
+- Use the confirmed number in the initiative's title.
+
+#### 2. Save the Initiative
+
+Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the reviewed initiative body file, its title and labels, and each label's colour and description.
+
+- For an existing initiative, pass its issue number and the selected body and metadata changes.
+
+#### 3. Save the Epics
+
+For each reviewed epic, a prerequisite epic before the epics that depend on it:
+
+- Apply [Save Tracker Issue](#save-tracker-issue) with the repository, the epic body file, its title, its labels with the confirmed priority label among them, and each label's colour and description.
+- For an existing epic, pass its issue number and the selected body and metadata changes.
+
+#### 4. Resolve the Links
+
+Apply [Resolve Placeholder Links](#resolve-placeholder-links) with the initiative body file, each epic body file and the saved issue identity of the initiative and of each epic.
+
+- Return each temporary link left unresolved, with the file that holds it, to the caller as a blocker.
+- Apply [Save Tracker Issue](#save-tracker-issue) with the body change for each rewritten body file.
+
+#### 5. Repair the Format
+
+- Apply [Repair Issue Format](#repair-issue-format) with [Validate Epic Body](#validate-epic-body) as the validator, the saved initiative JSON, current pull request records and corpus branch as its further inputs, the epic template, and every saved epic with its identity, current JSON and output body path.
+- Apply [Repair Issue Format](#repair-issue-format) with [Validate Initiative Body](#validate-initiative-body) as the validator, every saved epic JSON and the requirement sources as its further inputs, the initiative template, and the saved initiative with its identity, current JSON and output body path.
+- Return each blocker either repair returns to the caller.
+
+#### 6. Record the Publication
+
+Apply [Populate Planning Record](#populate-planning-record) with the record identity, folder path, the saved initiative and epic issue links, the evidence and decisions the caller supplies, and the caller's commit message file, asking it to publish.
+
+- Return the saved initiative and epic identities, the publication result and any blocker to the caller.
 
 ## Delivery Base Preparation
 
@@ -2898,24 +2914,36 @@ Follow the [Procedure](#procedure-3), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Confirm prerequisites.**
-   For each supplied epic:
-   - Apply [Check Epic Prerequisites](#check-epic-prerequisites) with the current initiative and epic bodies and the prerequisite issue and base-merge records.
-   - Carry a missing or unconfirmed prerequisite into the result as that epic's finding, and leave its bases uncreated.
-2. **Prepare the bases.**
-   For each epic whose prerequisites are confirmed, apply [Prepare Delivery Bases](#prepare-delivery-bases) with the project checkout, epic identity, changed long-lived branches and the confirmed [Prerequisite Evidence](#prerequisite-evidence).
-   - Carry unevaluable branch names or a failed creation into the result.
-3. **Read branches and pull requests.**
-   - Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and each supplied epic's identity.
-   - Use the current pull request records the caller supplies. When it supplies none, apply [Read Initiative Pull Requests](#read-initiative-pull-requests) with the repository, initiative prefix and destination collection file.
-   - Return to the caller with the findings when the branch names are unevaluable or the pull request evidence is incomplete.
-4. **Align the pull requests.**
-   Apply [Align Pull Request Base](#align-pull-request-base) with the repository, those pull request records, the long-lived branches and epic bases Read Delivery Branches returned, and the project checkout.
-5. **Return the result.**
-   Return to the caller:
-   - The bases created and each epic's prerequisite findings.
-   - The long-lived branches and epic bases Read Delivery Branches returned.
-   - The retargeted pull requests, updated task branches, conflicts and pull requests awaiting a decision that Align Pull Request Base returned.
+#### 1. Confirm Prerequisites
+
+For each supplied epic:
+
+- Apply [Check Epic Prerequisites](#check-epic-prerequisites) with the current initiative and epic bodies and the prerequisite issue and base-merge records.
+- Carry a missing or unconfirmed prerequisite into the result as that epic's finding, and leave its bases uncreated.
+
+#### 2. Prepare the Bases
+
+For each epic whose prerequisites are confirmed, apply [Prepare Delivery Bases](#prepare-delivery-bases) with the project checkout, epic identity, changed long-lived branches and the confirmed [Prerequisite Evidence](#prerequisite-evidence).
+
+- Carry unevaluable branch names or a failed creation into the result.
+
+#### 3. Read Branches and Pull Requests
+
+- Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and each supplied epic's identity.
+- Use the current pull request records the caller supplies. When it supplies none, apply [Read Initiative Pull Requests](#read-initiative-pull-requests) with the repository, initiative prefix and destination collection file.
+- Return to the caller with the findings when the branch names are unevaluable or the pull request evidence is incomplete.
+
+#### 4. Align the Pull Requests
+
+Apply [Align Pull Request Base](#align-pull-request-base) with the repository, those pull request records, the long-lived branches and epic bases Read Delivery Branches returned, and the project checkout.
+
+#### 5. Return the Result
+
+Return to the caller:
+
+- The bases created and each epic's prerequisite findings.
+- The long-lived branches and epic bases Read Delivery Branches returned.
+- The retargeted pull requests, updated task branches, conflicts and pull requests awaiting a decision that Align Pull Request Base returned.
 
 # References
 

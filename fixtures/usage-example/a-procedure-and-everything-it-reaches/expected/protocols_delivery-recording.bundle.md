@@ -8,53 +8,64 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ### Procedure
 
-1. **Read the evidence.**
-   Apply [Read Delivery Evidence](#read-delivery-evidence) with the selected repositories and initiative prefix, each selected epic's fetched JSON, authenticated access and destination snapshot files.
-   - Use its pull request records, complete issue-link snapshot and per-epic [Delivery Findings](#delivery-findings) in the following steps.
-   - Return its [unnamed deliveries](#unnamed-deliveries) and any incomplete evidence to the caller with the result.
-2. **Match deliveries to tasks.**
-   For each selected epic, apply [Match Delivery to Tasks](#match-delivery-to-tasks) with the epic JSON and the pull requests its Unmatched and In flight findings name, and those linked to the task issue a Note row links, with their changes and descriptions.
-   - Use the confirmed task-to-pull-request pairs in the following steps.
-   - Return the pending matches to the caller.
-3. **Record the merged deliveries.**
-   For each selected epic with a confirmed match whose pull request has merged:
-   - Follow [Issue Delivery](#issue-delivery) once with every such merged pull request, its matched tasks' issue records, the epic JSON, the pull request records, complete issue-link snapshot, confirmed matches, project checkout, named instruments, the caller's allowance and change list, and output body and comment files.
-   - Follow [Issue Closure](#issue-closure) for each task issue whose delivery result it returns as eligible, with the confirmed repository setting.
-4. **Record each epic.**
-   For each selected epic, apply [Record Epic Delivery](#record-epic-delivery) with its current JSON, the pull request records, complete issue-link snapshot, task issue records, every confirmed match, open or merged, project checkout and output body file.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
-   - Route the returned [Delivery Findings](#delivery-findings):
-     - **Conflict.**
-       - Return each to the caller as an unresolved finding.
-     - **Unmatched, in flight or note.**
-       - Apply Match Delivery to Tasks with the pull requests it names, or for a note those linked to the row's task issue.
-       - Add the confirmed pairs to the matches.
-     - **Draft or references.**
-       - Follow [Review Pull Request](#review-pull-request) with the repository, the epic base it names, the delivery findings, the actual task merges into that base, the epic's issue, the confirmed repository setting and the current epic and task-merge records.
-     - **Unmerged.**
-       - Return the epic base to the caller with its review identity.
-     - **Uncited.**
-       - Apply [Link Pull Request to Issue](#link-pull-request-to-issue) with the pull request and issue it names, the pull request records, link-snapshot destination, authenticated access and confirmed repository setting.
-       - Use its refreshed snapshot in the following steps.
-     - **Unplaced.**
-       - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, the unplaced task issue, the caller's allowance and change list, the pull request records, complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
-       - Return a row it leaves pending to the caller with the updated change list.
-     - **Open questions.**
-       - Apply [Resolve Open Questions](#resolve-open-questions) with the epic identity, current JSON, the epic [Template](#template) and [Fields](#fields-2), the initiative as related context and an output body path.
-       - Return the questions it leaves open to the caller.
-     - **Ready to verify.**
-       - Apply [Record Verified Criteria](#record-verified-criteria) with the repository, those criterion ids, the epic's current JSON and body, delivery findings, delivery revisions, named instruments, project checkout, the verification evidence Issue Delivery and each earlier pass of this routing returned, output body file, pull request records and complete issue-link snapshot.
-       - Retain its verified ids and verification evidence, with those Issue Delivery returned, for the next pass and the caller.
-       - For each criterion this run leaves unverified on an unmet row, as Delivery Findings defines one, apply [Plan Gap Task](#plan-gap-task) with the current epic JSON and body, the delivered task row, those criterion ids, the delivery records, complete issue-link snapshot and output body path, once per criterion.
-       - Apply Record Verified Criteria again for each criterion Plan Gap Task returns as already holding, with the verification evidence retained so far.
-     - **Ticked early.**
-       - Apply Match Delivery to Tasks for the delivery the criterion's rows lack.
-       - Where no match is confirmed, apply [Untick Criteria](#untick-criteria) with the current body, those criterion ids and the output body file.
-       - Apply Save Tracker Issue with the returned body.
-     - **Disagreement.**
-       - Return each to the caller with its pull request and row.
-   - Repeat Record Epic Delivery, its save and this routing with the saved epic JSON, refreshed records and every confirmed match, until it returns no unmatched, in flight, uncited, note or unplaced finding beyond those returned to the caller as pending.
-   - Return to the caller the saved epic and task identities, each epic's latest Delivery Findings, the verified criteria, every verification evidence this run took with the revision it was taken on, the pull request records and complete issue-link snapshot, the updated change list and every pending or unresolved finding.
+#### 1. Read the Evidence
+
+Apply [Read Delivery Evidence](#read-delivery-evidence) with the selected repositories and initiative prefix, each selected epic's fetched JSON, authenticated access and destination snapshot files.
+
+- Use its pull request records, complete issue-link snapshot and per-epic [Delivery Findings](#delivery-findings) in the following steps.
+- Return its [unnamed deliveries](#unnamed-deliveries) and any incomplete evidence to the caller with the result.
+
+#### 2. Match Deliveries to Tasks
+
+For each selected epic, apply [Match Delivery to Tasks](#match-delivery-to-tasks) with the epic JSON and the pull requests its Unmatched and In flight findings name, and those linked to the task issue a Note row links, with their changes and descriptions.
+
+- Use the confirmed task-to-pull-request pairs in the following steps.
+- Return the pending matches to the caller.
+
+#### 3. Record the Merged Deliveries
+
+For each selected epic with a confirmed match whose pull request has merged:
+
+- Follow [Issue Delivery](#issue-delivery) once with every such merged pull request, its matched tasks' issue records, the epic JSON, the pull request records, complete issue-link snapshot, confirmed matches, project checkout, named instruments, the caller's allowance and change list, and output body and comment files.
+- Follow [Issue Closure](#issue-closure) for each task issue whose delivery result it returns as eligible, with the confirmed repository setting.
+
+#### 4. Record Each Epic
+
+For each selected epic, apply [Record Epic Delivery](#record-epic-delivery) with its current JSON, the pull request records, complete issue-link snapshot, task issue records, every confirmed match, open or merged, project checkout and output body file.
+
+- Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
+- Route the returned [Delivery Findings](#delivery-findings):
+  - **Conflict.**
+    - Return each to the caller as an unresolved finding.
+  - **Unmatched, in flight or note.**
+    - Apply Match Delivery to Tasks with the pull requests it names, or for a note those linked to the row's task issue.
+    - Add the confirmed pairs to the matches.
+  - **Draft or references.**
+    - Follow [Review Pull Request](#review-pull-request) with the repository, the epic base it names, the delivery findings, the actual task merges into that base, the epic's issue, the confirmed repository setting and the current epic and task-merge records.
+  - **Unmerged.**
+    - Return the epic base to the caller with its review identity.
+  - **Uncited.**
+    - Apply [Link Pull Request to Issue](#link-pull-request-to-issue) with the pull request and issue it names, the pull request records, link-snapshot destination, authenticated access and confirmed repository setting.
+    - Use its refreshed snapshot in the following steps.
+  - **Unplaced.**
+    - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, the unplaced task issue, the caller's allowance and change list, the pull request records, complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
+    - Return a row it leaves pending to the caller with the updated change list.
+  - **Open questions.**
+    - Apply [Resolve Open Questions](#resolve-open-questions) with the epic identity, current JSON, the epic [Template](#template) and [Fields](#fields-2), the initiative as related context and an output body path.
+    - Return the questions it leaves open to the caller.
+  - **Ready to verify.**
+    - Apply [Record Verified Criteria](#record-verified-criteria) with the repository, those criterion ids, the epic's current JSON and body, delivery findings, delivery revisions, named instruments, project checkout, the verification evidence Issue Delivery and each earlier pass of this routing returned, output body file, pull request records and complete issue-link snapshot.
+    - Retain its verified ids and verification evidence, with those Issue Delivery returned, for the next pass and the caller.
+    - For each criterion this run leaves unverified on an unmet row, as Delivery Findings defines one, apply [Plan Gap Task](#plan-gap-task) with the current epic JSON and body, the delivered task row, those criterion ids, the delivery records, complete issue-link snapshot and output body path, once per criterion.
+    - Apply Record Verified Criteria again for each criterion Plan Gap Task returns as already holding, with the verification evidence retained so far.
+  - **Ticked early.**
+    - Apply Match Delivery to Tasks for the delivery the criterion's rows lack.
+    - Where no match is confirmed, apply [Untick Criteria](#untick-criteria) with the current body, those criterion ids and the output body file.
+    - Apply Save Tracker Issue with the returned body.
+  - **Disagreement.**
+    - Return each to the caller with its pull request and row.
+- Repeat Record Epic Delivery, its save and this routing with the saved epic JSON, refreshed records and every confirmed match, until it returns no unmatched, in flight, uncited, note or unplaced finding beyond those returned to the caller as pending.
+- Return to the caller the saved epic and task identities, each epic's latest Delivery Findings, the verified criteria, every verification evidence this run took with the revision it was taken on, the pull request records and complete issue-link snapshot, the updated change list and every pending or unresolved finding.
 
 ## Issue Delivery
 
@@ -64,23 +75,31 @@ Follow the [Procedure](#procedure-1), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Task issues.**
-   For each task issue the pull requests deliver:
-   - Apply [Verify Selected Criteria](#verify-selected-criteria) for each criterion the task covers, with its current body, delivery findings, delivery revisions, named instruments, the project checkout and the run's verification evidence.
-   - Add the verification evidence it returns to the run's, which starts as the verification evidence the caller supplied.
-   - Apply [Record Task Delivery](#record-task-delivery) with the task JSON, pull request records, complete issue-link snapshot, its delivering pull request number, returned verified criterion ids, output body file and output comment file.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the repository, task issue number and returned body file.
-   - Apply [Comment on Issue](#comment-on-issue) with the repository, task issue number and returned comment file.
-2. **Epic rows.**
-   Apply [Record Epic Delivery](#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
-   - Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
-   - For each task issue its [Delivery Findings](#delivery-findings) name as unplaced:
-     - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the saved epic JSON, that task issue, the caller's allowance and change list when supplied, the pull request records, complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
-     - Use the body and Delivery Findings it returns in the following steps; a row it leaves pending is returned to the caller with the updated change list.
-3. **Epic criteria.**
-   Apply [Record Verified Criteria](#record-verified-criteria) with the repository, the criteria the returned Delivery Findings name as ready to verify, the saved epic JSON and body, those findings, delivery revisions, named instruments, project checkout, the run's verification evidence, output body file, pull request records and complete issue-link snapshot.
-   - Add the verification evidence it returns to the run's.
-   - Return to the caller the saved task and epic identities, each task's eligibility findings, the verified criteria, the run's verification evidence with the revision each was taken on, each criterion left unverified, the epic's Delivery Findings with each coverage disagreement as [Delivery Findings](#delivery-findings) defines it, and the updated change list.
+#### 1. Task Issues
+
+For each task issue the pull requests deliver:
+
+- Apply [Verify Selected Criteria](#verify-selected-criteria) for each criterion the task covers, with its current body, delivery findings, delivery revisions, named instruments, the project checkout and the run's verification evidence.
+- Add the verification evidence it returns to the run's, which starts as the verification evidence the caller supplied.
+- Apply [Record Task Delivery](#record-task-delivery) with the task JSON, pull request records, complete issue-link snapshot, its delivering pull request number, returned verified criterion ids, output body file and output comment file.
+- Apply [Save Tracker Issue](#save-tracker-issue) with the repository, task issue number and returned body file.
+- Apply [Comment on Issue](#comment-on-issue) with the repository, task issue number and returned comment file.
+
+#### 2. Epic Rows
+
+Apply [Record Epic Delivery](#record-epic-delivery) with the epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+
+- Apply [Save Tracker Issue](#save-tracker-issue) with the returned body when it differs from the current one.
+- For each task issue its [Delivery Findings](#delivery-findings) name as unplaced:
+  - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the saved epic JSON, that task issue, the caller's allowance and change list when supplied, the pull request records, complete issue-link snapshot, task issue records, confirmed matches, project checkout and output body file.
+  - Use the body and Delivery Findings it returns in the following steps; a row it leaves pending is returned to the caller with the updated change list.
+
+#### 3. Epic Criteria
+
+Apply [Record Verified Criteria](#record-verified-criteria) with the repository, the criteria the returned Delivery Findings name as ready to verify, the saved epic JSON and body, those findings, delivery revisions, named instruments, project checkout, the run's verification evidence, output body file, pull request records and complete issue-link snapshot.
+
+- Add the verification evidence it returns to the run's.
+- Return to the caller the saved task and epic identities, each task's eligibility findings, the verified criteria, the run's verification evidence with the revision each was taken on, each criterion left unverified, the epic's Delivery Findings with each coverage disagreement as [Delivery Findings](#delivery-findings) defines it, and the updated change list.
 
 ## Issue Closure
 
@@ -90,18 +109,27 @@ Follow the [Procedure](#procedure-2), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Issue.**
-   - Apply [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
-   - Apply [Capture Issue Development](#capture-issue-development) for that issue.
-2. **Pull requests.**
-   Apply [Read Pull Request State](#read-pull-request-state) for every captured link, across repositories and all states.
-3. **Check delivery completion.**
-   Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, current JSON, complete Development snapshot, those pull request records and criterion verification evidence, adding the task's delivery result for a task and the project checkout for an epic.
-   - Return an incomplete or failed result to the caller before closure.
-4. **Close.**
-   Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
-   - On a changed link set or missing evidence, repeat from the issue step for the same issue.
-   - Report any unmerged link or unmet criterion.
+#### 1. Issue
+
+- Apply [Read Tracker Issue](#read-tracker-issue) for the issue selected by the delivery checks.
+- Apply [Capture Issue Development](#capture-issue-development) for that issue.
+
+#### 2. Pull Requests
+
+Apply [Read Pull Request State](#read-pull-request-state) for every captured link, across repositories and all states.
+
+#### 3. Check Delivery Completion
+
+Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, current JSON, complete Development snapshot, those pull request records and criterion verification evidence, adding the task's delivery result for a task and the project checkout for an epic.
+
+- Return an incomplete or failed result to the caller before closure.
+
+#### 4. Close
+
+Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
+
+- On a changed link set or missing evidence, repeat from the issue step for the same issue.
+- Report any unmerged link or unmet criterion.
 
 ## Review Pull Request
 
@@ -111,23 +139,33 @@ Follow the [Procedure](#procedure-3), adhering to [Rules](#rules) and [Conventio
 
 ### Procedure
 
-1. **Find.**
-   Use the review number in the supplied delivery findings.
-   - When it is absent:
-     - Apply [Locate Review Pull Request](#locate-review-pull-request) with the repository and epic base as head.
-     - Use its returned number or absence result.
-   - Fetch an existing review through [Read Pull Request State](#read-pull-request-state).
-2. **Populate.**
-   Pass the existing body when present and the actual task merges into the base to [Populate Review Body](#populate-review-body).
-3. **Publish.**
-   For an existing review, or a base whose [State](#state) calls for one, pass the returned file to [Publish Pull Request](#publish-pull-request).
-   - For an existing review, supply its number.
-   - For a new review, supply the epic kind, the epic base as head with the target [Other Pull Requests](#other-pull-requests) gives it, the epic's issue, the repository setting the caller confirmed and a link-snapshot destination.
-   - Return a discrepancy Publish Pull Request reports to the caller.
-   - When the base has no review and its State calls for none, return the absence result to the caller.
-4. **Record.**
-   Apply [Record Epic Delivery](#record-epic-delivery) with the current epic and the task-merge records, including the review state Publish Pull Request returned.
-   - Return its updated body and [Delivery Findings](#delivery-findings) with the review identity to the caller.
+#### 1. Find
+
+Use the review number in the supplied delivery findings.
+
+- When it is absent:
+  - Apply [Locate Review Pull Request](#locate-review-pull-request) with the repository and epic base as head.
+  - Use its returned number or absence result.
+- Fetch an existing review through [Read Pull Request State](#read-pull-request-state).
+
+#### 2. Populate
+
+Pass the existing body when present and the actual task merges into the base to [Populate Review Body](#populate-review-body).
+
+#### 3. Publish
+
+For an existing review, or a base whose [State](#state) calls for one, pass the returned file to [Publish Pull Request](#publish-pull-request).
+
+- For an existing review, supply its number.
+- For a new review, supply the epic kind, the epic base as head with the target [Other Pull Requests](#other-pull-requests) gives it, the epic's issue, the repository setting the caller confirmed and a link-snapshot destination.
+- Return a discrepancy Publish Pull Request reports to the caller.
+- When the base has no review and its State calls for none, return the absence result to the caller.
+
+#### 4. Record
+
+Apply [Record Epic Delivery](#record-epic-delivery) with the current epic and the task-merge records, including the review state Publish Pull Request returned.
+
+- Return its updated body and [Delivery Findings](#delivery-findings) with the review identity to the caller.
 
 # Rules
 
