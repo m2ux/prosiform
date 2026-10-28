@@ -16,14 +16,14 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 Apply [Select Project Board](#select-project-board) with the requested theme or board identity.
 
-- Use the returned owner and board number for the sync and read steps.
+- Use the returned owner and board number for [2. Sync](#2-sync) and [3. Read the Evidence](#3-read-the-evidence).
 - Resolve a pending theme selection before continuing.
 
 ### 2. Sync
 
 Follow [Sync Mode](#dispatch-sync-mode) for each open initiative on the selected board, with the allowance the caller supplied.
 
-- Wait for its saved delivery results before the read step.
+- Wait for its saved delivery results before [3. Read the Evidence](#3-read-the-evidence).
 - Return any blocker that prevents current delivery from being established.
 
 #### Dispatch Sync Mode
@@ -41,7 +41,7 @@ Apply [Read Board Delivery Evidence](#read-board-delivery-evidence) with the sel
 Apply [Apply Board Queue](#apply-board-queue) with the board identity, the returned board items with Status, initiative pull request records, board fields and assignee login, an output directory such as `board/`, every resolved off-board issue file and every confirmed unplanned initiative identity.
 
 - Return a reference it reports as missing evidence as a blocker; the queue stays pending.
-- When it returns pending decisions, settle them in the decide step, then return to the read step.
+- When it returns pending decisions, settle them in [5. Decide](#5-decide), then return to [3. Read the Evidence](#3-read-the-evidence).
 
 ### 5. Decide
 
@@ -49,7 +49,7 @@ For each pending `order` or `ask` line, a re-prioritisation as [Report Lines](#r
 
 - For each initiative an applied option or answer numbers, apply [Save Tracker Issue](#save-tracker-issue) with its identity and the [priority label](#priority-sets) that number names, with the label's colour and description.
 - Add each initiative an `ask` answer leaves with no number to the confirmed unplanned initiative identities.
-- A held or unanswered line leaves the queue pending: report it and continue at the report step.
+- A held or unanswered line leaves the queue pending: report it and continue at [6. Report](#6-report).
 
 ### 6. Report
 
@@ -544,7 +544,7 @@ Run each proposed Status and assignee call. An assignee call acts on the issue, 
 Apply [Read Board State](#read-board-state) for the refreshed board items.
 
 - Apply Plan Board Queue with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
-- Continue from step 2 until the refreshed queue is [complete](#completeness) and contains no further call.
+- Continue from [2. Resolve Off-Board Issue References](#2-resolve-off-board-issue-references) until the refreshed queue is [complete](#completeness) and contains no further call.
 
 ##### 6. Return the Converged Queue
 

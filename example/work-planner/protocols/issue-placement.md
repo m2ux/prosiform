@@ -32,7 +32,7 @@ When the placement adds a task or an epic, apply [Check Dependencies and Numberi
 
 ### 4. Record the Graph
 
-When step 2 ran and the initiative has a planning record, apply [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map that Check Dependencies and Numbering returned as its [Dependency Check](../artifacts/planning-record.md#dependency-check), the saved destination issue links, and the caller's commit message file when it asks to publish.
+When [2. Check the Graph](#2-check-the-graph) ran and the initiative has a planning record, apply [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record) with the record identity, folder path, the longest chains, contending pairs and proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map that Check Dependencies and Numbering returned as its [Dependency Check](../artifacts/planning-record.md#dependency-check), the saved destination issue links, and the caller's commit message file when it asks to publish.
 
 ### 5. Settle the Orphan
 

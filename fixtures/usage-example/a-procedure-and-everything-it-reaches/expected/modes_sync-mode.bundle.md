@@ -1231,7 +1231,7 @@ Present each unmet criterion and its missing evidence to the user.
 - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
 - Record an unanswered decision as pending.
 - If no criteria need further work, return the pending findings to the caller.
-- Continue to the draft step with only the criteria the user confirms need further work.
+- Continue to [2. Draft the Gap Task](#2-draft-the-gap-task) with only the criteria the user confirms need further work.
 
 ##### 2. Draft the Gap Task
 
@@ -1239,7 +1239,7 @@ Draft a further task for the criteria selected for further work, meeting [Work B
 
 - Confirm the draft with the user.
 - On acceptance, apply [Revise Epic Rows](#revise-epic-rows) with the further row and the criteria it adopts from the delivered task's Coverage.
-- Return an unanswered draft as pending without continuing to the reconcile step.
+- Return an unanswered draft as pending without continuing to [3. Record the Revised Epic Delivery](#3-record-the-revised-epic-delivery).
 
 ##### 3. Record the Revised Epic Delivery
 
@@ -1262,7 +1262,7 @@ Draft the task issue's row, meeting [Work Breakdown](#work-breakdown-1).
 
 Apply [Settle Plan Change](#settle-plan-change) with the drafted row as a task creation, the task issue as its subject, the drafted row as the recommended option, the epic and task issue identities, the supplied allowance and the change list.
 
-- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to the revise step.
+- Return a row left held, unanswered or declined to the caller as pending, with the updated change list, without continuing to [3. Revise Epic Rows with the Placed Row](#3-revise-epic-rows-with-the-placed-row).
 
 ##### 3. Revise Epic Rows with the Placed Row
 
@@ -2492,7 +2492,7 @@ Run each emitted call, including the assignee calls, which act on the issue rath
 
 ##### 4. Re-Read the Delivery Evidence
 
-Read the issues and the board's delivery evidence again, as step 1 does.
+Read the issues and the board's delivery evidence again, as [1. Read the Delivery Evidence](#1-read-the-delivery-evidence) does.
 
 - Apply [Plan Board Changes](#plan-board-changes) with the refreshed initiative JSON, linked epic records, task issue records, pull request records, complete issue-link snapshot, board identity, board fields, board items, output directory, assignee login, and every resolved off-board issue file.
 - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
@@ -2869,7 +2869,7 @@ Apply [Check Issue Completion](#check-issue-completion) with the issue's kind, c
 
 Apply [Close Tracker Issue](#close-tracker-issue) with the issue identity, the successful completion result, issue JSON, complete Development snapshot, confirmed repository setting and those pull request records.
 
-- On a changed link set or missing evidence, repeat from the issue step for the same issue.
+- On a changed link set or missing evidence, repeat from [1. Issue](#1-issue) for the same issue.
 - Report any unmerged link or unmet criterion.
 
 # References

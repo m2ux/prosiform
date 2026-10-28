@@ -8,7 +8,7 @@ Run the commands from the repository root after [installation](../README.md#inst
 
 ### Input
 
-The [planning procedure](work-planner/modes/plan-mode.md) links the documents its publish step reaches:
+The [planning procedure](work-planner/modes/plan-mode.md) links the documents its step [6. Publish](work-planner/modes/plan-mode.md#6-publish) reaches:
 
 ```markdown
 ### 6. Publish
@@ -48,7 +48,7 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
 ```
 
-Its publish step reads:
+Its step [6. Publish](work-planner/modes/plan-mode.md#6-publish) reads:
 
 ```markdown
 ### 6. Publish
@@ -211,7 +211,7 @@ Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-
 
 ### Command
 
-The [board procedure](work-planner/modes/advance-mode.md) applies that operation in its read step:
+The [board procedure](work-planner/modes/advance-mode.md) applies that operation in its step [3. Read the Evidence](work-planner/modes/advance-mode.md#3-read-the-evidence):
 
 ```bash
 cd example/work-planner
@@ -268,7 +268,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's step [1. Fetch](work-planner/modes/hoist-mode.md#1-fetch) applies leads:
 
 ```markdown
 # Artifacts

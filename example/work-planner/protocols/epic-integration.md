@@ -43,7 +43,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 Pass the confirmed epic readiness, the verified head and target requirements Fetch Merge Readiness returned, the repository setting and the passing evidence to [Merge Delivery Pull Request](../artifacts/pull-request.md#merge-delivery-pull-request) with delivery kind epic, without asking for further confirmation.
 - Return its handoff to the caller when a human reviewer must merge.
-- On a refusal, repeat steps 2 and 3 once with refreshed inputs, then this step. Return a second refusal to the caller.
+- On a refusal, repeat [2. Refresh the Evidence](#2-refresh-the-evidence) and [3. Check Readiness](#3-check-readiness) once with refreshed inputs, then this step. Return a second refusal to the caller.
 
 ### 5. Confirm the Result
 

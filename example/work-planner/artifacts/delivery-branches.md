@@ -158,7 +158,7 @@ Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout
 
 If it differs from the verified head:
 - Apply [Read Pull Request State](pull-request.md#read-pull-request-state) for the same pull request, and take its head as the verified head.
-- Repeat steps 1 and 2 once.
+- Repeat [1. Fetch the Review Head](#1-fetch-the-review-head) and [2. Read the Fetched Revision](#2-read-the-fetched-revision) once.
 - If the fetched head still differs, return a changed-head finding before creating a worktree.
 
 #### 4. Derive the Review Worktree Path

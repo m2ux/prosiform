@@ -43,7 +43,7 @@ For each reported flow, run [Flow Trace](#flow-trace).
 Inspect the staleness block on every response. For a behind index:
 - Discard its measurements.
 - Run [Index Repository](#index-repository).
-- Repeat steps 1 to 5 once with the updated index.
+- Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index.
 - If a response is still behind, return a freshness blocker.
 
 #### 7. Return the Current Graph Evidence
