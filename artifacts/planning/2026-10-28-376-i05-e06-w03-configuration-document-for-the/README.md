@@ -12,6 +12,9 @@ Board fields, labels and limits are written in more than one file, so changing a
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03 work item](w03.md) | The binding inventory, what is and is not a binding, the link replacing each occurrence, and the component |
+| [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
