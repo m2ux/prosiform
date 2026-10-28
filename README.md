@@ -49,7 +49,15 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the existing folder `-o` names: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. File and directory names use hyphens rather than underscores.
+Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the existing folder `-o` names: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
+
+### Print the Guide
+
+```bash
+pf
+```
+
+With no arguments, `pf` prints the guide an agent follows a skill by: the compile step, the rule that a link whose text opens with `↳` names an inline target to compile, read whole and follow, and that a bundle opening with a Prosiform section is followed from there. A skill's bootstrap is one instruction: run `pf` and follow it.
 
 ### Bundle a Source and its Dependencies
 
@@ -62,3 +70,9 @@ pf example/work-planner/modes/plan-mode.md
 ```bash
 pf 'example/work-planner/artifacts/epic.md#delivery-findings'
 ```
+
+### Dispatch to Sub-agents
+
+A link whose text opens with `⇉` dispatches its target, as Plan Mode's link to Sync Mode does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
+
+A bundle that dispatches opens with a `# Prosiform` section stating how: `## Dispatch` whenever it dispatches, and `## Parallel dispatch` when it carries a set. Each sub-section links the protocol it follows, and the protocols are the same bytes in every bundle.

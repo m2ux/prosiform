@@ -4,7 +4,7 @@ The Python implementation of prosiform, checked against the behavioural contract
 
 ### Command line
 
-Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes its bundle under its derived name into the working directory or the folder `-o` names, writes informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
+Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes its bundles into a folder of the run's own, named for its entry with the `.bundles` suffix, in the working directory or the folder `-o` names, writes the guide a bare `pf` prints and informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
 
 ## Environment
 
@@ -106,7 +106,7 @@ Paths below are relative to `src/`.
 
 ### Command interface
 
-`tests/test_cli.py` checks option grammar, output streams, exit statuses, implementation-specific responses, and write failures. A bundle is written into the folder `-o` names, or the working directory, under its joined derived name; it is published through one rename, an existing file keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
+`tests/test_cli.py` checks option grammar, the guide a bare `pf` prints, output streams, exit statuses, implementation-specific responses, and write failures. A run's bundles are written into a folder of its own under the folder `-o` names, or the working directory, under their joined derived names; the folder is published through one rename, an existing run folder keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
 
 ### Candidate validation
 
