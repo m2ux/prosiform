@@ -86,7 +86,7 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
-Expose `pf` as the sole executable, with case-sensitive short operational flags and diagnostics on stderr. One normalized entry writes a derived bundle filename in the invocation working directory; `-o -` sends the bundle to stdout. Help and version responses use stdout. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+Expose `pf` as the sole executable, with case-sensitive short operational flags and diagnostics on stderr. A run writes its bundle under its automatic name into the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: help, version and code-listing responses use it. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
 pf [OPTIONS] REF [REF ...]
@@ -95,7 +95,7 @@ pf [OPTIONS] REF [REF ...]
 | Option | Behavior |
 | --- | --- |
 | `-f DOC` | Referring document for fragment-only positional references, resolved from the invocation working directory. File-naming positional references also use that working directory. |
-| `-o FILE` | Exact output destination relative to the invocation working directory, or `-` for stdout. Required for multiple distinct normalized entries. A path naming any captured source is refused. |
+| `-o DIR` | The folder each bundle is written to, under its automatic name, relative to the invocation working directory; the invocation working directory when absent. The folder must exist. `-` names standard output, which carries no bundle, and is refused. A bundle path naming any captured source is refused. |
 | `-c` | Discover, bundle, and validate without emitting or publishing the bundle. |
 | `-d text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
 | `-v` | Report tool version and profile identifier. |
@@ -103,9 +103,9 @@ pf [OPTIONS] REF [REF ...]
 
 Each resource budget adds one option of its own, declared with its default and its counting rule at Resource limits.
 
-`-c` accepts `-o FILE`, validating the run without writing that file. Optional manifests and dependency explanations can be added later without changing the core invocation.
+`-c` accepts `-o DIR`, validating the run without writing into that folder. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
-A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: no entry reference, an undeclared option (including `-r` and `-g`), an invalid option value, a fragment-only entry without `-f`, multiple distinct normalized entries without `-o`, or an output destination overlapping any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation, including the explicit destination requirement for combined entries, and publishes nothing.
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: no entry reference, an undeclared option (including `-r` and `-g`), an invalid option value, a fragment-only entry without `-f`, `-o -`, or a bundle path overlapping any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
 ### Usage examples
 
@@ -114,8 +114,8 @@ A command line the grammar above does not admit is refused with `E_INVALID_USAGE
 pf work-planner/modes/align-mode.md
 pf 'work-planner/modes/align-mode.md#prerequisites'
 
-# Distinct selections share one explicit destination.
-pf -o combined.bundle.md work-planner/SKILL.md \
+# Distinct selections share one bundle, written into the folder -o names.
+pf -o build work-planner/SKILL.md \
   'work-planner/modes/align-mode.md#prerequisites'
 
 # A referring document supplies context for a bare fragment only.
@@ -123,7 +123,6 @@ pf -f work-planner/modes/align-mode.md '#prerequisites'
 
 # Full compilation and validation, without publication.
 pf -c 'work-planner/modes/align-mode.md#prerequisites'
-pf -o - work-planner/modes/align-mode.md
 ```
 
 For these examples, `work-planner/modes/align-mode.md` declares the following frontmatter and contains an eligible `prerequisites` heading. `work-planner/SKILL.md` declares root `"."`. The examples specify the file-owned invocation contract; runtime conformance must execute them against an identified candidate and specimen tree.
@@ -141,7 +140,7 @@ prosiform:
 
 Count distinct explicit selections after canonical file and fragment resolution. Repeated equivalent references count once; absent and empty fragments share whole-document identity. Distinct sections of one file, or a whole document and one of its sections, remain distinct entries even when coverage consolidates them.
 
-For one entry, take its path relative to the invocation working directory, remove the recognized Markdown extension, preserve spelling and replace each path separator with `_`. For a section, append `__` and its resolved source fragment identifier. Append `.bundle.md` and publish in the invocation working directory. A fragment-only entry derives its filename from the file supplied by `-f`. Roots and group names never rename an entry's output.
+For each selection, take its path relative to the invocation working directory, remove the recognized Markdown extension, preserve spelling and replace each path separator with `_`. For a section, append `__` and its resolved source fragment identifier. Join the selections' names with `+` in the order the command line first names each, append `.bundle.md` and publish into the output folder. A fragment-only entry derives its filename from the file supplied by `-f`. Roots and group names never rename an entry's output.
 
 | Entry, from the working directory | Automatic filename |
 | --- | --- |
@@ -151,9 +150,10 @@ For one entry, take its path relative to the invocation working directory, remov
 | `work-planner/artifacts/epic.markdown` | `work-planner_artifacts_epic.bundle.md` |
 | `../library/guide.md` | `.._library_guide.bundle.md` |
 | Equivalent references `guide.md` and `./guide.md#`, absent root | `guide.bundle.md` |
-| `guide.md#one` and `guide.md#two` | Explicit `-o` required |
+| `guide.md#one` and `guide.md#two` | `guide__one+guide__two.bundle.md` |
+| `rules.md`, then `guide.md#run` | `rules+guide__run.bundle.md` |
 
-Retain parent segments when an entry lies above the working directory, then flatten their separators: they become filename text, never output traversal. Literal underscores remain literal. Recommend hyphens in authored file and directory names to reduce ambiguity; this does not guarantee collision freedom for arbitrary paths or case-insensitive filesystems. No encoding, hashing, shortening or collision registry is applied to automatic names. Filesystem name or length failures use `E_PUBLICATION_FAILED`. Automatic and explicit file destinations share captured-source overlap checks, candidate validation and atomic replacement; stdout delivery uses `-o -`.
+Retain parent segments when an entry lies above the working directory, then flatten their separators: they become filename text, never output traversal. Literal underscores remain literal. Recommend hyphens in authored file and directory names to reduce ambiguity; this does not guarantee collision freedom for arbitrary paths or case-insensitive filesystems. No encoding, hashing, shortening or collision registry is applied to automatic names. Filesystem name or length failures use `E_PUBLICATION_FAILED`. Every bundle path takes the captured-source overlap check, candidate validation and atomic replacement, whichever folder holds it.
 
 ## Explicitly linked source structure
 
@@ -382,7 +382,7 @@ Group and group-depth are present together or absent together; root is independe
 
 ### Metadata failures
 
-Metadata input failures exit 1, fail check mode, publish no stdout bundle, and preserve an existing output file. Text and JSON diagnostics identify the failing field and original physical source location. A YAML syntax error points to the parser's marked token; an invalid key points to that key; a value type or value error points to that value; a missing paired field points to the present field; an unknown reserved field points to its key. Duplicate keys identify both occurrences. Collection-depth errors point to the collection that exceeds the limit.
+Metadata input failures exit 1, fail check mode, publish no bundle, and preserve an existing output file. Text and JSON diagnostics identify the failing field and original physical source location. A YAML syntax error points to the parser's marked token; an invalid key points to that key; a value type or value error points to that value; a missing paired field points to the present field; an unknown reserved field points to its key. Duplicate keys identify both occurrences. Collection-depth errors point to the collection that exceeds the limit.
 
 | Diagnostic | Defect |
 | --- | --- |
@@ -522,7 +522,7 @@ Successful compilation establishes that the complete candidate passed validation
 
 - **Exit status:** The agent-facing wrapper must check process success rather than interpreting the mere presence of Markdown as a successful read.
 - **Response limit:** The wrapper must buffer or otherwise verify complete output and enforce a response-size limit compatible with its transport. If it cannot deliver the whole document, return a *delivery* failure rather than a truncated apparent success.
-- **Clean Markdown:** Keep success stdout limited to the bundle document. The bundle opens on its first group's content and carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
+- **Clean Markdown:** Keep the bundle file limited to the bundle document. The bundle opens on its first group's content and carries no generated commentary: completion metadata, byte counts, warnings, and diagnostics belong in the wrapper's structured result or a sidecar, never in per-section Markdown envelopes.
 - **Broken pipes:** Report transport/write failure through a nonzero exit when detectable. Do not claim that stdout can be atomically delivered to every consumer.
 - **No silent fallback:** Do not replace oversized output with a summary, a partial document, or references that the agent must follow separately.
 
@@ -558,7 +558,7 @@ Validation is mandatory. Failures must give the calling agent enough information
 - **Preservation:** Preserve selected instruction wording and code under the declared transformations: leading BOM removal, frontmatter stripping, reference-use conversion, definition removal, destination rewriting, title absorption, heading shifts and necessary Setext conversion, generated group, variant and member headings, heading-only ancestors, Markdown escaping, and boundary whitespace. Untouched non-heading bytes and code examples are not reformatted or repaired.
 - **Completeness:** No content is silently dropped to satisfy resource limits, and no failed dependency is silently omitted.
 - **Safety:** Enforce bounded bootstrap access, each referring source's effective root and configured resource limits. Never execute included commands, and never open a reference the tool did not resolve as a local Markdown dependency.
-- **Publication:** Compile failures return nonzero status and no bundle on stdout. Diagnostics go to stderr. File output should be published atomically only after successful validation. An output destination that refuses the write, a detected broken pipe among them, fails with `E_PUBLICATION_FAILED`.
+- **Publication:** Compile failures return nonzero status and write no bundle. Diagnostics go to stderr, and standard output carries no bundle. A bundle is written into its output folder atomically, only after successful validation. An output destination that refuses the write, a detected broken pipe among them, fails with `E_PUBLICATION_FAILED`.
 
 ### Post-compilation invariants
 
@@ -667,7 +667,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 | Safe YAML | Duplicate keys at root and nested levels with both coordinates; custom tags, aliases, merge keys; collection depth at and beyond the limit; raw source-byte boundary and source-change capture. |
 | Body separation | Apparent Markdown headings, links and definitions in metadata produce no dependencies or rendered bytes; body YAML fences remain literal; physical diagnostic coordinates include metadata and BOM. |
 | Preserved assembly | Overview and variant arrangements, shortest distinguishing member names, heading overflow, ambiguous source slugs, anchor collisions and document/section rewrites retain their defined outcomes. |
-| Atomic failure | Invalid metadata and conflicting groups under stdout, file output and check mode, with an existing output file preserved; text and JSON carry both conflict locations. |
+| Atomic failure | Invalid metadata and conflicting groups under file output and check mode, with an existing output file preserved; text and JSON carry both conflict locations. |
 | Public interface | Help and invocation table agree on operational options; structural option rejection; representative metadata corpus and installed-wheel smoke against the identified candidate. |
 
 ### File-owned invocation conformance cases
@@ -682,8 +682,8 @@ Before broad implementation, create small fixtures with exact expected bundles o
 | Self references | Fragment-only links and deferred fragments in a file outside its own declared root; deferred target validated but its outgoing dependencies unopened. |
 | Multi-root identity | Two physical sources sharing a path relative to their own roots, named by their working-directory paths; stable source sorting and conflict locations; unambiguous diagnostics and inclusion chains; ambiguous displayed member names published with a warning. |
 | Derived filenames | Whole-file, `.markdown`, mixed-case suffix, section, empty fragment, equivalent duplicate references and `-f`; literal underscores, spaces, Unicode and parent segments; linked roots and groups do not rename the entry. |
-| Combined selection | Multiple files, distinct sections of one file, and whole-file plus section selections require explicit `-o`, including in check mode; file destination and `-o -` each produce one bundle. |
-| Publication | Automatic output in invocation working directory; exact `-o` destination; existing output preserved on failure; overlap with any captured source, including deferred-only targets; filename/length failure; atomic replacement, check mode and clean stdout/stderr. |
+| Combined selection | Multiple files, distinct sections of one file, and whole-file plus section selections produce one bundle whose name joins each selection's name in command-line order, including in check mode. |
+| Publication | Output into the invocation working directory and into the `-o` folder; `-o -` refused; existing output preserved on failure; overlap with any captured source, including deferred-only targets; filename/length failure; atomic replacement, check mode and clean stdout/stderr. |
 | Deferred handoff | URI-escaped cwd-relative destination, including parent segments and literal delimiters, can be invoked from the same working directory with `pf`; outside-root citations and unopened resources retain authored bytes. |
 
 Runtime delivery updates each consumer in the layer that changes its behavior: settings schema consumers with the decoder, root/referrer entry fixtures and CLI consumers with the resolver, and stdout-dependent consumers with automatic output publication. This includes installed-wheel smoke commands and diagram renderer invocations. Compare compiled content independently of invocation and output location against baseline `93fe6b354a85e244f64e33af700a55aab4f26044`; entry-root annotations preserve body bytes and deliberately update physical-location expectations. Authoring guidance teaches per-source roots, full setting names and hyphen-preferred paths. These are required conformance checks, not claims that the current runtime has passed them.
