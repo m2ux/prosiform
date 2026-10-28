@@ -6,7 +6,7 @@
 
 The dispatch (`⇉`) and parallel dispatch (`⫽`) operators are prosiform grammar: `pf` compiles what each states into the bundles it publishes, so an agent follows a bundle without an authored symbol table. Every dispatched target compiles to a bundle of its own beside the bundle that dispatches it. A `⇉` link points at a local sub-section instructing its dispatch; the `⫽` links in one section form a set, and point at one local sub-section instructing their dispatch together. Each bundle opens with a `# Prosiform` section stating the protocols it uses. A bare `pf` serves what remains of the corpus bootstrap, so a skill's bootstrap is one instruction to run it.
 
-The epic is I05:E03: eleven task rows delivered as nine pull requests, each leaving a working `pf`, with one edge outside it: the eval row waits on I05:E01's baseline.
+The epic is I05:E03: sixteen task rows delivered as ten pull requests, each leaving a working `pf`, with one edge outside it: the eval row waits on I05:E01's baseline.
 
 ## Artifacts
 
@@ -22,7 +22,13 @@ The epic is I05:E03: eleven task rows delivered as nine pull requests, each leav
 | [W08 work item](w08.md) | The Prosiform section, its protocols and profile v4 |
 | [W09 work item](w09.md) | The guide a bare `pf` prints, bootstrap retirement and the documentation |
 | [W10 work item](w10.md) | Layout-permutation fixtures for the bundle set |
-| [W11 work item](w11.md) | Dispatch scenarios in the diagram-following eval and their baseline |
+| [W11 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w11.md) | The run folder's swap: a link at its path, a refused restore and a refused cleanup |
+| [W12 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w12.md) | Name collisions, a missing output folder and a source read two ways, refused before any write |
+| [W13 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w13.md) | Staging and aside names independent of the run folder's |
+| [W14 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w14.md) | Dispatch link text, empty-text refusal, reserved headings and one dispatched-link reader |
+| [W15 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w15.md) | Schema-valid test manifests and the renamed fixture families |
+| [W16 work item](w16.md) | Dispatch scenarios in the diagram-following eval and their baseline |
+| [Review findings](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/findings.md) | The seven findings of the review of the epic as merged to `main` |
 | [Joins](joins.md) | Independent row pairs that take separate pull requests, and why |
 
 ## Design
@@ -86,7 +92,12 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 | W08 | The `# Prosiform` section and its protocols; profile v4 | 6 |
 | W09 | The guide from a bare `pf`; bootstrap retirement; docs, glossary and invocation | 7 |
 | W10 | Layout-permutation corpus fixtures for the bundle set | 8 |
-| W11 | Dispatch and parallel-dispatch scenarios in the E01 eval, and their first baseline | 9 |
+| W11 | The run folder's swap: a link at its path replaced, a refused restore and cleanup reported | 9 |
+| W12 | Name collisions, a missing output folder and a source read two ways refused before any write, `-c` included | 9 |
+| W13 | Staging and aside names of fixed length | 9 |
+| W14 | Dispatch link text collapsed, empty text refused, only emitted headings reserved | 9 |
+| W15 | Schema-valid test manifests; `parallel-dispatch` and `publication` families | 9 |
+| W16 | Dispatch and parallel-dispatch scenarios in the E01 eval, and their first baseline | 10 |
 
 ## Decisions
 
@@ -99,16 +110,18 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 - **Steps are sub-sections, by corpus convention.** A step a heading roots is a precise link destination. Converting the work-planner corpus is its own epic; this epic writes Board Reads in that form.
 - **Protocols first.** A step can be acted on before later text is read.
 - **Profile v4.** The same source bundles differently, as with v3.
-- **Navigation extends E01.** One runner, scorer and baseline serve every agent eval; W11 takes an edge on I05:E01 W05.
+- **Navigation extends E01.** One runner, scorer and baseline serve every agent eval; W16 takes an edge on I05:E01 W05.
 - **Breaking, without compatibility.** `-o FILE`, standard-output publication, the run-set target shape and the bootstrap symbol rows for `⇉` and `⫽` are removed.
 - **Profile v4 lands with the Prosiform section.** W08 changes what every dispatching bundle opens with and fixes the protocol wording as a profile constant, so the profile bump is its criterion. (Planning, 2026-10-28.)
 - **Each pf task carries its own contract edits.** `make conformance` reads the design from `engineering` at the README's pin and holds the build's codes to it, and `make invocation` holds the help text to `invocation.md`, so W01–W06 and W08 each edit their design clauses, the pin and their `invocation.md` rows; W09 sweeps the remaining prose. (Planning, 2026-10-28.)
 - **The stdout consumers move with W01.** The corpus runner, the manifest schema, the 308 `expected/stdout.md` files, `checks/render.py`, `checks/smoke.py` and the delivery wrapper all read a bundle from standard output; W01 moves or removes each, so `make check` holds on its revision. (Planning, 2026-10-28.)
 - **Ten rows, eight pull requests.** The dispatched-bundles and parallel-sets tasks each exceeded three criteria, so each is split into two joined rows sharing one pull request: W03 with W04, W06 with W07. (User, 2026-10-28.)
-- **Priority 8, beside E01.** The collision rule would rank this epic 7, behind I05:E01, because W11 and E01 W01 both write `evals/diagram-following/workflows`. The user overrode it ("I want this work now"): W11's edge on E01 W05 already holds the only shared folder until E01's eval is written, so nothing else waits. (User, 2026-10-28.)
+- **Priority 8, beside E01.** The collision rule would rank this epic 7, behind I05:E01, because W16 (then W11) and E01 W01 both write `evals/diagram-following/workflows`. The user overrode it ("I want this work now"): W16's edge on E01 W05 already holds the only shared folder until E01's eval is written, so nothing else waits. (User, 2026-10-28.)
 - **The run folder carries a suffix.** A run writes into `<entry name>.bundles/` and replaces only a folder of that name, so an author folder named like the entry is never its run folder; raised as #358 from W03 and placed as W05, after W04 and ahead of the parallel sets. The rows after it moved up one number. (User, 2026-10-28.)
 - **Step headings carry their number.** A step sub-section is headed by its position and action, as `### 6. Publish`; Board Reads (W07) is written that way first, and Corpus Steps' first row states the convention. Inserting a step renumbers the anchors below it, and `pf`'s unresolved-link check reports a link left naming an old one. (User, 2026-10-28.)
 - **Dispatch accompanies Parallel dispatch.** `## Dispatch` is present whenever a bundle uses either operator, because the Parallel dispatch protocol dispatches each item as Dispatch states; `## Parallel dispatch` only with `⫽`. An authored `Dispatch` or `Parallel dispatch` heading is refused wherever pf emits it. AC16 states the rule. (Orchestrating session, 2026-10-28, during W08.)
+- **Review findings are one pull request into the epic base.** The seven findings of the review of `main` at 8e56baf3 (#355) are all fixed in one task pull request into `i05/e03/main`, as joined rows W11–W15, each criterion with its test or fixture; a new draft review pull request then carries `i05/e03/main` into `main` for the user to merge. (User, 2026-10-28.)
+- **The fix rows precede the eval.** They wait on nothing outside the epic, and the eval waits on I05:E01 W05, so the fix rows take W11–W15 and the eval row moves from W11 to W16. No pull request named it. (Planning, 2026-10-28.)
 - **No discussion pull request.** The records pushed to `engineering` are the discussion, as for I05's earlier epics. (User, 2026-10-28.)
 
 ## Component Map
@@ -127,7 +140,12 @@ Each row's declared component, and every other path its pull request writes. The
 | W08 | `src/prosiform/bundle.py` | `__init__.py`, `profile.py`, `src/tests`, `fixtures/`, `fixtures/cli` (version), `fixtures/usage-example/*/expected/`, `README.md` (pin); `design.md` |
 | W09 | `src/prosiform/cli.py` | `src/tests`, `fixtures/cli`, `fixtures/usage-example/*/expected/`, `example/work-planner/bootstrap.md` (removed), `example/work-planner/SKILL.md`, `example/work-planner/rules.md`, `example/work-planner/guidelines.md`, `invocation.md`, `docs/glossary.md`, `README.md`; `design.md` |
 | W10 | `fixtures/dispatch` | `fixtures/run-set` |
-| W11 | `evals/diagram-following/workflows` | `evals/diagram-following/score.py`, `run.py`, `stub_agent.py`, `report.py`, `baseline.json`, `README.md` |
+| W11 | `src/prosiform/cli.py` | `src/tests`, `invocation.md`, `README.md` (pin); `design.md` |
+| W12 | `src/prosiform/cli.py` | `src/tests`, `README.md` (pin); `design.md` |
+| W13 | `src/prosiform/cli.py` | `src/tests` |
+| W14 | `src/prosiform/dispatch.py` | `cli.py`, `src/tests`, `fixtures/dispatch`, `README.md` (pin); `design.md` |
+| W15 | `fixtures` | `fixtures/run-set` → `fixtures/parallel-dispatch`, `fixtures/delivery` → `fixtures/publication`, `checks/tests` |
+| W16 | `evals/diagram-following/workflows` | `evals/diagram-following/score.py`, `run.py`, `stub_agent.py`, `report.py`, `baseline.json`, `README.md` |
 
 ## Collision Surface
 
@@ -136,7 +154,7 @@ Checked against the in-flight I05 epics, the open pull requests and the open epi
 - **I05:E02 Link Forms (#339).**
   Every row is merged and its base reached `main` through #342 and the v0.15.0 release; the epic awaits closure. No collision.
 - **I05:E01 Diagram Following (#333).**
-  `i05/e01/main` is unmerged and holds `evals/diagram-following/`, `Makefile`, `checks.md`, `checks/layout.py` and `src/README.md`; its W05 (the baseline run) waits on the user's eval login. W11 writes the same eval and takes an edge on E01 W05; no other row touches E01's paths. `deps.py` reports E01:W01 and E03:W11 both extending `evals/diagram-following/workflows`, which the user accepted at the same priority.
+  `i05/e01/main` is unmerged and holds `evals/diagram-following/`, `Makefile`, `checks.md`, `checks/layout.py` and `src/README.md`; its W05 (the baseline run) waits on the user's eval login. W16 writes the same eval and takes an edge on E01 W05; no other row touches E01's paths. `deps.py` reports E01:W01 and E03:W16 (then W11) both extending `evals/diagram-following/workflows`, which the user accepted at the same priority.
 - **I05:E04 Corpus Steps.**
   W06, W07 and W09 write `example/work-planner/` (`delivery-evidence.md`, `guidelines.md`, `rules.md`, `SKILL.md`) and the usage-example bundles, which every E04 row also writes. E04's first row depends on W09 and the epic sits one number below.
 - **I01:E00 Findings Ledger (#21, draft pull request #325).**
@@ -148,7 +166,7 @@ Checked against the in-flight I05 epics, the open pull requests and the open epi
 
 ## Epic Priority
 
-`deps.py` over I05's body with E03 and E04 added, the work items and the joins records proposes E03 one below E01 and E02 from the E01:W01 / E03:W11 contention. Confirmed: E03 `priority: 8` beside E01 and E02, at the user's request; E04 `priority: 7`.
+`deps.py` over I05's body with E03 and E04 added, the work items and the joins records proposes E03 one below E01 and E02 from the E01:W01 / E03:W16 contention. Confirmed: E03 `priority: 8` beside E01 and E02, at the user's request; E04 `priority: 7`.
 
 Longest chains: 24, each of 9 steps, every one running E03 W01, W02, W08 and W09 then E04 W01.
 
@@ -164,6 +182,19 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
   The row split, the priority, the step heading form and the discussion pull request, as Decisions records.
 - **Second pass.**
   After the split, `deps.py` reports no problem and no unaccounted pair, and `format.py` reports only the AC22 flag above.
+
+### Review of the merged epic
+
+Review of `main` at 8e56baf3, the #355 merge, 2026-10-28. Seven findings, each verified; the [findings record](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/findings.md) holds their evidence.
+
+- **Publication.**
+  1 (high) the run folder resolved through a link at its path, so the swap removes or writes outside `-o`; 4 (medium) a derived-name collision found only by the write, so `-c` passes it; 5 (medium-low) captures merged last-wins, so a source changed between two bundles' reads publishes; 6 (low) an unguarded restore, a cleanup failure reported as a failed publication, and staging names overflowing long run names; 7b `-c` passing a missing output folder.
+- **Dispatch.**
+  2 (high) link text entering a heading unnormalised, so wrapped, trailing-space or empty text ends in an internal error; 3 (medium) `Prosiform` and `Dispatch in parallel` reserved in every bundle; 7a a deferral message for dispatched links; 7c repeated deduplication; 7d dispatched links read by two readers.
+- **Tests and fixtures.**
+  7e test manifests carrying the retired `stdout` field; 7f two fixture families named for retired concepts.
+- **Resolution.**
+  Rows W11–W15 with AC27–AC38, joined in one pull request; AC12–AC14 name `fixtures/parallel-dispatch`. The user's decision is under Decisions.
 
 ## Links
 
