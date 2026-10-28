@@ -7,7 +7,7 @@ The plan changes this delivery session applied and held, under the deliver-mode 
 - **Folded work: the Action titles decision.** W01 left W02 to decide whether the no-articles Action titles rule binds step headings. Decided: it does not. A step heading is not a procedure title, so its action keeps the step's label as written, articles included (`#### 1. Read the Brief`, `#### 2. Place It`), and every converted heading follows that. Stated in `example/work-planner/guidelines.md`, Action titles, as a sub-bullet. Folded into W02's pull request, since the conversion cannot be applied consistently without it.
 - **Folded work: two further README excerpts.** Besides plan mode's publish step, `example/README.md` quotes plan mode's record step (the dispatched-link construct) and revise mode's first step (the deferral example), input and output. Each is the converted text, so the README does not quote a form the corpus no longer has.
 
-Recording delivery on [#352](https://github.com/m2ux/prosiform/issues/352) — W02 links its pull request, then Done and AC2 on merge — is delivery, not a plan change.
+The session recorded delivery on [#352](https://github.com/m2ux/prosiform/issues/352) — W02 links [#365](https://github.com/m2ux/prosiform/pull/365), merged into `i05/e04/main` at `fa6913e8`, with Done ticked, and AC2 is ticked — which is delivery, not a plan change.
 
 ## Held
 

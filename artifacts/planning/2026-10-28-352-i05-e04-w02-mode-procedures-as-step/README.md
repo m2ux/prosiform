@@ -31,3 +31,4 @@ A mode's steps are what a dispatching session, a guideline or a reviewer most of
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Corpus Steps planning record](../2026-10-28-352-i05-e04-corpus-step-subsections/README.md) |
 | Prior task | [W01 Step Convention in the Corpus Guidelines](../2026-10-28-352-i05-e04-w01-step-convention-in-the/README.md) |
+| Pull request | [I05:E04 Mode Procedures as Step Sub-sections](https://github.com/m2ux/prosiform/pull/365) |
