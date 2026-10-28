@@ -6,7 +6,7 @@
 
 This record holds the placement and plan of [#376](https://github.com/m2ux/prosiform/issues/376): the work-planner example under `example/work-planner/` brought to one set of authoring rules — bindings stated once, Inputs and Outputs as contract links, commands inline in their steps, one home per rule, one subject per file — with the `N. Action` step sub-sections kept. The issue is kept and becomes I05's epic E06; its original body is preserved as a comment on it.
 
-The change is to the corpus, its guidelines and one repository check; `pf` is unchanged. A check first reports the findings by area, one sample file shows every rule for approval, and the rollout follows by area, ending with the check held under `make check`. The epic starts from the step sub-section conversion of the same corpus, I05:E04, whose review pull request [#372](https://github.com/m2ux/prosiform/pull/372) has not merged.
+The change is to the corpus, its guidelines and one repository check; `pf` is unchanged. A check first reports the findings by area, one sample file shows every rule for approval, and the rollout follows by area, ending with the check held under `make check`. The epic starts from the step sub-section conversion of the same corpus, I05:E04, which [#372](https://github.com/m2ux/prosiform/pull/372) merged into `main`.
 
 ## Artifacts
 
@@ -37,18 +37,15 @@ Counted on the I05:E04 base, [`14d059d1`](https://github.com/m2ux/prosiform/tree
 
 ## Decisions
 
-- **Placement.** A new epic of I05, as the user asked; #376 is kept and rewritten as the epic, since it carries the design and the open questions.
+- **Placement.** A new epic of I05, as the user asked; #376 is kept and rewritten as the epic, since it carries the design and its evidence.
 - **Number.** E06, after the Deferred Debt epic E05; the held decision on Deferred Debt staying I05's last epic, recorded with #373's placement, covers this number too.
 - **Corpus only.** The rules bind the example; `pf` gains no rule. The check is a repository check.
 - **Fixtures move with each task.** Each row regenerates the usage-example bundles its files reach; the epic's last criterion states the end state on the base.
 - **Initiative coverage.** The row covers I05's AC3 alone, as E04's does: no `pf` behaviour or bundling rule changes.
-
-## Open Questions
-
-Both stay open for the user; the epic starts once each is answered. A recommendation is offered, not applied.
-
-- **Title headings.** pf takes a file's H1 as its file heading when it groups bundled content, so dropping it changes how bundles name each file's section. Recommended: keep each H1 as the file's bundle heading and state that in the guidelines, since nothing else names the file's section; the alternative needs a pf rule this corpus-only epic does not carry.
-- **Configuration home.** Recommended: a new `configuration.md` beside `conventions.md`, linked from `SKILL.md`: the bindings are values, the conventions are rules, and one subject per file keeps them apart. The alternative is `conventions.md` itself, which keeps one file fewer.
+- **Epic split.** The ten rows as published: rules, check, configuration, conventions, sample, artifact contracts, artifact commands, the other files, homes and splits, guard. (User, 2026-10-28.)
+- **Epic priority.** `priority: 8`, the number E01, E03, E04 and E05 carry: E04 has merged, so the contention that would place E06 below it is gone. (User, 2026-10-28.)
+- **Title headings kept.** Each file keeps its H1, and the guidelines state that a file's H1 is its heading in the bundle, the name pf gives the file's section when it groups bundled content. W01 states the rule. (User, 2026-10-28.)
+- **Configuration home.** The bindings live in a new `example/work-planner/configuration.md`, beside `conventions.md` and linked from `SKILL.md`: bindings are values and conventions are rules, so each file keeps one subject. W03 creates it, and AC3 names it. (User, 2026-10-28.)
 
 ## Component Map
 
@@ -68,7 +65,7 @@ Both stay open for the user; the epic starts once each is answered. A recommenda
 ## Collision Surface
 
 - **I05:E04 Corpus Steps.**
-  Every row of E04 is delivered to its base `i05/e04/main`, whose merge into `main` is review pull request #372, still open. That base rewrites every file under `example/work-planner/` and the usage-example bundles, which every row here writes too. `deps.py` reports E04 W01 and E06 W01 contending on `guidelines.md`, and E04 W04 with E06 W06 and E06 W07 on `artifacts`. E06 W01 depends on E04 W05, so E06's base is cut from `main` after #372 merges.
+  Its base merged into `main` through #372, so its rewrite of `example/work-planner/` and the usage-example bundles is the tree this epic starts from, and E06 W01's dependency on E04 W05 is met on `main`. `deps.py` still lists E04 W01 against E06 W01 on `guidelines.md`, and E04 W04 against E06 W06 and E06 W07 on `artifacts`, since it reads row components rather than merges; with every E04 row delivered and its base merged, no pair can conflict.
 - **I05:E04 W06 and repository checks.**
   E04's guard wrote `Makefile`, `checks.md` and `checks/README.md`, which W02 and W10 write too; any other open work on those files, such as I05:E01's unmerged base and I01:E00's draft, rebases against W10.
 - **I05:E03 Dispatch Bundles.**
@@ -78,17 +75,18 @@ Both stay open for the user; the epic starts once each is answered. A recommenda
 
 ## Epic Priority
 
-`deps.py` proposes E06 one below E01, E03, E04 and E05, from the component contention with E04. The others carry `priority: 8`; E06 would take `priority: 7`. Held for the user; no priority label is applied.
+`priority: 8`, shared with E01, E03, E04 and E05, as Decisions records. The contention with E04 that `deps.py` reports is with delivered rows on a merged base.
 
 ## Review
 
-Validate Issue Body and Check Dependencies and Numbering over the saved bodies, 2026-10-28.
+Validate Issue Body and Check Dependencies and Numbering over the saved bodies, 2026-10-28, and again after the user's decisions.
 
 - **Format.** `format.py` reports nothing to fix, apply or decide on #376 or #327.
 - **Dependencies.** No problem in I05:E06; the one problem `deps.py` prints, E01 W01's edge to I05:E00 W02, is outside this run, since E00 was not supplied. No numbering advisory.
 - **Joins.** Every independent pair in E06 is accounted for in [Joins](joins.md).
 - **Longest chain.** 16 steps, through E03 W01–W09, E04 W01 and W05, then E06 W01, W05, W09 and W10.
 - **Contending pairs.** E04:W01 with E06:W01 on `example/work-planner/guidelines.md`; E04:W04 with E06:W06 and with E06:W07 on `example/work-planner/artifacts`.
+- **Second pass.** With the decisions applied and the open questions removed, `format.py` reports nothing to fix, apply or decide on #376, and `deps.py` reports no problem in E06, no unaccounted pair and no numbering advisory.
 - **Corpus audit.** The criterion applies to workflow definitions; this corpus is example material, so the epic carries none.
 
 ## Links
