@@ -21,6 +21,8 @@ Each earlier task proves the rule it adds. Nothing yet proves those rules togeth
 | Artifact | What it holds |
 | --- | --- |
 | [W10 work item](w10.md) | The layouts the bundle set takes, the fixture covering each, and the four fixtures this task adds |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
