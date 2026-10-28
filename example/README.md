@@ -27,7 +27,7 @@ cd example/work-planner
 pf modes/plan-mode.md
 ```
 
-It writes the bundle to `modes_plan-mode/modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, beside a bundle for each target its dispatches reach, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
+It writes the bundle to `modes_plan-mode.bundles/modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, beside a bundle for each target its dispatches reach, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
 
 ### Output
 
