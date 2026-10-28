@@ -57,7 +57,7 @@ from prosiform.closure import (
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
-    RUN_SET_MARK,
+    PARALLEL_MARK,
     Malformed,
     OutsideRoot,
     Reference,
@@ -69,7 +69,6 @@ from prosiform.closure import (
     operators,
     resolvable,
     resolve,
-    run_set,
     withholding,
     withholding_target,
 )
@@ -130,8 +129,6 @@ from prosiform.profile import (
 )
 from prosiform.provenance import Target
 from prosiform.rewrite import Definition, definitions
-from prosiform.run_set import CODES as RUN_SET_CODES
-from prosiform.run_set import RunSet, misshapen, stray
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
@@ -194,7 +191,7 @@ COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
     DISPATCH_MARK: "the dispatch mark",
-    RUN_SET_MARK: "the run-set mark",
+    PARALLEL_MARK: "the parallel dispatch mark",
 }
 
 CODES = tuple(
@@ -219,7 +216,6 @@ CODES = tuple(
             *DISPATCH_CODES,
             *LIMITS_CODES,
             *PROFILE_CODES,
-            *RUN_SET_CODES,
             *SOURCE_CODES,
         }
     )
@@ -983,8 +979,8 @@ def refusals_of_operators(
     """Refuse a link whose operator states nothing the run can carry out.
 
     Each operator states how one compilation is carried out — by a later
-    run, by a sub-agent, or by this run as a run-set — so a link stating
-    two states two contradictory things. An operator names the
+    run, by a sub-agent, or by a sub-agent alongside others — so a link
+    stating two states two contradictory things. An operator names the
     compilation of a Markdown document or section under the source root,
     so one opening a link or an image naming anything else — a remote
     address, a resource, a document outside the root — states a
@@ -1097,38 +1093,6 @@ def dispatches(
         )
 
 
-def run_sets(
-    path: str,
-    source: Source,
-    tokens: Sequence[Token],
-    chosen: Selection | None,
-    chain: Sequence[str],
-) -> Iterator[RunSet]:
-    """Every run-set link the selected content of one source carries.
-
-    A run-set's target is compiled like any link's, so what is yielded is
-    the target the link resolves to, with the text the link opens with
-    and the place it is written, for the check of the target's shape.
-    """
-    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
-    for use in uses(tokens, selected):
-        if use.resource or not run_set(use.opening):
-            continue
-        found = resolvable(path, use.destination, source.root)
-        if found is None:
-            continue
-        line = source.line(use.line)
-        yield RunSet(
-            replace(
-                found,
-                origin=location(path, line),
-                chain=(*chain, identity(found)),
-            ),
-            use.opening,
-            Location(path, 1 if line is None else line, 1),
-        )
-
-
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
     """Every referring route must retain no-follow access to a cached identity."""
     if one.path not in captured:
@@ -1161,7 +1125,6 @@ def traverse(
     dict[str, Capture],
     list[Reference],
     list[Hop],
-    list[RunSet],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -1209,9 +1172,7 @@ def traverse(
 
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
-    for the bundles the run compiles from them, and so are the
-    run-set links, each target once in the same way, for the check of
-    its shape.
+    for the bundles the run compiles from them.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -1223,7 +1184,6 @@ def traverse(
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
     dispatching: dict[str, Hop] = {}
-    running: dict[str, RunSet] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1269,8 +1229,6 @@ def traverse(
                 deferred.setdefault((one.path, one.fragment), one)
             for link in dispatches(path, read[path], parsed[path], chosen, reached):
                 dispatching.setdefault(link.name, link)
-            for named in run_sets(path, read[path], parsed[path], chosen, reached):
-                running.setdefault(named.name, named)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1306,7 +1264,6 @@ def traverse(
         captured,
         found,
         list(dispatching.values()),
-        list(running.values()),
     )
 
 
@@ -1955,44 +1912,6 @@ def derived_name(referrer: Reference | None, requested: Sequence[Reference]) -> 
     return f"{run_name(selections(referrer, requested))}{BUNDLE_SUFFIX}"
 
 
-def misshaped(
-    links: Sequence[RunSet],
-    read: Mapping[str, Source],
-    parsed: Mapping[str, Sequence[Token]],
-) -> list[Diagnostic]:
-    """One warning for each target a run-set link names that is no run-set.
-
-    The target is compiled into the bundle, so its selected content is
-    the whole document, or the section a fragment names with its
-    subsections, read from the source the run parsed. Each link in it
-    resolves from the target's own document within that document's root.
-    """
-    found: list[Diagnostic] = []
-    for link in links:
-        tokens = parsed[link.target.path]
-        source = read[link.target.path]
-        if link.target.fragment is None:
-            chosen: Sequence[Token] = tuple(regions(tokens))
-        else:
-            try:
-                rooted = section(tokens, link.target.fragment)
-            except (Ambiguous, Nested):
-                continue
-            if rooted is None:
-                continue
-            chosen = rooted
-
-        def calls(
-            destination: str, document: str = link.target.path, root: str = source.root
-        ) -> bool:
-            return resolvable(document, destination, root) is not None
-
-        held = stray(tokens, chosen, calls)
-        if held is not None:
-            found.append(misshapen(link, held, source.line(held.line)))
-    return found
-
-
 @dataclass(frozen=True)
 class Compiled:
     """One bundle of a run, compiled from its own entry under its own budgets.
@@ -2026,7 +1945,7 @@ def compiled(
     """
     limits = budgets(options)
     try:
-        read, parsed, defined, captured, found, hops, running = traverse(
+        read, parsed, defined, captured, found, hops = traverse(
             root, referrer, requested, limits
         )
     except Crossed as crossed:
@@ -2040,7 +1959,7 @@ def compiled(
     bundled, coinciding = compose(
         read, parsed, defined, referrer, requested, found, limits, bundle_file
     )
-    trailing = misshaped(running, read, parsed)
+    trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
         trailing.append(
             Diagnostic(

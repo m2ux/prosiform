@@ -74,6 +74,7 @@ from prosiform.bundle import (
 from prosiform.closure import (
     bundled,
     dispatched,
+    parallel,
     rebased,
     unmarked,
     withholding_target,
@@ -88,7 +89,7 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
-    Target,
+    Served,
 )
 from prosiform.source import (
     ANCHOR,
@@ -138,6 +139,7 @@ CONTAINERS = {
 }
 
 PARAGRAPH_OPEN = "paragraph_open"
+BULLET_LIST_OPEN = "bullet_list_open"
 
 TARGET_INTEGRITY = "target integrity"
 EXACTLY_ONCE = "exactly-once coverage"
@@ -326,7 +328,7 @@ def intended(
     children: Sequence[Token],
     targets: Mapping[tuple[str, str | None], str],
     root: str = "",
-    dispatched_to: Mapping[Target, str] | None = None,
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
@@ -373,7 +375,7 @@ def intended(
             return one
         if dispatched(opening):
             served = {} if dispatched_to is None else dispatched_to
-            given = served.get((withheld.path, withheld.fragment))
+            given = served.get(((withheld.path, withheld.fragment), parallel(opening)))
             if given is None:
                 raise Invalid(
                     TARGET_INTEGRITY,
@@ -651,11 +653,14 @@ def structure(
                     f"is emitted as a {span.type!r} rather than as a heading at "
                     f"level {part.level}",
                 )
-            if isinstance(part, Instruction) and span.type != PARAGRAPH_OPEN:
+            if isinstance(part, Instruction) and span.type != (
+                BULLET_LIST_OPEN if part.listed else PARAGRAPH_OPEN
+            ):
                 raise Invalid(
                     NO_EXPANSION,
                     f"the {part.kind} {part.text!r} of {one.record.path!r} is "
-                    f"emitted as a {span.type!r} rather than as a paragraph",
+                    f"emitted as a {span.type!r} rather than as a "
+                    f"{'bulleted list' if part.listed else 'paragraph'}",
                 )
             paired.append((one.record, part, span))
             at += 1
@@ -1026,7 +1031,7 @@ def references(
     published: Side,
     targets: Mapping[tuple[str, str | None], str],
     root: str = "",
-    dispatched_to: Mapping[Target, str] | None = None,
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> None:
     """Hold one region's uses, diagram links among them, to those its source wrote.
 
@@ -1111,7 +1116,7 @@ def preserved(
 
 def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
-    dispatching: Mapping[tuple[str, int], Mapping[Target, str]],
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
 ) -> None:
     """Hold each dispatched link's destination to a dispatch sub-section.
 
@@ -1119,7 +1124,7 @@ def dispatches(
     link's destination is held to is the kind of heading it reaches.
     """
     for (path, _line), served in dispatching.items():
-        for target, destination in served.items():
+        for (target, _parallel), destination in served.items():
             found = reached.get(destination)
             if found is None or not (
                 isinstance(found[1], Generated) and found[1].kind == DISPATCH_SECTION
@@ -1139,7 +1144,7 @@ def validate(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     budget: int,
-    dispatching: Mapping[tuple[str, int], Mapping[Target, str]] | None = None,
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
