@@ -73,7 +73,7 @@ Return the body, the comment file and the eligibility findings. The caller saves
 ### Titles
 
 - The title is `[I07:E00:W01] Name: Subtitle`.
-- The label is `type:task`.
+- The label is the task [kind label](../configuration.md#kind-labels).
 - `W` is the task within the epic. Tasks count from `W01`.
 
 ### Open Questions

@@ -54,7 +54,7 @@ Return the complete updated body file to the caller.
 
 One pull request body referencing its published overview.
 
-**Inputs:** Current body, published overview URL on the engineering branch and output body path.
+**Inputs:** Current body, published overview URL on the [engineering branch](../configuration.md#engineering-branch) and output body path.
 
 #### 1. Add the Overview Reference
 
@@ -62,7 +62,7 @@ Add the Architecture Overview reference to the body's References section, creati
 
 #### 2. Preserve an Existing Overview Row
 
-Preserve an existing row already naming the overview. The link uses the engineering-artifacts base URL so later files resolve from the same record.
+Preserve an existing row already naming the overview. The link's base URL is the [records folder](../configuration.md#engineering-branch) on the engineering branch, so later files resolve from the same record.
 
    ```markdown
    - **R1.** [Architecture Overview](https://github.com/{owner}/{repo}/tree/engineering/artifacts/planning/2026-10-08-950-queue-placement/architecture-overview.md) — the change's structure, its flows, and the order to read the diff.

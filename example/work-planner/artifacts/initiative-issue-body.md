@@ -202,7 +202,7 @@ Return each source's contents and identity with those findings.
 ### Titles
 
 - The title is `[I07] Name: Subtitle`.
-- Labels are `type:initiative` and a `theme:*`.
+- Labels are the initiative [kind label](../configuration.md#kind-labels) and one [theme label](../configuration.md#theme-labels).
 - `I` is the initiative number. Initiatives count from `00`.
 
 ### Problem

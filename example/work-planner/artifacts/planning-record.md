@@ -51,7 +51,7 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 #### 1. Find the Publishing Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
+Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on, with the [engineering branch](../configuration.md#engineering-branch) name.
 
 #### 2. Commit the Planning Record Folder
 
@@ -71,11 +71,11 @@ The existing planning folder whose reference is one issue or pull request number
 
 #### 1. Find the Engineering Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree).
+Run [Find Engineering Worktree](#find-engineering-worktree) with the [engineering branch](../configuration.md#engineering-branch) name.
 
 #### 2. List the Matching Planning Records
 
-Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
+Run [List Planning Records](#list-planning-records) in that worktree with its [records folder](../configuration.md#engineering-branch) and the number as the reference.
 - Return each folder path it lists.
 - When it lists none, return that no record has that reference.
 
@@ -155,12 +155,12 @@ External references only: a tracker issue, a parent epic, a pull request. An art
 
 Prints the checkout holding the engineering branch, which is where every planning record is written.
 
-**Inputs:** Any checkout of the project.
+**Inputs:** Any checkout of the project and the [engineering branch](../configuration.md#engineering-branch) name.
 
 - The engineering branch has one long-lived worktree and takes no further one.
 
 ```bash
-git worktree list | grep '\[engineering\]'
+git worktree list | grep '\[<engineering-branch>\]'
 ```
 
 ### Commit Planning Record
@@ -198,12 +198,12 @@ cd '<engineering-worktree>' && git push
 
 Prints each planning folder whose reference is one issue or pull request number.
 
-**Inputs:** Engineering worktree and the reference number.
+**Inputs:** Engineering worktree, its [records folder](../configuration.md#engineering-branch) and the reference number.
 
 - The pattern places the reference directly after the date, as the [planning-folder path](#add-planning-record) does, so a number inside the date does not match.
 
 ```bash
-cd '<engineering-worktree>' && ls -d artifacts/planning/????-??-??-'<reference>'-*/
+cd '<engineering-worktree>' && ls -d '<records-folder>'????-??-??-'<reference>'-*/
 ```
 
 **Example:**
@@ -218,7 +218,7 @@ Adds the folder for one planning record on the long-lived engineering worktree.
 
 **Inputs:** Engineering worktree and planning-folder path composed from the date, optional issue or pull request number, and slug.
 
-- `<planning-folder-path>` is `artifacts/planning/<yyyy-mm-dd>[-<ref>]-<slug>/`. The date is the day the record is opened.
+- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](../configuration.md#engineering-branch). The date is the day the record is opened.
 - `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
 - The slug is lowercase words separated by hyphens, a short name of the work.
 - The folder's files are the [planning layout](planning-record.md#layout).
