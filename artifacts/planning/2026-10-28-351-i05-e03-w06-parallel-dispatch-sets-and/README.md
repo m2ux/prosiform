@@ -12,6 +12,10 @@ Parallelism becomes a property of the dispatches a section's prose writes, and a
 
 | Artifact | What it holds |
 | --- | --- |
+| [W06 work item](w06.md) | The `⫽` set, its `Dispatch in parallel` sub-section and the retired run-set shape |
+| [W07 work item](w07.md) | Board Reads as numbered step sub-sections and the usage-example bundles it reaches |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
