@@ -18,6 +18,8 @@ The epic's bundle set is the contract an agent follows. Each finding is a run th
 | [W14 work item](w14.md) | Dispatch link text, empty-text refusal, reserved headings and one dispatched-link reader |
 | [W15 work item](w15.md) | Schema-valid test manifests and the renamed fixture families |
 | [Findings](findings.md) | The seven review findings, as verified at `main` 8e56baf3 |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
