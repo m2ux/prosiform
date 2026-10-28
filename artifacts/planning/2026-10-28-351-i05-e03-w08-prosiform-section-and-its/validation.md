@@ -59,3 +59,7 @@ AC18: `cli/informational-version-response` and `cli/informational-long-version-r
 - `make conformance`: 302 clauses, 0 declarations naming no clause, 0 declared codes the build reports nowhere, 0 reported codes the contract declares nowhere; The Prosiform section is covered by 6 fixtures, the Prosiform section adversarial family by 8.
 - `make invocation`: 28 statements of `invocation.md`, each held to the build's help.
 - `make vocabulary`: 43 contract terms, `Prosiform section` among them, each defined in the glossary.
+
+## Continuous integration
+
+`Checks` ran `make check` on the pull request head `40de3544` and passed ([run](https://github.com/m2ux/prosiform/actions/runs/40680103908/job/122788357980)). [#361](https://github.com/m2ux/prosiform/pull/361) merged into `i05/e03/main` at `c285144f`.

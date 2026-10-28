@@ -24,4 +24,5 @@ An agent reading a bundle top-down meets each protocol before the step that uses
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior task | [W06+W07 Parallel Dispatch Sets and Board Reads as Steps](../2026-10-28-351-i05-e03-w06-parallel-dispatch-sets-and/README.md) |
+| Pull request | [#361 Prosiform Section and Its Protocols](https://github.com/m2ux/prosiform/pull/361) |
 | Review pull request | [#355](https://github.com/m2ux/prosiform/pull/355) |
