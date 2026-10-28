@@ -2,7 +2,7 @@
 """Read and validate a fixture manifest against the corpus schema.
 
 A fixture is a directory under `fixtures/` holding `manifest.toml`, the
-source tree that manifest names and the bytes it expects back. The manifest
+source tree that manifest names and the bundles it expects back. The manifest
 is the whole declaration, and `fixtures/manifest.schema.json` is the shape
 it must take: a JSON Schema document, so the schema is data every reader
 of the corpus reads rather than code any one of them owns.
@@ -90,36 +90,16 @@ def missing_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
     """Every path the manifest names that the fixture does not hold.
 
     The schema states a path's shape; whether the fixture carries what the
-    path names is a fact about the directory. A fixture declaring that the
-    run cannot find its allowed source root is the one that names a root
-    it does not hold, and `present_files` holds it to that.
+    path names is a fact about the directory.
     """
     missing = []
     root = manifest.get("invocation", {}).get("cwd")
     if isinstance(root, str) and not (fixture / root).is_dir():
         missing.append(f"invocation.cwd: {root} is not a directory")
-    stdout = manifest.get("expected", {}).get("stdout")
-    if isinstance(stdout, str) and not (fixture / stdout).is_file():
-        missing.append(f"expected.stdout: {stdout} is not a file")
+    for bundle in manifest.get("expected", {}).get("bundles", []):
+        if isinstance(bundle, str) and not (fixture / bundle).is_file():
+            missing.append(f"expected.bundles: {bundle} is not a file")
     return missing
-
-
-def present_files(fixture: Path, manifest: dict[str, Any]) -> list[str]:
-    """Every path the manifest declares absent that the fixture already holds.
-
-    A declaration the directory contradicts before the run says nothing
-    about the run, so it is a defect in the fixture rather than a
-    difference the run produced. A fixture declaring that the run cannot
-    find its allowed source root declares that root absent, so a fixture
-    holding it is refused the same way.
-    """
-    declared = manifest.get("expected", {}).get("absent", [])
-    present = [
-        f"expected.absent: {name} is a path the fixture holds"
-        for name in declared
-        if isinstance(name, str) and (fixture / name).exists()
-    ]
-    return present
 
 
 def identity(fixture: Path, corpus: Path = CORPUS) -> str:

@@ -1,6 +1,8 @@
-description = "A chain of three dispatches — the bundle dispatching a target whose own closure dispatches, whose own closure dispatches once more — is as deep as a chain is held to, so the bundle publishes with no warning."
+description = "A chain of three dispatches — the entry dispatching a target whose bundle dispatches, whose bundle dispatches once more — publishes one bundle for the entry and one for each target, each dispatch pointing at a sub-section naming its target's bundle, and is as deep as a chain is held to, so the run raises no warning."
 
 clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch sub-sections",
   "Link classification and resource handling — Dispatch depth",
   "Adversarial acceptance fixtures — Dispatch",
 ]
@@ -11,5 +13,5 @@ arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/record.bundle.md", "expected/review.bundle.md"]
 diagnostics = []

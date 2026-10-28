@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/m2ux/prosiform/blob/main/fixtures/manifest.schema.json",
   "title": "prosiform fixture manifest",
-  "description": "The declaration of one corpus fixture: the source tree it bundles, the invocation to run against that tree, and the standard output, exit status and diagnostics the run must produce. A runner decides the fixture's result from this declaration and the fixture's files alone. Nothing here names an implementation, a module or a language. The manifest is written as TOML and validated against this document after parsing, because TOML's value model is a subset of JSON's.",
+  "description": "The declaration of one corpus fixture: the source tree it bundles, the invocation to run against that tree, and the bundles, exit status and diagnostics the run must produce. A runner decides the fixture's result from this declaration and the fixture's files alone. Nothing here names an implementation, a module or a language. The manifest is written as TOML and validated against this document after parsing, because TOML's value model is a subset of JSON's.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -53,7 +53,7 @@
       ]
     },
     "invocation": {
-      "description": "Working directory and arguments for the configured build, with JSON diagnostics supplied by the runner.",
+      "description": "Working directory and arguments for the configured build, with JSON diagnostics supplied by the runner. The runner names no output folder, so the run writes where these arguments send it: the working directory, or the folder an -o argument names.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -61,9 +61,8 @@
       ],
       "properties": {
         "arguments": {
-          "description": "Command arguments, in order. The runner supplies JSON diagnostics.",
+          "description": "Command arguments, in order. The runner supplies JSON diagnostics, except to a fixture declaring no argument and no fault, which runs the bare command.",
           "type": "array",
-          "minItems": 1,
           "items": {
             "type": "string",
             "minLength": 1
@@ -76,24 +75,12 @@
       }
     },
     "expected": {
-      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so all three parts are declared. Standard output is declared one way or the other: as the bytes the run must reproduce, or as the text it must carry where those bytes belong to one build. A run that must also leave the filesystem alone names each path it must not create.",
+      "description": "The complete result the run must produce. A comparison that reads one part of it passes a run that failed in another, so every part is declared: the bundles the run writes, its exit status and its diagnostics. Every file the run creates under the fixture or its working directory is compared by name with the bundles declared, so a run writing a file no bundle names fails. Standard output carries no bundle: it is empty unless the text it carries is declared.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "exit_status",
         "diagnostics"
-      ],
-      "oneOf": [
-        {
-          "required": [
-            "stdout"
-          ]
-        },
-        {
-          "required": [
-            "stdout_contains"
-          ]
-        }
       ],
       "properties": {
         "exit_status": {
@@ -107,12 +94,17 @@
             4
           ]
         },
-        "stdout": {
-          "description": "The fixture-relative path to the bytes standard output must carry. A run that publishes no bundle names a file holding nothing.",
-          "$ref": "#/$defs/fixturePath"
+        "bundles": {
+          "description": "The fixture-relative paths to the bytes of each bundle the run must write, each file named as the run names the bundle. A run writing no bundle declares none.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/bundlePath"
+          }
         },
         "stdout_contains": {
-          "description": "The text standard output must carry, where the whole of the response is a build's own. An informational response reporting a version is such a run: the version belongs to the implementation, and what the contract states is the rest. Declared in place of the bytes, never beside them.",
+          "description": "The text standard output must carry, where the whole of the response is a build's own. An informational response reporting a version is such a run: the version belongs to the implementation, and what the contract states is the rest. Declared absent, standard output carries nothing.",
           "$ref": "#/$defs/carriedText"
         },
         "diagnostics": {
@@ -120,15 +112,6 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/diagnostic"
-          }
-        },
-        "absent": {
-          "description": "The fixture-relative paths the run must leave absent, such as an output file a validation-only run is told to write and must not. A stream comparison cannot reach a file, so the absence is declared rather than inferred. A fixture that already holds one of these paths declares nothing about its run and is malformed. A fixture whose run creates no file names none.",
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/fixturePath"
           }
         }
       }
@@ -243,10 +226,17 @@
         "pattern": "(^|/)\\.\\.(/|$)"
       }
     },
+    "bundlePath": {
+      "description": "A bundle the fixture expects, held under expected/ and named as the run names it in its folder: each selection's name, the names joined with + when a run has several entries, then .bundle.md.",
+      "type": "string",
+      "pattern": "^expected/[^/\\\\]+\\.bundle\\.md$"
+    },
     "errorCode": {
       "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
       "enum": [
         "E_AMBIGUOUS_SOURCE_HEADING",
+        "E_DISPATCH_CYCLE",
+        "E_HEADING_COLLISION",
         "E_HEADING_DEPTH_OVERFLOW",
         "E_INVALID_ENCODING",
         "E_INVALID_FRONTMATTER",
@@ -275,12 +265,9 @@
       "description": "The warning catalogue: the stable warning codes the design declares, each prefixed W_. A warning accompanies a successful run rather than deciding a failing one, so a fixture declaring one states what a run writes to standard error while still succeeding. A diagnostic whose severity is warning draws its code from here.",
       "enum": [
         "W_COINCIDENT_HEADING",
-        "W_DISPATCH_CYCLE",
         "W_DISPATCH_DEPTH",
-        "W_DISPATCH_NOT_PROCEDURAL",
         "W_DISPATCH_SELF",
-        "W_RESOURCE_PORTABILITY",
-        "W_RUN_SET_SHAPE"
+        "W_RESOURCE_PORTABILITY"
       ]
     }
   }

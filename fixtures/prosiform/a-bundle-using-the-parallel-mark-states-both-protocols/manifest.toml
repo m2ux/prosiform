@@ -1,0 +1,15 @@
+description = "A bundle whose only operator is the parallel dispatch mark opens with a Prosiform section holding the Dispatch protocol, which the Parallel dispatch protocol follows as it states, and the Parallel dispatch protocol; its Dispatch in parallel sub-section links the protocol it follows."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/review__source.bundle.md", "expected/review__tests.bundle.md"]
+diagnostics = []

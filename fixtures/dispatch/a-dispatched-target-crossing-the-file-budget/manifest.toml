@@ -1,0 +1,19 @@
+description = "Each bundle holds every budget for its own closure: the entry opens itself and confirms its target, two documents within a file budget of three, while the dispatched target's own bundle opens four, so the run ends in the budget fault and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Resource limits — -F",
+  "Resource limits, every budget holds per bundle",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-F", "3", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"

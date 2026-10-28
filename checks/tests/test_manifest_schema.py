@@ -1,30 +1,27 @@
 """Assert the schema describes a complete fixture declaration and nothing else.
 
-A fixture declares its invocation, its expected standard output, its
-expected exit status and its expected diagnostics in one manifest. The
-schema requires all four, so a manifest leaving one out is rejected as
-malformed rather than running with an expectation nobody stated. The
+A fixture declares its invocation, its expected exit status and its
+expected diagnostics in one manifest. The schema requires all three, so a
+manifest leaving one out is rejected as malformed rather than running with
+an expectation nobody stated. The
 source tree the run is confined to is declared beside the invocation's
 arguments, and a manifest naming none declares a run supplied no allowed
 source root. A diagnostic's code comes from the catalogue its severity
 selects, so a fixture cannot expect a failure the contract does not
 define, and cannot declare a warning where an error belongs.
 
-Standard output is declared one way or the other: as the bytes the run
-must reproduce, or, where the whole of the response is a build's own, as
-the text it must carry. A manifest declaring it both ways states its
-output twice, and one declaring it neither way states nothing about the
-stream, so each is rejected.
+A run writes its bundles to files, and a manifest names each by the
+fixture-relative path holding its expected bytes. That path sits under
+`expected/` and carries the bundle's own name, so a declaration naming
+another directory or another kind of file is rejected, and a run writing no
+bundle declares none. Standard output carries no bundle: a manifest
+declares the text it carries where the whole of a response is a build's
+own, and declaring none states that the stream is empty.
 
 A diagnostic about a reference declares the fields that reference
 carries, the inclusion chain among them, and a chain reaching nothing is
 no chain. A diagnostic under a code naming several faults declares the
 text its message carries, so the fixture states which fault it is.
-
-A run that must leave a path untouched declares it, because a comparison
-of the two streams says nothing about a file. The declaration carries
-fixture-relative paths, one apiece, and a fixture whose run creates no
-file leaves it out.
 
 A fixture declaring behaviour the build has yet to deliver names the work
 that delivers it. The schema states that name's shape, so the marker is
@@ -39,7 +36,6 @@ from manifests import catalogue, errors
 
 DECLARATIONS = {
     "invocation": ("invocation", "arguments"),
-    "expected standard output": ("expected", "stdout"),
     "expected exit status": ("expected", "exit_status"),
     "expected diagnostics": ("expected", "diagnostics"),
 }
@@ -53,7 +49,6 @@ def complete() -> dict[str, Any]:
         "invocation": {"cwd": "source", "arguments": ["guide.md"]},
         "expected": {
             "exit_status": 1,
-            "stdout": "expected/stdout.md",
             "diagnostics": [
                 {
                     "severity": "error",
@@ -75,7 +70,7 @@ def succeeding() -> dict[str, Any]:
         "invocation": {"cwd": "source", "arguments": ["guide.md"]},
         "expected": {
             "exit_status": 0,
-            "stdout": "expected/stdout.md",
+            "bundles": ["expected/guide.bundle.md"],
             "diagnostics": [
                 {
                     "severity": "warning",
@@ -197,10 +192,58 @@ def test_an_exit_status_outside_the_declared_categories_fails() -> None:
     assert errors(manifest)
 
 
-def test_an_expected_path_leaving_the_fixture_fails() -> None:
-    manifest = complete()
-    manifest["expected"]["stdout"] = "../elsewhere/stdout.md"
+def test_a_bundle_path_leaving_the_fixture_fails() -> None:
+    manifest = succeeding()
+    manifest["expected"]["bundles"] = ["../elsewhere/guide.bundle.md"]
     assert errors(manifest)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "guide.bundle.md",
+        "notes_rules+guide__run.bundle.md",
+        "My Note.bundle.md",
+        "notes_[draft](page.md).bundle.md",
+    ],
+)
+def test_a_bundle_named_as_the_run_names_it_validates(name: str) -> None:
+    manifest = succeeding()
+    manifest["expected"]["bundles"] = [f"expected/{name}"]
+    assert errors(manifest) == []
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "expected/stdout.md",
+        "guide.bundle.md",
+        "source/guide.bundle.md",
+        "expected/nested/guide.bundle.md",
+    ],
+)
+def test_a_bundle_path_outside_the_expected_bundles_fails(path: str) -> None:
+    manifest = succeeding()
+    manifest["expected"]["bundles"] = [path]
+    assert errors(manifest), f"{path} passed as a bundle"
+
+
+def test_an_empty_bundle_list_fails() -> None:
+    manifest = succeeding()
+    manifest["expected"]["bundles"] = []
+    assert errors(manifest), "a declaration naming no bundle passed validation"
+
+
+def test_a_bundle_named_twice_fails() -> None:
+    manifest = succeeding()
+    manifest["expected"]["bundles"] = ["expected/guide.bundle.md"] * 2
+    assert errors(manifest), "one bundle declared twice passed validation"
+
+
+def test_a_manifest_declaring_standard_output_as_bytes_fails() -> None:
+    manifest = succeeding()
+    manifest["expected"]["stdout"] = "expected/stdout.md"
+    assert errors(manifest), "standard output declared as bytes passed validation"
 
 
 def test_an_empty_diagnostic_list_is_a_declaration() -> None:
@@ -226,8 +269,7 @@ def carrying_text() -> dict[str, Any]:
     manifest = complete()
     manifest["expected"]["exit_status"] = 0
     manifest["expected"]["diagnostics"] = []
-    del manifest["expected"]["stdout"]
-    manifest["expected"]["stdout_contains"] = ["prosiform ", "(skill-markdown-v3)"]
+    manifest["expected"]["stdout_contains"] = ["prosiform ", "(skill-markdown-v4)"]
     return manifest
 
 
@@ -235,16 +277,11 @@ def test_a_manifest_declaring_the_text_standard_output_carries_validates() -> No
     assert errors(carrying_text()) == []
 
 
-def test_a_manifest_declaring_standard_output_both_ways_fails() -> None:
-    manifest = carrying_text()
-    manifest["expected"]["stdout"] = "expected/stdout.md"
-    assert errors(manifest), "a manifest stating its output twice passed validation"
-
-
-def test_a_manifest_declaring_standard_output_neither_way_fails() -> None:
+def test_a_manifest_declaring_no_standard_output_validates() -> None:
+    """Standard output declared absent is an empty stream."""
     manifest = carrying_text()
     del manifest["expected"]["stdout_contains"]
-    assert errors(manifest), "a manifest stating no output passed validation"
+    assert errors(manifest) == []
 
 
 def test_an_empty_text_declaration_fails() -> None:
@@ -289,32 +326,10 @@ def test_a_whole_message_field_fails() -> None:
     assert errors(manifest), "a whole message passed validation"
 
 
-def test_a_manifest_declaring_an_absent_path_validates() -> None:
+def test_a_manifest_declaring_an_absent_path_fails() -> None:
+    """Every file a run writes is compared, so no path is declared absent."""
     manifest = complete()
     manifest["expected"]["absent"] = ["bundle.md"]
-    assert errors(manifest) == []
-
-
-def test_a_manifest_declaring_no_absent_path_validates() -> None:
-    assert "absent" not in complete()["expected"]
-    assert errors(complete()) == []
-
-
-def test_an_empty_absent_list_fails() -> None:
-    manifest = complete()
-    manifest["expected"]["absent"] = []
-    assert errors(manifest), "a declaration naming no path passed validation"
-
-
-def test_an_absent_path_named_twice_fails() -> None:
-    manifest = complete()
-    manifest["expected"]["absent"] = ["bundle.md", "bundle.md"]
-    assert errors(manifest), "one path declared twice passed validation"
-
-
-def test_an_absent_path_leaving_the_fixture_fails() -> None:
-    manifest = complete()
-    manifest["expected"]["absent"] = ["../elsewhere/bundle.md"]
     assert errors(manifest)
 
 

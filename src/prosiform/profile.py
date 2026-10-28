@@ -1,4 +1,4 @@
-"""The `skill-markdown-v3` profile: the parser it configures and what it refuses.
+"""The `skill-markdown-v4` profile: the parser it configures and what it refuses.
 
 The profile is CommonMark with pipe tables and double-tilde strikethrough
 enabled, source task-list markers preserved as the text the source wrote,

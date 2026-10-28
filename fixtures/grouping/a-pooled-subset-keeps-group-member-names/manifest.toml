@@ -14,5 +14,5 @@ arguments = ["g/a/notes.md", "g/b/notes.md", "g/c/other.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/g_a_notes+g_b_notes+g_c_other.bundle.md"]
 diagnostics = []

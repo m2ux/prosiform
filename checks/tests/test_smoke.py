@@ -4,8 +4,8 @@ The check installs the build and invokes the command by name, and what it
 decides on is the run it gets back: the status, the two streams and the
 command's own path. Each reading is held here to a run it would be read
 wrongly: a success that wrote to standard error, a version response naming no
-profile, a bundle differing from the source's, and a command resolving inside
-the repository.
+profile, a bundle differing from the source's or carried on standard output,
+and a command resolving inside the repository.
 """
 
 from pathlib import Path
@@ -21,8 +21,20 @@ def run(status: int = 0, out: str = "", err: str = "") -> CompletedProcess[str]:
     )
 
 
-def answering(monkeypatch: pytest.MonkeyPatch, response: CompletedProcess[str]) -> None:
+def answering(
+    monkeypatch: pytest.MonkeyPatch,
+    response: CompletedProcess[str],
+    bundle: str | None = None,
+) -> None:
+    """A command answering every run alike, writing any bundle into its run's folder."""
+
     def invoke(environment: Path, cwd: Path, *arguments: str) -> CompletedProcess[str]:
+        if bundle is not None:
+            named = smoke.derived(arguments[-1])
+            folder = Path(arguments[arguments.index("-o") + 1])
+            folder = folder / smoke.run_folder(named)
+            folder.mkdir()
+            (folder / f"{named}.bundle.md").write_text(bundle)
         return response
 
     monkeypatch.setattr(smoke, "invoke", invoke)
@@ -64,26 +76,45 @@ def test_a_version_response_naming_no_profile_is_refused(
 def test_a_bundle_differing_from_the_source_is_refused(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out="# guide\n"))
+    answering(monkeypatch, run(), "# guide\n")
     with pytest.raises(smoke.Failed) as refused:
-        smoke.bundles(tmp_path, tmp_path, tmp_path)
+        smoke.bundles(tmp_path, tmp_path / "elsewhere", tmp_path)
     assert "the bundle differs" in str(refused.value)
+
+
+def test_a_bundle_on_standard_output_is_refused(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    answering(monkeypatch, run(out=smoke.BUNDLE), smoke.BUNDLE)
+    with pytest.raises(smoke.Failed) as refused:
+        smoke.bundles(tmp_path, tmp_path / "elsewhere", tmp_path)
+    assert "standard output carries text" in str(refused.value)
+
+
+def test_a_folder_holding_no_bundle_is_refused(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    answering(monkeypatch, run())
+    with pytest.raises(smoke.Failed) as refused:
+        smoke.bundles(tmp_path, tmp_path / "elsewhere", tmp_path)
+    assert "the output folder holds [] and []" in str(refused.value)
 
 
 def test_a_bundle_writing_to_standard_error_is_refused(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out=smoke.BUNDLE, err="W_RESOURCE_PORTABILITY: x\n"))
+    answering(monkeypatch, run(err="W_RESOURCE_PORTABILITY: x\n"), smoke.BUNDLE)
     with pytest.raises(smoke.Failed) as refused:
-        smoke.bundles(tmp_path, tmp_path, tmp_path)
+        smoke.bundles(tmp_path, tmp_path / "elsewhere", tmp_path)
     assert "wrote to standard error" in str(refused.value)
 
 
 def test_the_bundle_the_source_names_is_accepted(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    answering(monkeypatch, run(out=smoke.BUNDLE))
-    smoke.bundles(tmp_path, tmp_path, tmp_path)
+    answering(monkeypatch, run(), smoke.BUNDLE)
+    smoke.bundles(tmp_path, tmp_path / "elsewhere", tmp_path)
+    assert not list((tmp_path / "bundles").iterdir())
 
 
 def test_an_environment_naming_no_command_is_refused(tmp_path: Path) -> None:

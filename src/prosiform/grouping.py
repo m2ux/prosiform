@@ -117,6 +117,7 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
+    Served,
     Target,
 )
 from prosiform.rewrite import Definition
@@ -238,6 +239,7 @@ def prepared(
     depth: int,
     root: str = "",
     keep_title: bool = False,
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -275,7 +277,9 @@ def prepared(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, defined, root)
+        else rewrite(
+            physical, tokens, chosen, assigned, path, defined, root, dispatching
+        )
     )
     member = Member(
         path,

@@ -1,7 +1,7 @@
-description = "A dispatched section carrying numbered steps is a procedure a sub-agent follows, so the bundle publishes with no warning."
+description = "A dispatched section carrying numbered steps is compiled to a bundle of its own selecting that section, and the run publishes both with no warning."
 
 clauses = [
-  "Link classification and resource handling — Dispatched procedures",
+  "Link classification and resource handling — Dispatched bundles",
   "Adversarial acceptance fixtures — Dispatch",
 ]
 
@@ -11,5 +11,5 @@ arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide.bundle.md", "expected/plan__steps.bundle.md"]
 diagnostics = []

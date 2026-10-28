@@ -20,5 +20,5 @@ arguments = ["gitnexus-impact-analysis/SKILL.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/gitnexus-impact-analysis_SKILL.bundle.md"]
 diagnostics = []

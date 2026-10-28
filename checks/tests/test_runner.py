@@ -6,8 +6,9 @@ manifests without any corpus fixture's expected bytes standing in as a
 result it was never compared against.
 
 The build under test is a canned program the test configures: it replays
-bytes on standard output, bytes on standard error and an exit status, and
-knows nothing of the contract. That is the point. The runner invokes
+bytes on standard output, bytes on standard error, a bundle written into
+the directory it runs in and an exit status, and knows nothing of the
+contract. That is the point. The runner invokes
 whatever configuration names, so the comparison is the whole of what these
 tests exercise, and a fixture's verdict against a real build is a thing
 only a real build can produce.
@@ -26,18 +27,16 @@ from manifests import (
     errors,
     identity,
     missing_files,
-    present_files,
     read,
 )
 from runner import (
-    ABSENT,
     BUILD,
     BUILD_TIMEOUT,
+    BUNDLES,
     DIAGNOSTICS,
     EXIT_STATUS,
     INVOCATION,
     MANIFEST,
-    STDOUT,
     STDOUT_TEXT,
     BuildNotConfigured,
     Result,
@@ -83,6 +82,8 @@ ROOT_NOT_FOUND = {
     "severity": "error",
     "code": "E_ROOT_NOT_FOUND",
 }
+BUNDLE_NAME = "guide.bundle.md"
+RUN_FOLDER = "guide.bundles"
 
 
 def write_fixture(
@@ -90,10 +91,9 @@ def write_fixture(
     *,
     arguments: tuple[str, ...] = ("guide.md",),
     exit_status: int = 0,
-    stdout: bytes = b"",
+    bundle: bytes | None = None,
     stdout_contains: tuple[str, ...] = (),
     diagnostics: tuple[dict[str, Any], ...] = (),
-    absent: tuple[str, ...] = (),
     complete: bool = True,
     source: bool = True,
     root: str | None = "source",
@@ -106,11 +106,13 @@ def write_fixture(
     declaring a run supplied no allowed source root names none, which is
     what `root` leaves out.
     """
+    directory.mkdir(parents=True, exist_ok=True)
     if source:
         (directory / "source").mkdir(parents=True, exist_ok=True)
         (directory / "source" / "guide.md").write_bytes(b"# Guide\n")
-    (directory / "expected").mkdir(parents=True, exist_ok=True)
-    (directory / "expected" / "stdout.md").write_bytes(stdout)
+    if bundle is not None:
+        (directory / "expected").mkdir(parents=True, exist_ok=True)
+        (directory / "expected" / BUNDLE_NAME).write_bytes(bundle)
 
     declared = ", ".join(json.dumps(argument) for argument in arguments)
     lines = [
@@ -136,13 +138,10 @@ def write_fixture(
     if stdout_contains:
         declared_text = ", ".join(json.dumps(entry) for entry in stdout_contains)
         lines.append(f"stdout_contains = [{declared_text}]")
-    else:
-        lines.append('stdout = "expected/stdout.md"')
+    if bundle is not None:
+        lines.append(f'bundles = ["expected/{BUNDLE_NAME}"]')
     if complete:
         lines.append(f"exit_status = {exit_status}")
-    if absent:
-        declared_absent = ", ".join(json.dumps(name) for name in absent)
-        lines.append(f"absent = [{declared_absent}]")
     if diagnostics:
         for diagnostic in diagnostics:
             lines.append("")
@@ -158,27 +157,43 @@ def write_fixture(
     if complete:
         assert errors(manifest) == []
         assert missing_files(directory, manifest) == []
-        assert present_files(directory, manifest) == []
     return directory
 
 
-def replaying(directory: Path, stdout: bytes, stderr: bytes, status: int) -> str:
-    """A configured build that replays one canned result and nothing else."""
+def replaying(
+    directory: Path,
+    stdout: bytes,
+    stderr: bytes,
+    status: int,
+    bundle: bytes | None = None,
+) -> str:
+    """A configured build that replays one canned result and nothing else.
+
+    A canned bundle is written into the run's folder in the directory the
+    build runs in, under the name the fixture declares.
+    """
     canned = directory / "canned"
     canned.mkdir(parents=True, exist_ok=True)
     out = canned / "stdout"
     err = canned / "stderr"
     out.write_bytes(stdout)
     err.write_bytes(stderr)
-    script = (
-        f"cat {shlex.quote(str(out))}; cat {shlex.quote(str(err))} >&2; exit {status}"
-    )
+    script = f"cat {shlex.quote(str(out))}; cat {shlex.quote(str(err))} >&2; "
+    if bundle is not None:
+        written = canned / "bundle"
+        written.write_bytes(bundle)
+        script += (
+            f"mkdir {RUN_FOLDER}; "
+            f"cat {shlex.quote(str(written))} > {RUN_FOLDER}/{BUNDLE_NAME}; "
+        )
+    script += f"exit {status}"
     return shlex.join(["/bin/sh", "-c", script])
 
 
 def publishing(name: str, text: str) -> str:
-    """A configured build that writes one file into the directory it runs in."""
-    script = f"printf %s {shlex.quote(text)} > {shlex.quote(name)}"
+    """A configured build that writes one file, and the folder holding it."""
+    folder = shlex.quote(str(Path(name).parent))
+    script = f"mkdir -p {folder}; printf %s {shlex.quote(text)} > {shlex.quote(name)}"
     return shlex.join(["/bin/sh", "-c", script])
 
 
@@ -219,11 +234,12 @@ def detail_of(result: Result, expectation: str) -> str:
 def test_a_passing_fixture_is_decided_from_its_manifest(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    fixture = write_fixture(tmp_path / "fixture", exit_status=0, stdout=b"# Guide\n")
-    configure(monkeypatch, replaying(tmp_path, b"# Guide\n", b"", 0))
+    fixture = write_fixture(tmp_path / "fixture", exit_status=0, bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Guide\n"))
     result = run_fixture(fixture)
     assert result.passed, result.report()
     assert result.report().endswith(": pass")
+    assert not (fixture / "source" / BUNDLE_NAME).exists()
 
 
 def test_a_failure_fixture_is_decided_from_its_manifest(
@@ -232,7 +248,6 @@ def test_a_failure_fixture_is_decided_from_its_manifest(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=1,
-        stdout=b"",
         diagnostics=(OUTSIDE_ROOT,),
     )
     configure(
@@ -270,13 +285,22 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
-        "-o",
-        "-",
         "-d",
         "json",
         "guide.md#alpha",
         "other.md",
     ]
+
+
+def test_a_fixture_declaring_no_argument_runs_the_bare_command(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", arguments=())
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    [shell] = record.read_text(encoding="utf-8").splitlines()
+    assert shell not in ("-d", "json")
 
 
 def test_the_verdict_follows_the_configured_build(
@@ -315,69 +339,111 @@ def test_a_malformed_fixture_is_refused_without_invoking_the_build(
     assert not record.exists()
 
 
-def test_a_path_the_run_leaves_absent_holds(
+def test_a_run_writing_nothing_where_no_bundle_is_declared_holds(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A declared path the run never creates is the expectation being met."""
-    fixture = write_fixture(
-        tmp_path / "fixture",
-        arguments=("-c", "-o", "bundle.md", "guide.md"),
-        absent=("bundle.md",),
-    )
+    """A validation-only run declares no bundle, and writing none meets it."""
+    fixture = write_fixture(tmp_path / "fixture", arguments=("-c", "guide.md"))
     configure(monkeypatch, "/bin/true")
     result = run_fixture(fixture)
     assert result.passed, result.report()
-    assert not (fixture / "bundle.md").exists()
 
 
-def test_a_path_the_run_creates_names_the_expectation(
+def test_a_file_no_bundle_declares_names_the_expectation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A run that writes the file it was told to validate without writing fails."""
-    fixture = write_fixture(
-        tmp_path / "fixture",
-        arguments=("-c", "-o", "bundle.md", "guide.md"),
-        absent=("bundle.md",),
-    )
-    configure(monkeypatch, publishing("../bundle.md", "# Guide\n"))
+    """A run that writes when its manifest declares no bundle fails."""
+    fixture = write_fixture(tmp_path / "fixture", arguments=("-c", "guide.md"))
+    configure(monkeypatch, publishing("../guide/bundle.md", "# Guide\n"))
     result = run_fixture(fixture)
     assert not result.passed
-    detail = detail_of(result, ABSENT)
-    assert "the run created bundle.md" in detail
+    detail = detail_of(result, BUNDLES)
+    assert "the run wrote bundle.md, which the manifest declares no bundle" in detail
     assert "8 bytes written" in detail
 
 
-def test_a_path_the_run_creates_is_removed(
+def test_a_file_the_run_writes_is_removed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A corpus run leaves the fixture directory the manifest declares."""
-    fixture = write_fixture(
-        tmp_path / "fixture",
-        arguments=("-c", "-o", "bundle.md", "guide.md"),
-        absent=("bundle.md",),
-    )
-    configure(monkeypatch, publishing("../bundle.md", "# Guide\n"))
+    """A corpus run leaves the fixture directory as its manifest declares it."""
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing("../guide/bundle.md", "# Guide\n"))
     assert not run_fixture(fixture).passed
-    assert not (fixture / "bundle.md").exists()
+    assert not (fixture / "guide").exists()
 
 
-def test_a_fixture_already_holding_a_declared_absent_path_is_refused(
+def test_a_file_written_outside_a_folder_of_the_run_is_reported(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A declaration the directory contradicts says nothing about the run."""
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing(f"../{BUNDLE_NAME}", "# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert f"the run wrote {BUNDLE_NAME} outside a folder of its own" in detail
+    assert not (fixture / BUNDLE_NAME).exists()
+
+
+def test_a_folder_named_for_no_declared_bundle_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing(f"../other.bundles/{BUNDLE_NAME}", "# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert "into other.bundles, which names no bundle the manifest" in detail
+    assert not (fixture / "other.bundles").exists()
+
+
+def test_a_folder_missing_the_run_folder_suffix_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing(f"../guide/{BUNDLE_NAME}", "# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert "into guide, which names no bundle the manifest declares" in detail
+    assert not (fixture / "guide").exists()
+
+
+def test_a_declared_bundle_the_run_does_not_write_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, "/bin/true")
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert f"the run wrote no {BUNDLE_NAME}" in detail
+
+
+def test_a_bundle_is_matched_by_name_wherever_the_run_writes_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A run whose -o names a folder above its working directory writes there."""
     fixture = write_fixture(
-        tmp_path / "fixture",
-        arguments=("-c", "-o", "bundle.md", "guide.md"),
-        absent=("bundle.md",),
+        tmp_path / "fixture", arguments=("-o", "..", "guide.md"), bundle=b"# Guide\n"
     )
-    (fixture / "bundle.md").write_bytes(b"# Guide\n")
+    configure(monkeypatch, publishing(f"../{RUN_FOLDER}/{BUNDLE_NAME}", "# Guide\n"))
+    result = run_fixture(fixture)
+    assert result.passed, result.report()
+    assert not (fixture / RUN_FOLDER).exists()
+
+
+def test_a_declared_bundle_path_the_fixture_does_not_hold_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    (fixture / "expected" / BUNDLE_NAME).unlink()
     record = tmp_path / "argv"
     configure(monkeypatch, recording(record))
     result = run_fixture(fixture)
-    assert not result.passed
-    assert "bundle.md is a path the fixture holds" in detail_of(result, MANIFEST)
+    assert f"expected/{BUNDLE_NAME} is not a file" in detail_of(result, MANIFEST)
     assert not record.exists()
-    assert (fixture / "bundle.md").exists()
+
+
+def test_standard_output_carrying_bytes_no_declaration_names_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Standard output carries no bundle, so a run writing a bundle there fails."""
+    fixture = write_fixture(tmp_path / "fixture")
+    configure(monkeypatch, replaying(tmp_path, b"# Guide\n", b"", 0))
+    detail = detail_of(run_fixture(fixture), STDOUT_TEXT)
+    assert "standard output carries 8 bytes where the manifest declares none" in detail
 
 
 def test_a_fixture_declaring_an_absent_root_is_decided_from_its_manifest(
@@ -428,8 +494,6 @@ def test_a_fixture_naming_no_root_is_run_with_none(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     assert record.read_text(encoding="utf-8").splitlines() == [
-        "-o",
-        "-",
         "-d",
         "json",
         "guide.md",
@@ -460,47 +524,48 @@ def test_a_differing_exit_status_names_the_expectation(
     assert "expected 0, the run exited 1" in detail_of(result, EXIT_STATUS)
 
 
-def test_differing_stdout_bytes_are_located(
+def test_differing_bundle_bytes_are_located(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    fixture = write_fixture(tmp_path / "fixture", stdout=b"# Guide\n\nAlpha\n")
-    configure(monkeypatch, replaying(tmp_path, b"# Guide\n\nBeta\n", b"", 0))
-    detail = detail_of(run_fixture(fixture), STDOUT)
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n\nAlpha\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Guide\n\nBeta\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert f"{BUNDLE_NAME}: the bytes differ" in detail
     assert "15 bytes expected, 14 produced" in detail
     assert "first difference at byte 9, expected line 3 column 1" in detail
     assert "Alpha" in detail
     assert "Beta" in detail
 
 
-def test_stdout_differing_only_in_newline_spelling_is_located(
+def test_a_bundle_differing_only_in_newline_spelling_is_located(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The preservation invariant turns on newline spelling, so a report shows it."""
-    fixture = write_fixture(tmp_path / "fixture", stdout=b"# Guide\r\n")
-    configure(monkeypatch, replaying(tmp_path, b"# Guide\n", b"", 0))
-    detail = detail_of(run_fixture(fixture), STDOUT)
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\r\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
     assert "first difference at byte 7, expected line 1 column 8" in detail
     assert "expected b'# Guide\\r\\n'" in detail
     assert "produced b'# Guide\\n'" in detail
 
 
-def test_stdout_missing_its_trailing_newline_is_located(
+def test_a_bundle_missing_its_trailing_newline_is_located(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    fixture = write_fixture(tmp_path / "fixture", stdout=b"# Guide\n")
-    configure(monkeypatch, replaying(tmp_path, b"# Guide", b"", 0))
-    detail = detail_of(run_fixture(fixture), STDOUT)
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Guide"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
     assert "first difference at byte 7" in detail
     assert "the run's output ends 1 byte early" in detail
     assert "expected b'# Guide\\n'" in detail
 
 
-def test_stdout_carrying_more_than_expected_is_located(
+def test_a_bundle_carrying_more_than_expected_is_located(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    fixture = write_fixture(tmp_path / "fixture", stdout=b"# Guide\n")
-    configure(monkeypatch, replaying(tmp_path, b"# Guide\ntrailing\n", b"", 0))
-    detail = detail_of(run_fixture(fixture), STDOUT)
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Guide\ntrailing\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
     assert "the run's output carries 9 bytes beyond the end" in detail
 
 
@@ -511,11 +576,11 @@ def test_an_output_carrying_the_declared_text_passes(
     fixture = write_fixture(
         tmp_path / "fixture",
         arguments=("-v",),
-        stdout_contains=("prosiform ", "(skill-markdown-v3)"),
+        stdout_contains=("prosiform ", "(skill-markdown-v4)"),
     )
     configure(
         monkeypatch,
-        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v3)\n", b"", 0),
+        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v4)\n", b"", 0),
     )
     result = run_fixture(fixture)
     assert result.passed, result.report()
@@ -528,7 +593,7 @@ def test_an_output_missing_the_declared_text_names_what_is_absent(
     fixture = write_fixture(
         tmp_path / "fixture",
         arguments=("-v",),
-        stdout_contains=("prosiform ", "(skill-markdown-v3)"),
+        stdout_contains=("prosiform ", "(skill-markdown-v4)"),
     )
     configure(
         monkeypatch,
@@ -536,7 +601,7 @@ def test_an_output_missing_the_declared_text_names_what_is_absent(
     )
     detail = detail_of(run_fixture(fixture), STDOUT_TEXT)
     assert "the output does not carry 1 declared text" in detail
-    assert "'(skill-markdown-v3)' is absent" in detail
+    assert "'(skill-markdown-v4)' is absent" in detail
     assert "skill-markdown-v2" in detail
 
 
@@ -771,13 +836,13 @@ def test_every_expectation_that_differed_is_reported(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=0,
-        stdout=b"# Guide\n",
+        bundle=b"# Guide\n",
         diagnostics=(OUTSIDE_ROOT,),
     )
-    configure(monkeypatch, replaying(tmp_path, b"# Other\n", b"", 1))
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 1, b"# Other\n"))
     result = run_fixture(fixture)
     named = {difference.expectation for difference in result.differences}
-    assert named == {EXIT_STATUS, STDOUT, DIAGNOSTICS}
+    assert named == {EXIT_STATUS, BUNDLES, DIAGNOSTICS}
     report = result.report()
     assert report.startswith(f"{identity(fixture)}: fail")
     for expectation in named:
@@ -813,7 +878,6 @@ def test_the_run_receives_the_fault_the_manifest_names(
         "source-changed",
         "guide.md",
     ]
-    assert written[:2] == ["-o", "-"]
 
 
 def test_a_run_meeting_no_fault_asks_for_none(

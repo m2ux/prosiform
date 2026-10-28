@@ -12,5 +12,5 @@ arguments = ["notes/note.md", "docs/note.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/notes_note+docs_note.bundle.md"]
 diagnostics = []

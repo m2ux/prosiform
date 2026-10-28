@@ -8,5 +8,5 @@ arguments = ["../outside.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/.._outside.bundle.md"]
 diagnostics = []

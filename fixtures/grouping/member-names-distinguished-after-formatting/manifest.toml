@@ -13,5 +13,5 @@ arguments = ["modes/a/plan.md", "modes/b/plan-mode.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/modes_a_plan+modes_b_plan-mode.bundle.md"]
 diagnostics = []

@@ -1,1 +1,1 @@
-../real.md
+../alias.bundle.md

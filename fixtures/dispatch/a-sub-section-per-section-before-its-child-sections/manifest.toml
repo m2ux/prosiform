@@ -1,0 +1,17 @@
+description = "Each section dispatching a target carries its own sub-section for it, after the section's own content and before its child sections, and two sections dispatching one target name one bundle, their sub-sections taking the renderer's ordinals."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatched bundles",
+  "Bundle destinations — Ordinal assignment",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review.bundle.md"]
+diagnostics = []

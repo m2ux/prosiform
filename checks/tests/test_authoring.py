@@ -28,9 +28,9 @@ INSTRUCTIONS = (
     "An explicit root resolves from the declaring file's directory.",
     "Every absent root uses the working directory",
     "`-f DOC`",
-    "`-o FILE`",
-    "A section inserts `__` and the fragment before that suffix.",
-    "Distinct selections require an explicit `-o` destination.",
+    "`-o DIR`",
+    "a section adds `__` and the fragment.",
+    "A run of several distinct selections joins their names with `+`",
     "File and directory names use hyphens rather than underscores.",
 )
 

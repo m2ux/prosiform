@@ -1,0 +1,15 @@
+description = "A dispatched document whose only numbered list sits in a code block carries no step, and a target's shape is the corpus's convention, so both bundles publish with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/example.bundle.md", "expected/guide.bundle.md"]
+diagnostics = []

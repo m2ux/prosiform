@@ -4,10 +4,10 @@
 A diagram link is followed when a reader clicks it in the rendered diagram,
 so a bundle proves its rewritten destinations only once Mermaid has drawn
 them. This check renders the expected bundle of each fixture `RENDERED`
-names with mermaid-cli, which draws every `mermaid` fence to an SVG in a
-headless browser, and reads every anchor the drawings carry. The corpus
-holds the build to that same bundle byte for byte, so the bundle rendered
-is the one the build publishes.
+names, the one its manifest declares, with mermaid-cli, which draws every
+`mermaid` fence to an SVG in a headless browser, and reads every anchor
+the drawings carry. The corpus holds the build to that same bundle byte
+for byte, so the bundle rendered is the one the build publishes.
 
 A Gantt diagram's link is no anchor: Mermaid binds it as a click handler
 that calls `window.open` once the page runs. Each fixture `CLICKED` names
@@ -38,6 +38,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import tomllib
 import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
@@ -49,7 +50,7 @@ PUPPETEER = '{"args": ["--no-sandbox"]}\n'
 SVG = "{http://www.w3.org/2000/svg}"
 XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
 HREF = "href"
-BUNDLE = "expected/stdout.md"
+MANIFEST = "manifest.toml"
 CLICK_PROGRAM = Path(__file__).resolve().parent / "click.mjs"
 NODE = "node"
 MERMAID_FENCE = re.compile(r"^```mermaid[^\n]*\n(.*?)^```", re.MULTILINE | re.DOTALL)
@@ -83,6 +84,13 @@ RENDERED: dict[str, list[str]] = {
 CLICKED: dict[str, list[str]] = {
     "rewriting/a-gantt-diagram-click-destination": ["#freeze", "#publish"],
 }
+
+
+def expected_bundle(fixture: Path) -> Path:
+    """The one bundle a fixture's manifest declares its run writes."""
+    with (fixture / MANIFEST).open("rb") as handle:
+        (declared,) = tomllib.load(handle)["expected"]["bundles"]
+    return fixture / str(declared)
 
 
 def anchors(svg: Path) -> list[str]:
@@ -151,7 +159,7 @@ def main() -> int:
     command = shlex.split(configured)
     failed = 0
     for name, expected in [*RENDERED.items(), *CLICKED.items()]:
-        bundle = FIXTURES / name / BUNDLE
+        bundle = expected_bundle(FIXTURES / name)
         text = bundle.read_text()
         if name in CLICKED:
             found, defects = clicked(command, text)

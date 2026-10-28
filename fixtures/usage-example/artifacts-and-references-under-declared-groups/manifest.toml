@@ -1,4 +1,4 @@
-description = "The usage example that compiles declared groups arranges the artifact documents its closure reaches into one group headed Artifacts, holding one section for each member. Each section is headed by that member's own title, kept as its source text since no other member carries it, and holds that member's own Operations, Fields and Commands subsections, as many of the three as the closure reaches. The reference document joins a second group, headed References, emitting the one heading its member carries at the grouping depth. A whole-document reference to a member resolves to the section its title heads."
+description = "The usage example that compiles declared groups arranges the artifact documents its closure reaches into one group headed Artifacts, holding one section for each member. Each section is headed by that member's own title, kept as its source text since no other member carries it, and holds that member's own Operations, Fields and Commands subsections, as many of the three as the closure reaches. The reference document joins a second group, headed References, emitting the one heading its member carries at the grouping depth. A whole-document reference to a member resolves to the section its title heads. The dispatched link to Issue Placement points at a sub-section naming that protocol's bundle, which the run publishes beside it."
 
 clauses = [
   "Usage examples",
@@ -15,5 +15,5 @@ arguments = ["modes/hoist-mode.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/modes_hoist-mode.bundle.md", "expected/protocols_issue-placement.bundle.md"]
 diagnostics = []

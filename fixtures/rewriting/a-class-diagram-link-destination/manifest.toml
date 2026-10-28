@@ -12,5 +12,5 @@ arguments = ["model.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/model.bundle.md"]
 diagnostics = []

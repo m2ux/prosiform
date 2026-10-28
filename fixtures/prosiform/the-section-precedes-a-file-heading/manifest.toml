@@ -1,0 +1,15 @@
+description = "A bundle opening on the file heading pf writes for a selected section carries the Prosiform section before that file heading."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md#change"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide__change.bundle.md", "expected/plan.bundle.md"]
+diagnostics = []

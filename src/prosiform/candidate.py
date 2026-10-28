@@ -71,15 +71,26 @@ from prosiform.bundle import (
     emitted_visible,
     openings,
 )
-from prosiform.closure import bundled, rebased, unmarked, withholding_target
+from prosiform.closure import (
+    bundled,
+    dispatched,
+    parallel,
+    rebased,
+    unmarked,
+    withholding_target,
+)
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
+    DISPATCH_SECTION,
+    PROSIFORM_SECTION,
     Ancestor,
     Emitted,
     Generated,
+    Instruction,
     Part,
     Range,
     Record,
+    Served,
 )
 from prosiform.source import (
     ANCHOR,
@@ -127,6 +138,9 @@ CONTAINERS = {
     "paragraph_open": "paragraph",
     "table_open": "table",
 }
+
+PARAGRAPH_OPEN = "paragraph_open"
+BULLET_LIST_OPEN = "bullet_list_open"
 
 TARGET_INTEGRITY = "target integrity"
 EXACTLY_ONCE = "exactly-once coverage"
@@ -240,7 +254,7 @@ def alternative(image: Token) -> str:
     written there is compared as the use it is, so the text left to
     compare here is what surrounds it. A link's visible text is
     therefore read out of this run and read back on that link's own
-    comparison, which is where a deferral mark the emission drops is
+    comparison, which is where a withholding mark the emission drops is
     accounted for.
     """
     children = image.children or []
@@ -315,6 +329,7 @@ def intended(
     children: Sequence[Token],
     targets: Mapping[tuple[str, str | None], str],
     root: str = "",
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
@@ -324,17 +339,17 @@ def intended(
     reference-style use at the inline form the definition it names
     gives it.
 
-    A withheld link under the allowed source root carries its target's
+    A deferred link under the allowed source root carries its target's
     path from the invocation working directory, so where it points is
-    the destination the bundle rebased. A link resolving nowhere the
-    bundle is responsible for is published as authored like any other
-    mention.
+    the destination the bundle rebased. A dispatched link points at the
+    dispatch sub-section its region carries for its target. A link
+    resolving nowhere the bundle is responsible for is published as
+    authored like any other mention.
 
-    What a withheld link shows is its author's text with a deferral mark
-    taken off: the destination already states the deferral, so the mark
-    is authoring syntax. A dispatch keeps its mark, which states who
-    compiles the material, and a reference the bundle rebased nothing
-    for keeps its text whole.
+    What a withheld link shows is its author's text with its mark taken
+    off: the destination or the sub-section states the withholding, so
+    the mark is authoring syntax. A reference the bundle gave no
+    destination keeps its text whole.
 
     Whether the bundle compiled the link is read from the text the
     link's content opens with, as discovery and emission read it, so a
@@ -359,6 +374,21 @@ def intended(
         withheld = withholding_target(path, one.destination, opening, root)
         if withheld is None:
             return one
+        if dispatched(opening):
+            served = {} if dispatched_to is None else dispatched_to
+            given = served.get(((withheld.path, withheld.fragment), parallel(opening)))
+            if given is None:
+                raise Invalid(
+                    TARGET_INTEGRITY,
+                    f"the dispatch {one.destination!r} in {path!r} was assigned no "
+                    f"sub-section",
+                )
+            return Use(
+                one.kind,
+                unmarked(one.text),
+                one.title,
+                normalizeLink(f"{ANCHOR}{given}"),
+            )
         return Use(
             one.kind,
             unmarked(one.text),
@@ -519,6 +549,8 @@ def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
                 named.append(
                     (f"the structural ancestor {part.text!r} of {held!r}", held)
                 )
+            elif isinstance(part, Instruction):
+                named.append((f"the {part.kind} {part.text!r} of {path!r}", path))
             else:
                 named.append((f"the {part.kind} {part.text!r} of {path!r}", path))
     return named
@@ -621,6 +653,15 @@ def structure(
                     f"the {part.kind} {part.text!r} of {one.record.path!r} "
                     f"is emitted as a {span.type!r} rather than as a heading at "
                     f"level {part.level}",
+                )
+            if isinstance(part, Instruction) and span.type != (
+                BULLET_LIST_OPEN if part.listed else PARAGRAPH_OPEN
+            ):
+                raise Invalid(
+                    NO_EXPANSION,
+                    f"the {part.kind} {part.text!r} of {one.record.path!r} is "
+                    f"emitted as a {span.type!r} rather than as a "
+                    f"{'bulleted list' if part.listed else 'paragraph'}",
                 )
             paired.append((one.record, part, span))
             at += 1
@@ -873,7 +914,9 @@ def levels(record: Record) -> None:
                 f"{one.level}, which is beyond H{MAX_LEVEL}",
             )
         if one.level == 1 and any(
-            isinstance(heading, Generated) and heading.level == 1
+            isinstance(heading, Generated)
+            and heading.level == 1
+            and heading.kind not in (DISPATCH_SECTION, PROSIFORM_SECTION)
             for heading in record.headings
         ):
             raise Invalid(
@@ -989,6 +1032,7 @@ def references(
     published: Side,
     targets: Mapping[tuple[str, str | None], str],
     root: str = "",
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> None:
     """Hold one region's uses, diagram links among them, to those its source wrote.
 
@@ -1000,7 +1044,7 @@ def references(
     preservation sets aside, so this is where each is held.
     """
     expected = [
-        intended(path, one, at, children, targets, root)
+        intended(path, one, at, children, targets, root, dispatched_to)
         for children, at, one in carried(source.tokens, source.span)
     ]
     found = [one for _, _at, one in carried(published.tokens, published.span)]
@@ -1030,7 +1074,7 @@ def preserved(
 
     The lines the bundle does not edit are compared as the bytes they
     are, the code examples as the parser read them, and the text each
-    inline token shows as a reader reads it, the deferral mark the
+    inline token shows as a reader reads it, the withholding mark the
     emission drops taken off the source side where the link carrying it
     is one the bundle rebased a destination for. Together they are the
     content of the region: nothing in it is reformatted or repaired.
@@ -1071,6 +1115,54 @@ def preserved(
             )
 
 
+def dispatches(
+    reached: Mapping[str, tuple[Record, Emitted]],
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+) -> None:
+    """Hold each dispatched link's destination to a dispatch sub-section.
+
+    A sub-section answers to no source target, so what a dispatched
+    link's destination is held to is the kind of heading it reaches.
+    """
+    for (path, _line), served in dispatching.items():
+        for (target, _parallel), destination in served.items():
+            found = reached.get(destination)
+            if found is None or not (
+                isinstance(found[1], Generated) and found[1].kind == DISPATCH_SECTION
+            ):
+                raise Invalid(
+                    TARGET_INTEGRITY,
+                    f"the destination {destination!r} a dispatch of {target!r} in "
+                    f"{path!r} was given reaches no dispatch sub-section",
+                )
+
+
+def protocols(
+    reached: Mapping[str, tuple[Record, Emitted]],
+    part: Instruction,
+    span: Token,
+    tokens: Sequence[Token],
+) -> None:
+    """Hold each link an instruction carries to a protocol of the Prosiform section.
+
+    An instruction is the bundle's own text, so the only link it writes
+    names the protocol it follows, and that link reaches the protocol
+    sub-section the bundle's Prosiform section carries.
+    """
+    for inline in inlines(tokens, [span]):
+        for _children, _at, use in uses(inline):
+            found = reached.get(use.destination.removeprefix(ANCHOR))
+            if found is None or not (
+                isinstance(found[1], Generated) and found[1].kind == PROSIFORM_SECTION
+            ):
+                raise Invalid(
+                    TARGET_INTEGRITY,
+                    f"the destination {use.destination!r} the instruction "
+                    f"{part.text!r} links reaches no protocol of the Prosiform "
+                    f"section",
+                )
+
+
 def validate(
     bundled: str,
     groups: Sequence[Group],
@@ -1079,6 +1171,7 @@ def validate(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     budget: int,
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
@@ -1101,10 +1194,16 @@ def validate(
     paired = structure(spans, groups)
     leakage(environment)
     outline(tokens, groups)
-    integrity(named(tokens, groups, assigned), targets)
+    served = {} if dispatching is None else dispatching
+    reached = named(tokens, groups, assigned)
+    integrity(reached, targets)
+    dispatches(reached, served)
     for record, part, span in paired:
         if isinstance(part, Ancestor):
             structural(record, part, span, tokens)
+            continue
+        if isinstance(part, Instruction):
+            protocols(reached, part, span, tokens)
             continue
         if isinstance(part, Generated):
             continue
@@ -1115,7 +1214,14 @@ def validate(
             located(parsed[carried.path], carried.lines),
         )
         published = Side(tokens, physical, span)
-        references(carried.path, source, published, targets, read[carried.path].root)
+        references(
+            carried.path,
+            source,
+            published,
+            targets,
+            read[carried.path].root,
+            served.get((carried.path, carried.lines[0]), {}),
+        )
         preserved(
             carried.path,
             carried.removed,

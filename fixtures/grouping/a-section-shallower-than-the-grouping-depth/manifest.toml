@@ -13,5 +13,5 @@ arguments = ["parts/one.md", "parts/two.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/parts_one+parts_two.bundle.md"]
 diagnostics = []

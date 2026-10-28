@@ -1,0 +1,16 @@
+description = "A section carrying a dispatch and a parallel set carries a Dispatch sub-section for the dispatched target and one Dispatch in parallel sub-section for its set, after it and before the section's child sections."
+
+clauses = [
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review__source.bundle.md", "expected/review__tests.bundle.md"]
+diagnostics = []

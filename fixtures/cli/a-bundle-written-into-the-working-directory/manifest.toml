@@ -1,0 +1,16 @@
+description = "A run naming no output folder writes its bundle into the invocation working directory under its derived name, and standard output carries nothing."
+
+clauses = [
+  "CLI contract — -o DIR, the invocation working directory when absent",
+  "Automatic output names, a selection is named by its path",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

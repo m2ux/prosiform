@@ -1,4 +1,4 @@
-description = "A command line naming no entry reference is refused as invalid usage, since a run with nothing to bundle names no outcome the contract defines."
+description = "A command line holding an option and naming no entry reference is refused as invalid usage, since a run with nothing to bundle names no outcome the contract defines; only a command line holding no argument prints the guide."
 
 clauses = [
   "CLI contract, no entry reference",
@@ -13,7 +13,6 @@ arguments = ["-c"]
 
 [expected]
 exit_status = 2
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"

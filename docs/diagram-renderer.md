@@ -25,18 +25,18 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 
 Grouping comes from each source file's [conversion metadata](../invocation.md#conversion-metadata). Call the tool again for another entry, using a different output prefix.
 
-For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Other prose and code examples are omitted without placeholders. Exact stdout and diagnostics remain complete.
+For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Other prose and code examples are omitted without placeholders. The saved bundle and diagnostics remain complete.
 
 Compact mode affects the image, not the bundle size. If compilation exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
 
-Use `--compact --input-section-level 2 --compiled-section-level 2` to show H3 titles without their body content, links or deeper headings. Content under H1–H2 follows the compact-mode rules. The section cutoff also works without compact mode. Set either panel independently: `--input-section-level 2 --compiled-section-level 3` shows H3 input titles and H4 compiled titles. Omit an option to show that panel at full depth. Saved stdout remains complete.
+Use `--compact --input-section-level 2 --compiled-section-level 2` to show H3 titles without their body content, links or deeper headings. Content under H1–H2 follows the compact-mode rules. The section cutoff also works without compact mode. Set either panel independently: `--input-section-level 2 --compiled-section-level 3` shows H3 input titles and H4 compiled titles. Omit an option to show that panel at full depth. The saved bundle remains complete.
 
 ## Output
 
-Each prefix produces `.svg`, `.review.md`, `.stdout.md`, `.stderr.txt`, `.command.txt` and `.run.json`.
+Each prefix produces `.svg`, `.review.md`, `.bundle.md`, `.stderr.txt`, `.command.txt` and `.run.json`.
 
 The image header contains only the compiler branch and commit. The review Markdown carries the command, image, exit status and diagnostics. The run record pins the compiler revision and hashes the source bytes and output.
 
 Body content and links are indented one step beyond their containing heading in both panels.
 
-The tool returns the compiler's exit status. A rejected bundle still produces review artifacts; a source file appears only if the compiler opened it. Deferred targets may be displayed without contributing content. The SVG simplifies Markdown formatting; consult `.stdout.md` for exact content and link destinations.
+The tool returns the compiler's exit status. A rejected bundle still produces review artifacts; a source file appears only if the compiler opened it. Deferred targets may be displayed without contributing content. The SVG simplifies Markdown formatting; consult `.bundle.md` for exact content and link destinations.

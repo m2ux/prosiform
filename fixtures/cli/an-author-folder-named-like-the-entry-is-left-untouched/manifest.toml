@@ -1,0 +1,16 @@
+description = "An author folder named like the entry is no run folder: the run reads the note it holds, writes its bundles into guide.bundles beside it, and leaves the folder and the draft no link names as they were."
+
+clauses = [
+  "CLI contract — -o DIR, a run folder named for the entry with the .bundles suffix",
+  "Automatic output names, the run folder carries the .bundles suffix",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

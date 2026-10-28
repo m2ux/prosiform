@@ -1,0 +1,17 @@
+description = "A dispatched target's bundle is named by the target's path from the invocation working directory and the fragment the link resolved, rather than the path its author wrote, so a target named through a parent segment and one whose path carries a space each publish under that name and the sub-section names it."
+
+clauses = [
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Automatic output names, a dispatched target named by its own selection",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["topic/guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/shared_my rules__run.bundle.md", "expected/shared_rules__every-rule.bundle.md", "expected/topic_guide.bundle.md"]
+diagnostics = []

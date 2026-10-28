@@ -1,0 +1,18 @@
+description = "A dispatch in a level-6 section leaves no heading level for its sub-section, so the run publishes nothing and fails, naming the link."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "publish.md"

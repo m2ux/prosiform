@@ -15,5 +15,5 @@ arguments = ["artifacts/repository-labels.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/artifacts_repository-labels.bundle.md"]
 diagnostics = []
