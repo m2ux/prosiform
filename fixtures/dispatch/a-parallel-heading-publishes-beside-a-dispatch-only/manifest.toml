@@ -1,0 +1,15 @@
+description = "A bundle using only the dispatch operator carries no Dispatch in parallel sub-section, so an authored heading reading Dispatch in parallel equals no heading pf emits there and publishes with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md"]
+diagnostics = []

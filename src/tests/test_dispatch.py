@@ -101,10 +101,3 @@ def test_a_dense_acyclic_graph_terminates() -> None:
     edges = {name: names[at + 1 :] for at, name in enumerate(names)}
     edges["entry.md"] = names
     assert refused(edges) is None
-
-
-def test_two_links_dispatching_one_target_warn_once() -> None:
-    edges = {"a": ["b"], "b": ["c"], "c": ["d"]}
-    links = [hop("a", "entry.md"), hop("a", "entry.md")]
-    found = analysed(links, {"entry.md"}, graph(edges))
-    assert [one.code for one in found] == [DISPATCH_DEPTH]

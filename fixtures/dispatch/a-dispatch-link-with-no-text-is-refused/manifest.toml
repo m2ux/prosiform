@@ -1,0 +1,22 @@
+description = "A dispatched link with no text after its mark leaves its sub-section nothing to be named by, so the run publishes nothing and fails, naming the link."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["no text after its mark"]
+reference = "⇉ "
+source = "guide.md:3"
+chain = ["guide.md", "plan.md"]
