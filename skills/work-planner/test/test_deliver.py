@@ -72,7 +72,7 @@ class Survey(unittest.TestCase):
         output = survey(staged((epic(943, ('W01', 'Queue plan', '', '')), 'In Progress')))
         self.assertIn('unit I07:E00:W01: coverage AC1, '
                       f'record {TODAY}-943-i07-e00-w01-queue-plan, '
-                      'branch i07/e00/w01-queue-plan, worktree .worktrees/i07-e00-w01', output)
+                      'branch i07/e00/w01-queue-plan, worktree .worktrees/i07/e00/w01-queue-plan', output)
         self.assertIn('available: 1, held: 0, blocked: 0', output)
 
     def test_a_unit_names_its_epic_base(self):
