@@ -21,7 +21,7 @@ The dispatch (`⇉`) and parallel dispatch (`⫽`) operators are prosiform gramm
 - **A sub-section sits one level below the section holding the link,** after that section's own content and before its child sections. A dispatch in content above the bundle's first heading takes a sub-section at the bundle's first heading level. A dispatch in a level-6 section is refused: no heading level remains.
 - **Budgets are per bundle.** Each bundle is read by one agent, so every budget holds for each bundle's own closure: `-E` counts hops from its entry, and `-F`, `-T`, `-L`, `-I` and `-O` count what it alone opens, reaches and publishes. The number of bundles is the number of distinct dispatched targets.
 - **pf's headings are its own.** An authored heading whose text equals one pf emits in the same bundle — `Prosiform`, `Dispatch <link text>` or `Dispatch in parallel` — is refused, naming both.
-- **A cycle is refused.** A chain of dispatches returning to a target already on it would start sub-agents without end, so the run publishes nothing and names the chain. A chain deeper than three dispatches still warns. The self-dispatch and not-procedural warnings are kept.
+- **A cycle is refused.** A chain of dispatches returning to a target already on it would start sub-agents without end, so the run publishes nothing and names the chain. A chain deeper than three dispatches still warns. The self-dispatch warning is kept. A dispatched target's shape is the corpus's convention, so pf states no rule on it.
 
 ### Dispatch
 
@@ -59,8 +59,8 @@ Layered tasks, each leaving a working `pf`:
 | --- | --- |
 | W01 | `-o` names a folder; joined derived names for several entries |
 | W02 | All-or-nothing publication of several bundles |
-| W03 | Dispatched bundles, `Dispatch` sub-sections and the cycle error |
-| W04 | Parallel dispatch sets and their sub-section; the run-set shape rule retired; Board Reads rewritten as sequential steps |
+| W03 | Dispatched bundles, `Dispatch` sub-sections and the cycle error; `W_DISPATCH_NOT_PROCEDURAL` retired |
+| W04 | Parallel dispatch sets and their sub-section; the run-set shape rule retired; Board Reads rewritten as sequential step sub-sections |
 | W05 | The `# Prosiform` section and its protocols |
 | W06 | `--guide`; bootstrap retirement; docs, glossary and invocation |
 | W07 | Layout-permutation corpus fixtures for the bundle set |
@@ -73,6 +73,7 @@ Layered tasks, each leaving a working `pf`:
 - **Cycle refused, depth warned.** A cycle cannot finish; a deep chain finishes slowly.
 - **Folder output.** Several bundles need a folder, and the derived scheme names them all.
 - **Parallelism is a property of dispatches.** `⫽` marks a link, not a target's shape, so any section's prose can run work together; a target holds no list of calls, and inline calls run in sequence.
+- **Steps are sub-sections, by corpus convention.** A step a heading roots is a precise link destination. Converting the work-planner corpus is its own epic; this epic writes Board Reads in that form.
 - **Protocols first.** A step can be acted on before later text is read.
 - **Profile v4.** The same source bundles differently, as with v3.
 - **Navigation extends E01.** One runner, scorer and baseline serve every agent eval; W08 takes an edge on I05:E01.
