@@ -53,6 +53,12 @@ table check: 18 command(s) and 8 declaration(s), each declared by the project an
 
 `i05/e04/main` moved to `aa826060` before the merge, carrying I05:E03 through `main`. The task branch merged it at `a869dfbf91df5f7f181494c36848f4b1cba7f09b` with no conflict, and `make check` ran again there, exit 0: `make test` 1302 passed, `make harness` 743 passed, `make corpus` 342 of 342 fixtures, every other check passed, and `make steps` passed over 58 documents.
 
+W05 then merged as #371, moving `i05/e04/main` to `37c50a20` with its linked step references and regenerated fixtures. The task branch merged it at `b17d1a607c34f10e66cc4841f41d73d47d92eaef` with no conflict, and `make check` ran on that final corpus, exit 0: `make test` 1302 passed, `make harness` 743 passed, `make corpus` 342 of 342 fixtures, every other check passed, and `make steps` passed over 58 documents.
+
+## Continuous Integration
+
+The repository's Checks workflow on `a869dfbf` failed in `make test`: `src/tests/test_handoff_round_trip.py::test_each_handoff_the_example_publishes_is_followed` timed out at its 60-second limit bundling `modes/deliver-mode.md`. The base `aa826060` failed the same way, before W06's code reached it. A rerun of the same job on `a869dfbf` passed, and the run takes about 29 seconds locally, so the limit is marginal on the runner rather than broken by W06. It is raised as an arising issue.
+
 ## Scope Finding
 
 The guard reads `example/work-planner/`, not all of `example/`. `example/my-skill/procedure.md` lines 7–8 write two numbered steps; it is the README's small demo skill, which E04 did not convert and the repository README's diagram example uses. Every other document under `example/` already passes: run over all of `example/`, the rules find those two lines and nothing else. The change list holds the AC6 wording question.
