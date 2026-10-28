@@ -292,6 +292,17 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     ]
 
 
+def test_a_fixture_declaring_no_argument_runs_the_bare_command(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", arguments=())
+    record = tmp_path / "argv"
+    configure(monkeypatch, recording(record))
+    run_fixture(fixture)
+    [shell] = record.read_text(encoding="utf-8").splitlines()
+    assert shell not in ("-d", "json")
+
+
 def test_the_verdict_follows_the_configured_build(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
