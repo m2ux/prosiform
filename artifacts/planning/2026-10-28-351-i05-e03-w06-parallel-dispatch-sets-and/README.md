@@ -25,4 +25,5 @@ Parallelism becomes a property of the dispatches a section's prose writes, and a
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Prior tasks | [W03+W04 Dispatched Bundles](../2026-10-28-351-i05-e03-w03-dispatched-bundles-sub-sections/README.md), [W05 Run Folder](../2026-10-28-351-i05-e03-w05-run-folder-bundles-suffix/README.md) |
+| Pull request | [#360 Parallel Dispatch Sets and Board Reads as Steps](https://github.com/m2ux/prosiform/pull/360) |
 | Review pull request | [#355](https://github.com/m2ux/prosiform/pull/355) |
