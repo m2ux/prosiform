@@ -318,7 +318,11 @@ def main():
     ):
         status = cli.main(["-o", folder, *arguments], stdout=stdout, stderr=stderr)
         written = sorted(Path(folder).glob("*/*.bundle.md"))
-        entry = [one for one in written if one.parent.name + ".bundle.md" == one.name]
+        entry = [
+            one
+            for one in written
+            if one.parent.name.removesuffix(".bundles") + ".bundle.md" == one.name
+        ]
         body = entry[0].read_bytes().decode() if entry else ""
     diagnostics = stderr.getvalue()
     inputs = {

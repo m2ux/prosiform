@@ -172,6 +172,7 @@ INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
 BUNDLE_SUFFIX = ".bundle.md"
+RUN_FOLDER_SUFFIX = ".bundles"
 CURRENT_FOLDER = "."
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
@@ -1859,6 +1860,10 @@ def publish_folder(bundles: Sequence[Bundle], folder: Path) -> None:
     folder is touched. Each file is created fresh, so two bundles of one
     run deriving one name refuse the second rather than overwrite the
     first.
+
+    The run's folder is the entry's derived name with the `.bundles`
+    suffix, so the folder a run replaces is only ever one a run names,
+    never an author's folder named like the entry.
     """
     staged = sibling(folder, "new")
     try:
@@ -2120,7 +2125,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     requested = entered(referring, requested)
 
     selected = selections(referring, requested)
-    folder = Path(options.output, run_name(selected)).resolve()
+    folder = Path(options.output, f"{run_name(selected)}{RUN_FOLDER_SUFFIX}").resolve()
     first = compiled(root, referring, requested, options, folder)
     single = {requested[0].chain[0]} if len(selected) == 1 else set()
     built = dispatched_set(root, first, single, options, folder)

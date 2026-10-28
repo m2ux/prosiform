@@ -83,7 +83,7 @@ ROOT_NOT_FOUND = {
     "code": "E_ROOT_NOT_FOUND",
 }
 BUNDLE_NAME = "guide.bundle.md"
-RUN_FOLDER = "guide"
+RUN_FOLDER = "guide.bundles"
 
 
 def write_fixture(
@@ -375,10 +375,20 @@ def test_a_folder_named_for_no_declared_bundle_is_reported(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
-    configure(monkeypatch, publishing(f"../other/{BUNDLE_NAME}", "# Guide\n"))
+    configure(monkeypatch, publishing(f"../other.bundles/{BUNDLE_NAME}", "# Guide\n"))
     detail = detail_of(run_fixture(fixture), BUNDLES)
-    assert "into other, which names no bundle the manifest declares" in detail
-    assert not (fixture / "other").exists()
+    assert "into other.bundles, which names no bundle the manifest" in detail
+    assert not (fixture / "other.bundles").exists()
+
+
+def test_a_folder_missing_the_run_folder_suffix_is_reported(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, publishing(f"../guide/{BUNDLE_NAME}", "# Guide\n"))
+    detail = detail_of(run_fixture(fixture), BUNDLES)
+    assert "into guide, which names no bundle the manifest declares" in detail
+    assert not (fixture / "guide").exists()
 
 
 def test_a_declared_bundle_the_run_does_not_write_is_reported(

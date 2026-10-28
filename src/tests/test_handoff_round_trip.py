@@ -189,7 +189,8 @@ class Tree:
                 if written
                 else {}
             )
-            bundle = bundles[f"{written[0].name}.bundle.md"] if written else ""
+            entry = written[0].name.removesuffix(".bundles") if written else ""
+            bundle = bundles[f"{entry}.bundle.md"] if written else ""
         assert result.stdout == ""
         diagnostics = [json.loads(line) for line in result.stderr.splitlines() if line]
         return Run(result.returncode, bundle, diagnostics, bundles)

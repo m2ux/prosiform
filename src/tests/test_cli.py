@@ -148,7 +148,7 @@ def published(folder: Path) -> tuple[str, dict[str, str]]:
         return "", {}
     [run] = written
     bundles = {one.name: one.read_bytes().decode() for one in sorted(run.iterdir())}
-    return bundles[f"{run.name}.bundle.md"], bundles
+    return bundles[f"{run.name.removesuffix('.bundles')}.bundle.md"], bundles
 
 
 def invoke(
@@ -434,14 +434,32 @@ def test_a_diagnostic_format_the_contract_does_not_declare_is_invalid_usage(
 def test_a_run_folder_holding_a_dependency_source_is_invalid_usage(
     root: Path,
 ) -> None:
-    (root / "guide.md").write_text("# Guide\n\nIt needs [the note](guide/note.md).\n")
-    (root / "guide").mkdir()
-    note = root / "guide" / "note.md"
+    (root / "guide.md").write_text(
+        "# Guide\n\nIt needs [the note](guide.bundles/note.md).\n"
+    )
+    (root / "guide.bundles").mkdir()
+    note = root / "guide.bundles" / "note.md"
     note.write_text("# Note\n")
     run = invoke("-o", str(root), "guide.md", cwd=root)
     assert run.status == USAGE_FAILURE
     assert "input source" in run.stderr
-    assert sorted(path.name for path in (root / "guide").iterdir()) == ["note.md"]
+    assert sorted(path.name for path in note.parent.iterdir()) == ["note.md"]
+
+
+def test_an_author_folder_named_like_the_entry_is_left_as_it_was(
+    root: Path,
+) -> None:
+    (root / "guide.md").write_text("# Guide\n\nIt needs [the note](guide/note.md).\n")
+    (root / "guide").mkdir()
+    (root / "guide" / "note.md").write_text("# Note\n")
+    (root / "guide" / "draft.txt").write_text("an author's draft\n")
+    run = invoke("-o", str(root), "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert contents(root / "guide") == {
+        "draft.txt": b"an author's draft\n",
+        "note.md": b"# Note\n",
+    }
+    assert sorted(contents(root / "guide.bundles")) == ["guide.bundle.md"]
 
 
 def test_a_source_reached_through_a_link_is_refused_before_any_output_check(
@@ -464,9 +482,11 @@ def test_a_bundle_is_written_into_the_folder_o_names(
     run = invoke("-o", "build", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.stdout == ""
-    assert [path.name for path in folder.iterdir()] == ["guide"]
-    assert [path.name for path in (folder / "guide").iterdir()] == ["guide.bundle.md"]
-    assert (folder / "guide" / "guide.bundle.md").read_text() == "# Guide\n"
+    assert [path.name for path in folder.iterdir()] == ["guide.bundles"]
+    assert [path.name for path in (folder / "guide.bundles").iterdir()] == [
+        "guide.bundle.md"
+    ]
+    assert (folder / "guide.bundles" / "guide.bundle.md").read_text() == "# Guide\n"
 
 
 def test_a_bundle_is_written_into_the_working_directory_without_o(
@@ -477,7 +497,7 @@ def test_a_bundle_is_written_into_the_working_directory_without_o(
         status = main(["guide.md"], out, err)
     assert status == SUCCESS
     assert out.getvalue() == "" and err.getvalue() == ""
-    assert (root / "guide" / "guide.bundle.md").read_text() == "# Guide\n"
+    assert (root / "guide.bundles" / "guide.bundle.md").read_text() == "# Guide\n"
 
 
 def test_several_entries_write_one_bundle_joining_their_names(
@@ -497,8 +517,10 @@ def test_several_entries_write_one_bundle_joining_their_names(
     )
     assert run.status == SUCCESS
     named = "guide__run+docs_note+guide"
-    assert [path.name for path in folder.iterdir()] == [named]
-    assert [path.name for path in (folder / named).iterdir()] == [f"{named}.bundle.md"]
+    assert [path.name for path in folder.iterdir()] == [f"{named}.bundles"]
+    assert [path.name for path in (folder / f"{named}.bundles").iterdir()] == [
+        f"{named}.bundle.md"
+    ]
 
 
 def test_standard_output_named_as_the_folder_is_invalid_usage(root: Path) -> None:
@@ -729,9 +751,11 @@ def test_a_missing_entry_carries_the_invalid_usage_code() -> None:
 def test_a_run_folder_holding_an_input_source_carries_the_invalid_usage_code(
     root: Path,
 ) -> None:
-    (root / "guide.md").write_text("# Guide\n\nIt needs [the note](guide/note.md).\n")
-    (root / "guide").mkdir()
-    (root / "guide" / "note.md").write_text("# Note\n")
+    (root / "guide.md").write_text(
+        "# Guide\n\nIt needs [the note](guide.bundles/note.md).\n"
+    )
+    (root / "guide.bundles").mkdir()
+    (root / "guide.bundles" / "note.md").write_text("# Note\n")
     run = invoke("-d", "json", "-o", str(root), "guide.md", cwd=root)
     assert run.status == USAGE_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
@@ -1166,8 +1190,8 @@ def test_a_run_folder_is_published_through_one_rename(
 
     monkeypatch.setattr(os, "rename", record)
     assert invoke("-o", str(published), "guide.md", cwd=root).status == (SUCCESS)
-    assert [target for _, target in renamed] == [str(published / "guide")]
-    assert [path.name for path in published.iterdir()] == ["guide"]
+    assert [target for _, target in renamed] == [str(published / "guide.bundles")]
+    assert [path.name for path in published.iterdir()] == ["guide.bundles"]
 
 
 def test_a_run_folder_replaces_the_earlier_one_whole(
@@ -1175,20 +1199,20 @@ def test_a_run_folder_replaces_the_earlier_one_whole(
 ) -> None:
     written(root, "guide.md", "# Guide\n")
     folder = tmp_path / "published"
-    earlier = folder / "guide"
+    earlier = folder / "guide.bundles"
     earlier.mkdir(parents=True)
     (earlier / "guide.bundle.md").write_text("earlier bytes\n")
     (earlier / "plan.bundle.md").write_text("an earlier run's dispatched bundle\n")
     assert invoke("-o", str(folder), "guide.md", cwd=root).status == SUCCESS
     assert contents(earlier) == {"guide.bundle.md": b"# Guide\n"}
-    assert [path.name for path in folder.iterdir()] == ["guide"]
+    assert [path.name for path in folder.iterdir()] == ["guide.bundles"]
 
 
 def test_a_failed_run_leaves_the_earlier_folder_alone(
     root: Path, tmp_path: Path
 ) -> None:
     written(root, "guide.md", "# Guide\n\n<div>raw</div>\n")
-    earlier = tmp_path / "guide"
+    earlier = tmp_path / "guide.bundles"
     earlier.mkdir()
     (earlier / "guide.bundle.md").write_text("earlier bytes\n")
     assert invoke("-o", str(tmp_path), "guide.md", cwd=root).status == (INPUT_FAILURE)
@@ -1319,7 +1343,7 @@ def test_a_run_leaves_every_file_in_its_folder_it_does_not_produce(
     assert invoke("-o", str(folder), "guide.md", cwd=root).status == SUCCESS
     after = contents(folder)
     assert {name: after[name] for name in before} == before
-    assert sorted(set(after) - set(before)) == ["guide"]
+    assert sorted(set(after) - set(before)) == ["guide.bundles"]
 
 
 def test_a_refused_swap_restores_the_earlier_folder(

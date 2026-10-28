@@ -31,7 +31,8 @@ def answering(
     def invoke(environment: Path, cwd: Path, *arguments: str) -> CompletedProcess[str]:
         if bundle is not None:
             named = smoke.derived(arguments[-1])
-            folder = Path(arguments[arguments.index("-o") + 1]) / named
+            folder = Path(arguments[arguments.index("-o") + 1])
+            folder = folder / smoke.run_folder(named)
             folder.mkdir()
             (folder / f"{named}.bundle.md").write_text(bundle)
         return response
