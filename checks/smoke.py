@@ -177,16 +177,34 @@ def version(environment: Path, elsewhere: Path) -> str:
     return response.strip()
 
 
+def derived(entry: str) -> str:
+    """The name a run gives one entry's bundle, from its working-directory path.
+
+    The entry's separators are written as underscores, so an entry above
+    the working directory keeps its parent segments as filename text.
+    """
+    return str(Path(entry).with_suffix("")).replace(os.sep, "_")
+
+
 def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     """A reference bundled from a source root the repository does not hold.
 
-    Standard output carries the bundle and nothing else, and standard
-    error carries nothing, so the installed command's stream split is
-    the one the contract names.
+    The folder `-o` names holds the bundle under its derived name and
+    nothing else, and both streams carry nothing, so the installed
+    command's output split is the one the contract names.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    run = invoke(environment, elsewhere, "-o", "-", entry)
-    produced = reported(run, f"{COMMAND} {entry}")
+    folder = elsewhere.parent / "bundles"
+    folder.mkdir(exist_ok=True)
+    run = invoke(environment, elsewhere, "-o", str(folder), entry)
+    if reported(run, f"{COMMAND} -o {folder} {entry}"):
+        raise Failed("standard output carries text, and a run writes its bundle")
+    name = f"{derived(entry)}.bundle.md"
+    written = sorted(path.name for path in folder.iterdir())
+    if written != [name]:
+        raise Failed(f"the output folder holds {written}, where the run writes {name}")
+    produced = (folder / name).read_text()
+    (folder / name).unlink()
     if produced != BUNDLE:
         raise Failed(
             f"the bundle differs from the one the source names\n"
@@ -195,39 +213,47 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
 
 
 def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
-    """Derived files, combined selections and validation through the installed CLI.
+    """Derived names, joined selections, folders and validation through the CLI.
 
-    A derived name is the entry's path from the working directory, its
-    separators written as underscores, so an entry above that directory
-    keeps its parent segments as filename text.
+    A run naming no folder writes into its working directory, a folder
+    `-o` names holds the bundle, and a folder that does not exist refuses
+    the write and keeps no temporary file.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
-    derived = str(Path(entry).with_suffix("")).replace(os.sep, "_")
-    for reference, name, expected in (
-        (entry, f"{derived}.bundle.md", BUNDLE),
-        (entry + "#guide", f"{derived}__guide.bundle.md", BUNDLE),
+    name = derived(entry)
+    for reference, published, expected in (
+        (entry, f"{name}.bundle.md", BUNDLE),
+        (entry + "#guide", f"{name}__guide.bundle.md", BUNDLE),
     ):
         run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
-        destination = elsewhere / name
+        destination = elsewhere / published
         if run.stdout or destination.read_text() != expected:
             raise Failed("derived output differs from the installed bundle")
         destination.unlink()
     run = invoke(environment, elsewhere, "-c", entry)
     succeeded(run, "check mode")
-    if (elsewhere / f"{derived}.bundle.md").exists() or run.stdout:
+    if list(elsewhere.iterdir()) or run.stdout:
         raise Failed("check mode published a bundle")
     run = invoke(environment, elsewhere, entry, entry + "#guide")
-    if run.returncode != 2 or run.stdout:
-        raise Failed("combined selections need an explicit destination")
-    destination = elsewhere / f"{derived}.bundle.md"
-    destination.mkdir()
-    run = invoke(environment, elsewhere, entry)
-    if run.returncode != 3 or run.stdout or not destination.is_dir():
-        raise Failed("derived output does not preserve an unwritable destination")
-    destination.rmdir()
-    if list(elsewhere.glob(f".{derived}.bundle.md.*")):
-        raise Failed("failed publication leaves temporary output")
+    succeeded(run, "joined selections")
+    joined = elsewhere / f"{name}+{name}__guide.bundle.md"
+    if run.stdout or not joined.is_file():
+        raise Failed("joined selections publish no bundle under the joined name")
+    joined.unlink()
+    run = invoke(environment, elsewhere, "-o", "-", entry)
+    if run.returncode != 2 or run.stdout or list(elsewhere.iterdir()):
+        raise Failed("standard output named as the output folder is not refused")
+    folder = elsewhere / "out"
+    folder.mkdir()
+    run = invoke(environment, elsewhere, "-o", "out", entry)
+    succeeded(run, "-o out")
+    if run.stdout or [path.name for path in folder.iterdir()] != [f"{name}.bundle.md"]:
+        raise Failed("the folder -o names does not hold the bundle")
+    shutil.rmtree(folder)
+    run = invoke(environment, elsewhere, "-o", "missing", entry)
+    if run.returncode != 3 or run.stdout or list(elsewhere.iterdir()):
+        raise Failed("a folder that does not exist leaves output behind")
 
 
 def ships_glossary(environment: Path) -> Path:

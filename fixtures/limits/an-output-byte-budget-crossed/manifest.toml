@@ -11,7 +11,6 @@ arguments = ["-O", "64", "alpha.md"]
 
 [expected]
 exit_status = 1
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"

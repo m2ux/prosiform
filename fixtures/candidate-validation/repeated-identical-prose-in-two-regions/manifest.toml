@@ -12,5 +12,5 @@ arguments = ["guide.md#rules", "guide.md#notes"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__rules+guide__notes.bundle.md"]
 diagnostics = []

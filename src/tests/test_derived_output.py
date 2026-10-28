@@ -30,9 +30,7 @@ def test_file_and_section_names_follow_the_working_directory_path(
     run = invoke(tmp_path, name + fragment)
     output = "Skill_modes_Run_it" + ("__part" if fragment else "") + ".bundle.md"
     assert run.status == 0 and run.stdout == ""
-    explicit = invoke(tmp_path, "-o", "-", name + fragment)
-    assert (tmp_path / output).read_text() == explicit.stdout
-    assert "Selected." in explicit.stdout
+    assert "Selected." in (tmp_path / output).read_text()
 
 
 @pytest.mark.parametrize(
@@ -53,28 +51,26 @@ def test_equivalent_selections_share_one_derived_destination(
 
 
 @pytest.mark.parametrize(
-    "references", [("a.md", "b.md"), ("a.md#one", "a.md#two"), ("a.md", "a.md#one")]
+    ("references", "name"),
+    [
+        (("a.md", "b.md"), "a+b.bundle.md"),
+        (("b.md", "a.md"), "b+a.bundle.md"),
+        (("a.md#one", "a.md#two"), "a__one+a__two.bundle.md"),
+        (("a.md", "a.md#one", "./a.md"), "a+a__one.bundle.md"),
+        (("-f", "a.md", "#two", "b.md"), "a__two+b.bundle.md"),
+    ],
 )
 @pytest.mark.parametrize("check", [False, True])
-def test_distinct_selections_require_explicit_output(
-    tmp_path: Path, references: tuple[str, ...], check: bool
+def test_distinct_selections_join_their_names_in_entry_order(
+    tmp_path: Path, references: tuple[str, ...], name: str, check: bool
 ) -> None:
     written(tmp_path, "a.md", "# A\n\n## One\n\nFirst.\n\n## Two\n\nSecond.\n")
     written(tmp_path, "b.md", "# B\n")
     flags = ["-c"] if check else []
-    run = invoke(tmp_path, "-d", "json", *flags, *references)
-    assert run.status == 2 and run.stdout == ""
-    assert run.diagnostics()[0]["code"] == cli.INVALID_USAGE
-    assert not list(tmp_path.glob("*.bundle.md"))
-    for destination in ("-", "combined.md"):
-        explicit = invoke(tmp_path, *flags, "-o", destination, *references)
-        assert explicit.status == 0
-        if check:
-            assert explicit.stdout == "" and not (tmp_path / "combined.md").exists()
-        elif destination == "-":
-            assert "First." in explicit.stdout
-        else:
-            assert "First." in (tmp_path / destination).read_text()
+    run = invoke(tmp_path, *flags, *references)
+    assert run.status == 0 and run.stdout == ""
+    published = sorted(path.name for path in tmp_path.glob("*.bundle.md"))
+    assert published == ([] if check else [name])
 
 
 def test_a_declared_root_does_not_rename_an_entry_s_output(tmp_path: Path) -> None:

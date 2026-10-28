@@ -10,5 +10,5 @@ arguments = ["-E", "2", "alpha.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/alpha.bundle.md"]
 diagnostics = []

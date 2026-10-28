@@ -22,6 +22,7 @@ import json
 import re
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -125,10 +126,10 @@ def withheld(bundle: str) -> list[tuple[str, str]]:
 
 @dataclass(frozen=True)
 class Run:
-    """One invocation and what it carried on each of its streams."""
+    """One invocation: its status, the bundle it wrote and its diagnostics."""
 
     status: int
-    stdout: str
+    bundle: str
     diagnostics: list[dict[str, Any]]
 
     def errors(self) -> list[dict[str, Any]]:
@@ -154,31 +155,36 @@ class Tree:
         destination.write_text(text, encoding=ENCODING)
 
     def invoke(self, *arguments: str) -> Run:
-        """One invocation from the copy's root, diagnostics read as data."""
+        """One run from the copy's root into a fresh folder, diagnostics as data."""
         found = shutil.which(COMMAND)
         assert found is not None, f"{COMMAND} is not on the path of this environment"
-        result = subprocess.run(
-            [found, "-d", "json", *arguments],
-            cwd=self.root,
-            capture_output=True,
-            text=True,
-            encoding=ENCODING,
-            timeout=60,
-            check=False,
-        )
+        with tempfile.TemporaryDirectory() as folder:
+            result = subprocess.run(
+                [found, "-d", "json", "-o", folder, *arguments],
+                cwd=self.root,
+                capture_output=True,
+                text=True,
+                encoding=ENCODING,
+                timeout=60,
+                check=False,
+            )
+            written = sorted(Path(folder).iterdir())
+            assert len(written) <= 1, written
+            bundle = written[0].read_bytes().decode(ENCODING) if written else ""
+        assert result.stdout == ""
         diagnostics = [json.loads(line) for line in result.stderr.splitlines() if line]
-        return Run(result.returncode, result.stdout, diagnostics)
+        return Run(result.returncode, bundle, diagnostics)
 
     def bundled(self, entry: str) -> str:
         """The bundle one document publishes, which carries no error."""
-        run = self.invoke("-o", "-", entry)
+        run = self.invoke(entry)
         assert run.status == 0, run.diagnostics
         assert run.errors() == [], run.diagnostics
-        return run.stdout
+        return run.bundle
 
     def compiled(self, destination: str) -> Run:
         """A destination the first bundle published, compiled from this root."""
-        return self.invoke("-o", "-", destination)
+        return self.invoke(destination)
 
     def handoffs(self, entry: str) -> list[tuple[str, str]]:
         """The links one mode handed to a later run, each resolvable from the root.
@@ -234,7 +240,7 @@ def assert_published(run: Run, expected: str) -> None:
     """The second run published exactly the expected document and no error."""
     assert run.errors() == [], run.diagnostics
     assert run.status == 0, run.diagnostics
-    assert run.stdout == expected
+    assert run.bundle == expected
 
 
 def handoff(tree: Tree, entry: str) -> tuple[str, str]:
@@ -302,7 +308,7 @@ def test_both_destinations_of_one_bundle_compile(tree: Tree) -> None:
         assert fragment in SECTION, destination
         run = tree.compiled(destination)
         assert_published(run, SECTION[fragment])
-        compiled[fragment] = run.stdout
+        compiled[fragment] = run.bundle
     assert sorted(compiled) == sorted(SECTION), compiled
 
 
@@ -324,7 +330,7 @@ def test_each_destination_the_example_publishes_compiles(tree: Tree) -> None:
         run = tree.compiled(destination)
         assert run.errors() == [], (destination, run.diagnostics)
         assert run.status == 0, (destination, run.diagnostics)
-        assert run.stdout, destination
+        assert run.bundle, destination
 
 
 def test_a_mode_bundle_carries_the_dispatch_rule_once(tree: Tree) -> None:

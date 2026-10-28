@@ -1,4 +1,4 @@
-description = "A run that fails returns a nonzero status and leaves standard output empty, so the status is the only thing that reports the outcome and a caller reading standard output for Markdown has nothing to mistake for a successful read."
+description = "A run that fails returns a nonzero status, writes no bundle and leaves standard output empty, so the status is the only thing that reports the outcome and a caller looking for Markdown has nothing to mistake for a successful read."
 
 clauses = [
   "Agent delivery contract — Exit status",
@@ -12,7 +12,6 @@ arguments = ["guide.md"]
 
 [expected]
 exit_status = 1
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"

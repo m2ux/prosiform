@@ -15,7 +15,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | --- | --- |
 | `REF` | document, document#fragment, or #fragment with -f; paths from cwd |
 | `-f DOC` | working-directory-relative document for fragment-only references |
-| `-o FILE` | atomic validated output to FILE; -: stdout; default: derived filename |
+| `-o DIR` | existing folder each bundle is written to atomically, under its derived name; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
 | `-x {source-changed,internal}` | inject a conformance run fault no source tree expresses; default none |
@@ -39,7 +39,8 @@ Run from the repository root; [worked examples](example/README.md) show input an
 cd example/work-planner
 pf modes/plan-mode.md
 pf 'artifacts/epic.md#delivery-findings'
-pf -o context.md modes/plan-mode.md
+pf -o build modes/plan-mode.md
+pf modes/plan-mode.md 'artifacts/epic.md#delivery-findings'
 pf -c modes/plan-mode.md
 ```
 
@@ -80,11 +81,11 @@ Metadata errors return exit status `1`: `E_INVALID_FRONTMATTER` identifies inval
 
 ## Output
 
-One normalized entry publishes a file in the working directory. The name is that entry's path relative to the working directory, without the Markdown suffix, with each separator written as `_`, then `.bundle.md`. A section inserts `__` and the fragment before that suffix. Distinct selections require an explicit `-o` destination. `-o FILE` names an exact file and `-o -` selects stdout.
+A run publishes its bundle into the folder `-o DIR` names, which must exist, or into the working directory when `-o` is absent. The bundle's name is each selection's path relative to the working directory, without the Markdown suffix, with each separator written as `_`; a section adds `__` and the fragment. A run of several distinct selections joins their names with `+` in the order the command line first names each, so `pf modes/plan-mode.md 'artifacts/epic.md#delivery-findings'` publishes `modes_plan-mode+artifacts_epic__delivery-findings.bundle.md`; equivalent references count once. The name ends `.bundle.md`. A bundle path naming a source the run reads is invalid usage, and so is `-o -`: standard output carries no bundle.
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
 
-Stdout contains that bundle when `-o -` selects it, an informational response, or nothing. A bundle opens on its first group's content; an instruction to follow an entry belongs in that source's own preamble.
+Stdout contains an informational response or nothing. A bundle opens on its first group's content; an instruction to follow an entry belongs in that source's own preamble.
 
 Diagnostics use stderr: text by default; `-d json` emits one JSON object per line.
 Warnings accompany a published bundle and exit `0`. `W_COINCIDENT_HEADING` names generated headings that read alike but for capitalization — two file headings, or two member headings of one merged group — once per set, with the shared text, a `location` for the first source and a `related` location for each other. Headings an author repeats raise no warning. `W_DISPATCH_DEPTH` names a chain of dispatches reaching a fourth hop, and `W_DISPATCH_CYCLE` a chain returning to a target already on it, the entry included. Each distinct target the bundle dispatches raises at most one of each, at the first link dispatching it: `location` is that link, `related` locates each later hop's link and the target it dispatches, and `chain` names the entry and every hop's target. The depth limit is fixed. `W_DISPATCH_NOT_PROCEDURAL` names a dispatched target carrying no numbered step, once per target, with the link as `location` and the target as `resolved`. `W_DISPATCH_SELF` names a dispatched link naming its own document the same way, and is reported in place of a cycle. `W_RUN_SET_SHAPE` names a run-set link whose target is no run-set, once per target, with the link as `location`, the target as `resolved` and, where it has a line, the first construct that breaks the shape as `related`. `W_RESOURCE_PORTABILITY` reports a bundle naming a resource.

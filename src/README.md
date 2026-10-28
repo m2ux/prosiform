@@ -4,11 +4,7 @@ The Python implementation of prosiform, checked against the behavioural contract
 
 ### Command line
 
-Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes a bundle to an entry-derived file unless `-o` selects stdout or another path, writes informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
-
-### Agent delivery
-
-`prosiform.delivery` runs the command as a process and buffers standard output. It determines success from the exit status and checks the complete bundle against the transport's response limit. An oversized bundle is withheld as a delivery failure. Each transport declares its limit; the build's output budget alone cannot guarantee delivery.
+Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes its bundle under its derived name into the working directory or the folder `-o` names, writes informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
 
 ## Environment
 
@@ -110,11 +106,7 @@ Paths below are relative to `src/`.
 
 ### Command interface
 
-`tests/test_cli.py` checks option grammar, output streams, exit statuses, implementation-specific responses, and write failures. Named output files are published through one rename, preserved on failure, and never written by validation-only runs.
-
-### Delivery limits
-
-`tests/test_delivery.py` checks delivery below and at the transport limit, complete withholding above it (including summaries), rejection of a zero limit, and failure statuses regardless of standard output. Three end-to-end tests run the installed entry point through the wrapper. The corpus drives the command directly, so wrapper behaviour needs separate tests.
+`tests/test_cli.py` checks option grammar, output streams, exit statuses, implementation-specific responses, and write failures. A bundle is written into the folder `-o` names, or the working directory, under its joined derived name; it is published through one rename, an existing file keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
 
 ### Candidate validation
 

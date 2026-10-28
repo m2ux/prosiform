@@ -20,5 +20,5 @@ arguments = [
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/article+café-münster+notes+the-code-span-and-bold-text+whats-new-v10.bundle.md"]
 diagnostics = []

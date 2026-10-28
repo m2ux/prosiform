@@ -45,14 +45,14 @@ BODY = b"# Guide\n"
 def write_fixture(
     directory: Path,
     *,
-    stdout: bytes = BODY,
+    bundle: bytes = BODY,
     awaits: str | None = None,
 ) -> Path:
     """A fixture directory declaring a successful run, optionally awaiting work."""
     (directory / "source").mkdir(parents=True, exist_ok=True)
     (directory / "source" / "guide.md").write_bytes(BODY)
     (directory / "expected").mkdir(parents=True, exist_ok=True)
-    (directory / "expected" / "stdout.md").write_bytes(stdout)
+    (directory / "expected" / "guide.bundle.md").write_bytes(bundle)
 
     lines = ['description = "A fixture written for one run of the corpus."', ""]
     if awaits is not None:
@@ -69,7 +69,7 @@ def write_fixture(
             "",
             "[expected]",
             "exit_status = 0",
-            'stdout = "expected/stdout.md"',
+            'bundles = ["expected/guide.bundle.md"]',
             "diagnostics = []",
         ]
     )
@@ -81,13 +81,14 @@ def write_fixture(
     return directory
 
 
-def replaying(directory: Path, stdout: bytes) -> str:
-    """A configured build that replays one canned standard output and succeeds."""
+def replaying(directory: Path, bundle: bytes) -> str:
+    """A configured build that writes one canned bundle and succeeds."""
     canned = directory / "canned"
     canned.mkdir(parents=True, exist_ok=True)
-    out = canned / "stdout"
-    out.write_bytes(stdout)
-    return shlex.join(["/bin/sh", "-c", f"cat {shlex.quote(str(out))}"])
+    written = canned / "bundle"
+    written.write_bytes(bundle)
+    script = f"cat {shlex.quote(str(written))} > guide.bundle.md"
+    return shlex.join(["/bin/sh", "-c", script])
 
 
 def verdict_of(
@@ -105,7 +106,9 @@ def verdict_of(
 
 def stand_in(name: str, *, passed: bool, awaits: str | None) -> Outcome:
     """One outcome, written directly rather than drawn from a run."""
-    differences = () if passed else (Difference("expected.stdout", "the bytes differ"),)
+    differences = (
+        () if passed else (Difference("expected.bundles", "the bytes differ"),)
+    )
     return Outcome(Result(name, differences, 0, b"", b""), awaits)
 
 
@@ -206,7 +209,7 @@ def test_a_corpus_that_holds_passes_and_awaited_fixtures_succeeds(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     write_fixture(tmp_path / "corpus" / "one")
-    write_fixture(tmp_path / "corpus" / "two", stdout=b"# Other\n", awaits="I00:E03")
+    write_fixture(tmp_path / "corpus" / "two", bundle=b"# Other\n", awaits="I00:E03")
     monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
     assert main(tmp_path / "corpus") == 0
 
@@ -215,7 +218,7 @@ def test_a_corpus_holding_a_failing_fixture_fails(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     write_fixture(tmp_path / "corpus" / "one")
-    write_fixture(tmp_path / "corpus" / "two", stdout=b"# Other\n")
+    write_fixture(tmp_path / "corpus" / "two", bundle=b"# Other\n")
     monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
     assert main(tmp_path / "corpus") == 1
 
@@ -271,8 +274,8 @@ def awaiting_corpus(tmp_path: Path) -> Path:
     """A corpus of three fixtures, two of them awaiting different work."""
     corpus = tmp_path / "corpus"
     write_fixture(corpus / "met")
-    write_fixture(corpus / "one", stdout=b"# Other\n", awaits="I00:E03")
-    write_fixture(corpus / "two", stdout=b"# Other\n", awaits="I00:E04:W02")
+    write_fixture(corpus / "one", bundle=b"# Other\n", awaits="I00:E03")
+    write_fixture(corpus / "two", bundle=b"# Other\n", awaits="I00:E04:W02")
     return corpus
 
 

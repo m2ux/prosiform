@@ -10,5 +10,5 @@ arguments = ["docs/guide.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/docs_guide.bundle.md"]
 diagnostics = []

@@ -13,7 +13,6 @@ arguments = ["guide.md#run-1"]
 
 [expected]
 exit_status = 1
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"

@@ -11,5 +11,5 @@ arguments = ["zulu.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/zulu.bundle.md"]
 diagnostics = []

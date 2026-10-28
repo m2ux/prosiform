@@ -22,8 +22,8 @@ def test_entries_and_linked_files_default_to_invocation_directory(
     written(tmp_path, "c.md", "# C\n\nShared cwd.\n\n[Above](../c.md)\n")
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "Shared cwd." in run.stdout
-    assert "[Above](../c.md)" in run.stdout
+    assert "Shared cwd." in run.bundle
+    assert "[Above](../c.md)" in run.bundle
 
 
 def test_library_root_outside_source_and_fragment_self_reference(
@@ -38,8 +38,8 @@ def test_library_root_outside_source_and_fragment_self_reference(
     written(tmp_path, "other/c.md", "# C\n\nSeparate library.\n")
     run = invoke("entries/a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "Separate library." in run.stdout
-    assert "[Self](#a)" in run.stdout
+    assert "Separate library." in run.bundle
+    assert "[Self](#a)" in run.bundle
 
 
 def test_parent_entry_bootstrap_and_referrer(tmp_path: Path) -> None:
@@ -47,7 +47,7 @@ def test_parent_entry_bootstrap_and_referrer(tmp_path: Path) -> None:
     (tmp_path / "caller").mkdir()
     run = invoke("-f", "../a.md", "#part", cwd=tmp_path / "caller")
     assert run.status == 0
-    assert "Parent content." in run.stdout
+    assert "Parent content." in run.bundle
 
 
 def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -> None:
@@ -60,15 +60,15 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     assert forward.status == reverse.status == 0
     # The entry documents lead in the order they are named, and each
     # target follows in the order the bundle first links to it.
-    assert forward.stdout.index("# A\n") < forward.stdout.index("# B\n")
-    assert reverse.stdout.index("# B\n") < reverse.stdout.index("# A\n")
-    assert forward.stdout.index("First target.") < forward.stdout.index(
+    assert forward.bundle.index("# A\n") < forward.bundle.index("# B\n")
+    assert reverse.bundle.index("# B\n") < reverse.bundle.index("# A\n")
+    assert forward.bundle.index("First target.") < forward.bundle.index(
         "Second target."
     )
-    assert reverse.stdout.index("Second target.") < reverse.stdout.index(
+    assert reverse.bundle.index("Second target.") < reverse.bundle.index(
         "First target."
     )
-    assert "[Target](#x)" in forward.stdout and "[Target](#x-1)" in forward.stdout
+    assert "[Target](#x)" in forward.bundle and "[Target](#x-1)" in forward.bundle
 
 
 def test_files_under_distinct_roots_are_headed_by_working_directory_paths(
@@ -78,7 +78,7 @@ def test_files_under_distinct_roots_are_headed_by_working_directory_paths(
         written(tmp_path, f"{name}/same.md", rooted(".", "Body.\n"))
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
     assert run.status == 0
-    assert run.stdout == "# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
+    assert run.bundle == "# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
 
 
 def test_shared_target_cycle_retains_its_own_root(tmp_path: Path) -> None:
@@ -91,7 +91,7 @@ def test_shared_target_cycle_retains_its_own_root(tmp_path: Path) -> None:
     )
     run = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     assert run.status == 0
-    assert run.stdout.count("Once.") == 1
+    assert run.bundle.count("Once.") == 1
 
 
 def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None:
@@ -103,8 +103,8 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "[Later](library/b%20%25%23%3F.md)" in run.stdout
-    assert "Hidden." not in run.stdout
+    assert "[Later](library/b%20%25%23%3F.md)" in run.bundle
+    assert "Hidden." not in run.bundle
 
 
 @pytest.mark.parametrize("root", ["missing", "file.md"])
@@ -145,7 +145,7 @@ def test_outside_root_link_is_an_unopened_citation(tmp_path: Path) -> None:
     (tmp_path / "library").mkdir()
     run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "[Outside](../missing.md)" in run.stdout
+    assert "[Outside](../missing.md)" in run.bundle
 
 
 def test_a_link_beside_its_file_outside_the_root_is_an_unopened_citation(
@@ -156,9 +156,9 @@ def test_a_link_beside_its_file_outside_the_root_is_an_unopened_citation(
     written(tmp_path, "library/b.md", "# B\n\nInside the root.\n")
     run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "[Beside](b.md)" in run.stdout
-    assert "Beside the entry." not in run.stdout
-    assert "Inside the root." not in run.stdout
+    assert "[Beside](b.md)" in run.bundle
+    assert "Beside the entry." not in run.bundle
+    assert "Inside the root." not in run.bundle
 
 
 def test_root_replacement_prevents_publication(
@@ -177,7 +177,7 @@ def test_root_replacement_prevents_publication(
     monkeypatch.setattr(cli, "compose", replace_root)
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
-    assert run.stdout == ""
+    assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_CHANGED
 
 
@@ -217,7 +217,7 @@ def test_members_under_distinct_roots_are_named_by_their_paths(
         )
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
     assert run.status == 0
-    assert "### One Same\n" in run.stdout and "### Two Same\n" in run.stdout
+    assert "### One Same\n" in run.bundle and "### Two Same\n" in run.bundle
 
 
 @pytest.mark.parametrize("linked", [False, True])
@@ -234,5 +234,5 @@ def test_a_cached_target_still_verifies_each_access_route(
         entries = ["b.md", "alias/../b.md"]
     run = invoke("-d", "json", *entries, cwd=tmp_path)
     assert run.status == 1
-    assert run.stdout == ""
+    assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK

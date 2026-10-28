@@ -16,5 +16,5 @@ arguments = ["artifacts/architecture-overview.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/artifacts_architecture-overview.bundle.md"]
 diagnostics = []
