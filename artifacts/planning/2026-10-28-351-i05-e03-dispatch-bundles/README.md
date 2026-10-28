@@ -204,3 +204,4 @@ Review of `main` at 8e56baf3, the #355 merge, 2026-10-28. Seven findings, each v
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Prerequisite epic | [I05:E01 Diagram Following](https://github.com/m2ux/prosiform/issues/333) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
+| Review pull request | [#369](https://github.com/m2ux/prosiform/pull/369), carrying #366 after #355 |

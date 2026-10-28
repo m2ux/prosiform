@@ -29,3 +29,5 @@ The epic's bundle set is the contract an agent follows. Each finding is a run th
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Dispatch Bundles planning record](../2026-10-28-351-i05-e03-dispatch-bundles/README.md) |
 | Merged epic | [#355](https://github.com/m2ux/prosiform/pull/355) |
+| Pull request | [#366 Review Fixes: Publication and Dispatch at Their Edges](https://github.com/m2ux/prosiform/pull/366), merged as 3ec3a1e7 |
+| Review pull request | [#369](https://github.com/m2ux/prosiform/pull/369) |
