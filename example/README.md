@@ -288,7 +288,7 @@ Select rules for your harness:
 - If you are Claude, compile [Claude](rules/claude.md).
 ```
 
-`Common` leads because the command line names it, and `Agents` follows at the link `Common` carries. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
+`Common` leads because the command line names it, and `Agents` follows at the link `Common` carries. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagram](../README.md#how-it-works) shows this Rules grouping.
 
 ## More fixture examples
 
