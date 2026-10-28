@@ -2,7 +2,7 @@ description = "The version response reports the tool and the profile identifier,
 
 clauses = [
   "CLI contract — -v, report tool version and profile identifier",
-  "Markdown and source-heading profile, skill-markdown-v3",
+  "Markdown and source-heading profile, skill-markdown-v4",
   "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
 ]
 
@@ -12,5 +12,5 @@ arguments = ["-v"]
 
 [expected]
 exit_status = 0
-stdout_contains = ["pf ", "(skill-markdown-v3)"]
+stdout_contains = ["pf ", "(skill-markdown-v4)"]
 diagnostics = []

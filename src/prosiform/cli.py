@@ -1438,7 +1438,7 @@ def coincident(
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
-            heading = file_named(named, read[named], parsed[named], one.wrapped)
+            heading = file_named(named, read[named], parsed[named], one.filed)
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue

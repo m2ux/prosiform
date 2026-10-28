@@ -62,6 +62,7 @@ VARIANT_HEADING = "variant heading"
 STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
 DISPATCH_SECTION = "dispatch sub-section"
+PROSIFORM_SECTION = "Prosiform section"
 
 Target = tuple[str, str | None]
 
@@ -179,9 +180,11 @@ class Instruction:
     A dispatch sub-section carries one: the instruction naming the
     bundle a sub-agent is handed. A `Dispatch in parallel` sub-section
     carries two: the instruction, and the bulleted list of the bundles
-    it hands out together. It carries no source range, so it can never
-    stand in for selected body content a group failed to emit. A listed
-    instruction is a bulleted list, and every other one a paragraph.
+    it hands out together. A protocol sub-section of the Prosiform
+    section carries one: the protocol it states. It carries no source
+    range, so it can never stand in for selected body content a group
+    failed to emit. A listed instruction is a bulleted list, and every
+    other one a paragraph.
     """
 
     text: str

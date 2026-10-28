@@ -23,7 +23,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 PROJECT = REPO / "src"
 COMMAND = "pf"
-PROFILE = "skill-markdown-v3"
+PROFILE = "skill-markdown-v4"
 ARTIFACTS = "PF_LINKED_BOOTSTRAP_ARTIFACTS"
 LINK = re.compile(r"^- \[([^]]+)\]\(([^)]+)\)$", re.M)
 
