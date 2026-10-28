@@ -54,7 +54,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 ## Procedure files
 
 - **What the file carries selects the set.**
-  - A procedure is a top-level section carrying a numbered step, whatever its heading names it, as [Commands](#commands) defines it.
+  - A procedure is a top-level section holding step sub-sections, whatever its heading names it, as [Commands](#commands) defines it.
   - A file carrying one takes the sections below. A catalog, a context file and a contract file state what a procedure consults, and nothing about them is a sequence, so each keeps its own shape.
   - A skill's entry point takes [its own structure](#skillmd-structure) whatever it carries.
 - **Top-level sections.**
@@ -65,7 +65,9 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - Rules holds what binds the file whatever step it is on.
   - An alternative way in is a step of the Procedure.
 - **Procedure.**
-  A `## Procedure` of numbered steps, each opening with a bold label. Where the file holds several procedures, each is a sub-section of it.
+  - A `## Procedure` writes each step as a sub-section one heading level below it, headed by the step's position and its action in title case: `### 1. Take the Proposal`.
+  - The steps come in the order performed, ahead of the procedure's child sections.
+  - Where the file holds several procedures, each is a child section of it, and writes its own steps one heading level below its heading.
 
 ## Layout
 
@@ -75,7 +77,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - A bold lead is a label. When the label and its body fit on one line of at most 100 characters, indent included, the body stays on it, two spaces after the label: `- **Epic**  Lists its tasks in a Work Breakdown table.`
   - A longer body goes on the next line, indented under the bullet.
   - A label that is a phrase ends in a full stop. A bare name, such as a mode or an issue type, takes none.
-  - No bold words open a running sentence. A step such as "**Fetch** each issue" becomes the label "**Fetch.**" with "Fetch each issue …" beneath it.
+  - No bold words open a running sentence. An item such as "**Fetch** each issue" becomes the label "**Fetch.**" with "Fetch each issue …" beneath it.
 - **Sub-bullets.**
   An item that describes several discrete points lists them as sub-bullets. A single sentence, or a simple list within one sentence, stays as it is.
 - **Bounded prose.**
@@ -114,7 +116,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - A specification sits in the file whose procedure runs it, in a `## Commands` section at the end of that file.
   - A single catalog holds only those specifications most of whose entries have several callers. Where a block of a catalog has one caller, it belongs to that caller.
   - A caller is a procedure that runs the command. A sibling specification, and any passage of prose naming a command, does not make the file holding it a caller.
-  - A procedure is a section carrying numbered steps, whatever its heading names it. The step is the author stating that the reader performs these, in this order, and is the only place a file records that.
+  - A procedure is a section holding step sub-sections, whatever its heading names it. The step is the author stating that the reader performs these, in this order, and is the only place a file records that.
   - Prose runs nothing whatever its mood, order or count: a sentence routing three commands in sequence names them as a statement of what one command does names it. State a route as steps that run them.
   - SKILL.md holds no specification. A command the entry point names is specified in the file whose procedure runs it, or in the catalog.
   - A specification with two owners has one home and a link from the other. A count of those links that keeps growing says the split is in the wrong place.
