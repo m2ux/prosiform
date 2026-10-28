@@ -20,6 +20,8 @@ Every later row of the epic changes the example to meet these rules. Stating the
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The authoring rules section by section, the rules they retire, and the component |
+| [Validation](validation.md) | The test plan's procedures and results, by check |
 
 ## Links
 
