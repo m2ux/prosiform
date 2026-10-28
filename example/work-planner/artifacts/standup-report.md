@@ -16,19 +16,36 @@ The copyable report and any missing-evidence findings.
 
 **Inputs:** Board items, pull request records, complete issue-link snapshot, optional window start, initiative filter, resolved off-board initiative records and output paths.
 
-1. Require the complete issue-link snapshot.
-2. Run [Summarise Progress](#summarise-progress), passing items as `--items`, pull requests as `--prs`, links as `--links`, the selected start as `--since`, the filter as `--initiative` and every resolved initiative as `--initiatives`.
-3. For each unresolved initiative the summary names:
-   - Apply [Locate Initiative Issue](issue.md#locate-initiative-issue) with its repository and initiative prefix.
-   - Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the located issue's current JSON into a file under the output paths.
-   - Add the returned file to the resolved off-board initiative records.
-   - Run Summarise Progress again with every resolved initiative record, retaining the board items, pull requests, links, window start and filter.
-   - Repeat while an initiative remains that no read has failed. An unavailable initiative stays an unresolved finding, a gap in the report.
-4. Write the management paragraph from the rendered Initiatives and Completed sections.
-   - It must meet [Management Paragraph](#management-paragraph).
-5. Run [Summarise Progress](#summarise-progress) with the same inputs and the paragraph file as `--summary`.
-6. Return the report and separate unresolved findings.
-   - The report must meet [Fields](#fields).
+#### 1. Require the Standup Link Snapshot
+
+Require the complete issue-link snapshot.
+
+#### 2. Summarise Standup Progress
+
+Run [Summarise Progress](#summarise-progress), passing items as `--items`, pull requests as `--prs`, links as `--links`, the selected start as `--since`, the filter as `--initiative` and every resolved initiative as `--initiatives`.
+
+#### 3. Resolve Off-Board Initiatives
+
+For each unresolved initiative the summary names:
+- Apply [Locate Initiative Issue](issue.md#locate-initiative-issue) with its repository and initiative prefix.
+- Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the located issue's current JSON into a file under the output paths.
+- Add the returned file to the resolved off-board initiative records.
+- Run Summarise Progress again with every resolved initiative record, retaining the board items, pull requests, links, window start and filter.
+- Repeat while an initiative remains that no read has failed. An unavailable initiative stays an unresolved finding, a gap in the report.
+
+#### 4. Write the Management Paragraph
+
+Write the management paragraph from the rendered Initiatives and Completed sections.
+- It must meet [Management Paragraph](#management-paragraph).
+
+#### 5. Render the Final Standup Report
+
+Run [Summarise Progress](#summarise-progress) with the same inputs and the paragraph file as `--summary`.
+
+#### 6. Return the Standup Report
+
+Return the report and separate unresolved findings.
+- The report must meet [Fields](#fields).
 
 ## Fields
 

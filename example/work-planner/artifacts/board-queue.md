@@ -16,13 +16,18 @@ Derives the queue from supplied board and delivery snapshots and confirmed decis
 
 **Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities. The caller supplies the delivery state.
 
-1. Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
-   - The queue must meet [Fields](#fields).
-   - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
-2. Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
-   - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
-   - Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
-   - The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
+#### 1. Compute the Board Queue
+
+Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
+- The queue must meet [Fields](#fields).
+- Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
+
+#### 2. Return the Proposed Queue Calls
+
+Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
+- Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
+- Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
+- The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
 
 ### *Apply* Board Queue
 
@@ -30,22 +35,39 @@ The board's initiative and epic Status and assignees, moved to the queue and con
 
 **Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
 
-1. Apply [Plan Board Queue](#plan-board-queue) with the supplied snapshots, board identity, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
-2. For each unresolved issue reference the queue returns:
-   - Apply [Read Tracker Issue](issue.md#read-tracker-issue) into a file.
-   - Add the returned file to the resolved off-board issue files.
-   - Apply Plan Board Queue again with the same inputs and every resolved off-board issue file.
-   - Repeat while references remain unresolved. On an unavailable issue, return the queue with that reference as missing evidence and stop.
-3. When the queue carries an `order` or `ask` line, return the queue with those lines as pending decisions and stop. The caller settles them and applies this operation again with its confirmed priorities saved and each initiative it confirms unplanned.
-4. Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](board.md#assignees) states.
-   - For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
-   - If that item still shows the preceding status:
-     - Repeat its write.
-     - Repeat the same item read. The item list can lag a write.
-5. Apply [Read Board State](board.md#read-board-state) for the refreshed board items.
-   - Apply Plan Board Queue with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
-   - Continue from step 2 until the refreshed queue is [complete](#completeness) and contains no further call.
-6. Return each move applied and the converged queue's `wait` and `next` lines.
+#### 1. Plan the Board Queue to Apply
+
+Apply [Plan Board Queue](#plan-board-queue) with the supplied snapshots, board identity, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
+
+#### 2. Resolve Off-Board Issue References
+
+For each unresolved issue reference the queue returns:
+- Apply [Read Tracker Issue](issue.md#read-tracker-issue) into a file.
+- Add the returned file to the resolved off-board issue files.
+- Apply Plan Board Queue again with the same inputs and every resolved off-board issue file.
+- Repeat while references remain unresolved. On an unavailable issue, return the queue with that reference as missing evidence and stop.
+
+#### 3. Return Pending Queue Decisions
+
+When the queue carries an `order` or `ask` line, return the queue with those lines as pending decisions and stop. The caller settles them and applies this operation again with its confirmed priorities saved and each initiative it confirms unplanned.
+
+#### 4. Run the Proposed Queue Calls
+
+Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](board.md#assignees) states.
+- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
+- If that item still shows the preceding status:
+  - Repeat its write.
+  - Repeat the same item read. The item list can lag a write.
+
+#### 5. Re-Read the Queued Board State
+
+Apply [Read Board State](board.md#read-board-state) for the refreshed board items.
+- Apply Plan Board Queue with the refreshed board items, the same initiative pull request records, board fields, assignee login, board identity and output directory, and every resolved off-board issue file and confirmed unplanned initiative identity.
+- Continue from step 2 until the refreshed queue is [complete](#completeness) and contains no further call.
+
+#### 6. Return the Converged Queue
+
+Return each move applied and the converged queue's `wait` and `next` lines.
 
 ## Fields
 
