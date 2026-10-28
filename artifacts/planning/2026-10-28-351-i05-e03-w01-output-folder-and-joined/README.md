@@ -13,6 +13,8 @@ Every later row of the epic publishes into this folder: a run that compiles a bu
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | The output folder, joined derived names and the corpus runner reading the folder |
+| [Validation](validation.md) | Each test-plan check, the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this delivery applied and held |
 
 ## Links
 
