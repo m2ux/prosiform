@@ -9,6 +9,8 @@ The plan changes this delivery session made, and those it held.
 - **Folded work.** #351: AC12–AC14 name `fixtures/parallel-dispatch`, the renamed family.
 - **Folded work.** Contract: the warning `W_EARLIER_SET_RETAINED` and the conformance fault `cleanup-refused` that reaches it in the corpus, since every declared code is held to a fixture.
 
+- **Folded work.** Contract, second review of #366: every derived name held to the filesystem's length before any write, naming its selection; the empty-dispatch refusal names its route.
+
 ## Held
 
 None.

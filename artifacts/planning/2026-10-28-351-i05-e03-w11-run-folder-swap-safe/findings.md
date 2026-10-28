@@ -25,3 +25,12 @@ Reproductions were run against the build at that revision.
 Test gaps: symlinked run folder; wrapped/empty/trailing-space link text; Prosiform/Dispatch in parallel headings without dispatch; -c on a name collision; source change between bundles; restore failure.
 
 Environment note: a pf installed on the host ahead of the build can shadow it in tests; run the checkout's own build.
+
+## Second review of #366 (head cbe3d664)
+
+Findings 1–7f confirmed fixed, no regression. The user kept `-x cleanup-refused` and asked for these on the same branch:
+
+1. LOW — the cleanup-refused fault seeded its earlier set in `execute` before publication validated, so a failing run under it left an empty run folder and a dangling link at the run folder ended in exit 4. Fixed: seeded in `publish_folder` after every check, only where nothing stands.
+2. LOW — the empty-link-text refusal lacked `source` and `chain` and named the destination as its reference. Fixed: refused in `cli.dispatches` as the operator refusals are, naming the link text, source location and route.
+3. NIT — `fixtures/README.md`: "so neither arises" read "none" for three faults. Fixed.
+4. NOTE — a bundle name is two bytes longer than the run folder's, so a 254–255-byte run name failed with `ENAMETOOLONG` naming the staging path. Fixed: every derived name is held to the output folder's `NAME_MAX` before any write, naming the selection.
