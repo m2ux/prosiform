@@ -1300,16 +1300,30 @@ The board snapshot and pull request records that establish current delivery acro
 
 **Inputs:** Board owner and number, authenticated access, output paths and destination snapshot files.
 
-1. Apply the [⫽ board reads](#board-reads).
+1. Apply the [board reads](#board-reads).
 2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
 
 ##### Board Reads
 
-- Apply [Read Board State](#read-board-state) with the board owner and number for its items, Status field and repositories.
-  - Apply [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests) for each [repository](#repositories) Read Board State returned.
-    - Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with those records.
-- Apply [Read Board Configuration](#read-board-configuration) with the board owner and number and output paths for the board fields.
-- Apply [Read Board Assignee](#read-board-assignee) for the assignee login.
+###### 1. Read Board State
+
+Apply [Read Board State](#read-board-state) with the board owner and number for its items, Status field and [repositories](#repositories).
+
+###### 2. Fetch Initiative Pull Requests
+
+Apply [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests) for each repository Read Board State returned, for the pull request records.
+
+###### 3. Fetch Pull Request Issue Links
+
+Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the pull request records Fetch Initiative Pull Requests returned, for the complete issue-link snapshot.
+
+###### 4. Read Board Configuration
+
+Apply [Read Board Configuration](#read-board-configuration) with the board owner and number and output paths for the board fields.
+
+###### 5. Read Board Assignee
+
+Apply [Read Board Assignee](#read-board-assignee) for the assignee login.
 
 ### Fields
 

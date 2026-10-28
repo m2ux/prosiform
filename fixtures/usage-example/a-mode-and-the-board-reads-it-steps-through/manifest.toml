@@ -1,0 +1,15 @@
+description = "The usage example that compiles the Advance mode bundles that mode with the Rules, Conventions and Bootstrap documents its links reach and the eight artifacts its links reach under the Artifacts heading. The Read Board Delivery Evidence operation links its Board Reads section as an ordinary section, which the bundle carries beneath that operation as five numbered step sub-sections, each headed by its position and action, with no warning. The dispatched link to Sync Mode is published without its mark, pointing at a sub-section of its step naming the Sync Mode bundle, which the run publishes beside it with every bundle its own dispatches reach; Sync Mode contributes no content to the Advance mode bundle."
+
+clauses = [
+  "Usage examples",
+  "Link classification and resource handling — The dispatch operator",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/advance-mode.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_advance-mode.bundle.md", "expected/modes_sync-mode.bundle.md", "expected/modes_understand-mode.bundle.md", "expected/protocols_delivery-recording.bundle.md", "expected/protocols_epic-closure.bundle.md"]
+diagnostics = []
