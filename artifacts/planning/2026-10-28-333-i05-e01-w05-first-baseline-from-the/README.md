@@ -13,6 +13,9 @@ Until one full run is recorded, the eval has no reference point, and its first f
 | Artifact | What it holds |
 | --- | --- |
 | [W05 work item](w05.md) | The run, the review of failures, the baseline and the measured cost |
+| [Findings](findings.md) | Which forms and models follow which workflows, failure classes, cost and duration, corpus defects |
+| [Validation](validation.md) | The checks run and their results |
+| [Change list](change-list.md) | Plan changes arising in delivery |
 
 ## Decisions
 
