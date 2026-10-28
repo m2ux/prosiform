@@ -6,7 +6,7 @@ The plan changes this delivery session applied and held, under the deliver-mode 
 
 - **Folded work: Run Board Reads.** `delivery-evidence.md`'s two-word child section `#### Board Reads` is retitled `#### Run Board Reads`, meeting the Child section titles rule's three words. The linking step, `example/README.md`'s Read in steps excerpt, the regenerated bundles and the board-reads fixture's description follow it. The fixture name `a-mode-and-the-board-reads-it-steps-through` still describes the section and stays.
 
-The session also recorded delivery on [#352](https://github.com/m2ux/prosiform/issues/352): W04 links [#368](https://github.com/m2ux/prosiform/pull/368), which is delivery, not a plan change.
+The session also recorded delivery on [#352](https://github.com/m2ux/prosiform/issues/352) — W04 links [#368](https://github.com/m2ux/prosiform/pull/368), merged into `i05/e04/main` at `f4ad4b34`, with Done ticked, and AC4 is ticked — which is delivery, not a plan change.
 
 ## Held
 
