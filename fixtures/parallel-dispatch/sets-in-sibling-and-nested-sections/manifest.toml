@@ -1,0 +1,17 @@
+description = "A section, its child section and its sibling each carry a set of their own: each set takes a Dispatch in parallel sub-section one level below its section, after the section's own content and before its child sections, the repeated headings taking the renderer's ordinals in bundle order, and a target two sets name is one bundle listed in each set with that set's own link text."
+
+clauses = [
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Link classification and resource handling — Dispatched bundles",
+  "Bundle destinations — Ordinal assignment",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/notes.bundle.md", "expected/review__docs.bundle.md", "expected/review__source.bundle.md", "expected/review__tests.bundle.md", "expected/tag.bundle.md"]
+diagnostics = []

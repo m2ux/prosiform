@@ -1,0 +1,19 @@
+description = "An authored heading reading Parallel dispatch equals the protocol sub-section pf emits in a bundle carrying a parallel set, so the run publishes nothing and fails, naming the authored heading."
+
+clauses = [
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+source = "guide.md"
+message_contains = ["Parallel dispatch"]

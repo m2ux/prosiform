@@ -17,5 +17,5 @@ arguments = [
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/artifacts_epic-issue-body__record-epic-delivery+artifacts_epic__delivery-findings.bundle.md"]
 diagnostics = []

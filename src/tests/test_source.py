@@ -20,11 +20,14 @@ the ordinal it passes over, and that a second document begins it again.
 """
 
 import pytest
+from markdown_it.token import Token
 
+from prosiform import source as source_module
 from prosiform.profile import parse
 from prosiform.source import (
     MARK,
     Ambiguous,
+    Diagram,
     Heading,
     Nested,
     Source,
@@ -34,10 +37,12 @@ from prosiform.source import (
     clicks,
     content,
     decode,
+    diagram_type,
     fragments,
     hashed,
     index,
     lines,
+    linking,
     nesting,
     occurrences,
     regions,
@@ -528,6 +533,308 @@ def test_a_click_offset_spans_its_destination_in_the_fence_line() -> None:
     assert written[click.offset : click.offset + len(click.destination)] == "a.md"
 
 
+def diagram_links(written: str, kind: str = "flowchart LR") -> list[tuple[str, int]]:
+    """Each destination one diagram line names, with its offset in that line."""
+    fence = next(
+        token
+        for token in parse(f"```mermaid\n{kind}\n{written}\n```\n")
+        if token.type == "fence"
+    )
+    return [(click.destination, click.offset) for click in clicks(fence)]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'link Cls "a.md"',
+        'link Cls "a.md" "the tooltip"',
+        'link Cls "a.md" "the tooltip" _blank',
+        'link Cls "a.md" _self',
+        'link Cls "a.md";',
+    ],
+)
+def test_a_class_link_names_its_quoted_destination(written: str) -> None:
+    assert diagram_links(written, "classDiagram") == [("a.md", 10)]
+
+
+@pytest.mark.parametrize(
+    ("written", "kind"),
+    [
+        ('Click A HREF "a.md"', "flowchart LR"),
+        ('CLICK A "a.md" "the tooltip" _BLANK', "stateDiagram-v2"),
+        ('cLiCk A hReF "a.md"', "gantt"),
+        ('LINK A "a.md"', "classDiagram"),
+        ('Link A "a.md" _Self', "classDiagram"),
+    ],
+)
+def test_a_diagram_link_keyword_matches_in_any_case(written: str, kind: str) -> None:
+    assert [one for one, _at in diagram_links(written, kind)] == ["a.md"]
+
+
+def test_a_class_link_takes_no_href() -> None:
+    assert diagram_links('link Cls href "a.md"', "classDiagram") == []
+
+
+@pytest.mark.parametrize(
+    ("written", "destination"),
+    [
+        ("link Alice: Spec @ docs/spec.md", "docs/spec.md"),
+        ("link Alice: Spec @docs/spec.md   ", "docs/spec.md"),
+        ("LINK Alice: Spec @ docs/spec.md;", "docs/spec.md"),
+        ("link Alice: Spec @ docs/a@b.md", "docs/a@b.md"),
+        ("Link Alice Smith: The spec @ docs/spec.md", "docs/spec.md"),
+    ],
+)
+def test_a_sequence_menu_entry_names_the_text_after_its_first_at(
+    written: str, destination: str
+) -> None:
+    [(found, at)] = diagram_links(written, "sequenceDiagram")
+    assert found == destination
+    assert written[at : at + len(found)] == destination
+
+
+def test_a_sequence_menu_line_names_each_string_value_in_written_order() -> None:
+    written = 'links Alice: {"Spec": "docs/spec.md", "Notes":"docs/notes.md"}'
+    found = diagram_links(written, "sequenceDiagram")
+    assert [one for one, _at in found] == ["docs/spec.md", "docs/notes.md"]
+    assert [written[at : at + len(one)] for one, at in found] == [
+        "docs/spec.md",
+        "docs/notes.md",
+    ]
+
+
+def test_a_sequence_menu_line_keyword_matches_in_any_case() -> None:
+    written = 'LINKS Alice: {"Spec": "docs/spec.md"};'
+    found = diagram_links(written, "sequenceDiagram")
+    assert [one for one, _at in found] == ["docs/spec.md"]
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'links Alice: ["docs/spec.md"]',
+        'links Alice: "docs/spec.md"',
+        'links Alice: {"Spec": "docs/spec.md"',
+        'links Alice: {"Spec": "docs/spec.md"} trailing',
+        "links Alice: docs/spec.md",
+    ],
+)
+def test_a_sequence_menu_line_holding_no_json_object_names_nothing(
+    written: str,
+) -> None:
+    assert diagram_links(written, "sequenceDiagram") == []
+
+
+def test_a_sequence_menu_value_holding_an_escape_names_nothing() -> None:
+    written = 'links Alice: {"Spec": "docs\\/spec.md", "Notes": "docs/notes.md"}'
+    found = diagram_links(written, "sequenceDiagram")
+    assert [one for one, _at in found] == ["docs/notes.md"]
+
+
+def diagram_read(written: str, kind: str = "sequenceDiagram") -> Diagram:
+    """What one diagram line of one diagram type links to."""
+    fence = next(
+        token
+        for token in parse(f"```mermaid\n{kind}\n{written}\n```\n")
+        if token.type == "fence"
+    )
+    return linking(fence)
+
+
+@pytest.mark.parametrize(
+    "written",
+    [
+        'links Alice: {"Count": 2, "Spec": "s.md"}',
+        'links Alice: {"Spec": "s.md", "Nested": {"a": "x.md"}}',
+        'links Alice: {"Spec": null}',
+        'links Alice: {"Spec": "s.md", "Spec": ["s.md"]}',
+    ],
+)
+def test_a_sequence_menu_value_that_is_no_string_breaks_its_line(
+    written: str,
+) -> None:
+    read = diagram_read(written)
+    assert read.clicks == ()
+    assert read.broken == (3,)
+
+
+def test_a_value_no_string_a_later_key_replaces_breaks_nothing() -> None:
+    written = 'links Alice: {"Spec": 2, "Spec": {"a": [1, "}"]}, "Spec": "s.md"}'
+    read = diagram_read(written)
+    assert [(one.destination, one.offset) for one in read.clicks] == [
+        ("s.md", written.index("s.md"))
+    ]
+    assert read.broken == ()
+
+
+def test_a_repeated_menu_key_names_its_last_value_alone() -> None:
+    written = 'links Alice: {"Spec": "a.md", "Notes": "n.md", "Spec": "b.md"}'
+    found = diagram_links(written, "sequenceDiagram")
+    assert found == [("n.md", written.index("n.md")), ("b.md", written.index("b.md"))]
+
+
+def test_a_repeated_menu_key_whose_last_value_holds_an_escape_names_nothing() -> None:
+    written = 'links Alice: {"Spec": "a.md", "Spec": "b\\/c.md"}'
+    assert diagram_links(written, "sequenceDiagram") == []
+
+
+def test_a_menu_constant_json_parse_refuses_names_nothing() -> None:
+    read = diagram_read('links Alice: {"Spec": NaN}')
+    assert read == Diagram()
+
+
+@pytest.mark.parametrize(
+    ("written", "destination", "kept"),
+    [
+        ("link Alice: Spec @ a.md;b.md", "a.md", ";b.md"),
+        ("link Alice: Spec @ a.md ; ", "a.md", " ; "),
+        ("link Alice: Spec @ a.md # a comment", "a.md", " # a comment"),
+        ("link Alice: Spec @ a.md#intro", "a.md", "#intro"),
+        ("link Alice: Spec @ a.md#35;intro", "a.md#intro", ""),
+        ("link Alice: Spec @ #35;intro;x.md", "#intro", ";x.md"),
+    ],
+)
+def test_a_sequence_menu_entry_ends_where_mermaid_ends_its_statement(
+    written: str, destination: str, kept: str
+) -> None:
+    [click] = diagram_read(written).clicks
+    assert click.destination == destination
+    assert written[click.offset + len(click.written) :] == kept
+
+
+def test_a_sequence_menu_entry_whose_at_follows_its_end_names_nothing() -> None:
+    assert diagram_links("link Alice: Spec; @ a.md", "sequenceDiagram") == []
+    assert diagram_links("link Alice: Spec # @ a.md", "sequenceDiagram") == []
+    assert diagram_links("link Alice: Spec @ ;a.md", "sequenceDiagram") == []
+
+
+def test_a_sequence_menu_line_ends_where_mermaid_ends_its_statement() -> None:
+    written = 'links Alice: {"Spec": "a.md#35;intro"}; links Bob: {"B": "b.md"}'
+    [click] = diagram_read(written).clicks
+    assert (click.destination, click.written) == ("a.md#intro", "a.md#35;intro")
+    assert diagram_links('links Alice: {"Spec": "a.md;b.md"}', "sequenceDiagram") == []
+    assert diagram_links('links Alice: {"Spec": "a.md#b"}', "sequenceDiagram") == []
+
+
+@pytest.mark.parametrize(
+    ("written", "kind"),
+    [
+        ("link --> done : retry @ ops.md", "stateDiagram-v2"),
+        ("link A: label @ ops.md", "flowchart LR"),
+        ('links A: {"Ops": "ops.md"}', "classDiagram"),
+        ("link A: label @ ops.md", "classDiagram"),
+        ('link Cls "a.md"', "sequenceDiagram"),
+        ('link Cls "a.md"', "flowchart LR"),
+        ('link Cls "a.md"', "stateDiagram-v2"),
+    ],
+)
+def test_a_link_form_is_read_in_its_own_diagram_alone(written: str, kind: str) -> None:
+    assert diagram_links(written, kind) == []
+
+
+@pytest.mark.parametrize(
+    ("content", "kind"),
+    [
+        ("classDiagram\n", "classDiagram"),
+        ("classDiagram-v2\n", "classDiagram"),
+        ("  sequenceDiagram\n", "sequenceDiagram"),
+        ("---\ntitle: Exchange\n---\nsequenceDiagram\n", "sequenceDiagram"),
+        ("%%{init: {'theme': 'dark'}}%%\nclassDiagram\n", "classDiagram"),
+        ("%% a comment\n%% another\nsequenceDiagram\n", "sequenceDiagram"),
+        ("\n\nsequenceDiagram\n", "sequenceDiagram"),
+        ("flowchart LR\n", ""),
+        ("stateDiagram-v2\n", ""),
+        ("title sequenceDiagram\n", ""),
+    ],
+)
+def test_a_diagram_type_is_read_as_mermaid_detects_it(content: str, kind: str) -> None:
+    assert diagram_type(content) == kind
+
+
+def test_a_sequence_diagram_under_front_matter_reads_its_menu() -> None:
+    text = "---\ntitle: Exchange\n---\nsequenceDiagram\nlink A: Spec @ s.md\n"
+    fence = next(
+        token for token in parse(f"```mermaid\n{text}```\n") if token.type == "fence"
+    )
+    assert [(one.destination, one.line) for one in clicks(fence)] == [("s.md", 6)]
+
+
+def test_a_menu_line_is_json_decoded_once_per_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+    decode = source_module.decoded
+
+    def counted(text: str) -> object:
+        calls.append(text)
+        return decode(text)
+
+    monkeypatch.setattr(source_module, "decoded", counted)
+    read = diagram_read('links Alice: {"A": "a.md", "B": "b.md", "A": "c.md"}')
+    assert len(read.clicks) == 2
+    assert len(calls) == 1
+
+
+def test_a_fence_s_diagram_is_read_once_however_often_it_is_asked(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[int] = []
+    read = source_module.read_diagram
+
+    def counted(fence: Token) -> Diagram:
+        calls.append(id(fence))
+        return read(fence)
+
+    monkeypatch.setattr(source_module, "read_diagram", counted)
+    text = '```mermaid\nsequenceDiagram\nlinks A: {"A": "a.md"}\n```\n'
+    tokens = parse(text)
+    for _ in range(3):
+        assert [one.destination for one in uses(tokens, list(regions(tokens)))] == [
+            "a.md"
+        ]
+    assert occurrences(tokens, list(regions(tokens))) == 1
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize(
+    ("written", "kind", "anchor"),
+    [
+        ('click A href "a.md"', "flowchart LR", "#"),
+        ('link Cls "a.md"', "classDiagram", "#"),
+        ("link Alice: Spec @ a.md", "sequenceDiagram", "#35;"),
+        ('links Alice: {"Spec": "a.md", "Notes": "b.md"}', "sequenceDiagram", "#35;"),
+    ],
+)
+def test_each_diagram_link_form_spells_its_anchor(
+    written: str, kind: str, anchor: str
+) -> None:
+    fence = next(
+        token
+        for token in parse(f"```mermaid\n{kind}\n{written}\n```\n")
+        if token.type == "fence"
+    )
+    found = list(clicks(fence))
+    assert found
+    assert {click.anchor for click in found} == {anchor}
+
+
+def test_each_sequence_menu_destination_is_one_use_on_its_line() -> None:
+    text = (
+        "```mermaid\n"
+        "sequenceDiagram\n"
+        "link Alice: Spec @ spec.md\n"
+        'links Bob: {"A": "a.md", "B": "b.md"}\n'
+        "```\n"
+    )
+    assert [(one.destination, one.line) for one in selected(text)] == [
+        ("spec.md", 3),
+        ("a.md", 4),
+        ("b.md", 4),
+    ]
+    tokens = parse(text)
+    assert occurrences(tokens, list(regions(tokens))) == 3
+
+
 def test_diagram_and_inline_uses_arrive_in_source_order() -> None:
     text = '[a](a.md)\n\n```mermaid\nclick A "b.md"\n```\n\n[c](c.md)\n'
     assert [one.destination for one in selected(text)] == ["a.md", "b.md", "c.md"]
@@ -668,3 +975,67 @@ def test_a_content_hash_is_taken_over_the_bytes_the_file_held() -> None:
     assert hashed(b"# Guide\n") == hashed(b"# Guide\n")
     assert hashed(b"# Guide\n") != hashed(b"# Guide\r\n")
     assert len(hashed(b"")) == 64
+
+
+def unfollowed(content: str) -> list[tuple[str, str, int]]:
+    """Each link one diagram renders that no diagram link line writes."""
+    fence = next(
+        token for token in parse(f"```mermaid\n{content}```\n") if token.type == "fence"
+    )
+    return [(one.form, one.destination, one.line) for one in linking(fence).unfollowed]
+
+
+KANBAN_TICKET = "Kanban ticket's link"
+LABEL_ANCHOR = "HTML anchor in a node label"
+
+
+def test_a_kanban_ticket_renders_the_link_its_front_matter_base_builds() -> None:
+    content = (
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'people/#TICKET#.md'\n---\n"
+        "kanban\n  Todo\n    [Write]@{ ticket: user, priority: 'High' }\n"
+    )
+    assert unfollowed(content) == [(KANBAN_TICKET, "people/user.md", 9)]
+
+
+def test_a_kanban_ticket_renders_the_link_an_init_directive_base_builds() -> None:
+    content = (
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'people/#TICKET#.md'\n---\n"
+        "%%{init: {'kanban': {'ticketBaseUrl': 'https://t.example/#TICKET#'}}}%%\n"
+        "kanban\n  Todo\n    [Write]@{ ticket: MC-1 }\n"
+    )
+    assert unfollowed(content) == [(KANBAN_TICKET, "https://t.example/MC-1", 10)]
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        "kanban\n  Todo\n    [Write]@{ ticket: user }\n",
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'p/#TICKET#.md'\n---\n"
+        "kanban\n  Todo\n    [Write]@{ priority: 'High' }\n",
+        "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'p/#TICKET#.md'\n---\n"
+        "flowchart LR\n  A[Write]@{ ticket: user }\n",
+    ],
+)
+def test_a_ticket_with_no_base_or_outside_a_kanban_renders_no_link(
+    content: str,
+) -> None:
+    assert unfollowed(content) == []
+
+
+@pytest.mark.parametrize(
+    ("written", "destination"),
+    [
+        ("A[\"<a href='people/user.md'>User</a>\"] --> B", "people/user.md"),
+        ('A[<a href="people/user.md">User</a>] --> B', "people/user.md"),
+        ('A["<A class=x HREF=people/user.md>User</A>"]', "people/user.md"),
+    ],
+)
+def test_an_html_anchor_in_a_node_label_renders_its_href(
+    written: str, destination: str
+) -> None:
+    content = f"flowchart LR\n{written}\n"
+    assert unfollowed(content) == [(LABEL_ANCHOR, destination, 3)]
+
+
+def test_an_html_anchor_in_a_comment_renders_nothing() -> None:
+    assert unfollowed("flowchart LR\n%% <a href='people/user.md'>User</a>\n") == []

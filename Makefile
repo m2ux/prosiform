@@ -46,6 +46,12 @@
 # that matrix at its default session cap; ARGS passes the runner's options
 # through, a later `--budget-usd` among them overriding the default.
 #
+# `make render` draws the diagrams of the corpus's diagram-link fixtures with
+# mermaid-cli, which `MERMAID_CLI` names, and fails without one. A Gantt
+# fixture's diagram is clicked in a running page instead, with the browser
+# mermaid-cli ships. mermaid-cli and the headless browser it drives are no
+# dependency of the build, so `make check` leaves it out.
+#
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
 
@@ -54,7 +60,7 @@ EVAL_BUDGET_USD := 75
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence eval-diagrams
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render eval-diagrams
 
 check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
@@ -102,6 +108,9 @@ conformance:
 
 independence:
 	$(UV_RUN) python checks/independence.py
+
+render:
+	python3 checks/render.py
 
 eval-diagrams:
 	$(UV_RUN) python evals/diagram-following/run.py --budget-usd $(EVAL_BUDGET_USD) $(ARGS)

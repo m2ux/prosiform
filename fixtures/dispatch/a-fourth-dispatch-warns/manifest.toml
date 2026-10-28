@@ -1,4 +1,4 @@
-description = "A chain reaching a fourth dispatch is deeper than a chain is held to, so the bundle publishes and the run warns, naming the chain from the bundle's own dispatch to the fourth hop."
+description = "A chain reaching a fourth dispatch is deeper than a chain is held to, so every bundle of the chain publishes and the run warns, naming the chain from the entry's own dispatch to the fourth hop."
 
 clauses = [
   "Link classification and resource handling — Dispatch depth",
@@ -11,7 +11,7 @@ arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/publish.bundle.md", "expected/record.bundle.md", "expected/review.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

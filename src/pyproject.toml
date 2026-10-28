@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "prosiform"
-version = "0.11.0"
+version = "0.15.0"
 description = "A deterministic compiler for instruction sets written as linked Markdown"
 readme = "README.md"
 requires-python = ">=3.13"

@@ -28,7 +28,8 @@ Four things are compared:
 - **The profile identifier.** The command reports it beside its version,
   and the documented invocation names it.
 - **The statements the documented invocation carries.**
-  A failed run publishes nothing, reading the sources is unsupported,
+  A bare command prints the guide, a failed run publishes nothing,
+  reading the sources is unsupported,
   the supported environment is POSIX, support rests on no-follow access,
   and file and directory names use hyphens rather than underscores.
   These are prose rather than a surface the command exposes, so each is
@@ -74,6 +75,7 @@ STATUS = re.compile(r"^ {2}([0-9]+)\s{2,}(\S.*?)\s*$")
 PROFILE = re.compile(r"\(([^()\s]+)\)\s*$")
 
 STATEMENTS = (
+    ("a bare command prints the guide", "with no arguments prints the guide"),
     ("a failed run stops the work", "A failed run publishes nothing"),
     (
         "reading the sources instead is unsupported",

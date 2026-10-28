@@ -1,0 +1,19 @@
+description = "A run of two entries that each dispatch writes one bundle whose name joins theirs with a plus sign, opening with one Prosiform section, each file heading carrying its own dispatch sub-sections, and one bundle per distinct target: a target both entries dispatch is one bundle, and the second sub-section naming it takes the renderer's ordinal."
+
+clauses = [
+  "Automatic output names, several selections join their names",
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — The Prosiform section",
+  "Bundle destinations — Ordinal assignment",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md", "mode.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide+mode.bundle.md", "expected/plan.bundle.md", "expected/review.bundle.md"]
+diagnostics = []

@@ -2,8 +2,11 @@
 __pycache__/
 *.py[cod]
 
-# Compiled bundles, written wherever pf is run.
+# Compiled bundles, written wherever pf is run. A file under fixtures/ named
+# as a bundle is the corpus's own, a source or an expected bundle, so it is
+# tracked.
 *.bundle.md
+!fixtures/**/*.bundle.md
 
 # The diagram-following eval's session records, written by each run.
 evals/diagram-following/results/

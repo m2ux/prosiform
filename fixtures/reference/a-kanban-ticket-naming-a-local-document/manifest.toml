@@ -1,0 +1,20 @@
+description = "A Kanban diagram whose ticket base URL builds, from a ticket, a link naming a local Markdown document is refused with a diagnostic naming the line that writes the ticket, since a renderer draws that link to a document the bundle does not carry; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Unsupported local-document syntax",
+  "Link classification and resource handling — Examples",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+source = "guide.md:11"
+chain = ["guide.md"]

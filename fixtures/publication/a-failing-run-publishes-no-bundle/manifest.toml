@@ -1,0 +1,19 @@
+description = "A run that fails returns a nonzero status, writes no bundle and leaves standard output empty, so the status is the only thing that reports the outcome and a caller looking for Markdown has nothing to mistake for a successful read."
+
+clauses = [
+  "Agent delivery contract — Exit status",
+  "Validation and failure contract — Publication",
+  "Compile before publishing — step 9, a failing run fails with diagnostics and publishes nothing",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "reference.md"

@@ -1,7 +1,7 @@
-# 🧩 Prosiform
+# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v2](https://img.shields.io/badge/profile-skill--markdown--v2-blue.svg)](https://github.com/m2ux/prosiform/blob/e1b82283825281279069188f575806dd11d4be3d/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/3a44b1c62566778c89263efb26ec743f434a3062/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
@@ -32,12 +32,12 @@ Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
 
 ```bash
 cd example/my-skill
-pf -o skill-bundle.md procedure.md rules/common.md
+pf procedure.md rules/common.md
 ```
 
-The Common and Agents files each declare group `rules` and depth `1` in their [conversion metadata](invocation.md#conversion-metadata).
+The Common and Agents files each declare group `rules` and depth `1`.
 
-![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In skill-bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Common and Agents beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
+![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In the bundle, procedure+rules_common.bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Common and Agents beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
 
 ## Installation
 
@@ -49,7 +49,15 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. One entry writes its bundle to an entry-derived filename in the working directory. Pass `-o -` to write that bundle to standard output. File and directory names use hyphens rather than underscores.
+Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the existing folder `-o` names: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
+
+### Print the Guide
+
+```bash
+pf
+```
+
+With no arguments, `pf` prints the guide an agent follows a skill by: the compile step, the rule that a link whose text opens with `↳` names an inline target to compile, read whole and follow, and that a bundle opening with a Prosiform section is followed from there. A skill's bootstrap is one instruction: run `pf` and follow it.
 
 ### Bundle a Source and its Dependencies
 
@@ -62,3 +70,9 @@ pf example/work-planner/modes/plan-mode.md
 ```bash
 pf 'example/work-planner/artifacts/epic.md#delivery-findings'
 ```
+
+### Dispatch to Sub-agents
+
+A link whose text opens with `⇉` dispatches its target, as Plan Mode's link to Sync Mode does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
+
+A bundle that dispatches opens with a `# Prosiform` section stating how: `## Dispatch` whenever it dispatches, and `## Parallel dispatch` when it carries a set. Each sub-section links the protocol it follows, and the protocols are the same bytes in every bundle.

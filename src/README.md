@@ -4,11 +4,7 @@ The Python implementation of prosiform, checked against the behavioural contract
 
 ### Command line
 
-Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes a bundle to an entry-derived file unless `-o` selects stdout or another path, writes informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
-
-### Agent delivery
-
-`prosiform.delivery` runs the command as a process and buffers standard output. It determines success from the exit status and checks the complete bundle against the transport's response limit. An oversized bundle is withheld as a delivery failure. Each transport declares its limit; the build's output budget alone cannot guarantee delivery.
+Installing the package provides `pf`, declared in `[project.scripts]` as `prosiform.cli:main`. It accepts the contract's options, writes its bundles into a folder of the run's own, named for its entry with the `.bundles` suffix, in the working directory or the folder `-o` names, writes the guide a bare `pf` prints and informational responses to standard output, writes diagnostics to standard error, and returns the outcome's exit status.
 
 ## Environment
 
@@ -35,7 +31,7 @@ uv sync --frozen
 | Declared | Value | Why |
 | --- | --- | --- |
 | Python | `>=3.13` | Required Python version; also used in continuous integration. |
-| [`markdown-it-py`](https://pypi.org/project/markdown-it-py/) | `==4.2.0` | Markdown parser for the `skill-markdown-v2` profile. |
+| [`markdown-it-py`](https://pypi.org/project/markdown-it-py/) | `==4.2.0` | Markdown parser for the `skill-markdown-v4` profile. |
 | [`ruamel.yaml`](https://yaml.dev/doc/ruamel.yaml/) | `==0.18.16` | Safe event parsing for bounded YAML metadata decoding. |
 
 The parser uses the `commonmark` preset with core `table` and `strikethrough` rules enabled. Typographic substitution is off, task-list markers remain text, and raw HTML produces tokens the build can reject. No parser plugin is required. `mdurl` is a transitive dependency of `markdown-it-py`.
@@ -110,11 +106,7 @@ Paths below are relative to `src/`.
 
 ### Command interface
 
-`tests/test_cli.py` checks option grammar, output streams, exit statuses, implementation-specific responses, and write failures. Named output files are published through one rename, preserved on failure, and never written by validation-only runs.
-
-### Delivery limits
-
-`tests/test_delivery.py` checks delivery below and at the transport limit, complete withholding above it (including summaries), rejection of a zero limit, and failure statuses regardless of standard output. Three end-to-end tests run the installed entry point through the wrapper. The corpus drives the command directly, so wrapper behaviour needs separate tests.
+`tests/test_cli.py` checks option grammar, the guide a bare `pf` prints, output streams, exit statuses, implementation-specific responses, and write failures. A run's bundles are written into a folder of its own under the folder `-o` names, or the working directory, under their joined derived names; the folder is published through one rename, an existing run folder keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
 
 ### Candidate validation
 

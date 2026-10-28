@@ -1,0 +1,17 @@
+description = "A sequence diagram's links line writing one key twice names its last value alone, as a renderer parsing the object keeps it: that document is compiled and its destination rewritten to the anchor of its heading, and the earlier value is carried as written and compiles nothing."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["exchange.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/exchange.bundle.md"]
+diagnostics = []

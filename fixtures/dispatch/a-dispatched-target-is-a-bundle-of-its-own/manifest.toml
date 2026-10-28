@@ -1,0 +1,19 @@
+description = "A link whose text opens with the dispatch mark contributes nothing to the bundle carrying it: its target is compiled to a bundle of its own, and the link is published without its mark, pointing at a sub-section after its section's content whose one line names that bundle."
+
+clauses = [
+  "Link classification and resource handling — The dispatch operator",
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — A withheld link's target",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/rules.bundle.md"]
+diagnostics = []

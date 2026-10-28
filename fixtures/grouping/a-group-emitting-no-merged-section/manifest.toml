@@ -12,5 +12,5 @@ arguments = ["rules/agents.md", "rules/common.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/rules_agents+rules_common.bundle.md"]
 diagnostics = []

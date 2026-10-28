@@ -1,0 +1,18 @@
+description = "A sequence diagram's links line holding a value that is no string, which a renderer draws as a link opening nothing, is refused with a diagnostic naming the line; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["exchange.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+source = "exchange.md:6"
+chain = ["exchange.md"]

@@ -10,6 +10,7 @@ import json
 import re
 import shlex
 import subprocess
+import tempfile
 import textwrap
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -161,7 +162,7 @@ def limit_section_content(body, section_level):
 def svg(
     inputs,
     root_name,
-    stdout,
+    bundle,
     branch_name,
     revision,
     compact=False,
@@ -199,12 +200,12 @@ def svg(
         block, h = card(466, at, 690, path, content)
         blocks.append(block)
         at += h + 22
-    bundle_body = stdout
+    bundle_body = bundle
     if compact:
         bundle_body = compact_markdown(bundle_body)
     expected = (
         limit_section_content(bundle_body, compiled_section_level)
-        if stdout
+        if bundle
         else "No bundle published."
     )
     outblock, outh = card(1230, top, 880, "Compiler output", expected, True)
@@ -297,7 +298,7 @@ def main():
         parser.error("The entry document must be under --cwd")
     if options.section:
         entry += "#" + options.section
-    arguments = ["-o", "-"]
+    arguments = []
     if options.max_output_bytes is not None:
         arguments.extend(["-O", str(options.max_output_bytes)])
     arguments.append(entry)
@@ -310,9 +311,20 @@ def main():
         return data
 
     stdout, stderr = io.StringIO(), io.StringIO()
-    with contextlib.chdir(root), patch.object(cli, "read_source", side_effect=record):
-        status = cli.main(arguments, stdout=stdout, stderr=stderr)
-    body, diagnostics = stdout.getvalue(), stderr.getvalue()
+    with (
+        tempfile.TemporaryDirectory() as folder,
+        contextlib.chdir(root),
+        patch.object(cli, "read_source", side_effect=record),
+    ):
+        status = cli.main(["-o", folder, *arguments], stdout=stdout, stderr=stderr)
+        written = sorted(Path(folder).glob("*/*.bundle.md"))
+        entry = [
+            one
+            for one in written
+            if one.parent.name.removesuffix(".bundles") + ".bundle.md" == one.name
+        ]
+        body = entry[0].read_bytes().decode() if entry else ""
+    diagnostics = stderr.getvalue()
     inputs = {
         path: data.decode("utf-8", errors="replace")
         for path, data in sorted(captured.items())
@@ -333,7 +345,7 @@ def main():
         suffix: Path(str(output) + suffix)
         for suffix in [
             ".svg",
-            ".stdout.md",
+            ".bundle.md",
             ".stderr.txt",
             ".command.txt",
             ".review.md",
@@ -345,7 +357,7 @@ def main():
     if any(path.resolve() in source_paths for path in destinations.values()):
         parser.error("Output files must not overwrite source documents")
     output.parent.mkdir(parents=True, exist_ok=True)
-    command = shlex.join(["prosiform", *arguments])
+    command = shlex.join(["pf", "-o", "<folder>", *arguments])
     fence = chr(96) * 3
     review = [
         "# " + document.name,
@@ -355,7 +367,7 @@ def main():
         "Source files opened by the compiler appear beside the bundle body. "
         "Opened files can include deferred targets; "
         "their presence does not imply their content is bundled. Images simplify "
-        "Markdown presentation; the stdout file preserves exact content and "
+        "Markdown presentation; the bundle file preserves exact content and "
         "link destinations."
         + (
             " Compact view omits body content while retaining headings and links."
@@ -394,12 +406,12 @@ def main():
         sources={
             path: hashlib.sha256(data).hexdigest() for path, data in captured.items()
         },
-        stdout_sha256=hashlib.sha256(body.encode()).hexdigest(),
+        bundle_sha256=hashlib.sha256(body.encode()).hexdigest(),
         stderr_sha256=hashlib.sha256(diagnostics.encode()).hexdigest(),
     )
     artifacts = {
         ".svg": rendered,
-        ".stdout.md": body,
+        ".bundle.md": body,
         ".stderr.txt": diagnostics,
         ".command.txt": command + "\n",
         ".review.md": "\n".join(review) + "\n",

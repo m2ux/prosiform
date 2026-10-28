@@ -1,0 +1,17 @@
+description = "A flowchart's diagram clicks written with href, without it, with a tooltip and with a tooltip and a link target each compile the document they name, and each destination between its quotes is rewritten to the destination of that document's heading while every other byte of the fence is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Bundle destinations — Internal links",
+  "Bundle destinations — Document destinations",
+  "Parser and source-preserving edits — Untouched content",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["flow.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/flow.bundle.md"]
+diagnostics = []

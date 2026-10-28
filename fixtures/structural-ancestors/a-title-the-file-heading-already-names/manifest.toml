@@ -11,5 +11,5 @@ arguments = ["guide.md#procedure"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__procedure.bundle.md"]
 diagnostics = []

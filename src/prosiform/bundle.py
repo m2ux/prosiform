@@ -45,7 +45,7 @@ it. Inside a
 region nothing is touched but the lines a link-reference definition
 occupies and the links the bundle rewrites, so an indented thematic
 break keeps its indent, a delimiter keeps its trailing spaces and a
-code example keeps every byte but a diagram's click destinations. A
+code example keeps every byte but a diagram's link destinations. A
 terminator belongs to the line it terminates and is content as the rest
 of the line is, so a region ends with the newline its source spelled on
 the line that ends it, and every heading the bundle generates ends with
@@ -87,11 +87,14 @@ is scoped to the whole bundle, so a reference from one group to another
 is spelled as one inside a group is. A mark goes with the rewrite,
 because a reader of the bundle has no use for authoring syntax.
 
-A Mermaid diagram's click destination is a link written inside a code
+A Mermaid diagram's link destination is a link written inside a code
 example, and the bundle rewrites it as it rewrites any other: the
-characters between its quotes take the destination its target was
-given, and every other byte of the fence is carried as written. A
-click destination the bundle compiled nothing for, such as one outside
+destination's characters take the destination its target was given,
+and every other byte of the fence is carried as written. The anchor is
+spelled as the line's form spells it: a quoted destination opens it
+with `#`, and a sequence diagram's menu entry with `#35;`, the entity
+Mermaid renders as `#` where a bare one would open a comment. A diagram
+link destination the bundle compiled nothing for, such as one outside
 the root or one naming no Markdown document, keeps the text its author
 wrote.
 
@@ -112,7 +115,14 @@ from pathlib import PurePosixPath
 
 from markdown_it.token import Token
 
-from prosiform.closure import bundled, rebased, unmarked, withholding_target
+from prosiform.closure import (
+    bundled,
+    dispatched,
+    parallel,
+    rebased,
+    unmarked,
+    withholding_target,
+)
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -124,10 +134,12 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
+    Served,
     Target,
 )
 from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
+    ANCHOR,
     FENCE,
     HREF,
     LINE_FEED,
@@ -164,8 +176,6 @@ ENDINGS = (f"{CARRIAGE_RETURN}{TERMINATOR}", TERMINATOR, CARRIAGE_RETURN)
 ATX = "#"
 SPACE = " "
 HEADING_OPEN = "heading_open"
-
-ANCHOR = "#"
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -226,7 +236,9 @@ class Group:
     part for each selected source region — rather than as the Markdown
     those parts join into, because the separation between two of them is
     the bundle's own and the bundle states it in one place. A group the
-    parent's own title opens has no file heading ahead of those regions.
+    parent's own title opens has no file heading ahead of those regions,
+    and a group the Prosiform section opens carries its file heading as
+    a part after that section.
     The text the group publishes is those parts with one blank line
     between each.
 
@@ -245,6 +257,14 @@ class Group:
     record: Record
     order: str
     wrapped: bool = True
+
+    @property
+    def filed(self) -> bool:
+        """Whether the group carries the file heading the bundle writes for it."""
+        return any(
+            isinstance(one, Generated) and one.kind == FILENAME_WRAPPER
+            for one in self.record.headings
+        )
 
     @property
     def text(self) -> str:
@@ -313,14 +333,13 @@ def emitted_visible(path: str, inline: Token, root: str = "") -> str:
     """The text one inline token shows once the bundle has rewritten its links.
 
     A heading can carry a link, and one the run withholds a compilation
-    of publishes without its deferral mark. What the heading shows is
+    of publishes without its deferral or dispatch mark. What the heading shows is
     therefore what the renderer slugs, so the destination the heading
     takes names the heading a reader finds.
 
     A link the bundle took no destination for shows the text its author
-    wrote. That covers a markup or resource reference under the root, a
-    reference leaving the root and a dispatch, because only a deferred
-    link has its destination rebased to state the deferral.
+    wrote. That covers a markup or resource reference under the root and
+    a reference leaving the root.
     """
     children = inline.children or []
     carried: list[str] = []
@@ -342,7 +361,7 @@ def shown_text(path: str, tokens: Sequence[Token], root: str = "") -> dict[int, 
     """The visible text of each heading token, keyed by the token's identity.
 
     The text is the one the bundle emits for that heading, which is the
-    text its author wrote with a deferral mark taken off, so the
+    text its author wrote with a withholding mark taken off, so the
     destination the heading takes names what a reader finds.
     """
     return {
@@ -358,7 +377,7 @@ def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
     what a reference into that document resolved against. It is read
     from the authored text and not from the published one, because a
     reference naming this heading carries the fragment the author's text
-    produces: a heading whose deferral mark is dropped on emission is
+    produces: a heading whose withholding mark is dropped on emission is
     still reached by the fragment its source spelling slugs to.
     """
     return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
@@ -372,6 +391,7 @@ def rewrite(
     path: str,
     defined: Mapping[str, Definition],
     root: str = "",
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -390,24 +410,35 @@ def rewrite(
     A source declaring no definition carries no reference-style use, so
     a token holding no link is the text its source wrote.
 
-    A diagram's click destination is replaced in the one line the click
-    is written on, between its quotes, so the line count holds there too.
+    A diagram's link destination is replaced in the one line it is
+    written on, so the line count holds there too. Several destinations
+    on one line are replaced in written order.
+
+    A dispatched link takes the destination of the sub-section its
+    region carries for its target, which the dispatch map holds by the
+    region's first line.
     """
     written = list(physical)
-    for inline in inlines(tokens, selected):
-        found = destinations(inline)
-        if inline.map is None or (not found and not defined):
-            continue
-        start, end = inline.map
-        targets = [target(path, one, opening, assigned, root) for one, opening in found]
-        written[start:end] = rewritten(written[start:end], inline, targets, defined)
+    served = {} if dispatching is None else dispatching
+    for region in selected:
+        here = served.get((path, (region.map or (0, 0))[0]), {})
+        for inline in inlines(tokens, [region]):
+            found = destinations(inline)
+            if inline.map is None or (not found and not defined):
+                continue
+            start, end = inline.map
+            targets = [
+                target(path, one, opening, assigned, root, dispatched_to=here)
+                for one, opening in found
+            ]
+            written[start:end] = rewritten(written[start:end], inline, targets, defined)
     for fence in within(tokens, selected):
         if fence.type != FENCE:
             continue
         held = lines(fence.content)
         first = 0 if fence.map is None else fence.map[0] + 1
         for click in clicks(fence):
-            given = target(path, click.destination, "", assigned, root)
+            given = target(path, click.destination, "", assigned, root, click.anchor)
             if given is not None:
                 at = click.line - 1
                 written[at] = clicked(written[at], held[at - first], click, given)
@@ -415,7 +446,7 @@ def rewrite(
 
 
 def clicked(physical: str, held: str, click: Click, given: str) -> str:
-    """One physical line with a diagram click's destination replaced.
+    """One physical line with one diagram link destination replaced.
 
     The fence holds the line without the container markers and indent
     the document line opens with, so the line the fence holds is the
@@ -423,9 +454,9 @@ def clicked(physical: str, held: str, click: Click, given: str) -> str:
     the end of the line, which both carry alike, its terminator aside:
     a CRLF the document wrote reaches the fence as a line feed.
     """
-    after = len(bare(held)) - click.offset - len(click.destination)
+    after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
-    return f"{physical[: end - len(click.destination)]}{given}{physical[end:]}"
+    return f"{physical[: end - len(click.written)]}{given}{physical[end:]}"
 
 
 def target(
@@ -434,19 +465,25 @@ def target(
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
     root: str = "",
+    anchor: str = ANCHOR,
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
     because the closure selected what the link named and the group
-    emitting it recorded the target it answers to.
+    emitting it recorded the target it answers to. Its destination is
+    that heading's slug behind the anchor spelling the link's form
+    writes, `#` wherever the link is not a sequence diagram's menu entry.
 
-    A withheld link under the allowed source root takes its target's
+    A deferred link under the allowed source root takes its target's
     path from the invocation working directory, so the run that
-    compiles it later, from that directory, follows it as written. It is
-    never rewritten to a bundle destination, even where another reference
-    carried its target into the bundle: what one author withheld cannot be changed by
-    another author's reference.
+    compiles it later, from that directory, follows it as written. A
+    dispatched one takes the destination of the dispatch sub-section
+    its region carries for its target. Neither is rewritten to the
+    destination of the target's own heading, even where another
+    reference carried its target into the bundle: what one author
+    withheld cannot be changed by another author's reference.
 
     A link resolving outside the allowed source root, and one naming no
     Markdown document, is text the bundle carries and takes no
@@ -454,10 +491,14 @@ def target(
     """
     found = bundled(path, destination, opening, root)
     if found is not None:
-        return f"{ANCHOR}{assigned[(found.path, found.fragment)]}"
+        return f"{anchor}{assigned[(found.path, found.fragment)]}"
     deferred = withholding_target(path, destination, opening, root)
     if deferred is None:
         return None
+    if dispatched(opening):
+        held = {} if dispatched_to is None else dispatched_to
+        served = ((deferred.path, deferred.fragment), parallel(opening))
+        return f"{anchor}{held[served]}"
     return rebased(deferred, destination)
 
 
@@ -710,6 +751,7 @@ def group(
     assigned: dict[tuple[str, str | None], str] | None = None,
     root: str = "",
     situate: bool = False,
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -790,7 +832,9 @@ def group(
     written = (
         list(physical)
         if assigned is None
-        else rewrite(physical, tokens, chosen, assigned, path, environment, root)
+        else rewrite(
+            physical, tokens, chosen, assigned, path, environment, root, dispatching
+        )
     )
     for token in regions(tokens):
         if id(token) in needed:

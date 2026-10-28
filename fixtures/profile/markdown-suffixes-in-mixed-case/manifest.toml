@@ -11,5 +11,5 @@ arguments = ["Guide.MD", "notes/Note.Markdown"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/Guide+notes_Note.bundle.md"]
 diagnostics = []

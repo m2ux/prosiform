@@ -1,0 +1,20 @@
+description = "A diagram node label holding an HTML anchor naming a local Markdown document is refused with a diagnostic naming the line, as raw HTML naming one is, since a renderer draws that anchor to a document the bundle does not carry; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Unsupported local-document syntax",
+  "Link classification and resource handling — Examples",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+source = "guide.md:5"
+chain = ["guide.md"]

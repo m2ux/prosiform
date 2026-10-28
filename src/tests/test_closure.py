@@ -25,9 +25,9 @@ from prosiform.closure import (
     identity,
     inside,
     operators,
+    parallel,
     rebased,
     resolve,
-    run_set,
     unmarked,
     withholding,
     withholding_target,
@@ -198,10 +198,12 @@ def test_operators_are_each_operator_one_text_opens_with() -> None:
     assert operators("the ¬ rules") == ()
 
 
-def test_an_unspaced_deferral_mark_is_published_as_written() -> None:
+def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
     assert unmarked("¬  the rules") == "the rules"
     assert unmarked("¬the rules") == "¬the rules"
-    assert unmarked("⇉ the rules") == "⇉ the rules"
+    assert unmarked("⇉ the rules") == "the rules"
+    assert unmarked("⫽ the rules") == "the rules"
+    assert unmarked("⫽the rules") == "⫽the rules"
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
@@ -372,27 +374,27 @@ def test_a_link_text_opening_with_a_guillemet_states_no_operator() -> None:
     assert operators("» the rules") == ()
 
 
-def test_a_link_text_opening_with_the_run_set_mark_states_a_run_set() -> None:
-    assert run_set("⫽ the reviews")
+def test_a_link_opening_with_the_parallel_mark_states_a_parallel_dispatch() -> None:
+    assert parallel("⫽ the reviews")
+    assert dispatched("⫽ the reviews")
     assert operators("⫽ the reviews") == ("⫽",)
+    assert not parallel("⇉ the reviews")
 
 
-def test_a_run_set_withholds_nothing() -> None:
-    assert not withholding("⫽ the reviews")
-    assert bundled("guide.md", "plan.md#reviews", "⫽ the reviews") is not None
-    assert withholding_target("guide.md", "plan.md", "⫽ the reviews") is None
+def test_a_parallel_dispatch_withholds_its_target() -> None:
+    assert withholding("⫽ the reviews")
+    assert bundled("guide.md", "plan.md#reviews", "⫽ the reviews") is None
+    found = withholding_target("guide.md", "plan.md#reviews", "⫽ the reviews")
+    assert found is not None
+    assert (found.path, found.fragment) == ("plan.md", "reviews")
 
 
-def test_a_run_set_mark_with_no_space_after_it_is_no_operator() -> None:
-    assert not run_set("⫽the reviews")
-    assert not run_set("the ⫽ reviews")
+def test_a_parallel_mark_with_no_space_after_it_is_no_operator() -> None:
+    assert not parallel("⫽the reviews")
+    assert not parallel("the ⫽ reviews")
     assert operators("⫽⇉ the reviews") == ()
 
 
 @pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "¬ ⫽ the reviews"])
-def test_the_run_set_mark_conflicts_with_either_other_operator(opening: str) -> None:
+def test_the_parallel_mark_conflicts_with_either_other_operator(opening: str) -> None:
     assert conflicting(opening)
-
-
-def test_a_run_set_mark_is_published_as_written() -> None:
-    assert unmarked("⫽ the reviews") == "⫽ the reviews"

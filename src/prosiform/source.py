@@ -66,12 +66,16 @@ link inside a code span or a code block is example content the parser
 produces no use for, so none reaches a caller asking what this content
 references.
 
-A Mermaid diagram is the one code block whose content links: a `click`
-line in a fence whose info string opens with `mermaid` names a
-destination a reader of the rendered diagram follows. Each such
-destination is a use, on the line the click is written, and opens with
-nothing, because a diagram gives a click no link text to carry a mark.
-A click naming a callback runs script rather than following a
+A Mermaid diagram is the one code block whose content links. In a fence
+whose info string opens with `mermaid`, a diagram link line names a
+destination a reader of the rendered diagram follows: a `click` line,
+a class diagram's `link` line, and a sequence diagram's participant
+menu, written one entry to a `link` line or several to a `links` line.
+Each form is read in the diagram that writes it, the diagram's type
+read as Mermaid detects it, and each is read where Mermaid's lexer
+ends it. Each destination is a use, on the line it is written, and opens with
+nothing, because a diagram gives a link no text to carry a mark. A
+click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
 is a use.
 
@@ -93,16 +97,19 @@ wherever its author put it.
 
 The document also counts what a budget is declared over: the container
 blocks it nests at its deepest point, which is what a nesting budget
-bounds, and the link, image and diagram click occurrences a run of
+bounds, and the link, image and diagram link occurrences a run of
 regions carries, each counted once where the source wrote it.
 """
 
 import hashlib
+import json
 import re
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 
 from markdown_it.token import Token
+from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
 
 from prosiform.limits import FILE_BYTES, NESTING
 from prosiform.metadata import (
@@ -144,10 +151,52 @@ HEADING_OPEN = "heading_open"
 INLINE = "inline"
 FENCE = "fence"
 DIAGRAM = "mermaid"
-CLICK = re.compile(
-    r'\s*click\s+[^\s"]+\s+(?:href\s+)?"(?P<destination>[^"]*)"'
-    r'(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*'
+QUOTED = (
+    r'"(?P<destination>[^"]*)"(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?'
+    r"\s*;?\s*"
 )
+CLICK_LINE = re.compile(rf'\s*click\s+[^\s"]+\s+(?:href\s+)?{QUOTED}', re.IGNORECASE)
+CLASS_LINK = re.compile(rf'\s*link\s+[^\s"]+\s+{QUOTED}', re.IGNORECASE)
+MENU_ENTRY = re.compile(r"\s*link\s+[^:]+:", re.IGNORECASE)
+MENU = re.compile(r"\s*links\s+[^:]+:", re.IGNORECASE)
+ENTRY_SEPARATOR = "@"
+ANCHOR = "#"
+ENTITY_ANCHOR = "#35;"
+ENTITY = re.compile(r"#[A-Za-z0-9_]+;")
+STATEMENT_END = ";"
+JSON_SPACE = " \t\r\n"
+JSON_STRING = re.compile(r'"(?:[^"\\]|\\.)*"')
+JSON_OPEN = "{["
+JSON_CLOSE = "}]"
+JSON_MEMBER_END = ",}"
+FRONT_MATTER = re.compile(
+    r"^([^\S\n\r]*)-{3}\s*[\n\r](.*?)[\n\r]\1-{3}\s*[\n\r]+", re.DOTALL
+)
+DIRECTIVE = re.compile(
+    r"%{2}{\s*(?:(\w+)\s*:|(\w+))\s*(?:(\w+)|((?:(?!}%{2}).|\r?\n)*))?\s*(?:}%{2})?",
+    re.IGNORECASE,
+)
+COMMENT = re.compile(r"\s*%%.*\n")
+CLASS_DIAGRAM = "classDiagram"
+SEQUENCE_DIAGRAM = "sequenceDiagram"
+KANBAN = "kanban"
+DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM, KANBAN)
+INITIALIZING = ("init", "initialize")
+CONFIG = "config"
+TICKET_BASE_URL = "ticketBaseUrl"
+TICKET_PLACEHOLDER = "#TICKET#"
+TICKET = "ticket"
+NODE_METADATA = re.compile(r"@(\{.*\})\s*$")
+HTML_ANCHOR = re.compile(
+    r"<a\s[^>]*?\bhref\s*=\s*(?:\"(?P<double>[^\"]*)\"|'(?P<single>[^']*)'|(?P<bare>[^\s>]+))",
+    re.IGNORECASE,
+)
+COMMENT_LINE = re.compile(r"\s*%%")
+KANBAN_TICKET = "Kanban ticket's link"
+LABEL_ANCHOR = "HTML anchor in a node label"
+AUTHORITY = "//"
+SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]+:")
+DIAGRAM_READ = "diagram links"
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
@@ -540,20 +589,70 @@ def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Toke
 
 @dataclass(frozen=True)
 class Click:
-    """One destination a diagram's click line names.
+    """One destination a diagram link line names.
 
-    The line is the line of this content the click is written on. The
+    The line is the line of this content the link is written on. The
     offset is where the destination's first character sits in that line
-    as the fence carries it, inside the quotes, so the destination spans
-    `offset` to `offset + len(destination)`. A fence carries a line
-    without the container markers and the indent its document line
+    as the fence carries it, and the written text is what the line holds
+    from there, so the link spans `offset` to `offset + len(written)`.
+    One line can name several, each at its own offset. A fence carries a
+    line without the container markers and the indent its document line
     opens with, so the line the fence carries is the trailing text of
     the line the document holds.
+
+    The destination is what the written text names. A sequence diagram's
+    menu entry writes `#35;` for the `#` a fragment opens with, since
+    Mermaid renders that entity as `#`, so each `#35;` it holds names a
+    `#`; every other form names its written text.
+
+    The anchor is how the line's form spells the `#` a heading anchor
+    opens with. A quoted destination writes `#`. A sequence diagram's
+    menu entry writes `#35;`, because its lexer reads a bare `#` on that
+    line as opening a comment, which takes the destination with it.
     """
 
     destination: str
     line: int
     offset: int
+    anchor: str
+    written: str
+
+
+@dataclass(frozen=True)
+class Unfollowed:
+    """One link Mermaid renders from a form the diagram link reader does not follow.
+
+    The form names it: a Kanban ticket's link, which Mermaid builds by
+    putting the ticket in place of `#TICKET#` in the diagram's
+    `ticketBaseUrl`, or an HTML anchor in a node label. The destination
+    is the URL Mermaid renders, and the line is the line of this content
+    that writes the ticket or the anchor.
+    """
+
+    form: str
+    destination: str
+    line: int
+
+
+@dataclass(frozen=True)
+class Diagram:
+    """What one fence's diagram links to.
+
+    The clicks are its link destinations in written order. A broken line
+    is a line of this content holding a `links` object one of whose
+    values is no string, which Mermaid renders as a link opening
+    nothing; it names no destination. The unfollowed links are the
+    links Mermaid renders that no diagram link line writes, in written
+    order; none is a use.
+    """
+
+    clicks: tuple[Click, ...] = ()
+    broken: tuple[int, ...] = ()
+    unfollowed: tuple[Unfollowed, ...] = ()
+
+
+class BrokenMenu(Exception):
+    """A `links` object one of whose values is no string."""
 
 
 def diagram(fence: Token) -> bool:
@@ -561,24 +660,311 @@ def diagram(fence: Token) -> bool:
     return fence.info.split(maxsplit=1)[:1] == [DIAGRAM]
 
 
-def clicks(fence: Token) -> Iterator[Click]:
-    """Each destination one fence's diagram links to, in written order.
+def diagram_type(content: str) -> str:
+    """The type one diagram declares, where it is a type whose links differ.
 
-    A line links when it is `click <node> href "<destination>"` or
-    `click <node> "<destination>"`, optionally followed by a quoted
-    tooltip and a link target. A click naming a callback, or a `call`
-    form, runs script and names no destination, so it yields nothing,
-    and neither does any line of a fence holding no diagram.
+    Mermaid sets aside a leading front matter block, every directive and
+    every comment line, and reads the type from the word the remaining
+    text opens on. Only a class diagram, a sequence diagram and a Kanban
+    diagram write a link form of their own, so every other diagram is
+    named by the empty string.
+    """
+    text = FRONT_MATTER.sub("", content, count=1)
+    text = COMMENT.sub(LINE_FEED, DIRECTIVE.sub("", text))
+    opening = text.lstrip()
+    return next((one for one in DIAGRAM_TYPES if opening.startswith(one)), "")
+
+
+def clicks(fence: Token) -> tuple[Click, ...]:
+    """Each destination one fence's diagram links to, in written order."""
+    return linking(fence).clicks
+
+
+def linking(fence: Token) -> Diagram:
+    """What one fence's diagram links to, read once for the fence.
+
+    The read is kept on the fence's token, so discovery, the budget, the
+    refusals, emission and candidate validation each take the read the
+    first of them made rather than reading the diagram again.
+    """
+    held = fence.meta.get(DIAGRAM_READ)
+    if not isinstance(held, Diagram):
+        held = read_diagram(fence)
+        fence.meta[DIAGRAM_READ] = held
+    return held
+
+
+def read_diagram(fence: Token) -> Diagram:
+    """What one fence's diagram links to, read from its text.
+
+    A line links when it is one of these, its keywords in any letter case:
+
+    - in any diagram, `click <node> href "<destination>"` or
+      `click <node> "<destination>"`;
+    - in a class diagram, `link <class> "<destination>"`;
+    - in a sequence diagram, `link <actor>: <label> @ <destination>`, the
+      destination being the trimmed text after the first `@`;
+    - in a sequence diagram, `links <actor>: {…}`, each string value of
+      the JSON object being one destination.
+
+    A quoted destination may be followed by a quoted tooltip and a link
+    target. A click naming a callback, or a `call` form, runs script and
+    names no destination, so it yields nothing, and neither does any line
+    of a fence holding no diagram.
+
+    A Kanban ticket's link and an HTML anchor in a node label are links
+    Mermaid renders that the reader does not follow, so each is read as
+    unfollowed rather than as a click.
     """
     if fence.map is None or not diagram(fence):
-        return
+        return Diagram()
+    form = diagram_type(fence.content)
+    base = ticket_base(fence.content) if form == KANBAN else None
     first = fence.map[0] + 2
+    found: list[Click] = []
+    broken: list[int] = []
+    unfollowed: list[Unfollowed] = []
     for at, physical in enumerate(lines(fence.content)):
-        written = CLICK.fullmatch(bare(physical))
-        if written is not None:
-            yield Click(
-                written.group("destination"), first + at, written.start("destination")
+        line = bare(physical)
+        unfollowed.extend(rendered(line, base, first + at))
+        try:
+            named = linked(line, form)
+        except BrokenMenu:
+            broken.append(first + at)
+            continue
+        for written, offset, anchor in named:
+            destination = (
+                written.replace(ENTITY_ANCHOR, ANCHOR)
+                if anchor == ENTITY_ANCHOR
+                else written
             )
+            found.append(Click(destination, first + at, offset, anchor, written))
+    return Diagram(tuple(found), tuple(broken), tuple(unfollowed))
+
+
+def rendered(line: str, base: str | None, at: int) -> Iterator[Unfollowed]:
+    """Each link one diagram line renders that no diagram link line writes.
+
+    A comment line renders nothing. A line writing a ticket in a Kanban
+    diagram whose ticket base URL is `base` renders the link Mermaid
+    builds from them, and each HTML anchor a line carries renders its
+    `href`.
+    """
+    if COMMENT_LINE.match(line):
+        return
+    if base:
+        ticket = ticket_of(line)
+        if ticket:
+            destination = base.replace(TICKET_PLACEHOLDER, ticket, 1)
+            yield Unfollowed(KANBAN_TICKET, destination, at)
+    for anchor in HTML_ANCHOR.finditer(line):
+        destination = next(group for group in anchor.groups() if group is not None)
+        yield Unfollowed(LABEL_ANCHOR, destination, at)
+
+
+def yaml_mapping(text: str) -> dict[object, object]:
+    """One YAML text as the mapping it holds, or an empty one where it holds none."""
+    try:
+        loaded = YAML(typ="safe", pure=True).load(text)
+    except YAMLError:
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def ticket_base(content: str) -> str | None:
+    """The `ticketBaseUrl` one Kanban diagram's own configuration sets.
+
+    Mermaid reads it from the front matter's `config` mapping, and an
+    `init` directive's configuration replaces it, so the last
+    directive setting it decides.
+    """
+    base: object = None
+    matter = FRONT_MATTER.match(content)
+    if matter is not None:
+        base = configured(yaml_mapping(matter.group(2)).get(CONFIG))
+    for directive in DIRECTIVE.finditer(content):
+        kind = directive.group(1) or directive.group(2) or ""
+        if kind.lower() not in INITIALIZING or directive.group(4) is None:
+            continue
+        set_here = configured(yaml_mapping(directive.group(4)))
+        if set_here is not None:
+            base = set_here
+    return base if isinstance(base, str) else None
+
+
+def configured(configuration: object) -> object:
+    """The `ticketBaseUrl` one Mermaid configuration mapping sets, if any."""
+    if not isinstance(configuration, dict):
+        return None
+    kanban = configuration.get(KANBAN)
+    return kanban.get(TICKET_BASE_URL) if isinstance(kanban, dict) else None
+
+
+def ticket_of(line: str) -> str | None:
+    """The ticket one Kanban node line's metadata names, if it names one."""
+    metadata = NODE_METADATA.search(line)
+    if metadata is None:
+        return None
+    ticket = yaml_mapping(metadata.group(1)).get(TICKET)
+    return None if ticket is None or ticket == "" else str(ticket)
+
+
+def external(path: str) -> bool:
+    """Whether a reference carries a scheme or an authority."""
+    return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
+
+
+def linked(line: str, form: str) -> list[tuple[str, int, str]]:
+    """Each destination one line of a diagram of one type names, in written order.
+
+    Each comes as written, with its offset and the anchor spelling its
+    form writes.
+    """
+    quoted = CLICK_LINE.fullmatch(line)
+    if quoted is None and form == CLASS_DIAGRAM:
+        quoted = CLASS_LINK.fullmatch(line)
+    if quoted is not None:
+        return [(quoted.group("destination"), quoted.start("destination"), ANCHOR)]
+    if form != SEQUENCE_DIAGRAM:
+        return []
+    entry = MENU_ENTRY.match(line)
+    if entry is not None:
+        end = statement_end(line, entry.end())
+        at = line.find(ENTRY_SEPARATOR, entry.end(), end)
+        if at < 0:
+            return []
+        start, stop = trimmed(line, at + 1, end)
+        return [] if start == stop else [(line[start:stop], start, ENTITY_ANCHOR)]
+    menu = MENU.match(line)
+    if menu is None:
+        return []
+    start, stop = trimmed(line, menu.end(), statement_end(line, menu.end()))
+    return [
+        (value, offset, ENTITY_ANCHOR) for value, offset in entries(line, start, stop)
+    ]
+
+
+def statement_end(line: str, at: int) -> int:
+    """Where a sequence statement's text begun at `at` ends.
+
+    Mermaid's sequence lexer ends the text at a `;`, which closes the
+    statement, or a `#`, which opens a comment. Mermaid first replaces
+    every entity, `#<word>;`, with a placeholder, so neither the `#` nor
+    the `;` of an entity ends anything.
+    """
+    while at < len(line):
+        if line[at] == ANCHOR:
+            entity = ENTITY.match(line, at)
+            if entity is None:
+                return at
+            at = entity.end()
+        elif line[at] == STATEMENT_END:
+            return at
+        else:
+            at += 1
+    return len(line)
+
+
+def trimmed(line: str, start: int, end: int) -> tuple[int, int]:
+    """The span `start` to `end` of a line with its surrounding whitespace left out."""
+    text = line[start:end]
+    begin = start + len(text) - len(text.lstrip())
+    return begin, max(begin, start + len(text.rstrip()))
+
+
+def entries(line: str, start: int, end: int) -> list[tuple[str, int]]:
+    """Each destination the JSON object one line holds names, with its offset.
+
+    The object spans `start` to `end` of the line, and a span holding
+    anything else names nothing. It is read as `JSON.parse` reads it: a
+    key written twice keeps its last value, so an earlier value names
+    nothing, and a value that is no string is a broken menu, which
+    `BrokenMenu` raises. A string value whose written text differs from
+    the string it decodes to, such as one holding an escape, is left out,
+    because the characters a rewrite replaces are the destination's own.
+    """
+    try:
+        members = decoded(line[start:end])
+    except ValueError:
+        return []
+    if not isinstance(members, tuple):
+        return []
+    last = {key: at for at, (key, _value) in enumerate(members)}
+    found = []
+    for at, ((key, value), (begin, past)) in enumerate(
+        zip(members, spans(line, start), strict=True)
+    ):
+        if last[key] != at:
+            continue
+        if not isinstance(value, str):
+            raise BrokenMenu
+        if line[begin + 1 : past - 1] == value:
+            found.append((value, begin + 1))
+    return found
+
+
+def refused_constant(name: str) -> object:
+    """Refuse a constant `JSON.parse` does not read, such as `NaN`."""
+    raise ValueError(name)
+
+
+MENU_DECODER = json.JSONDecoder(
+    object_pairs_hook=tuple, parse_constant=refused_constant
+)
+
+
+def decoded(text: str) -> object:
+    """One `links` object's text decoded, each object as its members in order."""
+    return MENU_DECODER.decode(text)
+
+
+def spans(line: str, start: int) -> Iterator[tuple[int, int]]:
+    """Where each member's value sits in the JSON object opening at `start`.
+
+    The object has already decoded, so the walk reads its text lexically:
+    a key is a string, and a value runs to the `,` or `}` outside every
+    string and every nested value.
+    """
+    at = skipped(line, start + 1)
+    while line[at] != JSON_MEMBER_END[1]:
+        key = JSON_STRING.match(line, at)
+        assert key is not None
+        at = skipped(line, skipped(line, key.end()) + 1)
+        past = value_end(line, at)
+        yield at, past
+        at = skipped(line, past)
+        if line[at] == JSON_MEMBER_END[0]:
+            at = skipped(line, at + 1)
+
+
+def value_end(line: str, at: int) -> int:
+    """Where the JSON value opening at `at` of one line ends."""
+    depth = 0
+    while at < len(line):
+        if line[at] == '"':
+            string = JSON_STRING.match(line, at)
+            assert string is not None
+            at = string.end()
+            if depth == 0:
+                return at
+            continue
+        if depth == 0 and (line[at] in JSON_MEMBER_END or line[at] in JSON_SPACE):
+            return at
+        if line[at] in JSON_OPEN:
+            depth += 1
+        elif line[at] in JSON_CLOSE:
+            depth -= 1
+            if depth == 0:
+                return at + 1
+        at += 1
+    return at
+
+
+def skipped(line: str, at: int) -> int:
+    """The first position from `at` past the JSON whitespace one line holds there."""
+    while at < len(line) and line[at] in JSON_SPACE:
+        at += 1
+    return at
 
 
 def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
@@ -593,8 +979,8 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     opens on, which is as near the use as the parser records a
     position.
 
-    A diagram's click destination is a link written on its own line of
-    the fence, so it is located at that line and opens with nothing.
+    A diagram's link destination is written on its own line of the
+    fence, so it is located at that line and opens with nothing.
     """
     for token in within(tokens, selected):
         if token.type == FENCE:
@@ -646,7 +1032,7 @@ def events(
 
 
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
-    """How many link, image and click uses the given regions of one source carry.
+    """How many link, image and diagram link uses the given regions of one source carry.
 
     A budget over references is declared over what an author wrote, so
     the count is of occurrences in the source rather than of the
@@ -654,7 +1040,7 @@ def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
     occurrences, and an image is one of them because opening a resource
     costs what opening a document costs. A use written inside an
     image's alternative content is one the author wrote, so it is
-    counted where it sits, and so is each click destination a diagram
+    counted where it sits, and so is each destination a diagram link
     names.
     """
     return sum(1 for _ in uses(tokens, selected))

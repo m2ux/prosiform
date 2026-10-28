@@ -12,7 +12,7 @@
 <rect x="612" y="996" width="510" height="472" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M624 996 H1110 Q1122 996 1122 1008 V1058 H612 V1008 Q612 996 624 996" fill="#202a36"/>
 <text x="640" y="1037" font-size="25" fill="#b1c6df" font-weight="400">rules/agents.md</text>
 <rect x="1252" y="32" width="510" height="1436" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1264 32 H1750 Q1762 32 1762 44 V94 H1252 V44 Q1252 32 1264 32" fill="#202a36"/>
-<text x="1280" y="73" font-size="25" fill="#b1c6df" font-weight="400">skill-bundle.md</text>
+<text x="1280" y="73" font-size="22" fill="#b1c6df" font-weight="400">procedure+rules_common.bundle.md</text>
 <text x="60" y="143" font-size="29" fill="#e6edf3" font-weight="400">my-skill/</text>
 <text x="60" y="198" font-size="24" fill="#e6edf3">├─ SKILL.md</text>
 <rect x="401" y="169" width="116" height="38" rx="19" fill="#102333" stroke="#58a6ff"/><text x="413" y="196" font-size="20" fill="#58a6ff">routing</text>

@@ -12,5 +12,5 @@ arguments = ["guide.md#stop", "./guide.md#run-it"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide__stop+guide__run-it.bundle.md"]
 diagnostics = []

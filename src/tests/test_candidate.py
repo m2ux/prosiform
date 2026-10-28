@@ -33,6 +33,7 @@ from prosiform.candidate import (
     UNSAFE_BUNDLE_BOUNDARY,
     Invalid,
     Unsafe,
+    protocols,
     validate,
 )
 from prosiform.cli import (
@@ -42,9 +43,19 @@ from prosiform.cli import (
 from prosiform.closure import Reference
 from prosiform.limits import BUDGETS, NESTING, Limits
 from prosiform.profile import REFERENCES, parse
-from prosiform.provenance import Ancestor, Carried, Generated, Origin, Range
+from prosiform.provenance import (
+    FILENAME_WRAPPER,
+    PROSIFORM_SECTION,
+    Ancestor,
+    Carried,
+    Generated,
+    Instruction,
+    Origin,
+    Range,
+    Record,
+)
 from prosiform.rewrite import Definition, definitions
-from prosiform.source import Source, fragments, lines
+from prosiform.source import Source, fragments, lines, regions
 
 BUDGET = Limits({budget: budget.default for budget in BUDGETS}).of(NESTING)
 
@@ -308,6 +319,48 @@ def test_an_added_diagram_click_fails() -> None:
         "%% the note links nowhere yet", 'click Note href "#note"'
     )
     assert refused(one).invariant == NO_NEW_LINKS
+
+
+SEQUENCED = """# Guide
+
+```mermaid
+sequenceDiagram
+    participant Open
+    link Open: The note @ note.md
+    links Open: {"Note": "note.md"}
+```
+"""
+
+
+def test_a_candidate_carrying_rewritten_sequence_menu_destinations_validates() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.validate()
+    assert "link Open: The note @ #35;note\n" in one.bundled
+    assert 'links Open: {"Note": "#35;note"}' in one.bundled
+
+
+def test_a_sequence_menu_entry_spelling_its_anchor_bare_names_nothing() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace("@ #35;note", "@ #note")
+    assert refused(one).invariant == NO_NEW_LINKS
+
+
+def test_a_sequence_menu_value_spelling_its_anchor_bare_names_nothing() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('"#35;note"', '"#note"')
+    assert refused(one).invariant == NO_NEW_LINKS
+
+
+def test_a_sequence_menu_entry_naming_another_heading_fails() -> None:
+    one = built({"guide.md": SEQUENCED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace("@ #35;note", "@ #35;guide")
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_click_spelling_its_anchor_as_an_entity_fails() -> None:
+    one = built({"guide.md": DIAGRAMMED, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('href "#note"', 'href "#35;note"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
 
 
 def test_reformatted_untouched_bytes_fail() -> None:
@@ -658,3 +711,39 @@ def test_a_link_inside_image_alternative_content_the_bundle_altered_fails() -> N
         "[shared rules](#rules)", "[other rules](#rules)", 1
     )
     assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def instructing(destination: str) -> None:
+    """Hold one instruction linking one destination to the Prosiform protocols."""
+    line = (
+        f"Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch]({destination}) "
+        "states."
+    )
+    text = f"# Prosiform\n\n## Dispatch\n\nProtocol.\n\n# Guide\n\n{line}\n"
+    tokens = parse(text, BUDGET)
+    headings = (
+        Generated("Prosiform", 1, PROSIFORM_SECTION),
+        Generated("Dispatch", 2, PROSIFORM_SECTION),
+        Generated("Guide", 1, FILENAME_WRAPPER),
+    )
+    record = Record("guide.md", None, headings, ())
+    reached = {
+        fragment: (record, heading)
+        for fragment, heading in zip(
+            ["prosiform", "dispatch", "guide"], headings, strict=True
+        )
+    }
+    protocols(reached, Instruction(line), list(regions(tokens))[-1], tokens)
+
+
+def test_an_instruction_linking_its_protocol_holds() -> None:
+    instructing("#dispatch")
+
+
+@pytest.mark.parametrize("destination", ["#guide", "#nowhere"])
+def test_an_instruction_linking_no_protocol_of_the_prosiform_section_is_invalid(
+    destination: str,
+) -> None:
+    with pytest.raises(Invalid) as caught:
+        instructing(destination)
+    assert caught.value.invariant == TARGET_INTEGRITY

@@ -1,0 +1,16 @@
+description = "A run of several entries writes one bundle whose name joins each distinct selection's derived name with a plus sign, in the order the command line first names it: a path keeps its directories as underscores, a section adds its fragment, and a repeated equivalent reference counts once."
+
+clauses = [
+  "Automatic output names, several selections join their names",
+  "CLI contract — -o DIR, the invocation working directory when absent",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["notes/rules.md", "guide.md#run", "./notes/rules.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/notes_rules+guide__run.bundle.md"]
+diagnostics = []

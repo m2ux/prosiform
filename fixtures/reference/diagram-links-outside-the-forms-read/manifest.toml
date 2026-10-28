@@ -1,0 +1,14 @@
+description = "A C4 diagram's link and a diagram type with no link syntax each name a document the source tree holds, and each fence is emitted as authored and compiles nothing."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -1,0 +1,16 @@
+description = "A run whose selected content carries one sequence diagram links line naming more destinations than the link budget allows fails, each destination of the line counted once where the source wrote it."
+
+clauses = [
+  "Resource limits — -L",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-L", "2", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"

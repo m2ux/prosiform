@@ -7,10 +7,12 @@ publication rechecks every captured source and bound directory. Discovery,
 rewriting and candidate validation use the same per-source resolution context."""
 
 import argparse
+import errno
 import os
 import re
+import shutil
 import sys
-import tempfile
+import uuid
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
@@ -56,20 +58,17 @@ from prosiform.closure import (
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
-    RUN_SET_MARK,
+    PARALLEL_MARK,
     Malformed,
     OutsideRoot,
     Reference,
     components,
     conflicting,
-    dispatched,
-    external,
     identity,
     inside,
     operators,
     resolvable,
     resolve,
-    run_set,
     withholding,
     withholding_target,
 )
@@ -84,7 +83,18 @@ from prosiform.diagnostics import (
     Reporter,
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
-from prosiform.dispatch import Hop, analysed, procedural, selfward, unprocedural
+from prosiform.dispatch import (
+    Anchors,
+    Hop,
+    Refused,
+    analysed,
+    anchors,
+    collisions,
+    cycle,
+    selfward,
+    subsections,
+    written_in,
+)
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
@@ -118,9 +128,8 @@ from prosiform.profile import (
     parse,
     refusals,
 )
+from prosiform.provenance import Target
 from prosiform.rewrite import Definition, definitions
-from prosiform.run_set import CODES as RUN_SET_CODES
-from prosiform.run_set import RunSet, misshapen, stray
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
     CLOSERS,
@@ -135,6 +144,7 @@ from prosiform.source import (
     Unterminated,
     content,
     decode,
+    external,
     fragments,
     hashed,
     index,
@@ -159,6 +169,9 @@ PUBLICATION_FAILURE = 3
 INTERNAL_ERROR = 4
 
 STANDARD_OUTPUT = "-"
+BUNDLE_SUFFIX = ".bundle.md"
+RUN_FOLDER_SUFFIX = ".bundles"
+CURRENT_FOLDER = "."
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
@@ -175,11 +188,12 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
+EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
     DISPATCH_MARK: "the dispatch mark",
-    RUN_SET_MARK: "the run-set mark",
+    PARALLEL_MARK: "the parallel dispatch mark",
 }
 
 CODES = tuple(
@@ -199,12 +213,12 @@ CODES = tuple(
             UNSUPPORTED_ENTRY_SUFFIX,
             RESOURCE_PORTABILITY,
             COINCIDENT_HEADING,
+            EARLIER_SET_RETAINED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
             *LIMITS_CODES,
             *PROFILE_CODES,
-            *RUN_SET_CODES,
             *SOURCE_CODES,
         }
     )
@@ -212,7 +226,8 @@ CODES = tuple(
 
 SOURCE_CHANGED_FAULT = "source-changed"
 INTERNAL_FAULT = "internal"
-FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT)
+CLEANUP_FAULT = "cleanup-refused"
+FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 
 DECIMAL = re.compile(r"^[0-9]+$")
 
@@ -222,6 +237,42 @@ EXIT_STATUSES = """exit statuses:
   2  invalid usage or option combination
   3  output publication or delivery failure, a broken pipe among them
   4  unexpected internal error
+"""
+
+GUIDE = """# Following a Skill with pf
+
+A skill's links name the documents to read. pf compiles a linked document, \
+and everything it reaches, into a bundle that is read whole.
+
+## Compile
+
+From the skill's directory, which holds `SKILL.md`, run:
+
+```bash
+pf -o <folder> <destination>
+```
+
+- `<destination>`  The link's destination as written.
+- `<folder>`  An existing working directory outside the repository.
+
+The run writes its bundles into `<folder>/<name>.bundles/`, where `<name>` is \
+the destination's path without its Markdown suffix, each `/` written as `_` \
+and a fragment added after `__`: `modes/plan-mode.md` compiles to \
+`modes_plan-mode.bundles/modes_plan-mode.bundle.md`, beside a bundle for each \
+target it dispatches.
+
+A non-zero exit stops the run and reports pf's diagnostics.
+
+## Inline Targets
+
+A link whose text opens with `↳` names an inline target: compile it, read the \
+whole bundle and follow it.
+
+## Following a Bundle
+
+A bundle that opens with a Prosiform section is followed from there: the \
+section states how each dispatched bundle in the run's folder is handed to a \
+sub-agent, and the steps after it name the bundles they dispatch.
 """
 
 
@@ -369,10 +420,12 @@ def parser() -> Parser:
     grammar = Parser(
         prog=NAME,
         add_help=False,
+        allow_abbrev=False,
         usage=f"{NAME} [OPTIONS] REF [REF ...]",
         description=(
-            "Bundle the local Markdown closure of one or more entry references "
-            "into one validated document."
+            "Bundle the local Markdown closure of one or more entry references, "
+            "and of each target they dispatch, into validated bundles. Run with "
+            "no arguments, pf prints the guide to compiling and following them."
         ),
         epilog=EXIT_STATUSES,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -386,8 +439,10 @@ def parser() -> Parser:
     grammar.add_argument(
         "-o",
         dest="output",
-        metavar="FILE",
-        help="atomic validated output to FILE; -: stdout; default: derived filename",
+        metavar="DIR",
+        default=CURRENT_FOLDER,
+        help="existing folder the run's own folder of bundles is written into, "
+        "swapped in whole; default: the working directory",
     )
     grammar.add_argument(
         "-c",
@@ -420,18 +475,21 @@ def parser() -> Parser:
         )
     grammar.add_argument(
         "-C",
+        "--codes",
         dest="codes",
         action="store_true",
         help="list this build's error and warning codes",
     )
     grammar.add_argument(
         "-v",
+        "--version",
         dest="version",
         action="store_true",
         help="tool version and profile identifier",
     )
     grammar.add_argument(
         "-h",
+        "--help",
         dest="help",
         action="store_true",
         help="usage, defaults and exit statuses",
@@ -962,8 +1020,8 @@ def refusals_of_operators(
     """Refuse a link whose operator states nothing the run can carry out.
 
     Each operator states how one compilation is carried out — by a later
-    run, by a sub-agent, or by this run as a run-set — so a link stating
-    two states two contradictory things. An operator names the
+    run, by a sub-agent, or by a sub-agent alongside others — so a link
+    stating two states two contradictory things. An operator names the
     compilation of a Markdown document or section under the source root,
     so one opening a link or an image naming anything else — a remote
     address, a resource, a document outside the root — states a
@@ -1053,58 +1111,37 @@ def dispatches(
 ) -> Iterator[Hop]:
     """Every dispatched link the selected content of one source carries.
 
-    A dispatch is a withheld link a sub-agent compiles, so what is
-    yielded is the target `withheld` yields for it, with the place the
-    link is written: the hop a chain of dispatches takes from here.
+    A dispatch is a withheld link whose target the run compiles as a
+    bundle of its own, so what is yielded is the target the link names,
+    with the place the link is written: the hop a chain of dispatches
+    takes from here. The links are those the bundle's dispatch
+    sub-sections are placed for, read by the one reader that places
+    them, so every hop the run follows has its sub-section. A link with
+    no text after its mark leaves that sub-section nothing to be named
+    by, so it is refused as the operator refusals are, naming the route.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
-    for use in uses(tokens, selected):
-        if use.resource or not dispatched(use.opening):
-            continue
-        found = withholding_target(path, use.destination, use.opening, source.root)
-        if found is None:
-            continue
-        line = source.line(use.line)
-        yield Hop(
-            replace(
-                found,
-                origin=location(path, line),
-                chain=(*chain, identity(found)),
-            ),
-            Location(path, 1 if line is None else line, 1),
-        )
-
-
-def run_sets(
-    path: str,
-    source: Source,
-    tokens: Sequence[Token],
-    chosen: Selection | None,
-    chain: Sequence[str],
-) -> Iterator[RunSet]:
-    """Every run-set link the selected content of one source carries.
-
-    A run-set's target is compiled like any link's, so what is yielded is
-    the target the link resolves to, with the text the link opens with
-    and the place it is written, for the check of the target's shape.
-    """
-    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
-    for use in uses(tokens, selected):
-        if use.resource or not run_set(use.opening):
-            continue
-        found = resolvable(path, use.destination, source.root)
-        if found is None:
-            continue
-        line = source.line(use.line)
-        yield RunSet(
-            replace(
-                found,
-                origin=location(path, line),
-                chain=(*chain, identity(found)),
-            ),
-            use.opening,
-            Location(path, 1 if line is None else line, 1),
-        )
+    for region in selected:
+        for link in written_in(path, source, tokens, region):
+            if not link.text:
+                raise input_failure(
+                    f"the link {link.opening!r} dispatches {link.written!r} with "
+                    f"no text after its mark, so no sub-section heading can "
+                    f"name it",
+                    code=UNSUPPORTED_CONSTRUCT,
+                    remedy="write the link's text after its mark",
+                    reference=link.opening,
+                    source=location(path, link.location.line),
+                    chain=(*chain, link.written),
+                )
+            yield Hop(
+                replace(
+                    link.reference,
+                    origin=location(path, link.location.line),
+                    chain=(*chain, identity(link.reference)),
+                ),
+                link.location,
+            )
 
 
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
@@ -1139,7 +1176,6 @@ def traverse(
     dict[str, Capture],
     list[Reference],
     list[Hop],
-    list[RunSet],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -1187,9 +1223,7 @@ def traverse(
 
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
-    for the analysis of how deep the dispatches run, and so are the
-    run-set links, each target once in the same way, for the check of
-    its shape.
+    for the bundles the run compiles from them.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -1201,7 +1235,6 @@ def traverse(
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
     dispatching: dict[str, Hop] = {}
-    running: dict[str, RunSet] = {}
     total = 0
     hop = 0
     frontier = ([referrer] if referrer is not None else []) + list(requested)
@@ -1247,8 +1280,6 @@ def traverse(
                 deferred.setdefault((one.path, one.fragment), one)
             for link in dispatches(path, read[path], parsed[path], chosen, reached):
                 dispatching.setdefault(link.name, link)
-            for named in run_sets(path, read[path], parsed[path], chosen, reached):
-                running.setdefault(named.name, named)
             for one in required(path, read[path], parsed[path], chosen, reached):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1284,7 +1315,6 @@ def traverse(
         captured,
         found,
         list(dispatching.values()),
-        list(running.values()),
     )
 
 
@@ -1292,10 +1322,11 @@ def confirm(
     tokens: Sequence[Token],
     one: Reference,
 ) -> None:
-    """Hold one deferred reference to naming a document and a heading that exist.
+    """Hold one withheld reference to naming a document and a heading that exist.
 
     A deferral says that the material is reached in a run of its own,
-    not that nobody is answerable for it, so the document is read and
+    and a dispatch that a sub-agent reaches it, not that nobody is
+    answerable for it, so the document is read and
     the fragment is looked up. A reference the root does not carry is
     refused by the read, and one naming no heading of the document it
     resolves to is refused here, each with the code and the route a
@@ -1308,14 +1339,14 @@ def confirm(
     target is there to be found.
 
     The caller supplies the cached index from the source's captured read.
-    A deferred-only source contributes no content to a group.
+    A withheld-only source contributes no content to a group.
     """
     if one.fragment is None:
         return
     if any(heading.fragment == one.fragment for heading in index(tokens)):
         return
     raise input_failure(
-        f"the reference {one.original!r} names no heading of the document it defers",
+        f"the reference {one.original!r} names no heading of the document it withholds",
         code=TARGET_NOT_FOUND,
         remedy="name a heading the document carries",
         reference=one.original,
@@ -1459,7 +1490,7 @@ def coincident(
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
-            heading = file_named(named, read[named], parsed[named], one.wrapped)
+            heading = file_named(named, read[named], parsed[named], one.filed)
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
@@ -1547,6 +1578,7 @@ def assembled(
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
     inforce: Mapping[str, int],
+    dispatching: Anchors | None = None,
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -1578,6 +1610,7 @@ def assembled(
                     assigned,
                     read[path].root,
                     path == parent,
+                    dispatching,
                 )
             )
     for named, paths in merging.items():
@@ -1598,6 +1631,7 @@ def assembled(
                             depth,
                             read[path].root,
                             path == parent,
+                            dispatching,
                         )
                         for path in paths
                     ],
@@ -1657,6 +1691,7 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
+    bundle_file: Callable[[Target], str],
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
@@ -1668,9 +1703,12 @@ def compose(
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. The second pass emits the same headings
-    as the first, because a rewrite edits a link's destination and its
-    mark and nothing a heading is slugged from.
+    compiled link is rewritten through. Each build carries the dispatch
+    sub-sections its sections need, inserted once the group exists, so
+    the headings the map is built from are every heading the bundle
+    emits. The second pass emits the same headings as the first,
+    because a rewrite edits a link's destination and its mark and
+    nothing a heading is slugged from.
 
     Candidate validation closes the pass. Every invariant it holds is
     a property of the construction, which an author cannot reach, so a
@@ -1678,15 +1716,34 @@ def compose(
     emitted regions is the exception: it follows from the documents the
     run was asked to bundle together, and an author closing a code
     example or selecting other content resolves it, so it is reported
-    as the input failure it is.
+    as the input failure it is. A dispatch the bundle cannot place, and
+    an authored heading equal to one pf emits, are refused as input
+    failures too.
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
     selected = placement(read, parsed, selected, referrer, entries)
-    headed = assembled(read, parsed, defined, selected, entries, None, inforce)
+    try:
+        headed, placed = subsections(
+            assembled(read, parsed, defined, selected, entries, None, inforce),
+            parsed,
+            read,
+            bundle_file,
+        )
+        collisions(headed)
+    except Refused as refusal:
+        raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
-    groups = assembled(read, parsed, defined, selected, entries, targets, inforce)
+    dispatching = anchors(placed, assigned)
+    groups, _ = subsections(
+        assembled(
+            read, parsed, defined, selected, entries, targets, inforce, dispatching
+        ),
+        parsed,
+        read,
+        bundle_file,
+    )
     bundled = assemble(groups)
     try:
         validate(
@@ -1697,6 +1754,7 @@ def compose(
             read,
             parsed,
             limits.of(NESTING),
+            dispatching,
         )
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
@@ -1756,154 +1814,383 @@ def publish(text: str, stream: IO[str]) -> None:
         ) from refused
 
 
-def publish_file(text: str, destination: Path) -> None:
-    """Write one validated bundle to a named file, atomically.
+@dataclass(frozen=True)
+class Bundle:
+    """One composed bundle, the file name it is published under and its warnings.
 
-    The bytes go to a temporary file beside the destination and that file
-    is renamed onto it, which is one filesystem operation, so a reader of
-    the destination sees the bytes that were there before or the whole
-    bundle and never a partial one. A write the destination refuses
-    leaves the temporary file behind no longer than the attempt.
+    The selection names what the bundle was compiled from, so a
+    diagnostic about the bundle can name its source.
     """
-    written = None
-    try:
-        handle = tempfile.NamedTemporaryFile(
-            "w",
-            encoding=ENCODING,
-            newline="",
-            dir=destination.parent,
-            prefix=f".{destination.name}.",
-            delete=False,
-        )
-        written = Path(handle.name)
-        with handle:
-            handle.write(text)
-        os.replace(written, destination)
-    except OSError as refused:
-        if written is not None:
-            written.unlink(missing_ok=True)
+
+    text: str
+    name: str
+    warnings: Sequence[Diagnostic]
+    selection: str
+
+
+def publication(
+    bundles: Sequence[Bundle],
+    folder: Path,
+    limits: Limits,
+    reporter: Reporter,
+    check: bool,
+    retained: bool = False,
+) -> None:
+    """Validate every bundle a run publishes, then publish the set whole or not at all.
+
+    Each bundle is held to the output budget, every name is held to one
+    bundle, the output folder is held to existing, and the run folder's
+    name and each bundle's are held to the length its filesystem allows,
+    before any is written, so a set publication would refuse ends the run with its
+    diagnostic and nothing written, whether or not the run only
+    validates. Every bundle's warnings follow, in turn, and then the set
+    is published into the run's folder, unless the run only validates,
+    which writes nothing. A run asked to retain the earlier set stands
+    an empty one at its folder where nothing stands there, once every
+    check has passed, and is refused its removal once the new set stands.
+    """
+    for one in bundles:
+        try:
+            limits.hold(OUTPUT_BYTES, len(one.text.encode(ENCODING)))
+        except Crossed as crossed:
+            raise crossing(crossed) from crossed
+    named: dict[str, Bundle] = {}
+    for one in bundles:
+        earlier = named.setdefault(one.name, one)
+        if earlier is not one:
+            raise colliding(earlier, one)
+    if not folder.parent.is_dir():
         raise Failure(
             PUBLICATION_FAILURE,
             Diagnostic(
                 ERROR,
-                f"the output path {str(destination)!r} refused the bundle: {refused}",
+                f"the output folder {str(folder.parent)!r} is not an existing "
+                f"folder, so the run's bundles cannot be written under it",
                 code=PUBLICATION_FAILED,
-                remedy="name a path the run can write",
+                remedy="name an existing folder the run can write",
             ),
-        ) from refused
+        )
+    longest = os.pathconf(folder.parent, "PC_NAME_MAX")
+    for one, name in [(bundles[0], folder.name), *((one, one.name) for one in bundles)]:
+        if len(os.fsencode(name)) > longest:
+            raise overlong(one, name, longest)
+    for one in bundles:
+        for warning in one.warnings:
+            reporter.emit(warning)
+    if not check:
+        publish_folder(bundles, folder, reporter, retained)
 
 
-def derived_output(
-    read: Mapping[str, Source],
+def overlong(one: Bundle, name: str, longest: int) -> Failure:
+    """A name the run derives for one selection that its filesystem refuses."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the run derives the name {name!r} for {one.selection!r}, "
+            f"{len(os.fsencode(name))} bytes, longer than the {longest} the "
+            f"output folder's filesystem allows",
+            code=PUBLICATION_FAILED,
+            remedy="shorten the source's path so its derived name fits",
+        ),
+    )
+
+
+def colliding(earlier: Bundle, later: Bundle) -> Failure:
+    """Two bundles of one run whose selections derive one file name."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the bundles of {earlier.selection!r} and {later.selection!r} both "
+            f"derive the name {later.name!r}, so one would overwrite the other",
+            code=PUBLICATION_FAILED,
+            remedy="rename one of the two sources so their derived names differ",
+        ),
+    )
+
+
+def sibling(folder: Path, role: str) -> Path:
+    """A hidden path beside the run's folder that nothing else names.
+
+    Its length is fixed, whatever the run folder's name, so any run
+    folder the filesystem accepts can be staged beside.
+    """
+    return folder.with_name(f".pf.{role}.{uuid.uuid4().hex}")
+
+
+def publish_folder(
+    bundles: Sequence[Bundle], folder: Path, reporter: Reporter, retained: bool
+) -> None:
+    """Write a run's set of bundles as one folder, swapped in whole.
+
+    Every bundle is written into a fresh folder beside the run's
+    folder, which is then renamed onto it, so a reader sees the whole
+    set the run produced or the whole set that was there before it,
+    never a mixture. Whatever already stands at the run folder's path
+    is renamed aside first and removed once the new folder is in place,
+    so for a moment nothing stands at that path. The path is never
+    followed: a symbolic link standing there is renamed and removed as
+    the link it is, and whatever it names is left as it was.
+
+    A failure before the new folder is in place removes it and leaves
+    everything else as it was, the earlier set restored where it was
+    moved aside; one that cannot be restored is reported where it lies.
+    An earlier set that cannot be removed once the new folder stands
+    leaves the run published, and is reported where it lies. Nothing
+    else in the output folder is touched.
+
+    The run's folder is the entry's derived name with the `.bundles`
+    suffix, so the folder a run replaces is only ever one a run names,
+    never an author's folder named like the entry.
+    """
+    staged = sibling(folder, "new")
+    try:
+        staged.mkdir()
+    except OSError as refused:
+        raise refusal(folder, refused) from refused
+    try:
+        for one in bundles:
+            with (staged / one.name).open("x", encoding=ENCODING, newline="") as file:
+                file.write(one.text)
+    except OSError as refused:
+        shutil.rmtree(staged, ignore_errors=True)
+        raise refusal(staged / one.name, refused) from refused
+    if retained and not (folder.exists() or folder.is_symlink()):
+        folder.mkdir()
+    aside = None
+    if folder.exists() or folder.is_symlink():
+        aside = sibling(folder, "old")
+        try:
+            os.rename(folder, aside)
+        except OSError as refused:
+            shutil.rmtree(staged, ignore_errors=True)
+            raise refusal(folder, refused) from refused
+    try:
+        os.rename(staged, folder)
+    except OSError as refused:
+        shutil.rmtree(staged, ignore_errors=True)
+        if aside is not None:
+            try:
+                os.rename(aside, folder)
+            except OSError as stranded:
+                raise unrestored(folder, aside, stranded) from refused
+        raise refusal(folder, refused) from refused
+    if aside is None:
+        return
+    try:
+        if retained:
+            raise PermissionError(errno.EACCES, "the run was asked to refuse it")
+        if aside.is_dir() and not aside.is_symlink():
+            shutil.rmtree(aside)
+        else:
+            aside.unlink()
+    except OSError as refused:
+        reporter.emit(
+            Diagnostic(
+                WARNING,
+                f"the run's bundles are published, and the earlier set moved "
+                f"aside to {str(aside)!r} could not be removed: {refused}",
+                code=EARLIER_SET_RETAINED,
+                remedy=f"remove {str(aside)!r}",
+            )
+        )
+
+
+def refusal(destination: Path, refused: OSError) -> Failure:
+    """One output path that refused the run's bundles, as a publication failure."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the output path {str(destination)!r} refused the bundle: {refused}",
+            code=PUBLICATION_FAILED,
+            remedy="name an existing folder the run can write",
+        ),
+    )
+
+
+def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
+    """A refused swap whose earlier set could not be put back where it stood."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the output path {str(folder)!r} refused the bundle, and the earlier "
+            f"set moved aside to {str(aside)!r} could not be restored: {refused}",
+            code=PUBLICATION_FAILED,
+            remedy=f"rename {str(aside)!r} to {str(folder)!r}",
+        ),
+    )
+
+
+def selections(
+    referrer: Reference | None, requested: Sequence[Reference]
+) -> tuple[Target, ...]:
+    """Each distinct selection the command line names, in first-named order."""
+    return tuple(
+        dict.fromkeys(
+            (one.path or (referrer.path if referrer else ""), one.fragment)
+            for one in requested
+        )
+    )
+
+
+def run_name(selected: Sequence[Target]) -> str:
+    """The name the selections give a run: each selection's name, joined.
+
+    A selection is named by its working-directory path, its Markdown
+    extension removed and each separator written as an underscore, and a
+    section adds two underscores and its fragment. The names are joined
+    with a plus sign in the order given.
+    """
+    names = []
+    for path, fragment in selected:
+        name = str(Path(path).with_suffix("")).replace(os.sep, "_")
+        if fragment is not None:
+            name += f"__{fragment}"
+        names.append(name)
+    return "+".join(names)
+
+
+def bundle_file(target: Target) -> str:
+    """The file one selection's bundle is published under."""
+    return f"{run_name((target,))}{BUNDLE_SUFFIX}"
+
+
+def derived_name(referrer: Reference | None, requested: Sequence[Reference]) -> str:
+    """The entry bundle's file name, joined from each distinct selection's name."""
+    return f"{run_name(selections(referrer, requested))}{BUNDLE_SUFFIX}"
+
+
+@dataclass(frozen=True)
+class Compiled:
+    """One bundle of a run, compiled from its own entry under its own budgets.
+
+    The dispatches are each distinct target the bundle dispatches, at the
+    first link naming it. The warnings are held in two runs so a depth
+    warning, which only the run's entry raises and only once every
+    bundle is compiled, takes its place between them.
+    """
+
+    text: str
+    name: str
+    hops: Sequence[Hop]
+    leading: Sequence[Diagnostic]
+    trailing: Sequence[Diagnostic]
+    captured: Mapping[str, Capture]
+
+
+def compiled(
+    root: Path,
     referrer: Reference | None,
     requested: Sequence[Reference],
-) -> str:
-    """The basename of one normalized entry, from its working-directory path."""
-    selections = {
-        (one.path or (referrer.path if referrer else ""), one.fragment)
-        for one in requested
-    }
-    if len(selections) != 1:
-        raise usage_failure(
-            "multiple distinct selections require an explicit -o destination"
+    options: argparse.Namespace,
+    folder: Path,
+) -> Compiled:
+    """One bundle compiled as its own entry, every budget counted from it alone.
+
+    Each bundle is read by one agent, so each starts from a fresh count
+    of what it opens, reaches and publishes, and its expansion depth is
+    counted from its own entry.
+    """
+    limits = budgets(options)
+    try:
+        read, parsed, defined, captured, found, hops = traverse(
+            root, referrer, requested, limits
         )
-    path, fragment = next(iter(selections))
-    name = str(Path(path).with_suffix("")).replace(os.sep, "_")
-    if fragment is not None:
-        name += f"__{fragment}"
-    return f"{name}.bundle.md"
+    except Crossed as crossed:
+        raise crossing(crossed) from crossed
+    for held in sources(root, read):
+        if held == folder or folder in held.parents:
+            raise usage_failure(
+                f"the output folder {str(folder)!r} holds the input source "
+                f"{str(held)!r}"
+            )
+    bundled, coinciding = compose(
+        read, parsed, defined, referrer, requested, found, limits, bundle_file
+    )
+    trailing: list[Diagnostic] = []
+    if resourced(bundled, limits.of(NESTING)):
+        trailing.append(
+            Diagnostic(
+                WARNING,
+                "the bundle names at least one resource, which it carries as the "
+                "text its source wrote, so a reader opening the bundle from "
+                "another directory may not find it",
+                code=RESOURCE_PORTABILITY,
+            )
+        )
+    return Compiled(
+        bundled,
+        derived_name(referrer, requested),
+        hops,
+        [*coinciding, *(selfward(hop) for hop in hops if hop.own)],
+        trailing,
+        captured,
+    )
 
 
-def unperformable(
-    hops: Sequence[Hop], parsed: Mapping[str, Sequence[Token]]
-) -> list[Diagnostic]:
-    """One warning for each target the bundle dispatches that carries no step.
+def dispatched_set(
+    root: Path,
+    entry: Compiled,
+    single: Collection[str],
+    options: argparse.Namespace,
+    folder: Path,
+) -> dict[str, Compiled]:
+    """Every bundle the entry's dispatches reach, transitively, by target.
 
-    A target's selected content is the whole document, or the section a
-    fragment names with its subsections, as the sub-agent compiling it
-    selects it. A section the run cannot root is the sub-agent's to
-    refuse, and raises nothing here.
+    Each distinct target is compiled once, as its own entry, in the
+    order the dispatches reaching it were read. A target naming the
+    run's own single selection is the entry's bundle.
     """
-    found: list[Diagnostic] = []
-    for hop in hops:
-        tokens = parsed[hop.target.path]
-        if hop.target.fragment is None:
-            chosen: Sequence[Token] = tuple(regions(tokens))
-        else:
-            try:
-                rooted = section(tokens, hop.target.fragment)
-            except (Ambiguous, Nested):
-                continue
-            if rooted is None:
-                continue
-            chosen = rooted
-        if not procedural(list(within(tokens, chosen))):
-            found.append(unprocedural(hop))
+    built: dict[str, Compiled] = {}
+    pending = list(entry.hops)
+    while pending:
+        hop = pending.pop(0)
+        if hop.name in built or hop.name in single:
+            continue
+        target = replace(hop.target, origin=None, chain=(hop.name,))
+        one = compiled(root, None, [target], options, folder)
+        built[hop.name] = one
+        pending.extend(one.hops)
+    return built
+
+
+def target_name(target: Target) -> str:
+    """One selection as the document and the section it names."""
+    path, fragment = target
+    return path if fragment is None else f"{path}#{fragment}"
+
+
+def captured_once(captures: Iterator[Mapping[str, Capture]]) -> dict[str, Capture]:
+    """Every source the run's bundles read, each as one read of it.
+
+    Each bundle captures the sources it reads, so a source two bundles
+    read is captured twice. Two captures holding different bytes or
+    identities record a source written between the two reads, and the
+    run's bundles would carry two versions of it, so the run is refused
+    as one whose source changed.
+    """
+    found: dict[str, Capture] = {}
+    for one in captures:
+        for path, held in one.items():
+            earlier = found.setdefault(path, held)
+            if (earlier.digest, earlier.file_identity) != (
+                held.digest,
+                held.file_identity,
+            ):
+                raise changed(
+                    path, "changed between two of the run's reads", held.chain
+                )
     return found
-
-
-def misshaped(
-    links: Sequence[RunSet],
-    read: Mapping[str, Source],
-    parsed: Mapping[str, Sequence[Token]],
-) -> list[Diagnostic]:
-    """One warning for each target a run-set link names that is no run-set.
-
-    The target is compiled into the bundle, so its selected content is
-    the whole document, or the section a fragment names with its
-    subsections, read from the source the run parsed. Each link in it
-    resolves from the target's own document within that document's root.
-    """
-    found: list[Diagnostic] = []
-    for link in links:
-        tokens = parsed[link.target.path]
-        source = read[link.target.path]
-        if link.target.fragment is None:
-            chosen: Sequence[Token] = tuple(regions(tokens))
-        else:
-            try:
-                rooted = section(tokens, link.target.fragment)
-            except (Ambiguous, Nested):
-                continue
-            if rooted is None:
-                continue
-            chosen = rooted
-
-        def calls(
-            destination: str, document: str = link.target.path, root: str = source.root
-        ) -> bool:
-            return resolvable(document, destination, root) is not None
-
-        held = stray(tokens, chosen, calls)
-        if held is not None:
-            found.append(misshapen(link, held, source.line(held.line)))
-    return found
-
-
-def onward(root: Path, limits: Limits) -> Callable[[Reference], Sequence[Hop]]:
-    """The dispatches a target's closure carries, were it compiled as an entry.
-
-    A sub-agent compiles a dispatched target as its own entry, so its
-    closure is the one this run's traversal reaches from that target,
-    under every rule this run's own closure follows. The traversal is
-    read for its dispatches alone and publishes nothing. A target whose
-    own compilation is refused carries no further hop here: that run
-    reports the refusal, and this one publishes the bundle it compiled.
-    """
-
-    def beyond(target: Reference) -> Sequence[Hop]:
-        entered = replace(target, origin=None, chain=(identity(target),))
-        try:
-            *_, hops, _ = traverse(root, None, [entered], limits)
-        except (Failure, Crossed):
-            return ()
-        return hops
-
-    return beyond
 
 
 def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> int:
     """One invocation, from its command line to the status its outcome returns."""
+    if not arguments:
+        publish(GUIDE, stdout)
+        return SUCCESS
     grammar = parser()
     options = grammar.parse_args(list(arguments))
 
@@ -1919,6 +2206,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     if not options.references:
         raise usage_failure("at least one entry reference is required")
+    if options.output == STANDARD_OUTPUT:
+        raise usage_failure(
+            "-o - names standard output, which carries no bundle; -o names the "
+            "folder the run's bundles are written under"
+        )
     requested = [entry(reference) for reference in options.references]
     if not options.referrer:
         for one in requested:
@@ -1934,60 +2226,47 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         referring = replace(referring, chain=(identity(referring),))
     requested = entered(referring, requested)
 
-    limits = budgets(options)
+    selected = selections(referring, requested)
+    folder = Path(options.output).resolve() / f"{run_name(selected)}{RUN_FOLDER_SUFFIX}"
+    first = compiled(root, referring, requested, options, folder)
+    single = {requested[0].chain[0]} if len(selected) == 1 else set()
+    built = dispatched_set(root, first, single, options, folder)
+
+    def onward(target: Reference) -> Sequence[Hop]:
+        name = identity(target)
+        return first.hops if name in single else built[name].hops
+
     try:
-        read, parsed, defined, captured, found, hops, running = traverse(
-            root, referring, requested, limits
-        )
-    except Crossed as crossed:
-        raise crossing(crossed) from crossed
-    output = options.output
-    if output is None:
-        output = derived_output(read, referring, requested)
-    if output != STANDARD_OUTPUT:
-        destination = Path(output).resolve()
-        if destination in sources(root, read):
-            raise usage_failure(f"the output path {output!r} names an input source")
-    bundled, coinciding = compose(
-        read, parsed, defined, referring, requested, found, limits
-    )
+        cycle(first.hops, single, onward)
+    except Refused as refused:
+        raise Failure(INPUT_FAILURE, refused.diagnostic) from refused
+    captured = captured_once(one.captured for one in (first, *built.values()))
     if options.fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
     if options.fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
-    try:
-        limits.hold(OUTPUT_BYTES, len(bundled.encode(ENCODING)))
-    except Crossed as crossed:
-        raise crossing(crossed) from crossed
-    for warning in coinciding:
-        reporter.emit(warning)
-    for warning in unperformable(hops, parsed):
-        reporter.emit(warning)
-    for hop in hops:
-        if hop.own:
-            reporter.emit(selfward(hop))
-    for warning in analysed(
-        hops, {one.chain[0] for one in requested}, onward(root, limits)
-    ):
-        reporter.emit(warning)
-    for warning in misshaped(running, read, parsed):
-        reporter.emit(warning)
-    if resourced(bundled, limits.of(NESTING)):
-        reporter.emit(
-            Diagnostic(
-                WARNING,
-                "the bundle names at least one resource, which it carries as the "
-                "text its source wrote, so a reader opening the bundle from "
-                "another directory may not find it",
-                code=RESOURCE_PORTABILITY,
-            )
-        )
-    if not options.check:
-        if output == STANDARD_OUTPUT:
-            publish(bundled, stdout)
-        else:
-            publish_file(bundled, destination)
+    deep = analysed(first.hops, single, onward)
+    bundles = [
+        Bundle(
+            first.text,
+            first.name,
+            [*first.leading, *deep, *first.trailing],
+            " ".join(target_name(one) for one in selected),
+        ),
+        *(
+            Bundle(one.text, one.name, [*one.leading, *one.trailing], name)
+            for name, one in built.items()
+        ),
+    ]
+    publication(
+        bundles,
+        folder,
+        budgets(options),
+        reporter,
+        options.check,
+        options.fault == CLEANUP_FAULT,
+    )
     return SUCCESS
 
 

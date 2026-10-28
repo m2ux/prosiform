@@ -1,0 +1,15 @@
+description = "A link whose text opens with the parallel dispatch mark and no space after it opens no operator: it is compiled like any other link, its destination rewritten to the bundled heading, and the bundle carries the link's text exactly as its author wrote it, with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — The parallel dispatch mark",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

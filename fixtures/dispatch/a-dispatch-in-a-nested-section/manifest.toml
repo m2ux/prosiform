@@ -1,0 +1,16 @@
+description = "A dispatch in a level-3 section takes its sub-section one level below, at level 4, after the section's own content and before its child section, and the target compiles to a bundle of its own."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/sketch.bundle.md"]
+diagnostics = []

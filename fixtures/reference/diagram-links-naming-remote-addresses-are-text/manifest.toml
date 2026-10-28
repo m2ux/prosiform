@@ -1,0 +1,14 @@
+description = "A Kanban ticket whose ticket base URL builds a remote address, and a diagram node label holding an HTML anchor naming a remote address, are each emitted as authored and open nothing."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

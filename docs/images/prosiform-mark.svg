@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Prosiform">
+<title>Prosiform</title>
+<style>g.m{stroke:#0969DA;fill:#0969DA}@media (prefers-color-scheme:dark){g.m{stroke:#58A6FF;fill:#58A6FF}}</style>
+<g class="m"><g stroke-width="16"><line x1="60" y1="20" x2="60" y2="180"/><line x1="140" y1="20" x2="140" y2="180"/><line x1="20" y1="60" x2="180" y2="60"/><line x1="20" y1="140" x2="180" y2="140"/></g><g stroke-width="7"><line x1="86" y1="76" x2="86" y2="124"/><line x1="114" y1="76" x2="114" y2="124"/><line x1="76" y1="86" x2="124" y2="86"/><line x1="76" y1="114" x2="124" y2="114"/></g><rect x="95" y="95" width="10" height="10" stroke="none"/></g>
+</svg>

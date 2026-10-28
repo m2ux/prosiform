@@ -37,7 +37,7 @@ from typing import Any
 import conformance
 import pytest
 from conformance import CLAIMS, RECORDED, SECTIONS, clauses, listed, render, report
-from manifests import catalogue, severities
+from manifests import MANIFEST_NAME, catalogue, errors, read, severities
 
 DESIGN = """# A design
 
@@ -115,7 +115,6 @@ def fixture(
         "invocation": {"arguments": ["guide.md"]},
         "expected": {
             "exit_status": status,
-            "stdout": "expected/stdout.md",
             "diagnostics": diagnostics or [],
         },
     }
@@ -136,7 +135,6 @@ def as_toml(manifest: dict[str, Any]) -> str:
     lines += [
         "[expected]",
         f"exit_status = {manifest['expected']['exit_status']}",
-        'stdout = "expected/stdout.md"',
     ]
     if not manifest["expected"]["diagnostics"]:
         lines.append("diagnostics = []")
@@ -429,3 +427,13 @@ def test_the_summary_counts_what_the_report_accounts_for(corpus: Path) -> None:
         f"{len(SECTIONS)} section(s) stating no behaviour, "
         f"{len(listed())} installation claim(s) no run observes"
     ) in printed[-1]
+
+
+def test_every_manifest_the_corpus_fixture_writes_is_one_the_schema_accepts(
+    corpus: Path,
+) -> None:
+    written = sorted(corpus.rglob(MANIFEST_NAME))
+    assert len(written) == 3
+    assert {str(path): errors(read(path)) for path in written} == {
+        str(path): [] for path in written
+    }

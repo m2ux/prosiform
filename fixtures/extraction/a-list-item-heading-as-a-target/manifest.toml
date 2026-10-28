@@ -12,7 +12,6 @@ arguments = ["guide.md#listed"]
 
 [expected]
 exit_status = 1
-stdout = "expected/stdout.md"
 
 [[expected.diagnostics]]
 severity = "error"

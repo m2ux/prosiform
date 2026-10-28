@@ -1,4 +1,4 @@
-description = "A dispatch naming a section of the entry's own document is a hop like any other, and warns as a dispatch of its own document: the section's closure is what its sub-agent compiles, so a chain through it reaching a fourth dispatch warns, while the chain from the same section's own dispatch in the bundle is three hops and raises nothing."
+description = "A dispatch naming a section of the entry's own document is a hop like any other, and warns as a dispatch of its own document: the section's bundle dispatches in turn, so a chain through it reaching a fourth dispatch warns, while the chain from the same section's own dispatch in the entry is three hops and raises nothing."
 
 clauses = [
   "Link classification and resource handling — Dispatching its own document",
@@ -13,7 +13,7 @@ arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
-stdout = "expected/stdout.md"
+bundles = ["expected/guide.bundle.md", "expected/guide__run.bundle.md", "expected/plan.bundle.md", "expected/record.bundle.md", "expected/review.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

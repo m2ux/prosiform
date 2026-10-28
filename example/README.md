@@ -27,13 +27,19 @@ cd example/work-planner
 pf modes/plan-mode.md
 ```
 
-It writes the bundle to `modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
+It writes the bundle to `modes_plan-mode.bundles/modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, beside a bundle for each target its dispatches reach, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) opens on the mode's own title and preamble, which tell the agent what to follow:
+The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) opens with its Prosiform section, which states the Dispatch protocol its dispatch sub-section follows, then the mode's own title and preamble, which tell the agent what to follow:
 
 ```markdown
+# Prosiform
+
+## Dispatch
+
+Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+
 # Plan Mode
 
 Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
@@ -57,21 +63,27 @@ The four documents the step links arrive in the bundle, and their headings are d
 
 The bundle shows each of these constructs:
 
-- **The entry's own content.** Plan Mode's title, preamble, `Procedure` and `Outcomes` open the bundle, without the entry's frontmatter.
-- **Whole documents under their titles.** Rules, Conventions, Propose Mode and Bootstrap declare no group, and each stands as an H1 headed by its own title.
+- **The Prosiform section.** The bundle dispatches, so it opens with `# Prosiform` and its `## Dispatch` protocol, in wording every bundle shares.
+- **The entry's own content.** Plan Mode's title, preamble, `Procedure` and `Outcomes` follow, without the entry's frontmatter.
+- **Whole documents under their titles.** Rules, Conventions and Propose Mode declare no group, and each stands as an H1 headed by its own title.
 - **Declared groups.** `Artifacts`, `Protocols` and `References` head their members in title case, each member's H1 an H2 beneath the group: the eighteen artifacts the bundle's links reach, two protocols and one reference.
 - **Dependency order.** Rules and Conventions follow the entry's own sections, in the order its preamble links them.
 - **Compiled links.** Every link to a document or section under the root points at a heading in the bundle.
 - **Distinct destinations for coinciding headings.** The `Procedure` headings of Propose Mode and Initiative Publication take `#procedure-1` and `#procedure-2`, the destinations their preambles link.
-- **A dispatched link.** The `⇉` mark is published, the destination names Sync Mode from the working directory, and Sync Mode contributes no content:
+- **A dispatched link.** The `⇉` mark is dropped, the link points at a sub-section of its step naming the Sync Mode bundle the run publishes beside this one, and Sync Mode contributes no content here:
 
   ```markdown
   9. **Record delivered work.**
      When work has landed:
-     - Follow [⇉ Sync Mode](modes/sync-mode.md) for the affected initiative.
+     - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
      - For each unplaced task row it returns pending:
        - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
        - Repeat Sync Mode with the refreshed epic.
+     - Return the saved delivery state or blockers.
+
+  ### Dispatch Sync Mode
+
+  Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
   ```
 
 - **An outside-root link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.
@@ -105,7 +117,7 @@ pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
+The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
 
 ```markdown
 # Artifacts
@@ -153,7 +165,7 @@ pf modes/revise-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) carries the step with the deferral mark removed:
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) carries the step with the deferral mark removed:
 
 ```markdown
 1. **Read the guidelines.**
@@ -164,23 +176,25 @@ The deferred link's destination names the guidelines from the working directory,
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml).
 
-## Run calls together
+## Read in steps
 
 ### Input
 
-The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step that marks its `Board Reads` section with `⫽`, a section holding only a bulleted list of calls:
+The [delivery evidence](work-planner/artifacts/delivery-evidence.md) artifact reads a board through a step that links its `Board Reads` section, whose reads are numbered step sub-sections, in the order their results are taken:
 
 ```markdown
-1. Apply the [⫽ board reads](#board-reads).
+1. Apply the [board reads](#board-reads).
 2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
 
 #### Board Reads
 
-- Apply [Read Board State](board.md#read-board-state) with the board owner and number for its items, Status field and repositories.
-  - Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for each [repository](board.md#repositories) Read Board State returned.
-    - Apply [Fetch Pull Request Issue Links](pull-request.md#fetch-pull-request-issue-links) with those records.
-- Apply [Read Board Configuration](board.md#read-board-configuration) with the board owner and number and output paths for the board fields.
-- Apply [Read Board Assignee](board.md#read-board-assignee) for the assignee login.
+##### 1. Read Board State
+
+Apply [Read Board State](board.md#read-board-state) with the board owner and number for its items, Status field and [repositories](board.md#repositories).
+
+##### 2. Fetch Initiative Pull Requests
+
+Apply [Fetch All Initiative Pull Requests](pull-request.md#fetch-all-initiative-pull-requests) for each repository Read Board State returned, for the pull request records.
 ```
 
 ### Command
@@ -194,24 +208,24 @@ pf modes/advance-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/stdout.md) publishes the `⫽` mark and points the link at the compiled `Board Reads` section, whose calls point at their headings in the bundle:
+The [expected bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) points the link at the compiled `Board Reads` section, whose steps sit one level below it and whose calls point at their headings in the bundle:
 
 ```markdown
-1. Apply the [⫽ board reads](#board-reads).
+1. Apply the [board reads](#board-reads).
 2. Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
 
 ##### Board Reads
 
-- Apply [Read Board State](#read-board-state) with the board owner and number for its items, Status field and repositories.
-  - Apply [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests) for each [repository](#repositories) Read Board State returned.
-    - Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with those records.
-- Apply [Read Board Configuration](#read-board-configuration) with the board owner and number and output paths for the board fields.
-- Apply [Read Board Assignee](#read-board-assignee) for the assignee login.
+###### 1. Read Board State
+
+Apply [Read Board State](#read-board-state) with the board owner and number for its items, Status field and [repositories](#repositories).
+
+###### 2. Fetch Initiative Pull Requests
+
+Apply [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests) for each repository Read Board State returned, for the pull request records.
 ```
 
-The section stands one level deeper than in its source, beneath the `Delivery Evidence` member of the `Artifacts` group. The agent reads the calls in the bundle and runs them together, as the bundle's `Symbols` table states.
-
-[Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/manifest.toml).
+[Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/manifest.toml).
 
 ## Declare groups per file
 
@@ -237,7 +251,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's first step applies leads:
 
 ```markdown
 # Artifacts
@@ -265,7 +279,7 @@ The [my-skill](my-skill/SKILL.md) rules have no source headings. Their generated
 
 ```bash
 cd example/my-skill
-pf -o - procedure.md rules/common.md
+pf procedure.md rules/common.md
 ```
 
 The grouped portion is:
@@ -288,7 +302,7 @@ Select rules for your harness:
 - If you are Claude, compile [Claude](rules/claude.md).
 ```
 
-`Common` leads because the command line names it, and `Agents` follows at the link `Common` carries. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagrams](../README.md#how-it-works) show this Rules grouping and the subsequent compilation of deferred agent-specific rules.
+`Common` leads because the command line names it, and `Agents` follows at the link `Common` carries. Each member keeps a distinct destination, `#agents` or `#common`. Generated headings use title case, while deferred filesystem paths keep the source spelling. The [README diagram](../README.md#how-it-works) shows this Rules grouping.
 
 ## More fixture examples
 
@@ -296,13 +310,13 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 
 | Example | Invocation fixture | Expected output |
 | --- | --- | --- |
-| Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/stdout.md) |
-| Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/stdout.md) |
-| Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/stdout.md) |
-| Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/stdout.md) |
-| Run calls together with `⫽` | [Manifest](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-calls-it-runs-together/expected/stdout.md) |
-| Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/stdout.md) |
-| Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | [Empty stdout](../fixtures/usage-example/validation-without-publication/expected/stdout.md) |
+| Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) |
+| Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) |
+| Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/artifacts_epic-issue-body__record-epic-delivery+artifacts_epic__delivery-findings.bundle.md) |
+| Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) |
+| Read in steps | [Manifest](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) |
+| Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) |
+| Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | None: the run writes no bundle |
 
 ## Source and validation
 
