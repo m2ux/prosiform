@@ -12,6 +12,7 @@ Every later row of the epic publishes into this folder: a run that compiles a bu
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The output folder, joined derived names and the corpus runner reading the folder |
 
 ## Links
 
