@@ -8,7 +8,16 @@ Validated head: `9c200ffc5145d9ed407cbee7dbda5da820d359cb`. Source commit: `e4e2
 
 ## Checks
 
-Implementation, consumer review and repository checks are complete; publication and merge evidence are pending.
+Implementation, consumer review, repository checks and delivery are complete.
+
+## Delivery Evidence
+
+- [Task pull request #387](https://github.com/m2ux/prosiform/pull/387) merges the exact validated head into `i05/e06/main` at `758d7f41323d0a5d18a20c4a8d3f07fa3d2dbfdc`.
+- [GitHub Checks](https://github.com/m2ux/prosiform/actions/runs/40833520896/job/123312894489) passed for `9c200ffc5145d9ed407cbee7dbda5da820d359cb`. The target had no branch protection or active rules and no review requirement; the pull request was clean and mergeable.
+- The post-merge comparison between the validated head and merge commit returns no changed files.
+- Epic #376 records W07 Done and AC7 checked. The epic remains open and In Progress on Project 18.
+- Epic review #386 remains an open draft from `i05/e06/main` to `main`, with its overview and references refreshed. The complete issue and pull request Development relations still link #376 and #386 in both directions.
+- W07 has no separate task issue. No closure is due; W08 is the next task.
 
 ## Repository Check Execution
 

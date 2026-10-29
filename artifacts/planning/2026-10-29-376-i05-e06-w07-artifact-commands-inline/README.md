@@ -21,5 +21,5 @@ The task covers AC7 of Example Authoring. The approved placement artifact suppli
 | Resource | Link |
 | --- | --- |
 | Epic | [Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
+| Task pull request | [Artifact Commands Inline in Their Steps](https://github.com/m2ux/prosiform/pull/387) |
 | Epic plan | [Planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
-
