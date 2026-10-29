@@ -21,12 +21,16 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 | [W07 work item](w07.md) | The `errored` class for a session that entered no state |
 | [W06 + W07 validation](validation-w06-w07.md) | The test-plan results, the mutation checks and the ten-session probe |
 | [W06 + W07 change list](change-list-w06-w07.md) | What this delivery applied, and the baseline refresh it held |
+| [W08 work item](w08.md) | Session isolation: the eval's config directory, its plugin hook and the injected context |
+| [W09 work item](w09.md) | The baseline refreshed, and the run that is refused rather than reported |
 
 ## Decisions
 
 - **Repeatable eval, not a one-off.** It lives in prosiform under `evals/diagram-following/`.
 - **Real agent sessions.** `claude -p --bare` in a fresh workspace per session; the CLI is already installed, so the runner adds no dependency.
 - **Three forms.** Bundle (subject), source tree (does bundling help) and bundled prose (does the diagram help).
+- **A fourth form.** The linked form, whose decisions name the rule stating the branch's label; added by W06 once the baseline showed no session depended on a link.
+- **The baseline is refreshed after both.** W08 holds a session to its form before W09 produces the baseline every later comparison rests on, so the committed baseline is not one carrying a plugin's context.
 - **Default matrix.** `claude-haiku-5-5` and `claude-sonnet-5-5`, five repetitions; both configurable.
 - **Synthetic workflows first.** Linear, branching, and branching with a loop and a nested link; a realistic workflow is a later row.
 - **Report and committed baseline.** No pass threshold until the baseline shows what is realistic.

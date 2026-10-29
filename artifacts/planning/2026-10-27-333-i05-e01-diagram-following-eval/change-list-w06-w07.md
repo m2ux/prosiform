@@ -16,6 +16,8 @@
 
   This run holds it because the run was user-driven and carries no allowance for a plan change.
 
+  **Resolved 2026-10-29.** Two rows take it: [W08](w08.md) holds a session to its form, and [W09](w09.md) produces the refreshed baseline, depending on W08 so the baseline every later comparison rests on is not one carrying a plugin's context. W09 covers AC21 and AC22; W08 covers AC18–AC20.
+
 ## Not Claimed
 
 - The epic's AC9 is not evidence that the linked form has been measured on a live run. It is ticked for the baseline that exists.
