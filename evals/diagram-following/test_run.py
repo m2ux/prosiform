@@ -16,10 +16,11 @@ import pytest
 from report import REPORT_JSON, RUN, SESSION, TIMEOUT
 from run import (
     BUNDLE,
+    BUNDLED,
     FORMS,
+    LINKED_TREE,
     PROSE_BUNDLE,
     TRANSCRIPT,
-    TREE,
     Ledger,
     Session,
     matrix,
@@ -39,7 +40,9 @@ CALLER_VARIABLES = (
     "ANTHROPIC_AUTH_TOKEN",
     "ANTHROPIC_BASE_URL",
 )
-SESSIONS_PER_REPETITION = sum(len(item.scenarios) for item in CORPUS.values()) * 3
+SESSIONS_PER_REPETITION = sum(len(item.scenarios) for item in CORPUS.values()) * len(
+    FORMS
+)
 
 
 @pytest.fixture
@@ -93,9 +96,9 @@ def material(session: Session) -> set[str]:
     workflow = CORPUS[session.workflow]
     scenario = next(i for i in workflow.scenarios if i.name == session.scenario)
     inputs = {f"inputs/{name}" for name in scenario.inputs}
-    if session.form != TREE:
+    if session.form in BUNDLED:
         return {ENTRY} | inputs
-    tree = workflow.form(FORMS[TREE])
+    tree = workflow.form(FORMS[session.form])
     return {
         str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()
     } | inputs
@@ -142,7 +145,7 @@ def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
     tmp_path: Path, log: Path
 ) -> None:
     eval_run(
-        tmp_path, "--workflows", "looping", "--repetitions", "1", "--budget-usd", "3"
+        tmp_path, "--workflows", "looping", "--repetitions", "1", "--budget-usd", "4"
     )
     by_form: dict[str, list[str]] = {}
     for entry in seen(log):
@@ -152,7 +155,7 @@ def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
         )
     looping = CORPUS["looping"]
     assert len(by_form["bundled"]) == 2 * len(looping.scenarios)
-    assert len(by_form["tree"]) == len(looping.scenarios)
+    assert len(by_form["tree"]) == 2 * len(looping.scenarios)
 
 
 def test_each_session_records_its_transcript_usage_cost_and_verdict(
@@ -230,8 +233,8 @@ def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
 ) -> None:
     with pytest.raises(
         CorpusError,
-        match=r"--budget-usd 0\.5 does not cover the 9 sessions at "
-        r"--session-budget-usd 0\.5, which need USD 4\.5",
+        match=r"--budget-usd 0\.5 does not cover the 12 sessions at "
+        r"--session-budget-usd 0\.5, which need USD 6\.0",
     ):
         eval_run(
             tmp_path,
@@ -250,12 +253,12 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1"),
-        *("--budget-usd", "3.75", "--session-budget-usd", "0.25"),
+        *("--budget-usd", "5", "--session-budget-usd", "0.25"),
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
-    assert record["started"] == 8
-    assert record["cost_usd"] == 4.0
-    assert len(seen(log)) == len(records(tmp_path)) == 8
+    assert record["started"] == 10
+    assert record["cost_usd"] == 5.0
+    assert len(seen(log)) == len(records(tmp_path)) == 10
     not_started = record["not_started"]
     assert not_started == [
         {
@@ -265,7 +268,7 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
             "form": session.form,
             "repetition": session.repetition,
         }
-        for session in sessions[8:]
+        for session in sessions[10:]
     ]
     written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
     assert written["not_started"] == not_started
@@ -293,6 +296,22 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
     assert record["started"] == 5
     assert record["cost_usd"] == 1.25
     assert all(item["cost_usd"] is None for item in records(tmp_path))
+
+
+def test_a_refused_agent_is_errored_not_a_trace_failure(
+    tmp_path: Path, log: Path
+) -> None:
+    """An agent that entered no state is recorded apart from one that stopped."""
+    record = eval_run(
+        tmp_path,
+        *("--agent-command", f"{sys.executable} -c 'import sys; sys.exit(1)'"),
+        *("--workflows", "linear", "--forms", LINKED_TREE, "--repetitions", "1"),
+        *("--budget-usd", "1"),
+    )
+    assert record["started"] == 1
+    [written] = records(tmp_path)
+    assert written["verdict"]["failure"] == "errored"
+    assert written["verdict"]["actual"] == []
 
 
 def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:

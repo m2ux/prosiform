@@ -56,7 +56,7 @@
 # documents, which `make tables` holds true in both directions.
 
 UV_RUN := uv run --project src --frozen
-EVAL_BUDGET_USD := 75
+EVAL_BUDGET_USD := 100
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 

@@ -4,13 +4,16 @@ How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link 
 
 ## Forms
 
-Each workflow in [`workflows/`](workflows) is written twice, as [`workflow.py`](workflow.py) describes: once as a diagram and once as prose whose transitions are sentences. A session receives one of three forms, always entered at `workflow.md`:
+Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, and a linked form whose decisions name a document stating the branch's label. A session receives one of four forms, always entered at `workflow.md`:
 
 | Form | Material | What it isolates |
 | --- | --- | --- |
 | `bundle` | The diagram form bundled by `pf` into one file. | The product under test. |
 | `tree` | The diagram form's source tree, unbundled. | Against `bundle`, what bundling adds. |
 | `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
+| `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
+
+The linked form's decisions carry no label of their own. Each names a rule document that states one label, so the edge a branch takes is recoverable only by opening the document the section links, and the label it states is held to the edges the diagram draws. Its rule document's destination resolves from the section that writes it, under `states/`.
 
 Every session is given the same [instruction](instruction.md), naming only the entry document. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
 
@@ -30,6 +33,8 @@ A session records each state it enters as a line of `trace.log` and does each st
 | `skipped_state` | jumped ahead, omitting states between. |
 | `invalid_transition` | entered a state no edge leads to: a step back, a state after the end, or the same state again. |
 
+A session whose agent reports an error, or prints no `result` message, takes `errored` instead of any of these. It entered no state, so its trace says nothing about how it followed the workflow: a refusal, an expired quota or a crashed command fails `errored` rather than as an `unfinished` run.
+
 ## Login
 
 Sessions run on the eval's own Claude login, kept apart from yours in `<eval-root>/config`, where the eval root defaults to `~/projects/eval/prosiform`. Log in once:
@@ -44,18 +49,18 @@ then `/login`. A run whose configuration directory holds no login fails before i
 
 | Command | Runs |
 | --- | --- |
-| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. A default run costs about USD 4 and takes about 10 minutes; its budget is USD 75. `ARGS='...'` passes the runner's options through. |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. A default run costs about USD 5.3 and takes about 13 minutes; its budget is USD 100. `ARGS='...'` passes the runner's options through. |
 
 The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--budget-usd` | 75 under `make eval-diagrams`; required otherwise | The run's spending cap, at least the sessions times `--session-budget-usd`. A later value in `ARGS` overrides the default. |
+| `--budget-usd` | 100 under `make eval-diagrams`; required otherwise | The run's spending cap, at least the sessions times `--session-budget-usd`. A later value in `ARGS` overrides the default. |
 | `--session-budget-usd` | 0.50 | Each session's spending cap. |
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
-| `--forms` | `bundle,tree,prose` | The forms, comma-separated. |
+| `--forms` | `bundle,tree,prose,linked` | The forms, comma-separated. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |

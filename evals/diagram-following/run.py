@@ -70,11 +70,12 @@ from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO
 
 from report import BASELINE, RUN, SESSION, TIMEOUT, names, write
-from score import ACTIONS, TRACE, score
+from score import ACTIONS, TRACE, Failure, Verdict, read_trace, score
 from workflow import (
     DIAGRAM,
     ENTRY,
     ENTRY_BUNDLE,
+    LINKED_FORM,
     PROSE,
     ROOT,
     CorpusError,
@@ -99,7 +100,13 @@ SCRUBBED = ("CLAUDE", "ANTHROPIC_")
 BUNDLE = "bundle"
 TREE = "tree"
 PROSE_BUNDLE = "prose"
-FORMS = {BUNDLE: DIAGRAM, TREE: DIAGRAM, PROSE_BUNDLE: PROSE}
+LINKED_TREE = "linked"
+FORMS = {
+    BUNDLE: DIAGRAM,
+    TREE: DIAGRAM,
+    PROSE_BUNDLE: PROSE,
+    LINKED_TREE: LINKED_FORM,
+}
 BUNDLED = {BUNDLE, PROSE_BUNDLE}
 SUMMARY = ("run_id", "sessions", "started", "cost_usd", "not_started")
 
@@ -362,10 +369,16 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
-        verdict = score(workflow, scenario, workspace)
+        result = result_message(records / TRANSCRIPT)
+        ran = read_trace(records)
+        verdict = (
+            errored(workflow, scenario)
+            if (result is not None and result.get("is_error"))
+            or (result is None and not ran)
+            else score(workflow, scenario, workspace)
+        )
     finally:
         shutil.rmtree(workspace)
-    result = result_message(records / TRANSCRIPT)
     cost = result.get("total_cost_usd") if result else None
     cost = float(cost) if isinstance(cost, int | float) else None
     record = {
@@ -380,6 +393,18 @@ def start(
     }
     (records / SESSION).write_text(json.dumps(record, indent=2) + "\n")
     return cost
+
+
+def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
+    """The verdict on a session that entered no state and reported an error.
+
+    An agent refused, cut off before it started, or one that printed no
+    `result` message and left no trace, is no evidence of how it followed
+    the workflow. It is recorded apart from a session that walked and
+    stopped, which is what `unfinished` names: a session ended at its
+    timeout keeps whatever trace it wrote, and is scored from it.
+    """
+    return Verdict(False, Failure.ERRORED, None, scenario.path, (), ())
 
 
 def run(arguments: argparse.Namespace) -> dict[str, object]:
