@@ -37,6 +37,7 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 - **Report and committed baseline.** No pass threshold until the baseline shows what is realistic.
 - **No initiative edge on E00.** Only W01 consumes E00's work, through E00 W02; the E01 base is cut from `main` once E00 has merged.
 - **Task work lands on a task branch, not the epic base.** W06 and W07 were first committed straight onto `i05/e01/main` (`b6c77033`, `cf2b970a`), which made the epic base do a task branch's job and put unreviewed work into #353's diff. Both are carried on `i05/e01/w06-linked-form` and reach the base through #393; the base was reset to `961df526`, the last commit W01–W05 delivered. (User, 2026-10-29.)
+- **The login stays in the config directory.** W08's Open Question asked whether to move the eval's login to `apiKeyHelper` through `--settings`, so that `CLAUDE_CONFIG_DIR` could carry nothing the eval did not write. The preflight refusal and the read of a session's injected context are enough: the plugin and remote settings that reach a session are then refused or reported, and no run's authentication changes. (User, 2026-10-29.)
 
 ## Base Updates
 
