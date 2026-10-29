@@ -42,7 +42,8 @@
 #
 # `make authoring` reports where the work-planner example departs from the
 # authoring rules its guidelines state, by file and area, and fails while any
-# departure remains. `make check` leaves it out.
+# departure remains, so the rules the example now meets are held by the checks
+# rather than by review.
 #
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
@@ -53,7 +54,7 @@ PYTHON_SOURCES := src/prosiform src/tests checks
 
 .PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render
 
-check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps authoring
 
 test:
 	cd src && uv run --frozen pytest
