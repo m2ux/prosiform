@@ -30,7 +30,7 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 - **Real agent sessions.** `claude -p --bare` in a fresh workspace per session; the CLI is already installed, so the runner adds no dependency.
 - **Three forms.** Bundle (subject), source tree (does bundling help) and bundled prose (does the diagram help).
 - **A fourth form.** The linked form, whose decisions name the rule stating the branch's label; added by W06 once the baseline showed no session depended on a link.
-- **The baseline is refreshed after both.** W08 holds a session to its form before W09 produces the baseline every later comparison rests on, so the committed baseline is not one carrying a plugin's context.
+- **The baseline is refreshed after both.** W08 holds a session to its form before W09 produces the baseline every later comparison rests on, so the committed baseline is not one carrying a plugin's context. The baseline refresh itself moved to [I05:E08](https://github.com/m2ux/prosiform/issues/403), which also hardens the corpus first; this epic's W09 carries only the refused-run guard.
 - **W08 and W09 are two rows, not a joined pair.** W09 read `Depends on W08` while the two named each other in Joins, which a shared pull request cannot hold: its own order would be the dependency. The Join is dropped and the dependency kept, so W08's stub-tested work reaches the base without waiting on the paid run W09 needs. Neither row can start while the model they need is out of credit. (User, 2026-10-29.)
 - **Default matrix.** `claude-haiku-5-5` and `claude-sonnet-5-5`, five repetitions; both configurable.
 - **Synthetic workflows first.** Linear, branching, and branching with a loop and a nested link; a realistic workflow is a later row.
@@ -38,6 +38,7 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 - **No initiative edge on E00.** Only W01 consumes E00's work, through E00 W02; the E01 base is cut from `main` once E00 has merged.
 - **Task work lands on a task branch, not the epic base.** W06 and W07 were first committed straight onto `i05/e01/main` (`b6c77033`, `cf2b970a`), which made the epic base do a task branch's job and put unreviewed work into #353's diff. Both are carried on `i05/e01/w06-linked-form` and reach the base through #393; the base was reset to `961df526`, the last commit W01–W05 delivered. (User, 2026-10-29.)
 - **The login stays in the config directory.** W08's Open Question asked whether to move the eval's login to `apiKeyHelper` through `--settings`, so that `CLAUDE_CONFIG_DIR` could carry nothing the eval did not write. The preflight refusal and the read of a session's injected context are enough: the plugin and remote settings that reach a session are then refused or reported, and no run's authentication changes. (User, 2026-10-29.)
+- **Epic delivered.** Every row of the work breakdown is delivered as of W09's merge (`6fca69ba`), and the epic base merged into `main` in `4848cfdc`. The baseline refresh and the corpus hardening are [I05:E08](https://github.com/m2ux/prosiform/issues/403)'s, and E07's rows take their edges on this epic's delivered rows. (2026-10-29.)
 
 ## Base Updates
 
