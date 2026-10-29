@@ -94,8 +94,8 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
 - **Delivery, 2026-10-29.**
   W01 merged into `i05/e07/main` as [#411](https://github.com/m2ux/prosiform/pull/411), with AC1 and AC2 ticked. Its session held five plan changes, and one changed the design: the authored form publishes the entry's bundle alone, so the two forms differ in the bundle set each gives a session rather than in prose alone. The Scenarios bullets above state that, and the review pull request [#412](https://github.com/m2ux/prosiform/pull/412) carries the base. The default matrix is 280 sessions and needs USD 140 at the session cap, above the USD 100 a bare `make eval-diagrams` passes; W03's row owns the budget it runs under.
 
-**Delivery, 2026-10-29.**
-W02 merged into `i05/e07/main` as [#413](https://github.com/m2ux/prosiform/pull/413), merge commit `8905b2e3`, with AC3 ticked. Its session held six plan changes and applied none. The scorer reads a session's sub-agent starts from `subagents.json` written beside the trace and the cost, and the three dispatch classes are read after the completion check, so a trace that stopped short is still `unfinished`. No paid session ran and `EVAL_BUDGET_USD` is still USD 100.
+- **Delivery, 2026-10-29.**
+  W02 merged into `i05/e07/main` as [#413](https://github.com/m2ux/prosiform/pull/413), merge commit `8905b2e3`, with AC3 ticked. Its session held six plan changes and applied none. The scorer reads a session's sub-agent starts from `subagents.json` written beside the trace and the cost, and the three dispatch classes are read after the completion check, so a trace that stopped short is still `unfinished`. No paid session ran and `EVAL_BUDGET_USD` is still USD 100.
 
 ## Links
 
