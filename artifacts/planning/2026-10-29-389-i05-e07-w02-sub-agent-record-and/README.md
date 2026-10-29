@@ -12,6 +12,7 @@ This record holds the delivery of W02: the sub-agent record written beside the t
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The sub-agent record, the four dispatch checks and the class each failing trace takes |
 
 ## Links
 
