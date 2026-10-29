@@ -9,15 +9,16 @@ The brief directs these and they are not plan changes:
 - **Epic #374's W03 row** points at [#409](https://github.com/m2ux/prosiform/pull/409), replacing the planning-folder link, and its Done cell is ticked.
 - **Epic #374's AC3** is ticked, the tests holding it.
 - **Issue #402** carries `Delivered by #409.`, its AC1–AC3 ticked, and is closed as completed.
-- **Board 18:** #402's Status is Done; #374 stays In Progress.
+- **Board 18:** #402's Status is Done; #374 moves to In Review once its base is complete.
 - **Review pull request #401** carries the base-complete note and the new row in its task table; it stays draft for its own review.
+- **`checks.md`'s `make harness` row** states all three preflight refusals, carried on the epic base as commit `4f07f2bf` and cited in #401's Changes.
 
 ## Held
 
-- **`checks.md`'s `make harness` row still enumerates two refusals.**
-  The row reads "refuses a run whose config directory installs or enables a plugin before its first session". `preflight` now makes three refusals, so the row is a surviving description of the old behaviour. W08's delivery updated this same row when it added its refusals, so the precedent is to update it here; this unit's component is `evals/diagram-following/run.py`, its test file and its README, and `checks.md` is outside that. The edit was made, found to be outside the component, and reverted.
+- **`checks.md`'s `make harness` row enumerated two refusals.**
+  The row read "refuses a run whose config directory installs or enables a plugin before its first session". `preflight` now makes three refusals, so the row described a boundary narrower than the one `make harness` holds. The unit's component is `evals/diagram-following/run.py`, its test file and its README, so the session reverted the edit rather than widen its scope.
 
-  **Recommended: amend #409 to carry the row.** It reads `refuses a run whose config directory installs a plugin, enables one, or declares a hook in its settings file, before its first session` — one clause, no new claim, and the row's own `make harness` statement then matches what `make harness` runs. The alternative, carrying it on the follow-on issue, leaves the row stale until that lands.
+  **Applied as recommended: the row is carried on the epic base**, commit `4f07f2bf`, because the row describes a check the base runs and the base is where `checks.md` lives. #401's Changes cite it, so the review states the row it carries.
 
 - **Deferred debt: a `settings.local.json` beside `settings.json`.**
   Raised as [#410](https://github.com/m2ux/prosiform/issues/410), `Session Isolation: A Settings Local File's Hook Refused`, labelled `tech-debt`, `theme:bundling` and `bot:ai-assisted`. The agent reads `settings.local.json` from the config directory and applies it over `settings.json`, so a `hooks` block there reaches a session exactly as one in `settings.json` does, and the preflight does not read it. The injected-context read still fails such a run, so the boundary holds; the cost is that a paid run spends its sessions before it is refused.
