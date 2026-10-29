@@ -10,11 +10,13 @@ A tracker issue: its identity, saved body, metadata, discussion and closure stat
 
 ## Operations
 
-### *Read* Tracker Issue
+### Read Tracker Issue
 
 The current issue, its saved body and discussion.
 
-**Inputs:** Repository, issue number and output files; whether discussion is needed.
+**Inputs:** [Issue identity](#issue-identity), [Record path](#issue-record)
+
+**Outputs:** [Issue record](#issue-record), [Issue comments](#issue-comment)
 
 #### 1. Fetch the Tracker Issue
 
@@ -24,11 +26,13 @@ Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch
 
 Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
 
-### *Save* Tracker Issue
+### Save Tracker Issue
 
 One populated body and its metadata, written to the tracker.
 
-**Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
+**Inputs:** [Issue identity](#issue-identity), [Issue content](#issue-content), [Label definitions](repository-labels.md#label-identity), [Comment](#issue-comment)
+
+**Outputs:** [Saved issue](#issue-record)
 
 #### 1. Take the Issue Body and Metadata
 
@@ -59,11 +63,13 @@ Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation
 
 Compare the saved fields with the intended body and metadata.
 
-### *Check* Issue Completion
+### Check Issue Completion
 
 The normal delivery result of one task, epic or initiative before tracker closure.
 
-**Inputs:** Issue kind, current issue JSON, complete Development snapshot, fresh linked pull request records and criterion verification evidence; for a task, the delivery result its delivering pull request established; for an epic, its project checkout.
+**Inputs:** [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records), [Verification evidence](acceptance-criteria.md#verification-evidence), [Task delivery result](task-body.md#task-delivery-result), [Project checkout](delivery-branches.md#project-checkout)
+
+**Outputs:** [Completion result](#completion-result)
 
 #### 1. Select the Completion Check
 
@@ -82,11 +88,13 @@ Select the check by the issue's kind:
 
 Return the completion result; an incomplete or failed result is a blocker to closure.
 
-### *Close* Tracker Issue
+### Close Tracker Issue
 
 Verified completion of an issue and its linked delivery.
 
-**Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
+**Inputs:** [Issue identity](#issue-identity), [Completion result](#completion-result), [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Auto-close setting](#auto-close-setting), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Closed issue](#issue-state)
 
 #### 1. Capture the Issue Development
 
@@ -105,7 +113,7 @@ Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`,
 
 #### 4. Require the Closure Gate
 
-Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+Require the supplied completion result to be complete, normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
 - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
 - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
 
@@ -113,11 +121,13 @@ Require normal delivery checks to pass, every criterion to be verified and ticke
 
 Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
-### *Close* Transferred Work
+### Close Transferred Work
 
 An issue whose work is tracked by another issue.
 
-**Inputs:** Issue identity, confirmed destination evidence and comment file.
+**Inputs:** [Issue identity](#issue-identity), [Transfer destination](#transfer-destination), [Comment](#issue-comment)
+
+**Outputs:** [Closed issue](#issue-state)
 
 #### 1. Confirm the Transfer Destination
 
@@ -135,11 +145,13 @@ Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
 
 Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) for its state and reason, as [Write confirmation](../conventions.md) states.
 
-### *Comment* on Issue
+### Comment on Issue
 
 The supplied discussion text saved on one issue.
 
-**Inputs:** Repository, issue number and exact comment text or file; reviewer identity and addressed feedback when replying to a review.
+**Inputs:** [Issue identity](#issue-identity), [Comment](#issue-comment), [Review feedback](#review-feedback)
+
+**Outputs:** [Saved comment](#issue-comment)
 
 #### 1. Compose the Feedback Reply
 
@@ -155,14 +167,17 @@ Publish the supplied comment:
 
 Return the saved comment URL.
 
-### *Close* as Completed
+### Close as Completed
 
 An issue closed after its final evidence check.
 
-**Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
+**Inputs:** [Issue identity](#issue-identity), [Auto-close setting](#auto-close-setting), [Completion result](#completion-result), [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Completed issue](#issue-state)
 
 #### 1. Capture Development Before Closure
 
+Require absolute paths for the issue, Development and linked pull request evidence files.
 Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
 
 #### 2. Compare the Development Links
@@ -185,11 +200,13 @@ Immediately after the gate passes, run [Set Completed State](#set-completed-stat
 
 Return the saved state or failure.
 
-### *Capture* Issue Development
+### Capture Issue Development
 
 The issue's current content and complete Development snapshot.
 
-**Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
+**Inputs:** [Issue identity](#issue-identity), [Auto-close setting](#auto-close-setting), [Record path](#issue-record), [Snapshot path](#development-snapshot)
+
+**Outputs:** [Development snapshot](#development-snapshot), [Issue record](#issue-record)
 
 #### 1. Read the Development Field
 
@@ -208,11 +225,13 @@ Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the sup
 
 Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
-### *Read* Issue Development
+### Read Issue Development
 
 The Development links observed for one issue through authenticated GitHub.
 
-**Inputs:** Issue identity and authenticated access.
+**Inputs:** [Issue identity](#issue-identity)
+
+**Outputs:** [Observed links](#observed-development-links)
 
 #### 1. Read Every Development Link
 
@@ -222,11 +241,13 @@ Read every page and state, across repositories, recording each linked pull reque
 
 Return the observed links and whether the entire field was readable.
 
-### *Confirm* Repository Auto-Close
+### Confirm Repository Auto-Close
 
 Whether the repository auto-closes issues whose linked pull requests merge, established for this session.
 
-**Inputs:** Repository and authenticated access.
+**Inputs:** [Repository](#tracker-repository)
+
+**Outputs:** [Auto-close setting](#auto-close-setting)
 
 #### 1. Read the Auto-Close Setting
 
@@ -240,11 +261,13 @@ Where no API field carries it, put the setting to the user and take their explic
 
 Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
 
-### *Read* Repository Issues
+### Read Repository Issues
 
 The issue collection used for repository-wide selection.
 
-**Inputs:** Repository and destination JSON file.
+**Inputs:** [Repository](#tracker-repository), [Issues path](#repository-issues)
+
+**Outputs:** [Repository issues](#repository-issues)
 
 #### 1. Fetch All Repository Issues
 
@@ -254,11 +277,13 @@ Run [Fetch All Issues](#fetch-all-issues), saving the complete collection.
 
 Return it with pull requests distinguishable from issues.
 
-### *Locate* Initiative Issue
+### Locate Initiative Issue
 
 The tracker identity matching one initiative prefix.
 
-**Inputs:** Repository and initiative prefix.
+**Inputs:** [Repository](#tracker-repository), [Initiative prefix](#tracker-prefix)
+
+**Outputs:** [Initiative issue](#issue-identity)
 
 #### 1. Find the Initiative Issue
 
@@ -268,11 +293,13 @@ Run [Find Initiative Issue](#find-initiative-issue) with the supplied repository
 
 Return its issue number or an unresolved identity.
 
-### *Select* Tracker Number
+### Select Tracker Number
 
 The next unused number for one prefixed issue kind in the repository.
 
-**Inputs:** Repository, the kind's prefix letter and its existing titles.
+**Inputs:** [Repository](#tracker-repository), [Prefix letter](#tracker-prefix)
+
+**Outputs:** [Tracker number](#tracker-prefix)
 
 #### 1. List the Prefixed Titles
 
@@ -292,11 +319,62 @@ Return the confirmed number.
 
 ## Fields
 
-- **Identity.** The issue has its repository, number and URL.
-- **Content.** The saved title, body and labels equal the supplied values.
-- **Discussion.** A saved comment preserves the supplied text.
-- **State.**
-  The issue is open or closed with its recorded completion reason. Completed work satisfies its criteria and delivery checks; transferred work identifies the issue tracking it.
+### Observed Development Links
+
+Every linked pull request URL in an issue's Development field, across repositories and states, and whether the entire field was readable.
+
+
+### Tracker Repository
+
+The repository whose tracker holds the issues: its owner and name, written `<owner>/<repo>`.
+
+### Issue Identity
+
+One issue's [repository](#tracker-repository), number and URL. An issue yet to be created has its repository alone. An unresolved identity names the repository and the title prefix that matched no issue.
+
+### Issue Content
+
+An issue's title, body and labels. The title meets [Titles](issue-body.md#titles), the body is a [body file](issue-body.md#body-file), and each label is a [repository label](repository-labels.md#label-identity). The saved title, body and labels equal the supplied values.
+
+### Issue Record
+
+One issue as the tracker returns it, saved as JSON at a local path: its [identity](#issue-identity), [content](#issue-content), [state](#issue-state) and kind, which its [tracker prefix](#tracker-prefix) and [kind label](../configuration.md#kind-labels) give. A body-only record is the issue's body alone, saved as markdown.
+
+### Issue Comment
+
+One comment on an issue: its exact text, as one line or a complete local file, and once saved its URL. An issue's discussion is its comments in order. A saved comment preserves the supplied text.
+
+### Issue State
+
+The issue is open, or closed with its reason: completed or not planned. Completed work satisfies its criteria and delivery checks; transferred work, closed as not planned, identifies the issue tracking it.
+
+### Tracker Prefix
+
+The bracketed prefix a planned issue's title opens with: for each level, its kind's prefix letter and a two-digit number, levels separated by colons, as `[I07]`, `[I07:E00]` and `[I07:E00:W01]`. A tracker number is the two-digit number of one level.
+
+### Repository Issues
+
+Every issue in one [repository](#tracker-repository), in all states, saved as one JSON file of [issue records](#issue-record). Pull requests among the entries carry a `pull_request` field that distinguishes them from issues.
+
+### Development Snapshot
+
+One issue's Development field as observed, saved as JSON at a local path: the issue's repository and number, whether the whole field was read, the repository's [auto-close setting](#auto-close-setting) as confirmed or `null` when unknown, and every linked pull request URL across repositories and states. An empty list in a complete snapshot means the field holds no link; an incomplete snapshot is incomplete evidence.
+
+### Linked Pull Request Records
+
+A fresh record of every pull request a [Development snapshot](#development-snapshot) names, across repositories and states, saved as JSON lines at a local path, each with its [state](pull-request.md#state) and merge result.
+
+### Completion Result
+
+The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](task-body.md#task-delivery-result), an epic's from its [delivery state](epic.md#delivery-state), and an initiative's from its [delivery state](initiative.md#delivery-state).
+
+### Transfer Destination
+
+The issue tracking another issue's work: its [identity](#issue-identity) and saved body, which contains that work and cites the source issue.
+
+### Review Feedback
+
+The reviewer's login and each point they raised in an issue's discussion.
 
 ### Auto-Close Setting
 

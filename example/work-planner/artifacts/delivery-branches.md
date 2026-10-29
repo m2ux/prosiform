@@ -10,11 +10,13 @@ The long-lived branches, epic bases and task branches used for delivery.
 
 ## Operations
 
-### *Prepare* Delivery Bases
+### Prepare Delivery Bases
 
 The branches a task pull request targets.
 
-**Inputs:** Project checkout, epic identifier, changed long-lived branches and confirmed prerequisite evidence.
+**Inputs:** [Project checkout](#project-checkout), [Epic prefix](#epic-bases), [Changed long-lived branches](#branches), [Prerequisite evidence](epic.md#prerequisite-evidence)
+
+**Outputs:** [Epic bases](#epic-bases)
 
 #### 1. List the Long-Lived Branches
 
@@ -38,11 +40,13 @@ Require the caller's confirmed prerequisite evidence before creating a base. The
 
 Apply [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
-### *Create* Epic Base
+### Create Epic Base
 
 The missing epic branch rooted in its remote long-lived branch.
 
-**Inputs:** Repository checkout, long-lived source branch, missing epic base name and confirmed prerequisite evidence.
+**Inputs:** [Project checkout](#project-checkout), [Long-lived branch](#branches), [Epic base](#epic-bases), [Prerequisite evidence](epic.md#prerequisite-evidence)
+
+**Outputs:** [Epic base](#epic-bases)
 
 #### 1. Require a Missing Destination Base
 
@@ -58,11 +62,13 @@ After a successful fetch:
 - Run [Publish Epic Base](#publish-epic-base) with that remote source and the missing epic base name, such as `i07/e00/main`, meeting [Epic Bases](#epic-bases).
 - Return the created branch or the failure.
 
-### *Update* Epic Base
+### Update Epic Base
 
 The current long-lived target merged into an epic base.
 
-**Inputs:** Project checkout and epic base branch.
+**Inputs:** [Project checkout](#project-checkout), [Epic base](#epic-bases)
+
+**Outputs:** [Epic base](#epic-bases)
 
 #### 1. Derive the Epic Base Target and Worktree
 
@@ -90,11 +96,13 @@ After a successful merge:
 - Run [Push Epic Base](#push-epic-base) in the same worktree.
 - Return the updated branch or the failure.
 
-### *Update* Task Branch
+### Update Task Branch
 
 The current epic base merged into a unit's task branch.
 
-**Inputs:** Task worktree, task branch name and corresponding epic base branch.
+**Inputs:** [Task worktree](#task-branches), [Task branch](#task-branches), [Epic base](#epic-bases)
+
+**Outputs:** [Task branch](#task-branches)
 
 #### 1. Fetch the Epic Base into the Task Worktree
 
@@ -114,11 +122,13 @@ After a successful merge:
 - Run [Push Task Branch](#push-task-branch) with the task branch as destination.
 - Return the updated branch or the failure.
 
-### *Create* Task Worktree
+### Create Task Worktree
 
 The worktree and branch one unit's session works in.
 
-**Inputs:** Project checkout, worktree path, task branch, epic base and confirmed prerequisite evidence.
+**Inputs:** [Project checkout](#project-checkout), [Task worktree](#task-branches), [Task branch](#task-branches), [Epic base](#epic-bases), [Prerequisite evidence](epic.md#prerequisite-evidence)
+
+**Outputs:** [Task worktree](#task-branches), [Task branch](#task-branches)
 
 #### 1. Require Task Worktree Prerequisites
 
@@ -140,11 +150,13 @@ Run [Add Task Worktree](#add-task-worktree) with the supplied path and task bran
 
 Return the worktree path and branch or the failure.
 
-### *Create* Pull Request Worktree
+### Create Pull Request Worktree
 
 The detached worktree where the graph reads the reviewed change.
 
-**Inputs:** Repository, repository checkout, pull request number and verified head commit.
+**Inputs:** [Pull request](pull-request.md#pull-request-identity), [Project checkout](#project-checkout), [Verified head](pull-request.md#verified-head)
+
+**Outputs:** [Review worktree](#review-worktrees), [Verified head](pull-request.md#verified-head)
 
 #### 1. Fetch the Review Head
 
@@ -185,11 +197,13 @@ Confirm its HEAD through Read Checkout Revision.
 
 Return the selected detached worktree path and head, or the discrepancy before measuring.
 
-### *Read* Target Requirements
+### Read Target Requirements
 
 The protection and active rules governing one target branch.
 
-**Inputs:** Repository, target branch and output files.
+**Inputs:** [Repository](repository-labels.md#repository), [Target branch](pull-request.md#target-branch), [Requirement paths](#target-requirements)
+
+**Outputs:** [Target requirements](#target-requirements)
 
 #### 1. Fetch the Target Branch Protection
 
@@ -203,11 +217,13 @@ Run [Fetch Active Branch Rules](#fetch-active-branch-rules) for the same target.
 
 Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
 
-### *Read* Delivery Branches
+### Read Delivery Branches
 
 The configured long-lived branches and existing epic bases.
 
-**Inputs:** Project checkout and epic identity.
+**Inputs:** [Project checkout](#project-checkout), [Epic prefix](#epic-bases)
+
+**Outputs:** [Long-lived branches](#branches), [Epic bases](#epic-bases)
 
 #### 1. Read the Long-Lived Branch Configuration
 
@@ -253,6 +269,14 @@ A reviewed pull request is read in a detached worktree, named by its number unde
 A unit's task branch is cut from the epic base for the long-lived branch the unit changes, named for its initiative, epic and first task in lowercase separated by slashes, and hyphenated with a slug of at most four words from its Description when one exists: `i01/e02/w04-write-defaults`. Every pull request delivering the unit's work is opened from this branch.
 
 Its worktree is named by that branch under the worktree directory of the repository's main working tree.
+
+### Project Checkout
+
+A checkout of the repository whose branches are delivered. Its main working tree holds the [Branches](#branches) statement, and its worktree directory holds every epic-base, task and review worktree.
+
+### Target Requirements
+
+The branch protection and the active rules governing one [target branch](pull-request.md#target-branch), each a local JSON file at its path, with the reviews and checks they require. An unreadable requirement is unresolved.
 
 ## Commands
 

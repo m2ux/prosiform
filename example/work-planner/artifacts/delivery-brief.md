@@ -10,11 +10,13 @@ The instructions and context supplied to one delivery session.
 
 ## Operations
 
-### *Populate* Delivery Brief
+### Populate Delivery Brief
 
 One complete prompt file for a confirmed delivery unit.
 
-**Inputs:** Epic URL, task ids, Descriptions, each task's component, criteria, test obligations, branch and bases, worktree, reserved folder, engineering worktree, board identity, change allowance and output path.
+**Inputs:** [Work identity](#work-identity), [Component](work-item.md#component), [Planning record](#planning-record), [Validation scope](#validation-scope), [Change allowance](plan-change.md#allowance), [Execution instructions](#execution-instructions), [Brief path](#location)
+
+**Outputs:** [Delivery brief](#fields)
 
 #### 1. Write the Delivery Brief
 
@@ -25,11 +27,13 @@ Write the supplied identity, context and execution instructions to the prompt fi
 
 Return the brief path and any missing context. The caller resolves gaps before dispatch.
 
-### *Read* Delivery Brief
+### Read Delivery Brief
 
 The confirmed unit a delivery session works from, with its reservation still held.
 
-**Inputs:** Brief path and an output file for the epic body.
+**Inputs:** [Brief path](#location), [Epic body path](epic-issue-body.md#body-file)
+
+**Outputs:** [Work identity](#work-identity), [Planning record](#planning-record), [Validation scope](#validation-scope), [Change allowance](plan-change.md#allowance)
 
 #### 1. Read the Delivery Brief File
 

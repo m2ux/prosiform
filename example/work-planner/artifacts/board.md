@@ -10,11 +10,13 @@ The theme or proposals board, its membership and each item's status.
 
 ## Operations
 
-### *Select* Project Board
+### Select Project Board
 
 The theme or proposals board the request names.
 
-**Inputs:** Board owner and either a theme name or the proposals-board selection.
+**Inputs:** [Board owner](#board-identity), [Board selection](#board-selection)
+
+**Outputs:** [Selected board](#board-identity)
 
 #### 1. Find the Named Board
 
@@ -28,11 +30,13 @@ Return a missing-selection result when neither a theme nor proposals is specifie
 
 Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
 
-### *Copy* Project Board
+### Copy Project Board
 
 A missing theme board, or a missing proposals board.
 
-**Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
+**Inputs:** [Board owner](#board-identity), [Repository](repository-labels.md#repository), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](issue.md#issue-record)
+
+**Outputs:** [Copied board](#board-identity)
 
 #### 1. Create an Absent Proposals Board
 
@@ -44,11 +48,13 @@ When the selected theme board is absent:
 - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
 - Require the new theme's label and board before an initiative takes that theme.
 
-### *Ensure* Project Board
+### Ensure Project Board
 
 The theme or proposals board the request names, created when it is absent.
 
-**Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
+**Inputs:** [Board owner](#board-identity), [Repository](repository-labels.md#repository), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](issue.md#issue-record)
+
+**Outputs:** [Board](#board-identity)
 
 #### 1. Select the Requested Board
 
@@ -66,11 +72,13 @@ When the board is absent:
 
 Return the owner and the board number the copy created.
 
-### *Create* Proposals Board
+### Create Proposals Board
 
 A new proposals board linked to the supplied repository.
 
-**Inputs:** Board owner and repository.
+**Inputs:** [Board owner](#board-identity), [Repository](repository-labels.md#repository)
+
+**Outputs:** [Proposals board](#board-identity)
 
 #### 1. Find the Proposals Template
 
@@ -96,11 +104,13 @@ Run [Link Board to Repository](#link-board-to-repository) with the owner, new bo
 
 Return the new board number after linking succeeds.
 
-### *Create* Theme Board
+### Create Theme Board
 
 A new theme board linked to the supplied repository.
 
-**Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
+**Inputs:** [Board owner](#board-identity), [Repository](repository-labels.md#repository), [Theme title](#one-board-per-theme), [Originating proposal](issue.md#issue-record)
+
+**Outputs:** [Theme board](#board-identity)
 
 #### 1. Require the Originating Proposal
 
@@ -130,11 +140,13 @@ Run [Link Board to Repository](#link-board-to-repository) with the owner, new bo
 
 Return the new board number after linking succeeds.
 
-### *Place* Issue on Board
+### Place Issue on Board
 
 One issue's membership and initial status.
 
-**Inputs:** Board owner and number, repository, issue number, output file and selected initial status.
+**Inputs:** [Board](#board-identity), [Repository](repository-labels.md#repository), [Issue](issue.md#issue-record), [Output file](#board-files), [Initial status](../configuration.md#status-field)
+
+**Outputs:** [Board item](#board-items)
 
 #### 1. Read the Issue to Place
 
@@ -156,15 +168,17 @@ Run [Set Item Status](#set-item-status) with the caller's selected status and th
 
 Run [Fetch Board Item](#fetch-board-item) for the saved item.
 
-### *Read* Board State
+### Read Board State
 
 The selected board's items and status fields.
 
-**Inputs:** Existing board owner and number, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns them, whether the caller ran that operation or carries its result.
+**Inputs:** [Board](#board-identity)
+
+**Outputs:** [Board items](#board-items), [Status field id](#status-field-id), [Repositories](#repositories)
 
 #### 1. Find the Board Status Field
 
-Run [Find Status Field](#find-status-field) for the board number and the [Status field](../configuration.md#status-field) name.
+Use the existing board, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns it, whether the caller ran that operation or carries its result. Run [Find Status Field](#find-status-field) for its number and the [Status field](../configuration.md#status-field) name.
 
 #### 2. Fetch Board Items with Status
 
@@ -174,11 +188,13 @@ Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing tha
 
 Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
-### *Read* Board Assignee
+### Read Board Assignee
 
 The authenticated login available for board assignments.
 
-**Inputs:** Authenticated repository access.
+**Inputs:** None
+
+**Outputs:** [Assignee login](#assignees)
 
 #### 1. Find the Board User
 
@@ -188,11 +204,13 @@ Run [Find User](#find-user).
 
 Return its login for the caller's assignment decisions.
 
-### *Read* Board Configuration
+### Read Board Configuration
 
 One board's field definitions and requested item state.
 
-**Inputs:** Board owner and number, output paths and optional item identity.
+**Inputs:** [Board](#board-identity), [Output paths](#board-files), [Board item](#board-items)
+
+**Outputs:** [Board fields](#board-fields), [Board item](#board-items)
 
 #### 1. Fetch the Configured Board Fields
 
@@ -206,15 +224,17 @@ When a single item is requested for [write confirmation](../conventions.md), run
 
 Return the field definitions and requested current item.
 
-### *Update* Item Status
+### Update Item Status
 
 One board item with a confirmed status selection applied.
 
-**Inputs:** Board and item identities, current Status field and option ids, selected status and request body file.
+**Inputs:** [Board](#board-identity), [Board item](#board-items), [Status field](#board-fields), [Selected status](../configuration.md#status-field), [Status request](#status-request)
+
+**Outputs:** [Board item](#board-items)
 
 #### 1. Set the Requested Item Status
 
-Run [Set Item Status](#set-item-status) with the supplied selection and ids.
+Require the caller's confirmed status selection, then run [Set Item Status](#set-item-status) with that selection and the supplied ids.
 
 #### 2. Re-Read the Updated Board Item
 
@@ -246,7 +266,7 @@ A board's repositories are those its items' issues live in, read from each item'
 
 ### Assignees
 
-An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so the call that changes one acts on the issue.
+The user is the login `gh` runs as. An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so the call that changes one acts on the issue.
 
 ### Standalone Issues
 
@@ -267,6 +287,34 @@ A standalone issue sits on no board.
     Not now. It stays on the board, with no assignee.
   - **Declined.**
     It will not become an initiative. It has no assignee.
+
+### Board Identity
+
+A board's owner and number, written `users/<owner>/projectsV2/<number>` for a user's board or `orgs/<owner>/projectsV2/<number>` for an organisation's. The owner is the user's login or organisation name; a board yet to be created has its owner alone.
+
+### Board Selection
+
+One theme's name, as [Theme Labels](../configuration.md#theme-labels) names it, or the proposals board.
+
+### Board Fields
+
+A board's field definitions as JSON: each field's id and name, and the [Status field](../configuration.md#status-field)'s id with its option ids.
+
+### Status Field Id
+
+The numeric identifier of the board's [Status field](../configuration.md#status-field).
+
+### Board Items
+
+A board's items as JSON, each with its item id, its Status and its issue whole. A single board item is one such entry.
+
+### Board Files
+
+The local paths a board read writes its JSON into: an issue file, a board fields file and a board item file.
+
+### Status Request
+
+A JSON file naming the Status field id as an integer and the selected option id as a string: `{"fields":[{"id":<status-field-id>,"value":"<status-option-id>"}]}`.
 
 ## Commands
 

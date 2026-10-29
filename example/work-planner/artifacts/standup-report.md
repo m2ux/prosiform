@@ -10,11 +10,13 @@ A board progress report for a selected window, formatted for pasting into Slack.
 
 ## Operations
 
-### *Compose* Standup Report
+### Compose Standup Report
 
 The copyable report and any missing-evidence findings.
 
-**Inputs:** Board items, pull request records, complete issue-link snapshot, optional window start, initiative filter, resolved off-board initiative records and output paths.
+**Inputs:** [Board items](board.md#board-items), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Window start](#scope), [Initiative filter](#scope), [Off-board initiatives](issue.md#issue-record), [Output paths](#report-files)
+
+**Outputs:** [Standup report](#sections), [Unresolved evidence](#unresolved-evidence)
 
 #### 1. Require the Standup Link Snapshot
 
@@ -79,6 +81,10 @@ One plain-language paragraph describes what the window delivered as outcomes for
 ### Unresolved Evidence
 
 An unresolved initiative identifies its number and repository. An off-board dependency is blocked. An epic with unreadable Work Breakdown is summarised without tasks and returned as a finding. Unresolved lines are separate from the copyable report.
+
+### Report Files
+
+The local paths the report's working JSON and text are written into: each off-board initiative's issue JSON and the management paragraph file.
 
 ## Commands
 

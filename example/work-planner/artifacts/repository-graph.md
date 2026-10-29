@@ -10,11 +10,13 @@ The indexed symbols, relationships and ordered flows for a repository revision.
 
 ## Operations
 
-### *Measure* Repository Change
+### Measure Repository Change
 
 Current graph evidence for the supplied change.
 
-**Inputs:** Worktree, verified head commit and base branch.
+**Inputs:** [Worktree](#revision), [Verified head](#revision), [Base branch](#revision)
+
+**Outputs:** [Changed symbols](#changed-symbols), [Symbol relationships](#symbol-relationships), [Flow traces](#flow-traces)
 
 #### 1. Check the Graph Index Status
 

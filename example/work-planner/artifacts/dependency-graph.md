@@ -10,11 +10,13 @@ The task edges an initiative's epics declare, and the row numbers that graph per
 
 ## Operations
 
-### *Check* Dependencies and Numbering
+### Check Dependencies and Numbering
 
 The task graph and the row numbers it permits, checked and renumbered across the supplied bodies.
 
-**Inputs:** Initiative and epic bodies or local drafts, the planning record that registered each task row, current pull request records, confirmed numbering maps when any, the caller's change allowance when it has one, the run's current [change list](plan-change.md#change-list), and explicitly authorized outside-initiative files.
+**Inputs:** [Initiative body](initiative-issue-body.md#template), [Epic bodies](epic-issue-body.md#template), [Planning records](planning-record.md#artifacts), [Pull request records](pull-request.md#pull-request-records), [Numbering maps](#numbering-map), [Allowance](plan-change.md#allowance), [Change list](plan-change.md#change-list), [Outside files](#outside-files)
+
+**Outputs:** [Dependency report](#dependency-report), [Change list](plan-change.md#change-list)
 
 #### 1. Gather Bodies and Check Dependencies
 
@@ -37,7 +39,7 @@ Settle each finding through [Settle Plan Change](plan-change.md#settle-plan-chan
 
 #### 3. Renumber the Confirmed Maps
 
-Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
+Require explicit authorization for each supplied outside-initiative file before editing it. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
 - For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
 - For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
 - Re-sort rewritten tables.
@@ -47,6 +49,15 @@ Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-m
 - Return the checked bodies, the printed longest chains, each printed contending pair, the proposed [Epic Priority](#epic-priority) map, the updated change list and the unresolved findings to the caller; do not publish a failed renumbering.
 
 ## Fields
+
+### Outside Files
+
+Local body files outside the initiative, each identified by its path and the initiative references it contains.
+
+### Dependency Report
+
+The checked initiative and epic bodies, longest dependency chains, contending task pairs, proposed [epic priority](#epic-priority) map and unresolved findings.
+
 
 - **Scope.** One initiative, its epics and their task rows.
 - **Source.** The initiative body and every epic body it links, published or as local drafts.

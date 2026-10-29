@@ -10,11 +10,13 @@ A pull request's identity, head and base, issue links, review state and merge re
 
 ## Operations
 
-### *Merge* Delivery Pull Request
+### Merge Delivery Pull Request
 
 One task or epic pull request's merge result, or its handoff for human approval.
 
-**Inputs:** Pull request identity, delivery kind, verified head, target requirements, current passing readiness evidence and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Delivery kind](#pull-request-kind), [Verified head](#verified-head), [Target requirements](delivery-branches.md#target-requirements), [Readiness evidence](#merge-readiness), [Auto-close setting](issue.md#auto-close-setting), [Merge authorization](#merge-authorization)
+
+**Outputs:** [Merge result](#merge-result)
 
 #### 1. Read Target Review Requirements
 
@@ -27,6 +29,7 @@ Read the supplied target branch's current required reviews and checks alongside 
 #### 2. Merge the Approved Pull Request
 
 When approval permits the agent to merge:
+- Require current readiness evidence with no unresolved condition, and the auto-close setting confirmed for the repository as [Close Tracker Issue](issue.md#close-tracker-issue) documents.
 - Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
 - If the merge is refused, return the refusal to the caller for fresh verification.
 
@@ -34,11 +37,13 @@ When approval permits the agent to merge:
 
 Return the merge result, including its merge commit when supplied, for the caller to confirm as [Write confirmation](../conventions.md) states.
 
-### *Access* Development Links
+### Access Development Links
 
 The observed or updated Development relation for a pull request.
 
-**Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](issue.md#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Link request](#link-request), [Delivery issue](issue.md#issue-record), [Auto-close setting](issue.md#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links)
 
 #### 1. Read the Pull Request Development Links
 
@@ -52,6 +57,7 @@ Return the complete relation for a read-only request.
 
 For a link edit:
 - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- Meet the applicable preconditions in [Close Tracker Issue](issue.md#close-tracker-issue).
 - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
 - For removal of an abandoned or incorrect link:
   - Require the supplied user decision.
@@ -69,15 +75,17 @@ Compare the field with the intended edit.
 
 Return the verified relation or discrepancy.
 
-### *Fetch* Pull Request Issue Links
+### Fetch Pull Request Issue Links
 
 The complete issue-link snapshot for a supplied set of pull requests.
 
-**Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
+**Inputs:** [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Issue-link snapshot](#issue-link-snapshot)
 
 #### 1. Read Links for Each Pull Request
 
-For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+For every pull request in the current records, `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
 
 #### 2. Re-Read Links After a Change
 
@@ -95,15 +103,17 @@ Run [Write Pull Request Links](#write-pull-request-links) with the observed comp
 
 Return the snapshot for the scripts' `--links` input.
 
-### *Link* Pull Request to Issue
+### Link Pull Request to Issue
 
 The verified delivery-issue relation for a pull request.
 
-**Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Delivery issue](issue.md#issue-record), [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot), [Auto-close setting](issue.md#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links), [Issue-link snapshot](#issue-link-snapshot)
 
 #### 1. Add the Development Link
 
-Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and the repository prerequisite confirmed as [Close Tracker Issue](issue.md#close-tracker-issue) documents.
 
 #### 2. Stop on an Unverified Link Edit
 
@@ -117,15 +127,17 @@ Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the
 
 Return the verified relation and refreshed snapshot.
 
-### *Merge* Epic Pull Request
+### Merge Epic Pull Request
 
 The epic's verified merge into its long-lived target.
 
-**Inputs:** Pull request identity, verified head SHA, target requirements, current passing readiness evidence and confirmed authorization for the agent to merge.
+**Inputs:** [Pull request](#pull-request-identity), [Verified head](#verified-head), [Target requirements](delivery-branches.md#target-requirements), [Readiness evidence](#merge-readiness), [Merge authorization](#merge-authorization)
+
+**Outputs:** [Merge result](#merge-result)
 
 #### 1. Require Epic Merge Authorization
 
-Require the supplied target requirements, readiness evidence and authorization.
+Require the supplied target requirements, current readiness evidence with no unresolved condition, and authorization for the agent to merge under the active delivery request and target review requirements.
 
 #### 2. Submit the Epic Merge
 
@@ -143,11 +155,13 @@ Confirm the merged state, merge commit, verified head and target.
 
 Return the result or discrepancy.
 
-### *Fetch* All Initiative Pull Requests
+### Fetch All Initiative Pull Requests
 
 The pull request collection covering every supplied board repository.
 
-**Inputs:** Ordered repository list and destination JSON-lines file.
+**Inputs:** [Repositories](board.md#repositories), [Records path](#pull-request-records)
+
+**Outputs:** [Pull request records](#pull-request-records)
 
 #### 1. Fetch the First Repository Pull Requests
 
@@ -169,11 +183,13 @@ If any fetch failed, return incomplete evidence.
 
 Return the complete collection only after every fetch succeeds.
 
-### *Read* Initiative Pull Requests
+### Read Initiative Pull Requests
 
 The current delivery pull requests for one initiative.
 
-**Inputs:** Repository, initiative prefix and destination collection file.
+**Inputs:** [Repository](repository-labels.md#repository), [Initiative prefix](initiative-issue-body.md#titles), [Records path](#pull-request-records)
+
+**Outputs:** [Pull request records](#pull-request-records)
 
 #### 1. Fetch the Initiative Pull Requests
 
@@ -183,11 +199,13 @@ Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the s
 
 Return the collection or an incomplete-fetch finding.
 
-### *Read* Pull Request State
+### Read Pull Request State
 
 One current pull request and its requested supporting records.
 
-**Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
+**Inputs:** [Pull request](#pull-request-identity), [Requested records](#pull-request-snapshot), [Snapshot paths](#pull-request-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot)
 
 #### 1. Fetch the Pull Request Snapshot
 
@@ -201,16 +219,18 @@ Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request
 
 Return the snapshots or missing evidence.
 
-### *Publish* Pull Request
+### Publish Pull Request
 
 One pull request created or updated from supplied content and metadata.
 
-**Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
+**Inputs:** [Pull request](#pull-request-identity), [Kind](#pull-request-kind), [Pull request content](#pull-request-content), [Delivery issue](issue.md#issue-record), [Auto-close setting](issue.md#auto-close-setting), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot), [Issue-link snapshot](#issue-link-snapshot)
 
 #### 1. Open a New Pull Request
 
 For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
-- For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+- For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
 
 #### 2. Update the Existing Pull Request
 
@@ -222,17 +242,19 @@ Re-read through [Read Pull Request State](#read-pull-request-state), as [Write c
 
 #### 4. Return the Published State
 
-Return the saved state or discrepancy.
+Return the saved state or discrepancy, and the issue-link snapshot when the creation path linked a delivery issue. Other publication paths return no issue-link snapshot.
 
-### *Align* Pull Request Base
+### Align Pull Request Base
 
 Each open delivery pull request pointed at the base its head requires.
 
-**Inputs:** Repository, current initiative pull request records, each open epic's long-lived branches and epic bases, and the project checkout.
+**Inputs:** [Repository](repository-labels.md#repository), [Pull request records](#pull-request-records), [Long-lived branches](delivery-branches.md#branches), [Epic bases](delivery-branches.md#epic-bases), [Project checkout](delivery-branches.md#project-checkout)
+
+**Outputs:** [Alignment result](#alignment-result)
 
 #### 1. Take Each Pull Request Target
 
-Take each open pull request's target from [Scope](#scope) and [Other Pull Requests](#other-pull-requests), with each long-lived branch as [Epic Bases](delivery-branches.md#epic-bases) names it.
+Take the target of each open pull request in the current records from [Scope](#scope) and [Other Pull Requests](#other-pull-requests), with each long-lived branch as [Epic Bases](delivery-branches.md#epic-bases) names it.
 - Report an open pull request for which neither field gives a target for the user's decision, and leave it unchanged.
 
 #### 2. Retarget Mismatched Pull Requests
@@ -248,11 +270,13 @@ For each task pull request whose saved state is not mergeable, apply [Update Tas
 
 Return the retargeted pull requests, updated task branches, conflicts and the pull requests awaiting a decision.
 
-### *Locate* Review Pull Request
+### Locate Review Pull Request
 
 The review pull request for a supplied epic base.
 
-**Inputs:** Repository and epic-base head.
+**Inputs:** [Repository](repository-labels.md#repository), [Epic base](delivery-branches.md#epic-bases)
+
+**Outputs:** [Review pull request](#pull-request-identity)
 
 #### 1. Find the Review Pull Request
 
@@ -262,11 +286,13 @@ Run [Find Review Pull Request](#find-review-pull-request) with the supplied head
 
 Return its number or an absent-review finding.
 
-### *Read* Head Evidence
+### Read Head Evidence
 
 The check-run and status evidence for one literal head commit.
 
-**Inputs:** Repository, verified head SHA and destination files.
+**Inputs:** [Repository](repository-labels.md#repository), [Verified head](#verified-head), [Evidence paths](#head-evidence)
+
+**Outputs:** [Head evidence](#head-evidence)
 
 #### 1. Fetch the Head Check Runs
 
@@ -280,11 +306,13 @@ Run [Fetch Head Status](#fetch-head-status) for the same SHA.
 
 Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 
-### *Merge* Task Pull Requests
+### Merge Task Pull Requests
 
 Merges each open task pull request whose test plan has passed.
 
-**Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
+**Inputs:** [Task pull request](#pull-request-identity), [Epic base](delivery-branches.md#epic-bases), [Auto-close setting](issue.md#auto-close-setting), [Test plan](pull-request-body.md#test-plan)
+
+**Outputs:** [Merge result](#merge-result)
 
 #### 1. Confirm Auto-Close and Epic Base
 
@@ -296,7 +324,7 @@ Apply [Fetch Merge Readiness](#fetch-merge-readiness) with delivery kind task fo
 
 #### 3. Merge the Task Pull Request
 
-Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
+Require a passed [test plan](pull-request-body.md#test-plan), then apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
 - Stop on a handoff for human approval.
 - Return a refusal with its readiness evidence. The pull request stays open.
 
@@ -305,11 +333,13 @@ Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery 
 Apply [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
 - Return that result to the caller.
 
-### *Fetch* Merge Readiness
+### Fetch Merge Readiness
 
 The current pull request's readiness against its target requirements and head checks.
 
-**Inputs:** Pull request identity, delivery kind, its target branch, for an epic pull request its epic base, and the protection, rules, check and status output paths.
+**Inputs:** [Pull request](#pull-request-identity), [Delivery kind](#pull-request-kind), [Target branch](#target-branch), [Epic base](delivery-branches.md#epic-bases), [Evidence paths](#merge-readiness)
+
+**Outputs:** [Readiness evidence](#merge-readiness), [Verified head](#verified-head), [Target requirements](delivery-branches.md#target-requirements)
 
 #### 1. Snapshot the Pull Request State
 
@@ -362,6 +392,62 @@ A task pull request delivers one task, or a set of tasks that name each other in
 - A linked issue remains open until its criteria and delivery requirements hold and every Development-linked pull request is merged.
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
+
+### Pull Request Identity
+
+A pull request's [repository](repository-labels.md#repository) and number. A pull request yet to be created has its repository alone.
+
+### Pull Request Kind
+
+Task, epic or planning discussion. A delivery pull request is a task or an epic one: a task pull request meets [Scope](#scope), and an epic's review pull request has an epic base as its head.
+
+### Target Branch
+
+The base a pull request merges into: the epic base [Scope](#scope) names for a task pull request, or the long-lived branch [Other Pull Requests](#other-pull-requests) names otherwise.
+
+### Verified Head
+
+The literal head commit SHA whose checks, reviews and target requirements were read. Verification applies to that exact SHA.
+
+### Pull Request Content
+
+The fields a publication writes: a body file at its path, meeting [Template](pull-request-body.md#template), its title, head and base. A change to an existing pull request names only the fields it changes.
+
+### Pull Request Snapshot
+
+One pull request's REST record as a local JSON file at its path, with its identity, state, head SHA, base and mergeable state. Its requested supporting records are its changed paths and its reviews, each in a file of its own.
+
+### Pull Request Records
+
+A local JSON-lines file at its path, one pull request's REST record per line. An initiative's records hold every pull request whose title carries its prefix, in all states, across its repositories; a failed fetch leaves them incomplete.
+
+### Issue-Link Snapshot
+
+A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
+
+### Link Request
+
+A read, an addition or a removal of one pull request's Development link. An edit names the issue; a removal carries the user's decision naming the abandoned or incorrect link.
+
+### Head Evidence
+
+The check runs and the combined commit status for one verified head, each a local JSON file at its path. Missing or pending evidence is unresolved.
+
+### Merge Readiness
+
+The readiness of one pull request at its verified head: its snapshot, [target requirements](delivery-branches.md#target-requirements), [head evidence](#head-evidence) and reviews, each a local JSON file at its path, with every unresolved condition. A conflict, a failed, missing or pending check, a blocked merge state, an unmet required review, or an epic pull request whose head or target departs from [Epic Bases](delivery-branches.md#epic-bases) is unresolved; readiness passes when none remains.
+
+### Merge Authorization
+
+The authorization result for the agent to merge the named pull request under the active delivery request and target review requirements, including any required human approval.
+
+### Merge Result
+
+One of: the merged [state](#state) with its verified head, target and merge commit; a handoff for human approval naming what was verified; or a refusal with its readiness evidence.
+
+### Alignment Result
+
+The pull requests retargeted, the task branches updated, the conflicts met, and the pull requests whose target awaits the user's decision.
 
 ## Commands
 

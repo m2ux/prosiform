@@ -10,11 +10,13 @@ The queue for one theme board: initiative priority sets, status and assignee cha
 
 ## Operations
 
-### *Plan* Board Queue
+### Plan Board Queue
 
 Derives the queue from supplied board and delivery snapshots and confirmed decisions.
 
-**Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities. The caller supplies the delivery state.
+**Inputs:** [Board](#board-identity), [Board items](board.md#board-items), [Initiative pull requests](pull-request.md#pull-request-records), [Board fields](board.md#board-fields), [Assignee login](board.md#assignees), [Output directory](#proposed-changes), [Off-board issues](issue.md#issue-record), [Unplanned initiatives](#unplanned-initiatives)
+
+**Outputs:** [Proposed changes](#proposed-changes), [Report lines](#report-lines), [Unresolved references](#completeness)
 
 #### 1. Compute the Board Queue
 
@@ -29,11 +31,13 @@ Return the proposed Status and assignee calls, report lines and unresolved issue
 - Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
 - The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
 
-### *Apply* Board Queue
+### Apply Board Queue
 
 The board's initiative and epic Status and assignees, moved to the queue and confirmed live.
 
-**Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
+**Inputs:** [Board](#board-identity), [Board items](board.md#board-items), [Initiative pull requests](pull-request.md#pull-request-records), [Board fields](board.md#board-fields), [Assignee login](board.md#assignees), [Output directory](#proposed-changes), [Off-board issues](issue.md#issue-record), [Unplanned initiatives](#unplanned-initiatives)
+
+**Outputs:** [Board items](board.md#board-items), [Applied changes](#proposed-changes), [Report lines](#report-lines), [Unresolved references](#completeness)
 
 #### 1. Plan the Board Queue to Apply
 
@@ -73,7 +77,7 @@ Return each move applied and the converged queue's `wait` and `next` lines.
 
 ### Board Identity
 
-The queue belongs to one theme board, identified as `users/{owner}/projectsV2/{id}` or `orgs/{owner}/projectsV2/{id}`. Its source snapshots contain board items with Status, board fields, initiative pull requests and any off-board issues its rows depend on.
+The queue belongs to one theme board, identified by its [board identity](board.md#board-identity). Its source snapshots contain board items with Status, board fields, initiative pull requests and any off-board issues its rows depend on.
 
 ### Priority Sets
 
@@ -134,6 +138,10 @@ A `Depends on` entry that names no row and links no issue, names an issue the ru
 - The epic that row gates keeps the Status it holds. The run proposes no move for it, so a Ready epic is not returned to Backlog on an entry nobody can read.
 - Every entry of a cell is read, so a cell carrying two names both.
 - A note raised while reading delivery rather than deciding a placement is reported and leaves the exit status alone.
+
+### Unplanned Initiatives
+
+Initiatives confirmed to carry no priority, each an issue number or `<owner>/<repo>#<issue-number>`. Each follows [Initiative Status](#initiative-status) for an initiative confirmed unplanned.
 
 ### Completeness
 
