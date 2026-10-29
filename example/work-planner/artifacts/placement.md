@@ -44,7 +44,7 @@ The issue candidates and available destinations, from the repository's issues.
 
 #### 1. List the Orphan Issues
 
-From `<workspace>`, run the orphans helper with the repository issues' JSON file as `<issues-json-file>`. Runs as [Helper invocation](../conventions.md) states.
+From `<workspace>`, run the orphans helper with the repository issues' JSON file as `<issues-json-file>`. Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/orphans.py '<issues-json-file>'
@@ -139,7 +139,7 @@ The orphan closed, its work tracked by the taking issue.
 
 #### 1. Prepare the Subsumption Comment
 
-Prepare the comment file naming the taking issue and task, as [Bodies](../conventions.md) states, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
+Prepare the comment file naming the taking issue and task, as [Bodies](../conventions.md#bodies) states, for example `Tracked in [I07:E01](…/issues/937) W04.` The closure operation records it once.
 
 #### 2. Close the Subsumed Orphan
 

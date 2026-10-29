@@ -24,64 +24,19 @@ Require the complete issue-link snapshot.
 
 #### 2. Summarise Standup Progress
 
-From `<workspace>`, render the preliminary report using board items as `--items`, pull requests as `--prs`, the complete link snapshot as `--links`, and any supplied window start, initiative filter and off-board initiative records.
-
-- `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
-- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
-- `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
-- `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
-- `--summary` gives the paragraph for management.
-
-The optional flags may be combined or omitted. Omitting all four uses the default window and all initiatives with no off-board records or management paragraph. **Example combinations:** a focused report can use `--since 2026-09-21 --initiative I08`; resolving an off-board initiative adds `--initiatives issue-946.json`; the final report adds `--summary summary.txt` to the same inputs.
-
-`<window-start-date>` uses `YYYY-MM-DD`.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json
-```
+Apply [Render Standup Report](#render-standup-report) with the board items, pull request records, complete issue-link snapshot, the supplied window start and initiative filter, and every supplied off-board initiative record.
 
 #### 3. Resolve Off-Board Initiatives
 
-Read the preliminary summary’s exit code and output. Continue with unresolved-initiative findings; return other execution errors.
+Read the preliminary summary’s result as [Command result](../conventions.md#command-result) states. Continue with unresolved-initiative findings.
 
 For each unresolved initiative the summary names:
 - Apply [Locate Initiative Issue](issue.md#locate-initiative-issue) with its repository and initiative prefix.
 - Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the located issue's current JSON into a file under the output paths.
 - Add the returned file to the resolved off-board initiative records.
+- Apply [Render Standup Report](#render-standup-report) again with the same inputs and every resolved initiative record.
 
-From `<workspace>`, render the report again with every resolved initiative record, retaining the board items, pull requests, links, window start and filter.
-
-- `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
-- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
-- `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
-- `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
-- `--summary` gives the paragraph for management.
-
-The optional flags may be combined or omitted. Omitting all four uses the default window and all initiatives with no off-board records or management paragraph. **Example combinations:** a focused report can use `--since 2026-09-21 --initiative I08`; resolving an off-board initiative adds `--initiatives issue-946.json`; the final report adds `--summary summary.txt` to the same inputs.
-
-`<window-start-date>` uses `YYYY-MM-DD`.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json
-```
-
-After each summary, inspect its exit code and unresolved initiatives. Repeat this step while an initiative remains that no read has failed; return any other computation error. An unavailable initiative stays an unresolved finding, a gap in the report.
+Read each summary’s result as [Command result](../conventions.md#command-result) states and its unresolved initiatives. Repeat while an initiative remains that no read has failed. An unavailable initiative stays an unresolved finding, a gap in the report.
 
 #### 4. Write the Management Paragraph
 
@@ -90,7 +45,26 @@ Write the management paragraph from the rendered Initiatives and Completed secti
 
 #### 5. Render the Final Standup Report
 
-From `<workspace>`, render the final report with the same inputs and the completed management paragraph file as `--summary`.
+Apply [Render Standup Report](#render-standup-report) with the same inputs and the completed management paragraph file.
+
+#### 6. Return the Standup Report
+
+Read the final renderer’s result as [Command result](../conventions.md#command-result) states. Return an execution failure as a blocker, retaining any unresolved evidence separately.
+
+Return the report and separate unresolved findings.
+- The report must meet [Fields](#fields).
+
+### Render Standup Report
+
+The report text for one set of board, delivery and window inputs.
+
+**Inputs:** [Board items](board.md#board-items), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Window start](#scope), [Initiative filter](#scope), [Off-board initiatives](issue.md#issue-record), [Management paragraph](#management-paragraph)
+
+**Outputs:** [Standup report](#sections)
+
+#### 1. Render the Report
+
+From `<workspace>`, render the report using board items as `--items`, pull requests as `--prs`, the complete link snapshot as `--links`, and any supplied window start, initiative filter, off-board initiative records and management paragraph.
 
 - `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
 - `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
@@ -102,7 +76,7 @@ The optional flags may be combined or omitted. Omitting all four uses the defaul
 
 `<window-start-date>` uses `YYYY-MM-DD`.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>' --summary '<management-paragraph-file>'
@@ -114,12 +88,9 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json --summary summary.txt
 ```
 
-#### 6. Return the Standup Report
+#### 2. Return the Rendered Report
 
-Read the final renderer’s exit code and output. Return an execution failure as a blocker, retaining any unresolved evidence separately.
-
-Return the report and separate unresolved findings.
-- The report must meet [Fields](#fields).
+Read the renderer’s result as [Command result](../conventions.md#command-result) states. Return the report and its unresolved evidence.
 
 ## Fields
 

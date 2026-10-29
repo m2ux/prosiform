@@ -69,7 +69,7 @@ From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--p
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
@@ -86,7 +86,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Return the Epic Delivery Findings
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
 
 Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
@@ -104,7 +104,7 @@ From `<workspace>`, update the epic JSON with records as `--prs`, snapshot as `-
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -118,7 +118,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Return the Epic Body and Refused Criteria
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -143,7 +143,7 @@ From `<workspace>`, reserve the confirmed task ids using the epic as `--epic`, i
 
 `<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](../configuration.md#engineering-branch) on the engineering branch.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --date '<record-date>' --fix '<output-body-file>'
@@ -157,7 +157,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 3. Return the Reserved Epic Body
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
 
 Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
@@ -181,7 +181,7 @@ From `<workspace>`, release the authorized held task ids using the epic as `--ep
 
 `<task-ids>` is a comma-separated list of task ids.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
@@ -195,7 +195,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 3. Publish the Released Epic Body
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
 
 Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
 
@@ -360,6 +360,8 @@ New tasks exist as epic rows with their details, discussion and evidence in the 
 
 The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
+- The body meets [Breakdown Prose](issue-body.md#breakdown-prose).
+
 - **Done.**
   A task row is complete when it is delivered, and every criterion its Coverage names is ticked.
 - **Row id.**
@@ -440,10 +442,6 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
   An issue backing several tasks, such as an investigation, is a reference: the epic cites it under References, no row id links it, and its title carries no agent-engineering prefix.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
-
-### Breakdown Prose
-
-Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
 ### Body File
 

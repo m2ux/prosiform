@@ -42,7 +42,7 @@ gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.cl
 
 #### 2. Report a Missing Board Selection
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
 
@@ -100,49 +100,13 @@ A new proposals board linked to the supplied repository.
 
 **Outputs:** [Proposals board](#board-identity)
 
-#### 1. Find the Proposals Template
+#### 1. Copy the Proposals Template
 
-From the repository checkout, find the template using the owner and proposals board’s [template title](../configuration.md#board-templates).
+Apply [Copy Board Template](#copy-board-template) with the owner, repository, the proposals board's [template title](../configuration.md#board-templates) and the configured [proposals title](../configuration.md#proposals-board) as the copy's title. The copied board meets [Proposals](#proposals).
 
-```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
-```
+#### 2. Return the Proposals Board Number
 
-#### 2. Use the Proposals Template as Source
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Use the returned number as the copy source.
-
-#### 3. Copy the Proposals Template
-
-From the repository checkout, copy the returned template number for the owner, using the configured [proposals title](../configuration.md#proposals-board).
-
-- The copy's JSON is one project; `.number` identifies the new board.
-
-```bash
-gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
-```
-
-#### 4. Retain the Proposals Board Number
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Retain the new board number. The copy meets [Proposals](#proposals).
-
-#### 5. Link the Proposals Board to the Repository
-
-From the repository checkout, link the new board using its owner, returned number and supplied repository.
-
-```bash
-gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
-```
-
-#### 6. Return the Proposals Board Number
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Return the new board number after linking succeeds.
+Return the copied board's owner and number.
 
 ### Create Theme Board
 
@@ -156,23 +120,35 @@ A new theme board linked to the supplied repository.
 
 Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
 
-#### 2. Find the Initiative Template
+#### 2. Copy the Initiative Template
 
-From the repository checkout, find the template using the owner and theme board’s [template title](../configuration.md#board-templates).
+Apply [Copy Board Template](#copy-board-template) with the owner, repository, the theme board's [template title](../configuration.md#board-templates) and the title required by [One Board Per Theme](#one-board-per-theme) as the copy's title. The copy carries the template's theme board [Status options](../configuration.md#status-field).
+
+#### 3. Return the Theme Board Number
+
+Return the copied board's owner and number.
+
+### Copy Board Template
+
+One board copied from an open template board and linked to its repository.
+
+**Inputs:** [Board owner](#board-identity), [Repository](repository-labels.md#repository), [Board title](#one-board-per-theme)
+
+**Outputs:** [Copied board](#board-identity)
+
+#### 1. Find the Template Board
+
+From the repository checkout, find the open template board using the owner and the supplied [template title](../configuration.md#board-templates).
 
 ```bash
 gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
 ```
 
-#### 3. Use the Initiative Template as Source
+#### 2. Copy the Template Board
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-Use the returned number as the copy source.
-
-#### 4. Copy the Initiative Template
-
-From the repository checkout, copy the returned template number for the owner, using the title required by [One Board Per Theme](#one-board-per-theme).
+From the repository checkout, copy the returned template number for the owner, using the supplied board title.
 
 - The copy's JSON is one project; `.number` identifies the new board.
 
@@ -180,13 +156,9 @@ From the repository checkout, copy the returned template number for the owner, u
 gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
 ```
 
-#### 5. Retain the Theme Board Number
+#### 3. Link the Board to the Repository
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Retain the new board number. The copy carries the template's theme board [Status options](../configuration.md#status-field).
-
-#### 6. Link the Theme Board to the Repository
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, link the new board using its owner, returned number and supplied repository.
 
@@ -194,9 +166,9 @@ From the repository checkout, link the new board using its owner, returned numbe
 gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
 ```
 
-#### 7. Return the Theme Board Number
+#### 4. Return the Copied Board Number
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the new board number after linking succeeds.
 
@@ -228,7 +200,7 @@ gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
 
 #### 3. Add the Issue to the Board
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, add the issue using the board owner and number and the returned issue id, not its issue number.
 
@@ -244,7 +216,7 @@ gh api --method POST 'users/<owner>/projectsV2/13/items' -f type=Issue -F id=304
 
 #### 4. Set the Placed Item Status
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, set the caller’s selected Status using the board owner and number, returned item id and supplied status-request file.
 
@@ -264,7 +236,7 @@ gh api --method PATCH 'users/<owner>/projectsV2/13/items/1001' --input status-ba
 
 #### 5. Confirm the Placed Board Item
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, read the saved item using the board owner and number, item id and Status field id.
 
@@ -280,7 +252,7 @@ gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
 
 #### 6. Return the Placed Board Item
 
-Read the final fetch exit code and response. Return the confirmed item only when its issue and Status match the intended placement; otherwise return the failure or discrepancy.
+Read the final fetch’s result as [Command result](../conventions.md#command-result) states. Return the confirmed item only when its issue and Status match the intended placement; otherwise return the failure or discrepancy.
 
 ### Read Board State
 
@@ -306,7 +278,7 @@ gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" --jq '.[] | s
 
 #### 2. Fetch Board Items with Status
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, save the board items using the board owner and number, returned Status field id and destination file.
 
@@ -322,7 +294,7 @@ gh api --paginate "users/<owner>/projectsV2/9/items?per_page=100&fields=41916763
 
 #### 3. Return the Board State
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
@@ -344,7 +316,7 @@ gh api user --jq .login
 
 #### 2. Return the Assignee Login
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return its login for the caller's assignment decisions.
 
@@ -372,9 +344,9 @@ gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
 
 #### 2. Fetch the Requested Board Item
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-When a single item is requested for [write confirmation](../conventions.md), read it from the repository checkout using the board owner and number, item id and Status field id. A list snapshot may lag a write.
+When a single item is requested for [write confirmation](../conventions.md#write-confirmation), read it from the repository checkout using the board owner and number, item id and Status field id.
 
 ```bash
 gh api "users/<owner>/projectsV2/<board-number>/items/<item-id>?fields=<status-field-id>"
@@ -388,7 +360,7 @@ gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
 
 #### 3. Return the Board Configuration
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the field definitions and requested current item.
 
@@ -420,9 +392,9 @@ gh api --method PATCH 'users/<owner>/projectsV2/13/items/1001' --input status-ba
 
 #### 2. Re-Read the Updated Board Item
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-Read the item as [Write confirmation](../conventions.md) states.
+Read the item as [Write confirmation](../conventions.md#write-confirmation) states.
 
 From the repository checkout, read the item using the supplied board owner and number, item id and Status field id.
 
@@ -438,7 +410,7 @@ gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
 
 #### 3. Return the Confirmed Item Status
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return its confirmed state or a discrepancy for the caller to resolve.
 

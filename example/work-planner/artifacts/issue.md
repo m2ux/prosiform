@@ -48,7 +48,7 @@ gh api 'repos/<owner>/<repo>/issues/943' --jq .body > live-943.md
 
 #### 2. Fetch the Issue Comments
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 When the request depends on the discussion, fetch every comment from the repository checkout using the supplied repository and issue number.
 
@@ -64,7 +64,7 @@ gh api --paginate 'repos/<owner>/<repo>/issues/874/comments'
 
 #### 3. Return the Issue Read
 
-Read each requested response and its exit code; return the issue record and any requested comments, or the failed read as missing evidence. When no discussion was requested, return the issue record alone.
+Read each requested response as [Command result](../conventions.md#command-result) states; return the issue record and any requested comments, or the failed read as missing evidence. When no discussion was requested, return the issue record alone.
 
 ### Save Tracker Issue
 
@@ -85,7 +85,7 @@ Apply [Ensure Repository Labels](repository-labels.md#ensure-repository-labels) 
 
 #### 3. Create New Issue
 
-For a new issue, run this creation command from the repository checkout using the supplied title, existing labels and complete body file as [Bodies](../conventions.md) states.
+For a new issue, run this creation command from the repository checkout using the supplied title, existing labels and complete body file as [Bodies](../conventions.md#bodies) states.
 
 Repeat `-f 'labels[]=<label>'` for each supplied label.
 
@@ -101,11 +101,11 @@ gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F body=@b
 
 #### 4. Update the Existing Issue
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-For an existing issue, run each command whose field is being changed, preserving all other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied issue identity.
+For an existing issue, run each command whose field is being changed, preserving all other fields. After each selected command, read its result as [Command result](../conventions.md#command-result) states; stop before another mutation on a failure. If no field changes, continue with the supplied issue identity.
 
-When changing the issue body, run this update from the repository checkout using its repository, number and complete body file as [Bodies](../conventions.md) states.
+When changing the issue body, run this update from the repository checkout using its repository, number and complete body file as [Bodies](../conventions.md#bodies) states.
 
 ```bash
 gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -F 'body=@<body-file>' --jq .number
@@ -157,13 +157,13 @@ gh api --method DELETE 'repos/<owner>/<repo>/issues/943/labels/<label>' --jq '.[
 
 #### 5. Comment on the Saved Issue
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 
 #### 6. Re-Read the Saved Issue
 
-As [Write confirmation](../conventions.md) states, read the saved issue.
+As [Write confirmation](../conventions.md#write-confirmation) states, read the saved issue.
 
 From the repository checkout, save the current issue using its repository, number and supplied destination JSON file.
 
@@ -179,7 +179,7 @@ gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
 
 #### 7. Compare the Saved Issue Fields
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Compare the saved fields with the intended body and metadata.
 
@@ -229,26 +229,11 @@ Take the caller's fresh records for every linked pull request, across repositori
 
 #### 3. Run the Closure Check
 
-From `<workspace>`, run the closure gate with the fresh issue JSON, complete Development snapshot and linked pull request records as `--issue`, `--development` and `--prs`.
-
-- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
-- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
-```
+Apply [Run Closure Gate](#run-closure-gate) with the fresh issue JSON, complete Development snapshot and linked pull request records, using absolute evidence paths.
 
 #### 4. Require the Closure Gate
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Require the supplied completion result to be complete, normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
 - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
@@ -290,9 +275,9 @@ gh api --method PATCH 'repos/<owner>/<repo>/issues/874' -f state=closed -f state
 
 #### 4. Re-Read the Transferred Issue
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-Re-read it with Fetch Tracker Issue for its state and reason, as [Write confirmation](../conventions.md) states.
+Re-read it with Fetch Tracker Issue for its state and reason, as [Write confirmation](../conventions.md#write-confirmation) states.
 
 From the repository checkout, save the current issue using its repository, number and supplied destination JSON file.
 
@@ -308,7 +293,7 @@ gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
 
 #### 5. Confirm the Transferred Issue State
 
-Read the final fetch exit code and response. Return a read failure or discrepancy unless the issue is closed with reason `not_planned`; otherwise return the confirmed closed issue with its retained body.
+Read the final fetch’s result as [Command result](../conventions.md#command-result) states. Return a read failure or discrepancy unless the issue is closed with reason `not_planned`; otherwise return the confirmed closed issue with its retained body.
 
 ### Comment on Issue
 
@@ -337,7 +322,7 @@ gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -f bo
 gh api --method POST 'repos/<owner>/<repo>/issues/637/comments' -f body='Delivered by #950.' --jq .html_url
 ```
 
-For a longer comment, post the complete supplied file from the repository checkout using the repository and issue number, as [Bodies](../conventions.md) states.
+For a longer comment, post the complete supplied file from the repository checkout using the repository and issue number, as [Bodies](../conventions.md#bodies) states.
 
 ```bash
 gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -F 'body=@<comment-file>' --jq .html_url
@@ -351,7 +336,7 @@ gh api --method POST 'repos/<owner>/<repo>/issues/874/comments' -F body=@comment
 
 #### 3. Return the Comment URL
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the saved comment URL.
 
@@ -374,26 +359,11 @@ Compare its links with the supplied fresh pull request records; return a changed
 
 #### 3. Run the Completion Gate
 
-From `<workspace>`, run the closure gate with the current issue JSON, complete Development snapshot and linked pull request records. Use absolute evidence paths when changing directory.
-
-- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
-- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
-```
+Apply [Run Closure Gate](#run-closure-gate) with the current issue JSON, complete Development snapshot and linked pull request records, using absolute evidence paths.
 
 #### 4. Require the Completion Gate to Pass
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
 
@@ -413,9 +383,40 @@ gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f state=closed -f state
 
 #### 6. Return the Completed State
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the saved state or failure.
+
+### Run Closure Gate
+
+The closure check's verdict for one issue, its Development snapshot and its linked pull request records.
+
+**Inputs:** [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Closure verdict](#closure-verdict)
+
+#### 1. Run the Closure Command
+
+From `<workspace>`, run the closure gate with the fresh issue JSON, complete Development snapshot and linked pull request records.
+
+- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
+- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
+```
+
+#### 2. Return the Closure Verdict
+
+Read the result of each command as [Command result](../conventions.md#command-result) states. Return the verdict with each blocker it reports, or the execution failure.
 
 ### Capture Issue Development
 
@@ -449,7 +450,7 @@ gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
 
 #### 4. Return the Development Files
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
@@ -513,7 +514,7 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > issues.
 
 #### 2. Return the Repository Issues
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return it with pull requests distinguishable from issues.
 
@@ -543,7 +544,7 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" --jq '.[]
 
 #### 2. Return the Initiative Issue Number
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return its issue number or an unresolved identity.
 
@@ -571,7 +572,7 @@ gh api --paginate 'repos/m2ux/workflow-server/issues?state=all&per_page=100' --j
 
 #### 2. Read the Highest Prefix
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Read the highest prefix carrying that letter.
 
@@ -658,6 +659,10 @@ A fresh record of every pull request a [Development snapshot](#development-snaps
 ### Completion Result
 
 The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](task-body.md#task-delivery-result), an epic's from its [delivery state](epic.md#delivery-state), and an initiative's from its [delivery state](initiative.md#delivery-state).
+
+### Closure Verdict
+
+The closure gate's report for one issue: passing, or the blockers that keep it open.
 
 ### Transfer Destination
 

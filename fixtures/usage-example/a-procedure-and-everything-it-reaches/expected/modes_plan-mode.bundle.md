@@ -127,41 +127,76 @@ Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) st
 
 # Rules
 
-- **Decisions.**
-  A question the user must decide is put as an interview, one question at a time. A decision the run's [allowance](#allowance) covers is taken with its recommended option rather than asked. Record each decision in the affected issues and, when there is one, the planning record.
-  - A plain-language paragraph before the question gives the context the user needs to answer it.
-  - The question offers more than one choice. The recommended choice is marked on its option.
-  - Wait for the user's answer. An unanswered question stays pending. A recommendation or elapsed time supplies no answer.
-  - The user can select Other and specify a response beyond the options.
-  - Use the native tool for presenting the question when one is available.
-- **Layers.**
-  Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
-- **Execution.**
-  A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing. Calls run in order. A step's `⇉` call runs in a sub-agent, and its `⫽` calls run in sub-agents together, as the bundle's Prosiform section states; those together never write to the same object.
+What binds every mode, protocol and artifact operation, stated once here and linked by the step that applies it.
+
+## Decisions
+
+A question the user must decide is put as an interview, one question at a time. A decision the run's [allowance](#allowance) covers is taken with its recommended option rather than asked. Record each decision in the affected issues and, when there is one, the planning record.
+
+- A plain-language paragraph before the question gives the context the user needs to answer it.
+- The question offers more than one choice. The recommended choice is marked on its option.
+- Wait for the user's answer. An unanswered question stays pending. A recommendation or elapsed time supplies no answer.
+- The user can select Other and specify a response beyond the options.
+- Use the native tool for presenting the question when one is available.
+
+## Layers
+
+Modes, protocols, artifacts. A mode aggregates protocol calls, as an application calls services; a protocol applies artifact operations and follows other protocols; an artifact does neither. A call goes down the stack, never up. A mode reaches an artifact operation directly only where no protocol owns that change.
+
+## Execution
+
+A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing. Calls run in order. A step's `⇉` call runs in a sub-agent, from any session, dispatched or not; its `⫽` calls run in sub-agents together, as the bundle's Prosiform section states, and those together never write to the same object.
 
 # Conventions
 
-- **Session.**
-  Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
-- **Repository.**
-  `gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
-- **Bodies.**
-  - Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
-  - Keep these files in a working directory outside the repository.
-- **Helper invocation.**
-  A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
-- **Write confirmation.**
-  Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
-- **Boards.**
-  A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
-- **Example values.**  Substitute the real ones:
-  - `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
-  - `950` a pull request, `I07` and `I08` initiative numbers;
-  - board `9` a theme board, and `419167630` its Status field id;
-  - `1` the Initiative Template board, `13` a board copied from it;
-  - `14` the Proposals Template, `15` the Proposals board;
-  - `m2ux` the user.
-  - `<checkout>` any checkout of the project, a linked worktree included.
+The prerequisites every mode's run shares: the session it starts in, where a command runs, how a result is read, and the values its examples use. Each is stated once here, and every step applying one links it.
+
+## Session
+
+Once per session, before the first `gh` call, unset `GH_TOKEN` and `GITHUB_TOKEN` so `gh` uses its keyring login. Where shell state does not persist between commands, confirm instead that neither is set in the shell profile.
+
+## Repository
+
+`gh` resolves `{owner}/{repo}` from the git remote of the directory it runs in, so run `gh` commands inside a checkout of the repository that holds the issues. `{other}` is a further repository the board's issues live in.
+
+## Bodies
+
+- Bodies, long comments and commit messages always go through a file (`-F body=@file`), never inline, which avoids quoting. The file holds the exact intended text.
+- Keep these files in a working directory outside the repository.
+
+## Helper Invocation
+
+A helper is a script in `<workspace>`, the checkout holding this skill. It runs from `<workspace>`, or the directory within it that its command names, under the sandbox invoked by its absolute path, `<workspace>/scripts/sbx`. A file kept outside `<workspace>`, such as a body file, is passed by its absolute path.
+
+## Command Result
+
+Read each command's exit code and output before the next step. A failing exit code, or a refusal the command reports, returns to the caller as an execution error or refusal before the work continues.
+
+## Helper Result
+
+A helper's written body exists only on a zero exit code. An invocation failure returns as a blocker, and only a successfully written body is published.
+
+## Write Confirmation
+
+Only a fresh re-read confirms a write: read the written object again and compare it with the intended state. The write's own output confirms nothing. A re-read that fails, or shows another state, leaves the write uncertain; that uncertainty returns to the caller, and the write is never retried as a different write.
+
+- A list read can lag a write, so a written item confirms by its own read alone. An item still showing the preceding state has the same write repeated and that item read again.
+
+## Boards
+
+A project board sits under `users/{owner}`, or `orgs/{owner}` when `gh api repos/{owner}/{repo} --jq .owner.type` is `Organization`.
+
+## Example Values
+
+Substitute the real ones:
+
+- `936` an initiative issue, `943` and `937` its epics, `637` a task issue, `874` an orphan, `946` an initiative off the board, `960` a proposal;
+- `950` a pull request, `I07` and `I08` initiative numbers;
+- board `9` a theme board, and `419167630` its Status field id;
+- `1` the Initiative Template board, `13` a board copied from it;
+- `14` the Proposals Template, `15` the Proposals board;
+- `m2ux` the user.
+- `<checkout>` any checkout of the project, a linked worktree included.
 
 # Artifacts
 
@@ -207,7 +242,7 @@ gh api 'repos/<owner>/<repo>/issues/943' --jq .body > live-943.md
 
 ##### 2. Fetch the Issue Comments
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 When the request depends on the discussion, fetch every comment from the repository checkout using the supplied repository and issue number.
 
@@ -223,7 +258,7 @@ gh api --paginate 'repos/<owner>/<repo>/issues/874/comments'
 
 ##### 3. Return the Issue Read
 
-Read each requested response and its exit code; return the issue record and any requested comments, or the failed read as missing evidence. When no discussion was requested, return the issue record alone.
+Read each requested response as [Command result](#command-result) states; return the issue record and any requested comments, or the failed read as missing evidence. When no discussion was requested, return the issue record alone.
 
 #### Save Tracker Issue
 
@@ -245,7 +280,7 @@ Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the
 
 ##### 3. Create New Issue
 
-For a new issue, run this creation command from the repository checkout using the supplied title, existing labels and complete body file as [Bodies](#conventions) states.
+For a new issue, run this creation command from the repository checkout using the supplied title, existing labels and complete body file as [Bodies](#bodies) states.
 
 Repeat `-f 'labels[]=<label>'` for each supplied label.
 
@@ -261,11 +296,11 @@ gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F body=@b
 
 ##### 4. Update the Existing Issue
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
-For an existing issue, run each command whose field is being changed, preserving all other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied issue identity.
+For an existing issue, run each command whose field is being changed, preserving all other fields. After each selected command, read its result as [Command result](#command-result) states; stop before another mutation on a failure. If no field changes, continue with the supplied issue identity.
 
-When changing the issue body, run this update from the repository checkout using its repository, number and complete body file as [Bodies](#conventions) states.
+When changing the issue body, run this update from the repository checkout using its repository, number and complete body file as [Bodies](#bodies) states.
 
 ```bash
 gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -F 'body=@<body-file>' --jq .number
@@ -317,13 +352,13 @@ gh api --method DELETE 'repos/<owner>/<repo>/issues/943/labels/<label>' --jq '.[
 
 ##### 5. Comment on the Saved Issue
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 
 ##### 6. Re-Read the Saved Issue
 
-As [Write confirmation](#conventions) states, read the saved issue.
+As [Write confirmation](#write-confirmation) states, read the saved issue.
 
 From the repository checkout, save the current issue using its repository, number and supplied destination JSON file.
 
@@ -339,7 +374,7 @@ gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
 
 ##### 7. Compare the Saved Issue Fields
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Compare the saved fields with the intended body and metadata.
 
@@ -365,26 +400,11 @@ Take the caller's fresh records for every linked pull request, across repositori
 
 ##### 3. Run the Closure Check
 
-From `<workspace>`, run the closure gate with the fresh issue JSON, complete Development snapshot and linked pull request records as `--issue`, `--development` and `--prs`.
-
-- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
-- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
-```
+Apply [Run Closure Gate](#run-closure-gate) with the fresh issue JSON, complete Development snapshot and linked pull request records, using absolute evidence paths.
 
 ##### 4. Require the Closure Gate
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Require the supplied completion result to be complete, normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
 
@@ -422,7 +442,7 @@ gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -f bo
 gh api --method POST 'repos/<owner>/<repo>/issues/637/comments' -f body='Delivered by #950.' --jq .html_url
 ```
 
-For a longer comment, post the complete supplied file from the repository checkout using the repository and issue number, as [Bodies](#conventions) states.
+For a longer comment, post the complete supplied file from the repository checkout using the repository and issue number, as [Bodies](#bodies) states.
 
 ```bash
 gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -F 'body=@<comment-file>' --jq .html_url
@@ -436,7 +456,7 @@ gh api --method POST 'repos/<owner>/<repo>/issues/874/comments' -F body=@comment
 
 ##### 3. Return the Comment URL
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return the saved comment URL.
 
@@ -459,26 +479,11 @@ Compare its links with the supplied fresh pull request records; return a changed
 
 ##### 3. Run the Completion Gate
 
-From `<workspace>`, run the closure gate with the current issue JSON, complete Development snapshot and linked pull request records. Use absolute evidence paths when changing directory.
-
-- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
-- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
-```
+Apply [Run Closure Gate](#run-closure-gate) with the current issue JSON, complete Development snapshot and linked pull request records, using absolute evidence paths.
 
 ##### 4. Require the Completion Gate to Pass
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
 
@@ -498,9 +503,40 @@ gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f state=closed -f state
 
 ##### 6. Return the Completed State
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return the saved state or failure.
+
+#### Run Closure Gate
+
+The closure check's verdict for one issue, its Development snapshot and its linked pull request records.
+
+**Inputs:** [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Closure verdict](#closure-verdict)
+
+##### 1. Run the Closure Command
+
+From `<workspace>`, run the closure gate with the fresh issue JSON, complete Development snapshot and linked pull request records.
+
+- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
+- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
+
+Runs as [Helper invocation](#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
+```
+
+##### 2. Return the Closure Verdict
+
+Read the result of each command as [Command result](#command-result) states. Return the verdict with each blocker it reports, or the execution failure.
 
 #### Capture Issue Development
 
@@ -534,7 +570,7 @@ gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
 
 ##### 4. Return the Development Files
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
@@ -598,7 +634,7 @@ gh api --paginate 'repos/m2ux/workflow-server/issues?state=all&per_page=100' --j
 
 ##### 2. Read the Highest Prefix
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Read the highest prefix carrying that letter.
 
@@ -681,6 +717,10 @@ A fresh record of every pull request a [Development snapshot](#development-snaps
 #### Completion Result
 
 The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](#task-delivery-result), an epic's from its [delivery state](#delivery-state), and an initiative's from its [delivery state](#delivery-state-1).
+
+#### Closure Verdict
+
+The closure gate's report for one issue: passing, or the blockers that keep it open.
 
 #### Review Feedback
 
@@ -771,7 +811,7 @@ Inspect the worktree lookup. Return a lookup error or missing-worktree finding b
 Stage and commit the supplied folder with the supplied message file. Resolve the message file against the engineering worktree, or pass its absolute path.
 
 - Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message as [Bodies](#conventions) states. The worktree is a linked one, so git writes here run unsandboxed.
+- Pass the message as [Bodies](#bodies) states. The worktree is a linked one, so git writes here run unsandboxed.
 
 ```bash
 cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
@@ -879,7 +919,7 @@ One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` 
 
 #### Commit Message
 
-A file holding the message of the commit that publishes the record, as [Bodies](#conventions) states.
+A file holding the message of the commit that publishes the record, as [Bodies](#bodies) states.
 
 #### Publication
 
@@ -1048,7 +1088,7 @@ For a link edit, take the supplied repository prerequisite from [Confirm Reposit
 
 ##### 4. Re-Read the Pull Request Development Links
 
-Read the same pull request's actual Development field through authenticated GitHub or an available supported tool, as [Write confirmation](#conventions) states.
+Read the same pull request's actual Development field through authenticated GitHub or an available supported tool, as [Write confirmation](#write-confirmation) states.
 
 - Include every page and state, recording each linked issue's repository and number and whether the field was fully readable.
 - Return a failed edit or unreadable field as a blocker.
@@ -1075,7 +1115,7 @@ For every pull request in the current records, `prs.json`, apply [Access Develop
 
 ##### 2. Re-Read Links After a Change
 
-Repeat that read after a link changes, as [Write confirmation](#conventions) states.
+Repeat that read after a link changes, as [Write confirmation](#write-confirmation) states.
 
 ##### 3. Return an Incomplete Link Fetch
 
@@ -1117,7 +1157,7 @@ Return the verified relation and refreshed snapshot.
 
 The current delivery pull requests for one initiative.
 
-**Inputs:** [Repository](#repository), [Initiative prefix](#titles-1), [Records path](#pull-request-records)
+**Inputs:** [Repository](#repository-1), [Initiative prefix](#titles-1), [Records path](#pull-request-records)
 
 **Outputs:** [Pull request records](#pull-request-records)
 
@@ -1139,7 +1179,7 @@ gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] 
 
 ##### 2. Return the Initiative Collection
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return the collection or an incomplete-fetch finding.
 
@@ -1181,9 +1221,9 @@ gh api 'repos/<owner>/<repo>/pulls/980' > epic-pr.json
 
 ##### 2. Fetch Requested Files or Reviews
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
-Run each requested supporting-record command. After each read, inspect its exit code and output; return a failure before the next read, keeping missing evidence explicit.
+Run each requested supporting-record command. After each read, read its result as [Command result](#command-result) states; return a failure before the next read, keeping missing evidence explicit.
 
 When changed files are requested, save their paths from the repository checkout using the supplied repository, pull request number and destination file.
 
@@ -1211,7 +1251,7 @@ gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > review
 
 ##### 3. Return the Pull Request Snapshots
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return the snapshots or missing evidence.
 
@@ -1227,7 +1267,7 @@ One pull request created or updated from supplied content and metadata.
 
 For creation, select exactly one command for the supplied kind, body, title, head and base, preserving epic and discussion draft state. For an existing pull request, continue at [3. Update the Existing Pull Request](#3-update-the-existing-pull-request).
 
-For task creation, run this command from the repository checkout using the supplied title, task branch, epic base and complete body file as [Bodies](#conventions) states.
+For task creation, run this command from the repository checkout using the supplied title, task branch, epic base and complete body file as [Bodies](#bodies) states.
 
 - Supply the epic prefix and purpose as title, the task branch as head, the epic base as base, and the complete body file.
 
@@ -1241,7 +1281,7 @@ gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<t
 gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Purpose' -f head='i07/e00/w01-purpose' -f base='i07/e00/main' -F body=@body.md --jq .html_url
 ```
 
-For epic creation, run this command from the repository checkout using the supplied title, epic base, long-lived target and review body file as [Bodies](#conventions) states.
+For epic creation, run this command from the repository checkout using the supplied title, epic base, long-lived target and review body file as [Bodies](#bodies) states.
 
 - Supply the epic prefix and name as title, the epic base as head, its long-lived branch as base, and the populated review body file.
 - `draft` is true, including when the work is already complete.
@@ -1256,7 +1296,7 @@ gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<e
 gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
 ```
 
-For discussion creation, run this command from the repository checkout using the supplied title, planning branch, target branch and body file as [Bodies](#conventions) states.
+For discussion creation, run this command from the repository checkout using the supplied title, planning branch, target branch and body file as [Bodies](#bodies) states.
 
 ```bash
 gh api --method POST 'repos/<owner>/<repository>/pulls' -f title='<title>' -f head='<planning-branch>' -f base='<target-branch>' -F body=@'<body-file>' -F draft=true
@@ -1270,16 +1310,16 @@ gh api --method POST repos/m2ux/workflow-server/pulls -f title='Queue Planning: 
 
 ##### 2. Confirm Creation and Link the Delivery Issue
 
-For a creation request, read the command’s exit code and returned identity; return a failure before attempting a link.
+For a creation request, read the command’s result as [Command result](#command-result) states, with its returned identity; return a failure before attempting a link.
 
 - For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
 - After a successful creation and any required link, continue at [4. Re-Read the Published Pull Request](#4-re-read-the-published-pull-request).
 
 ##### 3. Update the Existing Pull Request
 
-For an existing pull request, run each command for a supplied change, preserving other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied pull request identity.
+For an existing pull request, run each command for a supplied change, preserving other fields. After each selected command, read its result as [Command result](#command-result) states; stop before another mutation on a failure. If no field changes, continue with the supplied pull request identity.
 
-When changing the body, run this update from the repository checkout using the pull request’s repository, number and complete body file as [Bodies](#conventions) states.
+When changing the body, run this update from the repository checkout using the pull request’s repository, number and complete body file as [Bodies](#bodies) states.
 
 - The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
 
@@ -1319,9 +1359,9 @@ gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f base='i07/e00/main' --
 
 ##### 4. Re-Read the Published Pull Request
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
-Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](#conventions) states.
+Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](#write-confirmation) states.
 
 ##### 5. Return the Published State
 
@@ -1331,7 +1371,7 @@ Return the saved state or discrepancy, and the issue-link snapshot when the crea
 
 Each open delivery pull request pointed at the base its head requires.
 
-**Inputs:** [Repository](#repository), [Pull request records](#pull-request-records), [Long-lived branches](#branches), [Epic bases](#epic-bases), [Project checkout](#project-checkout)
+**Inputs:** [Repository](#repository-1), [Pull request records](#pull-request-records), [Long-lived branches](#branches), [Epic bases](#epic-bases), [Project checkout](#project-checkout)
 
 **Outputs:** [Alignment result](#alignment-result)
 
@@ -1386,7 +1426,7 @@ A task pull request delivers one task, or a set of tasks that name each other in
 
 #### Pull Request Identity
 
-A pull request's [repository](#repository) and number. A pull request yet to be created has its repository alone.
+A pull request's [repository](#repository-1) and number. A pull request yet to be created has its repository alone.
 
 #### Pull Request Kind
 
@@ -1559,7 +1599,7 @@ gh api 'repos/m2ux/workflow-server/contents/docs/spec.md?ref=4a217fe6' --jq .con
 
 ##### 3. Fetch Other Source URLs
 
-Read each pinned-source command’s exit code and output. Carry a failed or empty response into the unreadable-source findings below.
+Read each pinned-source command’s result as [Command result](#command-result) states. Carry a failed or empty response into the unreadable-source findings below.
 
 Fetch other URLs through the harness's web access.
 
@@ -1643,6 +1683,7 @@ Each marked [source](#sources), its identity and contents, the local file path h
 
 The columns are `Epic | Description | Coverage | Depends on | Done`. The table has no Joins column.
 
+- The body meets [Breakdown Prose](#breakdown-prose-1).
 - An epic row's id is the epic, linked to its issue: `[E01](…/issues/937)`.
 - An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
 - An epic row is complete when its issue is closed as completed.
@@ -1776,7 +1817,7 @@ From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--p
 
 `<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
@@ -1793,7 +1834,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ##### 2. Return the Epic Delivery Findings
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](#helper-result) states, retaining its reported findings or refused criteria.
 
 Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
@@ -1927,6 +1968,8 @@ New tasks exist as epic rows with their details, discussion and evidence in the 
 
 The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 
+- The body meets [Breakdown Prose](#breakdown-prose-1).
+
 - **Done.**
   A task row is complete when it is delivered, and every criterion its Coverage names is ticked.
 - **Row id.**
@@ -2007,10 +2050,6 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
   An issue backing several tasks, such as an investigation, is a reference: the epic cites it under References, no row id links it, and its title carries no agent-engineering prefix.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
-
-#### Breakdown Prose
-
-Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
 #### Body File
 
@@ -2130,7 +2169,7 @@ From `<workspace>`, check dependencies using the initiative body, every epic id 
 - It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
 - It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
@@ -2144,7 +2183,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ##### 2. Settle Dependency Findings
 
-Read the dependency checker’s exit code and output. Treat reported dependency or numbering problems as findings to settle; return an unreadable input or invocation failure as a blocker.
+Read the dependency checker’s result as [Command result](#command-result) states. Treat reported dependency or numbering problems as findings to settle; return an unreadable input as a blocker.
 
 Settle each finding through [Settle Plan Change](#settle-plan-change), with the correction below as its recommended option, the affected issue identities, the supplied allowance and the current change list.
 
@@ -2166,7 +2205,7 @@ For a confirmed epic map, run the renumberer from `<workspace>` with the initiat
 - The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
 - Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
@@ -2187,7 +2226,7 @@ For a confirmed task map, run the renumberer from `<workspace>` with the initiat
 - Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
 - Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
@@ -2485,12 +2524,12 @@ Check each section of the issue against the field conditions for its kind and ag
 
 ##### 2. Check the Changed Body Formats
 
-From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result before the next issue; retain format findings and stop on an unreadable input or invocation failure.
+From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result as [Command result](#command-result) states before the next issue; retain format findings and stop on an unreadable input.
 
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
@@ -2504,7 +2543,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ##### 3. Return the Body Check Findings
 
-Read each format-check exit code and output. Return its format findings with the field findings; report an unreadable input or failed invocation as a blocker.
+Read each format check’s result as [Command result](#command-result) states. Return its format findings with the field findings; report an unreadable input as a blocker.
 
 #### Validate Issue Body
 
@@ -2521,7 +2560,7 @@ From `<workspace>`, check the supplied issue JSON with its kind’s additional f
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
@@ -2535,7 +2574,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ##### 2. Review the Body Field Conditions
 
-Read the format checker’s exit code, findings and corrected body. Return an unreadable input or invocation failure as a blocker; retain format findings for the review.
+Read the format checker’s result as [Command result](#command-result) states, with its findings and corrected body. Return an unreadable input as a blocker; retain format findings for the review.
 
 Review the body against the supplied field conditions.
 
@@ -2636,7 +2675,7 @@ Resolve a non-mechanical finding confined to one body.
 
 ##### 4. Re-Read Each Repaired Issue
 
-Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue, as [Write confirmation](#conventions) states.
+Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue, as [Write confirmation](#write-confirmation) states.
 
 - Repeat the kind's validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
@@ -2663,7 +2702,7 @@ Publish the corrected body through [Save Tracker Issue](#save-tracker-issue).
 
 ##### 4. Re-Read the Answered Issue
 
-Apply [Read Tracker Issue](#read-tracker-issue) for the saved issue, as [Write confirmation](#conventions) states.
+Apply [Read Tracker Issue](#read-tracker-issue) for the saved issue, as [Write confirmation](#write-confirmation) states.
 
 ##### 5. Return the Question Decisions
 
@@ -2740,6 +2779,10 @@ An acceptance criterion meets these. A kind adds its own under its Acceptance Cr
   The acceptance criteria the row delivers, `AC2, AC5`, and nothing else. Every criterion is delivered by at least one row.
 - **Depends on.**
   References only, with no prose, and only what no other entry in the cell already implies.
+
+#### Breakdown Prose
+
+Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
 #### Numbering
 
@@ -2940,7 +2983,7 @@ A held change is left unapplied and its subject stays as it stands, so the next 
 
 The required label definitions available for issue publication.
 
-**Inputs:** [Repository](#repository), [Required labels](#label-identity)
+**Inputs:** [Repository](#repository-1), [Required labels](#label-identity)
 
 **Outputs:** [Available labels](#label-identity)
 
@@ -2954,13 +2997,13 @@ gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
 
 ##### 2. Compare Required Label Names
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Compare the returned labels with the supplied required names.
 
 ##### 3. Create Absent Required Labels
 
-From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s exit code and output before the next label; return a failure immediately.
+From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s result as [Command result](#command-result) states before the next label; return a failure immediately.
 
 ```bash
 gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
@@ -2968,7 +3011,7 @@ gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<
 
 ##### 4. Return the Available Labels
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return the observed existing labels and successful creations. When every required label already exists, return that observed set. An unknown definition is a finding for the caller to resolve before publication.
 
@@ -3201,7 +3244,7 @@ gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.cl
 
 ##### 2. Report a Missing Board Selection
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
 
@@ -3213,7 +3256,7 @@ Return the selected board number, or an absent-board result for [Copy Project Bo
 
 A missing theme board, or a missing proposals board.
 
-**Inputs:** [Board owner](#board-identity), [Repository](#repository), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
+**Inputs:** [Board owner](#board-identity), [Repository](#repository-1), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
 
 **Outputs:** [Copied board](#board-identity)
 
@@ -3232,7 +3275,7 @@ When the selected theme board is absent:
 
 The theme or proposals board the request names, created when it is absent.
 
-**Inputs:** [Board owner](#board-identity), [Repository](#repository), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
+**Inputs:** [Board owner](#board-identity), [Repository](#repository-1), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
 
 **Outputs:** [Board](#board-identity)
 
@@ -3258,59 +3301,23 @@ Return the owner and the board number the copy created.
 
 A new proposals board linked to the supplied repository.
 
-**Inputs:** [Board owner](#board-identity), [Repository](#repository)
+**Inputs:** [Board owner](#board-identity), [Repository](#repository-1)
 
 **Outputs:** [Proposals board](#board-identity)
 
-##### 1. Find the Proposals Template
+##### 1. Copy the Proposals Template
 
-From the repository checkout, find the template using the owner and proposals board’s [template title](#board-templates).
+Apply [Copy Board Template](#copy-board-template) with the owner, repository, the proposals board's [template title](#board-templates) and the configured [proposals title](#proposals-board) as the copy's title. The copied board meets [Proposals](#proposals).
 
-```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
-```
+##### 2. Return the Proposals Board Number
 
-##### 2. Use the Proposals Template as Source
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Use the returned number as the copy source.
-
-##### 3. Copy the Proposals Template
-
-From the repository checkout, copy the returned template number for the owner, using the configured [proposals title](#proposals-board).
-
-- The copy's JSON is one project; `.number` identifies the new board.
-
-```bash
-gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
-```
-
-##### 4. Retain the Proposals Board Number
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Retain the new board number. The copy meets [Proposals](#proposals).
-
-##### 5. Link the Proposals Board to the Repository
-
-From the repository checkout, link the new board using its owner, returned number and supplied repository.
-
-```bash
-gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
-```
-
-##### 6. Return the Proposals Board Number
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Return the new board number after linking succeeds.
+Return the copied board's owner and number.
 
 #### Create Theme Board
 
 A new theme board linked to the supplied repository.
 
-**Inputs:** [Board owner](#board-identity), [Repository](#repository), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
+**Inputs:** [Board owner](#board-identity), [Repository](#repository-1), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
 
 **Outputs:** [Theme board](#board-identity)
 
@@ -3318,23 +3325,35 @@ A new theme board linked to the supplied repository.
 
 Require the originating proposal record for a proposal-derived board; return a missing-input finding when its designator is unavailable.
 
-##### 2. Find the Initiative Template
+##### 2. Copy the Initiative Template
 
-From the repository checkout, find the template using the owner and theme board’s [template title](#board-templates).
+Apply [Copy Board Template](#copy-board-template) with the owner, repository, the theme board's [template title](#board-templates) and the title required by [One Board Per Theme](#one-board-per-theme) as the copy's title. The copy carries the template's theme board [Status options](#status-field).
+
+##### 3. Return the Theme Board Number
+
+Return the copied board's owner and number.
+
+#### Copy Board Template
+
+One board copied from an open template board and linked to its repository.
+
+**Inputs:** [Board owner](#board-identity), [Repository](#repository-1), [Board title](#one-board-per-theme)
+
+**Outputs:** [Copied board](#board-identity)
+
+##### 1. Find the Template Board
+
+From the repository checkout, find the open template board using the owner and the supplied [template title](#board-templates).
 
 ```bash
 gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
 ```
 
-##### 3. Use the Initiative Template as Source
+##### 2. Copy the Template Board
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
-Use the returned number as the copy source.
-
-##### 4. Copy the Initiative Template
-
-From the repository checkout, copy the returned template number for the owner, using the title required by [One Board Per Theme](#one-board-per-theme).
+From the repository checkout, copy the returned template number for the owner, using the supplied board title.
 
 - The copy's JSON is one project; `.number` identifies the new board.
 
@@ -3342,13 +3361,9 @@ From the repository checkout, copy the returned template number for the owner, u
 gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
 ```
 
-##### 5. Retain the Theme Board Number
+##### 3. Link the Board to the Repository
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-Retain the new board number. The copy carries the template's theme board [Status options](#status-field).
-
-##### 6. Link the Theme Board to the Repository
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 From the repository checkout, link the new board using its owner, returned number and supplied repository.
 
@@ -3356,9 +3371,9 @@ From the repository checkout, link the new board using its owner, returned numbe
 gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
 ```
 
-##### 7. Return the Theme Board Number
+##### 4. Return the Copied Board Number
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return the new board number after linking succeeds.
 
@@ -3366,7 +3381,7 @@ Return the new board number after linking succeeds.
 
 One issue's membership and initial status.
 
-**Inputs:** [Board](#board-identity), [Repository](#repository), [Issue](#issue-record), [Output file](#board-files), [Initial status](#status-field)
+**Inputs:** [Board](#board-identity), [Repository](#repository-1), [Issue](#issue-record), [Output file](#board-files), [Initial status](#status-field)
 
 **Outputs:** [Board item](#board-items)
 
@@ -3390,7 +3405,7 @@ gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
 
 ##### 3. Add the Issue to the Board
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 From the repository checkout, add the issue using the board owner and number and the returned issue id, not its issue number.
 
@@ -3406,7 +3421,7 @@ gh api --method POST 'users/<owner>/projectsV2/13/items' -f type=Issue -F id=304
 
 ##### 4. Set the Placed Item Status
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 From the repository checkout, set the caller’s selected Status using the board owner and number, returned item id and supplied status-request file.
 
@@ -3426,7 +3441,7 @@ gh api --method PATCH 'users/<owner>/projectsV2/13/items/1001' --input status-ba
 
 ##### 5. Confirm the Placed Board Item
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 From the repository checkout, read the saved item using the board owner and number, item id and Status field id.
 
@@ -3442,7 +3457,7 @@ gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
 
 ##### 6. Return the Placed Board Item
 
-Read the final fetch exit code and response. Return the confirmed item only when its issue and Status match the intended placement; otherwise return the failure or discrepancy.
+Read the final fetch’s result as [Command result](#command-result) states. Return the confirmed item only when its issue and Status match the intended placement; otherwise return the failure or discrepancy.
 
 ### Fields
 
@@ -3504,54 +3519,19 @@ The branches a task pull request targets.
 
 **Outputs:** [Epic bases](#epic-bases)
 
-##### 1. List the Long-Lived Branches
+##### 1. Read the Delivery Branch Collections
 
-From `<workspace>`, read the long-lived branch configuration with `--project` set to the supplied project checkout.
+Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and epic branch prefix.
 
-- The names meet [Branches](#branches).
-- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
-- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
+##### 2. Report Missing Branch Configuration
 
-Runs as [Helper invocation](#conventions) states.
+A missing or empty `config/branches` reports the names as unevaluable; obtain the project's branch names before creating delivery branches.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
-```
-
-##### 2. List the Epic Bases
-
-Read the branch-name helper result. Preserve an expected `unevaluable:` result with exit 1 for the configuration decision below; return other execution errors.
-
-From the repository checkout, list remote bases using the supplied epic branch prefix.
-
-- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
-- The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
-- The output contains one full base branch name per line.
-
-```bash
-git ls-remote --heads origin 'refs/heads/<epic-branch-prefix>/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-**Example:**
-
-```bash
-git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-##### 3. Report Missing Branch Configuration
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-If `config/branches` is missing or empty:
-
-- Report the names as unevaluable.
-- Obtain the project's branch names before creating delivery branches.
-
-##### 4. Require Base Prerequisite Evidence
+##### 3. Require Base Prerequisite Evidence
 
 Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
 
-##### 5. Create Each Missing Epic Base
+##### 4. Create Each Missing Epic Base
 
 Apply [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
@@ -3577,7 +3557,7 @@ git fetch origin '<source-branch>'
 
 ##### 3. Publish the New Epic Base
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 After a successful fetch:
 
@@ -3589,7 +3569,7 @@ git push origin 'origin/<source-branch>:refs/heads/<epic-base>'
 
 ##### 4. Confirm the Published Epic Base
 
-Read the push exit code and output. Return the created base only on success; return a refused or non-fast-forward push without rewriting the remote branch.
+Read the push’s result as [Command result](#command-result) states. Return the created base only on success; return a refused or non-fast-forward push without rewriting the remote branch.
 
 #### Update Task Branch
 
@@ -3609,7 +3589,7 @@ git fetch origin '<source-branch>'
 
 ##### 2. Stop on a Task Branch Fetch Failure
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Stop on failure.
 
@@ -3623,7 +3603,7 @@ git merge --no-edit 'origin/<source-branch>'
 
 ##### 4. Push the Updated Task Branch
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 After a successful merge:
 After a successful merge, push from the task worktree with the supplied task branch as destination.
@@ -3640,7 +3620,7 @@ git push origin HEAD:refs/heads/i07/e00/w01-queue-plan
 
 ##### 5. Confirm the Task Branch Push
 
-Read the push exit code and output. Return the updated task branch only on success; report a failed or non-fast-forward push without rewriting the remote branch.
+Read the push’s result as [Command result](#command-result) states. Return the updated task branch only on success; report a failed or non-fast-forward push without rewriting the remote branch.
 
 #### Read Delivery Branches
 
@@ -3658,7 +3638,7 @@ From `<workspace>`, read the branch configuration using the supplied project che
 - `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
 - A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
 
-Runs as [Helper invocation](#conventions) states.
+Runs as [Helper invocation](#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
@@ -3666,7 +3646,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ##### 2. Read the Epic Base Names
 
-Read the helper’s exit code and output. Preserve a missing or empty configuration as unevaluable evidence; return any other execution error.
+Read the helper’s result as [Command result](#command-result) states. Preserve a missing or empty configuration as unevaluable evidence.
 
 From the repository checkout, list remote bases using the supplied epic branch prefix.
 
@@ -3686,7 +3666,7 @@ git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/head
 
 ##### 3. Return the Delivery Branch Collections
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](#command-result) states.
 
 Return both collections and any missing configuration.
 

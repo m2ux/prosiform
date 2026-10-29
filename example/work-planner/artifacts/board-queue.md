@@ -33,7 +33,7 @@ From `<workspace>`, compute the queue with snapshots as `--items`, `--prs` and `
 
 Omit `--others` and `--unplanned` when absent; otherwise pass all issue files after `--others` and repeat `--unplanned` for each confirmed initiative.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>' --others '<off-board-issue-file>' --unplanned '<unplanned-initiative>'
@@ -50,7 +50,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Return the Proposed Queue Calls
 
-Read the helper’s exit code and output. Preserve pending decisions, missing evidence and unresolvable dependencies in the report; return any other execution error without applying calls.
+Read the helper’s result as [Command result](../conventions.md#command-result) states. Preserve pending decisions, missing evidence and unresolvable dependencies in the report.
 
 Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
 - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
@@ -84,10 +84,10 @@ When the queue carries an `order` or `ask` line, return the queue with those lin
 #### 4. Run the Proposed Queue Calls
 
 Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](board.md#assignees) states.
-- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status, as [Write confirmation](../conventions.md) states.
+- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status, as [Write confirmation](../conventions.md#write-confirmation) states.
 - If that item still shows the preceding status:
   - Repeat its write.
-  - Repeat the same item read. The item list can lag a write.
+  - Repeat the same item read.
 
 #### 5. Re-Read the Queued Board State
 
