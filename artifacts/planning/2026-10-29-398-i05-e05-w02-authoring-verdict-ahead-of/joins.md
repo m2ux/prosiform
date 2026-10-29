@@ -5,3 +5,5 @@
 Every pair of rows in this epic where neither depends on the other, and why it shares no pull request.
 
 - E05:W01 and E05:W02 stay apart. W01's handoff round-trip limit is closed and merged; W02 is new work against a different target — the order of `make check` — and its tests sit in the check's own suite rather than in `src/tests/test_handoff_round_trip.py`. Neither reaches the other's files.
+- E05:W01 and E05:W03 stay apart. W01 is closed and merged; W03 changes `evals/diagram-following/run.py`'s preflight and its tests, which W01 never touched.
+- E05:W02 and E05:W03 stay apart. W02 changes the `Makefile` and the check docs; W03 changes the eval's runner. Neither reaches the other's files.
