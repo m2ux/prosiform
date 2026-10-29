@@ -88,6 +88,8 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
   No problem, no unaccounted pair and no numbering advisory across I05's eight epics.
 - **Settled by the user.**
   The move itself, the three-row split, E03's renumbering and the priority.
+- **Sync, 2026-10-29.**
+  The three rows link their work items in the epic's record, and the epic reads Backlog with every row undelivered: its prerequisite E01 W05 has landed on `i05/e01/main` but that base is unmerged.
 
 ## Links
 
