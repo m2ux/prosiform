@@ -1,6 +1,6 @@
 """Read the diagram-following corpus: its workflows, their forms and scenarios.
 
-A workflow is a directory under `workflows/` holding two source trees and
+A workflow is a directory under `workflows/` holding its source trees and
 its scenarios. Each tree's entry document is `workflow.md`, and each state
 is a document of its own under `states/`, named for the state in lower
 case and headed with the state's name.
@@ -18,6 +18,14 @@ case and headed with the state's name.
   document states one label, so the label a branch takes is reachable only
   by following the link, and it is held to the edge the diagram draws all
   the same. A label that names an edge exists on the diagram alone.
+- `compiled/` and `authored/` hold the same workflow with its states
+  dispatching targets of their own, so a state's section names a step that
+  hands another document to a sub-agent. `compiled/` writes the step with
+  the dispatch operator the `pf` guide states, `⇉` for one target and `⫽`
+  for a set of them, so `pf` compiles each target into a bundle of its own.
+  `authored/` writes the same step with the protocol as prose and only
+  ordinary links, so it publishes one bundle and the protocol an agent
+  reads is the corpus's text rather than the profile's.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
@@ -33,15 +41,21 @@ file holds.
 The diagram is the one statement of the workflow's edges: the scenarios
 name inputs and a path, and the path is held to the edges parsed here.
 `scenarios.toml` lists each scenario's name, its inputs as file name and
-value, and the path a correct run walks. A run writes each input to
-`inputs/<name>` as the value followed by a newline, and a condition reads
-the file with surrounding whitespace removed.
+value, and the path a correct run walks. A dispatch form's scenario also
+lists the trace a correct run produces: one `[[scenario.trace]]` table per
+sub-agent start, in the order the walk dispatches them, naming the section
+the sub-agent follows as the document and heading it was compiled from,
+what it returned, and `together` on each entry of a set started at once.
+A run writes each input to `inputs/<name>` as the value followed by a
+newline, and a condition reads the file with surrounding whitespace removed.
 
 A form is bundled by the `pf` command the environment provides, run from
 the form's directory, so the bundle is the one this checkout builds. `pf`
 writes its bundle set into `workflow.bundles/` under the output folder it is
-given, and the entry's bundle there is `workflow.bundle.md`. No form
-dispatches, so that bundle is the whole set.
+given, and the entry's bundle there is `workflow.bundle.md`. A form that
+dispatches publishes one bundle per target beside the entry's, so its set
+is every bundle `pf` writes; a form that does not publishes the entry's
+alone.
 """
 
 import re
@@ -62,12 +76,44 @@ SCENARIOS = "scenarios.toml"
 DIAGRAM = "diagram"
 PROSE = "prose"
 LINKED_FORM = "linked"
-FORMS = (DIAGRAM, PROSE, LINKED_FORM)
+COMPILED_FORM = "compiled"
+AUTHORED_FORM = "authored"
+FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM)
+
+BUNDLES = "workflow.bundles"
+DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
+DRAWN = (DIAGRAM, COMPILED_FORM)
+"""The forms whose entry documents draw the workflow, in the order they are tried.
+
+A workflow drawing a diagram form holds it there; one written in the two
+dispatch forms holds the same diagram in its compiled form's entry, since
+both forms draw the workflow and only the compiled one's entry dispatches.
+"""
+
+TRANSITION = {
+    DIAGRAM: DIAGRAM,
+    PROSE: PROSE,
+    LINKED_FORM: LINKED_FORM,
+    COMPILED_FORM: DIAGRAM,
+    AUTHORED_FORM: DIAGRAM,
+}
+"""The form whose transition sentences a form's sections are written in.
+
+A dispatch form draws the workflow as its diagram form does, so each
+section's transition names the edge's label or takes the one edge out of
+its state, and only the step handing a section to a sub-agent is its own.
+"""
 
 START = "start"
 STOP = "stop"
 ENTRY_PLACEHOLDER = "ENTRY"
 STEP_LIMIT = 100
+
+DISPATCH_OPERATOR = "⇉"
+PARALLEL_OPERATOR = "⫽"
+RETURNED_DONE = "done"
+RETURNED_QUESTION = "question"
+RETURNED = (RETURNED_DONE, RETURNED_QUESTION)
 
 FENCE = re.compile(r"^```(\w*)\n(.*?)^```", re.MULTILINE | re.DOTALL)
 NODE = r"(\w+)(?:\(+[^)]*\)+)?"
@@ -81,6 +127,18 @@ ONLY_EDGE = "Take the transition out of this state."
 LABEL = r"take the transition labelled `([^`]+)`"
 GO_TO = r"go to \[(\w+)\]\([^)]+\)"
 LINKED = r"take the transition labelled in \[([^\]]+)\]\(([^)]+)\)"
+LINK_TARGET = re.compile(
+    rf"\[(?:{DISPATCH_OPERATOR}|{PARALLEL_OPERATOR})?\s*([^\]]+)\]"
+    r"\(([^)#]*)(?:#([^)]*))?\)"
+)
+"""One link a step writes, with its text, document and heading.
+
+The link's text may open with a dispatch operator, which the compiled form
+writes and the authored form does not, so both forms' steps read alike.
+"""
+LINKS = r"((?:\[[^\]]*\]\([^)]*\))(?: and \[[^\]]*\]\([^)]*\))*)\."
+STEP_ONE = re.compile(rf"^\d+\. Hand the .+? to a sub-agent: {LINKS}")
+STEP_SET = re.compile(rf"^\d+\. Hand the .+? to sub-agents of their own: {LINKS}")
 LABEL_STATEMENT = re.compile(
     r"^The transition labelled `([^`]+)` applies\.$", re.MULTILINE
 )
@@ -169,12 +227,32 @@ class Section:
 
 
 @dataclass(frozen=True)
+class Dispatch:
+    """One sub-agent start a correct run makes.
+
+    `section` is the document and heading the sub-agent follows, as
+    `<document>#<heading>`, since an author and the profile both name the
+    target's section rather than the bundle it compiles to. `returned` is
+    what it gave back, and `together` marks an entry of a set started
+    beside the entry above it.
+    """
+
+    section: str
+    returned: str
+    together: bool
+
+
+@dataclass(frozen=True)
 class Scenario:
-    """One run's inputs and the path a correct run walks."""
+    """One run's inputs, the path a correct run walks and its dispatch trace.
+
+    `trace` is empty for a form that dispatches nothing.
+    """
 
     name: str
     inputs: dict[str, str]
     path: tuple[str, ...]
+    trace: tuple[Dispatch, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -190,6 +268,22 @@ class Workflow:
     def form(self, form: str) -> Path:
         """The directory holding one form's source tree."""
         return self.directory / form
+
+    @property
+    def forms(self) -> tuple[str, ...]:
+        """The forms this workflow is written in."""
+        return tuple(form for form in FORMS if self.form(form).is_dir())
+
+    @property
+    def walked(self) -> dict[str, Section]:
+        """The sections a run of the workflow walks, for its states' actions.
+
+        A workflow drawing a diagram form walks that form's sections; one
+        written in the dispatch forms walks the compiled form's, whose
+        sections are the diagram's with the step handing a target added.
+        """
+        form = next(form for form in DRAWN if form in self.forms)
+        return self.sections[form]
 
 
 def mermaid(entry: Path) -> str:
@@ -302,18 +396,35 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
     with path.open("rb") as handle:
         entries = tomllib.load(handle)["scenario"]
     return tuple(
-        Scenario(entry["name"], dict(entry["inputs"]), tuple(entry["path"]))
+        Scenario(
+            entry["name"],
+            dict(entry["inputs"]),
+            tuple(entry["path"]),
+            tuple(
+                Dispatch(row["dispatch"], row["returned"], row.get("together", False))
+                for row in entry.get("trace", ())
+            ),
+        )
         for entry in entries
     )
 
 
 def read_workflow(directory: Path) -> Workflow:
     """One workflow directory, read whole."""
+    drawn = next(
+        directory / form / ENTRY
+        for form in DRAWN
+        if (directory / form / ENTRY).is_file()
+    )
     return Workflow(
         directory.name,
         directory,
-        read_diagram(directory / DIAGRAM / ENTRY),
-        {form: read_sections(directory / form, form) for form in FORMS},
+        read_diagram(drawn),
+        {
+            form: read_sections(directory / form, TRANSITION[form])
+            for form in FORMS
+            if (directory / form).is_dir()
+        },
         read_scenarios(directory / SCENARIOS),
     )
 
@@ -336,7 +447,8 @@ def instruction(entry: str) -> str:
 def bundle(form_directory: Path, output: Path) -> subprocess.CompletedProcess[bytes]:
     """The `pf` run bundling one form from its entry document under `output`.
 
-    The entry's bundle is `output / ENTRY_BUNDLE` once the run succeeds.
+    The entry's bundle is `output / ENTRY_BUNDLE` once the run succeeds, and
+    every other bundle the run writes sits beside it in the same folder.
     """
     command = shutil.which("pf")
     if command is None:
@@ -347,6 +459,101 @@ def bundle(form_directory: Path, output: Path) -> subprocess.CompletedProcess[by
         capture_output=True,
         check=False,
     )
+
+
+def bundled(output: Path) -> list[Path]:
+    """Every bundle a form's run wrote under `output`, in name order."""
+    return sorted(path for path in (output / BUNDLES).glob("*.bundle.md"))
+
+
+def section_body(directory: Path, document: str, heading: str) -> str:
+    """One heading's content within a document, and nothing beside it.
+
+    `directory` is that of the section writing the link, which is where the
+    document resolves from. A heading is matched without regard to case,
+    since a section names it lower case and the document heads it as a
+    title.
+    """
+    path = (directory / document).resolve()
+    if not path.is_file():
+        raise CorpusError(f"a dispatch names {document}, which is no document")
+    text = path.read_text()
+    start = re.search(rf"^#+ {re.escape(heading)}$", text, re.MULTILINE | re.IGNORECASE)
+    if start is None:
+        raise CorpusError(f"{document} holds no {heading} section")
+    rest = text[start.end() :]
+    end = re.search(r"^#+ ", rest, re.MULTILINE)
+    return rest if end is None else rest[: end.start()]
+
+
+def dispatched(body: str, directory: Path, root: Path) -> list[tuple[bool, list[str]]]:
+    """The targets a section's steps dispatch, each step's in order.
+
+    A step hands one document to a sub-agent, or several to sub-agents of
+    their own, so the pair says whether the step's targets form one set. A
+    target is named as `<document>#<heading>`, the section a sub-agent
+    follows, since both forms name the section and neither names the bundle
+    it compiles to. The document is named from the form's root, `root`,
+    though the step writes its link from `directory`, the directory of the
+    section writing it. A link resolving to no document, or to a document
+    holding no such heading, is a fault.
+    """
+    steps: list[tuple[bool, list[str]]] = []
+    for line in body.splitlines():
+        found = STEP_ONE.match(line) or STEP_SET.match(line)
+        if found is None:
+            continue
+        targets: list[str] = []
+        for _, document, heading in LINK_TARGET.findall(found.group(1)):
+            written = (directory / document).resolve()
+            if not written.is_file():
+                raise CorpusError(f"a step dispatches {document}, which is no document")
+            if not re.search(
+                rf"^#+ {re.escape(heading)}$",
+                written.read_text(),
+                re.MULTILINE | re.IGNORECASE,
+            ):
+                raise CorpusError(f"{document} holds no {heading} section")
+            named = written.relative_to(root.resolve()).with_suffix("")
+            targets.append(f"{named.as_posix()}#{heading.lower()}")
+        if not targets:
+            raise CorpusError(f"a dispatch step names no document: {line!r}")
+        together = STEP_SET.match(line) is not None
+        if together and len(targets) < 2:
+            raise CorpusError(f"a set states one target: {line!r}")
+        steps.append((together, targets))
+    return steps
+
+
+def dispatch_walk(
+    workflow: Workflow, form: str, inputs: dict[str, str]
+) -> tuple[tuple[str, bool], ...]:
+    """The sub-agents a correct run of one form starts, in order.
+
+    Each state on the path dispatches the targets its section's steps name,
+    and a dispatched section dispatches its own targets in turn, so the walk
+    is the source's statement of which sub-agents start, in what order, and
+    which of them start together. What each returned is the scenario's to
+    state, since it is the sub-agent's to give.
+    """
+    root = workflow.form(form)
+    trace: list[tuple[str, bool]] = []
+
+    def follow(body: str, directory: Path) -> None:
+        for together, targets in dispatched(body, directory, root):
+            for index, target in enumerate(targets):
+                trace.append((target, together and index > 0))
+                document, _, heading = target.partition("#")
+                written = root / f"{document}.md"
+                follow(
+                    section_body(written.parent, written.name, heading),
+                    written.parent,
+                )
+
+    for state in walk(workflow, form, inputs):
+        section = sections_of(workflow, form)[state]
+        follow(section.body, section.path.parent)
+    return tuple(trace)
 
 
 def holds(condition: str, inputs: dict[str, str], trace: list[str]) -> bool:
@@ -370,19 +577,31 @@ def input_read(condition: str) -> str:
 
 
 def inputs_read(workflow: Workflow, form: str) -> set[str]:
-    """The input files one form's conditions read."""
+    """The input files one form's conditions read.
+
+    A form's sections are written in the transition sentences of the form
+    `TRANSITION` names, and they decide on the same conditions whichever of
+    those sentences a form uses, so a form this workflow does not hold is
+    read from the one writing the same sentences.
+    """
+    written = form if form in workflow.sections else TRANSITION[form]
     return {
         input_read(section.transition.condition)
-        for section in workflow.sections[form].values()
+        for section in workflow.sections[written].values()
         if section.transition is not None and section.transition.condition is not None
     }
+
+
+def sections_of(workflow: Workflow, form: str) -> dict[str, Section]:
+    """One form's sections, or the sections of the form it is written in."""
+    return workflow.sections[form if form in workflow.sections else TRANSITION[form]]
 
 
 def successor(
     workflow: Workflow, form: str, state: str, inputs: dict[str, str], trace: list[str]
 ) -> str | None:
     """The state one form's section for a state says comes next, if any."""
-    transition = workflow.sections[form][state].transition
+    transition = sections_of(workflow, form)[state].transition
     if transition is None:
         return None
     chosen = transition.then
@@ -390,7 +609,7 @@ def successor(
         transition.condition, inputs, trace
     ):
         chosen = transition.otherwise
-    if form == PROSE:
+    if TRANSITION[form] == PROSE:
         return chosen
     leaving = workflow.diagram.leaving(state)
     targets = [edge.target for edge in leaving if edge.label == chosen]

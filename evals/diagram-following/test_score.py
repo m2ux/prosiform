@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 from score import TRACE, Failure, Verdict, read_trace, score
-from workflow import DIAGRAM, Scenario, Workflow, workflows
+from workflow import Scenario, Workflow, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -30,7 +30,7 @@ def workspace(
     (tmp_path / TRACE).write_text(log)
     (tmp_path / "actions").mkdir()
     for state in set(trace) & workflow.diagram.states:
-        name, value = workflow.sections[DIAGRAM][state].action
+        name, value = workflow.walked[state].action
         (tmp_path / "actions" / name).write_text(f"{value}\n")
     return tmp_path
 
