@@ -203,3 +203,10 @@ Review of `main` at 8e56baf3, the #355 merge, 2026-10-28. Seven findings, each v
 | Prerequisite epic | [I05:E01 Diagram Following](https://github.com/m2ux/prosiform/issues/333) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
 | Review pull request | [#369](https://github.com/m2ux/prosiform/pull/369), carrying #366 after #355 |
+
+## Closure
+
+Closed as completed on 2026-10-29. Every row is delivered, AC1–AC35 are verified and ticked, and both Development-linked pull requests, #355 and #369, are merged into `main`. The closure gate passed on a fresh Development read with the repository's auto-closing setting confirmed disabled, so closure follows the criteria rather than the merges.
+
+W16 stays unoccupied: that number named the eval row the epic gave up to I05:E07, so the epic's rows end at W15.
+
