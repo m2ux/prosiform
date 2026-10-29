@@ -13,6 +13,8 @@ It also gives the check a failing case per rule, so a rule the check stops detec
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](w10.md) | What this task delivers, its parts and its test obligations |
+| [Validation](validation.md) | The test plan, its results at the delivered revision, the criterion each rail observes, and the demonstrated guard failure |
+| [Change list](change-list.md) | What was applied, and what was held and why |
 
 ## Links
 
