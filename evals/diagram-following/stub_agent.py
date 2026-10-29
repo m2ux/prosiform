@@ -15,6 +15,8 @@ The environment scripts it:
   its workspace held on starting, its arguments, its prompt, the names of
   its environment's variables and its `CLAUDE_CONFIG_DIR`;
 - `STUB_AGENT_SILENT`: when set, it prints no `result` message;
+- `STUB_AGENT_ERROR`: when set, its `result` message reports `is_error` true,
+  as a refusal or a crashed agent does;
 - `STUB_AGENT_HANG`: a file the first session to find it absent creates,
   then hangs after writing its trace, printing nothing more.
 """
@@ -81,7 +83,7 @@ def main() -> int:
         result = {
             "type": "result",
             "subtype": "success",
-            "is_error": False,
+            "is_error": bool(os.environ.get("STUB_AGENT_ERROR")),
             "num_turns": len(path),
             "total_cost_usd": float(os.environ.get("STUB_AGENT_COST", "0.01")),
             "usage": {"input_tokens": 100 * len(path), "output_tokens": 10},

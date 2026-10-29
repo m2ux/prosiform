@@ -28,7 +28,7 @@ from run import (
     run,
 )
 from score import ACTIONS, TRACE
-from workflow import DIAGRAM, ENTRY, CorpusError, workflows
+from workflow import DIAGRAM, ENTRY, LINKED_FORM, CorpusError, workflows
 
 STUB = Path(__file__).resolve().parent / "stub_agent.py"
 CORPUS = {workflow.name: workflow for workflow in workflows()}
@@ -156,6 +156,63 @@ def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
     looping = CORPUS["looping"]
     assert len(by_form["bundled"]) == 2 * len(looping.scenarios)
     assert len(by_form["tree"]) == 2 * len(looping.scenarios)
+
+
+def test_the_linked_form_walks_every_scenario_of_a_branching_workflow(
+    tmp_path: Path, log: Path
+) -> None:
+    """Both `branching` scenarios reach the path their inputs determine.
+
+    The session's workspace is the linked form's own source tree, so the
+    rule document each decision links is present and the stub finds the
+    state headings there rather than in a bundle.
+    """
+    eval_run(
+        tmp_path,
+        *("--workflows", "branching", "--forms", LINKED_TREE, "--repetitions", "1"),
+        *("--budget-usd", "4"),
+    )
+    written = records(tmp_path)
+    assert len(written) == len(CORPUS["branching"].scenarios)
+    linked = CORPUS["branching"].form(LINKED_FORM)
+    rules = {str(path.relative_to(linked)) for path in (linked / "rules").iterdir()}
+    assert rules == {"rules/escalation.md", "rules/queue.md"}
+    held = {tuple(sorted(entry["files"])) for entry in seen(log)}
+    for files in held:
+        assert "workflow.md" in files
+        assert {"states/triage.md", "states/intake.md"} <= set(files)
+        assert rules <= set(files), "the linked form's rule documents are absent"
+        assert "scenarios.toml" not in files
+    for record in written:
+        assert record["form"] == LINKED_TREE
+        assert record["verdict"]["passed"] is True, record["verdict"]
+        assert record["verdict"]["actual"] == record["verdict"]["expected"]
+
+
+def test_the_linked_form_walks_every_scenario_of_a_looping_workflow(
+    tmp_path: Path, log: Path
+) -> None:
+    """Both `looping` scenarios reach the path their inputs determine."""
+    eval_run(
+        tmp_path,
+        *("--workflows", "looping", "--forms", LINKED_TREE, "--repetitions", "1"),
+        *("--budget-usd", "4"),
+    )
+    written = records(tmp_path)
+    assert len(written) == len(CORPUS["looping"].scenarios)
+    linked = CORPUS["looping"].form(LINKED_FORM)
+    rules = {str(path.relative_to(linked)) for path in (linked / "rules").iterdir()}
+    assert rules == {"rules/rework.md", "rules/release.md"}
+    held = {tuple(sorted(entry["files"])) for entry in seen(log)}
+    for files in held:
+        assert "workflow.md" in files
+        assert {"states/draft.md", "states/review.md"} <= set(files)
+        assert rules <= set(files), "the linked form's rule documents are absent"
+        assert "scenarios.toml" not in files
+    for record in written:
+        assert record["form"] == LINKED_TREE
+        assert record["verdict"]["passed"] is True, record["verdict"]
+        assert record["verdict"]["actual"] == record["verdict"]["expected"]
 
 
 def test_each_session_records_its_transcript_usage_cost_and_verdict(
@@ -312,6 +369,21 @@ def test_a_refused_agent_is_errored_not_a_trace_failure(
     [written] = records(tmp_path)
     assert written["verdict"]["failure"] == "errored"
     assert written["verdict"]["actual"] == []
+
+
+def test_an_agent_reporting_an_error_is_errored_though_it_wrote_a_trace(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A refusal mid-run is `errored`, not a workflow the agent stopped short."""
+    monkeypatch.setenv("STUB_AGENT_ERROR", "1")
+    eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-usd", "1"),
+    )
+    [record] = records(tmp_path)
+    assert record["exit_status"] == 0
+    assert record["verdict"]["failure"] == "errored"
 
 
 def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:
