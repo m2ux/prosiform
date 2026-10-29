@@ -10,11 +10,13 @@ Populates one initiative body. The body states the goal as criteria and lists th
 
 ## Operations
 
-### *Populate* Initiative Issue Body
+### Populate Initiative Issue Body
 
 One initiative body and its local validation findings.
 
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+**Inputs:** [Scoped proposal](proposal-body.md#template), [Goal clauses](goal-trace.md#goal-clauses), [Requirement sources](#sources), [Epic summaries](#work-breakdown), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Format findings](issue-body.md#format-findings)
 
 #### 1. Draft the Initiative Body
 
@@ -28,11 +30,13 @@ Apply [Check Round of Edits](issue-body.md#check-round-of-edits).
 
 Return the populated body and its local format findings to the caller.
 
-### *Draft* Initiative Issue Body
+### Draft Initiative Issue Body
 
 One initiative body, scoped to one proposal.
 
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+**Inputs:** [Scoped proposal](proposal-body.md#template), [Goal clauses](goal-trace.md#goal-clauses), [Requirement sources](#sources), [Epic summaries](#work-breakdown), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file)
 
 #### 1. Copy the Initiative Template
 
@@ -62,11 +66,13 @@ Fill the initiative-specific cells.
 - Each row must meet [Work Breakdown](#work-breakdown).
 - An item a test cannot observe must stay named as [Coverage Reports](issue-body.md#coverage-reports) define.
 
-### *Resolve* Placeholder Links
+### Resolve Placeholder Links
 
 Saved issue identities in the links an initiative and its epics carry before their issues exist.
 
-**Inputs:** Initiative body file, each epic body file, and the saved issue identity of the initiative and of each epic.
+**Inputs:** [Initiative body](#body-file), [Epic bodies](epic-issue-body.md#body-file), [Saved issues](issue.md#issue-record)
+
+**Outputs:** [Initiative body](#body-file), [Epic bodies](epic-issue-body.md#body-file), [Unresolved links](#temporary-links)
 
 #### 1. Replace Temporary Issue Links
 
@@ -82,39 +88,79 @@ Confirm no temporary link remains in any of those files.
 
 Return the rewritten body files and each temporary link left unresolved, with the file that holds it.
 
-### *Record* Initiative Delivery
+### Record Initiative Delivery
 
 One initiative body with its epic delivery recorded.
 
-**Inputs:** Initiative JSON, every linked epic's current JSON and optional output body file.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Delivery findings](initiative.md#delivery-findings)
 
 #### 1. Run Sync Initiative
 
-Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
+From `<workspace>`, update the supplied initiative JSON with every linked epic’s current record as `--epics`, adding `--fix` when an output body is requested.
+
+- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](initiative.md#delivery-state).
+
+Pass every epic JSON file as a separate argument after `--epics`. Omit `--fix` when no output body is requested.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
+```
 
 #### 2. Return the Initiative Delivery Findings
 
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
+
 Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
-### *Record* Initiative Criteria
+### Record Initiative Criteria
 
 Verified criteria and completed rows in one initiative body.
 
-**Inputs:** Initiative JSON, every linked epic's current JSON, verified criterion ids and output body file.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Verified criteria](#initiative-acceptance-criteria), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Refused criteria](acceptance-criteria.md#unverified-criteria)
 
 #### 1. Run Tick Initiative Criteria
 
-Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+From `<workspace>`, update the initiative JSON with linked epic records as `--epics`, verified criterion ids as `--tick` and output body file as `--fix`. Refuse criteria not ready to verify.
+
+Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
+```
 
 #### 2. Return the Initiative Body and Refused Criteria
 
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
+
 Return the body and refused criteria. Complete rows receive Done ticks.
 
-### *Validate* Initiative Body
+### Validate Initiative Body
 
 The body's local format and field findings.
 
-**Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Source evidence](#source-evidence), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Validation findings](issue-body.md#format-findings)
 
 #### 1. Validate the Initiative Issue Body
 
@@ -132,11 +178,13 @@ Include excluded names in Problem and Proposal and criterion/source departures i
 
 Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-### *Read* Requirement Sources
+### Read Requirement Sources
 
 The requirements evidence used to validate an initiative's criteria.
 
-**Inputs:** Initiative References, checkout, authenticated source access and destination files.
+**Inputs:** [Initiative references](#references), [Source files](#source-evidence)
+
+**Outputs:** [Source evidence](#source-evidence)
 
 #### 1. Read Local Requirement Sources
 
@@ -144,9 +192,21 @@ Read each local source at its checkout path.
 
 #### 2. Fetch Pinned GitHub Sources
 
-For a pinned GitHub blob, run [Fetch Source](#fetch-source) with its repository, path, pinned revision and output file.
+For a pinned GitHub blob, fetch its content from the repository checkout using the repository owner and name, source path, pinned revision and destination file. URL-encode the path and revision for the request.
+
+```bash
+gh api 'repos/<owner>/<repository>/contents/<source-path>?ref=<revision>' --jq .content | base64 -d > '<source-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/m2ux/workflow-server/contents/docs/spec.md?ref=4a217fe6' --jq .content | base64 -d > source-R1.md
+```
 
 #### 3. Fetch Other Source URLs
+
+Read each pinned-source command’s result as [Command result](../conventions.md#command-result) states. Carry a failed or empty response into the unreadable-source findings below.
 
 Fetch other URLs through the harness's web access.
 
@@ -159,6 +219,18 @@ Record an unreadable or empty source as a [Sources](#sources) finding; its crite
 Return each source's contents and identity with those findings.
 
 ## Fields
+
+### Body File
+
+A local Markdown file at a given path holding one initiative body that meets [Template](#template).
+
+### Temporary Links
+
+Each placeholder for an unsaved initiative or epic issue, with the body file containing it and the intended issue identity.
+
+### Source Evidence
+
+Each marked [source](#sources), its identity and contents, the local file path holding those contents, and any unreadable or empty-source finding.
 
 ### Template
 
@@ -202,7 +274,7 @@ Return each source's contents and identity with those findings.
 ### Titles
 
 - The title is `[I07] Name: Subtitle`.
-- Labels are `type:initiative` and a `theme:*`.
+- Labels are the initiative [kind label](../configuration.md#kind-labels) and one [theme label](../configuration.md#theme-labels).
 - `I` is the initiative number. Initiatives count from `00`.
 
 ### Problem
@@ -218,6 +290,7 @@ Return each source's contents and identity with those findings.
 
 The columns are `Epic | Description | Coverage | Depends on | Done`. The table has no Joins column.
 
+- The body meets [Breakdown Prose](issue-body.md#breakdown-prose).
 - An epic row's id is the epic, linked to its issue: `[E01](…/issues/937)`.
 - An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
 - An epic row is complete when its issue is closed as completed.
@@ -285,59 +358,3 @@ A final epic of the initiative holds the debt that initiative's delivery defers.
 ### Breakdown Prose
 
 Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
-
-## Commands
-
-### Sync Initiative
-
-Reports an initiative's delivery state against its epics, and ticks Done on an epic row whose issue is closed as completed.
-
-**Inputs:** Initiative JSON, every linked epic record and optional output body file.
-
-- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](initiative.md#delivery-state).
-
-Pass every epic JSON file as a separate argument after `--epics`.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
-```
-
-### Tick Initiative Criteria
-
-Ticks confirmed initiative criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current initiative JSON, every linked epic JSON, verified criterion ids and destination body file.
-
-Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
-```
-
-### Fetch Source
-
-Saves one GitHub source at the revision its permalink pins.
-
-**Inputs:** Repository owner and name, source path, pinned revision and destination file. URL-encode the path and revision for the request.
-
-```bash
-gh api 'repos/<owner>/<repository>/contents/<source-path>?ref=<revision>' --jq .content | base64 -d > '<source-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/m2ux/workflow-server/contents/docs/spec.md?ref=4a217fe6' --jq .content | base64 -d > source-R1.md
-```

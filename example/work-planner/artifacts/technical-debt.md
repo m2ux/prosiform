@@ -10,11 +10,13 @@ One problem a unit's validation finds, and the class that decides where it is fi
 
 ## Operations
 
-### *Classify* Technical Debt
+### Classify Technical Debt
 
 One debt item sorted into the class that decides whether the unit fixes or defers it.
 
-**Inputs:** The debt item, the evidence that shows it, and the criteria the unit's Coverage carries.
+**Inputs:** [Debt item](#debt-item), [Unit criteria](acceptance-criteria.md#criterion)
+
+**Outputs:** [Classified debt item](#debt-item)
 
 #### 1. Match the Debt Class
 

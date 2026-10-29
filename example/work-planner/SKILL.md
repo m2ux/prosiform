@@ -18,6 +18,8 @@ Work Planner plans work as GitHub issues and keeps the plan current until the wo
 
 Each theme's project board shows where its items stand. The Proposals board holds proposals. A planning record holds what an initiative leaves out: the evidence, the decisions and each review.
 
+The values a deployment sets, such as its labels, board fields, planning-record branch and report limits, are in [Configuration](configuration.md).
+
 ## Modes
 
 Run `pf` and follow it, then select the mode as appropriate to fulfill the user request:

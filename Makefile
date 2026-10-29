@@ -10,8 +10,8 @@
 # the build under test through the corpus runner, and the last two read the
 # corpus through the manifest reader beside it, which reads `jsonschema` from
 # that same group, so the four run through it. The smoke, layout, table, link,
-# vocabulary and step checks depend on the standard library alone and run under
-# `python3` directly.
+# vocabulary, step and authoring checks depend on the standard library alone and
+# run under `python3` directly.
 #
 # `make smoke` is the one check that does not run the build from this
 # checkout: it builds the wheel, installs it into a throwaway environment and
@@ -40,6 +40,11 @@
 # mermaid-cli ships. mermaid-cli and the headless browser it drives are no
 # dependency of the build, so `make check` leaves it out.
 #
+# `make authoring` reports where the work-planner example departs from the
+# authoring rules its guidelines state, by file and area, and fails while any
+# departure remains, so the rules the example now meets are held by the checks
+# rather than by review.
+#
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
 
@@ -47,9 +52,9 @@ UV_RUN := uv run --project src --frozen
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps render
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render
 
-check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps authoring
 
 test:
 	cd src && uv run --frozen pytest
@@ -98,6 +103,9 @@ independence:
 
 steps:
 	python3 checks/steps.py
+
+authoring:
+	python3 checks/authoring.py
 
 render:
 	python3 checks/render.py

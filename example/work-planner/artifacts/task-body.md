@@ -10,11 +10,13 @@ Populates one task body.
 
 ## Operations
 
-### *Populate* Task Body
+### Populate Task Body
 
 One task body within its supplied epic context.
 
-**Inputs:** Task scope, epic context, design, criteria and output path.
+**Inputs:** [Task scope](#task-scope), [Epic body](epic-issue-body.md#template), [Output body path](issue-body.md#body-file)
+
+**Outputs:** [Task body](#template)
 
 - Populate the body from the [Template](#template) at the supplied output path.
   - The title must meet the shared [Titles](issue-body.md#titles) conditions.
@@ -22,17 +24,35 @@ One task body within its supplied epic context.
   - Acceptance criteria must meet the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria).
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
-### *Record* Task Delivery
+### Record Task Delivery
 
 One task body with its confirmed delivery and verified criteria recorded.
 
-**Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids, output body file and output comment file.
+**Inputs:** [Task issue](issue.md#issue-record), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Delivering pull request](pull-request.md#pull-request-identity), [Verified criterion ids](acceptance-criteria.md#criterion), [Output body path](issue-body.md#body-file), [Comment path](issue.md#issue-comment)
+
+**Outputs:** [Task delivery result](#task-delivery-result)
 
 #### 1. Sync the Task Issue
 
-Run [Sync Task Issue](#sync-task-issue) with the task JSON, records as `--prs`, snapshot as `--links`, delivery number as `--pr`, verified ids as `--tick` and output as `--fix`. Tick only criteria the caller has verified.
+From `<workspace>`, update the task JSON with records as `--prs`, snapshot as `--links`, delivering pull request number as `--pr`, verified criterion ids as `--tick` and output body file as `--fix`. Tick only criteria the caller has verified.
+
+`<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --pr '<pull-request-number>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-637.json --prs prs.json --links links.json --pr 950 --tick AC1 --fix fixed-637.md
+```
 
 #### 2. Write the Delivery Comment
+
+Read the helper’s result as [Command result](../conventions.md#command-result) states, with its written body. Return an invocation failure before writing the comment, retaining any eligibility findings.
 
 Write `Delivered by #<pull-request-number>.` to the output comment file, with the delivering pull request number.
 
@@ -73,7 +93,7 @@ Return the body, the comment file and the eligibility findings. The caller saves
 ### Titles
 
 - The title is `[I07:E00:W01] Name: Subtitle`.
-- The label is `type:task`.
+- The label is the task [kind label](../configuration.md#kind-labels).
 - `W` is the task within the epic. Tasks count from `W01`.
 
 ### Open Questions
@@ -89,22 +109,10 @@ Return the body, the comment file and the eligibility findings. The caller saves
 - A task has the [epic issue body](epic-issue-body.md)'s sections without the Work Breakdown table.
 - New task planning follows [Work Breakdown](epic-issue-body.md#work-breakdown). This body describes an existing issue kept as a task.
 
-## Commands
+### Task Scope
 
-### Sync Task Issue
+The work one task delivers within its epic: its problem, design and acceptance criteria, as the [Template](#template) sections hold them.
 
-Records the pull request that delivered a task issue, ticks its criteria, and reports whether it is closable.
+### Task Delivery Result
 
-**Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids and output file.
-
-`<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --pr '<pull-request-number>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-637.json --prs prs.json --links links.json --pr 950 --tick AC1 --fix fixed-637.md
-```
+One task's delivery as recorded: the body with its delivering pull request and verified criteria ticked, a comment file reading `Delivered by #<pull-request-number>.`, and the eligibility findings stating whether the task is closable.

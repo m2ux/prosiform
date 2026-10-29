@@ -10,11 +10,13 @@ The quality and verification state of an issue's acceptance criteria: how each c
 
 ## Operations
 
-### *Check* Criteria Quality
+### Check Criteria Quality
 
 The quality findings for the acceptance criteria of the issues being aligned, against their characteristics and the marked sources they answer to.
 
-**Inputs:** Each issue body whose criteria are checked, the initiative's References, checkout, authenticated source access and source destination files.
+**Inputs:** [Issue records](issue.md#issue-record), [Initiative references](initiative-issue-body.md#references), [Project checkout](delivery-branches.md#project-checkout), [Source files](initiative-issue-body.md#source-evidence)
+
+**Outputs:** [Criteria quality findings](#criteria-quality-findings)
 
 #### 1. Check Requirement Characteristics
 
@@ -35,11 +37,13 @@ Align the criteria with each source read, as [Sources](initiative-issue-body.md#
 
 Return the failing criteria, departures and gaps with the source findings Read Requirement Sources returns.
 
-### *Verify* Selected Criteria
+### Verify Selected Criteria
 
 The verification evidence for a supplied set of criteria whose delivery is ready.
 
-**Inputs:** Criterion ids, current issue body, delivery findings, delivery revisions, named instruments, the project checkout to run them in, and the [verification evidence](#verification-evidence) the run has already taken, when it has any.
+**Inputs:** [Criterion ids](#criterion), [Current body](issue-body.md#body-file), [Epic delivery findings](epic.md#delivery-findings), [Initiative delivery findings](initiative.md#delivery-findings), [Delivery revisions](#revision), [Instruments](#instrument), [Project checkout](#instrument-checkout), [Verification evidence](#verification-evidence)
+
+**Outputs:** [Verification evidence](#verification-evidence), [Verified criterion ids](#criterion), [Unverified criteria](#unverified-criteria)
 
 #### 1. Confirm Criterion Readiness
 
@@ -58,11 +62,13 @@ Check out each branch the delivering pull requests merged into, in the supplied 
 Return the verification evidence of each selected criterion, kept or taken, the verified criterion ids, and each unresolved criterion with what is missing.
 - Leave body publication and further planning to the caller.
 
-### *Tick* Verified Criteria
+### Tick Verified Criteria
 
 The confirmed criteria and completed rows recorded in an epic or initiative body.
 
-**Inputs:** Issue JSON, verified criterion ids, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
+**Inputs:** [Issue record](issue.md#issue-record), [Verified criterion ids](#criterion), [Output body path](issue-body.md#body-file), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Linked epic records](issue.md#issue-record)
+
+**Outputs:** [Ticked body](issue-body.md#body-file), [Refused criteria](#unverified-criteria)
 
 #### 1. Record the Criterion Ticks
 
@@ -74,11 +80,13 @@ Record the criteria, meeting [Tick State](#tick-state).
 
 Return the resulting body and any criteria refused as not ready to verify. The artifact operations return the updated bodies for publication.
 
-### *Untick* Criteria
+### Untick Criteria
 
 The criteria a body ticked without the delivery their evidence depends on, returned to unticked.
 
-**Inputs:** Current issue body, criterion ids and output body file.
+**Inputs:** [Current body](issue-body.md#body-file), [Criterion ids](#criterion), [Output body path](issue-body.md#body-file)
+
+**Outputs:** [Unticked body](issue-body.md#body-file)
 
 #### 1. Clear the Criterion Ticks
 
@@ -88,11 +96,13 @@ Clear the tick on each supplied criterion, and Done on each row or table that ci
 
 Write the body to the output file and return it for publication, leaving every other criterion and row as it stands.
 
-### *Record* Verified Criteria
+### Record Verified Criteria
 
 The verified criteria of one epic or initiative, ticked and saved to its issue.
 
-**Inputs:** Repository, criterion ids, current issue JSON and body, delivery findings, delivery revisions, named instruments, the project checkout, the verification evidence the run has already taken when it has any, output body file, and the pull request records with the complete issue-link snapshot for an epic or every linked epic record for an initiative.
+**Inputs:** [Issue record](issue.md#issue-record), [Criterion ids](#criterion), [Epic delivery findings](epic.md#delivery-findings), [Initiative delivery findings](initiative.md#delivery-findings), [Delivery revisions](#revision), [Instruments](#instrument), [Project checkout](#instrument-checkout), [Verification evidence](#verification-evidence), [Output body path](issue-body.md#body-file), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Linked epic records](issue.md#issue-record)
+
+**Outputs:** [Saved issue](issue.md#issue-record), [Verified criterion ids](#criterion), [Verification evidence](#verification-evidence), [Unverified criteria](#unverified-criteria)
 
 #### 1. Verify the Selected Criteria
 
@@ -113,10 +123,17 @@ Return the verified ids, the verification evidence Verify Selected Criteria retu
 
 ## Fields
 
-- **Criterion.** The id of one acceptance criterion in the issue body that states it.
-- **Instrument.** The command, test or check the criterion names as the thing that observes it.
-- **Revision.**
-  The branch and commit the instrument ran against, which is the branch the delivering pull requests merged into.
+### Criterion
+
+The id of one acceptance criterion in the issue body that states it, as `AC2`. A set of criteria is a list of those ids.
+
+### Instrument
+
+The command, test or check the criterion names as the thing that observes it.
+
+### Revision
+
+The branch and commit the instrument ran against, which is the branch the delivering pull requests merged into.
 
 ### Readiness
 
@@ -137,3 +154,14 @@ One criterion's instrument result, passing or failing, with the issue that state
 ### Tick State
 
 A ticked criterion carries verification evidence. Done on the row or table that cites it follows [Tables](issue-body.md#tables) and [Work Breakdown](epic-issue-body.md#work-breakdown). A criterion refused as not ready to verify is returned unticked with what it is missing.
+
+### Unverified Criteria
+
+Each criterion left unticked, refused as not ready to verify or unverified, with what it is missing.
+
+### Criteria Quality Findings
+
+- **Failing criteria.** Each criterion that fails a [requirement characteristic](../references/requirement-characteristics.md), with that characteristic.
+- **Departures.** Each criterion that departs from a marked [source](initiative-issue-body.md#sources), with that source.
+- **Gaps.** Each source requirement no criterion makes true.
+- **Source findings.** Each marked source that is unreadable or empty, its criteria left unevaluated.

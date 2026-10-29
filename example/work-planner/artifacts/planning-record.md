@@ -10,74 +10,140 @@ A planning record is a folder. README.md is its entry point: it answers what the
 
 ## Operations
 
-### *Populate* Planning Record
+### Populate Planning Record
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
+**Inputs:** [Record identity](#record-folder), [Folder path](#record-folder), [Artifact files](#artifacts), [External links](#links), [Removed artifacts](#artifacts), [Commit message](#commit-message)
+
+**Outputs:** [Folder path](#record-folder), [Publication](#publication)
 
 #### 1. Prepare the Selected Planning Record
 
-Prepare the selected record:
-- For a new record:
-  - Create the folder with [Add Planning Record](#add-planning-record).
-  - Populate README.md from the [Template](#template).
-- For an existing record:
-  - Read its README, retaining its creation date, other artifacts and links.
-  - Update only the supplied content.
-- The folder must meet [Layout](#layout).
-- All populated README fields must meet [Fields](#fields).
+For a new record, run this command from the engineering worktree with the caller-composed [Record Folder](#record-folder) path.
 
-#### 2. Register the Supplied Artifact Files
+```bash
+mkdir -p '<planning-folder-path>'
+```
+
+**Example:**
+
+```bash
+mkdir -p artifacts/planning/2026-10-15-950-queue-plan
+```
+
+#### 2. Populate the Record Entry Point
+
+For a new record, inspect the folder-creation result. Return any error without writing or publishing further files. On success, populate README.md from the [Template](#template).
+
+For an existing record, read its README, retaining its creation date, other artifacts and links.
+- Update only the supplied content.
+
+For either kind of record, the folder must meet [Layout](#layout), and every populated README field must meet [Fields](#fields).
+
+#### 3. Register the Supplied Artifact Files
 
 Register the artifact files supplied by the caller, using their chosen names.
 - Each file must have a row meeting [Layout](#layout) and [Artifacts](#artifacts).
 - File content remains supplied by the caller; this operation does not author that artifact's content.
 - Delete each artifact the caller names as removed, with its row.
 
-#### 3. Publish the Populated Planning Record
+#### 4. Publish the Populated Planning Record
 
 When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
 
-#### 4. Return the Planning Record Folder
+#### 5. Return the Planning Record Folder
 
 Return the folder path, and the publication result when it published.
 
-### *Publish* Planning Record
+### Publish Planning Record
 
 The record's folder committed and pushed, so every link into it resolves for a reader.
 
-**Inputs:** Planning-folder path, the files written into it and a commit message file.
+**Inputs:** [Folder path](#record-folder), [Record files](#layout), [Commit message](#commit-message)
+
+**Outputs:** [Publication](#publication)
 
 #### 1. Find the Publishing Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on.
+From any project checkout, list the worktree for the configured [engineering branch](../configuration.md#engineering-branch).
+
+- The engineering branch has one long-lived worktree and takes no further one.
+
+```bash
+git worktree list | grep '\[<engineering-branch>\]'
+```
 
 #### 2. Commit the Planning Record Folder
 
-Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
-- Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
+Inspect the worktree lookup. Return a lookup error or missing-worktree finding before any write. Use the returned path as `<engineering-worktree>`.
+
+Stage and commit the supplied folder with the supplied message file. Resolve the message file against the engineering worktree, or pass its absolute path.
+
+- Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
+- Pass the message as [Bodies](../conventions.md#bodies) states. The worktree is a linked one, so git writes here run unsandboxed.
+
+```bash
+cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
+```
+
+**Example:**
+
+```bash
+cd .engineering && git add artifacts/planning/2026-10-15-950-queue-plan && git commit -F msg.txt -- artifacts/planning/2026-10-15-950-queue-plan
+```
 
 #### 3. Push the Engineering Branch
 
-Run [Push Engineering Branch](#push-engineering-branch).
-- Report a push that will not fast-forward rather than rewriting the branch.
+Inspect the commit result; return a failure without pushing. Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree), then push from the engineering worktree.
 
-### *Locate* Planning Record
+- Planning records go straight to the branch; they take no pull request.
+
+```bash
+cd '<engineering-worktree>' && git push
+```
+
+#### 4. Return the Publication Result
+
+Inspect the push result. Report a non-fast-forward refusal or other push failure without rewriting the branch. Return the published commit and record path only after a successful push.
+
+### Locate Planning Record
 
 The existing planning folder whose reference is one issue or pull request number.
 
-**Inputs:** Issue or pull request number.
+**Inputs:** [Reference](#record-folder)
+
+**Outputs:** [Folder paths](#record-folder)
 
 #### 1. Find the Engineering Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree).
+From any project checkout, list the worktree for the configured [engineering branch](../configuration.md#engineering-branch).
+
+- The engineering branch has one long-lived worktree and takes no further one.
+
+```bash
+git worktree list | grep '\[<engineering-branch>\]'
+```
 
 #### 2. List the Matching Planning Records
 
-Run [List Planning Records](#list-planning-records) in that worktree with the number as the reference.
-- Return each folder path it lists.
-- When it lists none, return that no record has that reference.
+Inspect the worktree lookup. Return a lookup error or missing-worktree finding before continuing. In the returned worktree, list folders under its configured [records folder](../configuration.md#engineering-branch) with the supplied reference number.
+
+- The pattern places the reference directly after the date, as the [planning-folder path](#record-folder) does, so a number inside the date does not match.
+
+```bash
+cd '<engineering-worktree>' && ls -d '<records-folder>'????-??-??-'<reference>'-*/
+```
+
+**Example:**
+
+```bash
+cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
+```
+
+#### 3. Return the Matching Record Paths
+
+Read the listing's result as [Command result](../conventions.md#command-result) states. Return each matching folder path. If the pattern has no match, return that no record has the reference.
 
 ## Fields
 
@@ -149,87 +215,20 @@ Two paragraphs: the purpose of this work, and why it matters.
 
 External references only: a tracker issue, a parent epic, a pull request. An artifact of this plan is an Artifacts row.
 
-## Commands
+### Record Folder
 
-### Find Engineering Worktree
-
-Prints the checkout holding the engineering branch, which is where every planning record is written.
-
-**Inputs:** Any checkout of the project.
-
-- The engineering branch has one long-lived worktree and takes no further one.
-
-```bash
-git worktree list | grep '\[engineering\]'
-```
-
-### Commit Planning Record
-
-Stages and commits one planning folder on the engineering worktree.
-
-**Inputs:** Engineering worktree, planning-folder path and a commit message file.
-
-- Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message through a file; the worktree is a linked one, so git writes here run unsandboxed.
-
-```bash
-cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
-```
-
-**Example:**
-
-```bash
-cd .engineering && git add artifacts/planning/2026-10-15-950-queue-plan && git commit -F msg.txt -- artifacts/planning/2026-10-15-950-queue-plan
-```
-
-### Push Engineering Branch
-
-Publishes the engineering branch so a record's links resolve.
-
-**Inputs:** Engineering worktree.
-
-- Planning records go straight to the branch; they take no pull request.
-
-```bash
-cd '<engineering-worktree>' && git push
-```
-
-### List Planning Records
-
-Prints each planning folder whose reference is one issue or pull request number.
-
-**Inputs:** Engineering worktree and the reference number.
-
-- The pattern places the reference directly after the date, as the [planning-folder path](#add-planning-record) does, so a number inside the date does not match.
-
-```bash
-cd '<engineering-worktree>' && ls -d artifacts/planning/????-??-??-'<reference>'-*/
-```
-
-**Example:**
-
-```bash
-cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
-```
-
-### Add Planning Record
-
-Adds the folder for one planning record on the long-lived engineering worktree.
-
-**Inputs:** Engineering worktree and planning-folder path composed from the date, optional issue or pull request number, and slug.
-
-- `<planning-folder-path>` is `artifacts/planning/<yyyy-mm-dd>[-<ref>]-<slug>/`. The date is the day the record is opened.
+- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](../configuration.md#engineering-branch). The date is the day the record is opened.
 - `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
 - The slug is lowercase words separated by hyphens, a short name of the work.
 - The folder's files are the [planning layout](planning-record.md#layout).
 - Edits are made on that worktree. The engineering branch takes no further worktree and no branch.
 
-```bash
-mkdir -p '<planning-folder-path>'
-```
+One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` under the [records folder](../configuration.md#engineering-branch). The date is the day the record opened. The reference is the bare number of the issue or pull request the record is for, absent for ad hoc work. The slug is lowercase hyphenated words naming the work. The folder's name is the record identity.
 
-**Example:**
+### Commit Message
 
-```bash
-mkdir -p artifacts/planning/2026-10-15-950-queue-plan
-```
+A file holding the message of the commit that publishes the record, as [Bodies](../conventions.md#bodies) states.
+
+### Publication
+
+The engineering-branch commit holding the record's folder, pushed to its remote.

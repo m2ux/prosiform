@@ -10,11 +10,13 @@ A pull request's identity, head and base, issue links, review state and merge re
 
 ## Operations
 
-### *Merge* Delivery Pull Request
+### Merge Delivery Pull Request
 
 One task or epic pull request's merge result, or its handoff for human approval.
 
-**Inputs:** Pull request identity, delivery kind, verified head, target requirements, current passing readiness evidence and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Delivery kind](#pull-request-kind), [Verified head](#verified-head), [Target requirements](delivery-branches.md#target-requirements), [Readiness evidence](#merge-readiness), [Auto-close setting](issue.md#auto-close-setting), [Merge authorization](#merge-authorization)
+
+**Outputs:** [Merge result](#merge-result)
 
 #### 1. Read Target Review Requirements
 
@@ -27,22 +29,43 @@ Read the supplied target branch's current required reviews and checks alongside 
 #### 2. Merge the Approved Pull Request
 
 When approval permits the agent to merge:
-- Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
+- Require current readiness evidence with no unresolved condition, and the auto-close setting confirmed for the repository as [Close Tracker Issue](issue.md#close-tracker-issue) documents.
+- For an epic, apply [Merge Epic Pull Request](#merge-epic-pull-request) with the verified readiness evidence, authorization, target requirements and exact verified head SHA, then continue at [3. Return the Delivery Merge Result](#3-return-the-delivery-merge-result).
+
+For a task whose readiness and authorization permit merging, run this merge from the repository checkout using the pull request’s repository and number.
+
+- Require the supplied readiness evidence and authorization before issuing the merge.
+- The merge method is a merge commit.
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' --jq .merged
+```
+
+**Example:**
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/950/merge' -f merge_method='merge' --jq .merged
+```
+
 - If the merge is refused, return the refusal to the caller for fresh verification.
 
 #### 3. Return the Delivery Merge Result
 
-Return the merge result, including its merge commit when supplied, for the caller's readback.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-### *Access* Development Links
+Return the merge result, including its merge commit when supplied, for the caller to confirm as [Write confirmation](../conventions.md#write-confirmation) states.
+
+### Access Development Links
 
 The observed or updated Development relation for a pull request.
 
-**Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](issue.md#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Link request](#link-request), [Delivery issue](issue.md#issue-record), [Auto-close setting](issue.md#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links)
 
 #### 1. Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
+Use authenticated GitHub or an available supported tool to read the supplied pull request's actual Development field across every page and state, recording the repository and number for each linked issue and whether the field was fully readable. A missing tool or inaccessible field is a blocker, not an empty link set.
 
 #### 2. Return the Read-Only Relation
 
@@ -50,16 +73,16 @@ Return the complete relation for a read-only request.
 
 #### 3. Edit the Development Links
 
-For a link edit:
-- Take the supplied repository prerequisite from [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
-- For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
-- For removal of an abandoned or incorrect link:
-  - Require the supplied user decision.
-  - Run [Remove Development Link](#remove-development-link) with those identities.
+For a link edit, take the supplied repository prerequisite from [Confirm Repository Auto-Close](issue.md#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- Meet the applicable preconditions in [Close Tracker Issue](issue.md#close-tracker-issue).
+- For an addition, use [GitHub's sidebar linking procedure](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue): in the issue's authenticated Development selector, select the pull request's repository and pull request, including a different repository when required. Retain the edit result.
+- For removal of an abandoned or incorrect link, require the supplied user decision before deselecting the supplied relation in the authenticated Development selector and saving the edit. Retain the edit result.
 
 #### 4. Re-Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) again for the same pull request.
+Read the same pull request's actual Development field through authenticated GitHub or an available supported tool, as [Write confirmation](../conventions.md#write-confirmation) states.
+- Include every page and state, recording each linked issue's repository and number and whether the field was fully readable.
+- Return a failed edit or unreadable field as a blocker.
 
 #### 5. Compare the Field with the Edit
 
@@ -69,19 +92,21 @@ Compare the field with the intended edit.
 
 Return the verified relation or discrepancy.
 
-### *Fetch* Pull Request Issue Links
+### Fetch Pull Request Issue Links
 
 The complete issue-link snapshot for a supplied set of pull requests.
 
-**Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
+**Inputs:** [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Issue-link snapshot](#issue-link-snapshot)
 
 #### 1. Read Links for Each Pull Request
 
-For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+For every pull request in the current records, `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
 
 #### 2. Re-Read Links After a Change
 
-Repeat that read after a link changes.
+Repeat that read after a link changes, as [Write confirmation](../conventions.md#write-confirmation) states.
 
 #### 3. Return an Incomplete Link Fetch
 
@@ -89,21 +114,23 @@ If any relation is unreadable, return the incomplete result.
 
 #### 4. Write the Links Snapshot
 
-Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
+Write the observed complete relations to the supplied destination, such as `links.json`, in the [Issue-Link Snapshot](#issue-link-snapshot) shape. Include one entry per pull request and every linked issue's repository and number.
 
 #### 5. Return the Links Snapshot
 
 Return the snapshot for the scripts' `--links` input.
 
-### *Link* Pull Request to Issue
+### Link Pull Request to Issue
 
 The verified delivery-issue relation for a pull request.
 
-**Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](issue.md#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Delivery issue](issue.md#issue-record), [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot), [Auto-close setting](issue.md#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links), [Issue-link snapshot](#issue-link-snapshot)
 
 #### 1. Add the Development Link
 
-Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and the repository prerequisite confirmed as [Close Tracker Issue](issue.md#close-tracker-issue) documents.
 
 #### 2. Stop on an Unverified Link Edit
 
@@ -117,25 +144,53 @@ Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the
 
 Return the verified relation and refreshed snapshot.
 
-### *Merge* Epic Pull Request
+### Merge Epic Pull Request
 
 The epic's verified merge into its long-lived target.
 
-**Inputs:** Pull request identity, verified head SHA, target requirements, current passing readiness evidence and confirmed authorization for the agent to merge.
+**Inputs:** [Pull request](#pull-request-identity), [Verified head](#verified-head), [Target requirements](delivery-branches.md#target-requirements), [Readiness evidence](#merge-readiness), [Merge authorization](#merge-authorization)
+
+**Outputs:** [Merge result](#merge-result)
 
 #### 1. Require Epic Merge Authorization
 
-Require the supplied target requirements, readiness evidence and authorization.
+Require the supplied target requirements, current readiness evidence with no unresolved condition, and authorization for the agent to merge under the active delivery request and target review requirements.
 
 #### 2. Submit the Epic Merge
 
-Run [Submit Epic Merge](#submit-epic-merge) with the exact head whose checks and target requirements were verified; return a refusal without continuing.
+From the repository checkout, submit the merge using the pull request identity and exact head SHA whose checks, target requirements and authorization were verified. Return a refusal without continuing.
+
+The merge method is a merge commit. The endpoint refuses a different head.
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
+```
+
+**Example:**
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/980/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
+```
 
 #### 3. Read the Epic Merge Result
 
-Run [Read Merge Result](#read-merge-result) for that pull request.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
+From the repository checkout, read the merge result using the supplied repository and pull request number.
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/980' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
+```
 
 #### 4. Confirm the Merged Epic State
+
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Confirm the merged state, merge commit, verified head and target.
 
@@ -143,25 +198,51 @@ Confirm the merged state, merge commit, verified head and target.
 
 Return the result or discrepancy.
 
-### *Fetch* All Initiative Pull Requests
+### Fetch All Initiative Pull Requests
 
 The pull request collection covering every supplied board repository.
 
-**Inputs:** Ordered repository list and destination JSON-lines file.
+**Inputs:** [Repositories](board.md#repositories), [Records path](#pull-request-records)
+
+**Outputs:** [Pull request records](#pull-request-records)
 
 #### 1. Fetch the First Repository Pull Requests
 
-Run [Fetch Repository Initiative Pull Requests](#fetch-repository-initiative-pull-requests) for the first repository and destination `prs.json`. This replaces the destination with a fresh collection.
+From the first repository’s checkout, fetch all initiative-prefixed pull requests to the supplied JSON-lines file, such as `prs.json`. This replaces the destination with a fresh collection.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' > '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' > prs.json
+```
 
 #### 2. Stop on a First Fetch Failure
+
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Stop on failure.
 
 #### 3. Append Further Repository Pull Requests
 
-Run [Append Repository Initiative Pull Requests](#append-repository-initiative-pull-requests) for each further repository, passing the same destination.
+From each further repository’s checkout, append its initiative-prefixed pull requests to the same destination file. Read each fetch result as [Command result](../conventions.md#command-result) states before continuing; return incomplete evidence on any failure.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' >> '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' >> prs.json
+```
 
 #### 4. Return Incomplete Pull Request Evidence
+
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 If any fetch failed, return incomplete evidence.
 
@@ -169,70 +250,230 @@ If any fetch failed, return incomplete evidence.
 
 Return the complete collection only after every fetch succeeds.
 
-### *Read* Initiative Pull Requests
+### Read Initiative Pull Requests
 
 The current delivery pull requests for one initiative.
 
-**Inputs:** Repository, initiative prefix and destination collection file.
+**Inputs:** [Repository](repository-labels.md#repository), [Initiative prefix](initiative-issue-body.md#titles), [Records path](#pull-request-records)
+
+**Outputs:** [Pull request records](#pull-request-records)
 
 #### 1. Fetch the Initiative Pull Requests
 
-Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
+From the repository checkout, save the initiative’s pull requests using its repository, prefix and destination JSON-lines file.
+
+`<initiative-prefix>` includes the opening bracket and initiative id, matching its task and epic titles.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("<initiative-prefix>"))' > '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
+```
 
 #### 2. Return the Initiative Collection
 
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
 Return the collection or an incomplete-fetch finding.
 
-### *Read* Pull Request State
+### Read Pull Request State
 
 One current pull request and its requested supporting records.
 
-**Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
+**Inputs:** [Pull request](#pull-request-identity), [Requested records](#pull-request-snapshot), [Snapshot paths](#pull-request-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot)
 
 #### 1. Fetch the Pull Request Snapshot
 
-Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
+Select the command for the supplied destination shape to capture current identity, state, head and base.
+
+For a JSON-lines collection, append the pull request from the repository checkout using its repository, number and destination file.
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq . >> '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/439' --jq . >> prs.json
+```
+
+For a complete standalone JSON snapshot, save the pull request from the repository checkout using its repository, number and destination file. This replaces the destination.
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' > '<pull-request-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/980' > epic-pr.json
+```
 
 #### 2. Fetch Requested Files or Reviews
 
-Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
+Run each requested supporting-record command. After each read, read its result as [Command result](../conventions.md#command-result) states; return a failure before the next read, keeping missing evidence explicit.
+
+When changed files are requested, save their paths from the repository checkout using the supplied repository, pull request number and destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/files' --jq '.[].filename' > '<changed-paths-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > changed-files.txt
+```
+
+When reviews are requested, save every review from the repository checkout using the supplied repository, pull request number and destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/reviews?per_page=100' > '<reviews-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > reviews.json
+```
 
 #### 3. Return the Pull Request Snapshots
 
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
 Return the snapshots or missing evidence.
 
-### *Publish* Pull Request
+### Publish Pull Request
 
 One pull request created or updated from supplied content and metadata.
 
-**Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
+**Inputs:** [Pull request](#pull-request-identity), [Kind](#pull-request-kind), [Pull request content](#pull-request-content), [Delivery issue](issue.md#issue-record), [Auto-close setting](issue.md#auto-close-setting), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot), [Issue-link snapshot](#issue-link-snapshot)
 
 #### 1. Open a New Pull Request
 
-For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
-- For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+For creation, select exactly one command for the supplied kind, body, title, head and base, preserving epic and discussion draft state. For an existing pull request, continue at [3. Update the Existing Pull Request](#3-update-the-existing-pull-request).
 
-#### 2. Update the Existing Pull Request
+For task creation, run this command from the repository checkout using the supplied title, task branch, epic base and complete body file as [Bodies](../conventions.md#bodies) states.
 
-For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
+- Supply the epic prefix and purpose as title, the task branch as head, the epic base as base, and the complete body file.
 
-#### 3. Re-Read the Published Pull Request
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<task-branch>' -f base='<epic-base>' -F 'body=@<body-file>' --jq .html_url
+```
 
-Re-read through [Read Pull Request State](#read-pull-request-state).
+**Example:**
 
-#### 4. Return the Published State
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Purpose' -f head='i07/e00/w01-purpose' -f base='i07/e00/main' -F body=@body.md --jq .html_url
+```
 
-Return the saved state or discrepancy.
+For epic creation, run this command from the repository checkout using the supplied title, epic base, long-lived target and review body file as [Bodies](../conventions.md#bodies) states.
 
-### *Align* Pull Request Base
+- Supply the epic prefix and name as title, the epic base as head, its long-lived branch as base, and the populated review body file.
+- `draft` is true, including when the work is already complete.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<epic-base>' -f base='<long-lived-base>' -F draft=true -F 'body=@<body-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
+```
+
+For discussion creation, run this command from the repository checkout using the supplied title, planning branch, target branch and body file as [Bodies](../conventions.md#bodies) states.
+
+```bash
+gh api --method POST 'repos/<owner>/<repository>/pulls' -f title='<title>' -f head='<planning-branch>' -f base='<target-branch>' -F body=@'<body-file>' -F draft=true
+```
+
+**Example:**
+
+```bash
+gh api --method POST repos/m2ux/workflow-server/pulls -f title='Queue Planning: Scope and Delivery' -f head=planning/queue -f base=engineering -F body=@discussion.md -F draft=true
+```
+
+#### 2. Confirm Creation and Link the Delivery Issue
+
+For a creation request, read the command’s result as [Command result](../conventions.md#command-result) states, with its returned identity; return a failure before attempting a link.
+- For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
+- After a successful creation and any required link, continue at [4. Re-Read the Published Pull Request](#4-re-read-the-published-pull-request).
+
+#### 3. Update the Existing Pull Request
+
+For an existing pull request, run each command for a supplied change, preserving other fields. After each selected command, read its result as [Command result](../conventions.md#command-result) states; stop before another mutation on a failure. If no field changes, continue with the supplied pull request identity.
+
+When changing the body, run this update from the repository checkout using the pull request’s repository, number and complete body file as [Bodies](../conventions.md#bodies) states.
+
+- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -F 'body=@<body-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -F body=@pr-950.md --jq .html_url
+```
+
+When changing the title, run this update from the repository checkout using the pull request’s repository, number and complete title.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f title='<title>' --jq .title
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f title='[I07:E00] Purpose' --jq .title
+```
+
+When changing the base, run this update from the repository checkout using the pull request’s repository, number and target branch.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f base='<target-branch>' --jq .base.ref
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f base='i07/e00/main' --jq .base.ref
+```
+
+#### 4. Re-Read the Published Pull Request
+
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
+Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](../conventions.md#write-confirmation) states.
+
+#### 5. Return the Published State
+
+Return the saved state or discrepancy, and the issue-link snapshot when the creation path linked a delivery issue. Other publication paths return no issue-link snapshot.
+
+### Align Pull Request Base
 
 Each open delivery pull request pointed at the base its head requires.
 
-**Inputs:** Repository, current initiative pull request records, each open epic's long-lived branches and epic bases, and the project checkout.
+**Inputs:** [Repository](repository-labels.md#repository), [Pull request records](#pull-request-records), [Long-lived branches](delivery-branches.md#branches), [Epic bases](delivery-branches.md#epic-bases), [Project checkout](delivery-branches.md#project-checkout)
+
+**Outputs:** [Alignment result](#alignment-result)
 
 #### 1. Take Each Pull Request Target
 
-Take each open pull request's target from [Scope](#scope) and [Other Pull Requests](#other-pull-requests), with each long-lived branch as [Epic Bases](delivery-branches.md#epic-bases) names it.
+Take the target of each open pull request in the current records from [Scope](#scope) and [Other Pull Requests](#other-pull-requests), with each long-lived branch as [Epic Bases](delivery-branches.md#epic-bases) names it.
 - Report an open pull request for which neither field gives a target for the user's decision, and leave it unchanged.
 
 #### 2. Retarget Mismatched Pull Requests
@@ -248,43 +489,85 @@ For each task pull request whose saved state is not mergeable, apply [Update Tas
 
 Return the retargeted pull requests, updated task branches, conflicts and the pull requests awaiting a decision.
 
-### *Locate* Review Pull Request
+### Locate Review Pull Request
 
 The review pull request for a supplied epic base.
 
-**Inputs:** Repository and epic-base head.
+**Inputs:** [Repository](repository-labels.md#repository), [Epic base](delivery-branches.md#epic-bases)
+
+**Outputs:** [Review pull request](#pull-request-identity)
 
 #### 1. Find the Review Pull Request
 
-Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
+From the repository checkout, find the open review pull request using the repository owner and name and supplied epic base as head.
+
+```bash
+gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:<epic-base>" --jq '.[0].number'
+```
+
+**Example:**
+
+```bash
+gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:i07/e00/main" --jq '.[0].number'
+```
 
 #### 2. Return the Review Pull Request Number
 
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
 Return its number or an absent-review finding.
 
-### *Read* Head Evidence
+### Read Head Evidence
 
 The check-run and status evidence for one literal head commit.
 
-**Inputs:** Repository, verified head SHA and destination files.
+**Inputs:** [Repository](repository-labels.md#repository), [Verified head](#verified-head), [Evidence paths](#head-evidence)
+
+**Outputs:** [Head evidence](#head-evidence)
 
 #### 1. Fetch the Head Check Runs
 
-Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
+From the repository checkout, save all check runs using the supplied repository, literal head SHA and destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > '<check-runs-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > checks.json
+```
 
 #### 2. Fetch the Head Commit Status
 
-Run [Fetch Head Status](#fetch-head-status) for the same SHA.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
+From the repository checkout, save commit status using the same repository and literal head SHA and its destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > '<commit-status-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > status.json
+```
 
 #### 3. Return the Head Evidence Snapshots
 
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
+
 Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 
-### *Merge* Task Pull Requests
+### Merge Task Pull Requests
 
 Merges each open task pull request whose test plan has passed.
 
-**Inputs:** Task pull request identity, its epic base, the repository prerequisite and the passing test-plan evidence.
+**Inputs:** [Task pull request](#pull-request-identity), [Epic base](delivery-branches.md#epic-bases), [Auto-close setting](issue.md#auto-close-setting), [Test plan](pull-request-body.md#test-plan)
+
+**Outputs:** [Merge result](#merge-result)
 
 #### 1. Confirm Auto-Close and Epic Base
 
@@ -296,7 +579,7 @@ Apply [Fetch Merge Readiness](#fetch-merge-readiness) with delivery kind task fo
 
 #### 3. Merge the Task Pull Request
 
-Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
+Require a passed [test plan](pull-request-body.md#test-plan), then apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery kind task, the verified head, target requirements, repository prerequisite and passing evidence, without further confirmation.
 - Stop on a handoff for human approval.
 - Return a refusal with its readiness evidence. The pull request stays open.
 
@@ -305,11 +588,13 @@ Apply [Merge Delivery Pull Request](#merge-delivery-pull-request) with delivery 
 Apply [Read Pull Request State](#read-pull-request-state) to confirm the merged state, head, base and merge commit.
 - Return that result to the caller.
 
-### *Fetch* Merge Readiness
+### Fetch Merge Readiness
 
 The current pull request's readiness against its target requirements and head checks.
 
-**Inputs:** Pull request identity, delivery kind, its target branch, for an epic pull request its epic base, and the protection, rules, check and status output paths.
+**Inputs:** [Pull request](#pull-request-identity), [Delivery kind](#pull-request-kind), [Target branch](#target-branch), [Epic base](delivery-branches.md#epic-bases), [Evidence paths](#merge-readiness)
+
+**Outputs:** [Readiness evidence](#merge-readiness), [Verified head](#verified-head), [Target requirements](delivery-branches.md#target-requirements)
 
 #### 1. Snapshot the Pull Request State
 
@@ -363,227 +648,39 @@ A task pull request delivers one task, or a set of tasks that name each other in
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
 
-## Commands
+### Pull Request Identity
 
-### Open Discussion Pull Request
+A pull request's [repository](repository-labels.md#repository) and number. A pull request yet to be created has its repository alone.
 
-Opens a draft for the supplied planning branch and body.
+### Pull Request Kind
 
-**Inputs:** Repository owner and name, title, planning branch, target branch and body file.
+Task, epic or planning discussion. A delivery pull request is a task or an epic one: a task pull request meets [Scope](#scope), and an epic's review pull request has an epic base as its head.
 
-```bash
-gh api --method POST 'repos/<owner>/<repository>/pulls' -f title='<title>' -f head='<planning-branch>' -f base='<target-branch>' -F body=@'<body-file>' -F draft=true
-```
+### Target Branch
 
-**Example:**
+The base a pull request merges into: the epic base [Scope](#scope) names for a task pull request, or the long-lived branch [Other Pull Requests](#other-pull-requests) names otherwise.
 
-```bash
-gh api --method POST repos/m2ux/workflow-server/pulls -f title='Queue Planning: Scope and Delivery' -f head=planning/queue -f base=engineering -F body=@discussion.md -F draft=true
-```
+### Verified Head
 
-### Retarget Pull Request
+The literal head commit SHA whose checks, reviews and target requirements were read. Verification applies to that exact SHA.
 
-Points a pull request at another base branch, such as its epic's base branch.
+### Pull Request Content
 
-**Inputs:** Repository, pull request number and target branch.
+The fields a publication writes: a body file at its path, meeting [Template](pull-request-body.md#template), its title, head and base. A change to an existing pull request names only the fields it changes.
 
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f base='<target-branch>' --jq .base.ref
-```
+### Pull Request Snapshot
 
-**Example:**
+One pull request's REST record as a local JSON file at its path, with its identity, state, head SHA, base and mergeable state. Its requested supporting records are its changed paths and its reviews, each in a file of its own.
 
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f base='i07/e00/main' --jq .base.ref
-```
+### Pull Request Records
 
-### Fetch Pull Request
+A local JSON-lines file at its path, one pull request's REST record per line. An initiative's records hold every pull request whose title carries its prefix, in all states, across its repositories; a failed fetch leaves them incomplete.
 
-Appends one pull request, as one JSON line, to the supplied file.
+### Issue-Link Snapshot
 
-**Inputs:** Repository, pull request number and destination JSON-lines file.
+A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
 
-```bash
-gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq . >> '<pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/439' --jq . >> prs.json
-```
-
-### Retitle Pull Request
-
-Replaces a pull request's title.
-
-**Inputs:** Repository, pull request number and complete title.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f title='<title>' --jq .title
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f title='[I07:E00] Purpose' --jq .title
-```
-
-### Open Task Pull Request
-
-Creates a pull request from a unit's branch to its epic base.
-
-**Inputs:** Repository, title, task head, epic base and populated body file.
-
-- Supply the epic prefix and purpose as title, the task branch as head, the epic base as base, and the complete body file.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<task-branch>' -f base='<epic-base>' -F 'body=@<body-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Purpose' -f head='i07/e00/w01-purpose' -f base='i07/e00/main' -F body=@body.md --jq .html_url
-```
-
-### Open Epic Pull Request
-
-Creates the draft pull request from an epic base to its long-lived target.
-
-**Inputs:** Repository, title, epic head, long-lived base and populated review body file.
-
-- Supply the epic prefix and name as title, the epic base as head, its long-lived branch as base, and the populated review body file.
-- `draft` is true, including when the work is already complete.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<epic-base>' -f base='<long-lived-base>' -F draft=true -F 'body=@<body-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
-```
-
-### Merge Pull Request
-
-Merges the task pull request into its epic base.
-
-**Inputs:** Pull request identity, current passing readiness evidence and confirmed authorization for the agent to merge.
-
-- Require the supplied readiness evidence and authorization before issuing the merge.
-- The merge method is a merge commit.
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' --jq .merged
-```
-
-**Example:**
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/950/merge' -f merge_method='merge' --jq .merged
-```
-
-### Patch Pull Request Body
-
-Replaces a pull request's body.
-
-**Inputs:** Repository, pull request number and complete populated body file.
-
-- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -F 'body=@<body-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -F body=@pr-950.md --jq .html_url
-```
-
-### Find Review Pull Request
-
-Returns the open pull request whose head is the supplied epic base, or no result when none exists.
-
-**Inputs:** Repository owner, repository and epic base name.
-
-```bash
-gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:<epic-base>" --jq '.[0].number'
-```
-
-**Example:**
-
-```bash
-gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:i07/e00/main" --jq '.[0].number'
-```
-
-### Submit Epic Merge
-
-Merges the epic base into its long-lived target at the supplied head.
-
-**Inputs:** Pull request identity, exact verified head SHA, passing target and readiness evidence and confirmed merge authorization.
-
-The merge method is a merge commit. The endpoint refuses a different head.
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
-```
-
-**Example:**
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/980/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
-```
-
-### Read Merge Result
-
-Returns a pull request's merge state, merge commit, head and base.
-
-**Inputs:** Repository and pull request number.
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/980' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
-```
-
-### Read Development Links
-
-Returns the complete Development relation through authenticated GitHub or an available supported tool.
-
-**Inputs:** Pull request identity and authenticated access.
-
-Read the actual field across every page and state, recording repository and number for each linked issue. Return the links and whether the field was fully readable.
-
-### Set Development Link
-
-Adds one pull request to an issue's Development relation.
-
-**Inputs:** Pull request identity, issue identity, authenticated access and confirmed repository prerequisite.
-
-Use [GitHub's sidebar linking procedure](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue): in the issue's Development selector, select the pull request's repository and pull request, including a different repository when required. Return the edit result.
-
-### Remove Development Link
-
-Removes one selected Development relation.
-
-**Inputs:** Pull request and issue identities, authenticated access and the user's decision authorizing removal of the abandoned or incorrect link.
-
-Deselect the supplied relation in the authenticated Development selector and save the edit. Return the edit result.
-
-### Write Pull Request Links
-
-Saves complete observed Development-linked issues as a JSON array.
-
-**Inputs:** One complete relation per pull request, with all repository and number pairs, and destination link-snapshot file.
-
-Write the supplied relations in this shape. Substitute numbers as JSON integers. Include each pull request and all its linked issues; use an empty array for a complete relation with no linked issues. Each repository is the one belonging to that pull request or issue.
+The JSON array has this shape. Numbers are JSON integers. Every pull request includes all linked issues; an empty array denotes a complete relation with no linked issues. Each repository belongs to its pull request or issue.
 
 ```text
 [
@@ -607,132 +704,26 @@ Write the supplied relations in this shape. Substitute numbers as JSON integers.
 ]
 ```
 
-### Save Pull Request Snapshot
+### Link Request
 
-Saves one complete pull request response, replacing the destination file.
+A read, an addition or a removal of one pull request's Development link. An edit names the issue; a removal carries the user's decision naming the abandoned or incorrect link.
 
-**Inputs:** Repository, pull request number and destination JSON file.
+### Head Evidence
 
-```bash
-gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' > '<pull-request-json-file>'
-```
+The check runs and the combined commit status for one verified head, each a local JSON file at its path. Missing or pending evidence is unresolved.
 
-**Example:**
+### Merge Readiness
 
-```bash
-gh api 'repos/<owner>/<repo>/pulls/980' > epic-pr.json
-```
+The readiness of one pull request at its verified head: its snapshot, [target requirements](delivery-branches.md#target-requirements), [head evidence](#head-evidence) and reviews, each a local JSON file at its path, with every unresolved condition. A conflict, a failed, missing or pending check, a blocked merge state, an unmet required review, or an epic pull request whose head or target departs from [Epic Bases](delivery-branches.md#epic-bases) is unresolved; readiness passes when none remains.
 
-### Fetch Pull Request Reviews
+### Merge Authorization
 
-Saves every review on one pull request.
+The authorization result for the agent to merge the named pull request under the active delivery request and target review requirements, including any required human approval.
 
-**Inputs:** Repository, pull request number and destination file.
+### Merge Result
 
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/reviews?per_page=100' > '<reviews-file>'
-```
+One of: the merged [state](#state) with its verified head, target and merge commit; a handoff for human approval naming what was verified; or a refusal with its readiness evidence.
 
-**Example:**
+### Alignment Result
 
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > reviews.json
-```
-
-### Fetch Initiative Pull Requests
-
-Saves the task and epic pull requests that name one initiative's epics.
-
-**Inputs:** Repository, initiative prefix and destination JSON-lines file.
-
-`<initiative-prefix>` includes the opening bracket and initiative id, matching its task and epic titles.
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("<initiative-prefix>"))' > '<pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
-```
-
-### Fetch Repository Initiative Pull Requests
-
-Starts a collection with all initiative-prefixed pull requests from one repository.
-
-**Inputs:** Repository and destination JSON-lines file.
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' > '<pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' > prs.json
-```
-
-### Append Repository Initiative Pull Requests
-
-Appends all initiative-prefixed pull requests from one further repository.
-
-**Inputs:** Repository and existing destination JSON-lines file.
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' >> '<pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' >> prs.json
-```
-
-### Fetch Pull Request Files
-
-Saves the paths a pull request changes.
-
-**Inputs:** Repository, pull request number and destination path-list file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/files' --jq '.[].filename' > '<changed-paths-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > changed-files.txt
-```
-
-### Fetch Head Check Runs
-
-Saves every check run for one exact commit.
-
-**Inputs:** Repository, literal head SHA and destination file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > '<check-runs-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > checks.json
-```
-
-### Fetch Head Status
-
-Saves commit status evidence for one exact commit.
-
-**Inputs:** Repository, literal head SHA and destination file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > '<commit-status-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > status.json
-```
+The pull requests retargeted, the task branches updated, the conflicts met, and the pull requests whose target awaits the user's decision.

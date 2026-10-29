@@ -10,11 +10,13 @@ One evidenced problem and its proposed solution.
 
 ## Operations
 
-### *Populate* Review Finding
+### Populate Review Finding
 
 One finding verified against its supplied source.
 
-**Inputs:** Area, severity, problem, proposed solution, source text and file:line, decision requirement and any confirmed answer.
+**Inputs:** [Finding](#finding-content), [Decision](#decision-state)
+
+**Outputs:** [Populated finding](#finding-content), [Pending decision](#decision-state)
 
 #### 1. Verify the Reported Problem
 
@@ -33,11 +35,13 @@ Populate the finding with its source quotation.
 
 Return the finding and any pending decision.
 
-### *Report* Review Finding
+### Report Review Finding
 
 The verified findings presented for resolution.
 
-**Inputs:** Area, severity, problem, solution and source evidence for each finding.
+**Inputs:** [Findings](#finding-content)
+
+**Outputs:** [Reported findings](#finding-content), [Confirmed resolutions](#decision-state)
 
 #### 1. Populate the Review Finding
 
