@@ -12,8 +12,8 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
-searching files, with no MCP server and no skill. `acceptEdits` lets it
-change files only within its workspace.
+searching files and to starting a sub-agent, with no MCP server and no
+shell. `acceptEdits` lets it change files only within its workspace.
 
 Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
 eval's own Claude configuration directory, holding its login, settings and
@@ -35,10 +35,12 @@ session's place in the matrix and removed once its records are kept.
 
 Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
-agent printed; `stderr.log` when it printed any; the final workspace's
-`trace.log` and `actions/`; and `session.json`, holding the session's
-identity, exit status, duration, the stream's `result` message with its
-`usage` and `total_cost_usd`, and the scorer's verdict record. `run.json`
+agent printed; `stderr.log` when it printed any; `subagents.json`, the
+sub-agent starts the transcript records, in order, with what each returned;
+the final workspace's `trace.log` and `actions/`; and `session.json`,
+holding the session's identity, exit status, duration, the stream's
+`result` message with its `usage` and `total_cost_usd`, and the scorer's
+verdict record. `run.json`
 holds the run's date, options, recorded cost, the sessions it did not
 start and the run's state. Once `run.json` is written, `report.py` writes
 the run's report beside it, compared with the committed baseline.
@@ -101,7 +103,15 @@ from report import (
     names,
     write,
 )
-from score import ACTIONS, TRACE, Failure, Verdict, read_trace, score
+from score import (
+    ACTIONS,
+    TRACE,
+    Failure,
+    Verdict,
+    read_trace,
+    record_starts,
+    score,
+)
 from workflow import (
     AUTHORED_FORM,
     COMPILED_FORM,
@@ -155,7 +165,7 @@ FORMS = {
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
 SUMMARY = ("run_id", "state", "sessions", "started", "cost_usd", "not_started")
 
-TOOLS = "Read,Write,Edit,Glob,Grep"
+TOOLS = "Read,Write,Edit,Glob,Grep,Task"
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
@@ -520,13 +530,14 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
+        record_starts(records / TRANSCRIPT, records)
         result = result_message(records / TRANSCRIPT)
         ran = read_trace(records)
         verdict = (
             errored(workflow, scenario)
             if (result is not None and result.get("is_error"))
             or (result is None and not ran)
-            else score(workflow, scenario, workspace)
+            else score(workflow, scenario, records)
         )
     finally:
         shutil.rmtree(workspace)

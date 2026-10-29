@@ -31,7 +31,7 @@ from run import (
     options,
     run,
 )
-from score import ACTIONS, TRACE
+from score import ACTIONS, SUBAGENTS, TRACE, Start, read_starts
 from workflow import ENTRY, ENTRY_BUNDLE, LINKED_FORM, CorpusError, workflows
 
 STUB = Path(__file__).resolve().parent / "stub_agent.py"
@@ -149,7 +149,7 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     assert found == sorted(sorted(material(session)) for session in sessions)
     for entry in entries:
         argv = entry["argv"]
-        assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep"
+        assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task"
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
         assert "--allowedTools" not in argv and "Bash" not in " ".join(argv)
@@ -770,3 +770,129 @@ def test_the_report_gives_each_dispatch_scenarios_pass_rate_per_model_and_form(
                 assert cell["pass_rate"] == 1.0
     text = (tmp_path / "results" / "test" / REPORT_MD).read_text()
     assert text.count("| 100% |") >= 2 * 2 * 4
+
+
+def session_of(record: dict[str, Any]) -> Session:
+    """The session a record was written for."""
+    return Session(
+        record["model"],
+        record["workflow"],
+        record["scenario"],
+        record["form"],
+        record["repetition"],
+    )
+
+
+def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC3: the record sits beside the trace and the cost the session recorded.
+
+    A session's sub-agent starts are read from its transcript as it settles
+    and written to `subagents.json`, so the scorer reads the record rather
+    than opening the transcript again. Each entry names the section the
+    sub-agent followed, what it returned and whether it started beside the
+    entry above it, and the session passes on its path and its record.
+    """
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-question"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-usd", "2"),
+    )
+    [record] = records(tmp_path)
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    assert {SUBAGENTS, TRACE, SESSION, TRANSCRIPT} <= {
+        path.name for path in directory.iterdir()
+    }
+    [scenario] = CORPUS["dispatch-question"].scenarios
+    assert read_starts(directory) == tuple(
+        Start(entry.section, entry.returned, entry.together) for entry in scenario.trace
+    )
+    assert record["verdict"]["passed"] is True
+    stated = json.loads((directory / SUBAGENTS).read_text())
+    assert stated["starts"][0]["returned"] == "question"
+
+
+def test_a_run_starting_no_sub_agent_is_undispatched(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC3: a bundle set read and not dispatched is `undispatched`."""
+    monkeypatch.setenv("STUB_AGENT_NO_DISPATCH", "1")
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-usd", "2"),
+    )
+    [record] = records(tmp_path)
+    assert record["verdict"]["failure"] == "undispatched"
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    assert read_starts(directory) == ()
+
+
+def test_a_run_that_ran_a_set_in_sequence_is_sequential_set(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC3: a set's bundles started, but one after another."""
+    monkeypatch.setenv("STUB_AGENT_SEQUENTIAL", "1")
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-set"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-usd", "2"),
+    )
+    [record] = records(tmp_path)
+    assert record["verdict"]["failure"] == "sequential_set"
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    assert [start.together for start in read_starts(directory)] == [False, False]
+
+
+def test_a_question_the_session_answered_is_unrelayed_question(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A sub-agent's question returned as done is answered in its place."""
+    monkeypatch.setenv("STUB_AGENT_ANSWER", "done")
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-question"),
+        *("--forms", AUTHORED_SET, "--repetitions", "1"),
+        *("--budget-usd", "2"),
+    )
+    [record] = records(tmp_path)
+    assert record["verdict"]["failure"] == "unrelayed_question"
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    assert [start.returned for start in read_starts(directory)] == ["done", "done"]
+
+
+def test_a_dispatch_run_that_stopped_short_is_unfinished(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC3: the completion check is read before any dispatch check."""
+    monkeypatch.setenv("STUB_AGENT_STOP", "1")
+    monkeypatch.setenv("STUB_AGENT_NO_DISPATCH", "1")
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-usd", "2"),
+    )
+    [record] = records(tmp_path)
+    assert record["verdict"]["failure"] == "unfinished"
+    assert record["verdict"]["actual"] == ["Request"]
+
+
+def test_a_scenario_dispatching_nothing_records_no_start(
+    tmp_path: Path, log: Path
+) -> None:
+    """A workflow dispatching nothing passes the dispatch checks with no record."""
+    eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-usd", "1"),
+    )
+    [record] = records(tmp_path)
+    assert record["verdict"]["passed"] is True
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    assert (directory / SUBAGENTS).is_file()
+    assert read_starts(directory) == ()

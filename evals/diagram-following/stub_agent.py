@@ -7,10 +7,22 @@ the inputs under `inputs/`, and writes the walk to `trace.log` with every
 state's action, as a correct agent would. It then prints a stream-json
 transcript ending in a `result` message carrying usage and a cost.
 
+A workflow that dispatches takes a `Task` call per sub-agent start the
+scenario states, each naming its section as `<document>#<heading>`, with
+the outcome the scenario gives it. The entries a scenario marks `together`
+share one assistant message, so they read as started at once, and each
+call is answered by a `tool_result` carrying `question` or `done`.
+
 The environment scripts it:
 
 - `STUB_AGENT_COST`: the cost its `result` message reports, in USD;
 - `STUB_AGENT_STOP`: a number of states after which it stops walking;
+- `STUB_AGENT_NO_DISPATCH`: when set, it starts no sub-agent, as an agent
+  that read the protocol and ignored it does;
+- `STUB_AGENT_SEQUENTIAL`: when set, it starts every sub-agent in a message
+  of its own, as an agent running a set one after another does;
+- `STUB_AGENT_ANSWER`: when set, every sub-agent returns `done`, as one
+  whose question the session answered in the sub-agent's place does;
 - `STUB_AGENT_LOG`: a directory to which it writes, per session, the files
   its workspace held on starting, its arguments, its prompt, the names of
   its environment's variables and its `CLAUDE_CONFIG_DIR`;
@@ -36,8 +48,8 @@ import time
 import uuid
 from pathlib import Path
 
-from score import ACTIONS, TRACE
-from workflow import walk, workflows
+from score import ACTIONS, RETURNED_QUESTION, TRACE
+from workflow import Scenario, Workflow, walk, workflows
 
 HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
 
@@ -49,6 +61,95 @@ def held(workspace: Path) -> list[str]:
         for path in workspace.rglob("*")
         if path.is_file()
     )
+
+
+def scenario_of(workflow: Workflow, inputs: dict[str, str]) -> Scenario | None:
+    """The scenario whose inputs a session's workspace holds, when one does."""
+    wanted = {name: value.strip() for name, value in inputs.items()}
+    for item in workflow.scenarios:
+        if {name: value.strip() for name, value in item.inputs.items()} == wanted:
+            return item
+    return None
+
+
+def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
+    """The sub-agent starts a session makes: a section, its return and a set flag.
+
+    The flag marks an entry the scenario states started beside the one above
+    it, which is where a set's members share one message. An agent that ran
+    the set in sequence or skipped every dispatch is scripted here, so the
+    scorer's checks have a trace to classify.
+    """
+    if item is None or os.environ.get("STUB_AGENT_NO_DISPATCH"):
+        return []
+    answer = os.environ.get("STUB_AGENT_ANSWER")
+    sequential = bool(os.environ.get("STUB_AGENT_SEQUENTIAL"))
+    return [
+        (
+            entry.section,
+            answer or entry.returned,
+            entry.together and not sequential,
+        )
+        for entry in item.trace
+    ]
+
+
+def message(identifier: str, start: tuple[str, str, bool]) -> dict[str, object]:
+    """One `Task` call, its description naming the section it hands over."""
+    section, _, _ = start
+    return {
+        "type": "tool_use",
+        "id": identifier,
+        "name": "Task",
+        "input": {"description": section, "prompt": f"Follow {section}."},
+    }
+
+
+def transcript_of(started: list[tuple[str, str, bool]]) -> list[dict[str, object]]:
+    """The assistant and user messages a session's sub-agent starts print.
+
+    Two starts together share one assistant message, and each call is
+    answered on its own, so a reader recovers both the order and what each
+    sub-agent returned.
+    """
+    messages: list[dict[str, object]] = []
+    made: list[tuple[str, str]] = []
+    group: list[dict[str, object]] = []
+
+    def flush() -> None:
+        if group:
+            messages.append({"type": "assistant", "message": {"content": list(group)}})
+            group.clear()
+
+    for start in started:
+        _, returned, together = start
+        identifier = f"toolu_{uuid.uuid4().hex[:12]}"
+        if not together:
+            flush()
+        group.append(message(identifier, start))
+        made.append((identifier, returned))
+    flush()
+    for identifier, returned in made:
+        text = (
+            "question: which provider should the draft name?"
+            if returned == RETURNED_QUESTION
+            else "done: the section is complete."
+        )
+        messages.append(
+            {
+                "type": "user",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": identifier,
+                            "content": text,
+                        }
+                    ]
+                },
+            }
+        )
+    return messages
 
 
 def main() -> int:
@@ -80,6 +181,7 @@ def main() -> int:
             trace.write(f"{state}\n")
             name, value = workflow.walked[state].action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
+    dispatch = starts(scenario_of(workflow, inputs))
     hang = os.environ.get("STUB_AGENT_HANG")
     if hang and not Path(hang).exists():
         Path(hang).touch()
@@ -96,7 +198,11 @@ def main() -> int:
                 }
             )
         )
-    print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
+    if dispatch:
+        for said in transcript_of(dispatch):
+            print(json.dumps(said))
+    else:
+        print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
     if not os.environ.get("STUB_AGENT_SILENT"):
         once = os.environ.get("STUB_AGENT_ERROR_ONCE")
         errored = bool(os.environ.get("STUB_AGENT_ERROR"))
