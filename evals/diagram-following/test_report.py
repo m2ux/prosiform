@@ -22,6 +22,7 @@ from report import (
     TIMEOUT,
     baseline_of,
     main,
+    markdown,
     report,
 )
 
@@ -322,6 +323,38 @@ def test_the_command_writes_the_report_beside_the_run(
     ) in text
     assert f"- `{SONNET}` / `tree` / `branching` / `low-severity`" in text
     assert f"- `{SONNET}` / `looping` / `two-rounds` / `prose` / `2`" in text
+
+
+def test_a_refused_run_gives_its_state_and_reason_and_no_row(
+    tmp_path: Path, baseline: Path
+) -> None:
+    """A run every session of which errored has no pass rate to compare."""
+    directory = tmp_path / "results" / "refused"
+    directory.mkdir(parents=True)
+    run = {
+        "run_id": "refused",
+        "date": "2026-10-27T11:00:00+00:00",
+        "options": {"models": HAIKU, "repetitions": 1},
+        "command": ["claude", "-p"],
+        "state": "refused",
+        "reason": "You've hit your weekly limit · resets Monday",
+        "sessions": 1,
+        "started": 1,
+        "cost_usd": 0.0,
+        "not_started": [],
+    }
+    (directory / RUN).write_text(json.dumps(run))
+    built = report(directory, baseline)
+    assert built["state"] == "refused"
+    assert built["reason"] == "You've hit your weekly limit · resets Monday"
+    assert built["baseline"] is None
+    for name in ("cells", "by_form", "by_model"):
+        assert built[name] == [] and built["baseline_only"][name] == []
+    text = markdown(built)
+    assert "- **State:** `refused`" in text
+    assert "You've hit your weekly limit · resets Monday" in text
+    assert "not compared" in text
+    assert "Pass rate" not in text and "## By Model" not in text
 
 
 def test_writing_the_baseline_follows_the_comparison_with_the_one_it_replaces(

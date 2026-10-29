@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from report import REPORT_JSON, RUN, SESSION, TIMEOUT
+from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     BUNDLE,
     BUNDLED,
@@ -385,6 +385,96 @@ def test_an_agent_reporting_an_error_is_errored_though_it_wrote_a_trace(
     [record] = records(tmp_path)
     assert record["exit_status"] == 0
     assert record["verdict"]["failure"] == "errored"
+
+
+def test_a_run_whose_every_session_errored_is_refused_and_reported_as_such(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A spent login is a refused run, not a matrix of failing agents.
+
+    Every session reports an error, so none entered a state. The run records
+    itself refused with one session's own message as the reason, and its
+    report names that instead of giving pass rates or a baseline comparison.
+    """
+    monkeypatch.setenv("STUB_AGENT_ERROR", "1")
+    monkeypatch.setenv("STUB_AGENT_REASON", "You've hit your weekly limit")
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
+        *("--budget-usd", "4"),
+    )
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert record["state"] == written["state"] == "refused"
+    assert written["reason"] == "You've hit your weekly limit"
+    assert record["started"] == written["sessions"] == 2
+    assert all(item["verdict"]["failure"] == "errored" for item in records(tmp_path))
+    built = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
+    assert built["state"] == "refused"
+    assert built["reason"] == "You've hit your weekly limit"
+    for name in ("cells", "by_form", "by_model"):
+        assert built[name] == [] and built["baseline_only"][name] == []
+    assert built["baseline"] is None
+    text = (tmp_path / "results" / "test" / REPORT_MD).read_text()
+    assert "- **State:** `refused`" in text
+    assert "You've hit your weekly limit" in text
+    assert "not compared" in text and "Pass rate" not in text
+
+
+def test_a_refused_run_writes_no_baseline(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("STUB_AGENT_ERROR", "1")
+    eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-usd", "1"),
+    )
+    baseline = tmp_path / "baseline.json"
+    with pytest.raises(CorpusError, match="refused, so it has no cells"):
+        main(
+            [
+                str(tmp_path / "results" / "test"),
+                "--baseline",
+                str(baseline),
+                "--write-baseline",
+            ]
+        )
+    assert not baseline.exists()
+
+
+def test_a_run_with_a_genuine_mix_of_errors_and_states_is_a_result(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A real fault beside sessions that entered a state is not a refusal."""
+    monkeypatch.setenv("STUB_AGENT_ERROR_ONCE", str(tmp_path / "errored"))
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
+        *("--parallel", "1", "--budget-usd", "4"),
+    )
+    failures = [item["verdict"]["failure"] for item in records(tmp_path)]
+    assert sorted(failures, key=str) == [None, "errored"]
+    assert record["state"] == "completed" and record["reason"] is None
+    written = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
+    assert written["state"] == "completed"
+    assert written["cells"] and written["cells"][0]["passed"] == 1
+
+
+def test_a_run_the_budget_stopped_part_way_is_not_refused(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Sessions it never started leave the matrix incomplete, not refused."""
+    monkeypatch.setenv("STUB_AGENT_ERROR", "1")
+    monkeypatch.setenv("STUB_AGENT_COST", "0.5")
+    record = eval_run(
+        tmp_path,
+        *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
+        *("--budget-usd", "1.25", "--session-budget-usd", "0.25"),
+    )
+    assert record["started"] == 3 and record["sessions"] == 5
+    assert len(record["not_started"]) == 2
+    assert all(item["verdict"]["failure"] == "errored" for item in records(tmp_path))
+    assert record["state"] == "completed" and record["reason"] is None
 
 
 def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:

@@ -39,9 +39,19 @@ agent printed; `stderr.log` when it printed any; the final workspace's
 `trace.log` and `actions/`; and `session.json`, holding the session's
 identity, exit status, duration, the stream's `result` message with its
 `usage` and `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, recorded cost, and the sessions it did not
-start. Once `run.json` is written, `report.py` writes the run's report
-beside it, compared with the committed baseline.
+holds the run's date, options, recorded cost, the sessions it did not
+start and the run's state. Once `run.json` is written, `report.py` writes
+the run's report beside it, compared with the committed baseline.
+
+A run every session of which took the `errored` verdict is `refused`: no
+session entered a state, so the matrix is no result and its pass rates
+would read a spent login as a matrix of failing agents. The reason it
+records is one session's own `result` text, so a reader sees the limit the
+agent reported. The state is decided here, once the sessions have settled
+and before `run.json` is written, and the report reads it from there: the
+whole matrix must have started and every session must have errored, so a
+run its budget stopped part way, and one where some sessions errored on a
+genuine fault beside passing ones, is a result rather than a refusal.
 
 A session runs for at most `--session-timeout-seconds`. On expiry its
 process group, the agent and every process it started, is killed; its exit
@@ -77,9 +87,20 @@ from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
-from typing import IO
+from typing import IO, Any
 
-from report import BASELINE, RUN, SESSION, TIMEOUT, names, write
+from report import (
+    BASELINE,
+    COMPLETED,
+    REASON,
+    REFUSED,
+    RUN,
+    SESSION,
+    STATE,
+    TIMEOUT,
+    names,
+    write,
+)
 from score import ACTIONS, TRACE, Failure, Verdict, read_trace, score
 from workflow import (
     DIAGRAM,
@@ -125,7 +146,7 @@ FORMS = {
     LINKED_TREE: LINKED_FORM,
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE}
-SUMMARY = ("run_id", "sessions", "started", "cost_usd", "not_started")
+SUMMARY = ("run_id", "state", "sessions", "started", "cost_usd", "not_started")
 
 TOOLS = "Read,Write,Edit,Glob,Grep"
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
@@ -513,6 +534,64 @@ def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
     return Verdict(False, Failure.ERRORED, None, scenario.path, (), ())
 
 
+def verdict_of(records: Path) -> dict[str, Any] | None:
+    """One finished session's record, if the run wrote one."""
+    path = records / SESSION
+    if not path.is_file():
+        return None
+    held = json.loads(path.read_text())
+    return held if isinstance(held, dict) else None
+
+
+def failed(record: dict[str, Any] | None) -> str | None:
+    """The failure class a session's record gives, or nothing where it passed."""
+    if record is None:
+        return None
+    verdict = record.get("verdict")
+    return verdict.get("failure") if isinstance(verdict, dict) else None
+
+
+def agent_message(record: dict[str, Any] | None) -> dict[str, Any] | None:
+    """The `result` message a session's record kept, when it kept one."""
+    if record is None:
+        return None
+    result = record.get("result")
+    return result if isinstance(result, dict) else None
+
+
+def reason_of(result: dict[str, Any] | None) -> str:
+    """The text the agent's `result` message carries, or a stated absence."""
+    text = None if result is None else result.get("result")
+    if isinstance(text, str) and text.strip():
+        return text.strip()
+    return "the session reported an error and printed no message"
+
+
+def outcome(
+    sessions: list[Session], started: list[bool], run_directory: Path
+) -> tuple[str, str | None]:
+    """A run's state, and the reason it records when it is refused.
+
+    A run is refused when it started every session of its matrix and every
+    one took the `errored` verdict: no session entered a state, so the
+    matrix is no result. A run its budget stopped part way, and one where
+    some sessions errored beside others that entered a state, is a
+    completed run whose failures are the result. The reason is the first
+    errored session's own `result` text, so a reader sees the limit the
+    agent reported.
+    """
+    if not all(started):
+        return COMPLETED, None
+    records = [
+        verdict_of(session.directory(run_directory))
+        for session, began in zip(sessions, started, strict=True)
+        if began
+    ]
+    if not records or any(failed(record) != str(Failure.ERRORED) for record in records):
+        return COMPLETED, None
+    return REFUSED, reason_of(agent_message(records[0]))
+
+
 def run(arguments: argparse.Namespace) -> dict[str, object]:
     """Run every session the budget allows and return the run's record."""
     agent = shlex.split(arguments.agent_command)
@@ -582,6 +661,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     with ThreadPoolExecutor(max_workers=max(1, arguments.parallel)) as pool:
         started = list(pool.map(attempt, sessions))
     shutil.rmtree(workspaces, ignore_errors=True)
+    state, reason = outcome(sessions, started, run_directory)
     carried = [
         f"{identify(session)} carried {what}"
         for session in sessions
@@ -601,6 +681,8 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             for key, value in vars(arguments).items()
         },
         "command": agent_argv(agent, "<model>", ledger.session_cap),
+        STATE: state,
+        REASON: reason,
         "sessions": len(sessions),
         "started": sum(started),
         "cost_usd": ledger.spent,

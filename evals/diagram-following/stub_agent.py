@@ -17,6 +17,11 @@ The environment scripts it:
 - `STUB_AGENT_SILENT`: when set, it prints no `result` message;
 - `STUB_AGENT_ERROR`: when set, its `result` message reports `is_error` true,
   as a refusal or a crashed agent does;
+- `STUB_AGENT_ERROR_ONCE`: a file the first session to find it absent creates,
+  then reports `is_error` true, so a run mixes an errored session with passing
+  ones on a real fault;
+- `STUB_AGENT_REASON`: the text its `result` message carries, as a refused
+  agent's message states the limit it hit;
 - `STUB_AGENT_INJECT`: text the agent prints as a hook response before its
   first turn, as a plugin's `SessionStart` hook delivers one;
 - `STUB_AGENT_HANG`: a file the first session to find it absent creates,
@@ -93,10 +98,16 @@ def main() -> int:
         )
     print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
     if not os.environ.get("STUB_AGENT_SILENT"):
+        once = os.environ.get("STUB_AGENT_ERROR_ONCE")
+        errored = bool(os.environ.get("STUB_AGENT_ERROR"))
+        if once and not Path(once).exists():
+            Path(once).touch()
+            errored = True
         result = {
             "type": "result",
             "subtype": "success",
-            "is_error": bool(os.environ.get("STUB_AGENT_ERROR")),
+            "is_error": errored,
+            "result": os.environ.get("STUB_AGENT_REASON", ""),
             "num_turns": len(path),
             "total_cost_usd": float(os.environ.get("STUB_AGENT_COST", "0.01")),
             "usage": {"input_tokens": 100 * len(path), "output_tokens": 10},
