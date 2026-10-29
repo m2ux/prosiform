@@ -6,7 +6,7 @@
 
 The dispatch (`⇉`) and parallel dispatch (`⫽`) operators are prosiform grammar: `pf` compiles what each states into the bundles it publishes, so an agent follows a bundle without an authored symbol table. Every dispatched target compiles to a bundle of its own beside the bundle that dispatches it. A `⇉` link points at a local sub-section instructing its dispatch; the `⫽` links in one section form a set, and point at one local sub-section instructing their dispatch together. Each bundle opens with a `# Prosiform` section stating the protocols it uses. A bare `pf` serves what remains of the corpus bootstrap, so a skill's bootstrap is one instruction to run it.
 
-The epic is I05:E03: sixteen task rows delivered as ten pull requests, each leaving a working `pf`, with one edge outside it: the eval row waits on I05:E01's baseline.
+The epic is I05:E03: fifteen task rows delivered as ten pull requests, each leaving a working `pf`.
 
 ## Artifacts
 
@@ -27,7 +27,6 @@ The epic is I05:E03: sixteen task rows delivered as ten pull requests, each leav
 | [W13 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w13.md) | Staging and aside names independent of the run folder's |
 | [W14 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w14.md) | Dispatch link text, empty-text refusal, reserved headings and one dispatched-link reader |
 | [W15 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w15.md) | Schema-valid test manifests and the renamed fixture families |
-| [W17 work item](w17.md) | The conformance report over the design clauses this epic changed |
 | [Review findings](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/findings.md) | The seven findings of the review of the epic as merged to `main` |
 | [Joins](joins.md) | Independent row pairs that take separate pull requests, and why |
 
@@ -97,7 +96,6 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 | W13 | Staging and aside names of fixed length | 9 |
 | W14 | Dispatch link text collapsed, empty text refused, only emitted headings reserved | 9 |
 | W15 | Schema-valid test manifests; `parallel-dispatch` and `publication` families | 9 |
-| W17 | Conformance report over this epic's clauses | |
 
 ## Decisions
 
@@ -112,8 +110,6 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 - **Profile v4.** The same source bundles differently, as with v3.
 - **The eval leaves the epic.** The diagram-following eval's dispatch scenarios and their baseline are I05:E07, which carries their criteria and its own rows; nothing in this epic measures an agent. (User, 2026-10-29.)
 - **Criteria renumbered.** With the eval's three criteria gone, AC26–AC38 close the gap to AC23–AC35, and this record's earlier citations of AC26–AC38 name the retired numbers. (User, 2026-10-29.)
-- **The last row is the conformance report.** The epic rewrites Dispatch, Run-set, Invocation and Publication clauses, so it holds `make conformance` to each of them and delivers that as AC36 by W17. W16 stays unoccupied, because the number named the eval row this epic gave up and a reader must not find it claimed here again. (User, 2026-10-29.)
-- **`make conformance` is the instrument, against the template's wording.** The rule for an epic changing workflow definitions states its criterion as the canon audit's coverage report, and `format.py` looks for that phrase. No canon audit covers prosiform's corpus: the `workflow-canon` skill is scoped to workflow-server's definitions. The epic therefore holds AC36 to `make conformance`, whose own report maps each design clause to the fixtures that exercise it, and the deviation stays a known finding against the template rather than being hidden behind wording that names an instrument nobody runs. (User, 2026-10-29.)
 - **Breaking, without compatibility.** `-o FILE`, standard-output publication, the run-set target shape and the bootstrap symbol rows for `⇉` and `⫽` are removed.
 - **Profile v4 lands with the Prosiform section.** W08 changes what every dispatching bundle opens with and fixes the protocol wording as a profile constant, so the profile bump is its criterion. (Planning, 2026-10-28.)
 - **Each pf task carries its own contract edits.** `make conformance` reads the design from `engineering` at the README's pin and holds the build's codes to it, and `make invocation` holds the help text to `invocation.md`, so W01–W06 and W08 each edit their design clauses, the pin and their `invocation.md` rows; W09 sweeps the remaining prose. (Planning, 2026-10-28.)
@@ -148,7 +144,6 @@ Each row's declared component, and every other path its pull request writes. The
 | W13 | `src/prosiform/cli.py` | `src/tests` |
 | W14 | `src/prosiform/dispatch.py` | `cli.py`, `src/tests`, `fixtures/dispatch`, `README.md` (pin); `design.md` |
 | W15 | `fixtures` | `fixtures/run-set` → `fixtures/parallel-dispatch`, `fixtures/delivery` → `fixtures/publication`, `checks/tests` |
-| W17 | `checks/conformance.py` | — |
 
 ## Collision Surface
 
