@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Every rule in the work-planner example is stated once, in the contract or step it binds, and every consumer links it rather than restating it. Each file reported for size or operation count is reviewed for a second subject, and split only where one exists.
+Every shared rule of the work-planner example is stated once, in the convention that owns it, and every step applying it links that anchor rather than restating it. Each file the authoring check's size report names is reviewed for a second subject, with the subject found and the reason for its disposition recorded.
 
 This task covers AC9 and AC10, following the delivered conversions of artifacts, modes and protocols. It supersedes the earlier record for this row, whose validation reported ownership, subject review, implementation and checks still pending.
 
@@ -12,6 +12,9 @@ This task covers AC9 and AC10, following the delivered conversions of artifacts,
 
 | Artifact | What it holds |
 | --- | --- |
+| [Work item](w09.md) | Scope, design and delivery obligations |
+| [Validation](validation.md) | Ownership matrix, subject review and check evidence |
+| [Change list](change-list.md) | Applied and held changes |
 
 ## Links
 
