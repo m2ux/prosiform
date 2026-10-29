@@ -21,4 +21,5 @@ This task covers AC8 of Example Authoring, building on the delivered artifact co
 | Resource | Link |
 | --- | --- |
 | Epic | [Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
+| Task pull request | [Modes, Protocols and Entry Under the Rules](https://github.com/m2ux/prosiform/pull/388) |
 | Epic plan | [Planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
