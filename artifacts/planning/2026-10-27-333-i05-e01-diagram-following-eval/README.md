@@ -17,6 +17,8 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 | [W03 work item](w03.md) | The headless agent runner and its spending cap |
 | [W04 work item](w04.md) | The report, baseline comparison and eval command |
 | [W05 work item](w05.md) | The first baseline from the default matrix |
+| [W06 work item](w06.md) | The linked form, whose decisions name the rule stating the branch's label |
+| [W07 work item](w07.md) | The `errored` class for a session that entered no state |
 
 ## Decisions
 
