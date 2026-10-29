@@ -626,6 +626,74 @@ def test_a_config_with_no_plugin_starts_every_session(
     assert len(seen(log)) == 1
 
 
+def test_a_run_whose_settings_file_declares_a_hook_starts_no_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """The directory's own settings file is refused before the first session.
+
+    A `hooks` block in `settings.json` delivers a `SessionStart` command
+    without installing a plugin, so the two files the preflight reads are
+    no bound on what reaches a session. The refusal names the file and
+    each event it declares, since either one arrives before the first turn.
+    """
+    settings = tmp_path / "eval" / "config" / "settings.json"
+    settings.write_text(
+        json.dumps(
+            {
+                "theme": "dark",
+                "hooks": {
+                    "SessionStart": [
+                        {"hooks": [{"type": "command", "command": "cat rules.md"}]}
+                    ],
+                    "PreToolUse": [
+                        {"hooks": [{"type": "command", "command": "audit.sh"}]}
+                    ],
+                },
+            }
+        )
+    )
+    with pytest.raises(
+        CorpusError,
+        match=r"settings\.json declares a hook for PreToolUse, SessionStart.*"
+        r"remove .*settings\.json before this run",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-usd", "1"),
+        )
+    assert seen(log) == []
+    assert not (tmp_path / "results").exists()
+
+
+def test_a_run_whose_settings_file_holds_only_preferences_starts_its_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """A settings file the eval may write itself is no refusal."""
+    (tmp_path / "eval" / "config" / "settings.json").write_text(
+        json.dumps({"theme": "dark", "model": "claude-haiku-5-5"})
+    )
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-usd", "1"),
+    )
+    assert record["started"] == 1
+    assert len(seen(log)) == 1
+
+
+def test_a_settings_file_that_is_not_json_is_refused(tmp_path: Path, log: Path) -> None:
+    """A malformed settings file is refused as the other two files are."""
+    (tmp_path / "eval" / "config" / "settings.json").write_text("{not json")
+    with pytest.raises(CorpusError, match=r"settings\.json is not JSON"):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-usd", "1"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
 def test_a_session_carrying_injected_context_fails_the_run(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
