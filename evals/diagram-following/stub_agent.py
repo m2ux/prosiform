@@ -17,6 +17,8 @@ The environment scripts it:
 - `STUB_AGENT_SILENT`: when set, it prints no `result` message;
 - `STUB_AGENT_ERROR`: when set, its `result` message reports `is_error` true,
   as a refusal or a crashed agent does;
+- `STUB_AGENT_INJECT`: text the agent prints as a hook response before its
+  first turn, as a plugin's `SessionStart` hook delivers one;
 - `STUB_AGENT_HANG`: a file the first session to find it absent creates,
   then hangs after writing its trace, printing nothing more.
 """
@@ -78,6 +80,17 @@ def main() -> int:
         Path(hang).touch()
         time.sleep(3600)
     print(json.dumps({"type": "system", "subtype": "init", "cwd": str(workspace)}))
+    if inject := os.environ.get("STUB_AGENT_INJECT"):
+        print(
+            json.dumps(
+                {
+                    "type": "system",
+                    "subtype": "hook_response",
+                    "hook_event": "SessionStart:startup",
+                    "additionalContext": inject,
+                }
+            )
+        )
     print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
     if not os.environ.get("STUB_AGENT_SILENT"):
         result = {

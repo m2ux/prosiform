@@ -20,7 +20,16 @@ eval's own Claude configuration directory, holding its login, settings and
 memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
-fails before it starts a session, naming the one-time login command.
+fails before it starts a session, naming the one-time login command, and so
+does one whose directory installs a plugin or whose remote settings enable
+one, naming the file that says so: a plugin's hooks reach a session before
+its first turn and no flag the runner passes suppresses them.
+
+What a session's agent did carry is read back from its transcript, so the
+boundary is observed rather than assumed. A hook's response, an appended
+system prompt or a memory file is context the run did not supply, and a run
+one of whose sessions carries one fails, naming the session and what it
+carried.
 `<root>/workspaces/<run-id>/` holds the run's workspaces, each at its
 session's place in the matrix and removed once its records are kept.
 
@@ -95,8 +104,15 @@ EVAL_ROOT = Path("~/projects/eval/prosiform")
 CONFIG = "config"
 WORKSPACES = "workspaces"
 LOGIN = ".credentials.json"
+PLUGINS = Path("plugins") / "installed_plugins.json"
+INSTALLED = "plugins"
+REMOTE = "remote-settings.json"
+ENABLED = "enabledPlugins"
 CONFIG_VARIABLE = "CLAUDE_CONFIG_DIR"
 SCRUBBED = ("CLAUDE", "ANTHROPIC_")
+HOOK_RESPONSE = "hook_response"
+SYSTEM = "system"
+CARRIED = ("additionalContext", "appendSystemPrompt", "memory")
 
 BUNDLE = "bundle"
 TREE = "tree"
@@ -309,12 +325,101 @@ def environment(config: Path) -> dict[str, str]:
 
 
 def preflight(config: Path) -> None:
-    """Refuse a run whose configuration directory holds no login."""
+    """Refuse a run whose config holds no login, or one a plugin reaches through."""
     if not (config / LOGIN).is_file():
         raise CorpusError(
             f"{config} holds no login; log in once with "
             f"`{CONFIG_VARIABLE}={config} claude`, then `/login`"
         )
+    path = installing(config)
+    if path is not None:
+        raise CorpusError(
+            f"{path} installs a plugin, whose hooks reach every session before "
+            f"its first turn; remove {path} before this run"
+        )
+    path = enabling(config)
+    if path is not None:
+        raise CorpusError(
+            f"{path} enables a plugin and its environment, which reach every "
+            f"session before its first turn; remove {path} before this run"
+        )
+
+
+def record_of(path: Path) -> dict[str, object]:
+    """One settings file's content, read as JSON."""
+    if not path.is_file():
+        return {}
+    try:
+        record = json.loads(path.read_text())
+    except json.JSONDecodeError as error:
+        raise CorpusError(f"{path} is not JSON: {error}") from error
+    return record if isinstance(record, dict) else {}
+
+
+def installing(config: Path) -> Path | None:
+    """The file that installs a plugin in `config`, when one does."""
+    path = config / PLUGINS
+    return path if record_of(path).get(INSTALLED) else None
+
+
+def enabling(config: Path) -> Path | None:
+    """The file whose remote settings enable a plugin, when one does."""
+    path = config / REMOTE
+    enabled = record_of(path).get(ENABLED)
+    if not isinstance(enabled, dict):
+        return None
+    return path if any(value is True for value in enabled.values()) else None
+
+
+def carried_context(message: dict[str, object]) -> str | None:
+    """The context one transcript message adds that the run did not supply."""
+    if message.get("type") == HOOK_RESPONSE or message.get("subtype") == HOOK_RESPONSE:
+        kind = "a hook response"
+    elif message.get("type") != SYSTEM:
+        return None
+    elif message.get("memory"):
+        kind = "a memory file"
+    elif message.get("appendSystemPrompt") or message.get("additionalContext"):
+        kind = "an appended system prompt"
+    else:
+        return None
+    text = next((str(message[key]) for key in CARRIED if message.get(key)), "")
+    return f"{kind} carrying {text!r}" if text else kind
+
+
+def identify(session: Session) -> str:
+    """A session's place in the matrix, as one path-like name."""
+    return "/".join(
+        (
+            session.model,
+            session.workflow,
+            session.scenario,
+            session.form,
+            str(session.repetition),
+        )
+    )
+
+
+def injected(transcript: Path) -> str | None:
+    """The context an agent added to its session, which the run did not supply.
+
+    The form and the instruction are all a session is given, so a hook's
+    response, an appended system prompt or a memory file is another
+    instruction set arriving beside them, whatever its source.
+    """
+    if not transcript.is_file():
+        return None
+    for line in transcript.read_text().splitlines():
+        try:
+            message = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(message, dict):
+            continue
+        carried = carried_context(message)
+        if carried is not None:
+            return carried
+    return None
 
 
 def converse(
@@ -477,6 +582,17 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     with ThreadPoolExecutor(max_workers=max(1, arguments.parallel)) as pool:
         started = list(pool.map(attempt, sessions))
     shutil.rmtree(workspaces, ignore_errors=True)
+    carried = [
+        f"{identify(session)} carried {what}"
+        for session in sessions
+        if (what := injected(session.directory(run_directory) / TRANSCRIPT)) is not None
+    ]
+    if carried:
+        raise CorpusError(
+            f"{len(carried)} session(s) carried context this run did not supply, "
+            f"so they measure nothing about how the agent read its form: "
+            f"{'; '.join(carried)}"
+        )
     record = {
         "run_id": run_id,
         "date": began.isoformat(timespec="seconds"),
