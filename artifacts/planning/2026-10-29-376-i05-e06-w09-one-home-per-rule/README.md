@@ -21,5 +21,6 @@ This task covers AC9 and AC10, following the delivered conversions of artifacts,
 | Resource | Link |
 | --- | --- |
 | Epic | [Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
+| Task pull request | [One Home Per Rule and One Subject Per File](https://github.com/m2ux/prosiform/pull/394) |
 | Epic plan | [Planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
 | Superseded record | [Earlier W09 record](../2026-10-29-376-i05-e06-w09-rule-ownership-and-file-subjects/README.md) |
