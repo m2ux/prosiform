@@ -21,9 +21,11 @@ memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
 fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin or whose remote settings enable
-one, naming the file that says so: a plugin's hooks reach a session before
-its first turn and no flag the runner passes suppresses them.
+does one whose directory installs a plugin, whose remote settings enable one,
+or whose settings file declares a hook for any event, naming the file that
+says so and the events it declares: a plugin's or a settings file's hooks
+reach a session before its first turn and no flag the runner passes
+suppresses them.
 
 What a session's agent did carry is read back from its transcript, so the
 boundary is observed rather than assumed. A hook's response, an appended
@@ -129,6 +131,8 @@ PLUGINS = Path("plugins") / "installed_plugins.json"
 INSTALLED = "plugins"
 REMOTE = "remote-settings.json"
 ENABLED = "enabledPlugins"
+SETTINGS = "settings.json"
+HOOKS = "hooks"
 CONFIG_VARIABLE = "CLAUDE_CONFIG_DIR"
 SCRUBBED = ("CLAUDE", "ANTHROPIC_")
 HOOK_RESPONSE = "hook_response"
@@ -346,7 +350,7 @@ def environment(config: Path) -> dict[str, str]:
 
 
 def preflight(config: Path) -> None:
-    """Refuse a run whose config holds no login, or one a plugin reaches through."""
+    """Refuse a run whose config holds no login, or one a plugin or hook reaches."""
     if not (config / LOGIN).is_file():
         raise CorpusError(
             f"{config} holds no login; log in once with "
@@ -363,6 +367,13 @@ def preflight(config: Path) -> None:
         raise CorpusError(
             f"{path} enables a plugin and its environment, which reach every "
             f"session before its first turn; remove {path} before this run"
+        )
+    declared = hooking(config)
+    if declared is not None:
+        path, events = declared
+        raise CorpusError(
+            f"{path} declares a hook for {', '.join(events)}, which reaches "
+            f"every session before its first turn; remove {path} before this run"
         )
 
 
@@ -390,6 +401,16 @@ def enabling(config: Path) -> Path | None:
     if not isinstance(enabled, dict):
         return None
     return path if any(value is True for value in enabled.values()) else None
+
+
+def hooking(config: Path) -> tuple[Path, list[str]] | None:
+    """The settings file that declares a hook, and the events it declares."""
+    path = config / SETTINGS
+    hooks = record_of(path).get(HOOKS)
+    if not isinstance(hooks, dict):
+        return None
+    events = sorted(str(event) for event, commands in hooks.items() if commands)
+    return (path, events) if events else None
 
 
 def carried_context(message: dict[str, object]) -> str | None:
