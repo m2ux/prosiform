@@ -42,12 +42,12 @@ Check each section of the issue against the field conditions for its kind and ag
 
 #### 2. Check the Changed Body Formats
 
-From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result before the next issue; retain format findings and stop on an unreadable input or invocation failure.
+From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result as [Command result](../conventions.md#command-result) states before the next issue; retain format findings and stop on an unreadable input.
 
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
@@ -61,7 +61,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 3. Return the Body Check Findings
 
-Read each format-check exit code and output. Return its format findings with the field findings; report an unreadable input or failed invocation as a blocker.
+Read each format check’s result as [Command result](../conventions.md#command-result) states. Return its format findings with the field findings; report an unreadable input as a blocker.
 
 ### Validate Issue Body
 
@@ -78,7 +78,7 @@ From `<workspace>`, check the supplied issue JSON with its kind’s additional f
 - The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
 - The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
@@ -92,7 +92,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Review the Body Field Conditions
 
-Read the format checker’s exit code, findings and corrected body. Return an unreadable input or invocation failure as a blocker; retain format findings for the review.
+Read the format checker’s result as [Command result](../conventions.md#command-result) states, with its findings and corrected body. Return an unreadable input as a blocker; retain format findings for the review.
 
 Review the body against the supplied field conditions.
 
@@ -189,7 +189,7 @@ Resolve a non-mechanical finding confined to one body.
 
 #### 4. Re-Read Each Repaired Issue
 
-Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue, as [Write confirmation](../conventions.md) states.
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue, as [Write confirmation](../conventions.md#write-confirmation) states.
 - Repeat the kind's validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
@@ -215,7 +215,7 @@ Publish the corrected body through [Save Tracker Issue](issue.md#save-tracker-is
 
 #### 4. Re-Read the Answered Issue
 
-Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue, as [Write confirmation](../conventions.md) states.
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue, as [Write confirmation](../conventions.md#write-confirmation) states.
 
 #### 5. Return the Question Decisions
 
@@ -292,6 +292,10 @@ An acceptance criterion meets these. A kind adds its own under its Acceptance Cr
   The acceptance criteria the row delivers, `AC2, AC5`, and nothing else. Every criterion is delivered by at least one row.
 - **Depends on.**
   References only, with no prose, and only what no other entry in the cell already implies.
+
+### Breakdown Prose
+
+Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
 ### Numbering
 

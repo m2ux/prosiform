@@ -104,7 +104,7 @@ From `<workspace>`, update the supplied initiative JSON with every linked epic�
 
 Pass every epic JSON file as a separate argument after `--epics`. Omit `--fix` when no output body is requested.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --fix '<output-body-file>'
@@ -118,7 +118,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Return the Initiative Delivery Findings
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
 
 Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
@@ -136,7 +136,7 @@ From `<workspace>`, update the initiative JSON with linked epic records as `--ep
 
 Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -150,7 +150,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Return the Initiative Body and Refused Criteria
 
-Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -206,7 +206,7 @@ gh api 'repos/m2ux/workflow-server/contents/docs/spec.md?ref=4a217fe6' --jq .con
 
 #### 3. Fetch Other Source URLs
 
-Read each pinned-source command’s exit code and output. Carry a failed or empty response into the unreadable-source findings below.
+Read each pinned-source command’s result as [Command result](../conventions.md#command-result) states. Carry a failed or empty response into the unreadable-source findings below.
 
 Fetch other URLs through the harness's web access.
 
@@ -290,6 +290,7 @@ Each marked [source](#sources), its identity and contents, the local file path h
 
 The columns are `Epic | Description | Coverage | Depends on | Done`. The table has no Joins column.
 
+- The body meets [Breakdown Prose](issue-body.md#breakdown-prose).
 - An epic row's id is the epic, linked to its issue: `[E01](…/issues/937)`.
 - An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
 - An epic row is complete when its issue is closed as completed.

@@ -81,7 +81,7 @@ Inspect the worktree lookup. Return a lookup error or missing-worktree finding b
 Stage and commit the supplied folder with the supplied message file. Resolve the message file against the engineering worktree, or pass its absolute path.
 
 - Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message as [Bodies](../conventions.md) states. The worktree is a linked one, so git writes here run unsandboxed.
+- Pass the message as [Bodies](../conventions.md#bodies) states. The worktree is a linked one, so git writes here run unsandboxed.
 
 ```bash
 cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
@@ -143,7 +143,7 @@ cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
 
 #### 3. Return the Matching Record Paths
 
-Inspect the listing's exit code and output. Return each matching folder path. If the pattern has no match, return that no record has the reference; report any other listing failure as an execution error.
+Read the listing's result as [Command result](../conventions.md#command-result) states. Return each matching folder path. If the pattern has no match, return that no record has the reference.
 
 ## Fields
 
@@ -227,7 +227,7 @@ One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` 
 
 ### Commit Message
 
-A file holding the message of the commit that publishes the record, as [Bodies](../conventions.md) states.
+A file holding the message of the commit that publishes the record, as [Bodies](../conventions.md#bodies) states.
 
 ### Publication
 

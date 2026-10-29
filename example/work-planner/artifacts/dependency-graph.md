@@ -38,7 +38,7 @@ From `<workspace>`, check dependencies using the initiative body, every epic id 
 - It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
 - It reads bodies from [Read Tracker Issue](issue.md#read-tracker-issue), or local drafts.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
@@ -52,7 +52,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Settle Dependency Findings
 
-Read the dependency checker’s exit code and output. Treat reported dependency or numbering problems as findings to settle; return an unreadable input or invocation failure as a blocker.
+Read the dependency checker’s result as [Command result](../conventions.md#command-result) states. Treat reported dependency or numbering problems as findings to settle; return an unreadable input as a blocker.
 
 Settle each finding through [Settle Plan Change](plan-change.md#settle-plan-change), with the correction below as its recommended option, the affected issue identities, the supplied allowance and the current change list.
 - The correction each finding takes:
@@ -73,7 +73,7 @@ For a confirmed epic map, run the renumberer from `<workspace>` with the initiat
 - The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
 - Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
@@ -94,7 +94,7 @@ For a confirmed task map, run the renumberer from `<workspace>` with the initiat
 - Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
 - Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'

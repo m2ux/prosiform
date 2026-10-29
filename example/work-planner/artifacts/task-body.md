@@ -38,7 +38,7 @@ From `<workspace>`, update the task JSON with records as `--prs`, snapshot as `-
 
 `<criterion-ids>` is a comma-separated list of verified criterion ids.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --pr '<pull-request-number>' --tick '<criterion-ids>' --fix '<output-body-file>'
@@ -52,7 +52,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Write the Delivery Comment
 
-Read the helper’s exit code, output and written body. Return an invocation failure before writing the comment, retaining any eligibility findings.
+Read the helper’s result as [Command result](../conventions.md#command-result) states, with its written body. Return an invocation failure before writing the comment, retaining any eligibility findings.
 
 Write `Delivered by #<pull-request-number>.` to the output comment file, with the delivering pull request number.
 

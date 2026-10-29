@@ -51,9 +51,9 @@ gh api --method PUT 'repos/<owner>/<repo>/pulls/950/merge' -f merge_method='merg
 
 #### 3. Return the Delivery Merge Result
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-Return the merge result, including its merge commit when supplied, for the caller to confirm as [Write confirmation](../conventions.md) states.
+Return the merge result, including its merge commit when supplied, for the caller to confirm as [Write confirmation](../conventions.md#write-confirmation) states.
 
 ### Access Development Links
 
@@ -80,7 +80,7 @@ For a link edit, take the supplied repository prerequisite from [Confirm Reposit
 
 #### 4. Re-Read the Pull Request Development Links
 
-Read the same pull request's actual Development field through authenticated GitHub or an available supported tool, as [Write confirmation](../conventions.md) states.
+Read the same pull request's actual Development field through authenticated GitHub or an available supported tool, as [Write confirmation](../conventions.md#write-confirmation) states.
 - Include every page and state, recording each linked issue's repository and number and whether the field was fully readable.
 - Return a failed edit or unreadable field as a blocker.
 
@@ -106,7 +106,7 @@ For every pull request in the current records, `prs.json`, apply [Access Develop
 
 #### 2. Re-Read Links After a Change
 
-Repeat that read after a link changes, as [Write confirmation](../conventions.md) states.
+Repeat that read after a link changes, as [Write confirmation](../conventions.md#write-confirmation) states.
 
 #### 3. Return an Incomplete Link Fetch
 
@@ -174,7 +174,7 @@ gh api --method PUT 'repos/<owner>/<repo>/pulls/980/merge' -f merge_method='merg
 
 #### 3. Read the Epic Merge Result
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, read the merge result using the supplied repository and pull request number.
 
@@ -190,7 +190,7 @@ gh api 'repos/<owner>/<repo>/pulls/980' --jq '{merged, merge_commit_sha, head: .
 
 #### 4. Confirm the Merged Epic State
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Confirm the merged state, merge commit, verified head and target.
 
@@ -222,13 +222,13 @@ gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] 
 
 #### 2. Stop on a First Fetch Failure
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Stop on failure.
 
 #### 3. Append Further Repository Pull Requests
 
-From each further repository’s checkout, append its initiative-prefixed pull requests to the same destination file. Read each fetch result before continuing; return incomplete evidence on any failure.
+From each further repository’s checkout, append its initiative-prefixed pull requests to the same destination file. Read each fetch result as [Command result](../conventions.md#command-result) states before continuing; return incomplete evidence on any failure.
 
 ```bash
 gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I"))' >> '<pull-request-records-file>'
@@ -242,7 +242,7 @@ gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] 
 
 #### 4. Return Incomplete Pull Request Evidence
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 If any fetch failed, return incomplete evidence.
 
@@ -276,7 +276,7 @@ gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] 
 
 #### 2. Return the Initiative Collection
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the collection or an incomplete-fetch finding.
 
@@ -318,9 +318,9 @@ gh api 'repos/<owner>/<repo>/pulls/980' > epic-pr.json
 
 #### 2. Fetch Requested Files or Reviews
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-Run each requested supporting-record command. After each read, inspect its exit code and output; return a failure before the next read, keeping missing evidence explicit.
+Run each requested supporting-record command. After each read, read its result as [Command result](../conventions.md#command-result) states; return a failure before the next read, keeping missing evidence explicit.
 
 When changed files are requested, save their paths from the repository checkout using the supplied repository, pull request number and destination file.
 
@@ -348,7 +348,7 @@ gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > review
 
 #### 3. Return the Pull Request Snapshots
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the snapshots or missing evidence.
 
@@ -364,7 +364,7 @@ One pull request created or updated from supplied content and metadata.
 
 For creation, select exactly one command for the supplied kind, body, title, head and base, preserving epic and discussion draft state. For an existing pull request, continue at [3. Update the Existing Pull Request](#3-update-the-existing-pull-request).
 
-For task creation, run this command from the repository checkout using the supplied title, task branch, epic base and complete body file as [Bodies](../conventions.md) states.
+For task creation, run this command from the repository checkout using the supplied title, task branch, epic base and complete body file as [Bodies](../conventions.md#bodies) states.
 
 - Supply the epic prefix and purpose as title, the task branch as head, the epic base as base, and the complete body file.
 
@@ -378,7 +378,7 @@ gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<t
 gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Purpose' -f head='i07/e00/w01-purpose' -f base='i07/e00/main' -F body=@body.md --jq .html_url
 ```
 
-For epic creation, run this command from the repository checkout using the supplied title, epic base, long-lived target and review body file as [Bodies](../conventions.md) states.
+For epic creation, run this command from the repository checkout using the supplied title, epic base, long-lived target and review body file as [Bodies](../conventions.md#bodies) states.
 
 - Supply the epic prefix and name as title, the epic base as head, its long-lived branch as base, and the populated review body file.
 - `draft` is true, including when the work is already complete.
@@ -393,7 +393,7 @@ gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<e
 gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
 ```
 
-For discussion creation, run this command from the repository checkout using the supplied title, planning branch, target branch and body file as [Bodies](../conventions.md) states.
+For discussion creation, run this command from the repository checkout using the supplied title, planning branch, target branch and body file as [Bodies](../conventions.md#bodies) states.
 
 ```bash
 gh api --method POST 'repos/<owner>/<repository>/pulls' -f title='<title>' -f head='<planning-branch>' -f base='<target-branch>' -F body=@'<body-file>' -F draft=true
@@ -407,15 +407,15 @@ gh api --method POST repos/m2ux/workflow-server/pulls -f title='Queue Planning: 
 
 #### 2. Confirm Creation and Link the Delivery Issue
 
-For a creation request, read the command’s exit code and returned identity; return a failure before attempting a link.
+For a creation request, read the command’s result as [Command result](../conventions.md#command-result) states, with its returned identity; return a failure before attempting a link.
 - For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
 - After a successful creation and any required link, continue at [4. Re-Read the Published Pull Request](#4-re-read-the-published-pull-request).
 
 #### 3. Update the Existing Pull Request
 
-For an existing pull request, run each command for a supplied change, preserving other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied pull request identity.
+For an existing pull request, run each command for a supplied change, preserving other fields. After each selected command, read its result as [Command result](../conventions.md#command-result) states; stop before another mutation on a failure. If no field changes, continue with the supplied pull request identity.
 
-When changing the body, run this update from the repository checkout using the pull request’s repository, number and complete body file as [Bodies](../conventions.md) states.
+When changing the body, run this update from the repository checkout using the pull request’s repository, number and complete body file as [Bodies](../conventions.md#bodies) states.
 
 - The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
 
@@ -455,9 +455,9 @@ gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f base='i07/e00/main' --
 
 #### 4. Re-Read the Published Pull Request
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
-Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](../conventions.md) states.
+Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](../conventions.md#write-confirmation) states.
 
 #### 5. Return the Published State
 
@@ -513,7 +513,7 @@ gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:i07/e00/main" --jq '.
 
 #### 2. Return the Review Pull Request Number
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return its number or an absent-review finding.
 
@@ -541,7 +541,7 @@ gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=1
 
 #### 2. Fetch the Head Commit Status
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, save commit status using the same repository and literal head SHA and its destination file.
 
@@ -557,7 +557,7 @@ gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' 
 
 #### 3. Return the Head Evidence Snapshots
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 

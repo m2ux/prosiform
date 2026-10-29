@@ -48,7 +48,7 @@ From `<workspace>`, inspect the epic JSON using the supplied pull request record
 
 - Results follow [Delivery Findings](#delivery-findings).
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
@@ -62,7 +62,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Return the Inspected Delivery Findings
 
-Read the helper’s exit code and output; return execution failures as blockers and retain delivery findings as evidence.
+Read the helper’s result as [Command result](../conventions.md#command-result) states, retaining delivery findings as evidence.
 
 Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 

@@ -111,7 +111,7 @@ These rules govern artifact operations, and every step that runs a command. Proc
 - **Concrete examples.**
   Retain hard-coded values in explicitly labelled examples alongside the generic command or payload template so their shape remains clear. Examples illustrate input values; they do not supply defaults or identify the current target.
 - **Helpers and bodies.**
-  A step running a helper links [Helper invocation](conventions.md), and one passing a body links [Bodies](conventions.md).
+  A step running a helper links [Helper invocation](conventions.md#helper-invocation), and one passing a body links [Bodies](conventions.md#bodies).
 
 ## Modes
 
@@ -134,7 +134,7 @@ Read this before adding or changing a mode.
 - **Body files.**
   A file that populates a body is named `<subject>-body.md`. The mode owns how many of that subject a request becomes.
 - **Other modes.**
-  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. Calls are sequential: complete the called work, then resume the calling step with its result; a blocker returns to the caller. A call whose link opens with `⇉` runs in a sub-agent, from any session, dispatched or not, and a step's `⫽` calls run in sub-agents together, as the bundle's Prosiform section states. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
+  Follow another mode, naming the selected scope and the whole mode or exact subsection to follow. Following a subsection follows that subsection only. [Execution](rules.md#execution) holds how the call runs and returns. Define findings in their artifact and identify the operation returning them; passive attribution to a mode does not establish a call, prior execution or a concurrent process.
 - **A new mode.**
   A new mode is a new file. An artifact is not edited to name it.
 - **Step rules.**

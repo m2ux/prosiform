@@ -18,53 +18,19 @@ The branches a task pull request targets.
 
 **Outputs:** [Epic bases](#epic-bases)
 
-#### 1. List the Long-Lived Branches
+#### 1. Read the Delivery Branch Collections
 
-From `<workspace>`, read the long-lived branch configuration with `--project` set to the supplied project checkout.
+Apply [Read Delivery Branches](#read-delivery-branches) with the project checkout and epic branch prefix.
 
-- The names meet [Branches](#branches).
-- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
-- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
+#### 2. Report Missing Branch Configuration
 
-Runs as [Helper invocation](../conventions.md) states.
+A missing or empty `config/branches` reports the names as unevaluable; obtain the project's branch names before creating delivery branches.
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
-```
-
-#### 2. List the Epic Bases
-
-Read the branch-name helper result. Preserve an expected `unevaluable:` result with exit 1 for the configuration decision below; return other execution errors.
-
-From the repository checkout, list remote bases using the supplied epic branch prefix.
-
-- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
-- The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
-- The output contains one full base branch name per line.
-
-```bash
-git ls-remote --heads origin 'refs/heads/<epic-branch-prefix>/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-**Example:**
-
-```bash
-git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-#### 3. Report Missing Branch Configuration
-
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
-
-If `config/branches` is missing or empty:
-- Report the names as unevaluable.
-- Obtain the project's branch names before creating delivery branches.
-
-#### 4. Require Base Prerequisite Evidence
+#### 3. Require Base Prerequisite Evidence
 
 Require the caller's confirmed prerequisite evidence before creating a base. The board status alone supplies no such evidence.
 
-#### 5. Create Each Missing Epic Base
+#### 4. Create Each Missing Epic Base
 
 Apply [Create Epic Base](#create-epic-base) for each missing base, passing the project checkout, corresponding long-lived branch, epic base name and confirmed prerequisite evidence.
 
@@ -90,7 +56,7 @@ git fetch origin '<source-branch>'
 
 #### 3. Publish the New Epic Base
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 After a successful fetch:
 
@@ -103,7 +69,7 @@ git push origin 'origin/<source-branch>:refs/heads/<epic-base>'
 
 #### 4. Confirm the Published Epic Base
 
-Read the push exit code and output. Return the created base only on success; return a refused or non-fast-forward push without rewriting the remote branch.
+Read the push’s result as [Command result](../conventions.md#command-result) states. Return the created base only on success; return a refused or non-fast-forward push without rewriting the remote branch.
 
 ### Update Epic Base
 
@@ -127,7 +93,7 @@ git fetch origin '<source-branch>'
 
 #### 3. Add or Reuse the Epic Base Worktree
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 For an absent worktree, run this command from the project checkout using the supplied path and fetched epic base. Reuse an existing worktree; stop on failure, including a base checked out elsewhere.
 
@@ -145,7 +111,7 @@ git worktree add .worktrees/i07/e00/main i07/e00/main
 
 #### 4. Fetch the Long-Lived Target
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the epic-base worktree, fetch its long-lived target, such as `main`; stop on failure.
 
@@ -155,7 +121,7 @@ git fetch origin '<source-branch>'
 
 #### 5. Merge the Long-Lived Target
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the epic-base worktree, merge the fetched target by its branch name without the `origin/` prefix, such as `main`. A conflict stops the update, leaves the pull request open and is reported.
 
@@ -165,7 +131,7 @@ git merge --no-edit 'origin/<source-branch>'
 
 #### 6. Push the Updated Epic Base
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 After a successful merge:
 After a successful merge, push from the same epic-base worktree.
@@ -177,7 +143,7 @@ git push
 
 #### 7. Confirm the Epic Base Push
 
-Read the push exit code and output. Return the updated base only on success; report a failed or non-fast-forward push without rewriting the remote branch.
+Read the push’s result as [Command result](../conventions.md#command-result) states. Return the updated base only on success; report a failed or non-fast-forward push without rewriting the remote branch.
 
 ### Update Task Branch
 
@@ -197,7 +163,7 @@ git fetch origin '<source-branch>'
 
 #### 2. Stop on a Task Branch Fetch Failure
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Stop on failure.
 
@@ -211,7 +177,7 @@ git merge --no-edit 'origin/<source-branch>'
 
 #### 4. Push the Updated Task Branch
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 After a successful merge:
 After a successful merge, push from the task worktree with the supplied task branch as destination.
@@ -229,7 +195,7 @@ git push origin HEAD:refs/heads/i07/e00/w01-queue-plan
 
 #### 5. Confirm the Task Branch Push
 
-Read the push exit code and output. Return the updated task branch only on success; report a failed or non-fast-forward push without rewriting the remote branch.
+Read the push’s result as [Command result](../conventions.md#command-result) states. Return the updated task branch only on success; report a failed or non-fast-forward push without rewriting the remote branch.
 
 ### Create Task Worktree
 
@@ -257,7 +223,7 @@ git fetch origin '<source-branch>'
 
 #### 4. Add the Task Worktree
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the project checkout, add the supplied task worktree path and task branch, rooted in the fetched epic base.
 
@@ -275,7 +241,7 @@ git worktree add .worktrees/i07-e00-w01 -b i07/e00/w01-queue-plan origin/i07/e00
 
 #### 5. Return the Task Worktree
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the worktree path and branch or the failure.
 
@@ -303,7 +269,7 @@ git fetch origin pull/950/head
 
 #### 2. Read the Fetched Revision
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 From the repository checkout, resolve `FETCH_HEAD` as the revision and use that checkout path for `<checkout>`.
 
@@ -313,7 +279,7 @@ git -C '<checkout>' rev-parse '<revision>^{commit}'
 
 #### 3. Recheck a Differing Fetched Head
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 If it differs from the verified head:
 - Apply [Read Pull Request State](pull-request.md#read-pull-request-state) for the same pull request, and take its head as the verified head.
@@ -346,7 +312,7 @@ Read both results. Reuse the existing worktree only at the verified head and whe
 
 #### 6. Add the Review Worktree
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 For an unused path, add a detached worktree from the repository checkout using that path and the verified fetched commit.
 
@@ -358,7 +324,7 @@ git worktree add --detach '<worktree-path>' '<head-commit>'
 
 #### 7. Confirm the Review Worktree Head
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Confirm the selected review worktree’s HEAD.
 
@@ -370,7 +336,7 @@ git -C '<checkout>' rev-parse '<revision>^{commit}'
 
 #### 8. Return the Review Worktree
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the selected detached worktree path and head, or the discrepancy before measuring.
 
@@ -414,7 +380,7 @@ gh api --paginate 'repos/<owner>/<repo>/rules/branches/main' > branch-rules.json
 
 #### 3. Return the Target Requirement Records
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
 
@@ -434,7 +400,7 @@ From `<workspace>`, read the branch configuration using the supplied project che
 - `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
 - A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
 
-Runs as [Helper invocation](../conventions.md) states.
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
 
 ```bash
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
@@ -442,7 +408,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 #### 2. Read the Epic Base Names
 
-Read the helper’s exit code and output. Preserve a missing or empty configuration as unevaluable evidence; return any other execution error.
+Read the helper’s result as [Command result](../conventions.md#command-result) states. Preserve a missing or empty configuration as unevaluable evidence.
 
 From the repository checkout, list remote bases using the supplied epic branch prefix.
 
@@ -462,7 +428,7 @@ git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/head
 
 #### 3. Return the Delivery Branch Collections
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return both collections and any missing configuration.
 

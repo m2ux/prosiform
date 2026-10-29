@@ -28,13 +28,13 @@ gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
 
 #### 2. Compare Required Label Names
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Compare the returned labels with the supplied required names.
 
 #### 3. Create Absent Required Labels
 
-From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s exit code and output before the next label; return a failure immediately.
+From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s result as [Command result](../conventions.md#command-result) states before the next label; return a failure immediately.
 
 ```bash
 gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
@@ -42,7 +42,7 @@ gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<
 
 #### 4. Return the Available Labels
 
-Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+Read the result of each command in the preceding step as [Command result](../conventions.md#command-result) states.
 
 Return the observed existing labels and successful creations. When every required label already exists, return that observed set. An unknown definition is a finding for the caller to resolve before publication.
 
