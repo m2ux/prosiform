@@ -1,0 +1,139 @@
+# Diagram-Following Eval
+
+How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link the sections saying what to do in each state, follows that workflow to completion. The eval gives each workflow to headless agent sessions, scores the path each session took, and compares the pass rates with a committed baseline.
+
+## Forms
+
+Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, and a linked form whose decisions name a document stating the branch's label. A session receives one of four forms, always entered at `workflow.md`:
+
+| Form | Material | What it isolates |
+| --- | --- | --- |
+| `bundle` | The diagram form bundled by `pf` into one file. | The product under test. |
+| `tree` | The diagram form's source tree, unbundled. | Against `bundle`, what bundling adds. |
+| `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
+| `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
+
+The linked form's decisions carry no label of their own. Each names a rule document that states one label, so the edge a branch takes is recoverable only by opening the document the section links, and the label it states is held to the edges the diagram draws. Its rule document's destination resolves from the section that writes it, under `states/`.
+
+Every session is given the same [instruction](instruction.md), naming only the entry document. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
+
+A diagram form's `click` lines carry destinations relative to the document that writes them, so a node opens its section for a reader of the source tree and for a session in its workspace. GitHub draws a Mermaid fence in a frame of its own and resolves such a destination against that frame, so a diagram form's clicks open nothing in the blob view; the state documents sit beside the entry document all the same.
+
+## Scoring
+
+A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of seven classes that fits where its trace departs from the path:
+
+| Class | The session |
+| --- | --- |
+| `missing_action` | walked the path and left a state's action undone or wrong. |
+| `unfinished` | stopped partway along the path. |
+| `invented_state` | entered a state the diagram does not hold. |
+| `loop_miscount` | repeated a loop more times than its input requires. |
+| `wrong_branch` | took the other branch of a decision on an input. |
+| `skipped_state` | jumped ahead, omitting states between. |
+| `invalid_transition` | entered a state no edge leads to: a step back, a state after the end, or the same state again. |
+
+A session whose agent reports an error, or prints no `result` message, takes `errored` instead of any of these. It entered no state, so its trace says nothing about how it followed the workflow: a refusal, an expired quota or a crashed command fails `errored` rather than as an `unfinished` run.
+
+A run in which every session took `errored` is **refused**. No session entered a state, so the matrix is no result, and its pass rates would read a spent login as a matrix of failing agents. `run.json` records `"state": "refused"` and a `reason`, and its report names both instead of giving tables or comparing pass rates. The reason is one session's own `result` text, so a reader sees the limit the agent reported. Only a run that started its whole matrix and errored in every session is refused: a run its budget stopped part way is unfinished, and one where some sessions errored on a genuine fault beside sessions that entered a state is a completed run whose failures are its result. The boundary is decided once the sessions settle, before `run.json` is written.
+
+## Login
+
+Sessions run on the eval's own Claude login, kept apart from yours in `<eval-root>/config`, where the eval root defaults to `~/projects/eval/prosiform`. Log in once:
+
+```bash
+CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude
+```
+
+then `/login`.
+
+## Isolation
+
+A session receives one form of one workflow and the instruction, so a pass measures the agent reading that form. Each mechanism below holds one part of that boundary; the first two are refused before a session starts, and the last is read back from each session's own transcript.
+
+| Mechanism | What it keeps out |
+| --- | --- |
+| `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is the only one set. |
+| `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
+| `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
+| `--tools Read,Write,Edit,Glob,Grep` | Every other tool, `Bash` included, so a session cannot reach past its workspace. |
+| `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
+| `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
+| The injected-context read | Context the agent added that the run did not supply. |
+
+Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one reach a session. It fails before the first session starts, naming the file to remove:
+
+- `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
+- `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint.
+
+A run whose config directory holds no login fails the same way, naming the one-time login command.
+
+A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
+
+## Running
+
+| Command | Runs |
+| --- | --- |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which is the default matrix's 200 sessions at the session cap. `ARGS='...'` passes the runner's options through. |
+
+The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--budget-usd` | 100 under `make eval-diagrams`; required otherwise | The run's spending cap, at least the sessions times `--session-budget-usd`. A later value in `ARGS` overrides the default. |
+| `--session-budget-usd` | 0.50 | Each session's spending cap. |
+| `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
+| `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
+| `--workflows` | every workflow | The workflows, comma-separated. |
+| `--forms` | `bundle,tree,prose,linked` | The forms, comma-separated. |
+| `--repetitions` | 5 | Sessions per model, form and scenario. |
+| `--parallel` | 4 | Sessions running at once. |
+| `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
+| `--agent-command` | `claude` | The agent's command line. |
+| `--results` | `results/` beside this file | Where runs are recorded. |
+| `--run-id` | the start time, as `YYYYMMDDTHHMMSSZ` | The run's directory name. |
+
+For example, one model over one workflow:
+
+```bash
+make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-usd 2'
+```
+
+### Default matrix and cost
+
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the four forms; and five repetitions: 200 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — so its cost is the 150 sessions it ran: about USD 4.01, in about 10 minutes at four sessions at once. The linked form's sessions are not in it, and a four-form run costs them on top. By model, over the baseline's 150 sessions:
+
+| Model | Sessions | Mean cost per session (USD) | Run cost (USD) | Mean session duration |
+| --- | --- | --- | --- | --- |
+| `claude-haiku-5-5` | 75 | 0.0038 | 0.29 | 15 s |
+| `claude-sonnet-5-5` | 75 | 0.0496 | 3.72 | 18 s |
+
+The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, the 200 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
+
+A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
+
+## Reading the report
+
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, trace, actions and `session.json`; and `run.json`, the run's options, cost, state and sessions not started. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+
+```bash
+uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
+```
+
+The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens (input, output, cache write and cache read) and the mean cost over the sessions recording them. The report opens with the run's cost and the count of sessions not started, and closes with those sessions listed.
+
+A refused run — one every session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` refuses a refused run, since it has no cells to write.
+
+`baseline.json` beside this file is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. [`report.md`](report.md) beside it is that run's report. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
+
+## Refreshing the baseline
+
+Run the default matrix, review its report, then write its cells as the baseline and commit `baseline.json` with the run's `report.md` beside it:
+
+```bash
+make eval-diagrams
+uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --write-baseline
+cp evals/diagram-following/results/<run-id>/report.md evals/diagram-following/report.md
+```
+
+The report written alongside is compared with the baseline being replaced, so it shows what the new baseline moves.
