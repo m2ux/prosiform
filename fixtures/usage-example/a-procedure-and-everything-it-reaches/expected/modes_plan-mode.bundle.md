@@ -3877,10 +3877,7 @@ The label naming the theme an initiative and its epics belong to: `theme:` and t
 
 | Theme | Label | Description |
 | --- | --- | --- |
-| Canon | `theme:canon` | Definitions Checked Against the Design Canon |
-| Language | `theme:language` | The Definition Language and Its Rules |
-| Mechanical | `theme:mechanical` | The Engine That Runs Definitions |
-| Delivery | `theme:delivery` | What Reaches Agents and Hosts |
+| Bundling | `theme:bundling` | Linked Markdown bundled into one validated document |
 
 #### Priority Labels
 
