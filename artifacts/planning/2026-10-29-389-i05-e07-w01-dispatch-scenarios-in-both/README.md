@@ -12,6 +12,9 @@ This record holds the delivery of W01: the dispatch scenarios written in the two
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The four dispatch scenarios in their compiled and authored-protocol forms, the reader's extension and the tests that hold them |
+| [Validation](validation.md) | Each check the work item's Test row names, with the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this session made and those it held |
 
 ## Links
 
