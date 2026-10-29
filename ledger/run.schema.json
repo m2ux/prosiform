@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/m2ux/prosiform/blob/main/ledger/run.schema.json",
+  "title": "prosiform ledger run record",
+  "description": "One bundling run: when it was taken, the sources it bundled and its outcome, the size of the bundle it published beside the size of the same sources read whole, and whether the entry reference's content was acted on from the bundle alone. The record is written as TOML and validated against this document after parsing, because TOML's value model is a subset of JSON's. Its identity is its file's name without the extension, which is the identity an entry cites.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "date",
+    "outcome",
+    "sizes",
+    "acted_from_bundle"
+  ],
+  "properties": {
+    "date": {
+      "description": "The day the run was taken, as YYYY-MM-DD in a string.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "outcome": {
+      "description": "What the run left behind: the bundles it published, or a failure that published none.",
+      "enum": [
+        "published",
+        "failed"
+      ]
+    },
+    "sizes": {
+      "description": "The bytes the run published against the bytes of the same sources read whole.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle",
+        "whole"
+      ],
+      "properties": {
+        "bundle": {
+          "description": "The bytes of the bundle the run published; zero when it published none.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "whole": {
+          "description": "The total bytes of the sources the run bundled, each read whole.",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "acted_from_bundle": {
+      "description": "Whether the entry reference's content was acted on from the bundle alone. A failed run published no bundle, so nothing was acted on from one.",
+      "type": "boolean"
+    },
+    "example": {
+      "description": "Each worked-example mode entry the run bundled, named as the exposure set names it.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://github.com/m2ux/prosiform/blob/main/ledger/exposure.schema.json#/properties/example/items"
+      }
+    },
+    "workspace": {
+      "description": "Each workspace skill the run bundled, named as the exposure set names it.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://github.com/m2ux/prosiform/blob/main/ledger/exposure.schema.json#/properties/workspace/items"
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "example"
+      ]
+    },
+    {
+      "required": [
+        "workspace"
+      ]
+    }
+  ],
+  "allOf": [
+    {
+      "description": "A failed run published no bundle.",
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sizes": {
+            "properties": {
+              "bundle": {
+                "const": 0
+              }
+            }
+          },
+          "acted_from_bundle": {
+            "const": false
+          }
+        }
+      }
+    }
+  ]
+}

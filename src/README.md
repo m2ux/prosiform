@@ -82,6 +82,7 @@ Run these from the repository root alongside the [repository checks](../checks/R
 | [`ruff`](https://pypi.org/project/ruff/) | `==0.17.1` | Linting and formatting under one configuration. |
 | [`mypy`](https://pypi.org/project/mypy/) | `==2.4.0` | Strict type checking. |
 | [`jsonschema`](https://pypi.org/project/jsonschema/) | `==4.26.0` | Fixture-manifest validation against the corpus schema. |
+| [`referencing`](https://pypi.org/project/referencing/) | `==0.37.0` | The registry that resolves a schema's reference to another schema on disk. |
 | [`types-jsonschema`](https://pypi.org/project/types-jsonschema/) | `==4.26.0.20261006` | Type annotations for `jsonschema`. |
 
 ## Test coverage

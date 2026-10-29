@@ -329,6 +329,7 @@ dev = [
     { name = "jsonschema" },
     { name = "mypy" },
     { name = "pytest" },
+    { name = "referencing" },
     { name = "ruff" },
     { name = "types-jsonschema" },
 ]
@@ -344,6 +345,7 @@ dev = [
     { name = "jsonschema", specifier = "==4.26.0" },
     { name = "mypy", specifier = "==2.4.0" },
     { name = "pytest", specifier = "==9.1.1" },
+    { name = "referencing", specifier = "==0.37.0" },
     { name = "ruff", specifier = "==0.17.1" },
     { name = "types-jsonschema", specifier = "==4.26.0.20261006" },
 ]
