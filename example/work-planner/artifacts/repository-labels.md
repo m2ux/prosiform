@@ -10,11 +10,13 @@ The labels available for issue metadata in one repository.
 
 ## Operations
 
-### *Ensure* Repository Labels
+### Ensure Repository Labels
 
 The required label definitions available for issue publication.
 
-**Inputs:** Repository and required label names, colours and descriptions.
+**Inputs:** [Repository](#repository), [Required labels](#label-identity)
+
+**Outputs:** [Available labels](#label-identity)
 
 #### 1. List the Repository Labels
 
@@ -33,6 +35,10 @@ Run [Create Label](#create-label) for each absent required definition.
 Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
 
 ## Fields
+
+### Repository
+
+One repository, written `<owner>/<repo>`.
 
 ### Label Identity
 

@@ -10,15 +10,17 @@ An initiative's epic delivery, criterion verification and completion state.
 
 ## Operations
 
-### *Check* Initiative Completion
+### Check Initiative Completion
 
 The initiative's normal delivery result before tracker closure.
 
-**Inputs:** Current initiative JSON, every linked epic's current JSON, criterion verification evidence and the current complete Development-link and linked pull-request records.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Criterion verification](acceptance-criteria.md#verification-evidence), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Pull request records](pull-request.md#pull-request-records)
+
+**Outputs:** [Completion result](#delivery-state)
 
 #### 1. Evaluate Initiative Delivery Evidence
 
-Evaluate the supplied evidence against [Delivery State](#delivery-state).
+Evaluate the current initiative, every linked epic's current record, the criterion verification, and the current Development links and linked pull request records against [Delivery State](#delivery-state).
 
 #### 2. Identify Initiative Completion Blockers
 

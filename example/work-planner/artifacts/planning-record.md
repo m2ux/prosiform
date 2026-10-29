@@ -10,11 +10,13 @@ A planning record is a folder. README.md is its entry point: it answers what the
 
 ## Operations
 
-### *Populate* Planning Record
+### Populate Planning Record
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
+**Inputs:** [Record identity](#record-folder), [Folder path](#record-folder), [Artifact files](#artifacts), [External links](#links), [Removed artifacts](#artifacts), [Commit message](#commit-message)
+
+**Outputs:** [Folder path](#record-folder), [Publication](#publication)
 
 #### 1. Prepare the Selected Planning Record
 
@@ -43,11 +45,13 @@ When the caller asks to publish, apply [Publish Planning Record](#publish-planni
 
 Return the folder path, and the publication result when it published.
 
-### *Publish* Planning Record
+### Publish Planning Record
 
 The record's folder committed and pushed, so every link into it resolves for a reader.
 
-**Inputs:** Planning-folder path, the files written into it and a commit message file.
+**Inputs:** [Folder path](#record-folder), [Record files](#layout), [Commit message](#commit-message)
+
+**Outputs:** [Publication](#publication)
 
 #### 1. Find the Publishing Worktree
 
@@ -63,11 +67,13 @@ Run [Commit Planning Record](#commit-planning-record), which stages and commits 
 Run [Push Engineering Branch](#push-engineering-branch).
 - Report a push that will not fast-forward rather than rewriting the branch.
 
-### *Locate* Planning Record
+### Locate Planning Record
 
 The existing planning folder whose reference is one issue or pull request number.
 
-**Inputs:** Issue or pull request number.
+**Inputs:** [Reference](#record-folder)
+
+**Outputs:** [Folder paths](#record-folder)
 
 #### 1. Find the Engineering Worktree
 
@@ -148,6 +154,18 @@ Two paragraphs: the purpose of this work, and why it matters.
 ### Links
 
 External references only: a tracker issue, a parent epic, a pull request. An artifact of this plan is an Artifacts row.
+
+### Record Folder
+
+One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` under the [records folder](../configuration.md#engineering-branch). The date is the day the record opened. The reference is the bare number of the issue or pull request the record is for, absent for ad hoc work. The slug is lowercase hyphenated words naming the work. The folder's name is the record identity.
+
+### Commit Message
+
+A file holding the message of the commit that publishes the record, as [Bodies](../conventions.md) states.
+
+### Publication
+
+The engineering-branch commit holding the record's folder, pushed to its remote.
 
 ## Commands
 

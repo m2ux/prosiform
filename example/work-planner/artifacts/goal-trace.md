@@ -10,11 +10,13 @@ The table tying each clause of a confirmed goal to the initiative criteria that 
 
 ## Operations
 
-### *Review* Initiative Goal
+### Review Initiative Goal
 
 The draft checked against the initiative outcomes.
 
-**Inputs:** Current initiative and epic bodies or drafts, confirmed goal clauses, marked requirement sources, and the supplied epic format results.
+**Inputs:** [Initiative body](initiative-issue-body.md#template), [Epic bodies](epic-issue-body.md#template), [Goal clauses](#goal-clauses), [Requirement sources](initiative-issue-body.md#sources), [Epic format results](issue-body.md#format-findings)
+
+**Outputs:** [Trace table](#trace-table), [Ranked gaps](#gaps)
 
 #### 1. State the Goal as Clauses
 
@@ -54,11 +56,13 @@ Rank the gaps, meeting [Gaps](#gaps).
 - Flag the few that most threaten the goal.
 - Return the trace table and the ranked findings to the caller.
 
-### *Check* Outside Threats
+### Check Outside Threats
 
 An item the draft leaves open is a gap.
 
-**Inputs:** Current initiative and epic bodies or drafts, and the artifacts and consumers the plan changes.
+**Inputs:** [Initiative body](initiative-issue-body.md#template), [Epic bodies](epic-issue-body.md#template), [Changed artifacts](#changed-artifacts)
+
+**Outputs:** [Threats](#gaps)
 
 #### 1. Check Outside Consumers
 
@@ -82,6 +86,15 @@ Check for a change elsewhere that alters the ground the plan stands on.
 - Return the evidenced threats and gaps to [Review Initiative Goal](#review-initiative-goal).
 
 ## Fields
+
+### Goal Clauses
+
+The confirmed goal divided into independently observable outcomes, each with an identifier used in the [trace table](#trace-table).
+
+### Changed Artifacts
+
+The artifacts a plan changes and the consumers affected by those changes, with the interfaces and requirements each relies on.
+
 
 ### Trace Table
 

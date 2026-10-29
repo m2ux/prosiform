@@ -10,11 +10,13 @@ Populates one task body.
 
 ## Operations
 
-### *Populate* Task Body
+### Populate Task Body
 
 One task body within its supplied epic context.
 
-**Inputs:** Task scope, epic context, design, criteria and output path.
+**Inputs:** [Task scope](#task-scope), [Epic body](epic-issue-body.md#template), [Output body path](issue-body.md#body-file)
+
+**Outputs:** [Task body](#template)
 
 - Populate the body from the [Template](#template) at the supplied output path.
   - The title must meet the shared [Titles](issue-body.md#titles) conditions.
@@ -22,11 +24,13 @@ One task body within its supplied epic context.
   - Acceptance criteria must meet the [shared acceptance criteria](issue-body.md#shared-acceptance-criteria).
   - All populated fields must meet [Fields](#fields), including the required [Sections](#sections).
 
-### *Record* Task Delivery
+### Record Task Delivery
 
 One task body with its confirmed delivery and verified criteria recorded.
 
-**Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids, output body file and output comment file.
+**Inputs:** [Task issue](issue.md#issue-record), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Delivering pull request](pull-request.md#pull-request-identity), [Verified criterion ids](acceptance-criteria.md#criterion), [Output body path](issue-body.md#body-file), [Comment path](issue.md#issue-comment)
+
+**Outputs:** [Task delivery result](#task-delivery-result)
 
 #### 1. Sync the Task Issue
 
@@ -88,6 +92,14 @@ Return the body, the comment file and the eligibility findings. The caller saves
 
 - A task has the [epic issue body](epic-issue-body.md)'s sections without the Work Breakdown table.
 - New task planning follows [Work Breakdown](epic-issue-body.md#work-breakdown). This body describes an existing issue kept as a task.
+
+### Task Scope
+
+The work one task delivers within its epic: its problem, design and acceptance criteria, as the [Template](#template) sections hold them.
+
+### Task Delivery Result
+
+One task's delivery as recorded: the body with its delivering pull request and verified criteria ticked, a comment file reading `Delivered by #<pull-request-number>.`, and the eligibility findings stating whether the task is closable.
 
 ## Commands
 

@@ -10,11 +10,13 @@ The membership, status and assignee changes that record delivery on one board.
 
 ## Operations
 
-### *Plan* Board Changes
+### Plan Board Changes
 
 The board changes implied by supplied delivery state.
 
-**Inputs:** Initiative JSON, epic and task records, pull request records, complete issue-link snapshot, board identity, fields and items, output directory, assignee login and resolved off-board issue files.
+**Inputs:** [Initiative](issue.md#issue-record), [Epics](issue.md#issue-record), [Tasks](issue.md#issue-record), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Board](board.md#board-identity), [Board fields](board.md#board-fields), [Board items](board.md#board-items), [Output directory](#change-calls), [Assignee login](board.md#assignees), [Off-board issues](issue.md#issue-record)
+
+**Outputs:** [Change calls](#change-calls), [Missing evidence](#missing-evidence)
 
 #### 1. Require the Board Change Link Snapshot
 
@@ -28,11 +30,13 @@ Run [Compute Board Changes](#compute-board-changes), mapping the supplied record
 
 Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms them as [Write confirmation](../conventions.md) states.
 
-### *Record* Epic Review
+### Record Epic Review
 
 One epic's board item at In Review, recording that its delivery is complete and its review draft awaits the user's mark.
 
-**Inputs:** Epic issue identity, board identity and output paths.
+**Inputs:** [Epic](issue.md#issue-record), [Board](board.md#board-identity), [Output paths](board.md#board-files)
+
+**Outputs:** [Epic board item](board.md#board-items)
 
 #### 1. Read the Review Board State
 
@@ -56,11 +60,13 @@ Apply [Update Item Status](board.md#update-item-status) with the board and item 
 
 Return the confirmed status or the discrepancy left for the caller.
 
-### *Record* Board Delivery
+### Record Board Delivery
 
 The board's status and assignees after its issues record delivery.
 
-**Inputs:** Saved initiative, epic and task identities, board identity and output directory.
+**Inputs:** [Initiative](issue.md#issue-record), [Epics](issue.md#issue-record), [Tasks](issue.md#issue-record), [Board](board.md#board-identity), [Output directory](#change-calls)
+
+**Outputs:** [Board items](board.md#board-items), [Assignees](board.md#assignees)
 
 #### 1. Read the Delivery Evidence
 
@@ -103,7 +109,7 @@ A task gated on an [unresolvable dependency](board-queue.md#unresolvable-depende
 
 ### Change Calls
 
-The result contains calls for issues to add, items to remove, Status to set and assignees to add or remove. Each call names its affected issue and board item. Assignees follow [Assignees](board.md#assignees).
+The result contains calls for issues to add, items to remove, Status to set and assignees to add or remove. Each call names its affected issue and board item, and the call files occupy one output directory. Assignees follow [Assignees](board.md#assignees).
 
 ### Missing Evidence
 

@@ -38,7 +38,7 @@ Return the options for the caller to offer and apply, each a [placement](#placem
 
 The issue candidates and available destinations, from the repository's issues.
 
-**Inputs:** [Repository issues](issue.md#fields)
+**Inputs:** [Repository issues](issue.md#issue-record)
 
 **Outputs:** [Candidate issues](#candidate-issues), [Candidate destinations](#candidate-destinations)
 
@@ -150,7 +150,7 @@ Apply [Close Transferred Work](issue.md#close-transferred-work) with the orphan 
 
 ### Orphan
 
-The orphan: a [tracker issue](issue.md#fields) with its repository, number, current body and discussion, the evidence, design and work its body proposes, and any planning-record reference it carries.
+The orphan: a [tracker issue](issue.md#issue-record) with its repository, number, current body and discussion, the evidence, design and work its body proposes, and any planning-record reference it carries.
 
 ### Candidate Issues
 

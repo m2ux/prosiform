@@ -10,11 +10,13 @@ The architecture overview explains one pull request's changes to the engineer wh
 
 ## Operations
 
-### *Populate* Architecture Overview
+### Populate Architecture Overview
 
 One architecture overview from supplied measurements.
 
-**Inputs:** Measured structure and flows, pull request head, code permalinks and the output path.
+**Inputs:** [Measured structure](#measured-structure), [Head commit](#code-references), [Code permalinks](#code-references), [Overview path](#location)
+
+**Outputs:** [Architecture overview](#template)
 
 #### 1. Check the Proposed Diagrams
 
@@ -36,6 +38,11 @@ Pin each code reference.
 Return the file for the caller to register in its planning record.
 
 ## Fields
+
+### Location
+
+The overview's local Markdown path and, after publication, its URL on the [engineering branch](../configuration.md#engineering-branch).
+
 
 ### Template
 

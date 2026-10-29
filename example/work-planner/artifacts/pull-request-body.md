@@ -10,15 +10,18 @@ Populates one pull request body from its change, review scope and validation evi
 
 ## Operations
 
-### *Populate* Pull Request Body
+### Populate Pull Request Body
 
 One pull request body from supplied change and validation evidence.
 
-**Inputs:** Change summary, supplied delivery scope, validation evidence, optional current body and output path.
+**Inputs:** [Change summary](#change-summary), [Delivery scope](pull-request.md#scope), [Validation evidence](#test-plan), [Current body](#body-file), [Output body file](#body-file)
+
+**Outputs:** [Pull request body](#body-file), [Unresolved evidence links](#test-plan)
 
 #### 1. Populate the Pull Request Template
 
 Populate the body from the [Template](#template) using the change and its evidence, using [Populate Review Body](#populate-review-body) for an epic review.
+- Start from the current body when one is supplied.
 - All populated fields must meet [Fields](#fields).
 
 #### 2. Verify the Test Result Links
@@ -29,11 +32,13 @@ Verify each result link against [Test Plan](#test-plan) before publishing the bo
 
 Return the complete body file and any unresolved evidence links to the caller for publication.
 
-### *Populate* Review Body
+### Populate Review Body
 
 The current change carried by one epic base.
 
-**Inputs:** Current base change, supplied task-merge evidence and optional existing review body.
+**Inputs:** [Base change](#change-summary), [Task merges](pull-request.md#pull-request-records), [Existing review body](#review-body)
+
+**Outputs:** [Review body](#review-body)
 
 #### 1. Populate the Review Template
 
@@ -50,11 +55,13 @@ For a later task merge:
 
 Return the complete updated body file to the caller.
 
-### *Link* Architecture Overview
+### Link Architecture Overview
 
 One pull request body referencing its published overview.
 
-**Inputs:** Current body, published overview URL on the [engineering branch](../configuration.md#engineering-branch) and output body path.
+**Inputs:** [Pull request body](#body-file), [Overview URL](architecture-overview.md#location), [Output body file](#body-file)
+
+**Outputs:** [Pull request body](#body-file)
 
 #### 1. Add the Overview Reference
 
@@ -72,15 +79,17 @@ Preserve an existing row already naming the overview. The link's base URL is the
 
 Return the complete updated body file for publication.
 
-### *Check* Test Coverage
+### Check Test Coverage
 
 The criteria a unit's planned tests leave unobserved.
 
-**Inputs:** The work item's test row and each criterion the unit's Coverage carries.
+**Inputs:** [Test row](work-item.md#sections), [Covered criteria](epic-issue-body.md#acceptance-criteria)
+
+**Outputs:** [Untested criteria](#test-coverage)
 
 #### 1. Compare Tests with Criteria
 
-Compare the test row with each supplied criterion, meeting [Test Coverage](#test-coverage).
+Compare the work item's test row with each criterion the unit's Coverage carries, meeting [Test Coverage](#test-coverage).
 
 #### 2. Return Untested Criteria
 
@@ -158,3 +167,11 @@ A task pull request carries a Test Plan.
 - The criterion selects the test kind: a unit test for one component, an integration test for a seam between components, and an end-to-end or system test for running-system behaviour. That evidence meets [Coverage Reports](issue-body.md#coverage-reports).
 - An instrument that does not exist yet is work the task carries, as the verified rule defines. Use the project's own system test where it can observe the criterion.
 - One row per check, in execution order, followed by any unobserved criteria. Every criterion in the unit's Coverage appears in at least one row.
+
+### Change Summary
+
+The functional changes a pull request, or the epic base a review covers, carries, each placed under the area it sits in.
+
+### Body File
+
+A local Markdown file at a given path holding one pull request body that meets [Template](#template).

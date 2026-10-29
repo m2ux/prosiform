@@ -10,11 +10,13 @@ Populates one initiative body. The body states the goal as criteria and lists th
 
 ## Operations
 
-### *Populate* Initiative Issue Body
+### Populate Initiative Issue Body
 
 One initiative body and its local validation findings.
 
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+**Inputs:** [Scoped proposal](proposal-body.md#template), [Goal clauses](goal-trace.md#goal-clauses), [Requirement sources](#sources), [Epic summaries](#work-breakdown), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Format findings](issue-body.md#format-findings)
 
 #### 1. Draft the Initiative Body
 
@@ -28,11 +30,13 @@ Apply [Check Round of Edits](issue-body.md#check-round-of-edits).
 
 Return the populated body and its local format findings to the caller.
 
-### *Draft* Initiative Issue Body
+### Draft Initiative Issue Body
 
 One initiative body, scoped to one proposal.
 
-**Inputs:** Scoped proposal, confirmed goal clauses, requirement sources, epic summaries and output path.
+**Inputs:** [Scoped proposal](proposal-body.md#template), [Goal clauses](goal-trace.md#goal-clauses), [Requirement sources](#sources), [Epic summaries](#work-breakdown), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file)
 
 #### 1. Copy the Initiative Template
 
@@ -62,11 +66,13 @@ Fill the initiative-specific cells.
 - Each row must meet [Work Breakdown](#work-breakdown).
 - An item a test cannot observe must stay named as [Coverage Reports](issue-body.md#coverage-reports) define.
 
-### *Resolve* Placeholder Links
+### Resolve Placeholder Links
 
 Saved issue identities in the links an initiative and its epics carry before their issues exist.
 
-**Inputs:** Initiative body file, each epic body file, and the saved issue identity of the initiative and of each epic.
+**Inputs:** [Initiative body](#body-file), [Epic bodies](epic-issue-body.md#body-file), [Saved issues](issue.md#issue-record)
+
+**Outputs:** [Initiative body](#body-file), [Epic bodies](epic-issue-body.md#body-file), [Unresolved links](#temporary-links)
 
 #### 1. Replace Temporary Issue Links
 
@@ -82,25 +88,29 @@ Confirm no temporary link remains in any of those files.
 
 Return the rewritten body files and each temporary link left unresolved, with the file that holds it.
 
-### *Record* Initiative Delivery
+### Record Initiative Delivery
 
 One initiative body with its epic delivery recorded.
 
-**Inputs:** Initiative JSON, every linked epic's current JSON and optional output body file.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Delivery findings](initiative.md#delivery-findings)
 
 #### 1. Run Sync Initiative
 
-Run [Sync Initiative](#sync-initiative) with the initiative and all linked epic records as `--epics`, supplying `--fix` when an output body is requested.
+Run [Sync Initiative](#sync-initiative) with the initiative and every linked epic's current record as `--epics`, supplying `--fix` when an output body is requested.
 
 #### 2. Return the Initiative Delivery Findings
 
 Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
-### *Record* Initiative Criteria
+### Record Initiative Criteria
 
 Verified criteria and completed rows in one initiative body.
 
-**Inputs:** Initiative JSON, every linked epic's current JSON, verified criterion ids and output body file.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Verified criteria](#initiative-acceptance-criteria), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Refused criteria](acceptance-criteria.md#unverified-criteria)
 
 #### 1. Run Tick Initiative Criteria
 
@@ -110,11 +120,13 @@ Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, l
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
-### *Validate* Initiative Body
+### Validate Initiative Body
 
 The body's local format and field findings.
 
-**Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
+**Inputs:** [Initiative issue](issue.md#issue-record), [Epic issues](issue.md#issue-record), [Source evidence](#source-evidence), [Output body file](#body-file)
+
+**Outputs:** [Initiative body](#body-file), [Validation findings](issue-body.md#format-findings)
 
 #### 1. Validate the Initiative Issue Body
 
@@ -132,11 +144,13 @@ Include excluded names in Problem and Proposal and criterion/source departures i
 
 Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-### *Read* Requirement Sources
+### Read Requirement Sources
 
 The requirements evidence used to validate an initiative's criteria.
 
-**Inputs:** Initiative References, checkout, authenticated source access and destination files.
+**Inputs:** [Initiative references](#references), [Source files](#source-evidence)
+
+**Outputs:** [Source evidence](#source-evidence)
 
 #### 1. Read Local Requirement Sources
 
@@ -159,6 +173,19 @@ Record an unreadable or empty source as a [Sources](#sources) finding; its crite
 Return each source's contents and identity with those findings.
 
 ## Fields
+
+### Body File
+
+A local Markdown file at a given path holding one initiative body that meets [Template](#template).
+
+### Temporary Links
+
+Each placeholder for an unsaved initiative or epic issue, with the body file containing it and the intended issue identity.
+
+### Source Evidence
+
+Each marked [source](#sources), its identity and contents, the local file path holding those contents, and any unreadable or empty-source finding.
+
 
 ### Template
 

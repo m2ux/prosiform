@@ -10,11 +10,13 @@ The available units, held rows, blocked work and merge candidates for one board.
 
 ## Operations
 
-### *Plan* Available Work
+### Plan Available Work
 
 One delivery plan from supplied board and delivery evidence.
 
-**Inputs:** Board items, pull request records, project checkout, epic-base names, resolved off-board issue files, output directory and optional record date.
+**Inputs:** [Board items](board.md#board-items), [Pull request records](pull-request.md#pull-request-records), [Project checkout](delivery-branches.md#project-checkout), [Epic bases](delivery-branches.md#epic-bases), [Off-board issues](#off-board-issues), [Output directory](#off-board-issues), [Record date](#branch-context)
+
+**Outputs:** [Available work](#report-lines)
 
 #### 1. Compute the Available Work
 
@@ -33,6 +35,11 @@ For each unresolved issue reference the plan returns:
 Return the units, holds, blockers, merge candidates and unresolved references meeting [Fields](#fields). The caller decides holds and dispatch.
 
 ## Fields
+
+### Off-Board Issues
+
+Resolved dependency issues outside the board, each an [issue record](issue.md#issue-record) at a local path, and the output directory holding those files.
+
 
 ### Work Units
 
