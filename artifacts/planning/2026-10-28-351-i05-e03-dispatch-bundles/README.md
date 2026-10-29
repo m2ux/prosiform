@@ -27,6 +27,7 @@ The epic is I05:E03: sixteen task rows delivered as ten pull requests, each leav
 | [W13 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w13.md) | Staging and aside names independent of the run folder's |
 | [W14 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w14.md) | Dispatch link text, empty-text refusal, reserved headings and one dispatched-link reader |
 | [W15 work item](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/w15.md) | Schema-valid test manifests and the renamed fixture families |
+| [W16 work item](w16.md) | The canon audit of the definition changes this epic made |
 | [Review findings](../2026-10-28-351-i05-e03-w11-run-folder-swap-safe/findings.md) | The seven findings of the review of the epic as merged to `main` |
 | [Joins](joins.md) | Independent row pairs that take separate pull requests, and why |
 
@@ -96,6 +97,7 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 | W13 | Staging and aside names of fixed length | 9 |
 | W14 | Dispatch link text collapsed, empty text refused, only emitted headings reserved | 9 |
 | W15 | Schema-valid test manifests; `parallel-dispatch` and `publication` families | 9 |
+| W16 | Canon audit of the changed definitions | |
 
 ## Decisions
 
@@ -110,6 +112,7 @@ Layered tasks, each leaving a working `pf`. Rows sharing a pull request are join
 - **Profile v4.** The same source bundles differently, as with v3.
 - **The eval leaves the epic.** The diagram-following eval's dispatch scenarios and their baseline are I05:E07, which carries their criteria and its own rows; nothing in this epic measures an agent. (User, 2026-10-29.)
 - **Criteria renumbered.** With the eval's three criteria gone, AC26–AC38 close the gap to AC23–AC35, and this record's earlier citations of AC26–AC38 name the retired numbers. (User, 2026-10-29.)
+- **The corpus audit is its own row.** The epic's rows write `example/work-planner/`, so the canon audit criterion and the row delivering it are added as AC36 and W16. (User, 2026-10-29.)
 - **Breaking, without compatibility.** `-o FILE`, standard-output publication, the run-set target shape and the bootstrap symbol rows for `⇉` and `⫽` are removed.
 - **Profile v4 lands with the Prosiform section.** W08 changes what every dispatching bundle opens with and fixes the protocol wording as a profile constant, so the profile bump is its criterion. (Planning, 2026-10-28.)
 - **Each pf task carries its own contract edits.** `make conformance` reads the design from `engineering` at the README's pin and holds the build's codes to it, and `make invocation` holds the help text to `invocation.md`, so W01–W06 and W08 each edit their design clauses, the pin and their `invocation.md` rows; W09 sweeps the remaining prose. (Planning, 2026-10-28.)
@@ -144,6 +147,7 @@ Each row's declared component, and every other path its pull request writes. The
 | W13 | `src/prosiform/cli.py` | `src/tests` |
 | W14 | `src/prosiform/dispatch.py` | `cli.py`, `src/tests`, `fixtures/dispatch`, `README.md` (pin); `design.md` |
 | W15 | `fixtures` | `fixtures/run-set` → `fixtures/parallel-dispatch`, `fixtures/delivery` → `fixtures/publication`, `checks/tests` |
+| W16 | `example/work-planner` | — |
 
 ## Collision Surface
 
