@@ -12,6 +12,9 @@ Today the artifacts hold a prose Inputs line in each operation and no Outputs li
 
 | Artifact | What it holds |
 | --- | --- |
+| [W06 work item](w06.md) | The authoring check's Inputs and Outputs findings by file group, the shape each operation takes, and the component |
+| [Validation](validation.md) | The test plan's procedures and results, by check |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
