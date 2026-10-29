@@ -47,7 +47,7 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 
 - **The eval leaves E03.** The three criteria W16 carried are the eval's, not the compiler's, and W16 could not start until the diagram-following eval reached `main`, so the work moves to its own epic: E07, beside the epic it extends, with the row split into the scenarios, the scorer's checks and the baseline. (User, 2026-10-29.)
 - **Three rows.** The scenarios, the scorer's checks and the baseline are three pull requests: the first two are stub-agent-tested work, the third spends money and needs the user's approval before it starts. (User, 2026-10-29.)
-- **E03 renumbers its criteria.** With AC23–AC25 gone, AC26–AC38 close the gap to AC23–AC35, and the map is recorded here. The merged review-fix pull request #366 and the record beside it cite the retired numbers. (User, 2026-10-29.)
+- **E03 renumbers its criteria.** The retired AC23–AC25 leave AC26–AC38 closing the gap to AC23–AC35. The merged review-fix pull request #366 and its record cite the retired numbers. (User, 2026-10-29.)
 - **Priority 7.** Every row extends `evals/diagram-following/`, which exists only on `i05/e01/main` and has not reached `main`, so E07 follows E01 by one number. E01 is at priority 8 and unmerged; E07 is released when E01's base merges. (User, 2026-10-29.)
 - **No whole-epic edge in the initiative.** E07's rows take their edges on E01's rows, and E07 consumes nothing from E03, so the initiative row names no epic. (Planning, 2026-10-29.)
 
