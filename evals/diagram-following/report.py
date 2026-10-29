@@ -142,7 +142,7 @@ def summed(cells: list[Row], key: tuple[str, ...]) -> dict[tuple[str, ...], Row]
             "passed": passed,
             "pass_rate": rate(passed, total),
             "failures": {
-                failure: sum(cell["failures"][failure] for cell in group)
+                failure: sum(cell["failures"].get(failure, 0) for cell in group)
                 for failure in FAILURES
             },
         }
@@ -154,7 +154,7 @@ def difference(row: Row, base: Row) -> Row:
     return {
         "pass_rate": round(row["pass_rate"] - base["pass_rate"], 4),
         "failures": {
-            failure: row["failures"][failure] - base["failures"][failure]
+            failure: row["failures"][failure] - base["failures"].get(failure, 0)
             for failure in FAILURES
         },
     }

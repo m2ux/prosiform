@@ -9,8 +9,11 @@ an empty trace. An action is done when its file exists and holds the value
 its section states, surrounding whitespace removed.
 
 A run passes when its trace is the scenario's path and every state on it
-has done its action. A failing run is classified from the first index at
-which its trace and the path differ, the classes taken in this order:
+has done its action. A session whose agent reported an error, or printed
+no `result` message, is *errored*: it entered no state, so its trace is no
+evidence of how it followed the workflow. A failing run is otherwise
+classified from the first index at which its trace and the path differ,
+the classes taken in this order:
 
 - the trace is the path, and a state on it has not done its action:
   *missing action*;
@@ -51,6 +54,7 @@ class Failure(StrEnum):
     LOOP_MISCOUNT = "loop_miscount"
     MISSING_ACTION = "missing_action"
     UNFINISHED = "unfinished"
+    ERRORED = "errored"
 
 
 @dataclass(frozen=True)

@@ -13,11 +13,17 @@ case and headed with the state's name.
 - `prose/` holds the same state documents and no diagram. Its entry
   document links the first state, and each section names the state that
   comes next.
+- `linked/` holds the same state documents and no diagram, and a decision
+  section names a branch by a document instead of a label. Each rule
+  document states one label, so the label a branch takes is reachable only
+  by following the link, and it is held to the edge the diagram draws all
+  the same. A label that names an edge exists on the diagram alone.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
 forms. A diagram section names the label of the edge to take, or takes the
-one edge out of its state; a prose section names the next state. A
+one edge out of its state; a prose section names the next state; a linked
+section names the document stating the label of the edge to take. A
 terminal section says the workflow is complete. A decision is written as
 one condition with a branch for when it holds and one for when it does
 not, and a condition is one of two sentences: an input file reads a value,
@@ -55,7 +61,8 @@ STATES = "states"
 SCENARIOS = "scenarios.toml"
 DIAGRAM = "diagram"
 PROSE = "prose"
-FORMS = (DIAGRAM, PROSE)
+LINKED_FORM = "linked"
+FORMS = (DIAGRAM, PROSE, LINKED_FORM)
 
 START = "start"
 STOP = "stop"
@@ -73,13 +80,19 @@ TERMINAL = "The workflow is complete."
 ONLY_EDGE = "Take the transition out of this state."
 LABEL = r"take the transition labelled `([^`]+)`"
 GO_TO = r"go to \[(\w+)\]\([^)]+\)"
+LINKED = r"take the transition labelled in \[([^\]]+)\]\(([^)]+)\)"
+LABEL_STATEMENT = re.compile(
+    r"^The transition labelled `([^`]+)` applies\.$", re.MULTILINE
+)
 DECISION = {
     DIAGRAM: re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$"),
     PROSE: re.compile(rf"^If (.+), {GO_TO}\. Otherwise, {GO_TO}\.$"),
+    LINKED_FORM: re.compile(rf"^If (.+), {LINKED}\. Otherwise, {LINKED}\.$"),
 }
 UNCONDITIONAL = {
     DIAGRAM: re.compile(rf"^{re.escape(ONLY_EDGE)}$"),
     PROSE: re.compile(r"^Go to \[(\w+)\]\([^)]+\)\.$"),
+    LINKED_FORM: re.compile(rf"^{re.escape(ONLY_EDGE)}$"),
 }
 READS = re.compile(r"^`inputs/([^`]+)` reads `([^`]*)`$")
 FEWER = re.compile(
@@ -206,11 +219,45 @@ def read_diagram(entry: Path) -> Diagram:
     return Diagram(starts[0], tuple(edges), terminals, clicks)
 
 
-def parse_transition(form: str, text: str) -> Transition | None:
+def labelled_rule(directory: Path, destination: str) -> str:
+    """The label a rule document states, as one backticked edge label.
+
+    A linked transition names a document rather than a label, so the label
+    a branch takes is the one that document states. It sits outside the
+    diagram form's sections, so a bundle carries it and a diagram does not.
+    `directory` is that of the section writing the link, which is where the
+    document resolves from.
+    """
+    target = directory / destination
+    if not target.is_file():
+        raise CorpusError(f"a transition links {destination}, which is no document")
+    found = None
+    for match in LABEL_STATEMENT.finditer(target.read_text()):
+        if found is not None:
+            raise CorpusError(f"{destination} states more than one label")
+        found = match.group(1)
+    if found is None:
+        raise CorpusError(f"{destination} states no label")
+    return found
+
+
+def parse_transition(
+    form: str, text: str, directory: Path | None = None
+) -> Transition | None:
     """A transition paragraph's meaning, in the form it is written for."""
     if text == TERMINAL:
         return None
     if decision := DECISION[form].match(text):
+        if form == LINKED_FORM:
+            condition, _, then_path, _, otherwise_path = decision.groups()
+            input_read(condition)
+            if directory is None:
+                raise CorpusError(f"a linked transition reads {text!r} with no root")
+            return Transition(
+                condition,
+                labelled_rule(directory, then_path),
+                labelled_rule(directory, otherwise_path),
+            )
         condition, then, otherwise = decision.groups()
         input_read(condition)
         return Transition(condition, then, otherwise)
@@ -220,7 +267,7 @@ def parse_transition(form: str, text: str) -> Transition | None:
     raise CorpusError(f"no {form} transition reads as {text!r}")
 
 
-def read_section(form: str, path: Path) -> Section:
+def read_section(form: str, path: Path, directory: Path) -> Section:
     """One state's document, split into its shared body and its transition."""
     text = path.read_text()
     heading = HEADING.match(text)
@@ -237,14 +284,14 @@ def read_section(form: str, path: Path) -> Section:
         path,
         body,
         actions[0],
-        parse_transition(form, transition.strip()),
+        parse_transition(form, transition.strip(), path.parent),
     )
 
 
 def read_sections(form_directory: Path, form: str) -> dict[str, Section]:
     """Every state document of one form, by state name."""
     sections = [
-        read_section(form, path)
+        read_section(form, path, form_directory)
         for path in sorted((form_directory / STATES).glob("*.md"))
     ]
     return {section.state: section for section in sections}

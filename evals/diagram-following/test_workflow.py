@@ -19,9 +19,11 @@ from workflow import (
     ENTRY,
     ENTRY_BUNDLE,
     FORMS,
+    LINKED_FORM,
     PROSE,
     STATES,
     WORKFLOWS,
+    CorpusError,
     Scenario,
     Workflow,
     bundle,
@@ -61,25 +63,31 @@ def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
 
 
 def section_faults(workflow: Workflow) -> list[str]:
-    """How the prose form's sections differ from the diagram form's beyond
+    """How another form's sections differ from the diagram form's beyond
     their transition paragraphs."""
     faults = []
     states = workflow.diagram.states
     for form in FORMS:
         if set(workflow.sections[form]) != states:
             faults.append(f"the {form} form's states are not the diagram's")
-    for state in sorted(states & set(workflow.sections[PROSE])):
-        drawn = workflow.sections[DIAGRAM].get(state)
-        written = workflow.sections[PROSE][state]
-        if drawn is None:
-            continue
-        if drawn.path.name != written.path.name or drawn.body != written.body:
-            faults.append(f"{state}: the prose section differs from the diagram's")
-        if (drawn.transition is None) != (written.transition is None):
-            faults.append(f"{state}: one form ends the workflow and the other does not")
-        elif drawn.transition and written.transition:
-            if drawn.transition.condition != written.transition.condition:
-                faults.append(f"{state}: the forms decide on different conditions")
+    for form in (PROSE, LINKED_FORM):
+        for state in sorted(states & set(workflow.sections[form])):
+            drawn = workflow.sections[DIAGRAM].get(state)
+            written = workflow.sections[form][state]
+            if drawn is None:
+                continue
+            if drawn.path.name != written.path.name or drawn.body != written.body:
+                faults.append(f"{state}: the {form} section differs from the diagram's")
+            if (drawn.transition is None) != (written.transition is None):
+                faults.append(
+                    f"{state}: the {form} form and the diagram disagree on ending"
+                )
+            elif drawn.transition and written.transition:
+                if drawn.transition.condition != written.transition.condition:
+                    faults.append(
+                        f"{state}: the {form} form and the diagram decide on"
+                        f" different conditions"
+                    )
     if "```mermaid" in (workflow.form(PROSE) / ENTRY).read_text():
         faults.append("the prose form carries a diagram")
     return faults
@@ -93,7 +101,6 @@ def transition_faults(workflow: Workflow) -> list[str]:
         leaving = diagram.leaving(state)
         labels = {edge.label for edge in leaving}
         drawn = workflow.sections[DIAGRAM][state].transition
-        written = workflow.sections[PROSE].get(state)
         if drawn is None:
             if leaving or state not in diagram.terminals:
                 faults.append(
@@ -108,10 +115,18 @@ def transition_faults(workflow: Workflow) -> list[str]:
             faults.append(f"{state}: no one unlabelled edge leaves it")
         if drawn.condition is not None and labels != {drawn.then, drawn.otherwise}:
             faults.append(f"{state}: its labels are not the edges leaving it")
+        written = workflow.sections[PROSE].get(state)
         if written is not None and written.transition is not None:
             named = {written.transition.then, written.transition.otherwise} - {None}
             if named != {edge.target for edge in leaving}:
                 faults.append(f"{state}: the prose names states the diagram does not")
+        linked = workflow.sections[LINKED_FORM].get(state)
+        if linked is not None and linked.transition is not None:
+            stated = {linked.transition.then, linked.transition.otherwise} - {None}
+            if stated != labels - {None}:
+                faults.append(
+                    f"{state}: the linked rules state labels the diagram does not"
+                )
     for node, destination in sorted(diagram.clicks.items()):
         if destination != document(node):
             faults.append(f"the click on {node} links {destination}, not its document")
@@ -254,6 +269,60 @@ def test_a_prose_transition_naming_another_state_is_a_fault(tmp_path: Path) -> N
     assert transition_faults(workflow) == [
         "Build: the prose names states the diagram does not"
     ]
+
+
+def test_a_linked_rule_stating_another_label_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "branching",
+        "linked/rules/escalation.md",
+        "The transition labelled `high` applies.",
+        "The transition labelled `low` applies.",
+    )
+    assert "Triage: the linked rules state labels the diagram does not" in (
+        transition_faults(workflow)
+    )
+
+
+def test_a_linked_rule_that_states_no_label_is_a_fault(tmp_path: Path) -> None:
+    with pytest.raises(CorpusError, match="states no label"):
+        broken(
+            tmp_path,
+            "branching",
+            "linked/rules/queue.md",
+            "The transition labelled `low` applies.",
+            "Queue the incident.",
+        )
+
+
+def test_a_linked_decision_must_state_a_label_outside_its_sections(
+    tmp_path: Path,
+) -> None:
+    """Stating a branch's label in the section itself is not a linked transition."""
+    with pytest.raises(CorpusError, match="no linked transition reads as"):
+        broken(
+            tmp_path,
+            "branching",
+            f"{LINKED_FORM}/{document('Triage')}",
+            "Otherwise, take the transition labelled in [the queue rule]"
+            "(../rules/queue.md).",
+            "Otherwise, take the transition labelled `low`.",
+        )
+
+
+def test_a_linked_decision_resolves_the_label_through_the_document(
+    tmp_path: Path,
+) -> None:
+    """The linked form walks the path only when each rule states its label."""
+    workflow = broken(
+        tmp_path,
+        "looping",
+        "linked/rules/rework.md",
+        "The transition labelled `revise` applies.",
+        "The transition labelled `approve` applies.",
+    )
+    faults = scenario_faults(workflow, workflow.scenarios[1])
+    assert any("two-rounds" in fault for fault in faults)
 
 
 def test_a_scenario_path_with_a_step_the_diagram_does_not_draw_is_a_fault(

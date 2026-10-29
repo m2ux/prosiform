@@ -259,6 +259,25 @@ def test_each_row_carries_its_difference_from_the_baseline(
     }
 
 
+def test_a_baseline_without_the_errored_class_still_compares(
+    recorded: Path, tmp_path: Path
+) -> None:
+    """A baseline written before `errored` existed reads its absence as zero."""
+    old = json.loads(json.dumps(BASELINE))
+    for cell in old["cells"]:
+        cell["failures"].pop("errored")
+    path = tmp_path / "old-baseline.json"
+    path.write_text(json.dumps(old))
+    built = report(recorded, path)
+    cell = row(built["cells"], HAIKU, "bundle")
+    assert cell["in_baseline"] is True
+    assert cell["difference"]["failures"]["errored"] == 0
+    assert cell["difference"] == {
+        "pass_rate": 0.25,
+        "failures": counts(unfinished=-1),
+    }
+
+
 def test_rows_absent_from_either_side_are_marked(
     recorded: Path, baseline: Path
 ) -> None:
