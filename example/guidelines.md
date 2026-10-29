@@ -29,7 +29,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - A skill may add directories of its own, one for its modes among them, and keep its guidelines beside SKILL.md. Its guidelines state what those files carry and the sections they take, and `structure.json` beside SKILL.md declares those sections to the shared check.
   - Scripts and tests each have a folder of their own. Standalone templates use `templates/`.
 - **Shared.**
-  `skills/` holds this file beside the `scripts/` and `test/` folders for checks that every skill runs. A check binding one skill lives in that skill's own folders.
+  The folder holding the skills holds this file beside the folders of the checks every skill runs. A check binding one skill lives in that skill's own folders.
 
 ## SKILL.md structure
 
@@ -48,24 +48,23 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   A statement that binds every mode goes in a rules or conventions file beside SKILL.md, which each mode's preamble links, never as loose prose in SKILL.md.
 - **Dependencies.**
   Every tool, sandbox, runtime, branch and harness capability the skill relies on is named in Dependencies, with what it is needed for.
-- **Commands.**
-  SKILL.md holds no command of its own.
 
 ## Procedure files
 
 - **What the file carries selects the set.**
-  - A procedure is a top-level section holding step sub-sections, whatever its heading names it, as [Commands](#commands) defines it.
+  - A procedure is a section holding steps, whatever its heading names it. A step is the author stating that the reader performs it, in its order, and is the only place a file records that.
   - A file carrying one takes the sections below. A catalog, a context file and a contract file state what a procedure consults, and nothing about them is a sequence, so each keeps its own shape.
-  - A skill's entry point takes [its own structure](#skillmd-structure) whatever it carries.
+  - A skill's entry point takes [its own structure](#skillmd-structure) whatever it carries, and a file in a directory whose sections the skill's own guidelines state takes those sections.
 - **Top-level sections.**
-  - Procedure, Reference, Rules and Commands, in that order, each optional but for Procedure.
+  - Procedure, Reference and Rules, in that order, each optional but for Procedure.
   - Anything else the file needs is a sub-section under one of them, so a diverse title names a part of a known whole.
 - **What the reader does with a heading places it.**
   - Reference holds what a step consults or produces: a table, an output shape, a vocabulary.
   - Rules holds what binds the file whatever step it is on.
   - An alternative way in is a step of the Procedure.
 - **Procedure.**
-  - A `## Procedure` writes each step as a sub-section one heading level below it, headed by the step's position and its action in title case: `### 1. Take the Proposal`.
+  - A `## Procedure` of more than one step writes each step as a sub-section one heading level below it, headed by the step's position and its action in title case: `### 1. Take the Proposal`.
+  - A single-step procedure is one paragraph or bullet, with no heading.
   - The steps come in the order performed, ahead of the procedure's child sections.
   - Where the file holds several procedures, each is a child section of it, and writes its own steps one heading level below its heading.
 
@@ -87,8 +86,8 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 
 - **Succinct.**  Plain words, and no sentence that another already carries.
 - **One home per rule.**
-  - Each rule is stated once: in SKILL.md, the mode that owns it, or the guide the modes share.
-  - Every other file cites it by link, never restates it.
+  - Each rule is stated once, in its home: the contract or outcome it constrains, the step it binds, the rules or conventions file when it binds every mode, or the guidelines when it governs how a file is written.
+  - Every other file links that home, never restates it.
 - **The design as it is.**
   Present tense, with no account of what the text replaced: no "previously", "no longer" or "instead of".
 - **Terms.**  After a rename, every use of the old term goes, in prose, docstrings and identifiers.
@@ -102,40 +101,29 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Selection links.**
   A link naming the next operation, section or route points wherever that content sits, forward included. The reader chooses from it rather than needing to hold it already.
 - **Prerequisite citation.**
-  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Audit Command Conventions](change-surface.md#audit-command-conventions) first.`
-  - Within one file, position carries the requirement and the citation is dropped: conventions sit ahead of the procedures and commands they govern.
+  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Issue Fields](issue.md#fields) first.`
+  - Within one file, position carries the requirement and the citation is dropped: conventions sit ahead of the procedures they govern.
   - A prerequisite citation pointing further down its own file is a defect, whatever its wording. A sequential reader meets it after the point it was meant to serve.
 - **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
 
 ## Commands
 
-- **One spec per operation.**
-  - Every command has a sub-section named for what it does: Fetch issue, Run guard suite.
-  - A script used several ways has a spec for each use.
-- **Local to the procedure.**
-  - A specification sits in the file whose procedure runs it, in a `## Commands` section at the end of that file.
-  - A single catalog holds only those specifications most of whose entries have several callers. Where a block of a catalog has one caller, it belongs to that caller.
-  - A caller is a procedure that runs the command. A sibling specification, and any passage of prose naming a command, does not make the file holding it a caller.
-  - A procedure is a section holding step sub-sections, whatever its heading names it. The step is the author stating that the reader performs these, in this order, and is the only place a file records that.
-  - Prose runs nothing whatever its mood, order or count: a sentence routing three commands in sequence names them as a statement of what one command does names it. State a route as steps that run them.
-  - SKILL.md holds no specification. A command the entry point names is specified in the file whose procedure runs it, or in the catalog.
-  - A specification with two owners has one home and a link from the other. A count of those links that keeps growing says the split is in the wrong place.
-- **Spec layout.**
-  - Each spec opens with a one-line, succinct description of what the command does.
-  - Detail a caller needs, such as flags, inputs or refusals, follows as bullets, then the command block.
-- **Named by link.**
-  - Prose names a spec by linking to its sub-section, mid-sentence: "run [Check Body Format](work-planner/artifacts/issue-body.md#check-body-format) on each epic".
-  - A command body is inlined only in the file that owns the spec.
+- **Commands in steps.**
+  - A command sits in the step that runs it, in an unindented fenced block, never a code span. No skill file has a `## Commands` section: a command lives in the step that runs it.
+  - The step's instruction states where the command runs from and which inputs fill its parameters, and the block follows it.
+  - A command several procedures run is written in each step that runs it.
+- **Prose runs nothing.**
+  Whatever its mood, order or count, a sentence naming commands runs none of them: a sentence routing three commands in sequence names them as a statement of what one command does names it. State a route as steps that run them.
 - **Conventions.**
   - Session setup, execution location, example values and other skill-wide prerequisites stand in the conventions file each mode's preamble links.
-  - Conventions governing one procedure's commands sit in that procedure's file, ahead of its Commands section.
+  - A condition governing one command sits in the step that runs it.
 
 ## Progressive Disclosure
 
 - **Placement.**
   Keep shared purpose and mode selection in the entry point, and what binds every mode in the rules and conventions files each mode links. Link conditional detail where the active mode needs it.
 - **Applicability.**
-  State the condition beside a conditional link and require the reader to resolve it before loading the instructions. Select checks before retrieving their command specs.
+  State the condition beside a conditional link and require the reader to resolve it before loading the instructions. Select a check before reading the steps that run it.
 - **Reading boundaries.**
   Link the smallest complete section the caller needs. A heading link names that section and its subsections, stopping before the next heading of equal or higher level. Whole-file links identify required complete documents.
 - **File size.**
@@ -175,4 +163,4 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 - **Stale claims.**
   After a behaviour change, search the skill for any description of the old behaviour and restate it.
 - **Verified.**
-  The skill's tests and affected shared-checker or integration suites pass, `skills/scripts/check_skill_files.py` reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed. State which checks ran and distinguish local evidence from external workflow execution.
+  The skill's tests and affected shared-checker or integration suites pass, the shared skill check reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed. State which checks ran and distinguish local evidence from external workflow execution.

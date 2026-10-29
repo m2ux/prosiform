@@ -10,11 +10,13 @@ The shape every issue body shares: its title, its Problem and Proposal, its acce
 
 ## Operations
 
-### *Write* Issue Table
+### Write Issue Table
 
 The shared table, before a kind fills its cells.
 
-**Inputs:** Current body, the kind's table columns and supplied row data.
+**Inputs:** [Current body](#body-file), [Kind conditions](#kind-conditions), [Row data](#tables)
+
+**Outputs:** [Issue body](#body-file)
 
 #### 1. Populate the Shared Table Cells
 
@@ -26,11 +28,13 @@ Populate the shared Done, Coverage and Depends on cells from the supplied row da
 
 Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
 
-### *Check* Round of Edits
+### Check Round of Edits
 
 The shared check after a round of edits.
 
-**Inputs:** Changed issue bodies, their kind's field conditions and format inputs.
+**Inputs:** [Changed bodies](#body-file), [Kind conditions](#kind-conditions), [Related context](#related-context)
+
+**Outputs:** [Format findings](#format-findings), [Field findings](#field-findings)
 
 #### 1. Check Each Section Against Fields
 
@@ -38,19 +42,57 @@ Check each section of the issue against the field conditions for its kind and ag
 
 #### 2. Check the Changed Body Formats
 
-Run [Check Body Format](#check-body-format) on every issue the round changed.
+From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result as [Command result](../conventions.md#command-result) states before the next issue; retain format findings and stop on an unreadable input.
 
-### *Validate* Issue Body
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
+
+#### 3. Return the Body Check Findings
+
+Read each format check’s result as [Command result](../conventions.md#command-result) states. Return its format findings with the field findings; report an unreadable input as a blocker.
+
+### Validate Issue Body
 
 One body checked against its supplied kind and template.
 
-**Inputs:** Issue JSON, kind field conditions, required related evidence and output body file.
+**Inputs:** [Issue record](issue.md#issue-record), [Kind conditions](#kind-conditions), [Related context](#related-context), [Output body path](#body-file)
+
+**Outputs:** [Corrected body](#body-file), [Format findings](#format-findings), [Field findings](#field-findings)
 
 #### 1. Run the Body Format Check
 
-Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
+From `<workspace>`, check the supplied issue JSON with its kind’s additional format inputs and the output body file as `--fix`.
+
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
 
 #### 2. Review the Body Field Conditions
+
+Read the format checker’s result as [Command result](../conventions.md#command-result) states, with its findings and corrected body. Return an unreadable input as a blocker; retain format findings for the review.
 
 Review the body against the supplied field conditions.
 
@@ -58,11 +100,13 @@ Review the body against the supplied field conditions.
 
 Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
 
-### *Apply* Body Corrections
+### Apply Body Corrections
 
 One body rewritten from confirmed local findings.
 
-**Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
+**Inputs:** [Current body](#body-file), [Kind conditions](#kind-conditions), [Related context](#related-context), [Confirmed resolutions](#body-resolutions), [Output body path](#body-file)
+
+**Outputs:** [Corrected body](#body-file), [Format findings](#format-findings), [Field findings](#field-findings), [Required changes](#required-changes)
 
 #### 1. Populate Missing Body Sections
 
@@ -93,11 +137,13 @@ Validate the body through [Validate Issue Body](#validate-issue-body).
 
 Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
-### *Build* Body Snapshot
+### Build Body Snapshot
 
 A local issue-shaped record for body validation.
 
-**Inputs:** Current body file, title, labels, optional existing issue JSON and destination JSON path.
+**Inputs:** [Issue content](issue.md#issue-content), [Existing issue](issue.md#issue-record), [Snapshot path](#body-snapshot)
+
+**Outputs:** [Body snapshot](#body-snapshot)
 
 #### 1. Write the Body Snapshot JSON
 
@@ -115,15 +161,17 @@ For an unpublished draft, use `number: null` and `state: "open"`; labels are str
 
 Return the JSON path for validation. No tracker issue is created by this operation.
 
-### *Repair* Issue Format
+### Repair Issue Format
 
 The saved format corrections for a set of issues of one kind and any unresolved content findings.
 
-**Inputs:** The kind's validator, either its body file's Validate operation or [Validate Issue Body](#validate-issue-body) with the kind's field conditions; that validator's further inputs; a set of issue bodies, each with its identity, current JSON and output body path; kind template and required related evidence.
+**Inputs:** [Issues](issue.md#issue-record), [Kind conditions](#kind-conditions), [Related context](#related-context), [Output body paths](#body-file)
+
+**Outputs:** [Repaired issues](issue.md#issue-record), [Format findings](#format-findings), [Field findings](#field-findings)
 
 #### 1. Apply the Format Validator
 
-Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
+Apply the kind's validator to each issue body with its current JSON, output path and the further inputs its kind conditions name: the kind's Validate operation where its body file has one, otherwise [Validate Issue Body](#validate-issue-body) with the kind conditions.
 - Return an unreadable source as a blocker before editing.
 
 #### 2. Review Each Format Diff
@@ -141,15 +189,17 @@ Resolve a non-mechanical finding confined to one body.
 
 #### 4. Re-Read Each Repaired Issue
 
-Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue.
-- Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for each saved issue, as [Write confirmation](../conventions.md#write-confirmation) states.
+- Repeat the kind's validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
-### *Resolve* Open Questions
+### Resolve Open Questions
 
 The answers to an issue's Open Questions saved in its body, and the questions that stay open.
 
-**Inputs:** Issue identity, current JSON, kind template and field conditions, related context and output body path.
+**Inputs:** [Issue record](issue.md#issue-record), [Kind conditions](#kind-conditions), [Related context](#related-context), [Output body path](#body-file)
+
+**Outputs:** [Saved issue](issue.md#issue-record), [Question decisions](#body-resolutions)
 
 #### 1. Interview on Open Questions
 
@@ -165,7 +215,7 @@ Publish the corrected body through [Save Tracker Issue](issue.md#save-tracker-is
 
 #### 4. Re-Read the Answered Issue
 
-Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue.
+Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the saved issue, as [Write confirmation](../conventions.md#write-confirmation) states.
 
 #### 5. Return the Question Decisions
 
@@ -243,6 +293,10 @@ An acceptance criterion meets these. A kind adds its own under its Acceptance Cr
 - **Depends on.**
   References only, with no prose, and only what no other entry in the cell already implies.
 
+### Breakdown Prose
+
+Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
+
 ### Numbering
 
 Rows are numbered in the order they can start, so every dependency points to an earlier row. Numbering that does not follow start order is advisory.
@@ -285,23 +339,30 @@ An issue's References section does not link issues or pull requests on the same 
 - **Apply.** Title or label changes for the caller to publish on the issue.
 - **Decide.** Missing content or a judgement for the caller to resolve.
 
-## Commands
+### Body File
 
-### Check Body Format
+One issue body as a local markdown file at a given path, in its kind's template section order and table columns.
 
-Checks one issue against its template, and with `--fix` writes the body with the mechanical fixes made.
+### Kind Conditions
 
-**Inputs:** Issue JSON, local output body file and the additional format inputs supplied by the kind.
+One body kind's template, with its table columns, its field conditions, and any further inputs its format check takes, as that kind's body file defines them.
 
-- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
-- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+### Related Context
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
-```
+The current records a body refers to or depends on: its parent and sibling issues, linked delivery and cited sources.
 
-**Example:**
+### Body Snapshot
 
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
-```
+A local [issue record](issue.md#issue-record) built from a body file, title and labels, saved as JSON at a given path. It carries the existing issue's identity and state, or `number: null` and `state: "open"` for an unpublished draft. Labels are strings or objects with a name.
+
+### Field Findings
+
+Each place a body departs from its kind conditions or [Fields](#fields): a missing or extra section, a wrong-kind layout, historical narration, or a criterion failing its named instrument, with the section it concerns.
+
+### Body Resolutions
+
+The decision taken on each non-mechanical finding or open question: content to add, an extra section kept, folded or removed, a criterion change, or an answer, each tied to the finding or question it settles.
+
+### Required Changes
+
+Changes a body correction needs outside that body: a tracker-kind change, a title or label change, or an edit to another issue's body, each naming the issue it applies to.

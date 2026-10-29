@@ -10,30 +10,60 @@ The queue for one theme board: initiative priority sets, status and assignee cha
 
 ## Operations
 
-### *Plan* Board Queue
+### Plan Board Queue
 
 Derives the queue from supplied board and delivery snapshots and confirmed decisions.
 
-**Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities. The caller supplies the delivery state.
+**Inputs:** [Board](#board-identity), [Board items](board.md#board-items), [Initiative pull requests](pull-request.md#pull-request-records), [Board fields](board.md#board-fields), [Assignee login](board.md#assignees), [Output directory](#proposed-changes), [Off-board issues](issue.md#issue-record), [Unplanned initiatives](#unplanned-initiatives)
+
+**Outputs:** [Proposed changes](#proposed-changes), [Report lines](#report-lines), [Unresolved references](#completeness)
 
 #### 1. Compute the Board Queue
 
-Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
+From `<workspace>`, compute the queue with snapshots as `--items`, `--prs` and `--fields`, board identity as `--board`, login as `--assignee`, output directory as `--out`, each resolved issue file as `--others` and each confirmed unplanned initiative as `--unplanned`.
+
+- `--items` is the board's items with Status.
+- `--prs` is the pull requests that name an initiative.
+- `--board` is the [board identity](#board-identity).
+- `--fields` is the board's fields.
+- `--out` is the directory the calls are written to.
+- `--assignee` is the login assigned to work from Ready.
+- `--others` takes every supplied off-board issue file as a separate argument.
+- `--unplanned` is an initiative left with no priority, an issue number or `<owner>/<repo>#<issue-number>`. Repeatable.
+
+Omit `--others` and `--unplanned` when absent; otherwise pass all issue files after `--others` and repeat `--unplanned` for each confirmed initiative.
+
+Runs as [Helper invocation](../conventions.md#helper-invocation) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>' --others '<off-board-issue-file>' --unplanned '<unplanned-initiative>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items items.json --prs prs.json --board 'users/<owner>/projectsV2/9' --fields fields.json --out board/ --assignee m2ux
+```
+
 - The queue must meet [Fields](#fields).
 - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
 
 #### 2. Return the Proposed Queue Calls
+
+Read the helper’s result as [Command result](../conventions.md#command-result) states. Preserve pending decisions, missing evidence and unresolvable dependencies in the report.
 
 Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
 - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
 - Report each [unresolvable dependency](#unresolvable-dependencies) with the row and the entry, and leave that row's epic where it stands.
 - The caller supplies further evidence and confirmed decisions for another pass and applies the proposed changes to tracked objects.
 
-### *Apply* Board Queue
+### Apply Board Queue
 
 The board's initiative and epic Status and assignees, moved to the queue and confirmed live.
 
-**Inputs:** Board identity, current board items with Status, initiative pull request records, board fields, assignee login, output directory, resolved off-board issue files and confirmed unplanned initiative identities.
+**Inputs:** [Board](#board-identity), [Board items](board.md#board-items), [Initiative pull requests](pull-request.md#pull-request-records), [Board fields](board.md#board-fields), [Assignee login](board.md#assignees), [Output directory](#proposed-changes), [Off-board issues](issue.md#issue-record), [Unplanned initiatives](#unplanned-initiatives)
+
+**Outputs:** [Board items](board.md#board-items), [Applied changes](#proposed-changes), [Report lines](#report-lines), [Unresolved references](#completeness)
 
 #### 1. Plan the Board Queue to Apply
 
@@ -54,10 +84,10 @@ When the queue carries an `order` or `ask` line, return the queue with those lin
 #### 4. Run the Proposed Queue Calls
 
 Run each proposed Status and assignee call. An assignee call acts on the issue, as [Assignees](board.md#assignees) states.
-- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status.
+- For each Status call, apply [Read Board Configuration](board.md#read-board-configuration) with the board identity, output directory and changed item identity to confirm its current status, as [Write confirmation](../conventions.md#write-confirmation) states.
 - If that item still shows the preceding status:
   - Repeat its write.
-  - Repeat the same item read. The item list can lag a write.
+  - Repeat the same item read.
 
 #### 5. Re-Read the Queued Board State
 
@@ -73,7 +103,7 @@ Return each move applied and the converged queue's `wait` and `next` lines.
 
 ### Board Identity
 
-The queue belongs to one theme board, identified as `users/{owner}/projectsV2/{id}` or `orgs/{owner}/projectsV2/{id}`. Its source snapshots contain board items with Status, board fields, initiative pull requests and any off-board issues its rows depend on.
+The queue belongs to one theme board, identified by its [board identity](board.md#board-identity). Its source snapshots contain board items with Status, board fields, initiative pull requests and any off-board issues its rows depend on.
 
 ### Priority Sets
 
@@ -81,7 +111,7 @@ A parallel work map assigns a positive integer to each ranked initiative. Every 
 
 The epics of one initiative carry their own sets. Every epic with the same number starts together, and a number is compared only with its siblings'.
 
-A priority label is `priority:` and a positive integer. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number. Its colour is `BFD4F2` and its description `Priority set <n>; a larger number starts sooner`, with `<n>` its integer.
+A priority label carries a set's number, with the name, colour and description [Priority Labels](../configuration.md#priority-labels) sets. A larger number is higher, with no maximum. Two such labels on one issue count as the larger number.
 
 ### Initiative Status
 
@@ -135,35 +165,12 @@ A `Depends on` entry that names no row and links no issue, names an issue the ru
 - Every entry of a cell is read, so a cell carrying two names both.
 - A note raised while reading delivery rather than deciding a placement is reported and leaves the exit status alone.
 
+### Unplanned Initiatives
+
+Initiatives confirmed to carry no priority, each an issue number or `<owner>/<repo>#<issue-number>`. Each follows [Initiative Status](#initiative-status) for an initiative confirmed unplanned.
+
 ### Completeness
 
 An `order` or `ask` line means a decision is pending. An unresolved issue reference means dependency evidence is missing. Either leaves the queue incomplete.
 
 A complete queue may still propose changes. Live board state has converged when a queue derived from refreshed items is complete and contains no further call. `wait` and `next` lines remain reportable at that point.
-
-## Commands
-
-### Compute Board Queue
-
-Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue. It exits nonzero where an [unresolvable dependency](#unresolvable-dependencies) stopped it placing a row.
-
-**Inputs:** Current board and delivery snapshots, board identity, assignee login, output directory, resolved dependency evidence, confirmed unplanned initiatives and the permitted Status scope.
-
-- `--items` is the board's items with Status.
-- `--prs` is the pull requests that name an initiative.
-- `--board` is the [board identity](#board-identity).
-- `--fields` is the board's fields.
-- `--out` is the directory the calls are written to.
-- `--assignee` is the login assigned to work from Ready.
-- `--others` is an issue file for an issue the rows depend on that is not on the board. Repeatable.
-- `--unplanned` is an initiative left with no priority, an issue number or `<owner>/<repo>#<issue-number>`. Repeatable.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items items.json --prs prs.json --board 'users/<owner>/projectsV2/9' --fields fields.json --out board/ --assignee m2ux
-```

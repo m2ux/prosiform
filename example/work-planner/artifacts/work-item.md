@@ -10,22 +10,26 @@ The local plan for one task's work.
 
 ## Operations
 
-### *Populate* Work Item
+### Populate Work Item
 
 One task's local implementation plan.
 
-**Inputs:** Task id, task scope, epic context, design, the component the implementation extends, supplied criteria and test requirements, and output file.
+**Inputs:** [Task id](#identity), [Task scope](epic-issue-body.md#work-breakdown), [Epic context](epic-issue-body.md#template), [Design](#sections), [Component](#component), [Criteria](epic-issue-body.md#acceptance-criteria), [Test requirements](pull-request-body.md#test-coverage), [Work-item path](#identity)
+
+**Outputs:** [Work item](#template)
 
 - Write the supplied task's file from [Template](#template), returning its path for registration in the planning record.
   - Its name and content must meet [Identity](#identity) and [Sections](#sections).
   - The supplied component must meet [Component](#component).
   - The test row must meet [Test Coverage](pull-request-body.md#test-coverage), using the supplied criteria without copying them into the file.
 
-### *Read* Work Item
+### Read Work Item
 
 The component and test row one task's plan declares.
 
-**Inputs:** Task id and the planning folder whose README registers that task's work item.
+**Inputs:** [Task id](#identity), [Planning folder](planning-record.md#record-folder)
+
+**Outputs:** [Component](#component), [Test row](#sections)
 
 #### 1. Read the Task Work-Item File
 

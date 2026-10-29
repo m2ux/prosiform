@@ -102,16 +102,26 @@ The bundle shows each of these constructs:
 The [epic issue body](work-planner/artifacts/epic-issue-body.md) contains this operation beneath its `Operations` heading:
 
 ```markdown
-### *Record* Epic Delivery
+### Record Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+**Inputs:** [Epic issue](issue.md#issue-record), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Task issues](issue.md#issue-record), [Task matches](epic.md#task-matches), [Project checkout](delivery-branches.md#project-checkout), [Output body file](#body-file)
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+**Outputs:** [Epic body](#body-file), [Delivery findings](epic.md#delivery-findings)
+
+#### 1. Run Sync Epic
+
+From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output body file to `--fix`.
+
+#### 2. Return the Epic Delivery Findings
+
+Read the helper’s result as [Helper result](../conventions.md#helper-result) states, retaining its reported findings or refused criteria.
+
+Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 ```
+
+The quote is the operation's opening: its contract links and both step headings, with each step's list of conditions and its command block following in the source.
 
 ### Command
 
@@ -135,15 +145,17 @@ The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referrin
 The selected operation follows beneath it:
 
 ```markdown
-#### *Record* Epic Delivery
+#### Record Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Task issues](#issue-record), [Task matches](#task-matches), [Project checkout](#project-checkout), [Output body file](#body-file)
 
-1. Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
-   - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
-2. Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
+**Outputs:** [Epic body](#body-file), [Delivery findings](#delivery-findings)
+
+##### 1. Run Sync Epic
+
+From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output body file to `--fix`.
 ```
 
 The selection retains its structural ancestors and rewrites the links the operation carries to bundle fragments. The rest of the bundle contains the sections those links reach.
@@ -268,7 +280,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's step [1. Fetch](work-planner/modes/hoist-mode.md#1-fetch) applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations` and `Fields`. The artifacts stand in the order the bundle first links to each, so the issue the mode's step [1. Fetch](work-planner/modes/hoist-mode.md#1-fetch) applies leads:
 
 ```markdown
 # Artifacts
@@ -277,7 +289,7 @@ The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-d
 
 ### Operations
 
-#### *Read* Tracker Issue
+#### Read Tracker Issue
 ```
 
 No two artifacts share a title, so each heading keeps its source text, and a link to a whole artifact resolves to the H2 its title heads.

@@ -10,11 +10,13 @@ One change to the plan that a run makes as it works, and whether the run applies
 
 ## Operations
 
-### *Check* Plan Change Autonomy
+### Check Plan Change Autonomy
 
 One pending change assessed against the run's allowance.
 
-**Inputs:** The pending change, its subject, the option recommended for it, and the allowance the caller was supplied.
+**Inputs:** [Pending change](#pending-change), [Allowance](#allowance)
+
+**Outputs:** [Autonomy result](#autonomy-result)
 
 #### 1. Match the Plan Change Kind
 
@@ -30,11 +32,13 @@ Return it as [held](#held-change) otherwise.
 - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
 - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
 
-### *Record* Plan Change
+### Record Plan Change
 
 One entry in the run's list, for a change it applied or held.
 
-**Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
+**Inputs:** [Pending change](#pending-change), [Change kind](#change-kinds), [Option](#entry), [Outcome](#entry), [Affected issues](issue.md#issue-record), [Change list](#change-list)
+
+**Outputs:** [Change list](#change-list)
 
 #### 1. Add the Plan Change Entry
 
@@ -44,11 +48,13 @@ Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list
 
 Return the updated list for the caller to publish and report.
 
-### *Settle* Plan Change
+### Settle Plan Change
 
 One pending change carried to its outcome: applied, held, or answered by the user.
 
-**Inputs:** The pending change, its subject, the option recommended for it, the affected issue identities, the allowance the caller was supplied, and the run's current [Change List](#change-list).
+**Inputs:** [Pending change](#pending-change), [Affected issues](issue.md#issue-record), [Allowance](#allowance), [Change list](#change-list)
+
+**Outputs:** [Settlement](#settlement), [Change list](#change-list)
 
 #### 1. Check the Plan Change Autonomy
 
@@ -74,6 +80,10 @@ Settle the change by what it returns:
 Return the applied option, held, or the user's answer, with the updated change list.
 
 ## Fields
+
+### Pending Change
+
+A change to the plan not yet applied: what it changes, its subject (the issue or row it concerns) and the option recommended for it.
 
 ### Allowance
 
@@ -101,7 +111,15 @@ One list for the run, holding every change it applied and every change it held. 
 
 ### Entry
 
-One line: the kind, the issue or row it concerns, and the option applied or recommended. The entry states the change, not the alternatives weighed against it.
+One line: the kind, the issue or row it concerns, the option applied or recommended, and its outcome, applied or held. The entry states the change, not the alternatives weighed against it.
+
+### Autonomy Result
+
+Automatic or held. An automatic result carries the change's [kind](#change-kinds) and the recommended option as the option to apply; a held result meets [Held Change](#held-change).
+
+### Settlement
+
+The option applied, a [held change](#held-change), or the user's answer.
 
 ### Held Change
 

@@ -10,11 +10,13 @@ The pull request records and issue links that establish what an initiative's epi
 
 ## Operations
 
-### *Read* Delivery Evidence
+### Read Delivery Evidence
 
 The pull requests and issue links that establish current delivery.
 
-**Inputs:** Selected repositories and initiative prefix, fetched epic JSON, authenticated access and destination snapshot files.
+**Inputs:** [Repositories](repository-labels.md#repository), [Initiative prefix](initiative-issue-body.md#titles), [Epic issues](issue.md#issue-record), [Records path](pull-request.md#pull-request-records), [Link snapshot path](pull-request.md#issue-link-snapshot)
+
+**Outputs:** [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot), [Delivery findings](epic.md#delivery-findings), [Unnamed deliveries](#unnamed-deliveries)
 
 #### 1. Fetch Pull Requests and Links
 
@@ -38,11 +40,13 @@ Name each pull request whose issue links reach an epic or one of its task issues
 
 Return the current pull request records, complete issue-link snapshot, per-epic findings and unnamed deliveries to the caller, reporting incomplete evidence as a blocker.
 
-### *Read* Board Delivery Evidence
+### Read Board Delivery Evidence
 
 The board snapshot and pull request records that establish current delivery across one board.
 
-**Inputs:** Board owner and number, authenticated access, output paths and destination snapshot files.
+**Inputs:** [Board](board.md#board-identity), [Board files](board.md#board-files), [Records path](pull-request.md#pull-request-records), [Link snapshot path](pull-request.md#issue-link-snapshot)
+
+**Outputs:** [Board snapshot](#board-snapshot), [Pull request records](pull-request.md#pull-request-records), [Issue-link snapshot](pull-request.md#issue-link-snapshot)
 
 #### 1. Apply the Board Reads
 
@@ -77,14 +81,14 @@ Apply [Read Board Assignee](board.md#read-board-assignee) for the assignee login
 ## Fields
 
 - **Pull request records.**
-  Every pull request carrying the initiative prefix, across the selected repositories, in all states.
+  The initiative's [pull request records](pull-request.md#pull-request-records): every pull request carrying its prefix, across the selected repositories, in all states.
 - **Issue-link snapshot.**
-  The complete set of Development links between those pull requests and the issues they deliver, read through the access that exposes them whole.
+  The complete set of Development links between those pull requests and the issues they deliver, read through the access that exposes them whole, as an [issue-link snapshot](pull-request.md#issue-link-snapshot).
 - **Findings.** The per-epic [Delivery Findings](epic.md#delivery-findings) the evidence yields.
 
 ### Board Snapshot
 
-The board items with their Status, the Status field, the board fields, the board's [repositories](board.md#repositories) and the assignee login, read together with the board's pull request records and issue-link snapshot.
+The board items with their Status, the Status field, the board fields, the board's [repositories](board.md#repositories) and the assignee login, read together with the board's pull request records and issue-link snapshot. Each is a local file at its path.
 
 ### Unnamed Deliveries
 
