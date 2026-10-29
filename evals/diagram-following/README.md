@@ -14,6 +14,8 @@ Each workflow in [`workflows/`](workflows) is written twice, as [`workflow.py`](
 
 Every session is given the same [instruction](instruction.md), naming only the entry document. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
 
+A diagram form's `click` lines carry destinations relative to the document that writes them, so a node opens its section for a reader of the source tree and for a session in its workspace. GitHub draws a Mermaid fence in a frame of its own and resolves such a destination against that frame, so a diagram form's clicks open nothing in the blob view; the state documents sit beside the entry document all the same.
+
 ## Scoring
 
 A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of seven classes that fits where its trace departs from the path:
