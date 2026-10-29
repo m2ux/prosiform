@@ -21,8 +21,9 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 ### Scenarios
 
 - **Four scenarios.** A dispatch chain, a parallel set, a set beside a dispatch, and a dispatched target returning a question. Each names its inputs and the dispatch trace a correct agent produces: the sub-agents it starts, in what order, and what each returned.
-- **A form is a bundle set.** The compiled form is the source tree whose links carry `⇉` and `⫽`, bundled by `pf` from the guide a bare `pf` prints. The authored-protocol form is the same state documents with the protocol written in as prose, so the report separates what compilation adds.
-- **The scenario names the trace.** A scenario's expected trace is a walk of the bundle set its source produces, so the corpus holds one statement of the dispatch each source states.
+- **The compiled form is a bundle set.** Its links carry `⇉` and `⫽`, so `pf` bundles each dispatched target into a bundle of its own beside the entry's, and the protocol an agent reads is the one the profile compiles.
+- **The authored form is one bundle.** The same state documents write the same steps as ordinary links, with the protocol as prose, so `pf` publishes the entry's bundle alone. A single bundle is what separates the forms: the report's difference between them is what compiling the protocol adds.
+- **The scenario names the trace.** A scenario's expected trace is a walk of the source its form carries, so the corpus holds one statement of the dispatch both forms state.
 
 ### Scoring
 
