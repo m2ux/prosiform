@@ -91,6 +91,8 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
   The move itself, the three-row split, E03's renumbering and the priority.
 - **Sync, 2026-10-29.**
   The three rows link their work items in the epic's record, and the epic reads Backlog with every row undelivered: its prerequisite E01 W05 has landed on `i05/e01/main` but that base is unmerged.
+- **Delivery, 2026-10-29.**
+  W01 merged into `i05/e07/main` as [#411](https://github.com/m2ux/prosiform/pull/411), with AC1 and AC2 ticked. Its session held five plan changes, and one changed the design: the authored form publishes the entry's bundle alone, so the two forms differ in the bundle set each gives a session rather than in prose alone. The Scenarios bullets above state that, and the review pull request [#412](https://github.com/m2ux/prosiform/pull/412) carries the base. The default matrix is 280 sessions and needs USD 140 at the session cap, above the USD 100 a bare `make eval-diagrams` passes; W03's row owns the budget it runs under.
 
 ## Links
 
@@ -100,4 +102,5 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Prerequisite epic | [I05:E01 Diagram Following](https://github.com/m2ux/prosiform/issues/333) |
 | Source epic | [I05:E03 Dispatch Bundles](https://github.com/m2ux/prosiform/issues/351) |
+| Review pull request | [#412](https://github.com/m2ux/prosiform/pull/412) — the base standing in review |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
