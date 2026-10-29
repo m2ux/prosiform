@@ -45,3 +45,5 @@ The login stays in the config directory, so `--bare` is not used: it would stop 
 | Task issue | [#395](https://github.com/m2ux/prosiform/issues/395) |
 | Predecessor | [#393](https://github.com/m2ux/prosiform/pull/393) — the linked form and `errored` class this boundary is measured over |
 | Review pull request | [#353](https://github.com/m2ux/prosiform/pull/353) |
+| Pull request | [#400](https://github.com/m2ux/prosiform/pull/400) — delivered and merged |
+| Deferred debt | [#402](https://github.com/m2ux/prosiform/issues/402) — a settings file's hook, held for I05:E05 |
