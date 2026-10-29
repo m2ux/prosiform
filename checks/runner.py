@@ -142,6 +142,45 @@ def build_timeout() -> float:
     return float(configured) if configured else DEFAULT_TIMEOUT
 
 
+def command_line(arguments: Sequence[str], fault: str | None = None) -> list[str]:
+    """The argument line one run is given: the runner's options, then the manifest's.
+
+    The destination and the diagnostic format are the runner's rather
+    than a manifest's, so a code is compared as a value; a fault is
+    asked for the same way, as the contract spells it.
+    """
+    requested = ["-x", fault] if fault is not None else []
+    return [*build_under_test(), "-o", "-", "-d", "json", *requested, *arguments]
+
+
+@dataclass(frozen=True)
+class Run:
+    """One run of the configured build: the status and the two streams it produced."""
+
+    exit_status: int
+    stdout: bytes
+    stderr: bytes
+
+
+def invoked(directory: Path, arguments: Sequence[str], fault: str | None = None) -> Run:
+    """The configured build, run in one directory as the corpus runs it.
+
+    A run that does not complete within the configured timeout raises
+    `subprocess.TimeoutExpired`, and an unconfigured build raises
+    `BuildNotConfigured`, so a caller that needs a verdict decides what
+    an absent one means.
+    """
+    completed = subprocess.run(
+        command_line(arguments, fault),
+        cwd=directory,
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        timeout=build_timeout(),
+        check=False,
+    )
+    return Run(completed.returncode, completed.stdout, completed.stderr)
+
+
 def render(chunk: bytes) -> str:
     """One run of bytes, with every newline and control byte spelled out."""
     return repr(chunk)
@@ -443,54 +482,37 @@ def run_fixture(fixture: Path) -> Result:
     invocation = manifest["invocation"]
     expected = manifest["expected"]
     declared = manifest.get(FAULT)
-    requested = ["-x", declared] if declared is not None else []
     allowed = build_timeout()
     with worked(fixture, declared) as working:
         named = invocation.get("cwd")
         invoked_from = working if named is None else (working / named).resolve()
-        argv = [
-            *build_under_test(),
-            "-o",
-            "-",
-            "-d",
-            "json",
-            *requested,
-            *invocation["arguments"],
-        ]
         try:
-            completed = subprocess.run(
-                argv,
-                cwd=invoked_from,
-                stdin=subprocess.DEVNULL,
-                capture_output=True,
-                timeout=allowed,
-                check=False,
-            )
+            run = invoked(invoked_from, invocation["arguments"], declared)
         except subprocess.TimeoutExpired:
             difference = Difference(
                 INVOCATION,
                 f"the run did not complete within {allowed} seconds",
-                (f"command {shlex.join(argv)}",),
+                (f"command {shlex.join(command_line(invocation['arguments'], declared))}",),
             )
             return Result(name, (difference,), None, b"", b"")
 
         stdout = (
             compare_stdout(
-                (fixture / expected["stdout"]).read_bytes(), completed.stdout
+                (fixture / expected["stdout"]).read_bytes(), run.stdout
             )
             if "stdout" in expected
-            else compare_stdout_text(expected["stdout_contains"], completed.stdout)
+            else compare_stdout_text(expected["stdout_contains"], run.stdout)
         )
         differences = [
-            *compare_exit_status(expected["exit_status"], completed.returncode),
+            *compare_exit_status(expected["exit_status"], run.exit_status),
             *stdout,
-            *compare_diagnostics(expected["diagnostics"], completed.stderr),
+            *compare_diagnostics(expected["diagnostics"], run.stderr),
             *compare_absent(working, expected.get("absent", [])),
         ]
     return Result(
         name,
         tuple(differences),
-        completed.returncode,
-        completed.stdout,
-        completed.stderr,
+        run.exit_status,
+        run.stdout,
+        run.stderr,
     )
