@@ -338,14 +338,15 @@ WANTED = 'no criterion is the corpus audit'
 
 
 def corpus_review(criterion: str, base: str, corpus: str | None = 'workflows',
-                  title: str = '[I01:E00] First: Epic') -> Review:
+                  title: str = '[I01:E00] First: Epic',
+                  canon: str | None = 'workflow-canon') -> Review:
     """An epic whose one pull request targets base, reviewed for the corpus audit criterion."""
     body = ('## Work Breakdown\n\n| Task | Description | Coverage | Depends on | Joins | Done |\n'
             '| --- | --- | --- | --- | --- | --- |\n| W01 | Work | AC1 | | | |\n\n'
             f'## Acceptance Criteria\n\n- [ ] **AC1.** {criterion}\n')
     epic = issue(2, title, body=body, labels=('type:epic', 'theme:mechanical'))
     prefix = title.split(']')[0] + ']'
-    r = Review(epic, prs=[pr(950, f'{prefix} Work', base=base)], corpus=corpus)
+    r = Review(epic, prs=[pr(950, f'{prefix} Work', base=base)], corpus=corpus, canon=canon)
     r.run()
     return r
 
@@ -354,6 +355,10 @@ class CorpusAudit(unittest.TestCase):
     def test_an_epic_reaching_the_corpus_states_the_audit(self):
         r = corpus_review('Holds.', 'i01/e00/workflows')
         self.assertTrue(any(WANTED in item for item in r.decide))
+
+    def test_a_project_no_canon_audit_covers_states_nothing(self):
+        r = corpus_review('Holds.', 'i01/e00/workflows', canon=None)
+        self.assertFalse(any(WANTED in item for item in r.decide))
 
     def test_a_deferred_debt_epic_reaching_the_corpus_states_the_audit(self):
         r = corpus_review('Holds.', 'i01/e09/workflows',

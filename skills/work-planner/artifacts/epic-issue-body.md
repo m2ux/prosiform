@@ -205,12 +205,14 @@ Each question holds only what is undecided and has a recommendation in the plann
 
 ### Corpus Audit
 
-An epic whose tasks change workflow definitions carries this criterion, and a final task row delivers it:
+A project whose design is held to a canon audit carries this criterion on an epic whose tasks change workflow definitions, and a final task row delivers it:
 
 ```markdown
 - [ ] **ACn.** The definitions this epic changes carry no outstanding confirmed finding, as the canon audit's coverage report shows.
 ```
 
+- **The criterion exists only where the report does.**
+  A canon audit reports findings against a project's canon, and a project without one has no outstanding finding to clear. Where no canon audit covers the definitions, the epic carries no such criterion and names no such row.
 - **The row is the epic's last.**
   It is named `Canon audit of the changed definitions`, depends on the rows whose definitions it audits, and covers this criterion alone.
 - **A finding closes by a fix on this epic's branch or by an issue that takes it.**
