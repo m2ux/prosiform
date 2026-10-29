@@ -109,7 +109,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 ## Commands
 
 - **Commands in steps.**
-  - A command sits in the step that runs it, in an unindented fenced block, never a code span. No file has a Commands section.
+  - A command sits in the step that runs it, in an unindented fenced block, never a code span. No skill file has a `## Commands` section: a command lives in the step that runs it.
   - The step's instruction states where the command runs from and which inputs fill its parameters, and the block follows it.
   - A command several procedures run is written in each step that runs it.
 - **Prose runs nothing.**
