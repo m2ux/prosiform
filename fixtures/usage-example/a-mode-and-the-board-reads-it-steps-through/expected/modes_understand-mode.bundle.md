@@ -128,11 +128,13 @@ The caller names the change kinds its run applies without asking. A run the user
 
 ### Operations
 
-#### *Access* Development Links
+#### Access Development Links
 
 The observed or updated Development relation for a pull request.
 
-**Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Link request](#link-request), [Delivery issue](#issue-record), [Auto-close setting](#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links)
 
 ##### 1. Read the Pull Request Development Links
 
@@ -147,6 +149,7 @@ Return the complete relation for a read-only request.
 For a link edit:
 
 - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- Meet the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
 - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
 - For removal of an abandoned or incorrect link:
   - Require the supplied user decision.
@@ -164,15 +167,17 @@ Compare the field with the intended edit.
 
 Return the verified relation or discrepancy.
 
-#### *Fetch* Pull Request Issue Links
+#### Fetch Pull Request Issue Links
 
 The complete issue-link snapshot for a supplied set of pull requests.
 
-**Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
+**Inputs:** [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Read Links for Each Pull Request
 
-For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+For every pull request in the current records, `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
 
 ##### 2. Re-Read Links After a Change
 
@@ -190,15 +195,17 @@ Run [Write Pull Request Links](#write-pull-request-links) with the observed comp
 
 Return the snapshot for the scripts' `--links` input.
 
-#### *Link* Pull Request to Issue
+#### Link Pull Request to Issue
 
 The verified delivery-issue relation for a pull request.
 
-**Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Delivery issue](#issue-record), [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot), [Auto-close setting](#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links), [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Add the Development Link
 
-Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and the repository prerequisite confirmed as [Close Tracker Issue](#close-tracker-issue) documents.
 
 ##### 2. Stop on an Unverified Link Edit
 
@@ -212,11 +219,13 @@ Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the
 
 Return the verified relation and refreshed snapshot.
 
-#### *Read* Pull Request State
+#### Read Pull Request State
 
 One current pull request and its requested supporting records.
 
-**Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
+**Inputs:** [Pull request](#pull-request-identity), [Requested records](#pull-request-snapshot), [Snapshot paths](#pull-request-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot)
 
 ##### 1. Fetch the Pull Request Snapshot
 
@@ -230,17 +239,19 @@ Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request
 
 Return the snapshots or missing evidence.
 
-#### *Publish* Pull Request
+#### Publish Pull Request
 
 One pull request created or updated from supplied content and metadata.
 
-**Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
+**Inputs:** [Pull request](#pull-request-identity), [Kind](#pull-request-kind), [Pull request content](#pull-request-content), [Delivery issue](#issue-record), [Auto-close setting](#auto-close-setting), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot), [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Open a New Pull Request
 
 For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
 
-- For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+- For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
 
 ##### 2. Update the Existing Pull Request
 
@@ -252,9 +263,20 @@ Re-read through [Read Pull Request State](#read-pull-request-state), as [Write c
 
 ##### 4. Return the Published State
 
-Return the saved state or discrepancy.
+Return the saved state or discrepancy, and the issue-link snapshot when the creation path linked a delivery issue. Other publication paths return no issue-link snapshot.
 
 ### Fields
+
+#### State
+
+A pull request is open, draft, ready for review, merged or closed without merge. A merged result identifies the verified head, target and merge commit.
+
+- An epic's review pull request is published as a draft when the first task merges into its epic base, and an unmerged epic base with work merged into it has one.
+- The review stays draft, and its epic open, until the epic is complete and the user marks it ready.
+
+#### Scope
+
+A task pull request delivers one task, or a set of tasks that name each other in Joins. It targets the epic base for the long-lived branch its work changes.
 
 #### Issue Links
 
@@ -265,6 +287,38 @@ Return the saved state or discrepancy.
 - A linked issue remains open until its criteria and delivery requirements hold and every Development-linked pull request is merged.
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
+
+#### Pull Request Identity
+
+A pull request's [repository](#repository) and number. A pull request yet to be created has its repository alone.
+
+#### Pull Request Kind
+
+Task, epic or planning discussion. A delivery pull request is a task or an epic one: a task pull request meets [Scope](#scope), and an epic's review pull request has an epic base as its head.
+
+#### Verified Head
+
+The literal head commit SHA whose checks, reviews and target requirements were read. Verification applies to that exact SHA.
+
+#### Pull Request Content
+
+The fields a publication writes: a body file at its path, meeting [Template](#template-2), its title, head and base. A change to an existing pull request names only the fields it changes.
+
+#### Pull Request Snapshot
+
+One pull request's REST record as a local JSON file at its path, with its identity, state, head SHA, base and mergeable state. Its requested supporting records are its changed paths and its reviews, each in a file of its own.
+
+#### Pull Request Records
+
+A local JSON-lines file at its path, one pull request's REST record per line. An initiative's records hold every pull request whose title carries its prefix, in all states, across its repositories; a failed fetch leaves them incomplete.
+
+#### Issue-Link Snapshot
+
+A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
+
+#### Link Request
+
+A read, an addition or a removal of one pull request's Development link. An edit names the issue; a removal carries the user's decision naming the abandoned or incorrect link.
 
 ### Commands
 
@@ -493,11 +547,13 @@ gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > c
 
 ### Operations
 
-#### *Create* Pull Request Worktree
+#### Create Pull Request Worktree
 
 The detached worktree where the graph reads the reviewed change.
 
-**Inputs:** Repository, repository checkout, pull request number and verified head commit.
+**Inputs:** [Pull request](#pull-request-identity), [Project checkout](#project-checkout), [Verified head](#verified-head)
+
+**Outputs:** [Review worktree](#review-worktrees), [Verified head](#verified-head)
 
 ##### 1. Fetch the Review Head
 
@@ -542,12 +598,23 @@ Return the selected detached worktree path and head, or the discrepancy before m
 
 ### Fields
 
+#### Branches
+
+A project states its long-lived branches in `config/branches` at its root, one name per line. A run from a linked worktree reads the statement its main working tree holds.
+
+- **Example.**
+  workflow-server's `config/branches` names `docker`, `main`, `workflows` and `workspace`.
+
 #### Review Worktrees
 
 A reviewed pull request is read in a detached worktree, named by its number under the worktree directory of the repository's main working tree.
 
 - **Example.**
   Pull request 950 is read at `.worktrees/pr-950`.
+
+#### Project Checkout
+
+A checkout of the repository whose branches are delivered. Its main working tree holds the [Branches](#branches) statement, and its worktree directory holds every epic-base, task and review worktree.
 
 ### Commands
 
@@ -603,11 +670,13 @@ git -C '<checkout>' status --porcelain --branch
 
 ### Operations
 
-#### *Measure* Repository Change
+#### Measure Repository Change
 
 Current graph evidence for the supplied change.
 
-**Inputs:** Worktree, verified head commit and base branch.
+**Inputs:** [Worktree](#revision), [Verified head](#revision), [Base branch](#revision)
+
+**Outputs:** [Changed symbols](#changed-symbols), [Symbol relationships](#symbol-relationships), [Flow traces](#flow-traces)
 
 ##### 1. Check the Graph Index Status
 
@@ -743,11 +812,13 @@ gitnexus query --query "Queue Placement" --limit 1
 
 ### Operations
 
-#### *Populate* Planning Record
+#### Populate Planning Record
 
 One planning directory and its artifact inventory.
 
-**Inputs:** Record identity, folder path, supplied artifact files and links, artifacts the caller names as removed, and a commit message file when the caller asks to publish.
+**Inputs:** [Record identity](#record-folder), [Folder path](#record-folder), [Artifact files](#artifacts-1), [External links](#links), [Removed artifacts](#artifacts-1), [Commit message](#commit-message)
+
+**Outputs:** [Folder path](#record-folder), [Publication](#publication)
 
 ##### 1. Prepare the Selected Planning Record
 
@@ -778,11 +849,13 @@ When the caller asks to publish, apply [Publish Planning Record](#publish-planni
 
 Return the folder path, and the publication result when it published.
 
-#### *Publish* Planning Record
+#### Publish Planning Record
 
 The record's folder committed and pushed, so every link into it resolves for a reader.
 
-**Inputs:** Planning-folder path, the files written into it and a commit message file.
+**Inputs:** [Folder path](#record-folder), [Record files](#layout), [Commit message](#commit-message)
+
+**Outputs:** [Publication](#publication)
 
 ##### 1. Find the Publishing Worktree
 
@@ -800,11 +873,13 @@ Run [Push Engineering Branch](#push-engineering-branch).
 
 - Report a push that will not fast-forward rather than rewriting the branch.
 
-#### *Locate* Planning Record
+#### Locate Planning Record
 
 The existing planning folder whose reference is one issue or pull request number.
 
-**Inputs:** Issue or pull request number.
+**Inputs:** [Reference](#record-folder)
+
+**Outputs:** [Folder paths](#record-folder)
 
 ##### 1. Find the Engineering Worktree
 
@@ -886,6 +961,18 @@ Two paragraphs: the purpose of this work, and why it matters.
 #### Links
 
 External references only: a tracker issue, a parent epic, a pull request. An artifact of this plan is an Artifacts row.
+
+#### Record Folder
+
+One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` under the [records folder](#engineering-branch). The date is the day the record opened. The reference is the bare number of the issue or pull request the record is for, absent for ad hoc work. The slug is lowercase hyphenated words naming the work. The folder's name is the record identity.
+
+#### Commit Message
+
+A file holding the message of the commit that publishes the record, as [Bodies](#conventions) states.
+
+#### Publication
+
+The engineering-branch commit holding the record's folder, pushed to its remote.
 
 ### Commands
 
@@ -976,11 +1063,13 @@ mkdir -p artifacts/planning/2026-10-15-950-queue-plan
 
 ### Operations
 
-#### *Populate* Architecture Overview
+#### Populate Architecture Overview
 
 One architecture overview from supplied measurements.
 
-**Inputs:** Measured structure and flows, pull request head, code permalinks and the output path.
+**Inputs:** [Measured structure](#measured-structure), [Head commit](#code-references), [Code permalinks](#code-references), [Overview path](#location)
+
+**Outputs:** [Architecture overview](#template-1)
 
 ##### 1. Check the Proposed Diagrams
 
@@ -1005,6 +1094,10 @@ Pin each code reference.
 Return the file for the caller to register in its planning record.
 
 ### Fields
+
+#### Location
+
+The overview's local Markdown path and, after publication, its URL on the [engineering branch](#engineering-branch).
 
 #### Template
 
@@ -1158,11 +1251,13 @@ Summary, Structure, Behaviour, What Changed and Reading Order are always present
 
 ### Operations
 
-#### *Link* Architecture Overview
+#### Link Architecture Overview
 
 One pull request body referencing its published overview.
 
-**Inputs:** Current body, published overview URL on the [engineering branch](#engineering-branch) and output body path.
+**Inputs:** [Pull request body](#body-file), [Overview URL](#location), [Output body file](#body-file)
+
+**Outputs:** [Pull request body](#body-file)
 
 ##### 1. Add the Overview Reference
 
@@ -1213,15 +1308,21 @@ Return the complete updated body file for publication.
 - **R1.** [{{Title}}]({{URL}}) — {{What the reader finds there. The issue this pull request delivers is not a reference: the Development field carries that link, as [Issue Links](pull-request.md#issue-links) state. Delete the section when there is none.}}
 ````
 
+#### Body File
+
+A local Markdown file at a given path holding one pull request body that meets [Template](#template-2).
+
 ## Issue
 
 ### Operations
 
-#### *Close* Tracker Issue
+#### Close Tracker Issue
 
 Verified completion of an issue and its linked delivery.
 
-**Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
+**Inputs:** [Issue identity](#issue-identity), [Completion result](#completion-result), [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Auto-close setting](#auto-close-setting), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Closed issue](#issue-state)
 
 ##### 1. Capture the Issue Development
 
@@ -1241,7 +1342,7 @@ Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`,
 
 ##### 4. Require the Closure Gate
 
-Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+Require the supplied completion result to be complete, normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
 
 - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
 - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
@@ -1250,14 +1351,17 @@ Require normal delivery checks to pass, every criterion to be verified and ticke
 
 Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
-#### *Close* as Completed
+#### Close as Completed
 
 An issue closed after its final evidence check.
 
-**Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
+**Inputs:** [Issue identity](#issue-identity), [Auto-close setting](#auto-close-setting), [Completion result](#completion-result), [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Completed issue](#issue-state)
 
 ##### 1. Capture Development Before Closure
 
+Require absolute paths for the issue, Development and linked pull request evidence files.
 Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
 
 ##### 2. Compare the Development Links
@@ -1280,11 +1384,13 @@ Immediately after the gate passes, run [Set Completed State](#set-completed-stat
 
 Return the saved state or failure.
 
-#### *Capture* Issue Development
+#### Capture Issue Development
 
 The issue's current content and complete Development snapshot.
 
-**Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
+**Inputs:** [Issue identity](#issue-identity), [Auto-close setting](#auto-close-setting), [Record path](#issue-record), [Snapshot path](#development-snapshot)
+
+**Outputs:** [Development snapshot](#development-snapshot), [Issue record](#issue-record)
 
 ##### 1. Read the Development Field
 
@@ -1304,11 +1410,13 @@ Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the sup
 
 Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
-#### *Read* Issue Development
+#### Read Issue Development
 
 The Development links observed for one issue through authenticated GitHub.
 
-**Inputs:** Issue identity and authenticated access.
+**Inputs:** [Issue identity](#issue-identity)
+
+**Outputs:** [Observed links](#observed-development-links)
 
 ##### 1. Read Every Development Link
 
@@ -1318,11 +1426,13 @@ Read every page and state, across repositories, recording each linked pull reque
 
 Return the observed links and whether the entire field was readable.
 
-#### *Confirm* Repository Auto-Close
+#### Confirm Repository Auto-Close
 
 Whether the repository auto-closes issues whose linked pull requests merge, established for this session.
 
-**Inputs:** Repository and authenticated access.
+**Inputs:** [Repository](#tracker-repository)
+
+**Outputs:** [Auto-close setting](#auto-close-setting)
 
 ##### 1. Read the Auto-Close Setting
 
@@ -1337,6 +1447,46 @@ Where no API field carries it, put the setting to the user and take their explic
 Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
 
 ### Fields
+
+#### Observed Development Links
+
+Every linked pull request URL in an issue's Development field, across repositories and states, and whether the entire field was readable.
+
+#### Tracker Repository
+
+The repository whose tracker holds the issues: its owner and name, written `<owner>/<repo>`.
+
+#### Issue Identity
+
+One issue's [repository](#tracker-repository), number and URL. An issue yet to be created has its repository alone. An unresolved identity names the repository and the title prefix that matched no issue.
+
+#### Issue Content
+
+An issue's title, body and labels. The title meets [Titles](#titles), the body is a [body file](#body-file-1), and each label is a [repository label](#label-identity). The saved title, body and labels equal the supplied values.
+
+#### Issue Record
+
+One issue as the tracker returns it, saved as JSON at a local path: its [identity](#issue-identity), [content](#issue-content), [state](#issue-state) and kind, which its [tracker prefix](#tracker-prefix) and [kind label](#kind-labels) give. A body-only record is the issue's body alone, saved as markdown.
+
+#### Issue State
+
+The issue is open, or closed with its reason: completed or not planned. Completed work satisfies its criteria and delivery checks; transferred work, closed as not planned, identifies the issue tracking it.
+
+#### Tracker Prefix
+
+The bracketed prefix a planned issue's title opens with: for each level, its kind's prefix letter and a two-digit number, levels separated by colons, as `[I07]`, `[I07:E00]` and `[I07:E00:W01]`. A tracker number is the two-digit number of one level.
+
+#### Development Snapshot
+
+One issue's Development field as observed, saved as JSON at a local path: the issue's repository and number, whether the whole field was read, the repository's [auto-close setting](#auto-close-setting) as confirmed or `null` when unknown, and every linked pull request URL across repositories and states. An empty list in a complete snapshot means the field holds no link; an incomplete snapshot is incomplete evidence.
+
+#### Linked Pull Request Records
+
+A fresh record of every pull request a [Development snapshot](#development-snapshot) names, across repositories and states, saved as JSON lines at a local path, each with its [state](#state) and merge result.
+
+#### Completion Result
+
+The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](#task-delivery-result), an epic's from its [delivery state](#delivery-state), and an initiative's from its [delivery state](#delivery-state-1).
 
 #### Auto-Close Setting
 
@@ -1431,7 +1581,109 @@ Write the supplied values in this shape. Substitute the issue number as a JSON i
 }
 ```
 
+## Repository Labels
+
+### Fields
+
+#### Repository
+
+One repository, written `<owner>/<repo>`.
+
+#### Label Identity
+
+Each label has a name, colour and description. Issue assignments use labels that exist in the repository.
+
+## Issue Body
+
+### Fields
+
+#### Titles
+
+- **Titles.**
+  - A title is a short name, a colon, and a subtitle stating the outcome.
+  - The name is two or three words and the subtitle a succinct summary of at most ten, in title case.
+  - A prefixed title separates its levels with colons, then the name.
+- **Bodies.**
+  - Every body keeps the section order of its kind template and the columns of that kind's table.
+  - Fill each `{{…}}` and delete a section the template marks as optional when it has nothing to say.
+- **Code references.**
+  A body references code as a link on the words it supports, a permalink pinned to a commit with its line anchors, never a bare `path:line`: `the [extrinsic type](…/blob/<sha>/runtime/src/lib.rs#L1231-L1232)`.
+- **Succinct items.**
+  Each Problem and Proposal item, and each of its sub-bullets, is at most two lines. A bold opener does not count toward the two. Several distinct points go in a bulleted list, never packed into those two lines.
+- **Bold leads.**
+  - A Problem or Proposal item that opens with a bold statement puts its body on the next line, indented under the bullet:
+
+    ```markdown
+    - **Length is the only check on entry.**
+      The data source decodes the key and never checks its value.
+    ```
+
+  - A bulleted item with sub-bullets keeps the line introducing them on its bold statement's line:
+
+    ```markdown
+    - **Framing is undocumented.** Nothing describes:
+      - the runtime's extrinsic type;
+    ```
+- **Labels.**
+  - Add `enhancement`, `bug` and `tech-debt` as they apply.
+  - **Example.**  workflow-server adds `workflows`.
+  - Only labels that exist are applied.
+
+#### Body File
+
+One issue body as a local markdown file at a given path, in its kind's template section order and table columns.
+
+## Task Body
+
+### Fields
+
+#### Task Delivery Result
+
+One task's delivery as recorded: the body with its delivering pull request and verified criteria ticked, a comment file reading `Delivered by #<pull-request-number>.`, and the eligibility findings stating whether the task is closable.
+
+## Epic
+
+### Fields
+
+#### Delivery State
+
+The epic is identified by its repository and issue number. Its state contains task delivery findings, criterion verification and ticks, open questions, expected delivery bases and their merges, and the revisions supporting the evidence. Integration readiness and completion are separate results, each with its unresolved conditions. An epic may be ready to integrate while one or more bases await merging.
+
+## Initiative
+
+### Fields
+
+#### Delivery State
+
+The state records every linked epic's completion, each initiative criterion's verification and tick, and the complete Development-linked pull request set and merge states. Each finding retains its source identity and evidence revision.
+
+An epic is delivered when its issue is closed as completed. A missing, open or cancelled epic remains undelivered, including when all initiative criteria are ticked. Criterion readiness and premature ticks are [Delivery Findings](#delivery-findings); delivery alone does not verify a criterion.
+
+Initiative completion requires every linked epic to be closed as completed, every criterion verified and ticked, and every Development-linked pull request merged. Incomplete evidence leaves completion unconfirmed. The result names each missing condition.
+
+#### Delivery Findings
+
+| Finding | Condition in the Supplied Initiative and Epic Records |
+| --- | --- |
+| Ready to verify | The initiative criterion is unticked and every epic whose Coverage cites it is delivered. |
+| Ticked early | The initiative criterion is ticked and an epic whose Coverage cites it is undelivered. |
+
+Epic delivery follows [Delivery State](#delivery-state-1). Each finding names the criterion and the supporting or missing epic evidence.
+
 # Configuration
+
+### Labels
+
+#### Kind Labels
+
+The label naming an agent-engineering issue's kind.
+
+| Kind | Label |
+| --- | --- |
+| Proposal | `type:proposal` |
+| Initiative | `type:initiative` |
+| Epic | `type:epic` |
+| Task | `type:task` |
 
 ### Planning Records
 

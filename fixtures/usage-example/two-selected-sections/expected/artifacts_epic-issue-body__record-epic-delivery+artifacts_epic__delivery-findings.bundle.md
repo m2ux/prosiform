@@ -4,16 +4,19 @@
 
 ### Operations
 
-#### *Record* Epic Delivery
+#### Record Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Task issues](#issue-record), [Task matches](#task-matches), [Project checkout](#project-checkout), [Output body file](#body-file)
+
+**Outputs:** [Epic body](#body-file), [Delivery findings](#delivery-findings)
 
 ##### 1. Run Sync Epic
 
 Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
 
+- Omit `--tasks` when no row has its own task issue; otherwise supply each task issue's record.
 - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 
 ##### 2. Return the Epic Delivery Findings
@@ -21,6 +24,40 @@ Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links
 Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
 ### Fields
+
+#### Template
+
+````markdown
+## Overview
+
+{{One paragraph: what this epic delivers and why it exists within the initiative.}}
+
+## Problem
+
+{{The friction as it is now. Bullets for distinct facets, sub-bullets for several items.}}
+
+## Proposal
+
+{{The design, in bullets or paragraphs, each opening with a bold statement, and its body on the next line.}}
+
+## Work Breakdown
+
+| Task | Description | Coverage | Depends on | Joins | Done |
+| --- | --- | --- | --- | --- | --- |
+| W01 | {{What the task delivers, at most eight words}} | AC{{n}}, AC{{m}} | {{Earlier task in this epic, [Exx:Wyy](…) or [Exx](…) in an earlier epic, or #issue}} | {{Tasks that can land in the same pull request}} | |
+
+## Acceptance Criteria
+
+- [ ] **AC1.** {{An end state of one invariant. It ends by naming its instrument.}}
+
+## Open Questions
+
+- {{An undecided point the epic cannot start without, with a recommendation in the planning record. Resolve every one before the first task starts, then delete the section.}}
+
+## References
+
+- **R1.** [Planning record]({{PLANNING_RECORD_URL}}) — {{What the reader finds there.}}
+````
 
 #### Work Breakdown
 
@@ -84,6 +121,10 @@ The columns are `Task | Description | Coverage | Depends on | Joins | Done`.
 - **Work another issue takes.**
   It leaves the table. Its criteria go with it, or to another row that delivers them.
 
+#### Body File
+
+A local Markdown file at a given path holding one epic body that meets [Template](#template).
+
 ### Commands
 
 #### Sync Epic
@@ -116,6 +157,10 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ### Fields
 
+#### Task Matches
+
+Task-to-pull-request pairs identifying the epic task id and delivering pull request, with each match marked confirmed or pending.
+
 #### Delivery Findings
 
 | Line | What it names |
@@ -138,15 +183,33 @@ An unmet row links a merged pull request while a covered criterion remains untic
 
 A coverage disagreement identifies the pull request and row, a criterion absent from either the test plan or row Coverage, an empty Test cell, or prose assigning the criterion to another task. Recording links, verified criteria and Done continues despite that finding.
 
-## Issue Body
+## Issue
 
 ### Fields
 
-#### Numbering
+#### Tracker Repository
 
-Rows are numbered in the order they can start, so every dependency points to an earlier row. Numbering that does not follow start order is advisory.
+The repository whose tracker holds the issues: its owner and name, written `<owner>/<repo>`.
 
-Work a pull request names keeps its number. Renumbering touches only a row no pull request names.
+#### Issue Identity
+
+One issue's [repository](#tracker-repository), number and URL. An issue yet to be created has its repository alone. An unresolved identity names the repository and the title prefix that matched no issue.
+
+#### Issue Content
+
+An issue's title, body and labels. The title meets [Titles](#titles), the body is a [body file](#body-file-1), and each label is a [repository label](#label-identity). The saved title, body and labels equal the supplied values.
+
+#### Issue Record
+
+One issue as the tracker returns it, saved as JSON at a local path: its [identity](#issue-identity), [content](#issue-content), [state](#issue-state) and kind, which its [tracker prefix](#tracker-prefix) and [kind label](#kind-labels) give. A body-only record is the issue's body alone, saved as markdown.
+
+#### Issue State
+
+The issue is open, or closed with its reason: completed or not planned. Completed work satisfies its criteria and delivery checks; transferred work, closed as not planned, identifies the issue tracking it.
+
+#### Tracker Prefix
+
+The bracketed prefix a planned issue's title opens with: for each level, its kind's prefix letter and a two-digit number, levels separated by colons, as `[I07]`, `[I07:E00]` and `[I07:E00:W01]`. A tracker number is the two-digit number of one level.
 
 ## Pull Request
 
@@ -161,6 +224,83 @@ Work a pull request names keeps its number. Renumbering touches only a row no pu
 - A linked issue remains open until its criteria and delivery requirements hold and every Development-linked pull request is merged.
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
+
+#### Pull Request Records
+
+A local JSON-lines file at its path, one pull request's REST record per line. An initiative's records hold every pull request whose title carries its prefix, in all states, across its repositories; a failed fetch leaves them incomplete.
+
+#### Issue-Link Snapshot
+
+A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
+
+## Delivery Branches
+
+### Fields
+
+#### Branches
+
+A project states its long-lived branches in `config/branches` at its root, one name per line. A run from a linked worktree reads the statement its main working tree holds.
+
+- **Example.**
+  workflow-server's `config/branches` names `docker`, `main`, `workflows` and `workspace`.
+
+#### Project Checkout
+
+A checkout of the repository whose branches are delivered. Its main working tree holds the [Branches](#branches) statement, and its worktree directory holds every epic-base, task and review worktree.
+
+## Issue Body
+
+### Fields
+
+#### Titles
+
+- **Titles.**
+  - A title is a short name, a colon, and a subtitle stating the outcome.
+  - The name is two or three words and the subtitle a succinct summary of at most ten, in title case.
+  - A prefixed title separates its levels with colons, then the name.
+- **Bodies.**
+  - Every body keeps the section order of its kind template and the columns of that kind's table.
+  - Fill each `{{…}}` and delete a section the template marks as optional when it has nothing to say.
+- **Code references.**
+  A body references code as a link on the words it supports, a permalink pinned to a commit with its line anchors, never a bare `path:line`: `the [extrinsic type](…/blob/<sha>/runtime/src/lib.rs#L1231-L1232)`.
+- **Succinct items.**
+  Each Problem and Proposal item, and each of its sub-bullets, is at most two lines. A bold opener does not count toward the two. Several distinct points go in a bulleted list, never packed into those two lines.
+- **Bold leads.**
+  - A Problem or Proposal item that opens with a bold statement puts its body on the next line, indented under the bullet:
+
+    ```markdown
+    - **Length is the only check on entry.**
+      The data source decodes the key and never checks its value.
+    ```
+
+  - A bulleted item with sub-bullets keeps the line introducing them on its bold statement's line:
+
+    ```markdown
+    - **Framing is undocumented.** Nothing describes:
+      - the runtime's extrinsic type;
+    ```
+- **Labels.**
+  - Add `enhancement`, `bug` and `tech-debt` as they apply.
+  - **Example.**  workflow-server adds `workflows`.
+  - Only labels that exist are applied.
+
+#### Numbering
+
+Rows are numbered in the order they can start, so every dependency points to an earlier row. Numbering that does not follow start order is advisory.
+
+Work a pull request names keeps its number. Renumbering touches only a row no pull request names.
+
+#### Body File
+
+One issue body as a local markdown file at a given path, in its kind's template section order and table columns.
+
+## Repository Labels
+
+### Fields
+
+#### Label Identity
+
+Each label has a name, colour and description. Issue assignments use labels that exist in the repository.
 
 # Conventions
 
@@ -185,3 +325,18 @@ Work a pull request names keeps its number. Renumbering touches only a row no pu
   - `14` the Proposals Template, `15` the Proposals board;
   - `m2ux` the user.
   - `<checkout>` any checkout of the project, a linked worktree included.
+
+# Configuration
+
+### Labels
+
+#### Kind Labels
+
+The label naming an agent-engineering issue's kind.
+
+| Kind | Label |
+| --- | --- |
+| Proposal | `type:proposal` |
+| Initiative | `type:initiative` |
+| Epic | `type:epic` |
+| Task | `type:task` |

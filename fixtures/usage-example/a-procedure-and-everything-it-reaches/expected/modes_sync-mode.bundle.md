@@ -139,11 +139,13 @@ Report per issue: tasks linked, criteria ticked, rows marked done, criteria left
 
 ### Operations
 
-#### *Read* Tracker Issue
+#### Read Tracker Issue
 
 The current issue, its saved body and discussion.
 
-**Inputs:** Repository, issue number and output files; whether discussion is needed.
+**Inputs:** [Issue identity](#issue-identity), [Record path](#issue-record)
+
+**Outputs:** [Issue record](#issue-record), [Issue comments](#issue-comment)
 
 ##### 1. Fetch the Tracker Issue
 
@@ -153,11 +155,13 @@ Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch
 
 Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
 
-#### *Save* Tracker Issue
+#### Save Tracker Issue
 
 One populated body and its metadata, written to the tracker.
 
-**Inputs:** Repository, optional existing issue number, populated body file, title and labels for creation; selected body or metadata changes for an existing issue; each assigned label's colour and description. Optional comment file.
+**Inputs:** [Issue identity](#issue-identity), [Issue content](#issue-content), [Label definitions](#label-identity), [Comment](#issue-comment)
+
+**Outputs:** [Saved issue](#issue-record)
 
 ##### 1. Take the Issue Body and Metadata
 
@@ -189,11 +193,13 @@ Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation
 
 Compare the saved fields with the intended body and metadata.
 
-#### *Check* Issue Completion
+#### Check Issue Completion
 
 The normal delivery result of one task, epic or initiative before tracker closure.
 
-**Inputs:** Issue kind, current issue JSON, complete Development snapshot, fresh linked pull request records and criterion verification evidence; for a task, the delivery result its delivering pull request established; for an epic, its project checkout.
+**Inputs:** [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records), [Verification evidence](#verification-evidence), [Task delivery result](#task-delivery-result), [Project checkout](#project-checkout)
+
+**Outputs:** [Completion result](#completion-result)
 
 ##### 1. Select the Completion Check
 
@@ -213,11 +219,13 @@ Select the check by the issue's kind:
 
 Return the completion result; an incomplete or failed result is a blocker to closure.
 
-#### *Close* Tracker Issue
+#### Close Tracker Issue
 
 Verified completion of an issue and its linked delivery.
 
-**Inputs:** Issue identity, successful normal delivery result, current issue JSON, complete Development snapshot, confirmed repository setting and fresh linked pull request records.
+**Inputs:** [Issue identity](#issue-identity), [Completion result](#completion-result), [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Auto-close setting](#auto-close-setting), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Closed issue](#issue-state)
 
 ##### 1. Capture the Issue Development
 
@@ -237,7 +245,7 @@ Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`,
 
 ##### 4. Require the Closure Gate
 
-Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
+Require the supplied completion result to be complete, normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
 
 - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
 - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
@@ -246,11 +254,13 @@ Require normal delivery checks to pass, every criterion to be verified and ticke
 
 Apply [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
-#### *Comment* on Issue
+#### Comment on Issue
 
 The supplied discussion text saved on one issue.
 
-**Inputs:** Repository, issue number and exact comment text or file; reviewer identity and addressed feedback when replying to a review.
+**Inputs:** [Issue identity](#issue-identity), [Comment](#issue-comment), [Review feedback](#review-feedback)
+
+**Outputs:** [Saved comment](#issue-comment)
 
 ##### 1. Compose the Feedback Reply
 
@@ -267,14 +277,17 @@ Publish the supplied comment:
 
 Return the saved comment URL.
 
-#### *Close* as Completed
+#### Close as Completed
 
 An issue closed after its final evidence check.
 
-**Inputs:** Repository, issue number, authenticated access, confirmed repository auto-closing setting, passing normal delivery checks and absolute paths to the current issue, Development and linked pull request evidence.
+**Inputs:** [Issue identity](#issue-identity), [Auto-close setting](#auto-close-setting), [Completion result](#completion-result), [Issue record](#issue-record), [Development snapshot](#development-snapshot), [Linked pull request records](#linked-pull-request-records)
+
+**Outputs:** [Completed issue](#issue-state)
 
 ##### 1. Capture Development Before Closure
 
+Require absolute paths for the issue, Development and linked pull request evidence files.
 Apply [Capture Issue Development](#capture-issue-development) immediately before closure with the issue identity, authenticated access, confirmed repository setting and evidence paths.
 
 ##### 2. Compare the Development Links
@@ -297,11 +310,13 @@ Immediately after the gate passes, run [Set Completed State](#set-completed-stat
 
 Return the saved state or failure.
 
-#### *Capture* Issue Development
+#### Capture Issue Development
 
 The issue's current content and complete Development snapshot.
 
-**Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
+**Inputs:** [Issue identity](#issue-identity), [Auto-close setting](#auto-close-setting), [Record path](#issue-record), [Snapshot path](#development-snapshot)
+
+**Outputs:** [Development snapshot](#development-snapshot), [Issue record](#issue-record)
 
 ##### 1. Read the Development Field
 
@@ -321,11 +336,13 @@ Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the sup
 
 Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
-#### *Read* Issue Development
+#### Read Issue Development
 
 The Development links observed for one issue through authenticated GitHub.
 
-**Inputs:** Issue identity and authenticated access.
+**Inputs:** [Issue identity](#issue-identity)
+
+**Outputs:** [Observed links](#observed-development-links)
 
 ##### 1. Read Every Development Link
 
@@ -335,11 +352,13 @@ Read every page and state, across repositories, recording each linked pull reque
 
 Return the observed links and whether the entire field was readable.
 
-#### *Confirm* Repository Auto-Close
+#### Confirm Repository Auto-Close
 
 Whether the repository auto-closes issues whose linked pull requests merge, established for this session.
 
-**Inputs:** Repository and authenticated access.
+**Inputs:** [Repository](#tracker-repository)
+
+**Outputs:** [Auto-close setting](#auto-close-setting)
 
 ##### 1. Read the Auto-Close Setting
 
@@ -354,6 +373,54 @@ Where no API field carries it, put the setting to the user and take their explic
 Return the confirmed value. An unconfirmed setting is a blocker, and an enabled one leaves the caller to obtain authorization before the repository is reconfigured.
 
 ### Fields
+
+#### Observed Development Links
+
+Every linked pull request URL in an issue's Development field, across repositories and states, and whether the entire field was readable.
+
+#### Tracker Repository
+
+The repository whose tracker holds the issues: its owner and name, written `<owner>/<repo>`.
+
+#### Issue Identity
+
+One issue's [repository](#tracker-repository), number and URL. An issue yet to be created has its repository alone. An unresolved identity names the repository and the title prefix that matched no issue.
+
+#### Issue Content
+
+An issue's title, body and labels. The title meets [Titles](#titles-1), the body is a [body file](#body-file), and each label is a [repository label](#label-identity). The saved title, body and labels equal the supplied values.
+
+#### Issue Record
+
+One issue as the tracker returns it, saved as JSON at a local path: its [identity](#issue-identity), [content](#issue-content), [state](#issue-state) and kind, which its [tracker prefix](#tracker-prefix) and [kind label](#kind-labels) give. A body-only record is the issue's body alone, saved as markdown.
+
+#### Issue Comment
+
+One comment on an issue: its exact text, as one line or a complete local file, and once saved its URL. An issue's discussion is its comments in order. A saved comment preserves the supplied text.
+
+#### Issue State
+
+The issue is open, or closed with its reason: completed or not planned. Completed work satisfies its criteria and delivery checks; transferred work, closed as not planned, identifies the issue tracking it.
+
+#### Tracker Prefix
+
+The bracketed prefix a planned issue's title opens with: for each level, its kind's prefix letter and a two-digit number, levels separated by colons, as `[I07]`, `[I07:E00]` and `[I07:E00:W01]`. A tracker number is the two-digit number of one level.
+
+#### Development Snapshot
+
+One issue's Development field as observed, saved as JSON at a local path: the issue's repository and number, whether the whole field was read, the repository's [auto-close setting](#auto-close-setting) as confirmed or `null` when unknown, and every linked pull request URL across repositories and states. An empty list in a complete snapshot means the field holds no link; an incomplete snapshot is incomplete evidence.
+
+#### Linked Pull Request Records
+
+A fresh record of every pull request a [Development snapshot](#development-snapshot) names, across repositories and states, saved as JSON lines at a local path, each with its [state](#state) and merge result.
+
+#### Completion Result
+
+The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](#task-delivery-result), an epic's from its [delivery state](#delivery-state), and an initiative's from its [delivery state](#delivery-state-1).
+
+#### Review Feedback
+
+The reviewer's login and each point they raised in an issue's discussion.
 
 #### Auto-Close Setting
 
@@ -647,15 +714,25 @@ Write the supplied values in this shape. Substitute the issue number as a JSON i
 - A task has the [epic issue body](#epic-issue-body)'s sections without the Work Breakdown table.
 - New task planning follows [Work Breakdown](#work-breakdown-1). This body describes an existing issue kept as a task.
 
+#### Task Scope
+
+The work one task delivers within its epic: its problem, design and acceptance criteria, as the [Template](#template) sections hold them.
+
+#### Task Delivery Result
+
+One task's delivery as recorded: the body with its delivering pull request and verified criteria ticked, a comment file reading `Delivered by #<pull-request-number>.`, and the eligibility findings stating whether the task is closable.
+
 ## Issue Body
 
 ### Operations
 
-#### *Write* Issue Table
+#### Write Issue Table
 
 The shared table, before a kind fills its cells.
 
-**Inputs:** Current body, the kind's table columns and supplied row data.
+**Inputs:** [Current body](#body-file), [Kind conditions](#kind-conditions), [Row data](#tables)
+
+**Outputs:** [Issue body](#body-file)
 
 ##### 1. Populate the Shared Table Cells
 
@@ -668,11 +745,13 @@ Populate the shared Done, Coverage and Depends on cells from the supplied row da
 
 Read the finished table against [Tables](#tables), [Numbering](#numbering), and [Reference form](#reference-form). A Depends on cell that holds prose fails [Tables](#tables). Numbering that does not follow start order is advisory, as [Numbering](#numbering) states.
 
-#### *Validate* Issue Body
+#### Validate Issue Body
 
 One body checked against its supplied kind and template.
 
-**Inputs:** Issue JSON, kind field conditions, required related evidence and output body file.
+**Inputs:** [Issue record](#issue-record), [Kind conditions](#kind-conditions), [Related context](#related-context), [Output body path](#body-file)
+
+**Outputs:** [Corrected body](#body-file), [Format findings](#format-findings), [Field findings](#field-findings)
 
 ##### 1. Run the Body Format Check
 
@@ -686,11 +765,13 @@ Review the body against the supplied field conditions.
 
 Return the [Format Findings](#format-findings), mechanical diff and field findings, including missing sections, extra sections, wrong-kind layout, historical narration and criteria that fail their named instrument. A mechanical correction preserves wording; new content and scope decisions require caller-supplied resolutions.
 
-#### *Apply* Body Corrections
+#### Apply Body Corrections
 
 One body rewritten from confirmed local findings.
 
-**Inputs:** Current body, selected kind template and field conditions, related context, confirmed resolutions and output path.
+**Inputs:** [Current body](#body-file), [Kind conditions](#kind-conditions), [Related context](#related-context), [Confirmed resolutions](#body-resolutions), [Output body path](#body-file)
+
+**Outputs:** [Corrected body](#body-file), [Format findings](#format-findings), [Field findings](#field-findings), [Required changes](#required-changes)
 
 ##### 1. Populate Missing Body Sections
 
@@ -722,11 +803,13 @@ Validate the body through [Validate Issue Body](#validate-issue-body).
 
 Return the corrected file, validation findings and any required cross-body or metadata changes for the caller.
 
-#### *Build* Body Snapshot
+#### Build Body Snapshot
 
 A local issue-shaped record for body validation.
 
-**Inputs:** Current body file, title, labels, optional existing issue JSON and destination JSON path.
+**Inputs:** [Issue content](#issue-content), [Existing issue](#issue-record), [Snapshot path](#body-snapshot)
+
+**Outputs:** [Body snapshot](#body-snapshot)
 
 ##### 1. Write the Body Snapshot JSON
 
@@ -744,15 +827,17 @@ For an unpublished draft, use `number: null` and `state: "open"`; labels are str
 
 Return the JSON path for validation. No tracker issue is created by this operation.
 
-#### *Repair* Issue Format
+#### Repair Issue Format
 
 The saved format corrections for a set of issues of one kind and any unresolved content findings.
 
-**Inputs:** The kind's validator, either its body file's Validate operation or [Validate Issue Body](#validate-issue-body) with the kind's field conditions; that validator's further inputs; a set of issue bodies, each with its identity, current JSON and output body path; kind template and required related evidence.
+**Inputs:** [Issues](#issue-record), [Kind conditions](#kind-conditions), [Related context](#related-context), [Output body paths](#body-file)
+
+**Outputs:** [Repaired issues](#issue-record), [Format findings](#format-findings), [Field findings](#field-findings)
 
 ##### 1. Apply the Format Validator
 
-Apply the supplied validator to each issue body with its current JSON, output path and the validator's further inputs.
+Apply the kind's validator to each issue body with its current JSON, output path and the further inputs its kind conditions name: the kind's Validate operation where its body file has one, otherwise [Validate Issue Body](#validate-issue-body) with the kind conditions.
 
 - Return an unreadable source as a blocker before editing.
 
@@ -775,7 +860,7 @@ Resolve a non-mechanical finding confined to one body.
 
 Apply [Read Tracker Issue](#read-tracker-issue) for each saved issue, as [Write confirmation](#conventions) states.
 
-- Repeat the supplied validator with the saved JSON and the same further inputs, context and output path.
+- Repeat the kind's validator with the saved JSON and the same further inputs, context and output path.
 - Return each saved body, whether a correction was made, and the validation result to the caller. A remaining failure is a blocker.
 
 ### Fields
@@ -892,6 +977,34 @@ An issue's References section does not link issues or pull requests on the same 
 - **Apply.** Title or label changes for the caller to publish on the issue.
 - **Decide.** Missing content or a judgement for the caller to resolve.
 
+#### Body File
+
+One issue body as a local markdown file at a given path, in its kind's template section order and table columns.
+
+#### Kind Conditions
+
+One body kind's template, with its table columns, its field conditions, and any further inputs its format check takes, as that kind's body file defines them.
+
+#### Related Context
+
+The current records a body refers to or depends on: its parent and sibling issues, linked delivery and cited sources.
+
+#### Body Snapshot
+
+A local [issue record](#issue-record) built from a body file, title and labels, saved as JSON at a given path. It carries the existing issue's identity and state, or `number: null` and `state: "open"` for an unpublished draft. Labels are strings or objects with a name.
+
+#### Field Findings
+
+Each place a body departs from its kind conditions or [Fields](#fields-2): a missing or extra section, a wrong-kind layout, historical narration, or a criterion failing its named instrument, with the section it concerns.
+
+#### Body Resolutions
+
+The decision taken on each non-mechanical finding or open question: content to add, an extra section kept, folded or removed, a criterion change, or an answer, each tied to the finding or question it settles.
+
+#### Required Changes
+
+Changes a body correction needs outside that body: a tracker-kind change, a title or label change, or an edit to another issue's body, each naming the issue it applies to.
+
 ### Commands
 
 #### Check Body Format
@@ -919,11 +1032,13 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ### Operations
 
-#### *Validate* Initiative Body
+#### Validate Initiative Body
 
 The body's local format and field findings.
 
-**Inputs:** Initiative JSON, every linked epic JSON, source evidence and output file.
+**Inputs:** [Initiative issue](#issue-record), [Epic issues](#issue-record), [Source evidence](#source-evidence), [Output body file](#body-file-1)
+
+**Outputs:** [Initiative body](#body-file-1), [Validation findings](#format-findings)
 
 ##### 1. Validate the Initiative Issue Body
 
@@ -942,6 +1057,18 @@ Include excluded names in Problem and Proposal and criterion/source departures i
 Return the corrected body, mechanical diff and unresolved findings for the caller.
 
 ### Fields
+
+#### Body File
+
+A local Markdown file at a given path holding one initiative body that meets [Template](#template-1).
+
+#### Temporary Links
+
+Each placeholder for an unsaved initiative or epic issue, with the body file containing it and the intended issue identity.
+
+#### Source Evidence
+
+Each marked [source](#sources), its identity and contents, the local file path holding those contents, and any unreadable or empty-source finding.
 
 #### Template
 
@@ -1075,11 +1202,13 @@ Populates one epic body. The body states one slice of the design and lists the t
 
 ### Operations
 
-#### *Populate* Epic Issue Body
+#### Populate Epic Issue Body
 
 One epic body and its local validation findings.
 
-**Inputs:** Initiative context, epic scope, draft title and labels, criteria, proposed task rows, available pull request records, corpus branch and output path.
+**Inputs:** [Initiative issue](#issue-record), [Epic scope](#epic-scope), [Pull request records](#pull-request-records), [Corpus branch](#branches), [Output body file](#body-file-2)
+
+**Outputs:** [Epic body](#body-file-2), [Draft rows](#work-breakdown-1), [Validation findings](#format-findings), [Unresolved links](#temporary-links)
 
 ##### 1. Draft the Epic Body
 
@@ -1114,27 +1243,32 @@ Identify unresolved publication links separately; they remain pending until trac
 
 Return the draft rows, their dependency references and the validation findings for the caller's cross-body ordering check.
 
-#### *Record* Epic Delivery
+#### Record Epic Delivery
 
 One epic body with supplied delivery matches and completed rows recorded.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Task issues](#issue-record), [Task matches](#task-matches), [Project checkout](#project-checkout), [Output body file](#body-file-2)
+
+**Outputs:** [Epic body](#body-file-2), [Delivery findings](#delivery-findings)
 
 ##### 1. Run Sync Epic
 
 Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
 
+- Omit `--tasks` when no row has its own task issue; otherwise supply each task issue's record.
 - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown-1).
 
 ##### 2. Return the Epic Delivery Findings
 
 Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
-#### *Record* Epic Criteria
+#### Record Epic Criteria
 
 Verified criteria and completed rows in one epic body.
 
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, verified criterion ids and output body file.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Verified criteria](#acceptance-criteria-1), [Output body file](#body-file-2)
+
+**Outputs:** [Epic body](#body-file-2), [Refused criteria](#unverified-criteria)
 
 ##### 1. Run Tick Epic Criteria
 
@@ -1144,11 +1278,13 @@ Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
-#### *Reserve* Task Rows
+#### Reserve Task Rows
 
 Task rows held for one confirmed delivery session.
 
-**Inputs:** Epic JSON, confirmed task ids, supplied planning-folder identity, planning-records base URL, record date and output body file.
+**Inputs:** [Epic issue](#issue-record), [Task ids](#task-delivery), [Planning folder](#layout), [Records base URL](#engineering-branch), [Record date](#header), [Output body file](#body-file-2)
+
+**Outputs:** [Epic body](#body-file-2)
 
 ##### 1. Check the Rows to Reserve
 
@@ -1162,15 +1298,17 @@ Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, s
 
 Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
-#### *Release* Task Rows
+#### Release Task Rows
 
 Held task rows returned to their work-item links.
 
-**Inputs:** Epic JSON, task ids, explicit user decision releasing the hold and output body file.
+**Inputs:** [Epic issue](#issue-record), [Task ids](#task-delivery), [Release decision](#release-decision), [Output body file](#body-file-2)
+
+**Outputs:** [Saved epic issue](#issue-record)
 
 ##### 1. Check the Rows to Release
 
-Require the supplied release decision and refuse any row that is not held.
+Require the user's explicit decision releasing the hold, and refuse any row that is not held.
 
 ##### 2. Run Release Row
 
@@ -1184,15 +1322,17 @@ Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
 
 Return the saved body with each task id linked to its lowercase work-item file inside the reserved folder, meeting [Task Delivery](#task-delivery).
 
-#### *Validate* Epic Body
+#### Validate Epic Body
 
 The body's local format and field findings.
 
-**Inputs:** Epic JSON, initiative context, current pull request records, corpus branch and output file.
+**Inputs:** [Epic issue](#issue-record), [Initiative issue](#issue-record), [Pull request records](#pull-request-records), [Corpus branch](#branches), [Output body file](#body-file-2)
+
+**Outputs:** [Epic body](#body-file-2), [Validation findings](#format-findings)
 
 ##### 1. Validate the Epic Issue Body
 
-Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-4), supplied related evidence and output file, supplying initiative JSON as `--initiative`, pull requests as `--prs` and corpus branch as `--corpus`.
+Apply [Validate Issue Body](#validate-issue-body) with the current body, local [Fields](#fields-4), supplied related evidence and output file, supplying initiative JSON as `--initiative`, current pull request records as `--prs` and corpus branch as `--corpus`.
 
 ##### 2. Read Epic Pull Request Reach
 
@@ -1206,11 +1346,13 @@ Include a missing [Corpus Audit](#corpus-audit) criterion on a corpus-changing e
 
 Return the corrected body, mechanical diff and unresolved findings for the caller.
 
-#### *Revise* Epic Rows
+#### Revise Epic Rows
 
 One epic body with confirmed task-grain and coverage corrections.
 
-**Inputs:** Epic body, confirmed row changes, field findings, supplied dependency references and output path.
+**Inputs:** [Epic body](#body-file-2), [Row changes](#work-breakdown-1), [Field findings](#field-findings), [Dependency references](#work-breakdown-1), [Output body file](#body-file-2)
+
+**Outputs:** [Epic body](#body-file-2), [Numbering changes](#numbering-map), [Dependency changes](#work-breakdown-1)
 
 ##### 1. Apply the Confirmed Row Changes
 
@@ -1223,15 +1365,17 @@ Apply the confirmed row changes through [Populate Epic Issue Body](#populate-epi
 
 Return the revised body and any cross-body numbering or dependency changes for the caller.
 
-#### *Plan* Gap Task
+#### Plan Gap Task
 
 The agreed disposition of criteria a delivered row left unmet.
 
-**Inputs:** Current epic JSON and body, delivered task row, unmet criterion ids, delivery records, complete issue-link snapshot and output body path.
+**Inputs:** [Epic issue](#issue-record), [Delivered task row](#work-breakdown-1), [Unmet criteria](#acceptance-criteria-1), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Output body file](#body-file-2)
+
+**Outputs:** [Saved epic issue](#issue-record), [Gap disposition](#gap-disposition)
 
 ##### 1. Present Unmet Epic Criteria
 
-Present each unmet criterion and its missing evidence to the user.
+Present each unmet criterion and its missing evidence, read from the current epic issue, to the user.
 
 - Return the criteria the user confirms already hold to the caller for verification and ticking. The delivered task retains them.
 - Record an unanswered decision as pending.
@@ -1253,11 +1397,13 @@ Apply [Record Epic Delivery](#record-epic-delivery) with the revised epic and th
 - Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
 - Return the saved row and criterion disposition to the caller. Done follows [Tables](#tables).
 
-#### *Place* Unplaced Task Row
+#### Place Unplaced Task Row
 
 One epic body given the row its table lacks for a task issue of the epic.
 
-**Inputs:** Epic JSON, the unplaced task issue, the run's allowance and change list when supplied, pull request records, complete issue-link snapshot, task issue records, confirmed task-to-pull-request matches, project checkout and output body file.
+**Inputs:** [Epic issue](#issue-record), [Unplaced task issue](#issue-record), [Allowance](#allowance), [Change list](#change-list), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Task issues](#issue-record), [Task matches](#task-matches), [Project checkout](#project-checkout), [Output body file](#body-file-2)
+
+**Outputs:** [Saved epic issue](#issue-record), [Epic body](#body-file-2), [Delivery findings](#delivery-findings), [Change list](#change-list)
 
 ##### 1. Draft the Unplaced Task Row
 
@@ -1423,6 +1569,26 @@ An epic whose tasks change workflow definitions carries this criterion, and a fi
 
 Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
 
+#### Body File
+
+A local Markdown file at a given path holding one epic body that meets [Template](#template-2).
+
+#### Epic Scope
+
+The work one epic takes: its slice of the initiative's design, its title and labels meeting [Titles](#titles-3), its [acceptance criteria](#acceptance-criteria-1), and its proposed task rows meeting [Work Breakdown](#work-breakdown-1).
+
+#### Release Decision
+
+The user's explicit decision to release the hold on named task rows, naming each task id it releases.
+
+#### Gap Disposition
+
+Each criterion a delivered row left unmet, with its missing evidence and one disposition:
+
+- **Holds.** The user confirms it already holds; the delivered task retains it, awaiting verification and ticking.
+- **Further task.** A further task row adopts it, meeting [Task grain](#work-breakdown-1).
+- **Pending.** The decision or the further task's draft is unanswered.
+
 ### Commands
 
 #### Sync Epic
@@ -1520,11 +1686,13 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ### Operations
 
-#### *Check* Plan Change Autonomy
+#### Check Plan Change Autonomy
 
 One pending change assessed against the run's allowance.
 
-**Inputs:** The pending change, its subject, the option recommended for it, and the allowance the caller was supplied.
+**Inputs:** [Pending change](#pending-change), [Allowance](#allowance)
+
+**Outputs:** [Autonomy result](#autonomy-result)
 
 ##### 1. Match the Plan Change Kind
 
@@ -1541,11 +1709,13 @@ Return it as [held](#held-change) otherwise.
 - A change matching no kind is held, as is one matching [Initiative Creation](#initiative-creation).
 - An absent allowance holds every change, so a run the user drives decides nothing on their behalf.
 
-#### *Record* Plan Change
+#### Record Plan Change
 
 One entry in the run's list, for a change it applied or held.
 
-**Inputs:** The change, its kind, the option applied or recommended, the affected issue identities and the run's current list.
+**Inputs:** [Pending change](#pending-change), [Change kind](#change-kinds), [Option](#entry), [Outcome](#entry), [Affected issues](#issue-record), [Change list](#change-list)
+
+**Outputs:** [Change list](#change-list)
 
 ##### 1. Add the Plan Change Entry
 
@@ -1555,11 +1725,13 @@ Add one entry meeting [Entry](#entry) to the supplied [Change List](#change-list
 
 Return the updated list for the caller to publish and report.
 
-#### *Settle* Plan Change
+#### Settle Plan Change
 
 One pending change carried to its outcome: applied, held, or answered by the user.
 
-**Inputs:** The pending change, its subject, the option recommended for it, the affected issue identities, the allowance the caller was supplied, and the run's current [Change List](#change-list).
+**Inputs:** [Pending change](#pending-change), [Affected issues](#issue-record), [Allowance](#allowance), [Change list](#change-list)
+
+**Outputs:** [Settlement](#settlement), [Change list](#change-list)
 
 ##### 1. Check the Plan Change Autonomy
 
@@ -1587,6 +1759,10 @@ Return the applied option, held, or the user's answer, with the updated change l
 
 ### Fields
 
+#### Pending Change
+
+A change to the plan not yet applied: what it changes, its subject (the issue or row it concerns) and the option recommended for it.
+
 #### Allowance
 
 The caller names the change kinds its run applies without asking. A run the user drives directly is supplied none.
@@ -1613,7 +1789,15 @@ One list for the run, holding every change it applied and every change it held. 
 
 #### Entry
 
-One line: the kind, the issue or row it concerns, and the option applied or recommended. The entry states the change, not the alternatives weighed against it.
+One line: the kind, the issue or row it concerns, the option applied or recommended, and its outcome, applied or held. The entry states the change, not the alternatives weighed against it.
+
+#### Autonomy Result
+
+Automatic or held. An automatic result carries the change's [kind](#change-kinds) and the recommended option as the option to apply; a held result meets [Held Change](#held-change).
+
+#### Settlement
+
+The option applied, a [held change](#held-change), or the user's answer.
 
 #### Held Change
 
@@ -1623,11 +1807,13 @@ A held change is left unapplied and its subject stays as it stands, so the next 
 
 ### Operations
 
-#### *Read* Board Delivery Evidence
+#### Read Board Delivery Evidence
 
 The board snapshot and pull request records that establish current delivery across one board.
 
-**Inputs:** Board owner and number, authenticated access, output paths and destination snapshot files.
+**Inputs:** [Board](#board-identity), [Board files](#board-files), [Records path](#pull-request-records), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Board snapshot](#board-snapshot), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Apply the Board Reads
 
@@ -1663,7 +1849,7 @@ Apply [Read Board Assignee](#read-board-assignee) for the assignee login.
 
 #### Board Snapshot
 
-The board items with their Status, the Status field, the board fields, the board's [repositories](#repositories) and the assignee login, read together with the board's pull request records and issue-link snapshot.
+The board items with their Status, the Status field, the board fields, the board's [repositories](#repositories) and the assignee login, read together with the board's pull request records and issue-link snapshot. Each is a local file at its path.
 
 #### Unnamed Deliveries
 
@@ -1677,11 +1863,13 @@ A pull request that delivers an epic carries that epic's reference in its title,
 
 ### Operations
 
-#### *Access* Development Links
+#### Access Development Links
 
 The observed or updated Development relation for a pull request.
 
-**Inputs:** Pull request identity, authenticated access and requested relation read or write; for an edit, the issue identity, confirmed repository prerequisite and any user decision authorizing removal of an abandoned or incorrect link, meeting the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Link request](#link-request), [Delivery issue](#issue-record), [Auto-close setting](#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links)
 
 ##### 1. Read the Pull Request Development Links
 
@@ -1696,6 +1884,7 @@ Return the complete relation for a read-only request.
 For a link edit:
 
 - Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
+- Meet the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
 - For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
 - For removal of an abandoned or incorrect link:
   - Require the supplied user decision.
@@ -1713,15 +1902,17 @@ Compare the field with the intended edit.
 
 Return the verified relation or discrepancy.
 
-#### *Fetch* Pull Request Issue Links
+#### Fetch Pull Request Issue Links
 
 The complete issue-link snapshot for a supplied set of pull requests.
 
-**Inputs:** Current pull request records, authenticated access and destination link-snapshot file.
+**Inputs:** [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Read Links for Each Pull Request
 
-For every pull request in `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
+For every pull request in the current records, `prs.json`, apply [Access Development Links](#access-development-links) with a read-only request and its identity. An observed empty field supplies an empty array; an unreadable field leaves the fetch incomplete.
 
 ##### 2. Re-Read Links After a Change
 
@@ -1739,15 +1930,17 @@ Run [Write Pull Request Links](#write-pull-request-links) with the observed comp
 
 Return the snapshot for the scripts' `--links` input.
 
-#### *Link* Pull Request to Issue
+#### Link Pull Request to Issue
 
 The verified delivery-issue relation for a pull request.
 
-**Inputs:** Pull request identity, delivery issue identity, current pull request records, link-snapshot destination, authenticated access and the caller's confirmed repository prerequisite documented in [Close Tracker Issue](#close-tracker-issue).
+**Inputs:** [Pull request](#pull-request-identity), [Delivery issue](#issue-record), [Pull request records](#pull-request-records), [Link snapshot path](#issue-link-snapshot), [Auto-close setting](#auto-close-setting)
+
+**Outputs:** [Development links](#issue-links), [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Add the Development Link
 
-Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and confirmed repository prerequisite.
+Apply [Access Development Links](#access-development-links) with the supplied identities, requested link addition and the repository prerequisite confirmed as [Close Tracker Issue](#close-tracker-issue) documents.
 
 ##### 2. Stop on an Unverified Link Edit
 
@@ -1761,11 +1954,13 @@ Apply [Fetch Pull Request Issue Links](#fetch-pull-request-issue-links) with the
 
 Return the verified relation and refreshed snapshot.
 
-#### *Fetch* All Initiative Pull Requests
+#### Fetch All Initiative Pull Requests
 
 The pull request collection covering every supplied board repository.
 
-**Inputs:** Ordered repository list and destination JSON-lines file.
+**Inputs:** [Repositories](#repositories), [Records path](#pull-request-records)
+
+**Outputs:** [Pull request records](#pull-request-records)
 
 ##### 1. Fetch the First Repository Pull Requests
 
@@ -1787,11 +1982,13 @@ If any fetch failed, return incomplete evidence.
 
 Return the complete collection only after every fetch succeeds.
 
-#### *Read* Pull Request State
+#### Read Pull Request State
 
 One current pull request and its requested supporting records.
 
-**Inputs:** Repository, pull request number, output paths and requested records: metadata, changed paths or reviews.
+**Inputs:** [Pull request](#pull-request-identity), [Requested records](#pull-request-snapshot), [Snapshot paths](#pull-request-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot)
 
 ##### 1. Fetch the Pull Request Snapshot
 
@@ -1805,17 +2002,19 @@ Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request
 
 Return the snapshots or missing evidence.
 
-#### *Publish* Pull Request
+#### Publish Pull Request
 
 One pull request created or updated from supplied content and metadata.
 
-**Inputs:** Repository, optional pull request number, task, epic or planning-discussion kind, body file and selected title, head or base changes, and, for a created delivery pull request, its delivery issue identity, the repository setting confirmed for the session and a link-snapshot destination.
+**Inputs:** [Pull request](#pull-request-identity), [Kind](#pull-request-kind), [Pull request content](#pull-request-content), [Delivery issue](#issue-record), [Auto-close setting](#auto-close-setting), [Link snapshot path](#issue-link-snapshot)
+
+**Outputs:** [Pull request snapshot](#pull-request-snapshot), [Issue-link snapshot](#issue-link-snapshot)
 
 ##### 1. Open a New Pull Request
 
 For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
 
-- For a task or epic pull request, apply [Link Pull Request to Issue](#link-pull-request-to-issue) with it, the supplied delivery issue, that confirmed setting and the snapshot destination, meeting [Issue Links](#issue-links).
+- For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
 
 ##### 2. Update the Existing Pull Request
 
@@ -1827,9 +2026,20 @@ Re-read through [Read Pull Request State](#read-pull-request-state), as [Write c
 
 ##### 4. Return the Published State
 
-Return the saved state or discrepancy.
+Return the saved state or discrepancy, and the issue-link snapshot when the creation path linked a delivery issue. Other publication paths return no issue-link snapshot.
 
 ### Fields
+
+#### State
+
+A pull request is open, draft, ready for review, merged or closed without merge. A merged result identifies the verified head, target and merge commit.
+
+- An epic's review pull request is published as a draft when the first task merges into its epic base, and an unmerged epic base with work merged into it has one.
+- The review stays draft, and its epic open, until the epic is complete and the user marks it ready.
+
+#### Scope
+
+A task pull request delivers one task, or a set of tasks that name each other in Joins. It targets the epic base for the long-lived branch its work changes.
 
 #### Issue Links
 
@@ -1840,6 +2050,34 @@ Return the saved state or discrepancy.
 - A linked issue remains open until its criteria and delivery requirements hold and every Development-linked pull request is merged.
 - The field is the whole of the relation: neither body links the other. The pull request's References carry its sources, and the issue it delivers is not among them.
 - A pull request with a delivery issue but no Development link is uncited.
+
+#### Pull Request Identity
+
+A pull request's [repository](#repository) and number. A pull request yet to be created has its repository alone.
+
+#### Pull Request Kind
+
+Task, epic or planning discussion. A delivery pull request is a task or an epic one: a task pull request meets [Scope](#scope), and an epic's review pull request has an epic base as its head.
+
+#### Pull Request Content
+
+The fields a publication writes: a body file at its path, meeting [Template](#template-3), its title, head and base. A change to an existing pull request names only the fields it changes.
+
+#### Pull Request Snapshot
+
+One pull request's REST record as a local JSON file at its path, with its identity, state, head SHA, base and mergeable state. Its requested supporting records are its changed paths and its reviews, each in a file of its own.
+
+#### Pull Request Records
+
+A local JSON-lines file at its path, one pull request's REST record per line. An initiative's records hold every pull request whose title carries its prefix, in all states, across its repositories; a failed fetch leaves them incomplete.
+
+#### Issue-Link Snapshot
+
+A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
+
+#### Link Request
+
+A read, an addition or a removal of one pull request's Development link. An edit names the issue; a removal carries the user's decision naming the abandoned or incorrect link.
 
 ### Commands
 
@@ -2100,11 +2338,13 @@ gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > c
 
 ### Operations
 
-#### *Select* Project Board
+#### Select Project Board
 
 The theme or proposals board the request names.
 
-**Inputs:** Board owner and either a theme name or the proposals-board selection.
+**Inputs:** [Board owner](#board-identity), [Board selection](#board-selection)
+
+**Outputs:** [Selected board](#board-identity)
 
 ##### 1. Find the Named Board
 
@@ -2118,11 +2358,13 @@ Return a missing-selection result when neither a theme nor proposals is specifie
 
 Return the selected board number, or an absent-board result for [Copy Project Board](#copy-project-board). Work one board at a time.
 
-#### *Copy* Project Board
+#### Copy Project Board
 
 A missing theme board, or a missing proposals board.
 
-**Inputs:** Board owner, repository, selected board kind, theme title and originating proposal record when applicable.
+**Inputs:** [Board owner](#board-identity), [Repository](#repository), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
+
+**Outputs:** [Copied board](#board-identity)
 
 ##### 1. Create an Absent Proposals Board
 
@@ -2135,11 +2377,13 @@ When the selected theme board is absent:
 - Apply [Create Theme Board](#create-theme-board) with the owner, repository, theme title and originating proposal record when applicable.
 - Require the new theme's label and board before an initiative takes that theme.
 
-#### *Ensure* Project Board
+#### Ensure Project Board
 
 The theme or proposals board the request names, created when it is absent.
 
-**Inputs:** Board owner, repository, either a theme name and title or the proposals-board selection, and the originating proposal's identity when a proposal derives the theme.
+**Inputs:** [Board owner](#board-identity), [Repository](#repository), [Board selection](#board-selection), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
+
+**Outputs:** [Board](#board-identity)
 
 ##### 1. Select the Requested Board
 
@@ -2159,11 +2403,13 @@ When the board is absent:
 
 Return the owner and the board number the copy created.
 
-#### *Create* Proposals Board
+#### Create Proposals Board
 
 A new proposals board linked to the supplied repository.
 
-**Inputs:** Board owner and repository.
+**Inputs:** [Board owner](#board-identity), [Repository](#repository)
+
+**Outputs:** [Proposals board](#board-identity)
 
 ##### 1. Find the Proposals Template
 
@@ -2189,11 +2435,13 @@ Run [Link Board to Repository](#link-board-to-repository) with the owner, new bo
 
 Return the new board number after linking succeeds.
 
-#### *Create* Theme Board
+#### Create Theme Board
 
 A new theme board linked to the supplied repository.
 
-**Inputs:** Board owner, repository, theme title and originating proposal record when applicable.
+**Inputs:** [Board owner](#board-identity), [Repository](#repository), [Theme title](#one-board-per-theme), [Originating proposal](#issue-record)
+
+**Outputs:** [Theme board](#board-identity)
 
 ##### 1. Require the Originating Proposal
 
@@ -2223,15 +2471,17 @@ Run [Link Board to Repository](#link-board-to-repository) with the owner, new bo
 
 Return the new board number after linking succeeds.
 
-#### *Read* Board State
+#### Read Board State
 
 The selected board's items and status fields.
 
-**Inputs:** Existing board owner and number, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns them, whether the caller ran that operation or carries its result.
+**Inputs:** [Board](#board-identity)
+
+**Outputs:** [Board items](#board-items), [Status field id](#status-field-id), [Repositories](#repositories)
 
 ##### 1. Find the Board Status Field
 
-Run [Find Status Field](#find-status-field) for the board number and the [Status field](#status-field) name.
+Use the existing board, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns it, whether the caller ran that operation or carries its result. Run [Find Status Field](#find-status-field) for its number and the [Status field](#status-field) name.
 
 ##### 2. Fetch Board Items with Status
 
@@ -2241,11 +2491,13 @@ Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing tha
 
 Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
-#### *Read* Board Assignee
+#### Read Board Assignee
 
 The authenticated login available for board assignments.
 
-**Inputs:** Authenticated repository access.
+**Inputs:** None
+
+**Outputs:** [Assignee login](#assignees)
 
 ##### 1. Find the Board User
 
@@ -2255,11 +2507,13 @@ Run [Find User](#find-user).
 
 Return its login for the caller's assignment decisions.
 
-#### *Read* Board Configuration
+#### Read Board Configuration
 
 One board's field definitions and requested item state.
 
-**Inputs:** Board owner and number, output paths and optional item identity.
+**Inputs:** [Board](#board-identity), [Output paths](#board-files), [Board item](#board-items)
+
+**Outputs:** [Board fields](#board-fields), [Board item](#board-items)
 
 ##### 1. Fetch the Configured Board Fields
 
@@ -2291,7 +2545,7 @@ A board's repositories are those its items' issues live in, read from each item'
 
 #### Assignees
 
-An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so the call that changes one acts on the issue.
+The user is the login `gh` runs as. An issue at Ready, In Progress, In Review or Done is assigned to the user; one in Backlog has no assignee. An assignee is set on the issue, not on the board item, so the call that changes one acts on the issue.
 
 #### Proposals
 
@@ -2308,6 +2562,30 @@ An issue at Ready, In Progress, In Review or Done is assigned to the user; one i
     Not now. It stays on the board, with no assignee.
   - **Declined.**
     It will not become an initiative. It has no assignee.
+
+#### Board Identity
+
+A board's owner and number, written `users/<owner>/projectsV2/<number>` for a user's board or `orgs/<owner>/projectsV2/<number>` for an organisation's. The owner is the user's login or organisation name; a board yet to be created has its owner alone.
+
+#### Board Selection
+
+One theme's name, as [Theme Labels](#theme-labels) names it, or the proposals board.
+
+#### Board Fields
+
+A board's field definitions as JSON: each field's id and name, and the [Status field](#status-field)'s id with its option ids.
+
+#### Status Field Id
+
+The numeric identifier of the board's [Status field](#status-field).
+
+#### Board Items
+
+A board's items as JSON, each with its item id, its Status and its issue whole. A single board item is one such entry.
+
+#### Board Files
+
+The local paths a board read writes its JSON into: an issue file, a board fields file and a board item file.
 
 ### Commands
 
@@ -2447,11 +2725,13 @@ gh api user --jq .login
 
 ### Operations
 
-#### *Plan* Board Changes
+#### Plan Board Changes
 
 The board changes implied by supplied delivery state.
 
-**Inputs:** Initiative JSON, epic and task records, pull request records, complete issue-link snapshot, board identity, fields and items, output directory, assignee login and resolved off-board issue files.
+**Inputs:** [Initiative](#issue-record), [Epics](#issue-record), [Tasks](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Board](#board-identity), [Board fields](#board-fields), [Board items](#board-items), [Output directory](#change-calls), [Assignee login](#assignees), [Off-board issues](#issue-record)
+
+**Outputs:** [Change calls](#change-calls), [Missing evidence](#missing-evidence)
 
 ##### 1. Require the Board Change Link Snapshot
 
@@ -2465,11 +2745,13 @@ Run [Compute Board Changes](#compute-board-changes), mapping the supplied record
 
 Return the generated calls and unresolved references, meeting [Fields](#fields-9). The caller gathers missing evidence, applies changes and confirms them as [Write confirmation](#conventions) states.
 
-#### *Record* Board Delivery
+#### Record Board Delivery
 
 The board's status and assignees after its issues record delivery.
 
-**Inputs:** Saved initiative, epic and task identities, board identity and output directory.
+**Inputs:** [Initiative](#issue-record), [Epics](#issue-record), [Tasks](#issue-record), [Board](#board-identity), [Output directory](#change-calls)
+
+**Outputs:** [Board items](#board-items), [Assignees](#assignees)
 
 ##### 1. Read the Delivery Evidence
 
@@ -2516,7 +2798,7 @@ A task gated on an [unresolvable dependency](#unresolvable-dependencies) keeps t
 
 #### Change Calls
 
-The result contains calls for issues to add, items to remove, Status to set and assignees to add or remove. Each call names its affected issue and board item. Assignees follow [Assignees](#assignees).
+The result contains calls for issues to add, items to remove, Status to set and assignees to add or remove. Each call names its affected issue and board item, and the call files occupy one output directory. Assignees follow [Assignees](#assignees).
 
 #### Missing Evidence
 
@@ -2561,11 +2843,13 @@ One overview explains one pull request, and a reviewer meets it on that pull req
 
 ### Operations
 
-#### *Ensure* Repository Labels
+#### Ensure Repository Labels
 
 The required label definitions available for issue publication.
 
-**Inputs:** Repository and required label names, colours and descriptions.
+**Inputs:** [Repository](#repository), [Required labels](#label-identity)
+
+**Outputs:** [Available labels](#label-identity)
 
 ##### 1. List the Repository Labels
 
@@ -2582,6 +2866,16 @@ Run [Create Label](#create-label) for each absent required definition.
 ##### 4. Return the Available Labels
 
 Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+
+### Fields
+
+#### Repository
+
+One repository, written `<owner>/<repo>`.
+
+#### Label Identity
+
+Each label has a name, colour and description. Issue assignments use labels that exist in the repository.
 
 ### Commands
 
@@ -2605,15 +2899,29 @@ Creates the label specified by its name, colour and description.
 gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
 ```
 
+## Acceptance Criteria
+
+### Fields
+
+#### Verification Evidence
+
+One criterion's instrument result, passing or failing, with the issue that states the criterion and the revision it was taken on. Within one run, evidence stands for its criterion on its revision: the criterion's instrument runs at most once on each revision, and a later verification on that revision keeps the earlier evidence.
+
+#### Unverified Criteria
+
+Each criterion left unticked, refused as not ready to verify or unverified, with what it is missing.
+
 ## Delivery Branches
 
 ### Operations
 
-#### *Read* Delivery Branches
+#### Read Delivery Branches
 
 The configured long-lived branches and existing epic bases.
 
-**Inputs:** Project checkout and epic identity.
+**Inputs:** [Project checkout](#project-checkout), [Epic prefix](#epic-bases)
+
+**Outputs:** [Long-lived branches](#branches), [Epic bases](#epic-bases)
 
 ##### 1. Read the Long-Lived Branch Configuration
 
@@ -2646,6 +2954,10 @@ A project states its long-lived branches in `config/branches` at its root, one n
 - **Example.**
   `i07/e00/main` merges `main`, and is checked out at `.worktrees/i07/e00/main`.
 - A completed epic is delivered by merging each base into its long-lived branch. The epic stays open until every base has merged.
+
+#### Project Checkout
+
+A checkout of the repository whose branches are delivered. Its main working tree holds the [Branches](#branches) statement, and its worktree directory holds every epic-base, task and review worktree.
 
 ### Commands
 
@@ -2689,11 +3001,13 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ### Operations
 
-#### *Inspect* Epic Delivery
+#### Inspect Epic Delivery
 
 The delivery findings for one epic from supplied evidence.
 
-**Inputs:** Epic JSON, current pull request records and complete issue-link snapshot.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot)
+
+**Outputs:** [Delivery findings](#delivery-findings)
 
 ##### 1. Match Epic Pull Requests
 
@@ -2703,11 +3017,13 @@ Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request
 
 Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
-#### *Check* Epic Readiness
+#### Check Epic Readiness
 
 The epic's eligibility for integration from current delivery and criterion evidence.
 
-**Inputs:** Current epic JSON, pull request records, complete issue-link snapshot and criterion verification evidence for the current delivery revisions.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Criterion verification](#verification-evidence)
+
+**Outputs:** [Integration readiness](#delivery-state)
 
 ##### 1. Inspect the Epic Delivery
 
@@ -2721,11 +3037,13 @@ Confirm every task is delivered, every epic criterion is verified and ticked, an
 
 Return the integration readiness in [Delivery State](#delivery-state), with the evidence revisions and each blocker. Readiness establishes the epic's content conditions; the caller supplies pull-request review, target and head-check evidence for the merge.
 
-#### *Check* Epic Completion
+#### Check Epic Completion
 
 The epic's normal delivery result before tracker closure.
 
-**Inputs:** Current epic JSON, pull request records, complete issue-link snapshot, current criterion verification evidence, complete expected base list and each base's merge evidence.
+**Inputs:** [Epic issue](#issue-record), [Pull request records](#pull-request-records), [Issue-link snapshot](#issue-link-snapshot), [Criterion verification](#verification-evidence), [Expected bases](#epic-bases), [Base merges](#state)
+
+**Outputs:** [Completion result](#delivery-state)
 
 ##### 1. Check the Epic Readiness
 
@@ -2744,6 +3062,10 @@ Confirm every base has merged into its corresponding long-lived branch. An unkno
 Return the completion result in [Delivery State](#delivery-state), identifying remaining blockers. Passing normal delivery checks supplies the caller's closure evidence; the tracker issue's current Development-link gate still governs the write.
 
 ### Fields
+
+#### Task Matches
+
+Task-to-pull-request pairs identifying the epic task id and delivering pull request, with each match marked confirmed or pending.
 
 #### Delivery State
 
@@ -2797,15 +3119,17 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 
 ### Operations
 
-#### *Check* Initiative Completion
+#### Check Initiative Completion
 
 The initiative's normal delivery result before tracker closure.
 
-**Inputs:** Current initiative JSON, every linked epic's current JSON, criterion verification evidence and the current complete Development-link and linked pull-request records.
+**Inputs:** [Initiative issue](#issue-record), [Epic issues](#issue-record), [Criterion verification](#verification-evidence), [Issue-link snapshot](#issue-link-snapshot), [Pull request records](#pull-request-records)
+
+**Outputs:** [Completion result](#delivery-state-1)
 
 ##### 1. Evaluate Initiative Delivery Evidence
 
-Evaluate the supplied evidence against [Delivery State](#delivery-state-1).
+Evaluate the current initiative, every linked epic's current record, the criterion verification, and the current Development links and linked pull request records against [Delivery State](#delivery-state-1).
 
 ##### 2. Identify Initiative Completion Blockers
 
@@ -2833,6 +3157,71 @@ Initiative completion requires every linked epic to be closed as completed, ever
 | Ticked early | The initiative criterion is ticked and an epic whose Coverage cites it is undelivered. |
 
 Epic delivery follows [Delivery State](#delivery-state-1). Each finding names the criterion and the supporting or missing epic evidence.
+
+## Planning Record
+
+### Fields
+
+#### Layout
+
+README.md is the one file the folder must hold. Any file beyond README.md is added as the work needs it.
+
+```text
+./
+├── README.md
+└── …
+```
+
+Each file beyond README.md is a row in the README's Artifacts.
+
+An overview record explains one pull request's change. Its folder's reference is the pull request number and its slug comes from the pull request's title. A pull request has one overview record, and a later overview of it reuses that folder.
+
+#### Header
+
+One blockquote: the classifier, the day the record was created, and a revised date when the README is updated after the work is done.
+
+## Dependency Graph
+
+### Fields
+
+#### Numbering Map
+
+A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
+
+## Pull Request Body
+
+### Fields
+
+#### Template
+
+````markdown
+## Overview
+
+{{One paragraph: what this pull request delivers and why.}}
+
+## Changes
+
+{{One sentence on what changed and why it was needed. Then one heading per area the changes sit in. A heading is two to five words, in title case, such as Queue Placement or Task Readiness. Under each heading, one bullet per functional change in that area. The bullet opens with a bold lead, as the scheme's Bold leads rule lays one out. The change is at most two lines, the lead included: the lead names what it does, and the behavior is the single line under it.}}
+
+### {{Queue Placement}}
+
+- **{{What it does.}}**
+  {{The behavior as it is.}}
+
+## Test Plan
+
+| Test | Description | Coverage | Pass |
+| --- | --- | --- | --- |
+| T1 | {{Check name, per [Test Plan](#test-plan).}} | {{Observed criteria, if any.}} | [{{Result}}]({{Planning document URL#test-section}}) |
+
+## Open Questions
+
+- {{An undecided point. Resolve it, then delete the section.}}
+
+## References
+
+- **R1.** [{{Title}}]({{URL}}) — {{What the reader finds there. The issue this pull request delivers is not a reference: the Development field carries that link, as [Issue Links](pull-request.md#issue-links) state. Delete the section when there is none.}}
+````
 
 ## Board Queue
 
