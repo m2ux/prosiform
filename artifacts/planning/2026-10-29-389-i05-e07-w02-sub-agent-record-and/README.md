@@ -23,5 +23,6 @@ This record holds the delivery of W02: the sub-agent record written beside the t
 | Epic | [I05:E07 Dispatch Following](https://github.com/m2ux/prosiform/issues/389) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic record | [Dispatch Following design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-29-389-i05-e07-dispatch-following) — the epic's design and its work items |
+| Pull request | [Sub-Agent Record and Dispatch Scorer Checks](https://github.com/m2ux/prosiform/pull/413) — merged into `i05/e07/main` as `8905b2e3` |
 | Preceding row | [W01 delivery](https://github.com/m2ux/prosiform/pull/411) — the dispatch scenarios this row scores |
 | Review pull request | [#412](https://github.com/m2ux/prosiform/pull/412) — the base this row merges into |
