@@ -20,9 +20,29 @@ The theme or proposals board the request names.
 
 #### 1. Find the Named Board
 
-Run [Find Theme Board](#find-theme-board) for the named theme, or [Find Proposals Board](#find-proposals-board) with the [proposals board](../configuration.md#proposals-board) title when the request names proposals. The selection meets [Themes](#themes) or [Proposals](#proposals).
+Select the command matching the requested board kind. The selection meets [Themes](#themes) or [Proposals](#proposals).
+
+For a theme selection, run this query from the repository checkout using the board owner and requested theme name.
+
+```bash
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | sub("^\\[P[0-9]+\\] "; "") | startswith("<theme-name>: ")) | .number'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | sub("^\\[P[0-9]+\\] "; "") | startswith("Canon: ")) | .number'
+```
+
+For a proposals selection, run this query from the repository checkout using the board owner and configured [proposals title](../configuration.md#proposals-board).
+
+```bash
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<proposals-board-title>") | .number'
+```
 
 #### 2. Report a Missing Board Selection
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return a missing-selection result when neither a theme nor proposals is specified; the caller obtains that choice.
 
@@ -82,25 +102,45 @@ A new proposals board linked to the supplied repository.
 
 #### 1. Find the Proposals Template
 
-Run [Find Board Template](#find-board-template) with the owner and the proposals board's [template title](../configuration.md#board-templates).
+From the repository checkout, find the template using the owner and proposals board’s [template title](../configuration.md#board-templates).
+
+```bash
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
+```
 
 #### 2. Use the Proposals Template as Source
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Use the returned number as the copy source.
 
 #### 3. Copy the Proposals Template
 
-Run [Copy Board Template](#copy-board-template) with that template number, the owner and the [proposals board](../configuration.md#proposals-board) title.
+From the repository checkout, copy the returned template number for the owner, using the configured [proposals title](../configuration.md#proposals-board).
+
+- The copy's JSON is one project; `.number` identifies the new board.
+
+```bash
+gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
+```
 
 #### 4. Retain the Proposals Board Number
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Retain the new board number. The copy meets [Proposals](#proposals).
 
 #### 5. Link the Proposals Board to the Repository
 
-Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+From the repository checkout, link the new board using its owner, returned number and supplied repository.
+
+```bash
+gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
+```
 
 #### 6. Return the Proposals Board Number
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the new board number after linking succeeds.
 
@@ -118,25 +158,45 @@ Require the originating proposal record for a proposal-derived board; return a m
 
 #### 2. Find the Initiative Template
 
-Run [Find Board Template](#find-board-template) with the owner and the theme board's [template title](../configuration.md#board-templates).
+From the repository checkout, find the template using the owner and theme board’s [template title](../configuration.md#board-templates).
+
+```bash
+gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
+```
 
 #### 3. Use the Initiative Template as Source
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Use the returned number as the copy source.
 
 #### 4. Copy the Initiative Template
 
-Run [Copy Board Template](#copy-board-template) with that template number, the owner and the title required by [One Board Per Theme](#one-board-per-theme).
+From the repository checkout, copy the returned template number for the owner, using the title required by [One Board Per Theme](#one-board-per-theme).
+
+- The copy's JSON is one project; `.number` identifies the new board.
+
+```bash
+gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
+```
 
 #### 5. Retain the Theme Board Number
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Retain the new board number. The copy carries the template's theme board [Status options](../configuration.md#status-field).
 
 #### 6. Link the Theme Board to the Repository
 
-Run [Link Board to Repository](#link-board-to-repository) with the owner, new board number and repository.
+From the repository checkout, link the new board using its owner, returned number and supplied repository.
+
+```bash
+gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
+```
 
 #### 7. Return the Theme Board Number
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the new board number after linking succeeds.
 
@@ -154,19 +214,73 @@ Apply [Read Tracker Issue](issue.md#read-tracker-issue) with the repository, iss
 
 #### 2. Fetch the Placement Status Options
 
-Run [Fetch Board Fields](#fetch-board-fields) for the Status options, using the supplied board.
+From the repository checkout, fetch the supplied board’s fields into the destination file, using its owner and number.
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" > '<board-fields-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
+```
 
 #### 3. Add the Issue to the Board
 
-Run [Add Issue to Board](#add-issue-to-board) with that issue id.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, add the issue using the board owner and number and the returned issue id, not its issue number.
+
+```bash
+gh api --method POST 'users/<owner>/projectsV2/<board-number>/items' -f type=Issue -F 'id=<issue-id>' --jq .id
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'users/<owner>/projectsV2/13/items' -f type=Issue -F id=3040123456 --jq .id
+```
 
 #### 4. Set the Placed Item Status
 
-Run [Set Item Status](#set-item-status) with the caller's selected status and the matching field and option ids.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, set the caller’s selected Status using the board owner and number, returned item id and supplied status-request file.
+
+The input file meets [Status Request](#status-request), with the supplied Status field id as a JSON integer and the selected option id as a JSON string.
+
+**Example payload:** `{"fields":[{"id":419167630,"value":"OPTION"}]}`.
+
+```bash
+gh api --method PATCH 'users/<owner>/projectsV2/<board-number>/items/<item-id>' --input '<status-input-file>' --jq .id
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'users/<owner>/projectsV2/13/items/1001' --input status-backlog.json --jq .id
+```
 
 #### 5. Confirm the Placed Board Item
 
-Run [Fetch Board Item](#fetch-board-item) for the saved item.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, read the saved item using the board owner and number, item id and Status field id.
+
+```bash
+gh api "users/<owner>/projectsV2/<board-number>/items/<item-id>?fields=<status-field-id>"
+```
+
+**Example:**
+
+```bash
+gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
+```
+
+#### 6. Return the Placed Board Item
+
+Read the final fetch exit code and response. Return the confirmed item only when its issue and Status match the intended placement; otherwise return the failure or discrepancy.
 
 ### Read Board State
 
@@ -178,13 +292,37 @@ The selected board's items and status fields.
 
 #### 1. Find the Board Status Field
 
-Use the existing board, as [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board) returns it, whether the caller ran that operation or carries its result. Run [Find Status Field](#find-status-field) for its number and the [Status field](../configuration.md#status-field) name.
+Use the existing board returned by [Select Project Board](#select-project-board) or [Copy Project Board](#copy-project-board), whether the caller ran that operation or carries its result. From the repository checkout, query its owner and number for the configured [Status field](../configuration.md#status-field) name.
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" --jq '.[] | select(.name == "<status-field-name>") | .id'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" --jq '.[] | select(.name == "Status") | .id'
+```
 
 #### 2. Fetch Board Items with Status
 
-Run [Fetch Board Items with Status](#fetch-board-items-with-status), passing that field id and board number.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, save the board items using the board owner and number, returned Status field id and destination file.
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/<board-number>/items?per_page=100&fields=<status-field-id>" > '<board-items-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/9/items?per_page=100&fields=419167630" > items.json
+```
 
 #### 3. Return the Board State
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the items, Status field, item ids and the board's [Repositories](#repositories) to the caller.
 
@@ -198,9 +336,15 @@ The authenticated login available for board assignments.
 
 #### 1. Find the Board User
 
-Run [Find User](#find-user).
+From the repository checkout, read the authenticated login.
+
+```bash
+gh api user --jq .login
+```
 
 #### 2. Return the Assignee Login
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return its login for the caller's assignment decisions.
 
@@ -214,13 +358,37 @@ One board's field definitions and requested item state.
 
 #### 1. Fetch the Configured Board Fields
 
-Run [Fetch Board Fields](#fetch-board-fields) for the supplied board.
+From the repository checkout, save the supplied board’s fields using its owner, number and destination file.
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" > '<board-fields-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
+```
 
 #### 2. Fetch the Requested Board Item
 
-When a single item is requested for [write confirmation](../conventions.md), run [Fetch Board Item](#fetch-board-item). A list snapshot may lag a write.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+When a single item is requested for [write confirmation](../conventions.md), read it from the repository checkout using the board owner and number, item id and Status field id. A list snapshot may lag a write.
+
+```bash
+gh api "users/<owner>/projectsV2/<board-number>/items/<item-id>?fields=<status-field-id>"
+```
+
+**Example:**
+
+```bash
+gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
+```
 
 #### 3. Return the Board Configuration
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the field definitions and requested current item.
 
@@ -234,13 +402,43 @@ One board item with a confirmed status selection applied.
 
 #### 1. Set the Requested Item Status
 
-Require the caller's confirmed status selection, then run [Set Item Status](#set-item-status) with that selection and the supplied ids.
+Require the caller’s confirmed status selection. From the repository checkout, set it using the supplied board owner and number, item id and status-request file.
+
+The input file meets [Status Request](#status-request), with the supplied Status field id as a JSON integer and the selected option id as a JSON string.
+
+**Example payload:** `{"fields":[{"id":419167630,"value":"OPTION"}]}`.
+
+```bash
+gh api --method PATCH 'users/<owner>/projectsV2/<board-number>/items/<item-id>' --input '<status-input-file>' --jq .id
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'users/<owner>/projectsV2/13/items/1001' --input status-backlog.json --jq .id
+```
 
 #### 2. Re-Read the Updated Board Item
 
-Read the item through [Fetch Board Item](#fetch-board-item), as [Write confirmation](../conventions.md) states.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Read the item as [Write confirmation](../conventions.md) states.
+
+From the repository checkout, read the item using the supplied board owner and number, item id and Status field id.
+
+```bash
+gh api "users/<owner>/projectsV2/<board-number>/items/<item-id>?fields=<status-field-id>"
+```
+
+**Example:**
+
+```bash
+gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
+```
 
 #### 3. Return the Confirmed Item Status
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return its confirmed state or a discrepancy for the caller to resolve.
 
@@ -315,173 +513,3 @@ The local paths a board read writes its JSON into: an issue file, a board fields
 ### Status Request
 
 A JSON file naming the Status field id as an integer and the selected option id as a string: `{"fields":[{"id":<status-field-id>,"value":"<status-option-id>"}]}`.
-
-## Commands
-
-### Find Board Template
-
-Prints the number of the open board with the supplied exact template title.
-
-**Inputs:** Board owner and template title.
-
-```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<template-title>") | .number'
-```
-
-### Copy Board Template
-
-Copies the supplied template into a new open board with the supplied title and prints its number.
-
-**Inputs:** Board owner, template board number and new board title.
-
-- The copy's JSON is one project; `.number` identifies the new board.
-
-```bash
-gh project copy '<template-number>' --source-owner '<owner>' --target-owner '<owner>' --title '<board-title>' --format json --jq .number
-```
-
-### Link Board to Repository
-
-Links one board to the supplied repository.
-
-**Inputs:** Board owner, board number and repository.
-
-```bash
-gh project link '<board-number>' --owner '<owner>' --repo '<repo>'
-```
-
-### Find Proposals Board
-
-Prints the number of the open board with the supplied title.
-
-**Inputs:** Board owner and the [proposals board](../configuration.md#proposals-board) title.
-
-```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title == "<proposals-board-title>") | .number'
-```
-
-### Add Issue to Board
-
-Adds the caller-supplied issue id to a board and prints the new item's id. The input is the issue id, not its number.
-
-**Inputs:** Board owner and number, and issue id.
-
-```bash
-gh api --method POST 'users/<owner>/projectsV2/<board-number>/items' -f type=Issue -F 'id=<issue-id>' --jq .id
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'users/<owner>/projectsV2/13/items' -f type=Issue -F id=3040123456 --jq .id
-```
-
-### Set Item Status
-
-Sets one board item's Status.
-
-**Inputs:** Board owner and number, item id, and input file containing the Status field id and selected option id.
-
-The input body names the Status field id and option id from [Fetch Board Fields](#fetch-board-fields): `{"fields":[{"id":<status-field-id>,"value":"<status-option-id>"}]}`. Substitute the field id as a JSON integer and the option id as a JSON string.
-
-**Example payload:** `{"fields":[{"id":419167630,"value":"OPTION"}]}`.
-
-```bash
-gh api --method PATCH 'users/<owner>/projectsV2/<board-number>/items/<item-id>' --input '<status-input-file>' --jq .id
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'users/<owner>/projectsV2/13/items/1001' --input status-backlog.json --jq .id
-```
-
-### Fetch Board Fields
-
-Saves a board's fields.
-
-**Inputs:** Board owner, board number and destination file.
-
-```bash
-gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" > '<board-fields-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" > fields.json
-```
-
-### Find Theme Board
-
-Prints the number of the open board for one theme, by its theme name after any proposal designator.
-
-**Inputs:** Board owner and theme name.
-
-```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | sub("^\\[P[0-9]+\\] "; "") | startswith("<theme-name>: ")) | .number'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "users/<owner>/projectsV2?per_page=100" --jq '.[] | select(.closed | not) | select(.title | sub("^\\[P[0-9]+\\] "; "") | startswith("Canon: ")) | .number'
-```
-
-### Find Status Field
-
-Prints the id of a board's Status field.
-
-**Inputs:** Board owner and number, and the [Status field](../configuration.md#status-field) name.
-
-```bash
-gh api --paginate "users/<owner>/projectsV2/<board-number>/fields?per_page=100" --jq '.[] | select(.name == "<status-field-name>") | .id'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "users/<owner>/projectsV2/9/fields?per_page=100" --jq '.[] | select(.name == "Status") | .id'
-```
-
-### Fetch Board Items with Status
-
-Saves a board's items with their Status, each carrying its issue whole.
-
-**Inputs:** Board owner and number, Status field id and destination file.
-
-```bash
-gh api --paginate "users/<owner>/projectsV2/<board-number>/items?per_page=100&fields=<status-field-id>" > '<board-items-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "users/<owner>/projectsV2/9/items?per_page=100&fields=419167630" > items.json
-```
-
-### Fetch Board Item
-
-Reads one board item, including its current Status.
-
-**Inputs:** Board owner and number, item id and Status field id.
-
-```bash
-gh api "users/<owner>/projectsV2/<board-number>/items/<item-id>?fields=<status-field-id>"
-```
-
-**Example:**
-
-```bash
-gh api "users/<owner>/projectsV2/9/items/1001?fields=419167630"
-```
-
-### Find User
-
-Prints the login `gh` runs as, the user assigned to work from Ready on.
-
-**Inputs:** Authenticated repository access.
-
-```bash
-gh api user --jq .login
-```

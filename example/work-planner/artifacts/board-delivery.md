@@ -24,9 +24,32 @@ Require the complete pull-request issue-link snapshot; refuse the computation wi
 
 #### 2. Compute the Board Changes
 
-Run [Compute Board Changes](#compute-board-changes), mapping the supplied records and board context to its parameters.
+From `<workspace>`, compute board changes using the supplied initiative, epic and task records, pull request and complete link snapshots, board identity, fields and items, output directory, assignee and resolved off-board issues.
+
+- `--epics`, `--tasks`, `--prs` and `--links` receive the related records and complete link snapshot.
+- `--board`, `--fields` and `--items` identify the current board state.
+- `--out` receives the call files; `--assignee` is the supplied login.
+- `--others` supplies each resolved dependency issue.
+
+Pass each epic or task JSON file as a separate argument after its corresponding flag.
+
+Omit `--others` when there are no resolved off-board issues; otherwise pass every resolved file after it.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board.py '<initiative-json-file>' --epics '<epic-json-file>' --tasks '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --board '<board-identity>' --fields '<board-fields-file>' --items '<board-items-file>' --out '<output-directory>' --assignee '<assignee-login>' --others '<off-board-issue-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board.py issue-936.json --epics issue-943.json issue-937.json --tasks issue-637.json --prs prs.json --links links.json --board 'users/<owner>/projectsV2/9' --fields fields.json --items items.json --out board/ --assignee m2ux
+```
 
 #### 3. Return the Planned Board Calls
+
+Read the helper’s exit code and output. Preserve unresolved references as missing evidence; return any other execution error without applying calls.
 
 Return the generated calls and unresolved references, meeting [Fields](#fields). The caller gathers missing evidence, applies changes and confirms them as [Write confirmation](../conventions.md) states.
 
@@ -114,30 +137,3 @@ The result contains calls for issues to add, items to remove, Status to set and 
 ### Missing Evidence
 
 Unresolved issue references identify dependency records the caller must supply before a complete result. A newly added issue receives its status on a subsequent pass using refreshed items.
-
-## Commands
-
-### Compute Board Changes
-
-Computes membership, Status and assignee calls from supplied delivery evidence.
-
-**Inputs:** Initiative JSON, epic and task JSON records, pull request and complete issue-link snapshots, board identity, board fields and items, output directory, assignee login and resolved off-board issue records.
-
-- `--epics`, `--tasks`, `--prs` and `--links` receive the related records and complete link snapshot.
-- `--board`, `--fields` and `--items` identify the current board state.
-- `--out` receives the call files; `--assignee` is the supplied login.
-- `--others` supplies each resolved dependency issue.
-
-Pass each epic or task JSON file as a separate argument after its corresponding flag.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board.py '<initiative-json-file>' --epics '<epic-json-file>' --tasks '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --board '<board-identity>' --fields '<board-fields-file>' --items '<board-items-file>' --out '<output-directory>' --assignee '<assignee-login>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board.py issue-936.json --epics issue-943.json issue-937.json --tasks issue-637.json --prs prs.json --links links.json --board 'users/<owner>/projectsV2/9' --fields fields.json --items items.json --out board/ --assignee m2ux
-```

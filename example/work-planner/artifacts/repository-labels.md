@@ -20,19 +20,31 @@ The required label definitions available for issue publication.
 
 #### 1. List the Repository Labels
 
-Run [List Labels](#list-labels) for the repository.
+From the repository checkout, list its labels using the supplied owner and repository.
+
+```bash
+gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
+```
 
 #### 2. Compare Required Label Names
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Compare the returned labels with the supplied required names.
 
 #### 3. Create Absent Required Labels
 
-Run [Create Label](#create-label) for each absent required definition.
+From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s exit code and output before the next label; return a failure immediately.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
+```
 
 #### 4. Return the Available Labels
 
-Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Return the observed existing labels and successful creations. When every required label already exists, return that observed set. An unknown definition is a finding for the caller to resolve before publication.
 
 ## Fields
 
@@ -43,25 +55,3 @@ One repository, written `<owner>/<repo>`.
 ### Label Identity
 
 Each label has a name, colour and description. Issue assignments use labels that exist in the repository.
-
-## Commands
-
-### List Labels
-
-Lists the labels that exist in the repository.
-
-**Inputs:** Repository.
-
-```bash
-gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
-```
-
-### Create Label
-
-Creates the label specified by its name, colour and description.
-
-**Inputs:** Repository, label name, colour and description.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
-```

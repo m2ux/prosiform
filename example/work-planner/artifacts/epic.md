@@ -44,9 +44,25 @@ The delivery findings for one epic from supplied evidence.
 
 #### 1. Match Epic Pull Requests
 
-Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
+From `<workspace>`, inspect the epic JSON using the supplied pull request records as `--prs` and complete link snapshot as `--links`.
+
+- Results follow [Delivery Findings](#delivery-findings).
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json
+```
 
 #### 2. Return the Inspected Delivery Findings
+
+Read the helper’s exit code and output; return execution failures as blockers and retain delivery findings as evidence.
 
 Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
@@ -124,7 +140,6 @@ Return the completion result in [Delivery State](#delivery-state), identifying r
 
 Task-to-pull-request pairs identifying the epic task id and delivering pull request, with each match marked confirmed or pending.
 
-
 ### Prerequisite Evidence
 
 Each prerequisite has its issue identity and completion state, expected delivery bases and their merge evidence. The result identifies confirmed and missing conditions for the candidate epic.
@@ -154,25 +169,3 @@ The epic is identified by its repository and issue number. Its state contains ta
 An unmet row links a merged pull request while a covered criterion remains unticked. A linked pull request naming another epic is a conflict and delivers its linked task once merged. A missing linked pull request leaves the supplied evidence incomplete.
 
 A coverage disagreement identifies the pull request and row, a criterion absent from either the test plan or row Coverage, an empty Test cell, or prose assigning the criterion to another task. Recording links, verified criteria and Done continues despite that finding.
-
-## Commands
-
-### Match Pull Requests
-
-Reports an epic's delivery state against the pull requests that name it.
-
-**Inputs:** Epic JSON, pull request records and complete issue-link snapshot.
-
-- Results follow [Delivery Findings](#delivery-findings).
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json
-```

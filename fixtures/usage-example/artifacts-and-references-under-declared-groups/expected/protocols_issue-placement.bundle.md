@@ -238,9 +238,36 @@ Use the supplied local drafts when reviewing unpublished work.
 
 - For published issues, fetch the initiative and each epic body with [Read Tracker Issue](#read-tracker-issue).
 - Read each task row's work-item file from the planning record that registered it, as its [Artifacts](#artifacts-1) list it. The record holds one per task whatever that row currently links, so contention is measured rather than reported as unchecked.
-- Run [Check Dependencies](#check-dependencies) with the initiative body, every epic body, every work-item file read and each record file accounting for independent pairs.
+
+From `<workspace>`, check dependencies using the initiative body, every epic id and body, every task id and work-item file read, and each planning-record file accounting for independent pairs.
+
+- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
+
+- Initiative edges follow the [whole-epic prerequisite rule](#work-breakdown); narrower dependencies stay in the task graph.
+- It also reports dependencies listed twice or already implied, and Joins pairs.
+- It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
+- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
+- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
+- A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
+- It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
+- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
+- It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md R=/records/joins.md
+```
 
 ##### 2. Settle Dependency Findings
+
+Read the dependency checker’s exit code and output. Treat reported dependency or numbering problems as findings to settle; return an unreadable input or invocation failure as a blocker.
 
 Settle each finding through [Settle Plan Change](#settle-plan-change), with the correction below as its recommended option, the affected issue identities, the supplied allowance and the current change list.
 
@@ -257,12 +284,48 @@ Settle each finding through [Settle Plan Change](#settle-plan-change), with the 
 
 Require explicit authorization for each supplied outside-initiative file before editing it. Renumber the confirmed maps, preserving the numbers [Numbering Map](#numbering-map) protects.
 
-- For a confirmed epic map, run [Renumber Epics](#renumber-epics) with current pull request records and every affected body.
-- For a confirmed task map, run [Renumber Tasks](#renumber-tasks) with the initiative and epic identities, owning epic body, confirmed old-to-new task-number map and every affected body file.
+For a confirmed epic map, run the renumberer from `<workspace>` with the initiative number, current pull request records, confirmed map, every affected body and any explicitly authorized outside-initiative files.
+
+- The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
+- Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
+```
+
+For a confirmed task map, run the renumberer from `<workspace>` with the initiative and epic numbers, owning epic body, confirmed old-to-new task map and every affected body file.
+
+- `<task-number-map>` is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each affected body file as a separate argument.
+
+- It renumbers `<epic-id> Wxx` and `<epic-id>:Wxx` everywhere, and bare `Wxx` inside that epic's own body. **Example:** for `E01`, the qualified forms are `E01 Wxx` and `E01:Wxx`.
+- The map assigns each old task number a distinct new number. A source absent from the files or a duplicate destination is refused.
+- Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
+- Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
+```
+
 - Re-sort rewritten tables.
 - Inspect every reported range.
 - Search prose for references the script cannot see.
-- Repeat Check Dependencies after each edge or numbering change until it reports no problem but the held findings.
+- Repeat [1. Gather Bodies and Check Dependencies](#1-gather-bodies-and-check-dependencies) after each edge or numbering change, using the current bodies, until it reports no problem but the held findings.
 - Return the checked bodies, the printed longest chains, each printed contending pair, the proposed [Epic Priority](#epic-priority) map, the updated change list and the unresolved findings to the caller; do not publish a failed renumbering.
 
 ### Fields
@@ -327,84 +390,6 @@ Every pair of tasks in an epic where neither depends on the other is named in th
 
 A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
 
-### Commands
-
-#### Check Dependencies
-
-Checks the task dependency graph across the epics given, and with `I=` the initiative's Depends on cells.
-
-**Inputs:** Initiative body file, each epic id with its body file, each task id with its work-item file, and each planning-record file accounting for independent pairs.
-
-- Keep `I=` for the initiative. Repeat the `<epic-id>=<epic-body-file>` argument once per epic, the `<epic-id>:<task-id>=<work-item-file>` argument once per work item, and `R=<record-file>` once per record.
-
-- Initiative edges follow the [whole-epic prerequisite rule](#work-breakdown); narrower dependencies stay in the task graph.
-- It also reports dependencies listed twice or already implied, and Joins pairs.
-- It prints each pair of tasks in an epic where neither depends on the other, the two do not name each other in Joins, and no `R=` record accounts for the pair. Each line names both resolutions, as [Joins](#joins) states. A record accounts for a pair by naming both ids on one of its lines, and an `R=` file it cannot read is a problem.
-- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
-- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
-- A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
-- It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
-- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
-- It reads bodies from [Read Tracker Issue](#read-tracker-issue), or local drafts.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py 'I=<initiative-body-file>' '<epic-id>=<epic-body-file>' '<epic-id>:<task-id>=<work-item-file>' 'R=<record-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deps.py I=/drafts/live-936.md E00=/drafts/live-943.md E01=/drafts/live-937.md E00:W01=/drafts/e00/w01.md E01:W01=/drafts/e01/w01.md R=/records/joins.md
-```
-
-#### Renumber Tasks
-
-Renumbers one epic's tasks by the map given, in the files given.
-
-**Inputs:** Initiative number, epic number, epic body file, task-number map and affected body files.
-
-- `<task-number-map>` is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each affected body file as a separate argument.
-
-- It renumbers `<epic-id> Wxx` and `<epic-id>:Wxx` everywhere, and bare `Wxx` inside that epic's own body. **Example:** for `E01`, the qualified forms are `E01 Wxx` and `E01:Wxx`.
-- The map assigns each old task number a distinct new number. A source absent from the files or a duplicate destination is refused.
-- Append `--outside` followed by each explicitly authorized outside-initiative body file when supplied; only this initiative's prefixed references change there.
-- Only rows no pull request names may be renumbered. Inspect the rewritten files before publishing them.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --epic '<epic-number>' --own '<epic-body-file>' --tasks '<task-number-map>' '<affected-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --epic 1 --own live-937.md --tasks 7:3,3:5 live-*.md
-```
-
-#### Renumber Epics
-
-Renumbers an initiative's epics across supplied body files.
-
-**Inputs:** Initiative number, current pull request records, confirmed epic-number map, body files and explicitly authorized outside-initiative files when present.
-
-- The map is a comma-separated list of `<old-number>:<new-number>` pairs. Pass each body file as a separate argument; append `--outside` followed by each outside-initiative file when supplied.
-- Files are rewritten in place. Outside files change only references carrying this initiative's prefix; links retain their targets. A collision or a number already named by a pull request is refused.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative '<initiative-number>' --prs '<pull-request-records-file>' --map '<epic-number-map>' '<body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/renumber.py --initiative 07 --prs prs.json --map 6:0,0:1 live-936.md live-943.md
-```
-
 ## Issue
 
 ### Operations
@@ -419,11 +404,51 @@ The current issue, its saved body and discussion.
 
 ##### 1. Fetch the Tracker Issue
 
-Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
+Select the command for the requested response shape, using the issue number and destination file.
+
+For a complete JSON response, run this query from the repository checkout using the supplied repository, issue number and destination JSON file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
+```
+
+For the body alone, run this query from the repository checkout using the supplied repository, issue number and destination body file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' --jq .body > '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' --jq .body > live-943.md
+```
 
 ##### 2. Fetch the Issue Comments
 
-Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+When the request depends on the discussion, fetch every comment from the repository checkout using the supplied repository and issue number.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/issues/<issue-number>/comments'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/issues/874/comments'
+```
+
+##### 3. Return the Issue Read
+
+Read each requested response and its exit code; return the issue record and any requested comments, or the failed read as missing evidence. When no discussion was requested, return the issue record alone.
 
 #### Save Tracker Issue
 
@@ -445,21 +470,101 @@ Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the
 
 ##### 3. Create New Issue
 
-For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
+For a new issue, run this creation command from the repository checkout using the supplied title, existing labels and complete body file as [Bodies](#conventions) states.
+
+Repeat `-f 'labels[]=<label>'` for each supplied label.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F 'body=@<body-file>' -f 'labels[]=<label>' --jq .number
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F body=@body.md -f 'labels[]=<label>' --jq .number
+```
 
 ##### 4. Update the Existing Issue
 
-For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+For an existing issue, run each command whose field is being changed, preserving all other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied issue identity.
+
+When changing the issue body, run this update from the repository checkout using its repository, number and complete body file as [Bodies](#conventions) states.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -F 'body=@<body-file>' --jq .number
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -F body=@body.md --jq .number
+```
+
+When changing the issue title, run this update from the repository checkout using its repository, number and complete new title.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f title='<title>' --jq .title
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f title='<title>' --jq .title
+```
+
+For each requested label addition, run this command from the repository checkout using the issue’s repository, number and existing label names.
+
+Repeat `-f 'labels[]=<label>'` for each supplied label.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/labels' -f 'labels[]=<label>' --jq '.[].name'
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/943/labels' -f 'labels[]=<label>' --jq '.[].name'
+```
+
+For each requested label removal, run this command from the repository checkout using the issue’s repository, number and label name.
+
+```bash
+gh api --method DELETE 'repos/<owner>/<repo>/issues/<issue-number>/labels/<label>' --jq '.[].name'
+```
+
+**Example:**
+
+```bash
+gh api --method DELETE 'repos/<owner>/<repo>/issues/943/labels/<label>' --jq '.[].name'
+```
 
 ##### 5. Comment on the Saved Issue
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 
 ##### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](#conventions) states.
+As [Write confirmation](#conventions) states, read the saved issue.
+
+From the repository checkout, save the current issue using its repository, number and supplied destination JSON file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
+```
 
 ##### 7. Compare the Saved Issue Fields
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Compare the saved fields with the intended body and metadata.
 
@@ -481,11 +586,39 @@ Apply [Comment on Issue](#comment-on-issue) with the destination reference and s
 
 ##### 3. Close the Issue as Not Planned
 
-Run [Close as Not Planned](#close-as-not-planned), retaining the issue's body.
+With confirmed evidence that the destination tracks the work, run this closure from the repository checkout using the issue’s repository and number, retaining its body.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f state=closed -f state_reason=not_planned --jq .state
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/874' -f state=closed -f state_reason=not_planned --jq .state
+```
 
 ##### 4. Re-Read the Transferred Issue
 
-Re-read it with [Fetch Tracker Issue](#fetch-tracker-issue) for its state and reason, as [Write confirmation](#conventions) states.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Re-read it with Fetch Tracker Issue for its state and reason, as [Write confirmation](#conventions) states.
+
+From the repository checkout, save the current issue using its repository, number and supplied destination JSON file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
+```
+
+##### 5. Confirm the Transferred Issue State
+
+Read the final fetch exit code and response. Return a read failure or discrepancy unless the issue is closed with reason `not_planned`; otherwise return the confirmed closed issue with its retained body.
 
 #### Comment on Issue
 
@@ -502,11 +635,33 @@ When replying to feedback already folded into the body, compose a precise, factu
 ##### 2. Publish the Issue Comment
 
 Publish the supplied comment:
+For a one-line comment, post its exact text from the repository checkout using the supplied repository and issue number.
 
-- For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
-- For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -f body='<comment-text>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/637/comments' -f body='Delivered by #950.' --jq .html_url
+```
+
+For a longer comment, post the complete supplied file from the repository checkout using the repository and issue number, as [Bodies](#conventions) states.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -F 'body=@<comment-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/874/comments' -F body=@comment-874.md --jq .html_url
+```
 
 ##### 3. Return the Comment URL
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the saved comment URL.
 
@@ -547,188 +702,6 @@ The issue tracking another issue's work: its [identity](#issue-identity) and sav
 #### Review Feedback
 
 The reviewer's login and each point they raised in an issue's discussion.
-
-### Commands
-
-#### Create Tracker Issue
-
-Creates an issue from a body file, with its title and labels, and prints its number.
-
-**Inputs:** Repository, populated body file, title and existing label names.
-
-Repeat `-f 'labels[]=<label>'` for each supplied label.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F 'body=@<body-file>' -f 'labels[]=<label>' --jq .number
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F body=@body.md -f 'labels[]=<label>' --jq .number
-```
-
-#### Patch Issue Body
-
-Replaces an issue's body from a file.
-
-**Inputs:** Repository, issue number and complete populated body file.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -F 'body=@<body-file>' --jq .number
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -F body=@body.md --jq .number
-```
-
-#### Fetch Issue Body
-
-Saves an issue's body alone.
-
-**Inputs:** Repository, issue number and destination file.
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/<issue-number>' --jq .body > '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/943' --jq .body > live-943.md
-```
-
-#### Retitle Tracker Issue
-
-Replaces an issue's title.
-
-**Inputs:** Repository, issue number and complete title.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f title='<title>' --jq .title
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f title='<title>' --jq .title
-```
-
-#### Add Issue Labels
-
-Adds labels to an issue.
-
-**Inputs:** Repository, issue number and existing label names.
-
-Repeat `-f 'labels[]=<label>'` for each supplied label.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/labels' -f 'labels[]=<label>' --jq '.[].name'
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/943/labels' -f 'labels[]=<label>' --jq '.[].name'
-```
-
-#### Remove Issue Label
-
-Removes one label from an issue.
-
-**Inputs:** Repository, issue number and label name.
-
-```bash
-gh api --method DELETE 'repos/<owner>/<repo>/issues/<issue-number>/labels/<label>' --jq '.[].name'
-```
-
-**Example:**
-
-```bash
-gh api --method DELETE 'repos/<owner>/<repo>/issues/943/labels/<label>' --jq '.[].name'
-```
-
-#### Fetch Issue Comments
-
-Prints an issue's comments.
-
-**Inputs:** Repository and issue number.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/issues/<issue-number>/comments'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/issues/874/comments'
-```
-
-#### Fetch Tracker Issue
-
-Saves an issue whole, as JSON, for the scripts that read issues.
-
-**Inputs:** Repository, issue number and destination JSON file.
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
-```
-
-#### Close as Not Planned
-
-Closes an issue whose work another issue tracks.
-
-**Inputs:** Issue identity and confirmed evidence that the work is tracked by its recorded destination.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f state=closed -f state_reason=not_planned --jq .state
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/874' -f state=closed -f state_reason=not_planned --jq .state
-```
-
-#### Post Inline Comment
-
-Posts one line of exact comment text and returns its URL.
-
-**Inputs:** Repository, issue number and one-line comment text.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -f body='<comment-text>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/637/comments' -f body='Delivered by #950.' --jq .html_url
-```
-
-#### Post Comment File
-
-Posts a complete comment file and returns its URL.
-
-**Inputs:** Repository, issue number and exact comment file.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -F 'body=@<comment-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/874/comments' -F body=@comment-874.md --jq .html_url
-```
 
 ## Initiative Issue Body
 
@@ -971,18 +944,29 @@ One planning directory and its artifact inventory.
 
 ##### 1. Prepare the Selected Planning Record
 
-Prepare the selected record:
+For a new record, run this command from the engineering worktree with the caller-composed [Record Folder](#record-folder) path.
 
-- For a new record:
-  - Create the folder with [Add Planning Record](#add-planning-record).
-  - Populate README.md from the [Template](#template-1).
-- For an existing record:
-  - Read its README, retaining its creation date, other artifacts and links.
-  - Update only the supplied content.
-- The folder must meet [Layout](#layout).
-- All populated README fields must meet [Fields](#fields-4).
+```bash
+mkdir -p '<planning-folder-path>'
+```
 
-##### 2. Register the Supplied Artifact Files
+**Example:**
+
+```bash
+mkdir -p artifacts/planning/2026-10-15-950-queue-plan
+```
+
+##### 2. Populate the Record Entry Point
+
+For a new record, inspect the folder-creation result. Return any error without writing or publishing further files. On success, populate README.md from the [Template](#template-1).
+
+For an existing record, read its README, retaining its creation date, other artifacts and links.
+
+- Update only the supplied content.
+
+For either kind of record, the folder must meet [Layout](#layout), and every populated README field must meet [Fields](#fields-4).
+
+##### 3. Register the Supplied Artifact Files
 
 Register the artifact files supplied by the caller, using their chosen names.
 
@@ -990,11 +974,11 @@ Register the artifact files supplied by the caller, using their chosen names.
 - File content remains supplied by the caller; this operation does not author that artifact's content.
 - Delete each artifact the caller names as removed, with its row.
 
-##### 3. Publish the Populated Planning Record
+##### 4. Publish the Populated Planning Record
 
 When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
 
-##### 4. Return the Planning Record Folder
+##### 5. Return the Planning Record Folder
 
 Return the folder path, and the publication result when it published.
 
@@ -1008,19 +992,46 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 ##### 1. Find the Publishing Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on, with the [engineering branch](#engineering-branch) name.
+From any project checkout, list the worktree for the configured [engineering branch](#engineering-branch).
+
+- The engineering branch has one long-lived worktree and takes no further one.
+
+```bash
+git worktree list | grep '\[<engineering-branch>\]'
+```
 
 ##### 2. Commit the Planning Record Folder
 
-Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
+Inspect the worktree lookup. Return a lookup error or missing-worktree finding before any write. Use the returned path as `<engineering-worktree>`.
 
-- Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
+Stage and commit the supplied folder with the supplied message file. Resolve the message file against the engineering worktree, or pass its absolute path.
+
+- Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
+- Pass the message as [Bodies](#conventions) states. The worktree is a linked one, so git writes here run unsandboxed.
+
+```bash
+cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
+```
+
+**Example:**
+
+```bash
+cd .engineering && git add artifacts/planning/2026-10-15-950-queue-plan && git commit -F msg.txt -- artifacts/planning/2026-10-15-950-queue-plan
+```
 
 ##### 3. Push the Engineering Branch
 
-Run [Push Engineering Branch](#push-engineering-branch).
+Inspect the commit result; return a failure without pushing. Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree), then push from the engineering worktree.
 
-- Report a push that will not fast-forward rather than rewriting the branch.
+- Planning records go straight to the branch; they take no pull request.
+
+```bash
+cd '<engineering-worktree>' && git push
+```
+
+##### 4. Return the Publication Result
+
+Inspect the push result. Report a non-fast-forward refusal or other push failure without rewriting the branch. Return the published commit and record path only after a successful push.
 
 ### Fields
 
@@ -1094,6 +1105,12 @@ External references only: a tracker issue, a parent epic, a pull request. An art
 
 #### Record Folder
 
+- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](#engineering-branch). The date is the day the record is opened.
+- `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
+- The slug is lowercase words separated by hyphens, a short name of the work.
+- The folder's files are the [planning layout](#layout).
+- Edits are made on that worktree. The engineering branch takes no further worktree and no branch.
+
 One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` under the [records folder](#engineering-branch). The date is the day the record opened. The reference is the bare number of the issue or pull request the record is for, absent for ad hoc work. The slug is lowercase hyphenated words naming the work. The folder's name is the record identity.
 
 #### Commit Message
@@ -1103,73 +1120,6 @@ A file holding the message of the commit that publishes the record, as [Bodies](
 #### Publication
 
 The engineering-branch commit holding the record's folder, pushed to its remote.
-
-### Commands
-
-#### Find Engineering Worktree
-
-Prints the checkout holding the engineering branch, which is where every planning record is written.
-
-**Inputs:** Any checkout of the project and the [engineering branch](#engineering-branch) name.
-
-- The engineering branch has one long-lived worktree and takes no further one.
-
-```bash
-git worktree list | grep '\[<engineering-branch>\]'
-```
-
-#### Commit Planning Record
-
-Stages and commits one planning folder on the engineering worktree.
-
-**Inputs:** Engineering worktree, planning-folder path and a commit message file.
-
-- Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message as [Bodies](#conventions) states. The worktree is a linked one, so git writes here run unsandboxed.
-
-```bash
-cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
-```
-
-**Example:**
-
-```bash
-cd .engineering && git add artifacts/planning/2026-10-15-950-queue-plan && git commit -F msg.txt -- artifacts/planning/2026-10-15-950-queue-plan
-```
-
-#### Push Engineering Branch
-
-Publishes the engineering branch so a record's links resolve.
-
-**Inputs:** Engineering worktree.
-
-- Planning records go straight to the branch; they take no pull request.
-
-```bash
-cd '<engineering-worktree>' && git push
-```
-
-#### Add Planning Record
-
-Adds the folder for one planning record on the long-lived engineering worktree.
-
-**Inputs:** Engineering worktree and planning-folder path composed from the date, optional issue or pull request number, and slug.
-
-- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](#engineering-branch). The date is the day the record is opened.
-- `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
-- The slug is lowercase words separated by hyphens, a short name of the work.
-- The folder's files are the [planning layout](#layout).
-- Edits are made on that worktree. The engineering branch takes no further worktree and no branch.
-
-```bash
-mkdir -p '<planning-folder-path>'
-```
-
-**Example:**
-
-```bash
-mkdir -p artifacts/planning/2026-10-15-950-queue-plan
-```
 
 ## Plan Change
 
@@ -1349,12 +1299,34 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 ##### 1. Run Sync Epic
 
-Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output body file to `--fix`.
+
+- A row whose id links its task issue links the pull request instead.
+- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
+- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
+- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
+- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
+
+`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
+```
 
 - Omit `--tasks` when no row has its own task issue; otherwise supply each task issue's record.
 - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown-1).
 
 ##### 2. Return the Epic Delivery Findings
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
@@ -1368,9 +1340,25 @@ Verified criteria and completed rows in one epic body.
 
 ##### 1. Run Tick Epic Criteria
 
-Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+From `<workspace>`, update the epic JSON with records as `--prs`, snapshot as `--links`, verified criterion ids as `--tick` and output body file as `--fix`. Refuse criteria not ready to verify.
+
+`<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
+```
 
 ##### 2. Return the Epic Body and Refused Criteria
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -1388,9 +1376,28 @@ Require the caller's confirmed unit and existing planning folder. Refuse a row a
 
 ##### 2. Run Reserve Row
 
-Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
+From `<workspace>`, reserve the confirmed task ids using the epic as `--epic`, ids as `--reserve`, supplied records base URL as `--records`, record date as `--date` and output body file as `--fix`.
+
+- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
+- The caller supplies the planned folder identity; `--date` is the day it is opened.
+
+`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](#engineering-branch) on the engineering branch.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --date '<record-date>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records 'https://github.com/<owner>/<repo>/tree/engineering/artifacts/planning' --fix fixed-943.md
+```
 
 ##### 3. Return the Reserved Epic Body
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
@@ -1408,9 +1415,27 @@ Require the user's explicit decision releasing the hold, and refuse any row that
 
 ##### 2. Run Release Row
 
-Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
+From `<workspace>`, release the authorized held task ids using the epic as `--epic`, ids as `--release` and output body file as `--fix`.
+
+- The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
+
+`<task-ids>` is a comma-separated list of task ids.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
+```
 
 ##### 3. Publish the Released Epic Body
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Publish the returned body through [Save Tracker Issue](#save-tracker-issue).
 
@@ -1685,99 +1710,6 @@ Each criterion a delivered row left unmet, with its missing evidence and one dis
 - **Further task.** A further task row adopts it, meeting [Task grain](#work-breakdown-1).
 - **Pending.** The decision or the further task's draft is unanswered.
 
-### Commands
-
-#### Sync Epic
-
-Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
-
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
-
-- A row whose id links its task issue links the pull request instead.
-- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
-- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
-- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
-- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
-
-`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
-```
-
-#### Tick Epic Criteria
-
-Ticks confirmed epic criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
-
-`<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
-```
-
-#### Reserve Row
-
-Holds each named task row for one session, by setting its record folder as the row's single link.
-
-**Inputs:** Epic JSON, confirmed reservable task ids, planning-folder identity, record date, records base URL and output body file.
-
-- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
-- The caller supplies the planned folder identity; `--date` is the day it is opened.
-
-`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](#engineering-branch) on the engineering branch.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records 'https://github.com/<owner>/<repo>/tree/engineering/artifacts/planning' --fix fixed-943.md
-```
-
-#### Release Row
-
-Frees each named task row, by replacing the planning-folder link with its work-item file link.
-
-**Inputs:** Epic JSON, confirmed held task ids, authorized release and output body file.
-
-- The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
-
-`<task-ids>` is a comma-separated list of task ids.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
-```
-
 ## Task Body
 
 ### Operations
@@ -1950,7 +1882,26 @@ Check each section of the issue against the field conditions for its kind and ag
 
 ##### 2. Check the Changed Body Formats
 
-Run [Check Body Format](#check-body-format) on every issue the round changed.
+From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result before the next issue; retain format findings and stop on an unreadable input or invocation failure.
+
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
+
+##### 3. Return the Body Check Findings
+
+Read each format-check exit code and output. Return its format findings with the field findings; report an unreadable input or failed invocation as a blocker.
 
 #### Validate Issue Body
 
@@ -1962,9 +1913,26 @@ One body checked against its supplied kind and template.
 
 ##### 1. Run the Body Format Check
 
-Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
+From `<workspace>`, check the supplied issue JSON with its kind’s additional format inputs and the output body file as `--fix`.
+
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
 
 ##### 2. Review the Body Field Conditions
+
+Read the format checker’s exit code, findings and corrected body. Return an unreadable input or invocation failure as a blocker; retain format findings for the review.
 
 Review the body against the supplied field conditions.
 
@@ -2138,29 +2106,6 @@ The decision taken on each non-mechanical finding or open question: content to a
 
 Changes a body correction needs outside that body: a tracker-kind change, a title or label change, or an edit to another issue's body, each naming the issue it applies to.
 
-### Commands
-
-#### Check Body Format
-
-Checks one issue against its template, and with `--fix` writes the body with the mechanical fixes made.
-
-**Inputs:** Issue JSON, local output body file and the additional format inputs supplied by the kind.
-
-- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
-- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
-```
-
 ## Pull Request
 
 ### Fields
@@ -2182,6 +2127,30 @@ A local JSON-lines file at its path, one pull request's REST record per line. An
 #### Issue-Link Snapshot
 
 A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
+
+The JSON array has this shape. Numbers are JSON integers. Every pull request includes all linked issues; an empty array denotes a complete relation with no linked issues. Each repository belongs to its pull request or issue.
+
+```text
+[
+  {
+    "repo": "<pull-request-owner>/<pull-request-repo>",
+    "number": <pull-request-number>,
+    "closingIssuesReferences": [{"repo": "<issue-owner>/<issue-repo>", "number": <issue-number>}]
+  }
+]
+```
+
+**Example payload:**
+
+```json
+[
+  {
+    "repo": "owner/repo",
+    "number": 950,
+    "closingIssuesReferences": [{"repo": "owner/repo", "number": 637}]
+  }
+]
+```
 
 ## Work Item
 
@@ -2208,19 +2177,31 @@ The required label definitions available for issue publication.
 
 ##### 1. List the Repository Labels
 
-Run [List Labels](#list-labels) for the repository.
+From the repository checkout, list its labels using the supplied owner and repository.
+
+```bash
+gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
+```
 
 ##### 2. Compare Required Label Names
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Compare the returned labels with the supplied required names.
 
 ##### 3. Create Absent Required Labels
 
-Run [Create Label](#create-label) for each absent required definition.
+From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s exit code and output before the next label; return a failure immediately.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
+```
 
 ##### 4. Return the Available Labels
 
-Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Return the observed existing labels and successful creations. When every required label already exists, return that observed set. An unknown definition is a finding for the caller to resolve before publication.
 
 ### Fields
 
@@ -2231,28 +2212,6 @@ One repository, written `<owner>/<repo>`.
 #### Label Identity
 
 Each label has a name, colour and description. Issue assignments use labels that exist in the repository.
-
-### Commands
-
-#### List Labels
-
-Lists the labels that exist in the repository.
-
-**Inputs:** Repository.
-
-```bash
-gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
-```
-
-#### Create Label
-
-Creates the label specified by its name, colour and description.
-
-**Inputs:** Repository, label name, colour and description.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
-```
 
 ## Proposal Body
 

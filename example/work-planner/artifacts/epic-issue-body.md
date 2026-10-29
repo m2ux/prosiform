@@ -59,11 +59,34 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 #### 1. Run Sync Epic
 
-Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output body file to `--fix`.
+
+- A row whose id links its task issue links the pull request instead.
+- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
+- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
+- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
+- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
+
+`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
+```
+
 - Omit `--tasks` when no row has its own task issue; otherwise supply each task issue's record.
 - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 
 #### 2. Return the Epic Delivery Findings
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the updated body and [Delivery Findings](epic.md#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
@@ -77,9 +100,25 @@ Verified criteria and completed rows in one epic body.
 
 #### 1. Run Tick Epic Criteria
 
-Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+From `<workspace>`, update the epic JSON with records as `--prs`, snapshot as `--links`, verified criterion ids as `--tick` and output body file as `--fix`. Refuse criteria not ready to verify.
+
+`<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
+```
 
 #### 2. Return the Epic Body and Refused Criteria
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -97,9 +136,28 @@ Require the caller's confirmed unit and existing planning folder. Refuse a row a
 
 #### 2. Run Reserve Row
 
-Run [Reserve Row](#reserve-row) with the epic as `--epic`, ids as `--reserve`, supplied base URL as `--records`, record date as `--date` and output as `--fix`.
+From `<workspace>`, reserve the confirmed task ids using the epic as `--epic`, ids as `--reserve`, supplied records base URL as `--records`, record date as `--date` and output body file as `--fix`.
+
+- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
+- The caller supplies the planned folder identity; `--date` is the day it is opened.
+
+`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](../configuration.md#engineering-branch) on the engineering branch.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --date '<record-date>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records 'https://github.com/<owner>/<repo>/tree/engineering/artifacts/planning' --fix fixed-943.md
+```
 
 #### 3. Return the Reserved Epic Body
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body with the folder as each row's single link, meeting [Task Delivery](#task-delivery).
 
@@ -117,9 +175,27 @@ Require the user's explicit decision releasing the hold, and refuse any row that
 
 #### 2. Run Release Row
 
-Run [Release Row](#release-row) with the epic as `--epic`, ids as `--release` and output as `--fix`.
+From `<workspace>`, release the authorized held task ids using the epic as `--epic`, ids as `--release` and output body file as `--fix`.
+
+- The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
+
+`<task-ids>` is a comma-separated list of task ids.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
+```
 
 #### 3. Publish the Released Epic Body
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Publish the returned body through [Save Tracker Issue](issue.md#save-tracker-issue).
 
@@ -387,94 +463,3 @@ Each criterion a delivered row left unmet, with its missing evidence and one dis
 - **Holds.** The user confirms it already holds; the delivered task retains it, awaiting verification and ticking.
 - **Further task.** A further task row adopts it, meeting [Task grain](#work-breakdown).
 - **Pending.** The decision or the further task's draft is unanswered.
-
-## Commands
-
-### Sync Epic
-
-Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
-
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
-
-- A row whose id links its task issue links the pull request instead.
-- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
-- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
-- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
-- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
-
-`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
-```
-
-### Tick Epic Criteria
-
-Ticks confirmed epic criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
-
-`<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
-```
-
-### Reserve Row
-
-Holds each named task row for one session, by setting its record folder as the row's single link.
-
-**Inputs:** Epic JSON, confirmed reservable task ids, planning-folder identity, record date, records base URL and output body file.
-- `--records` is the URL of the planning records folder, needed when no row id in the epic links a record.
-- The caller supplies the planned folder identity; `--date` is the day it is opened.
-
-`<task-ids>` is a comma-separated list of task ids; `<records-base-url>` is the URL of the [records folder](../configuration.md#engineering-branch) on the engineering branch.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --reserve '<task-ids>' --records '<records-base-url>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --reserve W01,W02 --records 'https://github.com/<owner>/<repo>/tree/engineering/artifacts/planning' --fix fixed-943.md
-```
-
-### Release Row
-
-Frees each named task row, by replacing the planning-folder link with its work-item file link.
-
-**Inputs:** Epic JSON, confirmed held task ids, authorized release and output body file.
-- The file is the task id in lowercase within that folder, as [Task ids](#task-delivery) defines.
-
-`<task-ids>` is a comma-separated list of task ids.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic '<epic-json-file>' --release '<task-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/deliver.py --epic issue-943.json --release W01 --fix fixed-943.md
-```

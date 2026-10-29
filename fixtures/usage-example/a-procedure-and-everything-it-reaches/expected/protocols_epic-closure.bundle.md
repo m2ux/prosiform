@@ -260,9 +260,25 @@ The delivery findings for one epic from supplied evidence.
 
 ##### 1. Match Epic Pull Requests
 
-Run [Match Pull Requests](#match-pull-requests) with the epic JSON, pull request records as `--prs` and link snapshot as `--links`.
+From `<workspace>`, inspect the epic JSON using the supplied pull request records as `--prs` and complete link snapshot as `--links`.
+
+- Results follow [Delivery Findings](#delivery-findings).
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json
+```
 
 ##### 2. Return the Inspected Delivery Findings
+
+Read the helper’s exit code and output; return execution failures as blockers and retain delivery findings as evidence.
 
 Return the [Delivery Findings](#delivery-findings); missing linked pull requests are missing evidence for the caller to supply.
 
@@ -342,28 +358,6 @@ An unmet row links a merged pull request while a covered criterion remains untic
 
 A coverage disagreement identifies the pull request and row, a criterion absent from either the test plan or row Coverage, an empty Test cell, or prose assigning the criterion to another task. Recording links, verified criteria and Done continues despite that finding.
 
-### Commands
-
-#### Match Pull Requests
-
-Reports an epic's delivery state against the pull requests that name it.
-
-**Inputs:** Epic JSON, pull request records and complete issue-link snapshot.
-
-- Results follow [Delivery Findings](#delivery-findings).
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json
-```
-
 ## Delivery Evidence
 
 ### Operations
@@ -420,12 +414,34 @@ One epic body with supplied delivery matches and completed rows recorded.
 
 ##### 1. Run Sync Epic
 
-Run [Sync Epic](#sync-epic), mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output file to `--fix`.
+From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--prs`, links to `--links`, task issues to `--tasks`, each confirmed match to `--link`, the checkout to `--project` and the output body file to `--fix`.
+
+- A row whose id links its task issue links the pull request instead.
+- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
+- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
+- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
+- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
+
+`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
+```
 
 - Omit `--tasks` when no row has its own task issue; otherwise supply each task issue's record.
 - Row changes must meet [Task Delivery](#task-delivery) and [Work Breakdown](#work-breakdown).
 
 ##### 2. Return the Epic Delivery Findings
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the updated body and [Delivery Findings](#delivery-findings) for the caller to resolve and publish. An unmerged epic base prevents a closable result.
 
@@ -439,9 +455,25 @@ Verified criteria and completed rows in one epic body.
 
 ##### 1. Run Tick Epic Criteria
 
-Run [Tick Epic Criteria](#tick-epic-criteria) with the epic JSON, records as `--prs`, snapshot as `--links`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+From `<workspace>`, update the epic JSON with records as `--prs`, snapshot as `--links`, verified criterion ids as `--tick` and output body file as `--fix`. Refuse criteria not ready to verify.
+
+`<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
+```
 
 ##### 2. Return the Epic Body and Refused Criteria
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -551,54 +583,6 @@ An epic criterion meets the [shared acceptance criteria](#shared-acceptance-crit
 
 A local Markdown file at a given path holding one epic body that meets [Template](#template).
 
-### Commands
-
-#### Sync Epic
-
-Links each named task's id to a pull request naming the epic, open or merged, and ticks Done on a row once it is complete.
-
-**Inputs:** Epic JSON, pull request records, complete issue-link snapshot, task records, confirmed matches, project checkout and output body file.
-
-- A row whose id links its task issue links the pull request instead.
-- A pull request whose head is an epic base is the pull request that merges that base, and is not matched to a task.
-- An unmerged epic base keeps the epic open, even when every row is delivered and every criterion is ticked.
-- `--project` is a checkout of the project. Without the long-lived branch names, an epic that would otherwise be closable is not.
-- `--link` names each task id and the pull request number it links. `--tasks` is the task issues. `--links` is the pull requests' Development-linked issues. `--fix` is the body written with the Done ticks.
-
-`<task-pull-request-map>` is a comma-separated list of `<task-id>=<pull-request-number>` pairs. Pass each task JSON file as a separate argument after `--tasks`.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tasks '<task-json-file>' --link '<task-pull-request-map>' --project '<checkout>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tasks issue-637.json --link W01=950,W02=950 --project '<checkout>' --fix fixed-943.md
-```
-
-#### Tick Epic Criteria
-
-Ticks confirmed epic criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current epic JSON, pull request and link snapshots, verified criterion ids and destination body file.
-
-`<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<epic-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-943.json --prs prs.json --links links.json --tick AC1,AC3 --fix fixed-943.md
-```
-
 ## Issue
 
 ### Operations
@@ -613,11 +597,51 @@ The current issue, its saved body and discussion.
 
 ##### 1. Fetch the Tracker Issue
 
-Run [Fetch Tracker Issue](#fetch-tracker-issue) for the complete JSON, or [Fetch Issue Body](#fetch-issue-body) for its body, with the issue number and destination file.
+Select the command for the requested response shape, using the issue number and destination file.
+
+For a complete JSON response, run this query from the repository checkout using the supplied repository, issue number and destination JSON file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
+```
+
+For the body alone, run this query from the repository checkout using the supplied repository, issue number and destination body file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' --jq .body > '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' --jq .body > live-943.md
+```
 
 ##### 2. Fetch the Issue Comments
 
-Run [Fetch Issue Comments](#fetch-issue-comments) when the request depends on the discussion.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+When the request depends on the discussion, fetch every comment from the repository checkout using the supplied repository and issue number.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/issues/<issue-number>/comments'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/issues/874/comments'
+```
+
+##### 3. Return the Issue Read
+
+Read each requested response and its exit code; return the issue record and any requested comments, or the failed read as missing evidence. When no discussion was requested, return the issue record alone.
 
 #### Save Tracker Issue
 
@@ -639,21 +663,101 @@ Apply [Ensure Repository Labels](#ensure-repository-labels) with every label the
 
 ##### 3. Create New Issue
 
-For a new issue, run [Create Tracker Issue](#create-tracker-issue) with the body's file, title and labels.
+For a new issue, run this creation command from the repository checkout using the supplied title, existing labels and complete body file as [Bodies](#conventions) states.
+
+Repeat `-f 'labels[]=<label>'` for each supplied label.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F 'body=@<body-file>' -f 'labels[]=<label>' --jq .number
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F body=@body.md -f 'labels[]=<label>' --jq .number
+```
 
 ##### 4. Update the Existing Issue
 
-For an existing issue, run [Patch Issue Body](#patch-issue-body), [Retitle Tracker Issue](#retitle-tracker-issue), [Add Issue Labels](#add-issue-labels) or [Remove Issue Label](#remove-issue-label) for the fields being changed.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+For an existing issue, run each command whose field is being changed, preserving all other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied issue identity.
+
+When changing the issue body, run this update from the repository checkout using its repository, number and complete body file as [Bodies](#conventions) states.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -F 'body=@<body-file>' --jq .number
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -F body=@body.md --jq .number
+```
+
+When changing the issue title, run this update from the repository checkout using its repository, number and complete new title.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f title='<title>' --jq .title
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f title='<title>' --jq .title
+```
+
+For each requested label addition, run this command from the repository checkout using the issue’s repository, number and existing label names.
+
+Repeat `-f 'labels[]=<label>'` for each supplied label.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/labels' -f 'labels[]=<label>' --jq '.[].name'
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/943/labels' -f 'labels[]=<label>' --jq '.[].name'
+```
+
+For each requested label removal, run this command from the repository checkout using the issue’s repository, number and label name.
+
+```bash
+gh api --method DELETE 'repos/<owner>/<repo>/issues/<issue-number>/labels/<label>' --jq '.[].name'
+```
+
+**Example:**
+
+```bash
+gh api --method DELETE 'repos/<owner>/<repo>/issues/943/labels/<label>' --jq '.[].name'
+```
 
 ##### 5. Comment on the Saved Issue
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Apply [Comment on Issue](#comment-on-issue) for an answer or a preserved body the caller requires, with the issue number and comment file.
 
 ##### 6. Re-Read the Saved Issue
 
-Re-read with [Fetch Tracker Issue](#fetch-tracker-issue), as [Write confirmation](#conventions) states.
+As [Write confirmation](#conventions) states, read the saved issue.
+
+From the repository checkout, save the current issue using its repository, number and supplied destination JSON file.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
+```
 
 ##### 7. Compare the Saved Issue Fields
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Compare the saved fields with the intended body and metadata.
 
@@ -705,9 +809,26 @@ Take the caller's fresh records for every linked pull request, across repositori
 
 ##### 3. Run the Closure Check
 
-Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
+From `<workspace>`, run the closure gate with the fresh issue JSON, complete Development snapshot and linked pull request records as `--issue`, `--development` and `--prs`.
+
+- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
+- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
+```
 
 ##### 4. Require the Closure Gate
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Require the supplied completion result to be complete, normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
 
@@ -733,11 +854,33 @@ When replying to feedback already folded into the body, compose a precise, factu
 ##### 2. Publish the Issue Comment
 
 Publish the supplied comment:
+For a one-line comment, post its exact text from the repository checkout using the supplied repository and issue number.
 
-- For a one-line comment, run [Post Inline Comment](#post-inline-comment) with the exact text.
-- For a longer comment, run [Post Comment File](#post-comment-file) with the complete file.
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -f body='<comment-text>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/637/comments' -f body='Delivered by #950.' --jq .html_url
+```
+
+For a longer comment, post the complete supplied file from the repository checkout using the repository and issue number, as [Bodies](#conventions) states.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -F 'body=@<comment-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/issues/874/comments' -F body=@comment-874.md --jq .html_url
+```
 
 ##### 3. Return the Comment URL
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the saved comment URL.
 
@@ -760,17 +903,46 @@ Compare its links with the supplied fresh pull request records; return a changed
 
 ##### 3. Run the Completion Gate
 
-Run [Check Issue Closure](#check-issue-closure) with the current issue, Development and linked pull request files, using absolute evidence paths when changing directory.
+From `<workspace>`, run the closure gate with the current issue JSON, complete Development snapshot and linked pull request records. Use absolute evidence paths when changing directory.
+
+- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
+- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
+```
 
 ##### 4. Require the Completion Gate to Pass
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Require exit 0 and passing normal delivery checks; a sync report of closable does not permit skipping this gate.
 
 ##### 5. Set the Completed State
 
-Immediately after the gate passes, run [Set Completed State](#set-completed-state) with the issue's repository and number and the passing evidence.
+Immediately after the gate passes and normal delivery checks pass, run this closure from the repository checkout using the issue’s repository and number.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f state=closed -f state_reason=completed --jq .state
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f state=closed -f state_reason=completed --jq .state
+```
 
 ##### 6. Return the Completed State
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the saved state or failure.
 
@@ -788,15 +960,25 @@ Apply [Read Issue Development](#read-issue-development) for the entire field acr
 
 ##### 2. Write the Development Snapshot
 
-Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
-
-- Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
+Write the issue identity, observed links, completeness result and repository setting to the supplied path, such as `development-943.json`, in the [Development Snapshot](#development-snapshot) shape. Preserve incomplete evidence as incomplete and the unknown auto-close setting as `null`.
 
 ##### 3. Fetch the Issue Snapshot
 
-Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
+From the repository checkout, save the issue’s current JSON using its repository and number and the supplied path, such as `issue-943.json`.
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
+```
 
 ##### 4. Return the Development Files
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
@@ -874,236 +1056,7 @@ The bracketed prefix a planned issue's title opens with: for each level, its kin
 
 One issue's Development field as observed, saved as JSON at a local path: the issue's repository and number, whether the whole field was read, the repository's [auto-close setting](#auto-close-setting) as confirmed or `null` when unknown, and every linked pull request URL across repositories and states. An empty list in a complete snapshot means the field holds no link; an incomplete snapshot is incomplete evidence.
 
-#### Linked Pull Request Records
-
-A fresh record of every pull request a [Development snapshot](#development-snapshot) names, across repositories and states, saved as JSON lines at a local path, each with its [state](#state) and merge result.
-
-#### Completion Result
-
-The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](#task-delivery-result), an epic's from its [delivery state](#delivery-state), and an initiative's from its [delivery state](#delivery-state-1).
-
-#### Review Feedback
-
-The reviewer's login and each point they raised in an issue's discussion.
-
-#### Auto-Close Setting
-
-GitHub's **Auto-close issues with merged linked pull requests** repository setting, which must be disabled before a delivery pull request is linked or merged, so that closure follows the criteria rather than the merge.
-
-- The setting is confirmed per repository and holds for the session; it is not inferred from an issue that stayed open.
-- No REST field and no GraphQL field of `gh` 2.46 carries it, so on such a host the user's explicit answer is the only source.
-- An enabled setting closes issues on merge whatever their criteria. Where it cannot be disabled, each affected issue's state is read after every merge and reopened where its criteria are unmet.
-
-### Commands
-
-#### Create Tracker Issue
-
-Creates an issue from a body file, with its title and labels, and prints its number.
-
-**Inputs:** Repository, populated body file, title and existing label names.
-
-Repeat `-f 'labels[]=<label>'` for each supplied label.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F 'body=@<body-file>' -f 'labels[]=<label>' --jq .number
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues' -f title='<title>' -F body=@body.md -f 'labels[]=<label>' --jq .number
-```
-
-#### Patch Issue Body
-
-Replaces an issue's body from a file.
-
-**Inputs:** Repository, issue number and complete populated body file.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -F 'body=@<body-file>' --jq .number
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -F body=@body.md --jq .number
-```
-
-#### Fetch Issue Body
-
-Saves an issue's body alone.
-
-**Inputs:** Repository, issue number and destination file.
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/<issue-number>' --jq .body > '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/943' --jq .body > live-943.md
-```
-
-#### Retitle Tracker Issue
-
-Replaces an issue's title.
-
-**Inputs:** Repository, issue number and complete title.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f title='<title>' --jq .title
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f title='<title>' --jq .title
-```
-
-#### Add Issue Labels
-
-Adds labels to an issue.
-
-**Inputs:** Repository, issue number and existing label names.
-
-Repeat `-f 'labels[]=<label>'` for each supplied label.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/labels' -f 'labels[]=<label>' --jq '.[].name'
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/943/labels' -f 'labels[]=<label>' --jq '.[].name'
-```
-
-#### Remove Issue Label
-
-Removes one label from an issue.
-
-**Inputs:** Repository, issue number and label name.
-
-```bash
-gh api --method DELETE 'repos/<owner>/<repo>/issues/<issue-number>/labels/<label>' --jq '.[].name'
-```
-
-**Example:**
-
-```bash
-gh api --method DELETE 'repos/<owner>/<repo>/issues/943/labels/<label>' --jq '.[].name'
-```
-
-#### Fetch Issue Comments
-
-Prints an issue's comments.
-
-**Inputs:** Repository and issue number.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/issues/<issue-number>/comments'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/issues/874/comments'
-```
-
-#### Fetch Tracker Issue
-
-Saves an issue whole, as JSON, for the scripts that read issues.
-
-**Inputs:** Repository, issue number and destination JSON file.
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/<issue-number>' > '<issue-json-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/issues/943' > issue-943.json
-```
-
-#### Check Issue Closure
-
-Checks the issue criteria, the complete link snapshot and every linked pull request.
-
-**Inputs:** Current issue JSON, complete Development snapshot and fresh linked pull request records.
-
-- `--issue`, `--development`, and `--prs` are the fresh issue JSON, Development snapshot, and linked pull request records.
-- Exit 0 means the closure gate passes; normal delivery checks must also pass. Exit 1 reports blockers. The command performs no network calls or writes.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue '<issue-json-file>' --development '<development-snapshot-file>' --prs '<linked-pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
-```
-
-#### Post Inline Comment
-
-Posts one line of exact comment text and returns its URL.
-
-**Inputs:** Repository, issue number and one-line comment text.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -f body='<comment-text>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/637/comments' -f body='Delivered by #950.' --jq .html_url
-```
-
-#### Post Comment File
-
-Posts a complete comment file and returns its URL.
-
-**Inputs:** Repository, issue number and exact comment file.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/<issue-number>/comments' -F 'body=@<comment-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/issues/874/comments' -F body=@comment-874.md --jq .html_url
-```
-
-#### Set Completed State
-
-Sets an issue to closed with the completed reason and returns its state.
-
-**Inputs:** Repository, issue number, passing normal delivery checks and an immediately preceding successful closure gate on current evidence.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/<issue-number>' -f state=closed -f state_reason=completed --jq .state
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/issues/943' -f state=closed -f state_reason=completed --jq .state
-```
-
-#### Write Development Snapshot
-
-Saves an observed Development field and repository setting as JSON.
-
-**Inputs:** Repository and issue number, observed links, completeness result, confirmed or unknown auto-closing setting and destination file.
-
-Write the supplied values in this shape. Substitute the issue number as a JSON integer, completeness as a boolean, and the auto-closing setting as a boolean or `null` when unknown. Supply every observed pull request URL, or an empty array when there are none. Preserve incomplete evidence as incomplete.
+The JSON object has this shape. The issue number is a JSON integer, completeness is a boolean, and the auto-closing setting is a boolean or `null` when unknown. The array holds every observed pull request URL, or is empty when there are none. Incomplete evidence has completeness `false`.
 
 ```text
 {
@@ -1127,6 +1080,28 @@ Write the supplied values in this shape. Substitute the issue number as a JSON i
 }
 ```
 
+- Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
+
+#### Linked Pull Request Records
+
+A fresh record of every pull request a [Development snapshot](#development-snapshot) names, across repositories and states, saved as JSON lines at a local path, each with its [state](#state) and merge result.
+
+#### Completion Result
+
+The normal delivery result of one task, epic or initiative: complete, or incomplete with each unmet condition. A task's comes from its [task delivery result](#task-delivery-result), an epic's from its [delivery state](#delivery-state), and an initiative's from its [delivery state](#delivery-state-1).
+
+#### Review Feedback
+
+The reviewer's login and each point they raised in an issue's discussion.
+
+#### Auto-Close Setting
+
+GitHub's **Auto-close issues with merged linked pull requests** repository setting, which must be disabled before a delivery pull request is linked or merged, so that closure follows the criteria rather than the merge.
+
+- The setting is confirmed per repository and holds for the session; it is not inferred from an issue that stayed open.
+- No REST field and no GraphQL field of `gh` 2.46 carries it, so on such a host the user's explicit answer is the only source.
+- An enabled setting closes issues on merge whatever their criteria. Where it cannot be disabled, each affected issue's state is read after every merge and reopened where its criteria are unmet.
+
 ## Initiative Issue Body
 
 ### Operations
@@ -1141,9 +1116,27 @@ One initiative body with its epic delivery recorded.
 
 ##### 1. Run Sync Initiative
 
-Run [Sync Initiative](#sync-initiative) with the initiative and every linked epic's current record as `--epics`, supplying `--fix` when an output body is requested.
+From `<workspace>`, update the supplied initiative JSON with every linked epic’s current record as `--epics`, adding `--fix` when an output body is requested.
+
+- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](#delivery-state-1).
+
+Pass every epic JSON file as a separate argument after `--epics`. Omit `--fix` when no output body is requested.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
+```
 
 ##### 2. Return the Initiative Delivery Findings
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and [Delivery Findings](#delivery-findings-1) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](#delivery-state-1).
 
@@ -1157,9 +1150,25 @@ Verified criteria and completed rows in one initiative body.
 
 ##### 1. Run Tick Initiative Criteria
 
-Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+From `<workspace>`, update the initiative JSON with linked epic records as `--epics`, verified criterion ids as `--tick` and output body file as `--fix`. Refuse criteria not ready to verify.
+
+Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
+```
 
 ##### 2. Return the Initiative Body and Refused Criteria
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -1230,50 +1239,6 @@ An initiative criterion meets the [shared acceptance criteria](#shared-acceptanc
   - An initiative criterion ends by naming its instrument. Which instruments keep a criterion is [Verifiable](#verifiable).
   - An automated test is an end-to-end walk through the real server, a smoke run of an agent against a live server, a live check on a deployed host, or a guard, fixture suite or check that continuous integration runs. The walk, smoke run or live check is preferred where the criterion is about what a run does.
   - A named test that does not exist yet is work the plan holds: a task in the epic whose subject it tests, or a discrete test-infrastructure epic when the tests serve several criteria. That epic's row cites the criteria its tests verify.
-
-### Commands
-
-#### Sync Initiative
-
-Reports an initiative's delivery state against its epics, and ticks Done on an epic row whose issue is closed as completed.
-
-**Inputs:** Initiative JSON, every linked epic record and optional output body file.
-
-- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](#delivery-state-1).
-
-Pass every epic JSON file as a separate argument after `--epics`.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
-```
-
-#### Tick Initiative Criteria
-
-Ticks confirmed initiative criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current initiative JSON, every linked epic JSON, verified criterion ids and destination body file.
-
-Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
-```
 
 ## Acceptance Criteria
 
@@ -1467,10 +1432,28 @@ Read the supplied target branch's current required reviews and checks alongside 
 When approval permits the agent to merge:
 
 - Require current readiness evidence with no unresolved condition, and the auto-close setting confirmed for the repository as [Close Tracker Issue](#close-tracker-issue) documents.
-- Run [Merge Pull Request](#merge-pull-request) for a task or [Merge Epic Pull Request](#merge-epic-pull-request) for an epic, passing the verified readiness evidence and authorization result. For an epic, also supply the target requirements and exact verified head SHA.
+- For an epic, apply [Merge Epic Pull Request](#merge-epic-pull-request) with the verified readiness evidence, authorization, target requirements and exact verified head SHA, then continue at [3. Return the Delivery Merge Result](#3-return-the-delivery-merge-result).
+
+For a task whose readiness and authorization permit merging, run this merge from the repository checkout using the pull request’s repository and number.
+
+- Require the supplied readiness evidence and authorization before issuing the merge.
+- The merge method is a merge commit.
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' --jq .merged
+```
+
+**Example:**
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/950/merge' -f merge_method='merge' --jq .merged
+```
+
 - If the merge is refused, return the refusal to the caller for fresh verification.
 
 ##### 3. Return the Delivery Merge Result
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the merge result, including its merge commit when supplied, for the caller to confirm as [Write confirmation](#conventions) states.
 
@@ -1484,7 +1467,7 @@ The observed or updated Development relation for a pull request.
 
 ##### 1. Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) for the actual field, including every page and state. A missing tool or inaccessible field is a blocker, not an empty link set.
+Use authenticated GitHub or an available supported tool to read the supplied pull request's actual Development field across every page and state, recording the repository and number for each linked issue and whether the field was fully readable. A missing tool or inaccessible field is a blocker, not an empty link set.
 
 ##### 2. Return the Read-Only Relation
 
@@ -1492,18 +1475,18 @@ Return the complete relation for a read-only request.
 
 ##### 3. Edit the Development Links
 
-For a link edit:
+For a link edit, take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
 
-- Take the supplied repository prerequisite from [Confirm Repository Auto-Close](#confirm-repository-auto-close); an unconfirmed setting blocks the edit.
 - Meet the applicable preconditions in [Close Tracker Issue](#close-tracker-issue).
-- For an addition, run [Set Development Link](#set-development-link) with the pull request and issue identities.
-- For removal of an abandoned or incorrect link:
-  - Require the supplied user decision.
-  - Run [Remove Development Link](#remove-development-link) with those identities.
+- For an addition, use [GitHub's sidebar linking procedure](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue): in the issue's authenticated Development selector, select the pull request's repository and pull request, including a different repository when required. Retain the edit result.
+- For removal of an abandoned or incorrect link, require the supplied user decision before deselecting the supplied relation in the authenticated Development selector and saving the edit. Retain the edit result.
 
 ##### 4. Re-Read the Pull Request Development Links
 
-Run [Read Development Links](#read-development-links) again for the same pull request, as [Write confirmation](#conventions) states.
+Read the same pull request's actual Development field through authenticated GitHub or an available supported tool, as [Write confirmation](#conventions) states.
+
+- Include every page and state, recording each linked issue's repository and number and whether the field was fully readable.
+- Return a failed edit or unreadable field as a blocker.
 
 ##### 5. Compare the Field with the Edit
 
@@ -1535,7 +1518,7 @@ If any relation is unreadable, return the incomplete result.
 
 ##### 4. Write the Links Snapshot
 
-Run [Write Pull Request Links](#write-pull-request-links) with the observed complete relations and destination `links.json`, including one entry per pull request and every linked issue's repository and number.
+Write the observed complete relations to the supplied destination, such as `links.json`, in the [Issue-Link Snapshot](#issue-link-snapshot) shape. Include one entry per pull request and every linked issue's repository and number.
 
 ##### 5. Return the Links Snapshot
 
@@ -1579,13 +1562,39 @@ Require the supplied target requirements, current readiness evidence with no unr
 
 ##### 2. Submit the Epic Merge
 
-Run [Submit Epic Merge](#submit-epic-merge) with the exact head whose checks and target requirements were verified; return a refusal without continuing.
+From the repository checkout, submit the merge using the pull request identity and exact head SHA whose checks, target requirements and authorization were verified. Return a refusal without continuing.
+
+The merge method is a merge commit. The endpoint refuses a different head.
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
+```
+
+**Example:**
+
+```bash
+gh api --method PUT 'repos/<owner>/<repo>/pulls/980/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
+```
 
 ##### 3. Read the Epic Merge Result
 
-Run [Read Merge Result](#read-merge-result) for that pull request.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, read the merge result using the supplied repository and pull request number.
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/980' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
+```
 
 ##### 4. Confirm the Merged Epic State
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Confirm the merged state, merge commit, verified head and target.
 
@@ -1603,9 +1612,23 @@ The current delivery pull requests for one initiative.
 
 ##### 1. Fetch the Initiative Pull Requests
 
-Run [Fetch Initiative Pull Requests](#fetch-initiative-pull-requests) with the supplied repository and prefix, saving the collection to the supplied file.
+From the repository checkout, save the initiative’s pull requests using its repository, prefix and destination JSON-lines file.
+
+`<initiative-prefix>` includes the opening bracket and initiative id, matching its task and epic titles.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("<initiative-prefix>"))' > '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
+```
 
 ##### 2. Return the Initiative Collection
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the collection or an incomplete-fetch finding.
 
@@ -1619,13 +1642,65 @@ One current pull request and its requested supporting records.
 
 ##### 1. Fetch the Pull Request Snapshot
 
-Run [Fetch Pull Request](#fetch-pull-request) or [Save Pull Request Snapshot](#save-pull-request-snapshot) for current identity, state, head and base.
+Select the command for the supplied destination shape to capture current identity, state, head and base.
+
+For a JSON-lines collection, append the pull request from the repository checkout using its repository, number and destination file.
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq . >> '<pull-request-records-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/439' --jq . >> prs.json
+```
+
+For a complete standalone JSON snapshot, save the pull request from the repository checkout using its repository, number and destination file. This replaces the destination.
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' > '<pull-request-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/pulls/980' > epic-pr.json
+```
 
 ##### 2. Fetch Requested Files or Reviews
 
-Run [Fetch Pull Request Files](#fetch-pull-request-files) or [Fetch Pull Request Reviews](#fetch-pull-request-reviews) when the caller requests those records.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Run each requested supporting-record command. After each read, inspect its exit code and output; return a failure before the next read, keeping missing evidence explicit.
+
+When changed files are requested, save their paths from the repository checkout using the supplied repository, pull request number and destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/files' --jq '.[].filename' > '<changed-paths-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > changed-files.txt
+```
+
+When reviews are requested, save every review from the repository checkout using the supplied repository, pull request number and destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/reviews?per_page=100' > '<reviews-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > reviews.json
+```
 
 ##### 3. Return the Pull Request Snapshots
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the snapshots or missing evidence.
 
@@ -1639,19 +1714,105 @@ One pull request created or updated from supplied content and metadata.
 
 ##### 1. Open a New Pull Request
 
-For creation, run [Open Task Pull Request](#open-task-pull-request), [Open Epic Pull Request](#open-epic-pull-request) or [Open Discussion Pull Request](#open-discussion-pull-request) for the supplied kind, body, title, head and base, preserving epic and discussion draft state.
+For creation, select exactly one command for the supplied kind, body, title, head and base, preserving epic and discussion draft state. For an existing pull request, continue at [3. Update the Existing Pull Request](#3-update-the-existing-pull-request).
+
+For task creation, run this command from the repository checkout using the supplied title, task branch, epic base and complete body file as [Bodies](#conventions) states.
+
+- Supply the epic prefix and purpose as title, the task branch as head, the epic base as base, and the complete body file.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<task-branch>' -f base='<epic-base>' -F 'body=@<body-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Purpose' -f head='i07/e00/w01-purpose' -f base='i07/e00/main' -F body=@body.md --jq .html_url
+```
+
+For epic creation, run this command from the repository checkout using the supplied title, epic base, long-lived target and review body file as [Bodies](#conventions) states.
+
+- Supply the epic prefix and name as title, the epic base as head, its long-lived branch as base, and the populated review body file.
+- `draft` is true, including when the work is already complete.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<epic-base>' -f base='<long-lived-base>' -F draft=true -F 'body=@<body-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
+```
+
+For discussion creation, run this command from the repository checkout using the supplied title, planning branch, target branch and body file as [Bodies](#conventions) states.
+
+```bash
+gh api --method POST 'repos/<owner>/<repository>/pulls' -f title='<title>' -f head='<planning-branch>' -f base='<target-branch>' -F body=@'<body-file>' -F draft=true
+```
+
+**Example:**
+
+```bash
+gh api --method POST repos/m2ux/workflow-server/pulls -f title='Queue Planning: Scope and Delivery' -f head=planning/queue -f base=engineering -F body=@discussion.md -F draft=true
+```
+
+##### 2. Confirm Creation and Link the Delivery Issue
+
+For a creation request, read the command’s exit code and returned identity; return a failure before attempting a link.
 
 - For a task or epic pull request with a delivery issue, require the confirmed auto-close setting and snapshot destination, then apply [Link Pull Request to Issue](#link-pull-request-to-issue) with them, meeting [Issue Links](#issue-links). A row task without its own issue supplies no delivery issue, auto-close setting or link snapshot for publication.
+- After a successful creation and any required link, continue at [4. Re-Read the Published Pull Request](#4-re-read-the-published-pull-request).
 
-##### 2. Update the Existing Pull Request
+##### 3. Update the Existing Pull Request
 
-For an existing pull request, run [Patch Pull Request Body](#patch-pull-request-body), [Retitle Pull Request](#retitle-pull-request) or [Retarget Pull Request](#retarget-pull-request) for the supplied changes, preserving other fields.
+For an existing pull request, run each command for a supplied change, preserving other fields. After each selected command, read its exit code and output; stop and return any failure before another mutation. If no field changes, continue with the supplied pull request identity.
 
-##### 3. Re-Read the Published Pull Request
+When changing the body, run this update from the repository checkout using the pull request’s repository, number and complete body file as [Bodies](#conventions) states.
+
+- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -F 'body=@<body-file>' --jq .html_url
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -F body=@pr-950.md --jq .html_url
+```
+
+When changing the title, run this update from the repository checkout using the pull request’s repository, number and complete title.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f title='<title>' --jq .title
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f title='[I07:E00] Purpose' --jq .title
+```
+
+When changing the base, run this update from the repository checkout using the pull request’s repository, number and target branch.
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f base='<target-branch>' --jq .base.ref
+```
+
+**Example:**
+
+```bash
+gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f base='i07/e00/main' --jq .base.ref
+```
+
+##### 4. Re-Read the Published Pull Request
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Re-read through [Read Pull Request State](#read-pull-request-state), as [Write confirmation](#conventions) states.
 
-##### 4. Return the Published State
+##### 5. Return the Published State
 
 Return the saved state or discrepancy, and the issue-link snapshot when the creation path linked a delivery issue. Other publication paths return no issue-link snapshot.
 
@@ -1665,9 +1826,21 @@ The review pull request for a supplied epic base.
 
 ##### 1. Find the Review Pull Request
 
-Run [Find Review Pull Request](#find-review-pull-request) with the supplied head.
+From the repository checkout, find the open review pull request using the repository owner and name and supplied epic base as head.
+
+```bash
+gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:<epic-base>" --jq '.[0].number'
+```
+
+**Example:**
+
+```bash
+gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:i07/e00/main" --jq '.[0].number'
+```
 
 ##### 2. Return the Review Pull Request Number
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return its number or an absent-review finding.
 
@@ -1681,13 +1854,37 @@ The check-run and status evidence for one literal head commit.
 
 ##### 1. Fetch the Head Check Runs
 
-Run [Fetch Head Check Runs](#fetch-head-check-runs) for the supplied literal SHA.
+From the repository checkout, save all check runs using the supplied repository, literal head SHA and destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > '<check-runs-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > checks.json
+```
 
 ##### 2. Fetch the Head Commit Status
 
-Run [Fetch Head Status](#fetch-head-status) for the same SHA.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, save commit status using the same repository and literal head SHA and its destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > '<commit-status-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > status.json
+```
 
 ##### 3. Return the Head Evidence Snapshots
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return both snapshots, retaining missing or pending evidence as unresolved. The caller compares them with supplied target requirements and current reviews.
 
@@ -1787,247 +1984,7 @@ A local JSON-lines file at its path, one pull request's REST record per line. An
 
 A local JSON file (`links.json`) at its path holding an array of pull request entries. Each entry has `repo` as its owner/repository string, `number` as its integer pull request number, and `closingIssuesReferences` as an array of objects with `repo` and integer `number` for each Development-linked issue. An observed empty field is an empty array. The snapshot is complete only when every relation was read.
 
-#### Link Request
-
-A read, an addition or a removal of one pull request's Development link. An edit names the issue; a removal carries the user's decision naming the abandoned or incorrect link.
-
-#### Head Evidence
-
-The check runs and the combined commit status for one verified head, each a local JSON file at its path. Missing or pending evidence is unresolved.
-
-#### Merge Readiness
-
-The readiness of one pull request at its verified head: its snapshot, [target requirements](#target-requirements), [head evidence](#head-evidence) and reviews, each a local JSON file at its path, with every unresolved condition. A conflict, a failed, missing or pending check, a blocked merge state, an unmet required review, or an epic pull request whose head or target departs from [Epic Bases](#epic-bases) is unresolved; readiness passes when none remains.
-
-#### Merge Authorization
-
-The authorization result for the agent to merge the named pull request under the active delivery request and target review requirements, including any required human approval.
-
-#### Merge Result
-
-One of: the merged [state](#state) with its verified head, target and merge commit; a handoff for human approval naming what was verified; or a refusal with its readiness evidence.
-
-### Commands
-
-#### Open Discussion Pull Request
-
-Opens a draft for the supplied planning branch and body.
-
-**Inputs:** Repository owner and name, title, planning branch, target branch and body file.
-
-```bash
-gh api --method POST 'repos/<owner>/<repository>/pulls' -f title='<title>' -f head='<planning-branch>' -f base='<target-branch>' -F body=@'<body-file>' -F draft=true
-```
-
-**Example:**
-
-```bash
-gh api --method POST repos/m2ux/workflow-server/pulls -f title='Queue Planning: Scope and Delivery' -f head=planning/queue -f base=engineering -F body=@discussion.md -F draft=true
-```
-
-#### Retarget Pull Request
-
-Points a pull request at another base branch, such as its epic's base branch.
-
-**Inputs:** Repository, pull request number and target branch.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f base='<target-branch>' --jq .base.ref
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f base='i07/e00/main' --jq .base.ref
-```
-
-#### Fetch Pull Request
-
-Appends one pull request, as one JSON line, to the supplied file.
-
-**Inputs:** Repository, pull request number and destination JSON-lines file.
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq . >> '<pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/439' --jq . >> prs.json
-```
-
-#### Retitle Pull Request
-
-Replaces a pull request's title.
-
-**Inputs:** Repository, pull request number and complete title.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -f title='<title>' --jq .title
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -f title='[I07:E00] Purpose' --jq .title
-```
-
-#### Open Task Pull Request
-
-Creates a pull request from a unit's branch to its epic base.
-
-**Inputs:** Repository, title, task head, epic base and populated body file.
-
-- Supply the epic prefix and purpose as title, the task branch as head, the epic base as base, and the complete body file.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<task-branch>' -f base='<epic-base>' -F 'body=@<body-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Purpose' -f head='i07/e00/w01-purpose' -f base='i07/e00/main' -F body=@body.md --jq .html_url
-```
-
-#### Open Epic Pull Request
-
-Creates the draft pull request from an epic base to its long-lived target.
-
-**Inputs:** Repository, title, epic head, long-lived base and populated review body file.
-
-- Supply the epic prefix and name as title, the epic base as head, its long-lived branch as base, and the populated review body file.
-- `draft` is true, including when the work is already complete.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='<title>' -f head='<epic-base>' -f base='<long-lived-base>' -F draft=true -F 'body=@<body-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/pulls' -f title='[I07:E00] Name' -f head='i07/e00/main' -f base='main' -F draft=true -F body=@body.md --jq .html_url
-```
-
-#### Merge Pull Request
-
-Merges the task pull request into its epic base.
-
-**Inputs:** Pull request identity, current passing readiness evidence and confirmed authorization for the agent to merge.
-
-- Require the supplied readiness evidence and authorization before issuing the merge.
-- The merge method is a merge commit.
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' --jq .merged
-```
-
-**Example:**
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/950/merge' -f merge_method='merge' --jq .merged
-```
-
-#### Patch Pull Request Body
-
-Replaces a pull request's body.
-
-**Inputs:** Repository, pull request number and complete populated body file.
-
-- The file is the whole body. The issue a pull request delivers is linked on the pull request itself, so this call leaves that link standing.
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/<pull-request-number>' -F 'body=@<body-file>' --jq .html_url
-```
-
-**Example:**
-
-```bash
-gh api --method PATCH 'repos/<owner>/<repo>/pulls/950' -F body=@pr-950.md --jq .html_url
-```
-
-#### Find Review Pull Request
-
-Returns the open pull request whose head is the supplied epic base, or no result when none exists.
-
-**Inputs:** Repository owner, repository and epic base name.
-
-```bash
-gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:<epic-base>" --jq '.[0].number'
-```
-
-**Example:**
-
-```bash
-gh api "repos/<owner>/<repo>/pulls?state=open&head=<owner>:i07/e00/main" --jq '.[0].number'
-```
-
-#### Submit Epic Merge
-
-Merges the epic base into its long-lived target at the supplied head.
-
-**Inputs:** Pull request identity, exact verified head SHA, passing target and readiness evidence and confirmed merge authorization.
-
-The merge method is a merge commit. The endpoint refuses a different head.
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/<pull-request-number>/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
-```
-
-**Example:**
-
-```bash
-gh api --method PUT 'repos/<owner>/<repo>/pulls/980/merge' -f merge_method='merge' -f sha='<head-sha>' --jq '{merged, message, sha}'
-```
-
-#### Read Merge Result
-
-Returns a pull request's merge state, merge commit, head and base.
-
-**Inputs:** Repository and pull request number.
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/pulls/980' --jq '{merged, merge_commit_sha, head: .head.sha, base: .base.ref}'
-```
-
-#### Read Development Links
-
-Returns the complete Development relation through authenticated GitHub or an available supported tool.
-
-**Inputs:** Pull request identity and authenticated access.
-
-Read the actual field across every page and state, recording repository and number for each linked issue. Return the links and whether the field was fully readable.
-
-#### Set Development Link
-
-Adds one pull request to an issue's Development relation.
-
-**Inputs:** Pull request identity, issue identity, authenticated access and confirmed repository prerequisite.
-
-Use [GitHub's sidebar linking procedure](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue): in the issue's Development selector, select the pull request's repository and pull request, including a different repository when required. Return the edit result.
-
-#### Remove Development Link
-
-Removes one selected Development relation.
-
-**Inputs:** Pull request and issue identities, authenticated access and the user's decision authorizing removal of the abandoned or incorrect link.
-
-Deselect the supplied relation in the authenticated Development selector and save the edit. Return the edit result.
-
-#### Write Pull Request Links
-
-Saves complete observed Development-linked issues as a JSON array.
-
-**Inputs:** One complete relation per pull request, with all repository and number pairs, and destination link-snapshot file.
-
-Write the supplied relations in this shape. Substitute numbers as JSON integers. Include each pull request and all its linked issues; use an empty array for a complete relation with no linked issues. Each repository is the one belonging to that pull request or issue.
+The JSON array has this shape. Numbers are JSON integers. Every pull request includes all linked issues; an empty array denotes a complete relation with no linked issues. Each repository belongs to its pull request or issue.
 
 ```text
 [
@@ -2051,103 +2008,25 @@ Write the supplied relations in this shape. Substitute numbers as JSON integers.
 ]
 ```
 
-#### Save Pull Request Snapshot
+#### Link Request
 
-Saves one complete pull request response, replacing the destination file.
+A read, an addition or a removal of one pull request's Development link. An edit names the issue; a removal carries the user's decision naming the abandoned or incorrect link.
 
-**Inputs:** Repository, pull request number and destination JSON file.
+#### Head Evidence
 
-```bash
-gh api 'repos/<owner>/<repo>/pulls/<pull-request-number>' > '<pull-request-json-file>'
-```
+The check runs and the combined commit status for one verified head, each a local JSON file at its path. Missing or pending evidence is unresolved.
 
-**Example:**
+#### Merge Readiness
 
-```bash
-gh api 'repos/<owner>/<repo>/pulls/980' > epic-pr.json
-```
+The readiness of one pull request at its verified head: its snapshot, [target requirements](#target-requirements), [head evidence](#head-evidence) and reviews, each a local JSON file at its path, with every unresolved condition. A conflict, a failed, missing or pending check, a blocked merge state, an unmet required review, or an epic pull request whose head or target departs from [Epic Bases](#epic-bases) is unresolved; readiness passes when none remains.
 
-#### Fetch Pull Request Reviews
+#### Merge Authorization
 
-Saves every review on one pull request.
+The authorization result for the agent to merge the named pull request under the active delivery request and target review requirements, including any required human approval.
 
-**Inputs:** Repository, pull request number and destination file.
+#### Merge Result
 
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/reviews?per_page=100' > '<reviews-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/980/reviews?per_page=100' > reviews.json
-```
-
-#### Fetch Initiative Pull Requests
-
-Saves the task and epic pull requests that name one initiative's epics.
-
-**Inputs:** Repository, initiative prefix and destination JSON-lines file.
-
-`<initiative-prefix>` includes the opening bracket and initiative id, matching its task and epic titles.
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("<initiative-prefix>"))' > '<pull-request-records-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate "repos/<owner>/<repo>/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
-```
-
-#### Fetch Pull Request Files
-
-Saves the paths a pull request changes.
-
-**Inputs:** Repository, pull request number and destination path-list file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/<pull-request-number>/files' --jq '.[].filename' > '<changed-paths-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/pulls/950/files' --jq '.[].filename' > changed-files.txt
-```
-
-#### Fetch Head Check Runs
-
-Saves every check run for one exact commit.
-
-**Inputs:** Repository, literal head SHA and destination file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > '<check-runs-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/check-runs?per_page=100' > checks.json
-```
-
-#### Fetch Head Status
-
-Saves commit status evidence for one exact commit.
-
-**Inputs:** Repository, literal head SHA and destination file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > '<commit-status-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/commits/<head-sha>/status?per_page=100' > status.json
-```
+One of: the merged [state](#state) with its verified head, target and merge commit; a handoff for human approval naming what was verified; or a refusal with its readiness evidence.
 
 ## Delivery Branches
 
@@ -2167,26 +2046,64 @@ Take the long-lived target and the worktree path from the base name, meeting [Ep
 
 ##### 2. Fetch the Epic Base
 
-Run [Fetch Remote Branch](#fetch-remote-branch) in the project checkout with that epic base; stop on failure.
+From the project checkout, fetch the supplied epic base; stop on failure.
+
+```bash
+git fetch origin '<source-branch>'
+```
 
 ##### 3. Add or Reuse the Epic Base Worktree
 
-Run [Add Epic Base Worktree](#add-epic-base-worktree) for an absent worktree, and reuse an existing one; stop on failure, which a base checked out elsewhere returns.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+For an absent worktree, run this command from the project checkout using the supplied path and fetched epic base. Reuse an existing worktree; stop on failure, including a base checked out elsewhere.
+
+- The path resolves against the directory the command runs in, so supply it as [Epic Bases](#epic-bases) anchors it rather than relative to a linked worktree.
+
+```bash
+git worktree add '<worktree-path>' '<epic-base>'
+```
+
+**Example:**
+
+```bash
+git worktree add .worktrees/i07/e00/main i07/e00/main
+```
 
 ##### 4. Fetch the Long-Lived Target
 
-Run [Fetch Remote Branch](#fetch-remote-branch) in that worktree with the long-lived target, such as `main`; stop on failure.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the epic-base worktree, fetch its long-lived target, such as `main`; stop on failure.
+
+```bash
+git fetch origin '<source-branch>'
+```
 
 ##### 5. Merge the Long-Lived Target
 
-Run [Merge Remote Branch](#merge-remote-branch) in that worktree with the target branch name, such as `main`, to merge `origin/main`. A conflict stops the update, leaves the pull request open and is reported.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the epic-base worktree, merge the fetched target by its branch name without the `origin/` prefix, such as `main`. A conflict stops the update, leaves the pull request open and is reported.
+
+```bash
+git merge --no-edit 'origin/<source-branch>'
+```
 
 ##### 6. Push the Updated Epic Base
 
-After a successful merge:
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
-- Run [Push Epic Base](#push-epic-base) in the same worktree.
-- Return the updated branch or the failure.
+After a successful merge:
+After a successful merge, push from the same epic-base worktree.
+
+```bash
+git push
+```
+
+##### 7. Confirm the Epic Base Push
+
+Read the push exit code and output. Return the updated base only on success; report a failed or non-fast-forward push without rewriting the remote branch.
 
 #### Create Pull Request Worktree
 
@@ -2198,13 +2115,31 @@ The detached worktree where the graph reads the reviewed change.
 
 ##### 1. Fetch the Review Head
 
-Run [Fetch Review Head](#fetch-review-head) in the checkout of the repository the pull request changes, passing its number; stop on failure.
+From the checkout of the repository the pull request changes, fetch its supplied number’s review head; stop on failure.
+
+```bash
+git fetch origin 'pull/<pull-request-number>/head'
+```
+
+**Example:**
+
+```bash
+git fetch origin pull/950/head
+```
 
 ##### 2. Read the Fetched Revision
 
-Run [Read Checkout Revision](#read-checkout-revision) in the repository checkout for `FETCH_HEAD`.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+From the repository checkout, resolve `FETCH_HEAD` as the revision and use that checkout path for `<checkout>`.
+
+```bash
+git -C '<checkout>' rev-parse '<revision>^{commit}'
+```
 
 ##### 3. Recheck a Differing Fetched Head
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 If it differs from the verified head:
 
@@ -2218,22 +2153,52 @@ Take the worktree path from the pull request number, meeting [Review Worktrees](
 
 ##### 5. Check an Existing Review Worktree
 
-If that worktree already exists:
+If the review worktree exists, read its `HEAD` from the repository checkout, using the review worktree path for `<checkout>` and `HEAD` for `<revision>`. If it is absent, continue at [6. Add the Review Worktree](#6-add-the-review-worktree).
 
-- Run Read Checkout Revision there for `HEAD`.
-- Run [Read Checkout Status](#read-checkout-status) there.
-- Reuse it only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
-- Otherwise retain it and select an unused path suffixed with the verified commit.
+```bash
+git -C '<checkout>' rev-parse '<revision>^{commit}'
+```
+
+After the existing-worktree revision read succeeds, run the following status command for the same path; return a read error before creating or reusing any worktree.
+
+From the repository checkout, read status using the same review worktree path for `<checkout>`.
+
+```bash
+git -C '<checkout>' status --porcelain --branch
+```
+
+Read both results. Reuse the existing worktree only at the verified head and when its status reports detached HEAD with no tracked or untracked changes.
+
+- Return a status read error.
+- Otherwise retain a mismatching or dirty worktree and select an unused path suffixed with the verified commit.
 
 ##### 6. Add the Review Worktree
 
-For an unused path, run [Add Review Worktree](#add-review-worktree) with that path and the verified commit.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+For an unused path, add a detached worktree from the repository checkout using that path and the verified fetched commit.
+
+- The path resolves against the directory the command runs in, so supply it as [Review Worktrees](#review-worktrees) anchors it rather than relative to a linked worktree.
+
+```bash
+git worktree add --detach '<worktree-path>' '<head-commit>'
+```
 
 ##### 7. Confirm the Review Worktree Head
 
-Confirm its HEAD through Read Checkout Revision.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Confirm the selected review worktree’s HEAD.
+
+From the repository checkout, resolve the selected review worktree’s `HEAD`, using its path for `<checkout>` and `HEAD` for `<revision>`.
+
+```bash
+git -C '<checkout>' rev-parse '<revision>^{commit}'
+```
 
 ##### 8. Return the Review Worktree
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return the selected detached worktree path and head, or the discrepancy before measuring.
 
@@ -2247,13 +2212,37 @@ The protection and active rules governing one target branch.
 
 ##### 1. Fetch the Target Branch Protection
 
-Run [Fetch Branch Protection](#fetch-branch-protection) for the supplied target.
+From the repository checkout, save protection using the supplied repository, target branch and destination file.
+
+```bash
+gh api 'repos/<owner>/<repo>/branches/<target-branch>/protection' > '<branch-protection-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/<owner>/<repo>/branches/main/protection' > protection.json
+```
 
 ##### 2. Fetch the Target Active Rules
 
-Run [Fetch Active Branch Rules](#fetch-active-branch-rules) for the same target.
+Read the protection response and exit code; retain an inaccessible or absent protection response as unresolved evidence while fetching active rules. A protection 404 alone does not establish the absence of active rules.
+
+From the repository checkout, save active rules using the same repository and target branch and its destination file.
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/rules/branches/<target-branch>' > '<branch-rules-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate 'repos/<owner>/<repo>/rules/branches/main' > branch-rules.json
+```
 
 ##### 3. Return the Target Requirement Records
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return both records. An unreadable requirement remains unresolved; a protection 404 does not establish the absence of active rules.
 
@@ -2267,13 +2256,41 @@ The configured long-lived branches and existing epic bases.
 
 ##### 1. Read the Long-Lived Branch Configuration
 
-Run [List Long-Lived Branches](#list-long-lived-branches) with the supplied checkout. Missing or empty configuration leaves branch names unevaluable.
+From `<workspace>`, read the branch configuration using the supplied project checkout. Missing or empty configuration leaves branch names unevaluable.
+
+- The names meet [Branches](#branches).
+- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
+- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
+
+Runs as [Helper invocation](#conventions) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
+```
 
 ##### 2. Read the Epic Base Names
 
-Run [List Epic Bases](#list-epic-bases) for the supplied epic.
+Read the helper’s exit code and output. Preserve a missing or empty configuration as unevaluable evidence; return any other execution error.
+
+From the repository checkout, list remote bases using the supplied epic branch prefix.
+
+- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
+- The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
+- The output contains one full base branch name per line.
+
+```bash
+git ls-remote --heads origin 'refs/heads/<epic-branch-prefix>/*' | cut -f2 | sed 's|refs/heads/||'
+```
+
+**Example:**
+
+```bash
+git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
+```
 
 ##### 3. Return the Delivery Branch Collections
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Return both collections and any missing configuration.
 
@@ -2311,172 +2328,6 @@ A checkout of the repository whose branches are delivered. Its main working tree
 #### Target Requirements
 
 The branch protection and the active rules governing one [target branch](#target-branch), each a local JSON file at its path, with the reviews and checks they require. An unreadable requirement is unresolved.
-
-### Commands
-
-#### List Epic Bases
-
-Prints one epic's base branch names, one per line.
-
-**Inputs:** Repository checkout and epic branch prefix.
-
-- A base is `<epic-branch-prefix>/<name>` whose `<name>` is a [long-lived branch](#branches), named as [Epic Bases](#epic-bases) states.
-- The prefix has the form `i<initiative-number>/e<epic-number>`. **Example:** `i07/e00`; a corresponding base is `i07/e00/main`.
-- The output contains one full base branch name per line.
-
-```bash
-git ls-remote --heads origin 'refs/heads/<epic-branch-prefix>/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-**Example:**
-
-```bash
-git ls-remote --heads origin 'refs/heads/i07/e00/*' | cut -f2 | sed 's|refs/heads/||'
-```
-
-#### List Long-Lived Branches
-
-Prints the long-lived branch names, one per line.
-
-**Inputs:** Project checkout.
-
-- The names meet [Branches](#branches).
-- `--project` is any checkout of the project. The names are the ones `config/branches` states in its main working tree, which a linked worktree resolves for itself.
-- A missing or empty statement prints `unevaluable:`, names what is missing, and exits 1.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py --names --project '<checkout>'
-```
-
-#### Fetch Remote Branch
-
-Fetches one source branch from origin.
-
-**Inputs:** Repository checkout and source branch.
-
-```bash
-git fetch origin '<source-branch>'
-```
-
-#### Merge Remote Branch
-
-Merges one fetched remote branch into the current worktree branch.
-
-**Inputs:** Destination worktree and fetched source branch name without the origin prefix.
-
-```bash
-git merge --no-edit 'origin/<source-branch>'
-```
-
-#### Push Epic Base
-
-Pushes the current epic base to its configured upstream.
-
-**Inputs:** Epic-base worktree and successful merge result.
-
-```bash
-git push
-```
-
-#### Fetch Review Head
-
-Fetches one pull request head into FETCH_HEAD.
-
-**Inputs:** Repository checkout and pull request number.
-
-```bash
-git fetch origin 'pull/<pull-request-number>/head'
-```
-
-**Example:**
-
-```bash
-git fetch origin pull/950/head
-```
-
-#### Add Epic Base Worktree
-
-Creates the worktree for an existing epic base.
-
-**Inputs:** Project checkout, worktree path and fetched epic base.
-
-- The path resolves against the directory the command runs in, so supply it as [Epic Bases](#epic-bases) anchors it rather than relative to a linked worktree.
-
-```bash
-git worktree add '<worktree-path>' '<epic-base>'
-```
-
-**Example:**
-
-```bash
-git worktree add .worktrees/i07/e00/main i07/e00/main
-```
-
-#### Add Review Worktree
-
-Creates a detached worktree at the fetched review head.
-
-**Inputs:** Repository checkout, worktree path and fetched head commit.
-
-- The path resolves against the directory the command runs in, so supply it as [Review Worktrees](#review-worktrees) anchors it rather than relative to a linked worktree.
-
-```bash
-git worktree add --detach '<worktree-path>' '<head-commit>'
-```
-
-#### Fetch Branch Protection
-
-Saves the target branch protection response.
-
-**Inputs:** Repository, target branch and destination file.
-
-```bash
-gh api 'repos/<owner>/<repo>/branches/<target-branch>/protection' > '<branch-protection-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/<owner>/<repo>/branches/main/protection' > protection.json
-```
-
-#### Fetch Active Branch Rules
-
-Saves every active rule for the target branch.
-
-**Inputs:** Repository, target branch and destination file.
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/rules/branches/<target-branch>' > '<branch-rules-file>'
-```
-
-**Example:**
-
-```bash
-gh api --paginate 'repos/<owner>/<repo>/rules/branches/main' > branch-rules.json
-```
-
-#### Read Checkout Revision
-
-Resolves one revision to its commit in the selected checkout.
-
-**Inputs:** Checkout and revision, such as HEAD or FETCH_HEAD.
-
-```bash
-git -C '<checkout>' rev-parse '<revision>^{commit}'
-```
-
-#### Read Checkout Status
-
-Reports branch or detached-HEAD state and tracked and untracked changes in one checkout.
-
-**Inputs:** Checkout path.
-
-```bash
-git -C '<checkout>' status --porcelain --branch
-```
 
 ## Pull Request Body
 
@@ -2626,19 +2477,31 @@ The required label definitions available for issue publication.
 
 ##### 1. List the Repository Labels
 
-Run [List Labels](#list-labels) for the repository.
+From the repository checkout, list its labels using the supplied owner and repository.
+
+```bash
+gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
+```
 
 ##### 2. Compare Required Label Names
+
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
 
 Compare the returned labels with the supplied required names.
 
 ##### 3. Create Absent Required Labels
 
-Run [Create Label](#create-label) for each absent required definition.
+From the repository checkout, create each absent required label using its supplied name, colour and description. Read each creation’s exit code and output before the next label; return a failure immediately.
+
+```bash
+gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
+```
 
 ##### 4. Return the Available Labels
 
-Return the available labels; an unknown definition is a finding for the caller to resolve before publication.
+Read the exit code and output of each command executed in the preceding step; return an execution error or refusal before continuing.
+
+Return the observed existing labels and successful creations. When every required label already exists, return that observed set. An unknown definition is a finding for the caller to resolve before publication.
 
 ### Fields
 
@@ -2649,28 +2512,6 @@ One repository, written `<owner>/<repo>`.
 #### Label Identity
 
 Each label has a name, colour and description. Issue assignments use labels that exist in the repository.
-
-### Commands
-
-#### List Labels
-
-Lists the labels that exist in the repository.
-
-**Inputs:** Repository.
-
-```bash
-gh api "repos/<owner>/<repo>/labels?per_page=100" --jq '.[].name'
-```
-
-#### Create Label
-
-Creates the label specified by its name, colour and description.
-
-**Inputs:** Repository, label name, colour and description.
-
-```bash
-gh api --method POST 'repos/<owner>/<repo>/labels' -f name='<label>' -f color='<hex-colour>' -f description='<description>' --jq .name
-```
 
 ## Issue Body
 
@@ -2967,37 +2808,77 @@ Current graph evidence for the supplied change.
 
 ##### 1. Check the Graph Index Status
 
-Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
+Read the graph index status from the supplied repository worktree. Run every command in this operation from that worktree and compare freshness with the supplied verified head.
+
+```bash
+gitnexus status
+```
 
 ##### 2. Refresh a Stale Graph Index
 
-If the repository is unindexed or behind the verified head:
+Inspect the status result and return an access error. If the repository is unindexed or behind the verified head, rebuild its index.
 
-- Run [Index Repository](#index-repository).
-- Confirm freshness.
+```bash
+gitnexus analyze
+```
 
 ##### 3. Measure the Change Surface
 
-Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
+If indexing ran, inspect its result and return any failure. Require an index current with the verified head, then measure changes against the supplied base branch.
+
+- `--base-ref` is the pull request's base, so the surface is the change rather than the branch's whole history.
+
+```bash
+gitnexus detect-changes --scope compare --base-ref '<base-branch>'
+```
+
+**Example:**
+
+```bash
+gitnexus detect-changes --scope compare --base-ref main
+```
 
 ##### 4. Read Each Changed Symbol Context
 
-For each changed symbol, run [Symbol Context](#symbol-context).
+Inspect the change-surface result and return any execution failure. For each changed symbol it identifies, read that symbol's context. Inspect each invocation before starting another; stop on a failed query.
+
+```bash
+gitnexus context '<symbol-identity>'
+```
+
+**Example:**
+
+```bash
+gitnexus context reserveRow
+```
 
 ##### 5. Trace Each Reported Flow
 
-For each reported flow, run [Flow Trace](#flow-trace).
+Inspect the symbol-context results and return any execution failure. For each flow identified by the change surface, query its ordered symbols. Inspect each invocation before starting another; stop on a failed query. The result meets [Flow Traces](#flow-traces).
+
+```bash
+gitnexus query --query '<flow-identity>' --limit 1
+```
+
+**Example:**
+
+```bash
+gitnexus query --query "Queue Placement" --limit 1
+```
 
 ##### 6. Re-Measure on a Stale Index
 
-Inspect the staleness block on every response. For a behind index:
+Inspect the flow-query results and return any execution failure. Inspect the staleness block on every response. If any response reports a behind index, discard its measurements and rebuild the index.
 
-- Discard its measurements.
-- Run [Index Repository](#index-repository).
-- Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index.
-- If a response is still behind, return a freshness blocker.
+```bash
+gitnexus analyze
+```
 
-##### 7. Return the Current Graph Evidence
+##### 7. Verify the Refreshed Measurements
+
+If the preceding step rebuilt the index, inspect its result and return any indexing failure. Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index. Inspect every repeated response's staleness block; if any remains behind, return a freshness blocker.
+
+##### 8. Return the Current Graph Evidence
 
 Return only evidence current with the supplied head, meeting [Fields](#fields-15), or a freshness blocker.
 
@@ -3023,78 +2904,6 @@ Each changed symbol has callers, callees, containing flows and file locations. F
 
 Each flow contains symbols in step order. Each `process_symbols` entry includes `step_index`, file and lines. Those ordered measurements supply sequence-diagram participants and interactions. A manually inferred call order does not establish a graph trace.
 
-### Commands
-
-#### Index Status
-
-Reports whether the repository is indexed, and how far behind the index sits.
-
-**Inputs:** Repository worktree and requested revision.
-
-```bash
-gitnexus status
-```
-
-#### Index Repository
-
-Indexes the repository, which an unindexed or behind repository needs before any measurement.
-
-**Inputs:** Repository worktree and requested revision.
-
-```bash
-gitnexus analyze
-```
-
-#### Change Surface
-
-Reports the symbols a pull request's diff touches and the flows they sit in, against the base branch.
-
-**Inputs:** Current indexed worktree and comparison base branch.
-
-- `--base-ref` is the pull request's base, so the surface is the change rather than the branch's whole history.
-
-```bash
-gitnexus detect-changes --scope compare --base-ref '<base-branch>'
-```
-
-**Example:**
-
-```bash
-gitnexus detect-changes --scope compare --base-ref main
-```
-
-#### Symbol Context
-
-Reports one symbol's callers, its callees and the flows it sits in, each with the file it sits in.
-
-**Inputs:** Symbol identity from the supplied change surface and the current graph worktree.
-
-```bash
-gitnexus context '<symbol-identity>'
-```
-
-**Example:**
-
-```bash
-gitnexus context reserveRow
-```
-
-#### Flow Trace
-
-Reports one flow's symbols in step order, the structure a sequence diagram is drawn from.
-
-**Inputs:** Flow identity from the supplied change surface and the current graph worktree. The result meets [Flow Traces](#flow-traces).
-
-```bash
-gitnexus query --query '<flow-identity>' --limit 1
-```
-
-**Example:**
-
-```bash
-gitnexus query --query "Queue Placement" --limit 1
-```
-
 ## Planning Record
 
 ### Operations
@@ -3109,18 +2918,29 @@ One planning directory and its artifact inventory.
 
 ##### 1. Prepare the Selected Planning Record
 
-Prepare the selected record:
+For a new record, run this command from the engineering worktree with the caller-composed [Record Folder](#record-folder) path.
 
-- For a new record:
-  - Create the folder with [Add Planning Record](#add-planning-record).
-  - Populate README.md from the [Template](#template-4).
-- For an existing record:
-  - Read its README, retaining its creation date, other artifacts and links.
-  - Update only the supplied content.
-- The folder must meet [Layout](#layout).
-- All populated README fields must meet [Fields](#fields-16).
+```bash
+mkdir -p '<planning-folder-path>'
+```
 
-##### 2. Register the Supplied Artifact Files
+**Example:**
+
+```bash
+mkdir -p artifacts/planning/2026-10-15-950-queue-plan
+```
+
+##### 2. Populate the Record Entry Point
+
+For a new record, inspect the folder-creation result. Return any error without writing or publishing further files. On success, populate README.md from the [Template](#template-4).
+
+For an existing record, read its README, retaining its creation date, other artifacts and links.
+
+- Update only the supplied content.
+
+For either kind of record, the folder must meet [Layout](#layout), and every populated README field must meet [Fields](#fields-16).
+
+##### 3. Register the Supplied Artifact Files
 
 Register the artifact files supplied by the caller, using their chosen names.
 
@@ -3128,11 +2948,11 @@ Register the artifact files supplied by the caller, using their chosen names.
 - File content remains supplied by the caller; this operation does not author that artifact's content.
 - Delete each artifact the caller names as removed, with its row.
 
-##### 3. Publish the Populated Planning Record
+##### 4. Publish the Populated Planning Record
 
 When the caller asks to publish, apply [Publish Planning Record](#publish-planning-record) with the folder path, the files this call wrote and the commit message file.
 
-##### 4. Return the Planning Record Folder
+##### 5. Return the Planning Record Folder
 
 Return the folder path, and the publication result when it published.
 
@@ -3146,19 +2966,46 @@ The record's folder committed and pushed, so every link into it resolves for a r
 
 ##### 1. Find the Publishing Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree) for the path the record is written on, with the [engineering branch](#engineering-branch) name.
+From any project checkout, list the worktree for the configured [engineering branch](#engineering-branch).
+
+- The engineering branch has one long-lived worktree and takes no further one.
+
+```bash
+git worktree list | grep '\[<engineering-branch>\]'
+```
 
 ##### 2. Commit the Planning Record Folder
 
-Run [Commit Planning Record](#commit-planning-record), which stages and commits that folder in one call.
+Inspect the worktree lookup. Return a lookup error or missing-worktree finding before any write. Use the returned path as `<engineering-worktree>`.
 
-- Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree).
+Stage and commit the supplied folder with the supplied message file. Resolve the message file against the engineering worktree, or pass its absolute path.
+
+- Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
+- Pass the message as [Bodies](#conventions) states. The worktree is a linked one, so git writes here run unsandboxed.
+
+```bash
+cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
+```
+
+**Example:**
+
+```bash
+cd .engineering && git add artifacts/planning/2026-10-15-950-queue-plan && git commit -F msg.txt -- artifacts/planning/2026-10-15-950-queue-plan
+```
 
 ##### 3. Push the Engineering Branch
 
-Run [Push Engineering Branch](#push-engineering-branch).
+Inspect the commit result; return a failure without pushing. Confirm the commit holds the files this record wrote, meeting [Shared Worktree](#shared-worktree), then push from the engineering worktree.
 
-- Report a push that will not fast-forward rather than rewriting the branch.
+- Planning records go straight to the branch; they take no pull request.
+
+```bash
+cd '<engineering-worktree>' && git push
+```
+
+##### 4. Return the Publication Result
+
+Inspect the push result. Report a non-fast-forward refusal or other push failure without rewriting the branch. Return the published commit and record path only after a successful push.
 
 #### Locate Planning Record
 
@@ -3170,14 +3017,33 @@ The existing planning folder whose reference is one issue or pull request number
 
 ##### 1. Find the Engineering Worktree
 
-Run [Find Engineering Worktree](#find-engineering-worktree) with the [engineering branch](#engineering-branch) name.
+From any project checkout, list the worktree for the configured [engineering branch](#engineering-branch).
+
+- The engineering branch has one long-lived worktree and takes no further one.
+
+```bash
+git worktree list | grep '\[<engineering-branch>\]'
+```
 
 ##### 2. List the Matching Planning Records
 
-Run [List Planning Records](#list-planning-records) in that worktree with its [records folder](#engineering-branch) and the number as the reference.
+Inspect the worktree lookup. Return a lookup error or missing-worktree finding before continuing. In the returned worktree, list folders under its configured [records folder](#engineering-branch) with the supplied reference number.
 
-- Return each folder path it lists.
-- When it lists none, return that no record has that reference.
+- The pattern places the reference directly after the date, as the [planning-folder path](#record-folder) does, so a number inside the date does not match.
+
+```bash
+cd '<engineering-worktree>' && ls -d '<records-folder>'????-??-??-'<reference>'-*/
+```
+
+**Example:**
+
+```bash
+cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
+```
+
+##### 3. Return the Matching Record Paths
+
+Inspect the listing's exit code and output. Return each matching folder path. If the pattern has no match, return that no record has the reference; report any other listing failure as an execution error.
 
 ### Fields
 
@@ -3251,6 +3117,12 @@ External references only: a tracker issue, a parent epic, a pull request. An art
 
 #### Record Folder
 
+- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](#engineering-branch). The date is the day the record is opened.
+- `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
+- The slug is lowercase words separated by hyphens, a short name of the work.
+- The folder's files are the [planning layout](#layout).
+- Edits are made on that worktree. The engineering branch takes no further worktree and no branch.
+
 One planning record's folder, at `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/` under the [records folder](#engineering-branch). The date is the day the record opened. The reference is the bare number of the issue or pull request the record is for, absent for ad hoc work. The slug is lowercase hyphenated words naming the work. The folder's name is the record identity.
 
 #### Commit Message
@@ -3260,91 +3132,6 @@ A file holding the message of the commit that publishes the record, as [Bodies](
 #### Publication
 
 The engineering-branch commit holding the record's folder, pushed to its remote.
-
-### Commands
-
-#### Find Engineering Worktree
-
-Prints the checkout holding the engineering branch, which is where every planning record is written.
-
-**Inputs:** Any checkout of the project and the [engineering branch](#engineering-branch) name.
-
-- The engineering branch has one long-lived worktree and takes no further one.
-
-```bash
-git worktree list | grep '\[<engineering-branch>\]'
-```
-
-#### Commit Planning Record
-
-Stages and commits one planning folder on the engineering worktree.
-
-**Inputs:** Engineering worktree, planning-folder path and a commit message file.
-
-- Staging and committing are one call, and the commit names its folder, so a concurrent session's staged work cannot ride along. See [Shared Worktree](#shared-worktree).
-- Pass the message as [Bodies](#conventions) states. The worktree is a linked one, so git writes here run unsandboxed.
-
-```bash
-cd '<engineering-worktree>' && git add '<planning-folder-path>' && git commit -F '<message-file>' -- '<planning-folder-path>'
-```
-
-**Example:**
-
-```bash
-cd .engineering && git add artifacts/planning/2026-10-15-950-queue-plan && git commit -F msg.txt -- artifacts/planning/2026-10-15-950-queue-plan
-```
-
-#### Push Engineering Branch
-
-Publishes the engineering branch so a record's links resolve.
-
-**Inputs:** Engineering worktree.
-
-- Planning records go straight to the branch; they take no pull request.
-
-```bash
-cd '<engineering-worktree>' && git push
-```
-
-#### List Planning Records
-
-Prints each planning folder whose reference is one issue or pull request number.
-
-**Inputs:** Engineering worktree, its [records folder](#engineering-branch) and the reference number.
-
-- The pattern places the reference directly after the date, as the [planning-folder path](#add-planning-record) does, so a number inside the date does not match.
-
-```bash
-cd '<engineering-worktree>' && ls -d '<records-folder>'????-??-??-'<reference>'-*/
-```
-
-**Example:**
-
-```bash
-cd .engineering && ls -d artifacts/planning/????-??-??-950-*/
-```
-
-#### Add Planning Record
-
-Adds the folder for one planning record on the long-lived engineering worktree.
-
-**Inputs:** Engineering worktree and planning-folder path composed from the date, optional issue or pull request number, and slug.
-
-- `<planning-folder-path>` is `<records-folder><yyyy-mm-dd>[-<ref>]-<slug>/`, under the [records folder](#engineering-branch). The date is the day the record is opened.
-- `<ref>` is the bare number of the issue or the pull request the record is for. A record for ad hoc work, which has neither, has no ref segment.
-- The slug is lowercase words separated by hyphens, a short name of the work.
-- The folder's files are the [planning layout](#layout).
-- Edits are made on that worktree. The engineering branch takes no further worktree and no branch.
-
-```bash
-mkdir -p '<planning-folder-path>'
-```
-
-**Example:**
-
-```bash
-mkdir -p artifacts/planning/2026-10-15-950-queue-plan
-```
 
 # Configuration
 

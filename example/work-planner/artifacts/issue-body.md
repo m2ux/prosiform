@@ -42,7 +42,26 @@ Check each section of the issue against the field conditions for its kind and ag
 
 #### 2. Check the Changed Body Formats
 
-Run [Check Body Format](#check-body-format) on every issue the round changed.
+From `<workspace>`, check every changed issue using its issue JSON, local correction output path and additional format inputs supplied by its kind. Read each result before the next issue; retain format findings and stop on an unreadable input or invocation failure.
+
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
+
+#### 3. Return the Body Check Findings
+
+Read each format-check exit code and output. Return its format findings with the field findings; report an unreadable input or failed invocation as a blocker.
 
 ### Validate Issue Body
 
@@ -54,9 +73,26 @@ One body checked against its supplied kind and template.
 
 #### 1. Run the Body Format Check
 
-Run [Check Body Format](#check-body-format) with the supplied issue JSON, kind inputs and output file as `--fix`.
+From `<workspace>`, check the supplied issue JSON with its kind’s additional format inputs and the output body file as `--fix`.
+
+- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
+- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
+```
 
 #### 2. Review the Body Field Conditions
+
+Read the format checker’s exit code, findings and corrected body. Return an unreadable input or invocation failure as a blocker; retain format findings for the review.
 
 Review the body against the supplied field conditions.
 
@@ -326,26 +362,3 @@ The decision taken on each non-mechanical finding or open question: content to a
 ### Required Changes
 
 Changes a body correction needs outside that body: a tracker-kind change, a title or label change, or an edit to another issue's body, each naming the issue it applies to.
-
-## Commands
-
-### Check Body Format
-
-Checks one issue against its template, and with `--fix` writes the body with the mechanical fixes made.
-
-**Inputs:** Issue JSON, local output body file and the additional format inputs supplied by the kind.
-
-- The format reader takes the template fence from the body artifact and its table columns where present. A body with a Work Breakdown table requires coverage for every criterion.
-- The input is one issue JSON. `--fix` names the output body file for mechanical fixes. Further inputs are specified by the calling body procedure.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py '<issue-json-file>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/format.py issue.json --fix fixed.md
-```
