@@ -28,7 +28,7 @@ A session records each state it enters as a line of `trace.log` and does each st
 | `missing_action` | walked the path and left a state's action undone or wrong. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
-| `loop_miscount` | left or repeated a loop at the wrong count. |
+| `loop_miscount` | repeated a loop more times than its input requires. |
 | `wrong_branch` | took the other branch of a decision on an input. |
 | `skipped_state` | jumped ahead, omitting states between. |
 | `invalid_transition` | entered a state no edge leads to: a step back, a state after the end, or the same state again. |
@@ -49,7 +49,7 @@ then `/login`. A run whose configuration directory holds no login fails before i
 
 | Command | Runs |
 | --- | --- |
-| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. A default run costs about USD 5.3 and takes about 13 minutes; its budget is USD 100. `ARGS='...'` passes the runner's options through. |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which is the default matrix's 200 sessions at the session cap. `ARGS='...'` passes the runner's options through. |
 
 The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
@@ -76,14 +76,14 @@ make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetiti
 
 ### Default matrix and cost
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the three forms; and five repetitions: 150 sessions. A default run costs about USD 4.01, the `cost_usd` the committed baseline records for its run, and takes about 10 minutes at four sessions at once. By model:
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the four forms; and five repetitions: 200 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — so its cost is the 150 sessions it ran: about USD 4.01, in about 10 minutes at four sessions at once. The linked form's sessions are not in it, and a four-form run costs them on top. By model, over the baseline's 150 sessions:
 
 | Model | Sessions | Mean cost per session (USD) | Run cost (USD) | Mean session duration |
 | --- | --- | --- | --- | --- |
 | `claude-haiku-5-5` | 75 | 0.0038 | 0.29 | 15 s |
 | `claude-sonnet-5-5` | 75 | 0.0496 | 3.72 | 18 s |
 
-The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 75, the 150 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
+The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, the 200 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
 
 A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
 

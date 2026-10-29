@@ -7,7 +7,8 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 
 - `bundle`: the diagram form bundled by `pf`, as one file;
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
-- `prose`: the prose form bundled by `pf`, as one file.
+- `prose`: the prose form bundled by `pf`, as one file;
+- `linked`: the linked form's source tree as it is, entered at `workflow.md`.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
