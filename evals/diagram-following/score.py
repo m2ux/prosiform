@@ -31,9 +31,39 @@ the classes taken in this order:
   one before it: a step back, a state entered after a terminal one, or the
   one before it repeated: *invalid transition*.
 
+A dispatch scenario also states the sub-agents a correct run starts, so a
+run whose trace is the path and whose actions are done is held to that
+record before it passes. The record is `subagents.json` beside the trace,
+written from the session's transcript when the session settles, so the
+scorer reads no transcript and takes no second read:
+
+- the sections the record names, in order, are the scenario's: otherwise
+  *undispatched*, since a bundle the scenario dispatches reached no
+  sub-agent or reached one in another order;
+- every start the scenario marks as opening a set beside the one above it
+  is recorded beside it: otherwise *sequential_set*;
+- each start's return is the scenario's: otherwise *unrelayed_question*,
+  which is a question the sub-agent returned and the session answered in
+  its place.
+
+The checks are read in that order, after the run is held to its path and
+its actions, so a trace that stopped short is *unfinished* however few
+sub-agents it started, and a record failing two checks takes the earlier.
+A scenario that dispatches nothing passes all three, and a record absent
+from a session that dispatches nothing names no start.
+
+A start is a `Task` tool call in the transcript, which names the section
+it hands over in the call's `description` as `<document>#<heading>`; its
+return is the text of the `tool_result` answering the call, read as
+`question` when that text opens with the word and as `done` otherwise. Two
+starts in one assistant message are together, since they were dispatched
+at once.
+
 The verdict's `record` is the form the runner writes and the report reads.
 """
 
+import json
+import re
 from dataclasses import asdict, dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -42,6 +72,17 @@ from workflow import FEWER, START, Scenario, Workflow
 
 TRACE = "trace.log"
 ACTIONS = "actions"
+SUBAGENTS = "subagents.json"
+TRANSCRIPT = "transcript.jsonl"
+TASK = "Task"
+DESCRIPTION = "description"
+TOOL_USE = "tool_use"
+TOOL_RESULT = "tool_result"
+CALL_ID = "tool_use_id"
+RETURNED_QUESTION = "question"
+RETURNED_DONE = "done"
+BUNDLE_SUFFIX = ".bundle.md"
+BUNDLE_JOIN = "__"
 
 
 class Failure(StrEnum):
@@ -54,6 +95,9 @@ class Failure(StrEnum):
     LOOP_MISCOUNT = "loop_miscount"
     MISSING_ACTION = "missing_action"
     UNFINISHED = "unfinished"
+    UNDISPATCHED = "undispatched"
+    SEQUENTIAL_SET = "sequential_set"
+    UNRELAYED_QUESTION = "unrelayed_question"
     ERRORED = "errored"
 
 
@@ -138,6 +182,188 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
     return Failure.INVALID_TRANSITION
 
 
+@dataclass(frozen=True)
+class Start:
+    """One sub-agent start a session's transcript records.
+
+    `target` is the text the dispatching call carried, naming the section it
+    handed over; `returned` is what the sub-agent gave back, and `together`
+    says whether it started in the same message as the start above it.
+    """
+
+    target: str
+    returned: str
+    together: bool
+
+    def record(self) -> dict[str, object]:
+        """The start as plain values `json.dumps` writes unchanged."""
+        return asdict(self)
+
+
+def calls(transcript: Path) -> dict[str, tuple[str, bool]]:
+    """Each `Task` call a transcript holds, by id, with whether it shares a message.
+
+    A `tool_use` block naming `Task` is one sub-agent start. Two such blocks
+    in one assistant message are together, since they were dispatched at
+    once. A call's target is the `description` its input carries, which names
+    the section handed over.
+    """
+    found: dict[str, tuple[str, bool]] = {}
+    if not transcript.is_file():
+        return found
+    for line in transcript.read_text().splitlines():
+        try:
+            message = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(message, dict) or message.get("type") != "assistant":
+            continue
+        content = message.get("message", {}).get("content")
+        if not isinstance(content, list):
+            continue
+        first = None
+        for block in content:
+            if not isinstance(block, dict) or block.get("type") != TOOL_USE:
+                continue
+            if block.get("name") != TASK:
+                continue
+            held = block.get("input")
+            target = held.get(DESCRIPTION) if isinstance(held, dict) else None
+            key = block.get("id")
+            if not isinstance(key, str) or not isinstance(target, str):
+                continue
+            found[key] = (target, first is not None)
+            if first is None:
+                first = key
+    return found
+
+
+def answered(transcript: Path) -> dict[str, str]:
+    """What each `Task` call returned, by the id of the call that started it.
+
+    A `tool_result` block answering a `Task` call carries the sub-agent's
+    result. It is `question` when that text opens with the word, which is
+    what a dispatched run returns instead of putting the question to the
+    user, and `done` otherwise.
+    """
+    found: dict[str, str] = {}
+    if not transcript.is_file():
+        return found
+    for line in transcript.read_text().splitlines():
+        try:
+            message = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(message, dict) or message.get("type") != "user":
+            continue
+        content = message.get("message", {}).get("content")
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if not isinstance(block, dict) or block.get("type") != TOOL_RESULT:
+                continue
+            key = block.get(CALL_ID)
+            text = block.get("content")
+            if not isinstance(key, str):
+                continue
+            if isinstance(text, list):
+                text = " ".join(
+                    part.get("text", "") for part in text if isinstance(part, dict)
+                )
+            said = text.strip().lower() if isinstance(text, str) else ""
+            found[key] = (
+                RETURNED_QUESTION
+                if said.startswith(RETURNED_QUESTION)
+                else RETURNED_DONE
+            )
+    return found
+
+
+def record_starts(transcript: Path, records: Path) -> tuple[Start, ...]:
+    """Read a session's transcript for its sub-agent starts and record them.
+
+    The record is `subagents.json` beside the trace and the session's cost,
+    one entry per start in the order the transcript made them, so the scorer
+    reads it instead of the transcript.
+    """
+    returned = answered(transcript)
+    starts = tuple(
+        Start(target, returned.get(key, RETURNED_DONE), together)
+        for key, (target, together) in calls(transcript).items()
+    )
+    (records / SUBAGENTS).write_text(
+        json.dumps({"starts": [start.record() for start in starts]}, indent=2) + "\n"
+    )
+    return starts
+
+
+def read_starts(workspace: Path) -> tuple[Start, ...]:
+    """The sub-agent starts a workspace's record holds, in order.
+
+    The record is read as the runner wrote it, so the scorer takes no second
+    read of the transcript, and a workspace with no record names no start.
+    """
+    path = workspace / SUBAGENTS
+    if not path.is_file():
+        return ()
+    try:
+        held = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return ()
+    if not isinstance(held, dict):
+        return ()
+    return tuple(
+        Start(
+            str(row.get("target", "")),
+            str(row.get("returned", "")),
+            bool(row.get("together")),
+        )
+        for row in held.get("starts", [])
+        if isinstance(row, dict)
+    )
+
+
+def names(target: str, section: str) -> bool:
+    """Whether a start's target names a section, as a section or as its bundle.
+
+    A compiled form hands over `pf`'s bundle for the section, named
+    `<document>__<heading>` and written beside the entry; an authored form
+    hands over the section itself, named `<document>#<heading>`. Both spell
+    one section, since the bundle's name is compiled from it. A start's
+    target is the text the dispatching call carried, so the section may sit
+    within a sentence.
+    """
+    document, _, heading = section.partition("#")
+    for spelled in (
+        f"{document}#{heading}",
+        f"{document}{BUNDLE_JOIN}{heading}{BUNDLE_SUFFIX}",
+    ):
+        if re.search(rf"{re.escape(spelled)}(?![\w#-])", target):
+            return True
+    return False
+
+
+def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
+    """The first dispatch check a run's record fails, or nothing when it passes."""
+    expected = scenario.trace
+    if len(starts) < len(expected) or any(
+        not names(start.target, due.section)
+        for start, due in zip(starts, expected, strict=False)
+    ):
+        return Failure.UNDISPATCHED
+    if any(
+        due.together and not start.together
+        for start, due in zip(starts, expected, strict=True)
+    ):
+        return Failure.SEQUENTIAL_SET
+    if any(
+        start.returned != due.returned
+        for start, due in zip(starts, expected, strict=True)
+    ):
+        return Failure.UNRELAYED_QUESTION
+    return None
+
+
 def score(workflow: Workflow, scenario: Scenario, workspace: Path) -> Verdict:
     """The verdict on one finished workspace for one scenario."""
     expected = scenario.path
@@ -155,13 +381,19 @@ def score(workflow: Workflow, scenario: Scenario, workspace: Path) -> Verdict:
         min(len(actual), len(expected)),
     )
     failure: Failure
+    at: int | None
     if actual == expected:
-        if not missing:
+        if missing:
+            return Verdict(
+                False, Failure.MISSING_ACTION, missing[0], expected, actual, actions
+            )
+        order = dispatched(scenario, read_starts(workspace))
+        if order is None:
             return Verdict(True, None, None, expected, actual, actions)
-        failure, divergence = Failure.MISSING_ACTION, missing[0]
+        failure, at = order, None
     elif divergence == len(actual):
-        failure = Failure.UNFINISHED
+        failure, at = Failure.UNFINISHED, divergence
     else:
         previous = actual[divergence - 1] if divergence else START
-        failure = departure(workflow, previous, actual[divergence])
-    return Verdict(False, failure, divergence, expected, actual, actions)
+        failure, at = departure(workflow, previous, actual[divergence]), divergence
+    return Verdict(False, failure, at, expected, actual, actions)

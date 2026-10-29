@@ -1,16 +1,31 @@
-"""Hold the scorer to its pass rule and its failure classes.
+"""Hold the scorer to its pass rule, its failure classes and its dispatch checks.
 
-Each test lays out a workspace by hand: a trace, and the action files a run
-that did every action of the states it entered would leave. A scenario's
-own path passes; each failure class is reached by one trace built to
-depart from its scenario in that way and no other.
+Each test lays out a workspace by hand: a trace, the action files a run
+that did every action of the states it entered would leave, and for a
+dispatch scenario the sub-agent record its transcript would produce. A
+scenario's own path passes; each failure class is reached by one trace
+built to depart from its scenario in that way and no other, and each
+dispatch class by one record built to fail that check and no earlier one.
 """
 
 import json
 from pathlib import Path
 
 import pytest
-from score import TRACE, Failure, Verdict, read_trace, score
+from score import (
+    ACTIONS,
+    SUBAGENTS,
+    TRACE,
+    Failure,
+    Start,
+    Verdict,
+    answered,
+    calls,
+    read_starts,
+    read_trace,
+    record_starts,
+    score,
+)
 from workflow import Scenario, Workflow, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
@@ -21,24 +36,45 @@ def scenario(workflow: str, name: str) -> Scenario:
     return next(item for item in CORPUS[workflow].scenarios if item.name == name)
 
 
+def starts_of(item: Scenario) -> list[Start]:
+    """The sub-agent starts a correct run of one scenario makes."""
+    return [
+        Start(entry.section, entry.returned, entry.together) for entry in item.trace
+    ]
+
+
+def record(held: Path, starts: list[Start]) -> Path:
+    """Write a workspace's sub-agent record, as the runner writes it."""
+    (held / SUBAGENTS).write_text(
+        json.dumps({"starts": [start.record() for start in starts]}, indent=2) + "\n"
+    )
+    return held
+
+
 def workspace(
-    tmp_path: Path, workflow: Workflow, trace: list[str], log: str | None = None
+    tmp_path: Path,
+    workflow: Workflow,
+    trace: list[str],
+    log: str | None = None,
+    starts: list[Start] | None = None,
 ) -> Path:
-    """A workspace holding a trace and every action of the states it names."""
+    """A workspace holding a trace, every action, and the sub-agent record."""
     if log is None:
         log = "".join(f"{state}\n" for state in trace)
     (tmp_path / TRACE).write_text(log)
-    (tmp_path / "actions").mkdir()
+    (tmp_path / ACTIONS).mkdir(exist_ok=True)
     for state in set(trace) & workflow.diagram.states:
         name, value = workflow.walked[state].action
-        (tmp_path / "actions" / name).write_text(f"{value}\n")
+        (tmp_path / ACTIONS / name).write_text(f"{value}\n")
+    record(tmp_path, list(starts or []))
     return tmp_path
 
 
 def run(tmp_path: Path, workflow: str, name: str, trace: list[str]) -> Verdict:
     """The verdict on a hand-made trace for one scenario."""
     held = CORPUS[workflow]
-    return score(held, scenario(workflow, name), workspace(tmp_path, held, trace))
+    item = scenario(workflow, name)
+    return score(held, item, workspace(tmp_path, held, trace, starts=starts_of(item)))
 
 
 @pytest.mark.parametrize(
@@ -49,8 +85,31 @@ def run(tmp_path: Path, workflow: str, name: str, trace: list[str]) -> Verdict:
 def test_a_run_walking_its_scenario_path_with_every_action_passes(
     tmp_path: Path, workflow: Workflow, item: Scenario
 ) -> None:
-    verdict = score(workflow, item, workspace(tmp_path, workflow, list(item.path)))
-    assert verdict == Verdict(True, None, None, item.path, item.path, ())
+    """AC3: a dispatch scenario's own record passes beside its path."""
+    held = workspace(tmp_path, workflow, list(item.path), starts=starts_of(item))
+    assert score(workflow, item, held) == Verdict(
+        True, None, None, item.path, item.path, ()
+    )
+
+
+@pytest.mark.parametrize(
+    "workflow",
+    [workflow for workflow in CORPUS if workflow.startswith("dispatch")],
+)
+def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
+    tmp_path: Path, workflow: str
+) -> None:
+    """AC3: every bundle a scenario names reached a sub-agent, in its order."""
+    held = CORPUS[workflow]
+    [item] = held.scenarios
+    verdict = score(
+        held, item, workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    )
+    assert (verdict.passed, verdict.failure, len(read_starts(tmp_path))) == (
+        True,
+        None,
+        len(item.trace),
+    )
 
 
 @pytest.mark.parametrize(
@@ -232,3 +291,208 @@ def test_the_record_is_plain_json_values(tmp_path: Path) -> None:
         "actual": ["Plan", "Build"],
         "actions": [],
     }
+
+
+def dispatched(workflow: str, starts: list[Start], tmp_path: Path) -> Verdict:
+    """The verdict on a dispatch scenario's own path with a chosen record."""
+    held = CORPUS[workflow]
+    [item] = held.scenarios
+    return score(held, item, workspace(tmp_path, held, list(item.path), starts=starts))
+
+
+def test_a_bundle_that_reached_no_sub_agent_is_undispatched(
+    tmp_path: Path,
+) -> None:
+    """AC3: a bundle set the agent read and did not dispatch is `undispatched`."""
+    verdict = dispatched("dispatch-chain", [], tmp_path)
+    assert (verdict.passed, verdict.failure) == (False, Failure.UNDISPATCHED)
+
+
+def test_a_bundle_dispatched_after_another_is_undispatched(
+    tmp_path: Path,
+) -> None:
+    """A record naming the sections in another order reached one out of turn."""
+    [first, second] = CORPUS["dispatch-chain"].scenarios[0].trace
+    verdict = dispatched(
+        "dispatch-chain",
+        [
+            Start(second.section, second.returned, False),
+            Start(first.section, first.returned, False),
+        ],
+        tmp_path,
+    )
+    assert verdict.failure == Failure.UNDISPATCHED
+
+
+def test_a_set_started_one_after_another_is_sequential_set(
+    tmp_path: Path,
+) -> None:
+    """AC3: a set's bundles reached sub-agents, but not together."""
+    [first, second] = CORPUS["dispatch-set"].scenarios[0].trace
+    verdict = dispatched(
+        "dispatch-set",
+        [
+            Start(first.section, first.returned, False),
+            Start(second.section, second.returned, False),
+        ],
+        tmp_path,
+    )
+    assert (verdict.passed, verdict.failure) == (False, Failure.SEQUENTIAL_SET)
+
+
+def test_a_question_answered_in_the_sub_agents_place_is_unrelayed(
+    tmp_path: Path,
+) -> None:
+    """AC3: a returned question the session answered takes `unrelayed_question`."""
+    [first, second] = CORPUS["dispatch-question"].scenarios[0].trace
+    assert first.returned != second.returned
+    verdict = dispatched(
+        "dispatch-question",
+        [
+            Start(first.section, second.returned, False),
+            Start(second.section, second.returned, False),
+        ],
+        tmp_path,
+    )
+    assert (verdict.passed, verdict.failure) == (False, Failure.UNRELAYED_QUESTION)
+
+
+def test_a_run_that_stopped_short_is_unfinished_though_nothing_was_dispatched(
+    tmp_path: Path,
+) -> None:
+    """AC3: the completion check is read first, so a short run is `unfinished`."""
+    held = CORPUS["dispatch-chain"]
+    [item] = held.scenarios
+    verdict = score(held, item, workspace(tmp_path, held, list(item.path[:-1])))
+    assert (verdict.failure, verdict.divergence) == (Failure.UNFINISHED, 1)
+
+
+def test_the_dispatch_checks_are_read_in_order(tmp_path: Path) -> None:
+    """AC3: a record failing two checks takes the earlier one.
+
+    A record that started too few sub-agents and gave the wrong return is
+    `undispatched`, not `unrelayed_question`; one that ran a set in sequence
+    and gave the wrong return is `sequential_set`, not the later check.
+    """
+    chain = CORPUS["dispatch-chain"].scenarios[0]
+    corpus = CORPUS["dispatch-chain"]
+    too_few = [Start(chain.trace[0].section, "question", False)]
+    held = tmp_path / "few"
+    held.mkdir()
+    verdict = score(
+        corpus, chain, workspace(held, corpus, list(chain.path), starts=too_few)
+    )
+    assert verdict.failure == Failure.UNDISPATCHED
+
+    aset = CORPUS["dispatch-set"].scenarios[0]
+    sequenced = [
+        Start(aset.trace[0].section, "question", False),
+        Start(aset.trace[1].section, "question", False),
+    ]
+    held = tmp_path / "sequence"
+    held.mkdir()
+    verdict = score(
+        CORPUS["dispatch-set"],
+        aset,
+        workspace(held, CORPUS["dispatch-set"], list(aset.path), starts=sequenced),
+    )
+    assert verdict.failure == Failure.SEQUENTIAL_SET
+
+
+def test_a_scenario_dispatching_nothing_passes_the_dispatch_checks(
+    tmp_path: Path,
+) -> None:
+    """A workflow dispatching nothing states no trace, so all three checks pass."""
+    linear = CORPUS["linear"]
+    item = scenario("linear", "straight-through")
+    held = workspace(tmp_path, linear, list(item.path))
+    assert item.trace == ()
+    assert score(linear, item, held).passed
+
+
+def transcript(tmp_path: Path, messages: list[dict[str, object]]) -> Path:
+    """A transcript holding the messages given, one per line."""
+    path = tmp_path / "transcript.jsonl"
+    path.write_text("\n".join(json.dumps(message) for message in messages) + "\n")
+    return path
+
+
+def call(identifier: str, target: str) -> dict[str, object]:
+    """One `Task` call naming the section it hands over."""
+    return {
+        "type": "tool_use",
+        "id": identifier,
+        "name": "Task",
+        "input": {"description": target, "prompt": f"Follow {target}."},
+    }
+
+
+def answer(identifier: str, text: str) -> dict[str, object]:
+    """One `tool_result` answering a call."""
+    return {
+        "type": "tool_result",
+        "tool_use_id": identifier,
+        "content": text,
+    }
+
+
+def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
+    tmp_path: Path,
+) -> None:
+    """A start reads its section, its return, and whether it came with another."""
+    held = transcript(
+        tmp_path,
+        [
+            {"type": "assistant", "message": {"content": [call("a", "plan#work")]}},
+            {
+                "type": "assistant",
+                "message": {
+                    "content": [call("b", "review#source"), call("c", "review#tests")]
+                },
+            },
+            {"type": "user", "message": {"content": [answer("a", "done: complete")]}},
+            {
+                "type": "user",
+                "message": {"content": [answer("b", "question: which source?")]},
+            },
+            {"type": "user", "message": {"content": [answer("c", "done: read")]}},
+        ],
+    )
+    records = tmp_path / "records"
+    records.mkdir()
+    record_starts(held, records)
+    assert read_starts(records) == (
+        Start("plan#work", "done", False),
+        Start("review#source", "question", False),
+        Start("review#tests", "done", True),
+    )
+    assert calls(held) == {
+        "a": ("plan#work", False),
+        "b": ("review#source", False),
+        "c": ("review#tests", True),
+    }
+    assert answered(held) == {"a": "done", "b": "question", "c": "done"}
+
+
+def test_a_start_naming_its_compiled_bundle_names_the_same_section(
+    tmp_path: Path,
+) -> None:
+    """A compiled form's call names `pf`'s bundle, which spells one section."""
+    verdict = dispatched(
+        "dispatch-chain",
+        [
+            Start("plan__work.bundle.md", "done", False),
+            Start("review__check.bundle.md", "done", False),
+        ],
+        tmp_path,
+    )
+    assert verdict.passed is True
+
+
+def test_an_absent_transcript_records_no_start(tmp_path: Path) -> None:
+    """A session that dispatched nothing, or wrote no transcript, records none."""
+    records = tmp_path / "records"
+    records.mkdir()
+    assert record_starts(tmp_path / "absent.jsonl", records) == ()
+    assert read_starts(records) == ()
+    assert read_starts(tmp_path / "unwritten") == ()
