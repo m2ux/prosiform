@@ -13,6 +13,8 @@ This record holds the delivery of W02: the sub-agent record written beside the t
 | Artifact | What it holds |
 | --- | --- |
 | [W02 work item](w02.md) | The sub-agent record, the four dispatch checks and the class each failing trace takes |
+| [Validation](validation.md) | Each check the work item's Test row names, with the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this session met and those it held |
 
 ## Links
 
