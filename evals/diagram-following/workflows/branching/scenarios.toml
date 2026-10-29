@@ -1,0 +1,12 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+
+[[scenario]]
+name = "high-severity"
+path = ["Intake", "Triage", "Escalate", "Notify", "Resolve"]
+inputs = { "severity.txt" = "high" }
+
+[[scenario]]
+name = "low-severity"
+path = ["Intake", "Triage", "Queue", "Resolve"]
+inputs = { "severity.txt" = "low" }

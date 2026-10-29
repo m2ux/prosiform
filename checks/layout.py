@@ -15,6 +15,7 @@ REQUIRED_TREES = {
     "fixtures": "the language-neutral fixture corpus",
     "src": "the build",
     "docs": "the documentation this repository owns",
+    "evals": "the evaluations of agents reading what the build produces",
 }
 
 

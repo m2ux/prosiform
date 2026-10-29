@@ -34,6 +34,18 @@
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
 #
+# `make harness` also holds the diagram-following eval's workflow corpus, its
+# scorer, its runner and its report. Its tests bundle each workflow form with
+# the `pf` the locked environment installs, score hand-made traces, run the
+# runner against a stub agent, and report over hand-made session records, so
+# they need no configured build and start no paid agent session.
+#
+# `make eval-diagrams` runs that eval against real agents, which costs money,
+# so no other target depends on it and `make check` never starts it. It runs
+# the default matrix within EVAL_BUDGET_USD, which covers every session of
+# that matrix at its default session cap; ARGS passes the runner's options
+# through, a later `--budget-usd` among them overriding the default.
+#
 # `make render` draws the diagrams of the corpus's diagram-link fixtures with
 # mermaid-cli, which `MERMAID_CLI` names, and fails without one. A Gantt
 # fixture's diagram is clicked in a running page instead, with the browser
@@ -49,10 +61,11 @@
 # documents, which `make tables` holds true in both directions.
 
 UV_RUN := uv run --project src --frozen
+EVAL_BUDGET_USD := 100
 TOOL_CONFIG := src/pyproject.toml
-PYTHON_SOURCES := src/prosiform src/tests checks
+PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render eval-diagrams
 
 check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps authoring
 
@@ -60,7 +73,7 @@ test:
 	cd src && uv run --frozen pytest
 
 harness:
-	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests
+	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests evals/diagram-following
 
 corpus:
 	$(UV_RUN) python checks/corpus.py
@@ -109,3 +122,6 @@ authoring:
 
 render:
 	python3 checks/render.py
+
+eval-diagrams:
+	$(UV_RUN) python evals/diagram-following/run.py --budget-usd $(EVAL_BUDGET_USD) $(ARGS)
