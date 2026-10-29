@@ -19,6 +19,8 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 | [W05 work item](w05.md) | The first baseline from the default matrix |
 | [W06 work item](w06.md) | The linked form, whose decisions name the rule stating the branch's label |
 | [W07 work item](w07.md) | The `errored` class for a session that entered no state |
+| [W06 + W07 validation](validation-w06-w07.md) | The test-plan results, the mutation checks and the ten-session probe |
+| [W06 + W07 change list](change-list-w06-w07.md) | What this delivery applied, and the baseline refresh it held |
 
 ## Decisions
 
