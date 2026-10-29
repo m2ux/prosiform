@@ -1,6 +1,6 @@
 # I05:E07 Dispatch Following — October 2026
 
-> Epic planning · Created 2026-10-29
+> Epic planning · Created 2026-10-29 · Revised 2026-10-29
 
 ## Executive Summary
 
