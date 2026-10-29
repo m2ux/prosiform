@@ -81,5 +81,10 @@ No paid session ran. Every test drives the stub agent beside the suite.
 
 ## Merge
 
-- Target `i05/e01/main`: no branch protection, no active rules.
+- Pull request: [#400](https://github.com/m2ux/prosiform/pull/400), `[I05:E01] Session Isolation`, head `i05/e01/w08-session-isolation-a-form` → base `i05/e01/main`.
+- Target `i05/e01/main`: no branch protection, no active rules, so no approving review is required.
+- Head checks: `Checks` completed `success` at `57f7f298` before the merge.
+- Test plan: every row ✓, so the plan had passed.
 - Auto-close of issues on merge: confirmed disabled for `m2ux/prosiform`.
+- Merged as a merge commit: `63a5f6e6d19198b6c748241e1383764cb2aa3cb1`, merged `2026-10-29T16:24:43Z`. The merge commit's files are the five the branch changed.
+- Task issue [#395](https://github.com/m2ux/prosiform/issues/395) closed as completed after the closure gate passed on its Development field: one merged pull request, #400, and AC1–AC3 ticked.
