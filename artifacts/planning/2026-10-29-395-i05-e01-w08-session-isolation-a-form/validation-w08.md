@@ -11,9 +11,24 @@
 - Tested revision: `57f7f2985f29ff53f8d5179417ce16d7b35c8d36`
 - Environment: `UV_CACHE_DIR=/tmp/w08-eval-uv`, `PROSIFORM_BUILD="uv run --project <worktree>/src --frozen pf"`
 
+## Test Plan
+
+Every row was executed at the head of this branch. Instrument: the eval's own tests under `evals/diagram-following/`, and `make check`.
+
+| Test | Description | Coverage | Result |
+| --- | --- | --- | --- |
+| T1 | A config directory installing a plugin is refused before the first session | AC1 | ✓ Pass |
+| T2 | A config directory whose remote settings enable a plugin is refused before the first session | AC1 | ✓ Pass |
+| T3 | A clean config directory starts its session, so the refusal does not over-reach | AC1 | ✓ Pass |
+| T4 | A session carrying a hook response fails the run, naming what it carried | AC2 | ✓ Pass |
+| T5 | Every carrying session is named once in the refusal | AC2 | ✓ Pass |
+| T6 | The transcript read recognises each form of injected context and stays silent otherwise | AC2 | ✓ Pass |
+| T7 | The README states each mechanism and each refusal the preflight makes | AC3 | ✓ Pass |
+| T8 | `make check` over the whole repository | — | ✓ Pass |
+
 ## Checks
 
-### AC1 — A plugin in the config directory is refused before the first session
+### AC1 A plugin in the config directory is refused before the first session
 
 **Where:** `evals/diagram-following/test_run.py::test_a_run_whose_config_installs_a_plugin_hook_starts_no_session`
 
@@ -21,7 +36,7 @@ The test plants `plugins/installed_plugins.json` holding one plugin in a tempora
 
 **Result:** ✓ Pass.
 
-### AC2 — A session carrying context the run did not supply fails the run, naming it
+### AC2 A session carrying context the run did not supply fails the run, naming it
 
 **Where:** `evals/diagram-following/test_run.py::test_a_session_carrying_injected_context_fails_the_run`
 
@@ -29,7 +44,7 @@ The test plants `plugins/installed_plugins.json` holding one plugin in a tempora
 
 **Result:** ✓ Pass.
 
-### AC3 — The README states each mechanism and what the preflight refuses
+### AC3 The README states each mechanism and what the preflight refuses
 
 **Where:** `evals/diagram-following/README.md`, section **Isolation**.
 
