@@ -55,7 +55,7 @@ These rules apply to mode and protocol procedures and artifact operations.
 ## Prose
 
 - **One home per rule.**
-  A rule is stated once, and every other file links it, never naming it in code font. Its home is the contract or outcome it constrains, the procedure step it binds, [Rules](rules.md) or [Conventions](conventions.md) when it binds every mode, or the Modes, Protocols, Artifacts, or References section below when it governs how that kind of file is written.
+  The shared [One home per rule](../guidelines.md#prose) holds. Here the file for what binds every mode is [Rules](rules.md) or [Conventions](conventions.md), the guidelines for a kind of file are its Modes, Protocols, Artifacts or References section below, and a link to a rule never names it in code font.
 - **Bindings.**
   A value fixed per deployment or per run, such as a repository, a label, a board field or a limit, is stated once in [Configuration](configuration.md) beside the entry point, which the entry point links, and every use links it.
   - A loop or batch limit names the configured value.
@@ -86,7 +86,7 @@ These rules apply to mode and protocol procedures and artifact operations.
 These rules govern artifact operations, and every step that runs a command. Procedure above and Artifacts below hold the rest of an operation's shape.
 
 - **Inputs and Outputs.**
-  An operation's **Inputs:** and **Outputs:** lines follow its opening line, one line each: a comma-separated list of links with no descriptions, each link's text naming the value and its target the contract defining that value's shape. An operation with none writes `None`.
+  An operation's **Inputs:** and **Outputs:** lines follow its opening line, each a paragraph of one line: a comma-separated list of links with no descriptions, each link's text naming the value and its target the contract defining that value's shape. An operation with none writes `None`.
   - Only boundary values are listed. A value the operation builds and consumes itself is linked from the step that builds it.
 - **Contracts.**
   A contract is the section defining a value's fields, meaning and allowed values. Every value has one, in the file that owns its subject. Contract prose says what a value is, never who supplies or uses it.
@@ -97,8 +97,8 @@ These rules govern artifact operations, and every step that runs a command. Proc
   - A repeated step sequence becomes one shared operation the others apply.
   - A choice between instruments is an operation the caller applies before choosing.
 - **Commands in steps.**
-  A command sits in the step that runs it. The step states where the command runs from and which inputs fill which parameters, and the command follows in an unindented fenced block, never a code span. The next step reads its exit code, output and refusal.
-  - No file has a Commands section.
+  The shared [Commands in steps](../guidelines.md#commands) holds.
+  - The next step reads the command's exit code, output and refusal.
   - A helper used by several operations is written in each, with the function that operation runs.
 - **One command.**
   A fenced block holds one command or access action. Sequencing, branching, repetition and readback are steps. A working-directory prefix and output-filter pipeline belong to the command they serve, and the optional flags of one command share its block.
