@@ -268,7 +268,7 @@ prosiform:
 
 Place the declaration in every contributing file that belongs to the group. A shared directory alone supplies no membership. See [conversion metadata](../invocation.md#conversion-metadata) for validation and source ownership.
 
-The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations`, `Fields` and `Commands`. The artifacts stand in the order the bundle first links to each, so the issue the mode's step [1. Fetch](work-planner/modes/hoist-mode.md#1-fetch) applies leads:
+The [expected bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) opens the group with its name in title case. Each artifact's H1 becomes one H2 beneath it, carrying that artifact's own `Operations` and `Fields`. The artifacts stand in the order the bundle first links to each, so the issue the mode's step [1. Fetch](work-planner/modes/hoist-mode.md#1-fetch) applies leads:
 
 ```markdown
 # Artifacts

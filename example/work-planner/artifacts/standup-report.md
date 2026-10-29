@@ -24,16 +24,64 @@ Require the complete issue-link snapshot.
 
 #### 2. Summarise Standup Progress
 
-Run [Summarise Progress](#summarise-progress), passing items as `--items`, pull requests as `--prs`, links as `--links`, the selected start as `--since`, the filter as `--initiative` and every resolved initiative as `--initiatives`.
+From `<workspace>`, render the preliminary report using board items as `--items`, pull requests as `--prs`, the complete link snapshot as `--links`, and any supplied window start, initiative filter and off-board initiative records.
+
+- `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
+- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
+- `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
+- `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
+- `--summary` gives the paragraph for management.
+
+The optional flags may be combined or omitted. Omitting all four uses the default window and all initiatives with no off-board records or management paragraph. **Example combinations:** a focused report can use `--since 2026-09-21 --initiative I08`; resolving an off-board initiative adds `--initiatives issue-946.json`; the final report adds `--summary summary.txt` to the same inputs.
+
+`<window-start-date>` uses `YYYY-MM-DD`.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json
+```
 
 #### 3. Resolve Off-Board Initiatives
+
+Read the preliminary summary’s exit code and output. Continue with unresolved-initiative findings; return other execution errors.
 
 For each unresolved initiative the summary names:
 - Apply [Locate Initiative Issue](issue.md#locate-initiative-issue) with its repository and initiative prefix.
 - Apply [Read Tracker Issue](issue.md#read-tracker-issue) for the located issue's current JSON into a file under the output paths.
 - Add the returned file to the resolved off-board initiative records.
-- Run Summarise Progress again with every resolved initiative record, retaining the board items, pull requests, links, window start and filter.
-- Repeat while an initiative remains that no read has failed. An unavailable initiative stays an unresolved finding, a gap in the report.
+
+From `<workspace>`, render the report again with every resolved initiative record, retaining the board items, pull requests, links, window start and filter.
+
+- `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
+- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
+- `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
+- `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
+- `--summary` gives the paragraph for management.
+
+The optional flags may be combined or omitted. Omitting all four uses the default window and all initiatives with no off-board records or management paragraph. **Example combinations:** a focused report can use `--since 2026-09-21 --initiative I08`; resolving an off-board initiative adds `--initiatives issue-946.json`; the final report adds `--summary summary.txt` to the same inputs.
+
+`<window-start-date>` uses `YYYY-MM-DD`.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json
+```
+
+After each summary, inspect its exit code and unresolved initiatives. Repeat this step while an initiative remains that no read has failed; return any other computation error. An unavailable initiative stays an unresolved finding, a gap in the report.
 
 #### 4. Write the Management Paragraph
 
@@ -42,9 +90,33 @@ Write the management paragraph from the rendered Initiatives and Completed secti
 
 #### 5. Render the Final Standup Report
 
-Run [Summarise Progress](#summarise-progress) with the same inputs and the paragraph file as `--summary`.
+From `<workspace>`, render the final report with the same inputs and the completed management paragraph file as `--summary`.
+
+- `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
+- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
+- `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
+- `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
+- `--summary` gives the paragraph for management.
+
+The optional flags may be combined or omitted. Omitting all four uses the default window and all initiatives with no off-board records or management paragraph. **Example combinations:** a focused report can use `--since 2026-09-21 --initiative I08`; resolving an off-board initiative adds `--initiatives issue-946.json`; the final report adds `--summary summary.txt` to the same inputs.
+
+`<window-start-date>` uses `YYYY-MM-DD`.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>' --summary '<management-paragraph-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json --summary summary.txt
+```
 
 #### 6. Return the Standup Report
+
+Read the final renderer’s exit code and output. Return an execution failure as a blocker, retaining any unresolved evidence separately.
 
 Return the report and separate unresolved findings.
 - The report must meet [Fields](#fields).
@@ -85,33 +157,3 @@ An unresolved initiative identifies its number and repository. An off-board depe
 ### Report Files
 
 The local paths the report's working JSON and text are written into: each off-board initiative's issue JSON and the management paragraph file.
-
-## Commands
-
-### Summarise Progress
-
-Prints the standup from supplied board items, pull request records and their issue-link snapshot.
-
-**Inputs:** Board items, pull request records and link snapshot; optional window start, initiative filter, off-board initiative records and management paragraph file.
-
-- `--links` is the supplied complete pull-request issue-link snapshot; it identifies the issue each pull request delivers.
-- `--since` opens the window on another date than the [Standup Window](../configuration.md#standup-window) default.
-- `<initiative-filter>` is an initiative id, or `<owner>/<repo>:<initiative-id>` where that id names initiatives in several repositories. **Examples:** `I08`, `owner/repo:I08`.
-- `--initiatives` gives supplied off-board initiative records, each as a separate file argument.
-- `--summary` gives the paragraph for management.
-
-The optional flags may be combined or omitted. Omitting all four uses the default window and all initiatives with no off-board records or management paragraph. **Example combinations:** a focused report can use `--since 2026-09-21 --initiative I08`; resolving an off-board initiative adds `--initiatives issue-946.json`; the final report adds `--summary summary.txt` to the same inputs.
-
-`<window-start-date>` uses `YYYY-MM-DD`.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items '<board-items-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --since '<window-start-date>' --initiative '<initiative-filter>' --initiatives '<initiative-json-file>' --summary '<management-paragraph-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/progress.py --items items.json --prs prs.json --links links.json --since 2026-09-21 --initiative I08 --initiatives issue-946.json --summary summary.txt
-```

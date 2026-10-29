@@ -98,9 +98,27 @@ One initiative body with its epic delivery recorded.
 
 #### 1. Run Sync Initiative
 
-Run [Sync Initiative](#sync-initiative) with the initiative and every linked epic's current record as `--epics`, supplying `--fix` when an output body is requested.
+From `<workspace>`, update the supplied initiative JSON with every linked epic’s current record as `--epics`, adding `--fix` when an output body is requested.
+
+- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](initiative.md#delivery-state).
+
+Pass every epic JSON file as a separate argument after `--epics`. Omit `--fix` when no output body is requested.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
+```
 
 #### 2. Return the Initiative Delivery Findings
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and [Delivery Findings](initiative.md#delivery-findings) from the supplied initiative and epic records. Delivery eligibility follows [Delivery State](initiative.md#delivery-state).
 
@@ -114,9 +132,25 @@ Verified criteria and completed rows in one initiative body.
 
 #### 1. Run Tick Initiative Criteria
 
-Run [Tick Initiative Criteria](#tick-initiative-criteria) with the initiative, linked epics as `--epics`, verified ids as `--tick` and output as `--fix`. Refuse criteria not ready to verify.
+From `<workspace>`, update the initiative JSON with linked epic records as `--epics`, verified criterion ids as `--tick` and output body file as `--fix`. Refuse criteria not ready to verify.
+
+Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
+```
 
 #### 2. Return the Initiative Body and Refused Criteria
+
+Read the helper’s exit code, output and any written body; return an invocation failure as a blocker and retain reported findings or refused criteria. Publish only a successfully written body.
 
 Return the body and refused criteria. Complete rows receive Done ticks.
 
@@ -158,9 +192,21 @@ Read each local source at its checkout path.
 
 #### 2. Fetch Pinned GitHub Sources
 
-For a pinned GitHub blob, run [Fetch Source](#fetch-source) with its repository, path, pinned revision and output file.
+For a pinned GitHub blob, fetch its content from the repository checkout using the repository owner and name, source path, pinned revision and destination file. URL-encode the path and revision for the request.
+
+```bash
+gh api 'repos/<owner>/<repository>/contents/<source-path>?ref=<revision>' --jq .content | base64 -d > '<source-file>'
+```
+
+**Example:**
+
+```bash
+gh api 'repos/m2ux/workflow-server/contents/docs/spec.md?ref=4a217fe6' --jq .content | base64 -d > source-R1.md
+```
 
 #### 3. Fetch Other Source URLs
+
+Read each pinned-source command’s exit code and output. Carry a failed or empty response into the unreadable-source findings below.
 
 Fetch other URLs through the harness's web access.
 
@@ -185,7 +231,6 @@ Each placeholder for an unsaved initiative or epic issue, with the body file con
 ### Source Evidence
 
 Each marked [source](#sources), its identity and contents, the local file path holding those contents, and any unreadable or empty-source finding.
-
 
 ### Template
 
@@ -312,63 +357,3 @@ A final epic of the initiative holds the debt that initiative's delivery defers.
 ### Breakdown Prose
 
 Work Breakdown contains its table. Explanatory prose belongs in Proposal. The body does not narrate execution order or how the tables work; Depends on carries the order.
-
-## Commands
-
-### Sync Initiative
-
-Reports an initiative's delivery state against its epics, and ticks Done on an epic row whose issue is closed as completed.
-
-**Inputs:** Initiative JSON, every linked epic record and optional output body file.
-
-- It takes every linked epic's current JSON. Delivery findings follow [Delivery State](initiative.md#delivery-state).
-
-Pass every epic JSON file as a separate argument after `--epics`.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json
-```
-
-### Tick Initiative Criteria
-
-Ticks confirmed initiative criteria, refusing any not ready to verify, and ticks completed rows.
-
-**Inputs:** Current initiative JSON, every linked epic JSON, verified criterion ids and destination body file.
-
-Pass every epic JSON file as a separate argument after `--epics`. `<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<initiative-json-file>' --epics '<epic-json-file>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-936.json --epics issue-943.json issue-937.json --tick AC2 --fix fixed-936.md
-```
-
-### Fetch Source
-
-Saves one GitHub source at the revision its permalink pins.
-
-**Inputs:** Repository owner and name, source path, pinned revision and destination file. URL-encode the path and revision for the request.
-
-```bash
-gh api 'repos/<owner>/<repository>/contents/<source-path>?ref=<revision>' --jq .content | base64 -d > '<source-file>'
-```
-
-**Example:**
-
-```bash
-gh api 'repos/m2ux/workflow-server/contents/docs/spec.md?ref=4a217fe6' --jq .content | base64 -d > source-R1.md
-```

@@ -34,9 +34,25 @@ One task body with its confirmed delivery and verified criteria recorded.
 
 #### 1. Sync the Task Issue
 
-Run [Sync Task Issue](#sync-task-issue) with the task JSON, records as `--prs`, snapshot as `--links`, delivery number as `--pr`, verified ids as `--tick` and output as `--fix`. Tick only criteria the caller has verified.
+From `<workspace>`, update the task JSON with records as `--prs`, snapshot as `--links`, delivering pull request number as `--pr`, verified criterion ids as `--tick` and output body file as `--fix`. Tick only criteria the caller has verified.
+
+`<criterion-ids>` is a comma-separated list of verified criterion ids.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --pr '<pull-request-number>' --tick '<criterion-ids>' --fix '<output-body-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-637.json --prs prs.json --links links.json --pr 950 --tick AC1 --fix fixed-637.md
+```
 
 #### 2. Write the Delivery Comment
+
+Read the helper’s exit code, output and written body. Return an invocation failure before writing the comment, retaining any eligibility findings.
 
 Write `Delivered by #<pull-request-number>.` to the output comment file, with the delivering pull request number.
 
@@ -100,25 +116,3 @@ The work one task delivers within its epic: its problem, design and acceptance c
 ### Task Delivery Result
 
 One task's delivery as recorded: the body with its delivering pull request and verified criteria ticked, a comment file reading `Delivered by #<pull-request-number>.`, and the eligibility findings stating whether the task is closable.
-
-## Commands
-
-### Sync Task Issue
-
-Records the pull request that delivered a task issue, ticks its criteria, and reports whether it is closable.
-
-**Inputs:** Task JSON, pull request records, complete issue-link snapshot, delivering pull request number, verified criterion ids and output file.
-
-`<criterion-ids>` is a comma-separated list of verified criterion ids.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py '<task-json-file>' --prs '<pull-request-records-file>' --links '<issue-link-snapshot-file>' --pr '<pull-request-number>' --tick '<criterion-ids>' --fix '<output-body-file>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/sync.py issue-637.json --prs prs.json --links links.json --pr 950 --tick AC1 --fix fixed-637.md
-```

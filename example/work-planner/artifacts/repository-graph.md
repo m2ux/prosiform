@@ -20,35 +20,77 @@ Current graph evidence for the supplied change.
 
 #### 1. Check the Graph Index Status
 
-Run [Index Status](#index-status) in the supplied worktree. Every graph command runs in that worktree.
+Read the graph index status from the supplied repository worktree. Run every command in this operation from that worktree and compare freshness with the supplied verified head.
+
+```bash
+gitnexus status
+```
 
 #### 2. Refresh a Stale Graph Index
 
-If the repository is unindexed or behind the verified head:
-- Run [Index Repository](#index-repository).
-- Confirm freshness.
+Inspect the status result and return an access error. If the repository is unindexed or behind the verified head, rebuild its index.
+
+```bash
+gitnexus analyze
+```
 
 #### 3. Measure the Change Surface
 
-Run [Change Surface](#change-surface) against the supplied base using `--base-ref`.
+If indexing ran, inspect its result and return any failure. Require an index current with the verified head, then measure changes against the supplied base branch.
+
+- `--base-ref` is the pull request's base, so the surface is the change rather than the branch's whole history.
+
+```bash
+gitnexus detect-changes --scope compare --base-ref '<base-branch>'
+```
+
+**Example:**
+
+```bash
+gitnexus detect-changes --scope compare --base-ref main
+```
 
 #### 4. Read Each Changed Symbol Context
 
-For each changed symbol, run [Symbol Context](#symbol-context).
+Inspect the change-surface result and return any execution failure. For each changed symbol it identifies, read that symbol's context. Inspect each invocation before starting another; stop on a failed query.
+
+```bash
+gitnexus context '<symbol-identity>'
+```
+
+**Example:**
+
+```bash
+gitnexus context reserveRow
+```
 
 #### 5. Trace Each Reported Flow
 
-For each reported flow, run [Flow Trace](#flow-trace).
+Inspect the symbol-context results and return any execution failure. For each flow identified by the change surface, query its ordered symbols. Inspect each invocation before starting another; stop on a failed query. The result meets [Flow Traces](#flow-traces).
+
+```bash
+gitnexus query --query '<flow-identity>' --limit 1
+```
+
+**Example:**
+
+```bash
+gitnexus query --query "Queue Placement" --limit 1
+```
 
 #### 6. Re-Measure on a Stale Index
 
-Inspect the staleness block on every response. For a behind index:
-- Discard its measurements.
-- Run [Index Repository](#index-repository).
-- Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index.
-- If a response is still behind, return a freshness blocker.
+Inspect the flow-query results and return any execution failure. Inspect the staleness block on every response. If any response reports a behind index, discard its measurements and rebuild the index.
 
-#### 7. Return the Current Graph Evidence
+```bash
+gitnexus analyze
+```
+
+#### 7. Verify the Refreshed Measurements
+
+If the preceding step rebuilt the index, inspect its result and return any indexing failure. Repeat [1. Check the Graph Index Status](#1-check-the-graph-index-status) through [5. Trace Each Reported Flow](#5-trace-each-reported-flow) once with the updated index. Inspect every repeated response's staleness block; if any remains behind, return a freshness blocker.
+
+#### 8. Return the Current Graph Evidence
 
 Return only evidence current with the supplied head, meeting [Fields](#fields), or a freshness blocker.
 
@@ -73,75 +115,3 @@ Each changed symbol has callers, callees, containing flows and file locations. F
 ### Flow Traces
 
 Each flow contains symbols in step order. Each `process_symbols` entry includes `step_index`, file and lines. Those ordered measurements supply sequence-diagram participants and interactions. A manually inferred call order does not establish a graph trace.
-
-## Commands
-
-### Index Status
-
-Reports whether the repository is indexed, and how far behind the index sits.
-
-**Inputs:** Repository worktree and requested revision.
-
-```bash
-gitnexus status
-```
-
-### Index Repository
-
-Indexes the repository, which an unindexed or behind repository needs before any measurement.
-
-**Inputs:** Repository worktree and requested revision.
-
-```bash
-gitnexus analyze
-```
-
-### Change Surface
-
-Reports the symbols a pull request's diff touches and the flows they sit in, against the base branch.
-
-**Inputs:** Current indexed worktree and comparison base branch.
-
-- `--base-ref` is the pull request's base, so the surface is the change rather than the branch's whole history.
-
-```bash
-gitnexus detect-changes --scope compare --base-ref '<base-branch>'
-```
-
-**Example:**
-
-```bash
-gitnexus detect-changes --scope compare --base-ref main
-```
-
-### Symbol Context
-
-Reports one symbol's callers, its callees and the flows it sits in, each with the file it sits in.
-
-**Inputs:** Symbol identity from the supplied change surface and the current graph worktree.
-
-```bash
-gitnexus context '<symbol-identity>'
-```
-
-**Example:**
-
-```bash
-gitnexus context reserveRow
-```
-
-### Flow Trace
-
-Reports one flow's symbols in step order, the structure a sequence diagram is drawn from.
-
-**Inputs:** Flow identity from the supplied change surface and the current graph worktree. The result meets [Flow Traces](#flow-traces).
-
-```bash
-gitnexus query --query '<flow-identity>' --limit 1
-```
-
-**Example:**
-
-```bash
-gitnexus query --query "Queue Placement" --limit 1
-```

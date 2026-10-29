@@ -20,11 +20,37 @@ Derives the queue from supplied board and delivery snapshots and confirmed decis
 
 #### 1. Compute the Board Queue
 
-Run [Compute Board Queue](#compute-board-queue) with the snapshots as `--items`, `--prs` and `--fields`, the board as `--board`, the login as `--assignee`, the output directory as `--out`, every resolved issue file as `--others` and every confirmed unplanned initiative as `--unplanned`.
+From `<workspace>`, compute the queue with snapshots as `--items`, `--prs` and `--fields`, board identity as `--board`, login as `--assignee`, output directory as `--out`, each resolved issue file as `--others` and each confirmed unplanned initiative as `--unplanned`.
+
+- `--items` is the board's items with Status.
+- `--prs` is the pull requests that name an initiative.
+- `--board` is the [board identity](#board-identity).
+- `--fields` is the board's fields.
+- `--out` is the directory the calls are written to.
+- `--assignee` is the login assigned to work from Ready.
+- `--others` takes every supplied off-board issue file as a separate argument.
+- `--unplanned` is an initiative left with no priority, an issue number or `<owner>/<repo>#<issue-number>`. Repeatable.
+
+Omit `--others` and `--unplanned` when absent; otherwise pass all issue files after `--others` and repeat `--unplanned` for each confirmed initiative.
+
+Runs as [Helper invocation](../conventions.md) states.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>' --others '<off-board-issue-file>' --unplanned '<unplanned-initiative>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items items.json --prs prs.json --board 'users/<owner>/projectsV2/9' --fields fields.json --out board/ --assignee m2ux
+```
+
 - The queue must meet [Fields](#fields).
 - Refuse a Status change outside Backlog, Ready and In Progress, identifying the issue. In Review, Done and task issues are outside the write scope.
 
 #### 2. Return the Proposed Queue Calls
+
+Read the helper’s exit code and output. Preserve pending decisions, missing evidence and unresolvable dependencies in the report; return any other execution error without applying calls.
 
 Return the proposed Status and assignee calls, report lines and unresolved issue references to the caller.
 - Distinguish pending decisions and missing evidence as [Completeness](#completeness) defines.
@@ -148,32 +174,3 @@ Initiatives confirmed to carry no priority, each an issue number or `<owner>/<re
 An `order` or `ask` line means a decision is pending. An unresolved issue reference means dependency evidence is missing. Either leaves the queue incomplete.
 
 A complete queue may still propose changes. Live board state has converged when a queue derived from refreshed items is complete and contains no further call. `wait` and `next` lines remain reportable at that point.
-
-## Commands
-
-### Compute Board Queue
-
-Prints proposed Status and assignee calls, `order`, `ask`, `wait` and `next` lines, and unresolved issue references for one board queue. It exits nonzero where an [unresolvable dependency](#unresolvable-dependencies) stopped it placing a row.
-
-**Inputs:** Current board and delivery snapshots, board identity, assignee login, output directory, resolved dependency evidence, confirmed unplanned initiatives and the permitted Status scope.
-
-- `--items` is the board's items with Status.
-- `--prs` is the pull requests that name an initiative.
-- `--board` is the [board identity](#board-identity).
-- `--fields` is the board's fields.
-- `--out` is the directory the calls are written to.
-- `--assignee` is the login assigned to work from Ready.
-- `--others` is an issue file for an issue the rows depend on that is not on the board. Repeatable.
-- `--unplanned` is an initiative left with no priority, an issue number or `<owner>/<repo>#<issue-number>`. Repeatable.
-
-Runs as [Helper invocation](../conventions.md) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items '<board-items-file>' --prs '<pull-request-records-file>' --board '<board-identity>' --fields '<board-fields-file>' --out '<output-directory>' --assignee '<assignee-login>'
-```
-
-**Example:**
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/board-queue.py --items items.json --prs prs.json --board 'users/<owner>/projectsV2/9' --fields fields.json --out board/ --assignee m2ux
-```
