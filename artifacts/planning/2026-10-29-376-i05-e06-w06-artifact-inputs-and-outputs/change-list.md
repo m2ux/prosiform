@@ -8,7 +8,8 @@
 - **Delivery.** Pull request #385 merged into `i05/e06/main` as `0febf1d228612c0ed09774ce36c767a7187c78c9`. W06 is Done and AC6 is verified and ticked.
 - **Repository setting.** The user confirmed the repository's issue auto-close setting is disabled before the merge.
 - **Epic review.** Draft pull request #386 presents the seven merged tasks on the epic base. The epic remains open and In Progress.
+- **Review Development link.** GitHub's `addCloseIssueReferences` mutation links draft #386 to epic #376. A fresh read confirms #386 in the issue's `closedByPullRequestsReferences` and #376 in the pull request's `closingIssuesReferences(userLinkedOnly: true)`, with both connections complete. The epic remains open and the pull request remains draft.
 
 ## Held
 
-- **Review Development link.** Draft #386 needs its Development link to epic #376. The available authenticated API reads the relation but provides no supported sidebar-link edit; the relation remains empty. This does not affect W06's task delivery, which has no separate task issue.
+None.
