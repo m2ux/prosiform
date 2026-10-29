@@ -22,6 +22,7 @@ Each operation's boundary is a set of values a reader can follow to their defini
 | --- | --- |
 | Epic | [I05:E06 Example Authoring](https://github.com/m2ux/prosiform/issues/376) |
 | Task pull request | [Artifact Inputs and Outputs as Contract Links](https://github.com/m2ux/prosiform/pull/385) |
+| Epic review | [Example Authoring draft](https://github.com/m2ux/prosiform/pull/386) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic plan | [Example Authoring planning record](../2026-10-28-376-i05-e06-example-authoring/README.md) |
 | Sample | [W05 Sample Artifact Under the Authoring Rules](../2026-10-28-376-i05-e06-w05-sample-artifact-under-the/README.md) |

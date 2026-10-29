@@ -4,6 +4,7 @@
 
 - Base revision: `c5056b8b` on `i05/e06/w06-artifact-inputs-and-outputs`.
 - Validated revision: `4053b77d5cb8949acdd2e0426d3e545159c0f65b`; artifact contracts are committed in `966961a1`, followed by the regenerated fixtures.
+- Merged revision: `0febf1d228612c0ed09774ce36c767a7187c78c9`. GitHub's comparison with the validated head reports no changed files.
 - The resumed worktree holds the prior session's edits to 30 artifact files.
 - Scope: I05:E06 W06, covering AC6. Command placement remains W07; mode and protocol conversion remains W08.
 
@@ -38,6 +39,10 @@ Commands use `UV_CACHE_DIR=/tmp/w06-uv-cache` and `PROSIFORM_BUILD="uv run --pro
 - `git diff --check` passed.
 
 These are local results. They do not claim GitHub CI execution. The initial `make check` command failed at test setup; the targeted retry and remaining targets together establish the completed check set.
+
+### Remote Checks and Merge
+
+[GitHub Checks](https://github.com/m2ux/prosiform/actions/runs/40827147952) completed successfully at the validated head before merge. The epic base has no branch-protection review requirement and no active branch rules; it already contains `main`. PR #385 was mergeable with a clean merge state, and the merge supplied its exact verified head SHA. The merged state and commit were read back before W06 and AC6 were marked complete.
 
 ## Consumer Walkthrough
 
