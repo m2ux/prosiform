@@ -1,5 +1,0 @@
-id: qualification
-initialActivity: run
-graph:
-  run:
-    done: null

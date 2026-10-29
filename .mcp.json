@@ -13,14 +13,6 @@
         "/usr/local/bin/gitnexus",
         "mcp"
       ]
-    },
-    "workflow-server": {
-      "type": "http",
-      "url": "http://127.0.0.1:3000/mcp"
-    },
-    "workflow-server-exp": {
-      "type": "http",
-      "url": "http://127.0.0.1:32772/mcp"
     }
   }
 }

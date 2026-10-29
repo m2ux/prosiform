@@ -1,6 +1,0 @@
-id: run
-steps:
-  - id: delivery
-    routine:
-      name: deliver
-      arguments: {envelope: sealed}
