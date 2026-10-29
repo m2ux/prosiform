@@ -31,6 +31,7 @@ The eval runs synthetic workflows of graded difficulty in three forms — the `p
 - **Three forms.** Bundle (subject), source tree (does bundling help) and bundled prose (does the diagram help).
 - **A fourth form.** The linked form, whose decisions name the rule stating the branch's label; added by W06 once the baseline showed no session depended on a link.
 - **The baseline is refreshed after both.** W08 holds a session to its form before W09 produces the baseline every later comparison rests on, so the committed baseline is not one carrying a plugin's context.
+- **W08 and W09 are two rows, not a joined pair.** W09 read `Depends on W08` while the two named each other in Joins, which a shared pull request cannot hold: its own order would be the dependency. The Join is dropped and the dependency kept, so W08's stub-tested work reaches the base without waiting on the paid run W09 needs. Neither row can start while the model they need is out of credit. (User, 2026-10-29.)
 - **Default matrix.** `claude-haiku-5-5` and `claude-sonnet-5-5`, five repetitions; both configurable.
 - **Synthetic workflows first.** Linear, branching, and branching with a loop and a nested link; a realistic workflow is a later row.
 - **Report and committed baseline.** No pass threshold until the baseline shows what is realistic.
