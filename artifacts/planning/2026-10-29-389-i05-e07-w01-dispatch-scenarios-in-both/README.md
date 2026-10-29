@@ -22,4 +22,5 @@ This record holds the delivery of W01: the dispatch scenarios written in the two
 | --- | --- |
 | Epic | [I05:E07 Dispatch Following](https://github.com/m2ux/prosiform/issues/389) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
+| Pull request | [I05:E07 Dispatch Scenarios in Both Forms](https://github.com/m2ux/prosiform/pull/411) — merged into `i05/e07/main` as `535ed374` |
 | Epic record | [Dispatch Following design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-29-389-i05-e07-dispatch-following) — the epic's design and its work items |
