@@ -42,15 +42,42 @@ Read every changed file against the [shared skill guidelines](../../guidelines.m
 - [Progressive disclosure](../../guidelines.md#progressive-disclosure).
 - Fix each departure.
 
-### 6. Verify
+### 6. Run Script Tests
 
-- Run [Run Tests](#run-tests) when an executable script, its consumed template or a test changed.
+When an executable script, its consumed template or a test changed, run the script tests from the work-planner directory in the supplied workspace checkout. Resolve `<workspace>` to that checkout, as [Helper invocation](#conventions) states. Otherwise continue at [7. Check Skill Files](#7-check-skill-files).
+
+```bash
+cd "<workspace>/skills/work-planner" && "<workspace>/scripts/sbx" python3 -m unittest discover -s test
+```
+
+### 7. Check Skill Files
+
+If the script tests ran, read their exit code and output before continuing. Correct any failure and repeat [6. Run Script Tests](#6-run-script-tests) until they pass.
+
 - When SKILL.md changes, confirm its frontmatter opens and closes with `---` and holds `name` and `description`.
-- Run [Check Skill Files](#check-skill-files) for every affected skill.
+
+From the supplied workspace checkout, check every affected skill's Markdown structure and links as [Helper invocation](#conventions) states. Resolve `<skill-directory>` to the affected skill's path relative to that checkout; supply one directory argument per affected skill.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/scripts/check_skill_files.py "<skill-directory>"
+```
+
+**Example:** Work Planner in the selected checkout.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/scripts/check_skill_files.py skills/work-planner
+```
+
+### 8. Verify Disclosure and Dependencies
+
+Read the skill-file check's exit code and output. Correct any failure and repeat the affected checks from [6. Run Script Tests](#6-run-script-tests) before continuing.
+
 - Apply [disclosure verification](../../guidelines.md#disclosure-verification) with the skill's [representative scenarios](guidelines.md#progressive-disclosure).
 - Resolve every required file, command and heading without an implicit external dependency.
 
-### 7. Deliver
+### 9. Deliver
+
+Deliver only after the required checks and disclosure verification pass.
 
 - Commit.
 - Push.
@@ -62,38 +89,6 @@ Read every changed file against the [shared skill guidelines](../../guidelines.m
   The user has the change they asked for in the skill, committed and pushed.
 - **The guidelines hold.**
   The change agrees with the guidelines, and a new rule the user stated for how the skill is written is part of that change.
-
-## Commands
-
-### Run Tests
-
-Runs the skill's script tests.
-
-**Inputs:** Workspace checkout containing the installed skill and its tests.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>/skills/work-planner" && "<workspace>/scripts/sbx" python3 -m unittest discover -s test
-```
-
-### Check Skill Files
-
-Checks the affected skill's Markdown structure and links.
-
-**Inputs:** Workspace checkout and affected skill directory; repeat the skill argument for additional affected skills.
-
-Runs as [Helper invocation](#conventions) states.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/scripts/check_skill_files.py "<skill-directory>"
-```
-
-**Example:** Work Planner in the selected checkout.
-
-```bash
-cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/scripts/check_skill_files.py skills/work-planner
-```
 
 # Rules
 
