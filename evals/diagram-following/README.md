@@ -43,7 +43,30 @@ Sessions run on the eval's own Claude login, kept apart from yours in `<eval-roo
 CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude
 ```
 
-then `/login`. A run whose configuration directory holds no login fails before it starts a session. Each session runs `claude -p` in a fresh workspace under the eval root with that configuration directory, no MCP server, no slash commands, file tools only and an environment holding no other Claude or Anthropic variable.
+then `/login`.
+
+## Isolation
+
+A session receives one form of one workflow and the instruction, so a pass measures the agent reading that form. Each mechanism below holds one part of that boundary; the first two are refused before a session starts, and the last is read back from each session's own transcript.
+
+| Mechanism | What it keeps out |
+| --- | --- |
+| `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is the only one set. |
+| `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
+| `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
+| `--tools Read,Write,Edit,Glob,Grep` | Every other tool, `Bash` included, so a session cannot reach past its workspace. |
+| `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
+| `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
+| The injected-context read | Context the agent added that the run did not supply. |
+
+Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one reach a session. It fails before the first session starts, naming the file to remove:
+
+- `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
+- `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint.
+
+A run whose config directory holds no login fails the same way, naming the one-time login command.
+
+A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
 
 ## Running
 

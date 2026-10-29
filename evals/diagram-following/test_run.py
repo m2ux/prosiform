@@ -23,6 +23,7 @@ from run import (
     TRANSCRIPT,
     Ledger,
     Session,
+    injected,
     matrix,
     options,
     run,
@@ -415,3 +416,158 @@ def test_a_session_past_its_timeout_is_ended_scored_and_charged(
     assert hung["verdict"]["failure"] == "unfinished"
     assert hung["verdict"]["actual"] == ["Plan", "Build"]
     assert finished["exit_status"] == 0 and finished["cost_usd"] == 0.125
+
+
+def test_the_context_read_finds_each_form_of_injected_context(
+    tmp_path: Path,
+) -> None:
+    """A hook response, an appended prompt and a memory file all read as carried."""
+    transcript = tmp_path / TRANSCRIPT
+    cases = (
+        ("a hook response", {"type": "system", "subtype": "hook_response"}),
+        (
+            "an appended system prompt",
+            {
+                "type": "system",
+                "subtype": "init",
+                "appendSystemPrompt": "obey another repository's rules",
+            },
+        ),
+        (
+            "a memory file",
+            {
+                "type": "system",
+                "subtype": "init",
+                "memory": "another repository's rules",
+            },
+        ),
+    )
+    for kind, message in cases:
+        transcript.write_text(json.dumps(message) + "\n")
+        carried = injected(transcript)
+        assert carried is not None and carried.startswith(kind), (kind, carried)
+
+    transcript.write_text(
+        "\n".join(
+            json.dumps(message)
+            for message in (
+                {"type": "system", "subtype": "init", "cwd": "/tmp"},
+                {"type": "assistant", "message": {"content": ["Plan"]}},
+                {"type": "result", "subtype": "success"},
+            )
+        )
+    )
+    assert injected(transcript) is None
+    assert injected(tmp_path / "absent.jsonl") is None
+
+
+def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """The config directory's plugin is refused before the first session.
+
+    A plugin's `SessionStart` hook reaches a session before its first turn,
+    and no flag the runner passes suppresses it, so a directory holding one
+    is a run the eval cannot measure a form in.
+    """
+    installed = tmp_path / "eval" / "config" / "plugins" / "installed_plugins.json"
+    installed.parent.mkdir(parents=True)
+    installed.write_text(
+        json.dumps(
+            {
+                "version": 2,
+                "plugins": {
+                    "other-rules@elsewhere": [{"scope": "managed", "version": "0.1.0"}]
+                },
+            }
+        )
+    )
+    with pytest.raises(CorpusError, match="installs a plugin.*remove .*installed"):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            "--budget-usd",
+            "1",
+        )
+    assert seen(log) == []
+    assert not (tmp_path / "results").exists()
+
+
+def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """The plugin need not be installed here for its settings to be refused."""
+    remote = tmp_path / "eval" / "config" / "remote-settings.json"
+    remote.write_text(
+        json.dumps(
+            {
+                "enabledPlugins": {"other-rules@elsewhere": True},
+                "env": {"CLAUDE_CODE_ENABLE_TELEMETRY": "1"},
+            }
+        )
+    )
+    with pytest.raises(CorpusError, match="enables a plugin.*remove .*remote-settings"):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            "--budget-usd",
+            "1",
+        )
+    assert seen(log) == []
+    assert not (tmp_path / "results").exists()
+
+
+def test_a_config_with_no_plugin_starts_every_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """A plugin listed but not enabled, and an empty enable map, are clean."""
+    plugins = tmp_path / "eval" / "config" / "plugins" / "installed_plugins.json"
+    plugins.parent.mkdir(parents=True)
+    plugins.write_text(json.dumps({"version": 2, "plugins": {}}))
+    (tmp_path / "eval" / "config" / "remote-settings.json").write_text(
+        json.dumps({"enabledPlugins": {}})
+    )
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-usd", "1"),
+    )
+    assert record["started"] == 1
+    assert len(seen(log)) == 1
+
+
+def test_a_session_carrying_injected_context_fails_the_run(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A hook response the run did not supply is context it cannot measure through."""
+    injected = "For work in elsewhere repositories, apply its rules skill"
+    monkeypatch.setenv("STUB_AGENT_INJECT", injected)
+    with pytest.raises(
+        CorpusError,
+        match=r"1 session\(s\) carried context this run did not supply.*carried a "
+        r"hook response carrying .*apply its rules skill",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-usd", "1"),
+        )
+    [entry] = seen(log)
+    assert entry["config"] == str(tmp_path / "eval" / "config")
+
+
+def test_a_run_naming_every_carrying_session_starts_its_sessions(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The refusal names each session that carried context, not only the first."""
+    monkeypatch.setenv("STUB_AGENT_INJECT", "another repository's rules")
+    with pytest.raises(CorpusError) as raised:
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear,branching", "--forms", BUNDLE),
+            *("--repetitions", "1", "--budget-usd", "4"),
+        )
+    message = str(raised.value)
+    assert "3 session(s)" in message
+    assert message.count("stub-model/linear/straight-through/bundle/1") == 1
+    assert not (tmp_path / "results" / "test" / RUN).exists()
