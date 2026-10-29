@@ -29,6 +29,7 @@ The work is deferred debt of I05 delivered past the epic that produced it: W10 w
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Issue | [#398](https://github.com/m2ux/prosiform/issues/398) — the defect this task fixes |
 | Pull request | [#399](https://github.com/m2ux/prosiform/pull/399) — the delivery of this task |
+| Epic review | [#401](https://github.com/m2ux/prosiform/pull/401) — the epic base this task merged into, standing in review |
 | Raised by | [W10 delivery](https://github.com/m2ux/prosiform/pull/397) |
 | Review pull request | [#386](https://github.com/m2ux/prosiform/pull/386) — the epic review that reported it as outrun |
 
