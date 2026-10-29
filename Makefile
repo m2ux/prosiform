@@ -55,7 +55,10 @@
 # `make authoring` reports where the work-planner example departs from the
 # authoring rules its guidelines state, by file and area, and fails while any
 # departure remains, so the rules the example now meets are held by the checks
-# rather than by review.
+# rather than by review. It reads the example alone and needs no build, and
+# `make check` names it ahead of `make corpus`: a rule break in a file the
+# usage-example fixtures reach alters a bundle, so the corpus would report the
+# bytes that moved while the authoring check names the file and the rule.
 #
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
@@ -67,7 +70,7 @@ PYTHON_SOURCES := src/prosiform src/tests checks evals
 
 .PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render eval-diagrams
 
-check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence steps authoring
+check: lock-check lint format-check typecheck test harness authoring corpus smoke layout tables links vocabulary invocation conformance independence steps
 
 test:
 	cd src && uv run --frozen pytest
