@@ -5,11 +5,12 @@
 - **W11 de-duplication.** Applied here, not held for W09: the work-planner One home per rule and Commands in steps rules link the shared rules and keep only what the skill adds.
 - **Guideline wording.** Inputs and Outputs: "one line each" becomes "each a paragraph of one line", as the sample writes them.
 - **Delivery record.** The #376 W05 row links the pull request in place of this folder, from a fresh read. Done and AC5 stay unticked.
+- **User approval.** The user approved the sample on #384.
+- **Task merge.** #384 merged into `i05/e06/main` at `c5056b8b` after CI passed on `bda07166`; the epic base had not moved since the branch was cut. W05 has no task issue. #376 AC5 ticked and W05 Done, from a fresh read.
 - **Debt and arising issues.** None found; no issue created or hoisted.
 
 ## Held
 
-- **Merge.** The task pull request is held for the user's approval of the sample.
 - **Epic review pull request.** E06 has none and the user has not confirmed one.
 
 ## Notes for Later Rows
