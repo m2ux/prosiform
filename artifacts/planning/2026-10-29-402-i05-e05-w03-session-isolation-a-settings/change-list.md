@@ -20,12 +20,10 @@ The brief directs these and they are not plan changes:
 
   **Applied as recommended: the row is carried on the epic base**, commit `4f07f2bf`, because the row describes a check the base runs and the base is where `checks.md` lives. #401's Changes cite it, so the review states the row it carries.
 
-- **Deferred debt: a `settings.local.json` beside `settings.json`.**
-  Raised as [#410](https://github.com/m2ux/prosiform/issues/410), `Session Isolation: A Settings Local File's Hook Refused`, labelled `tech-debt`, `theme:bundling` and `bot:ai-assisted`. The agent reads `settings.local.json` from the config directory and applies it over `settings.json`, so a `hooks` block there reaches a session exactly as one in `settings.json` does, and the preflight does not read it. The injected-context read still fails such a run, so the boundary holds; the cost is that a paid run spends its sessions before it is refused.
+- **Deferred debt: the settings files the session's workspace delivers.**
+  Raised as [#410](https://github.com/m2ux/prosiform/issues/410), now titled `Session Isolation: A Settings File the Workspace Delivers`, labelled `tech-debt`, `theme:bundling` and `bot:ai-assisted`. Claude Code's project-scope settings files — `.claude/settings.json` and `.claude/settings.local.json` — are read from the directory the session starts in, which the eval sets to a workspace `prepare` copies from a corpus form's tree. A `hooks` block in such a file reaches a session, and an ancestor `.claude` between the workspace and the filesystem root is project scope too, so the caller's own settings govern the run. The preflight reads neither. The injected-context read still fails such a run, so the boundary holds; the cost is that a paid run spends its sessions before it is refused.
 
-  Placed as a new task row in #374, it would take a fourth acceptance criterion — AC4, "a run whose config directory holds a `settings.local.json` declaring a hook is refused before its first session starts, naming the file and the events it declares" — since the table's Coverage column holds one criterion per row and AC1–AC3 are each already held by a merged unit.
-
-  **Recommended: hold the row until #401 merges.** The epic's three criteria are all satisfied by merged work; adding AC4 and an open row to an epic whose review pull request is in flight states a criterion the base does not meet, which is what #401 is for. Place #410 after the review merges, in a follow-on epic or as #374's AC4 then.
+  **Recommended: place it as a task row, and hold that until the epic in hand is decided.** The original statement — that a `settings.local.json` beside the *config directory's* file was unread — was wrong: that name is project-local scope, not a config-root file, so the gap is the workspace's own tree and the ancestor discovery, which is what the corrected body states.
 
 - **Deferred Debt as I05's last epic, and its numbering.**
   Unchanged and still open from W01's change list. #410 is a deferred-debt issue of the same kind and takes the same treatment.
