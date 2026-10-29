@@ -13,6 +13,7 @@ This record holds the delivery of #402: the preflight refuses a settings file th
 | Artifact | What it holds |
 | --- | --- |
 | [W03 work item](w03.md) | The preflight refusal for a settings file's hook, its boundary against a file of preferences, and the checks it requires |
+| [Validation](validation.md) | The test-plan results, the mutation checks and the limitations |
 
 ## Links
 
