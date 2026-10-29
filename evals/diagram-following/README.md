@@ -99,7 +99,7 @@ A session that still carries context the run did not supply fails the run after 
 
 | Command | Runs |
 | --- | --- |
-| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which is the default matrix's 280 sessions at the session cap. `ARGS='...'` passes the runner's options through. |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which does not cover the default matrix's 280 sessions at the session cap, so a run over the whole matrix names a budget of its own in `ARGS`. `ARGS='...'` passes the runner's options through. |
 
 The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
@@ -133,7 +133,7 @@ The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; th
 | `claude-haiku-5-5` | 75 | 0.0038 | 0.29 | 15 s |
 | `claude-sonnet-5-5` | 75 | 0.0496 | 3.72 | 18 s |
 
-The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, the 280 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
+The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, which the default matrix's 280 sessions need at USD 140 at the USD 0.50 session cap, so a run over the whole matrix refuses before it starts a session unless `ARGS` names a larger `--budget-usd`. A run over the dispatch scenarios alone needs USD 40: 80 sessions at the cap.
 
 A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
 
