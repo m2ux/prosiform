@@ -15,21 +15,24 @@ from typing import Any
 import pytest
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
+    AUTHORED_SET,
     BUNDLE,
     BUNDLED,
+    COMPILED_SET,
     FORMS,
     LINKED_TREE,
     PROSE_BUNDLE,
     TRANSCRIPT,
     Ledger,
     Session,
+    bundles_of,
     injected,
     matrix,
     options,
     run,
 )
 from score import ACTIONS, TRACE
-from workflow import DIAGRAM, ENTRY, LINKED_FORM, CorpusError, workflows
+from workflow import ENTRY, ENTRY_BUNDLE, LINKED_FORM, CorpusError, workflows
 
 STUB = Path(__file__).resolve().parent / "stub_agent.py"
 CORPUS = {workflow.name: workflow for workflow in workflows()}
@@ -41,9 +44,12 @@ CALLER_VARIABLES = (
     "ANTHROPIC_AUTH_TOKEN",
     "ANTHROPIC_BASE_URL",
 )
-SESSIONS_PER_REPETITION = sum(len(item.scenarios) for item in CORPUS.values()) * len(
-    FORMS
-)
+DISPATCHING = ("dispatch-beside", "dispatch-chain", "dispatch-question", "dispatch-set")
+
+
+def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
+    """The sessions a run of the whole corpus starts."""
+    return len(matrix(list(CORPUS.values()), models, forms, repetitions))
 
 
 @pytest.fixture
@@ -93,12 +99,25 @@ def records(tmp_path: Path) -> list[dict[str, Any]]:
 
 
 def material(session: Session) -> set[str]:
-    """The files a session's workspace holds on starting."""
+    """The files a session's workspace holds on starting.
+
+    A bundled form's entry bundle is `workflow.md`, and every other bundle
+    of its set sits beside it under the name `pf` gave it. A form read as a
+    source tree gives its own files.
+    """
     workflow = CORPUS[session.workflow]
     scenario = next(i for i in workflow.scenarios if i.name == session.scenario)
     inputs = {f"inputs/{name}" for name in scenario.inputs}
     if session.form in BUNDLED:
-        return {ENTRY} | inputs
+        return (
+            {ENTRY}
+            | inputs
+            | {
+                name
+                for name in bundles_of(workflow, session.form)
+                if name != ENTRY_BUNDLE.name
+            }
+        )
     tree = workflow.form(FORMS[session.form])
     return {
         str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()
@@ -107,7 +126,10 @@ def material(session: Session) -> set[str]:
 
 def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -> None:
     sessions = matrix(list(CORPUS.values()), ["a", "b"], list(FORMS), 5)
-    assert len(sessions) == len(set(sessions)) == 2 * 5 * SESSIONS_PER_REPETITION
+    assert (
+        len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
+    )
+    assert len(sessions) == 2 * 5 * 28
 
 
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
@@ -118,7 +140,8 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
-    assert record["started"] == len(sessions) == 2 * SESSIONS_PER_REPETITION
+    expected = every_session(["stub-model"], list(FORMS), 2)
+    assert record["started"] == len(sessions) == expected
     entries = seen(log)
     assert len(entries) == len(sessions)
     assert len({entry["workspace"] for entry in entries}) == len(sessions)
@@ -145,18 +168,36 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
 def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
     tmp_path: Path, log: Path
 ) -> None:
+    """A bundled form gives its set, a tree form its source documents."""
     eval_run(
         tmp_path, "--workflows", "looping", "--repetitions", "1", "--budget-usd", "4"
     )
-    by_form: dict[str, list[str]] = {}
-    for entry in seen(log):
-        files = [name for name in entry["files"] if not name.startswith("inputs/")]
-        by_form.setdefault("tree" if len(files) > 1 else "bundled", []).append(
-            str(files)
-        )
     looping = CORPUS["looping"]
-    assert len(by_form["bundled"]) == 2 * len(looping.scenarios)
-    assert len(by_form["tree"]) == 2 * len(looping.scenarios)
+    tree_document = f"states/{looping.diagram.start.lower()}.md"
+    bundle_entries = [
+        entry
+        for entry in seen(log)
+        if sorted(name for name in entry["files"] if name.endswith(".md")) == [ENTRY]
+    ]
+    tree_entries = [entry for entry in seen(log) if tree_document in entry["files"]]
+    assert len(bundle_entries) == 2 * len(looping.scenarios)
+    assert len(tree_entries) == 2 * len(looping.scenarios)
+
+
+def test_a_compiled_form_gives_its_whole_bundle_set(tmp_path: Path, log: Path) -> None:
+    """A dispatching bundle set reaches the session with every bundle it names."""
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
+        *("--repetitions", "1", "--budget-usd", "4"),
+    )
+    [workflow] = [CORPUS["dispatch-chain"]]
+    published = (
+        name for name in bundles_of(workflow, COMPILED_SET) if name != ENTRY_BUNDLE.name
+    )
+    expected = {ENTRY, *published}
+    for entry in seen(log):
+        assert expected <= set(entry["files"])
 
 
 def test_the_linked_form_walks_every_scenario_of_a_branching_workflow(
@@ -222,7 +263,7 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
     monkeypatch.setenv("STUB_AGENT_COST", "0.125")
     eval_run(tmp_path, "--repetitions", "1", "--budget-usd", "100")
     written = records(tmp_path)
-    assert len(written) == SESSIONS_PER_REPETITION
+    assert len(written) == every_session(["stub-model"], list(FORMS), 1)
     for record in written:
         session = Session(
             record["model"],
@@ -246,9 +287,7 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
         assert trace == verdict["actual"]
         action_files = {path.name for path in (directory / ACTIONS).iterdir()}
         workflow = CORPUS[session.workflow]
-        assert action_files == {
-            workflow.sections[DIAGRAM][state].action[0] for state in trace
-        }
+        assert action_files == {workflow.walked[state].action[0] for state in trace}
 
 
 def test_a_failing_session_is_recorded_with_its_failure(
@@ -311,12 +350,12 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1"),
-        *("--budget-usd", "5", "--session-budget-usd", "0.25"),
+        *("--budget-usd", "7", "--session-budget-usd", "0.25"),
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
-    assert record["started"] == 10
-    assert record["cost_usd"] == 5.0
-    assert len(seen(log)) == len(records(tmp_path)) == 10
+    assert record["started"] == 14
+    assert record["cost_usd"] == 7.0
+    assert len(seen(log)) == len(records(tmp_path)) == 14
     not_started = record["not_started"]
     assert not_started == [
         {
@@ -326,7 +365,7 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
             "form": session.form,
             "repetition": session.repetition,
         }
-        for session in sessions[10:]
+        for session in sessions[14:]
     ]
     written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
     assert written["not_started"] == not_started
@@ -661,3 +700,73 @@ def test_a_run_naming_every_carrying_session_starts_its_sessions(
     assert "3 session(s)" in message
     assert message.count("stub-model/linear/straight-through/bundle/1") == 1
     assert not (tmp_path / "results" / "test" / RUN).exists()
+
+
+@pytest.mark.parametrize(
+    ("workflow", "form"),
+    [
+        (workflow, form)
+        for workflow in DISPATCHING
+        for form in (COMPILED_SET, AUTHORED_SET)
+    ],
+    ids=lambda item: str(item),
+)
+def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
+    tmp_path: Path, log: Path, workflow: str, form: str
+) -> None:
+    """AC1: each dispatch scenario runs in its compiled and authored forms."""
+    eval_run(
+        tmp_path,
+        *("--workflows", workflow, "--forms", form),
+        *("--repetitions", "1", "--budget-usd", "2"),
+    )
+    [record] = records(tmp_path)
+    assert (record["workflow"], record["form"]) == (workflow, form)
+    assert record["verdict"]["passed"] is True, record["verdict"]
+    assert record["verdict"]["actual"] == record["verdict"]["expected"]
+    [scenario] = CORPUS[workflow].scenarios
+    assert record["trace"] == [
+        {
+            "section": entry.section,
+            "returned": entry.returned,
+            "together": entry.together,
+        }
+        for entry in scenario.trace
+    ]
+
+
+def test_the_report_gives_each_dispatch_scenarios_pass_rate_per_model_and_form(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC2: the report holds one cell per dispatch scenario, model and form.
+
+    The run takes two models over the four dispatch scenarios in both
+    forms, two repetitions each, the stub agent passing every session, so
+    each cell reads two sessions and a pass rate of one. A second run over
+    the compiled form stops its agent after one state, so its cells read a
+    run that did not complete, and the report's per-scenario cells separate
+    the rates the two forms give.
+    """
+    record = eval_run(
+        tmp_path,
+        *("--models", "stub-a,stub-b"),
+        *("--workflows", ",".join(DISPATCHING)),
+        *("--repetitions", "2", "--budget-usd", "20"),
+    )
+    built = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
+    assert record["started"] == built["sessions"] == 2 * 4 * 2 * 2
+    assert built["state"] == "completed"
+    cells = {
+        (cell["model"], cell["form"], cell["workflow"], cell["scenario"]): cell
+        for cell in built["cells"]
+    }
+    assert len(cells) == 2 * 2 * 4
+    for workflow in DISPATCHING:
+        [scenario] = CORPUS[workflow].scenarios
+        for model in ("stub-a", "stub-b"):
+            for form in (COMPILED_SET, AUTHORED_SET):
+                cell = cells[(model, form, workflow, scenario.name)]
+                assert (cell["sessions"], cell["passed"]) == (2, 2)
+                assert cell["pass_rate"] == 1.0
+    text = (tmp_path / "results" / "test" / REPORT_MD).read_text()
+    assert text.count("| 100% |") >= 2 * 2 * 4

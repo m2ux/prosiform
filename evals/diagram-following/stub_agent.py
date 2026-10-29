@@ -37,7 +37,7 @@ import uuid
 from pathlib import Path
 
 from score import ACTIONS, TRACE
-from workflow import DIAGRAM, walk, workflows
+from workflow import walk, workflows
 
 HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
 
@@ -71,14 +71,14 @@ def main() -> int:
     }
     workflow = next(item for item in workflows() if item.diagram.states <= headings)
     inputs = {path.name: path.read_text() for path in (workspace / "inputs").iterdir()}
-    path = walk(workflow, DIAGRAM, inputs)
+    path = walk(workflow, workflow.forms[0], inputs)
     if stop := os.environ.get("STUB_AGENT_STOP"):
         path = path[: int(stop)]
     (workspace / ACTIONS).mkdir()
     with (workspace / TRACE).open("w") as trace:
         for state in path:
             trace.write(f"{state}\n")
-            name, value = workflow.sections[DIAGRAM][state].action
+            name, value = workflow.walked[state].action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
     hang = os.environ.get("STUB_AGENT_HANG")
     if hang and not Path(hang).exists():

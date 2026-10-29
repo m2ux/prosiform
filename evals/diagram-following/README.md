@@ -4,7 +4,7 @@ How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link 
 
 ## Forms
 
-Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, and a linked form whose decisions name a document stating the branch's label. A session receives one of four forms, always entered at `workflow.md`:
+Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the branch's label, and the two dispatch forms a workflow dispatching a target is written in. A session receives one of six forms, always entered at `workflow.md`:
 
 | Form | Material | What it isolates |
 | --- | --- | --- |
@@ -12,12 +12,37 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `tree` | The diagram form's source tree, unbundled. | Against `bundle`, what bundling adds. |
 | `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
 | `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
+| `compiled` | The compiled form's bundle set: the entry's bundle, every dispatched target's beside it, and the Prosiform section `pf` emits around each. | Whether an agent follows the dispatch protocol `pf` compiles. |
+| `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
+
+A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, and the four dispatch scenarios take `compiled` and `authored`.
 
 The linked form's decisions carry no label of their own. Each names a rule document that states one label, so the edge a branch takes is recoverable only by opening the document the section links, and the label it states is held to the edges the diagram draws. Its rule document's destination resolves from the section that writes it, under `states/`.
 
 Every session is given the same [instruction](instruction.md), naming only the entry document. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
 
 A diagram form's `click` lines carry destinations relative to the document that writes them, so a node opens its section for a reader of the source tree and for a session in its workspace. GitHub draws a Mermaid fence in a frame of its own and resolves such a destination against that frame, so a diagram form's clicks open nothing in the blob view; the state documents sit beside the entry document all the same.
+
+### Dispatch scenarios
+
+The four dispatch scenarios say what a bundled workflow's dispatch protocol is for: whether an agent hands a dispatched section to a sub-agent at all, starts a set's targets together, and puts a sub-agent's question to the user rather than answering it.
+
+| Workflow | Scenario | What it dispatches |
+| --- | --- | --- |
+| `dispatch-chain` | `chain` | A section whose own step dispatches a second, so a run starts two sub-agents in order. |
+| `dispatch-set` | `parallel-set` | Two sections at once, so a run starts two sub-agents together. |
+| `dispatch-beside` | `set-beside-a-dispatch` | One section, then two more as a set of their own. |
+| `dispatch-question` | `returned-question` | A section returning a question, put to the user, then dispatched again with the answers. |
+
+A dispatch scenario's `scenarios.toml` names the trace a correct run produces beside the path it walks: one `[[scenario.trace]]` table per sub-agent start, in the order the walk dispatches it.
+
+| Field | Meaning |
+| --- | --- |
+| `dispatch` | The section the sub-agent follows, as `<document>#<heading>`. Both forms name a section, so one trace is the trace of both. |
+| `returned` | What the sub-agent gave back: `done`, or `question` for one it returned unanswered. |
+| `together` | Whether it started beside the entry above it, which marks every member of a set but the one opening it. |
+
+The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own; the authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone. The two forms therefore hold one statement of the dispatch, and a pass rate's difference between them is what compilation adds.
 
 ## Scoring
 
@@ -74,7 +99,7 @@ A session that still carries context the run did not supply fails the run after 
 
 | Command | Runs |
 | --- | --- |
-| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which is the default matrix's 200 sessions at the session cap. `ARGS='...'` passes the runner's options through. |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which is the default matrix's 280 sessions at the session cap. `ARGS='...'` passes the runner's options through. |
 
 The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
@@ -85,7 +110,7 @@ The command starts paid agent sessions, so no other target depends on it and `ma
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
-| `--forms` | `bundle,tree,prose,linked` | The forms, comma-separated. |
+| `--forms` | `bundle,tree,prose,linked,compiled,authored` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
@@ -101,20 +126,20 @@ make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetiti
 
 ### Default matrix and cost
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the five scenarios of the three workflows; the four forms; and five repetitions: 200 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — so its cost is the 150 sessions it ran: about USD 4.01, in about 10 minutes at four sessions at once. The linked form's sessions are not in it, and a four-form run costs them on top. By model, over the baseline's 150 sessions:
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the six scenarios of the seven workflows, in the forms each is written in; and five repetitions: 280 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — so its cost is the 150 sessions it ran: about USD 4.01, in about 10 minutes at four sessions at once. The linked form's sessions are not in it, and a four-form run costs them on top. By model, over the baseline's 150 sessions:
 
 | Model | Sessions | Mean cost per session (USD) | Run cost (USD) | Mean session duration |
 | --- | --- | --- | --- | --- |
 | `claude-haiku-5-5` | 75 | 0.0038 | 0.29 | 15 s |
 | `claude-sonnet-5-5` | 75 | 0.0496 | 3.72 | 18 s |
 
-The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, the 200 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
+The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, the 280 sessions at the USD 0.50 session cap, so it starts every session of the default matrix.
 
 A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, trace, actions and `session.json`; and `run.json`, the run's options, cost, state and sessions not started. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, trace, actions and `session.json`; and `run.json`, the run's options, cost, state and sessions not started. `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>

@@ -38,7 +38,7 @@ from dataclasses import asdict, dataclass
 from enum import StrEnum
 from pathlib import Path
 
-from workflow import DIAGRAM, FEWER, START, Scenario, Workflow
+from workflow import FEWER, START, Scenario, Workflow
 
 TRACE = "trace.log"
 ACTIONS = "actions"
@@ -96,7 +96,7 @@ def read_trace(workspace: Path) -> tuple[str, ...]:
 
 def action_done(workflow: Workflow, state: str, workspace: Path) -> bool:
     """Whether a state's action file exists and holds the stated value."""
-    name, value = workflow.sections[DIAGRAM][state].action
+    name, value = workflow.walked[state].action
     written = workspace / ACTIONS / name
     return written.is_file() and written.read_text().strip() == value
 
@@ -128,7 +128,7 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
     if entered not in workflow.diagram.states:
         return Failure.INVENTED_STATE
     if entered in {edge.target for edge in workflow.diagram.leaving(previous)}:
-        transition = workflow.sections[DIAGRAM][previous].transition
+        transition = workflow.walked[previous].transition
         condition = transition.condition if transition else None
         if condition is not None and FEWER.match(condition):
             return Failure.LOOP_MISCOUNT
@@ -144,9 +144,7 @@ def score(workflow: Workflow, scenario: Scenario, workspace: Path) -> Verdict:
     actual = read_trace(workspace)
     missing = undone(workflow, actual, workspace)
     actions = tuple(
-        dict.fromkeys(
-            workflow.sections[DIAGRAM][actual[index]].action[0] for index in missing
-        )
+        dict.fromkeys(workflow.walked[actual[index]].action[0] for index in missing)
     )
     divergence = next(
         (
