@@ -8,6 +8,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 
 | Page | Answers |
 | --- | --- |
+| [Concept](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) | The original design concept |
 | [Architecture](architecture.md) | The whole run, and where each of the pages below fits |
 | [Sources](sources.md) | What a source is, how its root confines it, and what its frontmatter declares |
 | [References](references.md) | Which links are dependencies, which are text, and what an operator states |
@@ -32,5 +33,3 @@ Each page covers one part of a run, and they read in the order a run happens.
 ## Commands
 
 [Checks](../checks.md) states each target the  declares and what it asserts. `make check` runs the set, stopping at the first failure.
-
-The design the contract implements is stated on the [engineering branch](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md).
