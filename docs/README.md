@@ -16,7 +16,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [Destinations](destinations.md) | How a heading is named and how each link is rewritten |
 | [Dispatch](dispatch.md) | How dispatched material becomes a bundle of its own |
 | [Bundles](bundles.md) | Derived names, publication and delivery |
-| [Checking](checking.md) | The invariants, the diagnostics and the budgets |
+| [Checking](checking.md) | The invariants, the diagnostics and the budgets checked by [makefile](../Makefile) |
 
 ## Reference
 
@@ -31,6 +31,6 @@ Each page covers one part of a run, and they read in the order a run happens.
 
 ## Commands
 
-[Checks](../checks.md) states each target the [Makefile](../Makefile) declares and what it asserts. `make check` runs the set, stopping at the first failure.
+[Checks](../checks.md) states each target the  declares and what it asserts. `make check` runs the set, stopping at the first failure.
 
 The design the contract implements is stated on the [engineering branch](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md).
