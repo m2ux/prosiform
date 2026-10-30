@@ -28,7 +28,7 @@ A caller who needs a bundle built against other material than the tree holds has
 - **Matched on normalized identity.**
   A key is the identity a link normalizes to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and beats a key naming the whole document, and a key without one covers the document and every fragment of it.
 - **Every reference is redirected.**
-  Positional entries, `-f`, and compiled, deferred, dispatched and run-set targets alike. A deferred destination in a mocked bundle names the substitute, because a later run follows the path the bundle published.
+  Positional entries, `-f`, and compiled, deferred, dispatched and parallel-dispatched targets alike, a reference its author's root admits and one it carries as a citation. A deferred destination in a mocked bundle names the substitute, because a later run follows the path the bundle published.
 - **A redirected entry names its own output.**
   The derived filename follows the substitute, because the redirect is total.
 - **Substitution is visible.**
