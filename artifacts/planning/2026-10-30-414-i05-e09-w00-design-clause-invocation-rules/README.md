@@ -13,6 +13,7 @@ This record holds the delivery of W00, which states the mapping in the contract'
 | Artifact | What it holds |
 | --- | --- |
 | [W00 work item](w00.md) | The design clause, the bundling rule, the vocabulary and the pin |
+| [Validation](validation.md) | The checks T1–T8 at the revisions they ran, with their observations |
 
 ## Links
 
