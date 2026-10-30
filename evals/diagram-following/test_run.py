@@ -33,6 +33,7 @@ from run import (
     Session,
     bundles_of,
     injected,
+    keep,
     matrix,
     observable,
     options,
@@ -959,6 +960,31 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
     assert record["verdict"]["passed"] is True
     stated = json.loads((directory / SUBAGENTS).read_text())
     assert stated["starts"][0]["returned"] == "question"
+
+
+def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC6: a dispatched section's own path survives the workspace.
+
+    A sub-agent following a section that holds a chart of its own records its
+    states to `trace-<section>.log`. The session's path is kept beside it, so
+    the two are read as one dispatch rather than as a nested chart's states
+    mistaken for the outer path.
+    """
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    (workspace / TRACE).write_text("Scope\nGather\n")
+    (workspace / f"{TRACE}-review.log").write_text("read\nrank\n")
+    records = tmp_path / "records"
+    records.mkdir()
+    keep(workspace, records)
+    assert sorted(path.name for path in records.glob(f"{TRACE}*")) == [
+        TRACE,
+        f"{TRACE}-review.log",
+    ]
+    assert (records / TRACE).read_text() == "Scope\nGather\n"
+    assert (records / f"{TRACE}-review.log").read_text() == "read\nrank\n"
 
 
 def test_a_run_starting_no_sub_agent_is_undispatched(
