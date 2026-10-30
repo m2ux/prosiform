@@ -1,0 +1,21 @@
+description = "A mapping entry whose key and value normalize to one identity is refused as invalid usage, because the redirect the option states is the identity it already names."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE",
+  "Exit status and JSON diagnostics — 2",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=./rules.md", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["rules.md", "./rules.md", "one identity on both sides"]
+reference = "rules.md"

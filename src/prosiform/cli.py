@@ -443,9 +443,54 @@ def substitution(options: argparse.Namespace) -> Substitution:
     one key and the section a key carries is part of what it names. The
     sides were resolved while the grammar was read, before any source
     was opened.
+
+    A mapping shape that states nothing is refused here, because here is
+    where the whole mapping is known: a second key naming an identity the
+    first already names, a key and a substitute naming one identity, and a
+    key carrying no document. The three are decided from one set of
+    identities, so no run reaches a shape that would otherwise win
+    silently by being read last.
     """
-    pairs = options.mock or ()
-    return Substitution({(one.path, one.fragment): other for one, other in pairs})
+    keys: dict[tuple[str, str | None], Reference] = {}
+    spelled: dict[tuple[str, str | None], str] = {}
+    for original, alternative in options.mock or ():
+        if not original.path:
+            raise documentless(original)
+        if identity(original) == identity(alternative):
+            raise self_mocked(original, alternative)
+        named = (original.path, original.fragment)
+        if named in keys:
+            raise duplicated(spelled[named], original)
+        keys[named] = alternative
+        spelled[named] = original.original
+    return Substitution(keys)
+
+
+def duplicated(earlier: str, later: Reference) -> Failure:
+    """Two mapping keys naming one identity, as the spellings their author wrote."""
+    return usage_failure(
+        f"the mapping keys {earlier!r} and {later.original!r} name one identity, "
+        f"so only one of them can redirect it",
+        reference=later.original,
+    )
+
+
+def self_mocked(original: Reference, alternative: Reference) -> Failure:
+    """One mapping entry whose substitute names the identity its key names."""
+    return usage_failure(
+        f"the mapping entry {original.original!r}={alternative.original!r} names "
+        f"one identity on both sides, so the substitute stands in for itself",
+        reference=original.original,
+    )
+
+
+def documentless(original: Reference) -> Failure:
+    """One mapping key carrying no document, as a section alone does."""
+    return usage_failure(
+        f"the mapping key {original.original!r} names no document to redirect, so "
+        f"no reference can name it",
+        reference=original.original,
+    )
 
 
 def parser() -> Parser:

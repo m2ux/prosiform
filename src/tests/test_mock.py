@@ -12,12 +12,19 @@ The root exemption is the reason the parameter exists, so it is asked
 from both directions: a substitute outside the writing source's root is
 reached when the mapping names it, and the reference is still held to
 the root when nothing does.
+
+The three shapes the mapping refuses are decided from one set of
+identities, so each case is asked through the command line that carries
+it: which pair of spellings a duplicate names, that a self-mock names the
+entry its author wrote, and that a key carrying no document reaches the
+usage failure rather than a document the option never named.
 """
 
 import io
 import json
 import os
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -218,6 +225,73 @@ def test_a_value_that_is_no_pair_is_invalid_usage(tree: Path) -> None:
 @pytest.mark.parametrize("value", ["=stand-in.md", "rules.md="])
 def test_a_pair_carrying_no_side_is_invalid_usage(tree: Path, value: str) -> None:
     assert invoke(tree, "-m", value, "guide.md")[0] == 2
+
+
+def refused(cwd: Path, *arguments: str) -> tuple[int, list[dict[str, Any]]]:
+    """One invocation from a directory, its status and the diagnostics it emitted."""
+    out, err = io.StringIO(), io.StringIO()
+    previous = Path.cwd()
+    try:
+        os.chdir(cwd)
+        status = main(["-d", "json", *arguments], out, err)
+    finally:
+        os.chdir(previous)
+    return status, [json.loads(line) for line in err.getvalue().splitlines() if line]
+
+
+def test_two_spellings_of_one_key_are_refused_naming_both(tree: Path) -> None:
+    """The message names the two options to edit, not the identity they share."""
+    status, voices = refused(
+        tree, "-m", "rules.md=stand-in.md", "-m", "./rules.md=guide.md", "guide.md"
+    )
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "rules.md" in voices[0]["message"]
+    assert "./rules.md" in voices[0]["message"]
+
+
+def test_a_self_mock_is_refused(tree: Path) -> None:
+    """A substitute naming its own key states no redirect at all."""
+    status, voices = refused(tree, "-m", "rules.md=./rules.md", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "one identity" in voices[0]["message"]
+
+
+def test_a_key_carrying_no_document_is_refused(tree: Path) -> None:
+    """A section alone names no document, so it is not resolved against one."""
+    status, voices = refused(tree, "-m", "#escalation=stand-in.md", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "#escalation" in voices[0]["message"]
+
+
+def test_a_document_key_and_a_section_key_of_it_are_two_keys(tree: Path) -> None:
+    """The identity a key names is its document and its section together."""
+    status, published = invoke(
+        tree,
+        "-m",
+        "rules.md=stand-in.md",
+        "-m",
+        "rules.md#escalation=guide.md",
+        "guide.md",
+    )
+    assert status == 0
+    assert "# Stand-in" in published
+
+
+def test_a_mapping_shape_is_refused_before_any_source_is_read(tree: Path) -> None:
+    """The refusals are decided from the mapping, so no absent entry masks one."""
+    status, voices = refused(
+        tree,
+        "-m",
+        "rules.md=stand-in.md",
+        "-m",
+        "./rules.md=guide.md",
+        "absent.md",
+    )
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
 
 
 def test_a_mapping_before_d_does_not_hide_the_diagnostic_format(tree: Path) -> None:
