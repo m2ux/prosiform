@@ -1,9 +1,14 @@
-"""Hold the runner to its sessions, its records and its spending cap.
+"""Hold the runner to its sessions, its records, its spending cap and its classes.
 
 Every run here starts the stub agent beside this file in place of the real
 one, so no test starts a paid session. The stub writes what it found in its
 workspace to a log, walks the workflow it finds there, and reports a cost
 the test chooses.
+
+The dispatch corpus is also held as a matrix: each departure the stub can
+state runs every dispatch scenario in both forms, and each cell is asserted
+against the class that departure predicts, so a check that fires for the
+wrong reason fails where it fires.
 """
 
 import json
