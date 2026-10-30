@@ -19,6 +19,16 @@ Headings are walked in bundle order — file headings, structural ancestors, sel
 
 An ordinal is safe in a bundle in a way it is not in a source. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A bundle is generated whole in one pass and validated against the map that produced it, so every ordinal it carries is assigned and checked in the same run.
 
+```mermaid
+flowchart TD
+  F["# Guide"] --> A["## Run → #run"]
+  A --> B["### Run → #run-2"]
+  B --> C["### Notes → #notes"]
+  C --> D["## Run → #run-3"]
+```
+
+*Figure 1. Headings Are Walked in Bundle Order, and Each Repeat Takes the Next Ordinal, Whatever Its Level.*
+
 ## Source fragments
 
 A fragment is resolved against the original document, before anything is arranged, so a destination follows from source identity rather than from traversal order.
@@ -30,6 +40,19 @@ A source heading's own fragment is the slug its visible text produces. Nothing n
 A compiled reference is rewritten to the destination of the target it resolved to. A reference the run compiled is a reference the bundle carries, so each one has a destination.
 
 The rest keep the bytes their author wrote: a link outside the root, a link with a scheme, an image, a non-Markdown target. A deferred link points at a path from the invocation working directory, and a dispatched link at its generated sub-section. Each is published without its operator mark.
+
+```mermaid
+flowchart LR
+  subgraph Source
+    L["Run the check<br/>(modes/sync-mode.md#run)"]
+  end
+  subgraph Bundle
+    D["Sync Mode"] --> R["Run<br/>(sync-mode)"]
+  end
+  L -- "resolved, then rewritten" --> R
+```
+
+*Figure 2. A Link Reaches the Destination of What It Named, Not One Whose Slug Coincides.*
 
 ## Definitions
 

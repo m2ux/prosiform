@@ -16,6 +16,18 @@ An explicit root resolves from the declaring file's directory. Every absent root
 
 The root bounds a link; it is not the base a link resolves from. Each path-bearing link resolves from the directory of the file that wrote it — the path a reader would follow in an editor — and the root then decides whether the result is inside. A link landing outside stays as the author wrote it and is never opened.
 
+```mermaid
+flowchart LR
+  subgraph Root["the root: what this source may contain"]
+    Doc["modes/plan-mode.md"]
+    Rules["rules/common.md"]
+  end
+  Doc -- "resolves from the file's own directory" --> Rules
+  Doc -. "lands outside the root, carried as authored" .-> Outside["../library/guide.md"]
+```
+
+*Figure 1. A Link Resolves from Its Own File, and the Root Decides Whether It Is Followed.*
+
 A root may name a sibling library that does not contain its declaring source. It authorizes content; it does not require the file to move.
 
 ## Frontmatter

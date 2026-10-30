@@ -2,6 +2,15 @@
 
 A run publishes a **bundle set**: one bundle for its entry, and one for each target its dispatches reach.
 
+```mermaid
+flowchart TD
+  Run["pf modes/plan-mode.md"] --> Folder["modes_plan-mode.bundles/"]
+  Folder --> Entry["modes_plan-mode.bundle.md"]
+  Folder --> Disp["modes_sync-mode.bundle.md"]
+```
+
+*Figure 1. One Run Folder Holds the Entry's Bundle and Each Dispatched Target's.*
+
 ## Derived names
 
 A selection's name is its path relative to the working directory, without the Markdown suffix, with each separator written as `_`. A section adds `__` and the fragment.
@@ -31,6 +40,16 @@ The run folder is written whole beside the earlier one and renamed onto it. What
 Nothing else in the output folder is touched, including an author's folder named like the entry. A symbolic link standing at the run folder's path is replaced as the link it is, and whatever it names is left as it was.
 
 A failure before the new folder stands removes it and leaves the output folder as it was. An earlier set that cannot be removed once the new one stands leaves the run published, and warns with the path that holds it.
+
+```mermaid
+flowchart LR
+  Write["write the set into<br/>a fresh folder beside"] --> Swap["rename it onto<br/>the run folder's path"]
+  Swap --> Drop["remove the earlier set<br/>once the new one stands"]
+  Swap -. "refused part-way" .-> Keep["the earlier set stands;<br/>the run fails and names it"]
+  Drop -. "refused" .-> Warn["published, with<br/>W_EARLIER_SET_RETAINED"]
+```
+
+*Figure 2. The Swap In Order, and What Each Refusal Leaves Behind.*
 
 ## The output folder
 

@@ -17,6 +17,19 @@ Everything else is carried as text and never opened:
 
 A bundle carrying any of these is still a successful run, and warns once that a resource it names may not be found where the bundle is read.
 
+```mermaid
+flowchart TD
+  Ref["a reference in selected content"] --> Scheme{"carries a scheme<br/>or an authority?"}
+  Scheme -- yes --> Text["text: carried as authored, never opened"]
+  Scheme -- no --> Root{"resolves under its<br/>author's root?"}
+  Root -- no --> Text
+  Root -- yes --> Kind{"names Markdown,<br/>a document or a section?"}
+  Kind -- no --> Text
+  Kind -- yes --> Dep["dependency: followed,<br/>bundled, rewritten"]
+```
+
+*Figure 1. Three Questions Decide What a Reference Becomes, and Text Is the Answer to Any of Them.*
+
 ## Selection by reference
 
 A reference with no fragment, or an empty one, selects the whole document: its body, its preamble included, less frontmatter. A reference with a fragment selects one section — a document-level heading and its subsections, ending before the next heading of equal or higher level.
@@ -40,6 +53,20 @@ A mark with no space after it opens no operator. `[⇉Sync](sync.md)` is an ordi
 One link states one operator. Text opening with two of them — `[¬ ⇉ Rules](rules.md)` — is refused, because each operator states how one compilation is carried out and a link stating two states two contradictory things. An operator naming anything but a Markdown document or section under the root is refused on the same ground.
 
 A deferral publishes a destination spelled from the invocation working directory, so the same command line can be run from there. A dispatch and a parallel dispatch publish a link to the generated sub-section, which [Dispatch](dispatch.md) covers.
+
+```mermaid
+flowchart TD
+  Text["link text opens with a mark"] --> Space{"a space follows<br/>the first mark?"}
+  Space -- no --> Plain["an ordinary link:<br/>the mark is text"]
+  Space -- yes --> Second{"a second mark<br/>and space follows?"}
+  Second -- "yes: ¬ ⇉" --> Refused["refused: one link<br/>states one operator"]
+  Second -- no --> Operator["an operator: ¬, ⇉ or ⫽"]
+  Operator --> Target{"names a Markdown document<br/>or section under the root?"}
+  Target -- no --> RefusedToo["refused"]
+  Target -- yes --> Withheld["withheld from this bundle,<br/>compiled as the mark states"]
+```
+
+*Figure 2. How a Mark at the Start of Link Text Is Read, and Where It Is Refused.*
 
 ## Diagram links
 

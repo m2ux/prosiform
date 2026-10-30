@@ -10,6 +10,17 @@ Fragment-only references resolve against their own source document wherever that
 
 A reference back to material the closure already holds resolves to that material's destination. It expands nothing twice.
 
+```mermaid
+flowchart LR
+  Entry["entry: guide.md"] --> P["procedure.md"]
+  Entry --> S["sync-mode.md"]
+  P --> R["rules.md#shared"]
+  S --> R
+  R -. "reached twice, carried once" .-> Once["one copy in the bundle"]
+```
+
+*Figure 1. Two Paths to One Target Carry It Once, and Both Links Point at It.*
+
 ## Consolidation
 
 Selections overlap. Asking for a section and then for its parent document would otherwise emit the section twice.
@@ -30,6 +41,15 @@ Follow the [Procedure](#procedure), adhering to [Rules](../rules.md) and [Conven
 
 places Rules and then Conventions directly after the entry document's own sections. Writing the links in a different order writes a different bundle.
 
+```mermaid
+flowchart TD
+  Entry["# Guide Mode<br/>(the entry document's own sections)"] --> P["# Procedure"]
+  Entry --> R["# Rules"]
+  Entry --> C["# Conventions"]
+```
+
+*Figure 2. Siblings Stand in the Order the Author Wrote the Links In.*
+
 A group stands where its first source is placed.
 
 ## Structural ancestors
@@ -49,6 +69,25 @@ Selected Detail content.
 ```
 
 That heading is a **structural ancestor**: generated structure, not a dependency. Its body is not included, its own links are not followed, and it is not a substitute for selecting its section.
+
+```mermaid
+flowchart LR
+  subgraph Source["source"]
+    A["## Alpha"]
+    B["## Beta"]
+    D["### Detail"]
+  end
+  subgraph Bundle["emitted"]
+    BA["### Alpha<br/>with its body"]
+    BB["### Beta<br/>heading only"]
+    BD["#### Detail<br/>with its body"]
+  end
+  A --> BA
+  B --> BB
+  D --> BD
+```
+
+*Figure 3. A Structural Ancestor Holds the Outline, and Nothing Else of Its Section.*
 
 Two rules keep ancestors honest:
 

@@ -32,6 +32,21 @@ Source validation and candidate validation share one grammar but not one policy.
 
 The candidate is never fed back through source frontmatter stripping or dependency discovery.
 
+```mermaid
+flowchart TD
+  S1["capture each source once"] --> S2["discover the closure"]
+  S2 --> S3["consolidate and place"]
+  S3 --> S4["assign every destination"]
+  S4 --> S5["build the candidate"]
+  S5 --> S6["validate against provenance"]
+  S6 --> S7["recheck each source's hash"]
+  S7 --> S8["publish the whole set"]
+  S6 -. "a failure writes nothing" .-> Fail["diagnostics on stderr"]
+  S7 -. "a source changed" .-> Fail
+```
+
+*Figure 1. The Steps in Order, and the Two That End the Run Before Anything Is Written.*
+
 ## Failure
 
 A failing run writes no bundle and publishes nothing. A run validates every bundle it produces before it writes any, so a failure in one writes none.

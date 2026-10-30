@@ -10,6 +10,17 @@ The file heading carries the title, so the title is not emitted again beneath it
 
 There is no heading above the file headings. A root names no division.
 
+```mermaid
+flowchart TD
+  H1["# guide &nbsp;(file heading, from the title)"]
+  H1 --> H2["## Procedure &nbsp;(source H1, shifted)"]
+  H2 --> H3["### Steps &nbsp;(source H2, shifted)"]
+  H1 --> H2b["## Rules &nbsp;(source H1, shifted)"]
+  H1 --> P["preamble &nbsp;(after the file heading)"]
+```
+
+*Figure 1. One File Heading per Source, with Every Source Level Shifted Down One.*
+
 ## The level shift
 
 Source headings move down one level beneath their file heading: H1 becomes H2, H2 becomes H3, and so on. Levels are shifted uniformly, not renormalized per selection, so the outline the author wrote keeps its shape.
@@ -46,6 +57,19 @@ The same name serves the member's subsection and every variant heading it carrie
 A member contributing nothing above the grouping depth takes no subsection; the merged sections it contributes to name it.
 
 The member subsections sit beneath an `Overview` heading where the group also emits merged sections, and directly beneath the group heading where it does not.
+
+```mermaid
+flowchart TD
+  G["# Rules &nbsp;(merged group heading)"]
+  G --> O["## Overview"]
+  O --> M1["### Common"]
+  O --> M2["### Agent Rules"]
+  G --> S["## Workflow"]
+  S --> V1["### Common &nbsp;(variant)"]
+  S --> V2["### Agent Rules &nbsp;(variant)"]
+```
+
+*Figure 2. A Merged Group: Members Above the Grouping Depth, Merged Sections Split into Variants.*
 
 ## Two headings that read alike
 
