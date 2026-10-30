@@ -1,0 +1,25 @@
+description = "A mapping applies under -c, which publishes nothing and reports the substitution exactly as a publishing run does, because a mocked check is how the substitution is exercised in continuous integration and a mapping that quietly stopped applying there would quieten every mocked run without failing one."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+  "CLI contract — -c",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-c", "-m", "rules.md=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "stand-in.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1

@@ -28,7 +28,7 @@ from typing import Any
 
 import pytest
 
-from prosiform.cli import main
+from prosiform.cli import MOCK_UNUSED, main
 from prosiform.closure import (
     UNSUBSTITUTED,
     OutsideRoot,
@@ -164,6 +164,52 @@ def test_the_two_halves_of_one_resolution_take_the_same_mapping() -> None:
 def test_a_mapping_is_a_value_the_run_cannot_rewrite() -> None:
     with pytest.raises(TypeError):
         WHOLE.keys[("other.md", None)] = SUBSTITUTE  # type: ignore[index]
+
+
+def test_one_key_serving_two_references_records_one_substitution() -> None:
+    """A key names a target, so the two references it serves are one substitution."""
+    mapped = Substitution({("rules.md", None): SUBSTITUTE})
+    inside("guide.md", "rules.md", "", mapped, "guide.md:3")
+    inside("guide.md", "rules.md#escalation", "", mapped, "guide.md:5")
+    assert [one.resolved for one in mapped.redirects.targets()] == ["stand-in.md"]
+
+
+def test_a_substitution_names_the_first_link_that_redirected_it() -> None:
+    """The record keeps the position the run first met the substitution at."""
+    mapped = Substitution({("rules.md", None): SUBSTITUTE})
+    inside("guide.md", "rules.md", "", mapped, "guide.md:3")
+    inside("guide.md", "rules.md", "", mapped, "guide.md:9")
+    assert [one.origin for one in mapped.redirects.targets()] == ["guide.md:3"]
+
+
+def test_a_stage_that_resolves_a_link_again_records_no_second_substitution() -> None:
+    """Emission and candidate validation re-resolve a link and add nothing."""
+    mapped = Substitution({("rules.md", None): SUBSTITUTE})
+    inside("guide.md", "rules.md", "", mapped, "guide.md:3")
+    bundled("guide.md", "rules.md", "the rules", "", mapped)
+    assert len(mapped.redirects.targets()) == 1
+
+
+def test_an_empty_mapping_records_neither_a_substitution_nor_an_unused_key() -> None:
+    """Neither has a subject, so a run given no mapping states nothing."""
+    assert UNSUBSTITUTED.redirects.targets() == ()
+    assert UNSUBSTITUTED.unserved() == ()
+
+
+def test_a_key_no_reference_named_is_unserved_and_keeps_its_authored_spelling() -> None:
+    """The key states a fact about the invocation, in the caller's own spelling."""
+    mapped = Substitution(
+        {("docs/rules.md", None): SUBSTITUTE},
+        {("docs/rules.md", None): "./docs/rules.md"},
+    )
+    inside("guide.md", "notes.md", "", mapped)
+    assert mapped.unserved() == ("./docs/rules.md",)
+
+
+def test_a_served_key_is_not_unserved() -> None:
+    mapped = Substitution({("rules.md", None): SUBSTITUTE})
+    inside("guide.md", "rules.md", "", mapped)
+    assert mapped.unserved() == ()
 
 
 def invoke(cwd: Path, *arguments: str) -> tuple[int, str]:
@@ -351,5 +397,105 @@ def test_a_title_carrying_a_withheld_link_is_headed_by_the_text_it_emits(
         os.chdir(previous)
     assert status == 0
     voices = [json.loads(line) for line in err.getvalue().splitlines() if line]
-    assert [one["code"] for one in voices] == ["W_COINCIDENT_HEADING"]
+    assert [one["code"] for one in voices] == [
+        "W_COINCIDENT_HEADING",
+        "W_MOCK_SUBSTITUTED",
+    ]
     assert "read 'the rules'" in voices[0]["message"]
+
+
+def voices(cwd: Path, *arguments: str) -> tuple[int, list[dict[str, Any]]]:
+    """One invocation from a directory, its status and its JSON diagnostics."""
+    out, err = io.StringIO(), io.StringIO()
+    previous = Path.cwd()
+    try:
+        os.chdir(cwd)
+        status = main([*arguments, "-d", "json"], out, err)
+    finally:
+        os.chdir(previous)
+    return status, [json.loads(line) for line in err.getvalue().splitlines() if line]
+
+
+def test_a_substitution_warning_names_the_link_its_destination_and_the_substitute(
+    tree: Path,
+) -> None:
+    """The three fields that tell one substitution from another."""
+    status, said = voices(
+        tree, "-m", "rules.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    voice = said[0]
+    assert voice["source"] == "rules.md"
+    assert voice["resolved"] == "stand-in.md"
+    assert voice["location"] == {"file": "guide.md", "line": 3, "column": 1}
+
+
+def test_a_substitution_warning_states_the_identity_the_reference_would_have_named(
+    tree: Path,
+) -> None:
+    """Two keys naming one stand-in are told apart only by what each replaces."""
+    (tree / "sibling.md").write_text("# Sibling\n\nSee [other rules](other.md).\n")
+    (tree / "other.md").write_text("# Other\n\nOther.\n")
+    status, said = voices(
+        tree,
+        "-m",
+        "rules.md=stand-in.md",
+        "-m",
+        "other.md=stand-in.md",
+        "-o",
+        str(tree / "out"),
+        "guide.md",
+        "sibling.md",
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == [
+        "W_MOCK_SUBSTITUTED",
+        "W_MOCK_SUBSTITUTED",
+    ]
+    assert ["'rules.md'" in said[0]["message"], "'other.md'" in said[1]["message"]] == [
+        True,
+        True,
+    ]
+
+
+def test_an_unused_key_warns_with_no_location_and_publishes(tree: Path) -> None:
+    """A key that matched nothing states a fact about the invocation."""
+    status, published = invoke(tree, "-m", "unrelated.md=stand-in.md", "guide.md")
+    assert status == 0
+    assert "# Rules" in published
+    status, said = voices(
+        tree, "-m", "unrelated.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_UNUSED"]
+    assert said[0]["source"] == "unrelated.md"
+    assert "location" not in said[0]
+
+
+def test_a_served_key_warns_unused_for_nothing(tree: Path) -> None:
+    """The complement of AC8: a mapping that matched states no unused key."""
+    _status, said = voices(
+        tree, "-m", "rules.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
+    )
+    assert MOCK_UNUSED not in [one["code"] for one in said]
+
+
+def test_a_check_run_reports_the_substitution_and_publishes_nothing(
+    tree: Path,
+) -> None:
+    """The mapping applies under `-c`, which is how a mocked check runs in CI."""
+    status, said = voices(
+        tree, "-c", "-m", "rules.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert said[0]["resolved"] == "stand-in.md"
+    assert not (tree / "out" / "guide.bundles").exists()
+
+
+def test_a_run_given_no_mapping_states_neither_warning(tree: Path) -> None:
+    """An empty mapping raises neither, because neither has a subject."""
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
+    assert status == 0
+    assert said == []

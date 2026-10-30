@@ -1,0 +1,26 @@
+description = "One key serving two references — the document whole and one of its sections — states one substitution, naming the first link that redirected it, its destination and the substitute, so a bundle of stand-in material cannot be read as a bundle of the material that ships."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "stand-in.md"
+message_contains = ["rules.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1

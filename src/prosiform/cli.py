@@ -192,6 +192,8 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
+MOCK_SUBSTITUTED = "W_MOCK_SUBSTITUTED"
+MOCK_UNUSED = "W_MOCK_UNUSED"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -217,6 +219,8 @@ CODES = tuple(
             RESOURCE_PORTABILITY,
             COINCIDENT_HEADING,
             EARLIER_SET_RETAINED,
+            MOCK_SUBSTITUTED,
+            MOCK_UNUSED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -442,7 +446,8 @@ def substitution(options: argparse.Namespace) -> Substitution:
     Every key stands for one identity, so two spellings of one path name
     one key and the section a key carries is part of what it names. The
     sides were resolved while the grammar was read, before any source
-    was opened.
+    was opened. Each key keeps the spelling the caller wrote, because a
+    key no reference named is reported as the caller wrote it.
 
     A mapping shape that states nothing is refused here, because here is
     where the whole mapping is known: a second key naming an identity the
@@ -463,7 +468,7 @@ def substitution(options: argparse.Namespace) -> Substitution:
             raise duplicated(spelled[named], original)
         keys[named] = alternative
         spelled[named] = original.original
-    return Substitution(keys)
+    return Substitution(keys, spelled)
 
 
 def duplicated(earlier: str, later: Reference) -> Failure:
@@ -625,6 +630,8 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
     read after the normalization: an entry reference is exempt from the
     writing source's root, so the mapping applies to the identity the
     reference normalized to rather than to anything a source decides.
+    An entry reference stands in no source, so a redirect of one is
+    recorded with no source position.
     """
     try:
         found = resolve(text, allow_parent=True)
@@ -647,7 +654,7 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
             remedy="name a document the source root carries",
             reference=text,
         )
-    return substitution.substitute(found)
+    return substitution.redirect(found)
 
 
 def entered(
@@ -1085,7 +1092,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, source.root, substitution)
+            found = inside(path, use.destination, source.root, substitution, at)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1214,12 +1221,12 @@ def withheld(
     for use in uses(tokens, selected):
         if use.resource:
             continue
+        at = location(path, source.line(use.line))
         found = withholding_target(
-            path, use.destination, use.opening, source.root, substitution
+            path, use.destination, use.opening, source.root, substitution, at
         )
         if found is None:
             continue
-        at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 
@@ -1965,6 +1972,64 @@ def resourced(bundled: str, budget: int) -> bool:
     )
 
 
+def substituted(mapping: Substitution) -> list[Diagnostic]:
+    """One warning for each mapping key a reference named.
+
+    A key names one substitution, so the references it served state one
+    warning at the first of them. The warning names that link as
+    `location` where the reference stands in a source, the destination
+    the author wrote as `source`, and the substitute's identity as
+    `resolved`; its message states the identity the reference would have
+    resolved to, which is what tells two keys naming one stand-in apart.
+    """
+    return [
+        Diagnostic(
+            WARNING,
+            f"the reference {one.source!r} is redirected to the substitute "
+            f"{one.resolved!r}, where it would have resolved to {one.would!r}",
+            code=MOCK_SUBSTITUTED,
+            source=one.source,
+            resolved=one.resolved,
+            location=None if one.origin is None else located(one.origin),
+        )
+        for one in mapping.redirects.targets()
+    ]
+
+
+def unused(mapping: Substitution) -> list[Diagnostic]:
+    """One warning for each mapping key no reference named.
+
+    A key that matched nothing mocks nothing, so whatever the run asserts
+    of its bundle holds of material the caller did not mean to test. The
+    key states a fact about the invocation rather than about any source,
+    so the warning carries the key's authored spelling and no location.
+    """
+    return [
+        Diagnostic(
+            WARNING,
+            f"the mapping key {spelling!r} names no reference the run resolved, "
+            f"so it substitutes nothing",
+            code=MOCK_UNUSED,
+            source=spelling,
+            remedy="name an identity a source of the run links, or drop the pairing",
+        )
+        for spelling in mapping.unserved()
+    ]
+
+
+def located(origin: str) -> Location:
+    """One diagnostic location from the source position a reference carries.
+
+    A position is written as its document and the line it stands on, and
+    a reference reached by a link is always on one; the document alone
+    is the whole of the position where no line is known.
+    """
+    document, marked, line = origin.rpartition(":")
+    if not marked or not DECIMAL.match(line):
+        return Location(origin, 1, 1)
+    return Location(document, int(line), 1)
+
+
 def publish(text: str, stream: IO[str]) -> None:
     """Write one response to standard output, or report that it was refused."""
     try:
@@ -2004,6 +2069,7 @@ def publication(
     reporter: Reporter,
     check: bool,
     retained: bool = False,
+    notices: Sequence[Diagnostic] = (),
 ) -> None:
     """Validate every bundle a run publishes, then publish the set whole or not at all.
 
@@ -2012,11 +2078,18 @@ def publication(
     name and each bundle's are held to the length its filesystem allows,
     before any is written, so a set publication would refuse ends the run with its
     diagnostic and nothing written, whether or not the run only
-    validates. Every bundle's warnings follow, in turn, and then the set
-    is published into the run's folder, unless the run only validates,
-    which writes nothing. A run asked to retain the earlier set stands
-    an empty one at its folder where nothing stands there, once every
-    check has passed, and is refused its removal once the new set stands.
+    validates. Every bundle's warnings follow, in turn, then the
+    warnings that are facts about the run rather than about one of its
+    bundles, and then the set is published into the run's folder, unless
+    the run only validates, which writes nothing. A run asked to retain
+    the earlier set stands an empty one at its folder where nothing
+    stands there, once every check has passed, and is refused its removal
+    once the new set stands.
+
+    A run's own warnings follow the bundle checks for the same reason
+    they hold under `-c`: what a run states of itself is stated by a run
+    that would otherwise have published, so a substituted check reports
+    its substitutions exactly as a substituted publication does.
     """
     for one in bundles:
         try:
@@ -2046,6 +2119,8 @@ def publication(
     for one in bundles:
         for warning in one.warnings:
             reporter.emit(warning)
+    for notice in notices:
+        reporter.emit(notice)
     if not check:
         publish_folder(bundles, folder, reporter, retained)
 
@@ -2451,6 +2526,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         reporter,
         options.check,
         options.fault == CLEANUP_FAULT,
+        [*substituted(mapping), *unused(mapping)],
     )
     return SUCCESS
 

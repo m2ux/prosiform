@@ -1,0 +1,19 @@
+description = "A key that matched no reference states that it substituted nothing and the run publishes its bundle unchanged at exit status 0, because a fixture whose mapping named nothing mocks nothing and whatever it asserts would otherwise pass for the wrong reason."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "unrelated.md=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_UNUSED"
+source = "unrelated.md"
