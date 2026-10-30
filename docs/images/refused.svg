@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1132" viewBox="0 0 2142 1132" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1132" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="277" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
+<path d="M32 134 H1032" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">└─ rules/</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">   ├─ quality.md</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">   └─ tests.md</text><rect x="32" y="379" width="1000" height="187" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="415" font-size="21" fill="#b1c6df" font-weight="400">SKILL.md</text>
+<path d="M32 433 H1032" stroke="#303b49"/>
+<text x="44" y="500" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="500" font-size="30" fill="#e6edf3" font-weight="500">Entry</text>
+<text x="70" y="548" font-size="20" fill="#58a6ff" font-weight="400">Follow Tests and Reviews.</text><rect x="32" y="588" width="1000" height="241" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="624" font-size="21" fill="#b1c6df" font-weight="400">rules/quality.md</text>
+<path d="M32 642 H1032" stroke="#303b49"/>
+<text x="44" y="709" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="709" font-size="30" fill="#e6edf3" font-weight="500">Quality</text>
+<text x="44" y="763" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="763" font-size="26" fill="#e6edf3" font-weight="500">Findings</text>
+<text x="70" y="811" font-size="20" fill="#e6edf3" font-weight="400">A review lands with its findings recorded.</text><rect x="32" y="851" width="1000" height="241" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="887" font-size="21" fill="#b1c6df" font-weight="400">rules/tests.md</text>
+<path d="M32 905 H1032" stroke="#303b49"/>
+<text x="44" y="972" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="972" font-size="30" fill="#e6edf3" font-weight="500">Quality</text>
+<text x="44" y="1026" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1026" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="70" y="1074" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="80" width="1000" height="351" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">Diagnostics</text>
+<path d="M1110 134 H2110" stroke="#303b49"/>
+<text x="1148" y="191" font-size="20" fill="#e6edf3" font-weight="400">E_TARGET_NOT_FOUND: the reference &#x27;rules/quality.md#reviews&#x27; names no</text>
+<text x="1148" y="228" font-size="20" fill="#e6edf3" font-weight="400">heading of the document it selects from</text>
+<text x="1148" y="265" font-size="20" fill="#e6edf3" font-weight="400">  reference: rules/quality.md#reviews</text>
+<text x="1148" y="302" font-size="20" fill="#e6edf3" font-weight="400">  resolved: rules/quality.md</text>
+<text x="1148" y="339" font-size="20" fill="#e6edf3" font-weight="400">  source: SKILL.md:3</text>
+<text x="1148" y="376" font-size="20" fill="#e6edf3" font-weight="400">  chain: SKILL.md → rules/quality.md#reviews</text>
+<text x="1148" y="413" font-size="20" fill="#e6edf3" font-weight="400">  remedy: name a heading the document carries</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

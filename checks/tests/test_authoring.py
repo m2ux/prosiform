@@ -20,18 +20,22 @@ from documents import ROOT
 GUIDE = ROOT / "invocation.md"
 README = ROOT / "README.md"
 EXAMPLES = ROOT / "example" / "README.md"
+BUNDLES = ROOT / "docs" / "bundles.md"
+SOURCES = ROOT / "docs" / "sources.md"
 SURFACES = (GUIDE, README, EXAMPLES)
 
+# Each authoring statement, beside the document that states it. The guide
+# keeps the command line; the architecture pages state the rules it links to.
 INSTRUCTIONS = (
-    "pf [OPTIONS] REF [REF ...]",
-    "The only keys in `prosiform` are `root`, `group` and `group-depth`",
-    "An explicit root resolves from the declaring file's directory.",
-    "Every absent root uses the working directory",
-    "`-f DOC`",
-    "`-o DIR`",
-    "a section adds `__` and the fragment.",
-    "A run of several distinct selections joins their names with `+`",
-    "File and directory names use hyphens rather than underscores.",
+    (GUIDE, "pf [OPTIONS] REF [REF ...]"),
+    (SOURCES, "The only keys in `prosiform` are `root`, `group` and `group-depth`"),
+    (SOURCES, "An explicit root resolves from the declaring file's directory."),
+    (SOURCES, "Every absent root uses the invocation working directory"),
+    (GUIDE, "`-f DOC`"),
+    (GUIDE, "`-o DIR`"),
+    (BUNDLES, "A section adds `__` and the fragment."),
+    (BUNDLES, "A run of several selections joins their names with `+`"),
+    (BUNDLES, "File and directory names use hyphens rather than underscores."),
 )
 
 HYPHENS = "hyphens rather than underscores"
@@ -98,9 +102,12 @@ def source_paths(argv: list[str]) -> list[str]:
     return found
 
 
-def test_the_invocation_guide_states_file_owned_authoring() -> None:
-    text = GUIDE.read_text(encoding="utf-8")
-    missing = [sentence for sentence in INSTRUCTIONS if sentence not in text]
+def test_the_authoring_statements_are_stated_where_they_are_owned() -> None:
+    missing = [
+        f"{path.relative_to(ROOT).as_posix()}: {sentence}"
+        for path, sentence in INSTRUCTIONS
+        if sentence not in path.read_text(encoding="utf-8")
+    ]
     assert missing == []
 
 
