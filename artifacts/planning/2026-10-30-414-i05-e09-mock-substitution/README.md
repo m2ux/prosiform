@@ -88,6 +88,9 @@ Six findings from a review against the source, all resolved.
 | W01 and W06 both implemented the two-step lookup, and both claimed AC14. | Medium | W01 owns the lookup and AC14; W06 owns what a section key means and the fixture that makes precedence observable. |
 | W01 extended both `closure.py` and `cli.py`, against the one-component rule. | Medium | Merged with W02 at the user's decision; AC14 moved to W06 to stay within the three-criterion grain. |
 | The epic carried an Open Question, which planning requires resolved before work starts. | Medium | Settled: design first, then the pin. |
+| W08's fixtures reached their stubs by `../stubs` from a `usage-example`-style symbolic link. `execute` takes `Path.cwd().resolve()`, so the value would have resolved to `example/stubs`, outside the fixture. | High | W08 holds a real copy of the example tree under `source/`, held to the original by `cmp` outside the corpus. |
+| W08 claimed `cmp` over the tree shows it unchanged, but the run wrote its bundle into `cwd`, inside the skill directory, and `expected.absent` resolves against the fixture root rather than `cwd`. | Medium | Both example fixtures run `-o -`, so the run publishes nothing and no `absent` declaration is needed. |
+| W08 named `artifacts/epic.md` as carrying "no criteria", which no part of it holds. | Low | The stub is described by the heading it replaces: `## Epic`, a member of the merged `artifacts` group at depth 1. |
 
 ## Links
 

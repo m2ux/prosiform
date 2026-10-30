@@ -77,7 +77,7 @@ A caller who needs a bundle built against other material than the tree holds has
 - [ ] **AC18.** A mapping key naming a document that does not exist compiles its substitute and publishes, where the same run without the mapping fails with `E_TARGET_NOT_FOUND`, as the corpus fixture `fixtures/mock/a-key-naming-an-absent-document-is-substituted` shows.
 - [ ] **AC19.** A mapping applies under `-c`, which publishes nothing and reports the substitution warning, as the corpus fixture `fixtures/mock/a-mocked-check-publishes-nothing` shows.
 - [ ] **AC20.** A mapping value carrying a parent segment reads the substitute above the working directory, and the warning names the substitute by that path, as the corpus fixture `fixtures/mock/a-substitute-above-the-working-directory-is-reachable` shows.
-- [ ] **AC21.** The example skill's modes bundle against stub artifacts supplied by a mapping and no edit to the skill tree, so `cmp` shows the tree unchanged, as the corpus fixture `fixtures/mock/an-example-mode-bundled-against-a-stub` shows.
+- [ ] **AC21.** The example skill's plan mode bundles against a stub artifact supplied by a mapping and no edit to the skill tree, with the stub standing where the real artifact's heading stood, as the corpus fixture `fixtures/mock/an-example-mode-bundled-against-a-stub` shows.
 - [ ] **AC22.** The example skill's `conventions.md` is redirected to a document naming a fake `gh`, and the bundle carries the fake as the command the agent is told to run, as the corpus fixture `fixtures/mock/an-example-skill-told-to-use-a-fake-gh` shows.
 
 ## Open Questions
