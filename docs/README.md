@@ -17,7 +17,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [Destinations](destinations.md) | How a heading is named and how each link is rewritten |
 | [Dispatch](dispatch.md) | How dispatched material becomes a bundle of its own |
 | [Bundles](bundles.md) | Derived names, publication and delivery |
-| [Checking](checking.md) | The invariants, the diagnostics and the budgets checked by [Makefile](../Makefile) |
+| [Validation](validation.md) | The invariants a bundle is held to, the diagnostics and the budgets |
 
 ## Reference
 

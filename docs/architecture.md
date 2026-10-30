@@ -63,4 +63,4 @@ The run writes its bundles into one folder of its own, named for its entry, and 
 
 Nothing is published before every bundle of the run has been built and checked. A run that fails writes nothing and reports a diagnostic on standard error, with a stable code and an exit status that says what kind of failure it was.
 
-[Checking](checking.md) covers the invariants, the diagnostics and the budgets.
+[Validation](validation.md) covers the invariants, the diagnostics and the budgets.

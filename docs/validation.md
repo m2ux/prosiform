@@ -1,4 +1,4 @@
-# Checking
+# Validation
 
 Bundling is a compile-and-check step, not a concatenation. Nothing is published until every bundle of the run has been built and every invariant holds.
 

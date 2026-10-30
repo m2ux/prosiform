@@ -76,7 +76,7 @@ The bundle is arranged in file headings and groups, its headings take destinatio
 - [Hierarchy](docs/hierarchy.md) — file headings, groups and depth
 - [Destinations](docs/destinations.md) — slugs, ordinals and rewriting
 - [Dispatch](docs/dispatch.md) — sub-sections, the Prosiform section and cycles
-- [Checking](docs/checking.md) — invariants, codes and budgets
+- [Validation](docs/validation.md) — invariants, codes and budgets
 
 ## Output
 
