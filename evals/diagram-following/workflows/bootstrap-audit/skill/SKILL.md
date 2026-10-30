@@ -1,15 +1,11 @@
 ---
 name: audit
-description: Compile the audit workflow and follow the bundle it produces.
+description: Run pf in this directory and follow the guide it prints.
 prosiform:
   root: "."
 ---
 # Audit
 
-Run this from the directory holding this skill:
+Run `pf`.
 
-```bash
-pf -o build sources/workflow.md
-```
-
-Read the bundle it writes, and follow it from its first state.
+[↳ workflow](sources/workflow.md)
