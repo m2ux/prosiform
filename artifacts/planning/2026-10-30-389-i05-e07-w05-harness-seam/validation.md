@@ -38,8 +38,31 @@ The suite drives the stub through the seam: the matrix, workspaces, isolation, b
 - the 189 harness tests;
 - the corpus of 342 fixtures, the installed-wheel smoke run, and the layout, tables, links, vocabulary, invocation, conformance, independence, steps and authoring checks, each clean.
 
+## T5 The first Cursor measurement
+
+A live run on `ba14fc42`'s predecessor, `3fa14b21`, over `dispatch-set` in both forms, one model, one repetition, under `~/projects/eval/prosiform`:
+
+| Workflow | Form | Verdict | Trace |
+| --- | --- | --- | --- |
+| `dispatch-set` | `compiled` | passed | `Survey`, `Report` |
+| `dispatch-set` | `authored` | `unfinished` | `Survey` |
+
+`dispatch-chain` was held out as unobservable: its trace names a start made inside a sub-agent, and the CLI's parent transcript reports no tool call a sub-agent made. The run recorded it in `run.json`'s `unobservable` list rather than scoring it.
+
+Four defects were found by that run and fixed in W06:
+
+- the instruction let a session log inlined section headings as states;
+- `names()` could not match a session's own wording of a section;
+- the ledger reported a reserved cap as tokens spent;
+- a nested dispatch was scored as agent failure rather than held out.
+
+## T6 The whole tree after W06
+
+`pytest evals/diagram-following` at `3fa14b21`: **192 passed**. `make check` exited 0 over the same tree.
+
 ## What this unit does not claim
 
-- **No Cursor pass rate.** The harness can start a Cursor session and read its stream, but no run has been made, so there is no pass rate for any form on that CLI. The committed baseline is Claude's and stays so until a run replaces it.
-- **Cursor's isolation is narrower than Claude's.** It declares no configuration directory, no MCP switch, no slash-command switch and no per-session spend cap, so a Cursor session shares the caller's configuration and the run's token guard is the only budget. A Cursor pass rate is comparable with Claude's only where that difference is stated beside it.
-- **The stub prints Claude's shape.** It gains a token count but not a second emitter, so the Cursor path is held by `test_harness.py` against captured shapes rather than by a stubbed run end to end. A stubbed Cursor run is the next step for confidence in the seam.
+- **No Claude pass rate since the changes.** The Claude login reached its weekly limit during this unit's first run attempt, which the runner recorded as `refused` naming the limit. No Claude session has run since the compiled-step change, so the committed baseline is stale for every dispatch cell.
+- **No Cursor baseline.** One session per cell at one repetition is a signal, not a baseline.
+- **Cursor's isolation is narrower than Claude's.** It trusts its workspace and draws no configuration boundary, so a Cursor pass rate is comparable with Claude's only where that difference is stated beside it.
+- **The stub prints one stream's shape.** `stub_agent.py` emits Claude's blocks, so the Cursor path is held by `test_harness.py` and a live run rather than by a stubbed matrix end to end.
