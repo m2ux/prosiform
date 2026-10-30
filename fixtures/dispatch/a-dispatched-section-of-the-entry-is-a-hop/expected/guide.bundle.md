@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 # Guide
 
-1. Hand the run to a sub-agent: [Run](#dispatch-run).
+1. [Run](#dispatch-run).
 
 ## Dispatch Run
 
@@ -14,7 +14,7 @@ Dispatch `guide__run.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ## Run
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. [plan](#dispatch-plan).
 
 ### Dispatch plan
 

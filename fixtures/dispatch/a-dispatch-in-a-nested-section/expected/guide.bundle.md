@@ -10,7 +10,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ### Draft
 
-1. Hand the sketch to a sub-agent: [sketch](#dispatch-sketch).
+1. [sketch](#dispatch-sketch).
 
 #### Dispatch sketch
 

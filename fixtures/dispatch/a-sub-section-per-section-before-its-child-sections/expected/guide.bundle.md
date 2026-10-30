@@ -8,7 +8,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Prepare
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. [plan](#dispatch-plan).
 
 ### Dispatch plan
 
@@ -20,7 +20,7 @@ What preparing involves.
 
 ## Revise
 
-1. Hand planning to a sub-agent again: [plan](#dispatch-plan-1).
+1. [plan](#dispatch-plan-1).
 2. Then hand review to one: [review](#dispatch-review).
 
 ### Dispatch plan

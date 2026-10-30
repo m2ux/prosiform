@@ -1,3 +1,3 @@
 # Record
 
-1. Hand the next step to a sub-agent: [⇉ publish](publish.md).
+1. [⇉ publish](publish.md).

@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 # Guide
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. [plan](#dispatch-plan).
 
 ## Dispatch plan
 
@@ -14,7 +14,7 @@ Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 # Mode
 
-1. Hand review to a sub-agent: [review](#dispatch-review).
+1. [review](#dispatch-review).
 2. Then hand planning to one: [plan](#dispatch-plan-1).
 
 ## Dispatch review

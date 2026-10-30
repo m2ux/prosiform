@@ -4,7 +4,7 @@
 
 ### Draft
 
-1. Hand the sketch to a sub-agent: [⇉ sketch](sketch.md).
+1. [⇉ sketch](sketch.md).
 
 #### Detail
 
