@@ -11,6 +11,19 @@ Two family-wide obligations:
 - **Every fixture names the clause W00 lands,** or `make conformance` refuses the declaration.
 - **Both warning codes need a fixture declaring them,** because `make conformance` reads `pf -C` and reports a code the contract declares and no manifest names as a failure.
 
+## How a fixture carries a mapping
+
+Four facts about the corpus decide the shape of every manifest here, and each was read from the checks rather than assumed.
+
+- **`arguments` is a list, one element per argv entry,** so `-m` and its `ORIGINAL=ALTERNATIVE` are two elements. The value needs no shell quoting because no shell sees it, which is why a fragment key is written `rules.md#escalation=stand-in.md` and not as a quoted word.
+- **The value's sides resolve from `invocation.cwd`,** which `runner.py` passes as the process's working directory. A substitute therefore sits inside the fixture's source tree, or above it by a parent segment.
+- **`expected.absent` resolves against the fixture directory, not `cwd`.** `compare_absent(fixture, …)` takes the fixture root, so a run publishing under `cwd` writes to `source/<name>` and the declaration reads `source/<name>`. Every `absent` declaration in this family names the `source/`-prefixed path for that reason.
+- **A fixture naming `-o -` writes nothing at all,** which is what the two example-skill fixtures do, because their source is a symbolic link to the repository's own example tree and a published file would land inside it.
+
+A fixture whose `source` is a symbolic link follows the `usage-example` family's pattern: the tree is reached rather than copied, so no fixture can drift from the material it tests.
+
+**A linked `source` cannot carry a substitute.** `execute` takes `Path.cwd().resolve()`, so a working directory reached through a symbolic link resolves to the link's target, and a `../stubs` value lands beside the target rather than beside the fixture. The two example-skill fixtures therefore hold a real copy of `example/work-planner` under `source/`, and are held to the original by `cmp` outside the corpus, as the `real-source` family already is. Every other fixture here owns a small tree and is unaffected.
+
 ## W01 — Mapping, option and identity
 
 | Fixture | Criterion | Declares |
