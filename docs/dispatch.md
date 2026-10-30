@@ -4,6 +4,22 @@ Not every link points at material for the reader of the bundle. A guide might sa
 
 Sending it anyway would pad the bundle with instructions nobody is about to follow. Leaving it out entirely would lose the procedure. A **dispatch** is the third option: the material is compiled as a bundle of its own, and the bundle that linked it says which one to hand over.
 
+## What it looks like
+
+One step of a procedure carries the mark. The run publishes two files: the entry's bundle, which names the second, and the second on its own.
+
+| Written, in `modes/review.md` | Compiled into `modes_review.bundle.md` |
+| --- | --- |
+| `## Procedure`<br><br>`1. Read the [Rules](../rules.md#tests).`<br>`2. Follow [⇉ Publish](../protocols/publish.md).` | `## Procedure`<br><br>`1. Read the [Rules](#tests).`<br>`2. Follow [Publish](#dispatch-publish).`<br><br>`### Dispatch Publish`<br><br>`Dispatch protocols_publish.bundle.md to a sub-agent, as [Dispatch](#dispatch) states.` |
+
+And beside it, `protocols_publish.bundle.md`, compiled from `protocols/publish.md` alone:
+
+| Written, in `protocols/publish.md` | Compiled into `protocols_publish.bundle.md` |
+| --- | --- |
+| `# Publish`<br><br>`## Procedure`<br><br>`1. Commit the change.`<br>`2. Push the branch.` | `# Publish`<br><br>`## Procedure`<br><br>`1. Commit the change.`<br>`2. Push the branch.` |
+
+*The bundle keeping the link is unchanged apart from the mark and the sub-section, and `Publish` is compiled as if it had been asked for on its own.*
+
 ## What a dispatch changes
 
 A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no content, no dependency through the link, no group membership. Its target is required to exist and to name the heading it names, because a sub-agent will follow it and the compilation must be able to succeed.

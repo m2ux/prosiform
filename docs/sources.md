@@ -4,6 +4,14 @@ A run's raw material is Markdown files on disk: a skill's entry point, the proce
 
 Each file is opened once, and everything the run decides about it is decided from that one reading: which of its links may be followed, which parts of it the bundle takes, and what its metadata declares.
 
+The file below declares its root and its group in leading frontmatter, then links a sibling document:
+
+| Written, in `modes/review.md` | Compiled |
+| --- | --- |
+| `---`<br>`prosiform:`<br>`  root: ".."`<br>`---`<br>`# Review Mode`<br><br>`Checks a change against the [Rules](../rules.md#tests).` | `# Review Mode`<br><br>`Checks a change against the [Rules](#tests).` |
+
+*The frontmatter is read and dropped, and the `..` in the link is resolved before it disappears.*
+
 ## Capture
 
 The run opens each distinct source once and keeps its path, bytes, hash and metadata together. Before publication it rechecks each one. A source that changed, disappeared or now resolves elsewhere fails the run, because the bytes that were validated are no longer the bytes the path names. A failed run writes nothing rather than publishing a bundle built from a file that has since moved.

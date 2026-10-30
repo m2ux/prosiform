@@ -19,13 +19,13 @@ A selection's name is its path relative to the working directory, without the Ma
 
 A run of several selections joins their names with `+`, in the order the command line first names each; equivalent references count once. The joined name names the run's folder with `.bundles` appended, and the entry's bundle with `.bundle.md` appended.
 
-```text
-pf modes/plan-mode.md 'artifacts/epic.md#delivery-findings'
+The example is a real run of a small skill: one mode that dispatches one protocol.
 
-modes_plan-mode+artifacts_epic__delivery-findings.bundles/
-  modes_plan-mode+artifacts_epic__delivery-findings.bundle.md
-  modes_sync-mode.bundle.md
-```
+| Written | On disk |
+| --- | --- |
+| **`modes/review.md`** (the entry)<br>`# Review Mode`<br><br>`## Procedure`<br><br>`1. Read the [Rules](../rules.md#tests).`<br>`2. Follow [⇉ Publish](../protocols/publish.md).`<br><br>**`protocols/publish.md`** (dispatched, no content here) | `modes_review.bundles/`<br>`  modes_review.bundle.md`<br>`  protocols_publish.bundle.md` |
+
+*The entry names the folder. The dispatched target sits beside it under its own selection's name, with no `+` in it.*
 
 Each dispatched target's bundle sits in the same folder under its own selection's name.
 

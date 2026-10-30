@@ -8,6 +8,14 @@ Guide                       ← the entry document's title
   Rules                     ← another contributing document
 ```
 
+A merged group is where this shows most: several files declaring one name share a heading, and their sections are pooled under it.
+
+| Written | Compiled |
+| --- | --- |
+| **`rules/tests.md`**<br>`---`<br>`prosiform:`<br>`  group: rules`<br>`  group-depth: 2`<br>`---`<br>`# Tests`<br><br>`## Tests`<br><br>`A change lands with a test that fails without it.`<br><br>**`rules/reviews.md`**<br>`---`<br>`prosiform:`<br>`  group: rules`<br>`  group-depth: 2`<br>`---`<br>`# Reviews`<br><br>`## Tests`<br><br>`A review lands with its findings recorded.` | `# Rules`<br><br>`## Overview`<br><br>`### Tests`<br><br>`### Reviews`<br><br>`## Tests`<br><br>`### Tests`<br><br>`A change lands with a test that fails without it.`<br><br>`### Reviews`<br><br>`A review lands with its findings recorded.` |
+
+*One heading for the group, one subsection naming each member, and the `Tests` both files declare pooled into one section split by document.*
+
 ## File headings
 
 Each contributing source becomes a **file heading**, an H1. Its text is the document's title where it has one: the document's first heading, if that is its only H1 and sits at the document level. A document with no title is headed by its path relative to the working directory, without the Markdown suffix, in title case.
@@ -18,11 +26,10 @@ There is no heading above the file headings. A root names no division.
 
 ```mermaid
 flowchart TD
-  H1["# guide &nbsp;(file heading, from the title)"]
-  H1 --> H2["## Procedure &nbsp;(source H1, shifted)"]
-  H2 --> H3["### Steps &nbsp;(source H2, shifted)"]
-  H1 --> H2b["## Rules &nbsp;(source H1, shifted)"]
-  H1 --> P["preamble &nbsp;(after the file heading)"]
+  H1["# Guide — the file heading"]
+  H1 --> H2["## Procedure — a source H1, shifted"]
+  H2 --> H3["### Steps — a source H2, shifted"]
+  H1 --> H2b["## Rules — a source H1, shifted"]
 ```
 
 *Figure 1. One File Heading per Source, with Every Source Level Shifted Down One.*

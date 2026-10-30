@@ -6,6 +6,23 @@ Prosiform chases them ahead of time. Given a document, or a section of one, it r
 
 The work of producing it is a **run**: read the files, follow the links, arrange the result, check it, write it out. This page names the parts of a run in the order they happen, and each section is the outline of a page that states one part in full.
 
+## A run, end to end
+
+A skill's entry point names one procedure. The procedure links the rules it is held to. The run is `pf SKILL.md`, and the three files become one bundle.
+
+| Written | Compiled |
+| --- | --- |
+| **`SKILL.md`**<br>`# Work Planner`<br><br>`Follow the [Review](modes/review.md) procedure.`<br><br>**`modes/review.md`**<br>`---`<br>`prosiform:`<br>`  root: ".."`<br>`---`<br>`# Review Mode`<br><br>`Checks a change against the [Rules](../rules.md#tests).`<br><br>`## Procedure`<br><br>`1. Read the [Rules](../rules.md#tests).`<br>`2. Report the findings.`<br><br>**`rules.md`**<br>`# Rules`<br><br>`## Tests`<br><br>`A change lands with a test that fails without it.` | `# Work Planner`<br><br>`Follow the [Review](#review-mode) procedure.`<br><br>`# Review Mode`<br><br>`Checks a change against the [Rules](#tests).`<br><br>`## Procedure`<br><br>`1. Read the [Rules](#tests).`<br>`2. Report the findings.`<br><br>`# Rules`<br><br>`### Tests`<br><br>`A change lands with a test that fails without it.` |
+
+*Three files, one document. Every link now points inside the bundle: at a heading, which is where a reader lands.*
+
+What changed is worth naming, because it is what the rest of these pages explain:
+
+- The entry's own text comes first, as written.
+- `modes/review.md` joined it as a whole document, headed by its title, and its `## Procedure` sits beneath that heading.
+- `rules.md` joined the same way, its `## Tests` one level lower than its author wrote it.
+- Both links were repointed from a path to a heading, so neither needs the file it used to name.
+
 ## The words on these pages
 
 Every term the contract uses has one meaning, defined once in the [glossary](glossary.md). These are the ones the rest of this page leans on.
@@ -31,7 +48,7 @@ flowchart LR
 
 ## Source
 
-The run's raw material is Markdown files on disk. Each one it opens is a **source**, read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it.
+The run's raw material is Markdown files on disk. Each one it opens is a **source**, read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it — which is why `modes/review.md` above could reach `rules.md` one directory up, and why its own frontmatter is absent from the bundle.
 
 [Sources](sources.md) covers capture, roots, frontmatter and the Markdown profile.
 
