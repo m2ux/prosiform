@@ -2886,7 +2886,7 @@ def test_a_parallel_mark_with_the_dispatch_mark_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
     assert diagnostic["reference"] == opening
-    assert "one compilation" in diagnostic["message"]
+    assert "two ways for one sub-agent" in diagnostic["message"]
 
 
 @pytest.mark.parametrize(

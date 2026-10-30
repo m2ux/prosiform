@@ -213,6 +213,14 @@ def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
     assert unmarked("⫽the rules") == "⫽the rules"
 
 
+def test_only_the_marks_that_are_operators_are_taken_off() -> None:
+    """A second mark with no space after it is text the author wrote."""
+    assert unmarked("¬ ⇉ the rules") == "the rules"
+    assert unmarked("¬ ⫽ the rules") == "the rules"
+    assert unmarked("¬ ⇉Rules") == "⇉Rules"
+    assert unmarked("¬ ⫽the reviews") == "⫽the reviews"
+
+
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
     assert inside("docs/guide.md", "other.md", "docs").path == "docs/other.md"
 

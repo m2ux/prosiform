@@ -1,0 +1,14 @@
+description = "A deferral followed by a mark with no space after it publishes the second mark as the author's text, because a mark with no space after it opens no operator and ends the run of operators a link's text opens with."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

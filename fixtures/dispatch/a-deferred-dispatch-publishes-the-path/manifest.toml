@@ -1,7 +1,7 @@
 description = "A link opening with the deferral mark and then the dispatch mark defers the material: the bundle publishes the path the later run follows, carries no sub-section for it, and compiles no second bundle, because the dispatch belongs to the run that compiles the material."
 
 clauses = [
-  "Link classification and resource handling — One operator per link",
+  "Link classification and resource handling — Operators that combine",
   "Link classification and resource handling — A deferred link's destination",
 ]
 

@@ -321,8 +321,15 @@ def unmarked(text: str) -> str:
         at += 1
     if not opens(text, at):
         return text
-    while at < len(text) and (text[at] in OPERATORS or text[at] in BLANKS):
+    # Each mark is removed only where it is an operator, meaning a space
+    # follows it. A mark with no space after it is the author's text, and
+    # ends the run of operators however many precede it.
+    while True:
         at += 1
+        while at < len(text) and text[at] in BLANKS:
+            at += 1
+        if not opens(text, at):
+            break
     return text[at:]
 
 
