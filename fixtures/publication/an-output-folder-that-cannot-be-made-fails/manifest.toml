@@ -1,0 +1,18 @@
+description = "A run whose output folder cannot be made — because a file stands where its parent must be — returns the publication status, names the folder, leaves standard output empty and writes no bundle."
+
+clauses = [
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 3",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-o", "blocked/under", "guide.md"]
+
+[expected]
+exit_status = 3
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_PUBLICATION_FAILED"
+message_contains = ["blocked"]

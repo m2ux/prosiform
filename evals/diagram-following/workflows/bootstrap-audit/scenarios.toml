@@ -1,0 +1,45 @@
+# A scenario is the inputs a run is given, the path a correct run walks, and the
+# sub-agents a correct run starts. Each input is a file under inputs/ holding
+# the value written, then a newline. A trace entry names the section a
+# sub-agent follows, in the order the walk dispatches it, what it returned, and
+# whether it started beside the entry above it.
+
+[[scenario]]
+name = "blocking-two-halves"
+path = ["Scope", "Gather", "Weigh", "Record", "Fix", "Publish"]
+inputs = { "halves.txt" = "two", "severity.txt" = "blocking", "known.txt" = "no", "fatal.txt" = "yes" }
+
+[[scenario.trace]]
+dispatch = "review#source"
+returned = "done"
+
+[[scenario.trace]]
+dispatch = "review#tests"
+returned = "done"
+together = true
+
+[[scenario.trace]]
+dispatch = "review#appraise"
+returned = "done"
+
+[[scenario.trace]]
+dispatch = "review#repair"
+returned = "done"
+
+[[scenario]]
+name = "clean-one-half"
+path = ["Scope", "Gather", "Weigh", "Record", "Publish"]
+inputs = { "halves.txt" = "one", "severity.txt" = "clean", "known.txt" = "yes", "fatal.txt" = "no" }
+
+[[scenario.trace]]
+dispatch = "review#source"
+returned = "done"
+
+[[scenario.trace]]
+dispatch = "review#tests"
+returned = "done"
+together = true
+
+[[scenario.trace]]
+dispatch = "review#appraise"
+returned = "done"

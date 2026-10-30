@@ -254,7 +254,8 @@ pf -o <folder> <destination>
 ```
 
 - `<destination>`  The link's destination as written.
-- `<folder>`  An existing working directory outside the repository.
+- `<folder>`  A working directory outside the repository. The run makes it \
+if it is not there.
 
 The run writes its bundles into `<folder>/<name>.bundles/`, where `<name>` is \
 the destination's path without its Markdown suffix, each `/` written as `_` \
@@ -442,7 +443,7 @@ def parser() -> Parser:
         dest="output",
         metavar="DIR",
         default=CURRENT_FOLDER,
-        help="existing folder the run's own folder of bundles is written into, "
+        help="folder the run's own folder of bundles is written into, made if absent, "
         "swapped in whole; default: the working directory",
     )
     grammar.add_argument(
@@ -1882,16 +1883,19 @@ def publication(
         if earlier is not one:
             raise colliding(earlier, one)
     if not folder.parent.is_dir():
-        raise Failure(
-            PUBLICATION_FAILURE,
-            Diagnostic(
-                ERROR,
-                f"the output folder {str(folder.parent)!r} is not an existing "
-                f"folder, so the run's bundles cannot be written under it",
-                code=PUBLICATION_FAILED,
-                remedy="name an existing folder the run can write",
-            ),
-        )
+        try:
+            folder.parent.mkdir(parents=True)
+        except OSError as error:
+            raise Failure(
+                PUBLICATION_FAILURE,
+                Diagnostic(
+                    ERROR,
+                    f"the output folder {str(folder.parent)!r} cannot be made, so "
+                    f"the run's bundles cannot be written under it",
+                    code=PUBLICATION_FAILED,
+                    remedy="name a folder the run can create, or one already there",
+                ),
+            ) from error
     longest = os.pathconf(folder.parent, "PC_NAME_MAX")
     for one, name in [(bundles[0], folder.name), *((one, one.name) for one in bundles)]:
         if len(os.fsencode(name)) > longest:
