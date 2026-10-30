@@ -3,10 +3,11 @@
 Each check the work item's Test row names, in execution order, with the revision it ran on and what it observed.
 
 - **Branch.** `i05/e07/w03-adversarial-classification-across-the`, cut from `i05/e07/main` at `8905b2e3`.
-- **Tested revision.** `1c2c67dc` for every check below.
+- **Tested revisions.** `1c2c67dc` for the checks below at implementation time, and the merged revision `d4da261c` when the delivery was confirmed. The merged tree is identical to the branch head `b80ec9e6`.
 - **Build under test.** `PROSIFORM_BUILD` named the worktree's locked environment's `pf`, `src/.venv/bin/pf`.
 - **No paid session ran.** Every session below starts [`stub_agent.py`](https://github.com/m2ux/prosiform/blob/1c2c67dc/evals/diagram-following/stub_agent.py) in place of the agent.
 - **No baseline written.** `baseline.json`, `report.md` and `EVAL_BUDGET_USD` are untouched.
+- **Sandbox.** `make check`'s wheel-build step resolves `hatchling` from PyPI, so it runs with full host permissions; the harness and the AC4 selections run under `scripts/sbx`.
 
 ## T1 AC4 — each departure over the whole dispatch corpus
 
@@ -54,6 +55,17 @@ The matrix's value is that it fails when a check fires for the wrong reason, not
 - the corpus, the installed-wheel smoke run, layout, tables, links, vocabulary, invocation, conformance, independence, steps and authoring checks, each clean.
 
 `make harness` alone: 947 passed in 30.56 s. `ruff check`, `ruff format --check` and `mypy` over `evals`: all clean.
+
+## T6 The merged revision
+
+Re-run on the merged revision `d4da261c`, the commit the epic base carries, with the worktree checked out there.
+
+| Command | Result |
+| --- | --- |
+| `uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . evals/diagram-following/test_run.py -k "departure_is_classified or clean_run_passes_every_dispatch_cell or departure_table_names"` | 6 passed, 42 deselected, in 3.89 s — the four matrix tests, the clean run and the table check. |
+| `make check` | Exit 0. `All checks passed!`, 1302 unit tests passed in 42.61 s, 947 harness tests passed in 31.63 s, and every corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence, steps and authoring check clean. |
+
+The merged tree is `fb1129602a8080b54aaf688e7cfe8655478495db`, identical to the branch head `b80ec9e6`, so the merged content is the tested content.
 
 ## What this unit does not claim
 
