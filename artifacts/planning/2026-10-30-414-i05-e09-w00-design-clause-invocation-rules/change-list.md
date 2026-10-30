@@ -12,6 +12,7 @@ Every plan change this session applied, and every one it held, under the allowan
 | Folded work | [W00 work item](../2026-10-30-414-i05-e09-mock-substitution/w00.md) | The two-pull-request bullet names the epic base rather than `main` as where the pin, the rule and the entries land, matching the delivery branches this epic's rows use. |
 | Folded work | [W00 work item](../2026-10-30-414-i05-e09-mock-substitution/w00.md) | The test row adds `make check` on the branch head and a temporary declaration naming the clause, so the row's evidence shows the report reading the clause from the pin rather than from a branch the clause was written on. |
 | Folded work | Epic [#414](https://github.com/m2ux/prosiform/issues/414) | Row `W00` now links pull request [#425](https://github.com/m2ux/prosiform/pull/425) and is ticked done, with `AC16` and `AC17` ticked. |
+| Folded work | Epic [#414](https://github.com/m2ux/prosiform/issues/414) | The clause's wording corrected the four refusals from "a key naming no document" to "a key carrying no document", admitted an absent key, and stated that the mapping applies under `-c`, as [#427](https://github.com/m2ux/prosiform/pull/427) records. The row keeps its link to #425, because the fix belongs to the delivery that row names and a second link on one row is a second delivery. |
 
 ## Held
 
