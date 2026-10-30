@@ -16,6 +16,10 @@ workflow it leads you to to completion, starting at its first state.
   line to trace.log in this directory. Append only a state the workflow's
   diagram draws as a node: a section heading, a dispatched sub-agent's
   section, or any other name the entry document carries is not a state.
+- When a state hands you a bundle to follow as a dispatched sub-agent, your
+  own states go to trace-<section>.log instead, named for the section you
+  were handed: the workflow you were dispatched is a workflow of its own, and
+  the session that dispatched you records its own path in trace.log.
 - In each state, do the action its section states, then choose the next
   state as its section says.
 - The files under inputs/ are what the workflow's decisions read. Do not

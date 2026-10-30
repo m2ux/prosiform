@@ -17,6 +17,7 @@ from pathlib import Path
 import pytest
 from workflow import (
     AUTHORED_FORM,
+    BOOTSTRAP,
     COMPILED_FORM,
     COMPILED_STEP,
     DIAGRAM,
@@ -25,6 +26,7 @@ from workflow import (
     ENTRY_BUNDLE,
     FORMS,
     LINKED_FORM,
+    MARKED_FORMS,
     PROSE,
     STATES,
     STEP_ONE,
@@ -81,7 +83,7 @@ def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
         for path in bundled_written
         if path != output / ENTRY_BUNDLE
     }
-    if form == COMPILED_FORM:
+    if form in MARKED_FORMS:
         targets = {
             target.partition("#")[0].split("/")[-1]
             for section in workflow.sections[form].values()
@@ -178,6 +180,39 @@ def step_faults(workflow: Workflow, form: str) -> list[str]:
     return faults
 
 
+def condition_faults(workflow: Workflow) -> list[str]:
+    """How a diagram's conditions fall short of the sections they name.
+
+    A decision's edges reach conditions, each condition is clicked to a
+    section, and that section states exactly one criterion. A state carries no
+    transition of its own, since the diagram is the only statement of routing.
+    """
+    diagram = workflow.diagram
+    faults = []
+    for state in sorted(diagram.states):
+        for form in workflow.forms:
+            if state in workflow.sections.get(form, {}) and (
+                workflow.sections[form][state].transition is not None
+            ):
+                faults.append(f"{state}: the {form} section states its own routing")
+    for decision in sorted(diagram.decisions):
+        escapes = diagram.leaving(decision)
+        if not escapes:
+            faults.append(f"{decision}: the decision reaches no condition")
+        for escape in escapes:
+            if escape.target not in diagram.conditions:
+                faults.append(
+                    f"{decision}: it reaches {escape.target}, not a condition"
+                )
+    for condition in sorted(diagram.conditions):
+        onward = diagram.leaving(condition)
+        if len(onward) != 1:
+            faults.append(f"{condition}: it reaches {len(onward)} states, not one")
+        if condition not in workflow.conditions:
+            faults.append(f"{condition}: no section states its criterion")
+    return faults
+
+
 def transition_faults(workflow: Workflow) -> list[str]:
     """How a section's transition or a click disagrees with the diagram.
 
@@ -188,6 +223,8 @@ def transition_faults(workflow: Workflow) -> list[str]:
     """
     diagram = workflow.diagram
     faults = []
+    if diagram.decisions:
+        return condition_faults(workflow)
     for form in workflow.forms:
         for state in sorted(diagram.states & set(workflow.sections[form])):
             leaving = diagram.leaving(state)
@@ -229,6 +266,20 @@ def transition_faults(workflow: Workflow) -> list[str]:
     return faults
 
 
+def reached(workflow: Workflow, state: str) -> set[str]:
+    """Every state one state's edges may enter, through a decision or alone."""
+    found: set[str] = set()
+    for edge in workflow.diagram.leaving(state):
+        if edge.target in workflow.diagram.decisions:
+            for escape in workflow.diagram.leaving(edge.target):
+                found |= {
+                    onward.target for onward in workflow.diagram.leaving(escape.target)
+                }
+        else:
+            found.add(edge.target)
+    return found
+
+
 def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
     """How a scenario's path or trace fails to be what its sources state."""
     diagram = workflow.diagram
@@ -236,10 +287,13 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
     faults = []
     if not path or path[0] != diagram.start:
         faults.append(f"{scenario.name}: the path does not open at {diagram.start}")
-    edges = {(edge.source, edge.target) for edge in diagram.edges}
+    # A state reaches the next state through a decision and a condition, so a
+    # step is held to the states a path reaches, not to one drawn edge.
     for step in zip(path, path[1:], strict=False):
-        if step not in edges:
-            faults.append(f"{scenario.name}: the diagram draws no edge {step}")
+        if step[1] not in reached(workflow, step[0]):
+            faults.append(
+                f"{scenario.name}: the diagram reaches no {step[1]} from {step[0]}"
+            )
     if path and path[-1] not in diagram.terminals:
         faults.append(f"{scenario.name}: the path ends at {path[-1]}, not terminal")
     read = inputs_read(workflow, workflow.forms[0])
@@ -250,14 +304,17 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
         walked = walk(workflow, form, scenario.inputs)
         if walked != path:
             faults.append(f"{scenario.name}: the {form} sections lead {walked}")
-    if COMPILED_FORM not in workflow.forms:
+    dispatching = [
+        form for form in (*DISPATCH_FORMS, BOOTSTRAP) if form in workflow.forms
+    ]
+    if not dispatching:
         if scenario.trace:
             faults.append(f"{scenario.name}: a form that dispatches names a trace")
         return faults
     if not scenario.trace:
         faults.append(f"{scenario.name}: it names no dispatch trace")
         return faults
-    for form in DISPATCH_FORMS:
+    for form in dispatching:
         stated = dispatch_walk(workflow, form, scenario.inputs)
         named = tuple((entry.section, entry.together) for entry in scenario.trace)
         if named != stated:
@@ -665,7 +722,7 @@ def test_a_scenario_path_with_a_step_the_diagram_does_not_draw_is_a_fault(
         '"Draft", "Publish"',
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
-    assert "no-rework: the diagram draws no edge ('Draft', 'Publish')" in faults
+    assert "no-rework: the diagram reaches no Publish from Draft" in faults
 
 
 def test_a_scenario_path_its_inputs_do_not_lead_through_is_a_fault(

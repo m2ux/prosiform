@@ -62,7 +62,7 @@ import re
 import shutil
 import subprocess
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -96,6 +96,12 @@ A bootstrap form's tree is its skill, which carries the documents it names.
 
 A bootstrap form's documents sit beside its skill, so the workflow is read
 from them while the skill that names them sits apart.
+"""
+MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
+"""The forms whose dispatch steps are written as marked links and no prose.
+
+A bootstrap skill's documents are the ones its compiled bundle carries, so a
+step states its dispatch by its marks there as it does in the compiled form.
 """
 SHELL_FORMS = (BOOTSTRAP,)
 """The forms a session runs a command to read, which no other form needs."""
@@ -139,8 +145,22 @@ RETURNED_QUESTION = "question"
 RETURNED = (RETURNED_DONE, RETURNED_QUESTION)
 
 FENCE = re.compile(r"^```(\w*)\n(.*?)^```", re.MULTILINE | re.DOTALL)
-NODE = r"(\w+)(?:\(+[^)]*\)+)?"
+NODE = r"(\w+)(?:(?:\(+[^)]*\)+)|(?:\{[^}]*\})|(?:\[[^\]]*\]))?"
 EDGE = re.compile(rf"^\s*{NODE}\s*-->\s*(?:\|([^|]*)\|\s*)?{NODE}\s*$")
+SHAPE = re.compile(
+    r"""^(\w+)(?:(?:\(+(?P<round>.+?)\)+)"""
+    r"""|(?:\{(?:["']?)(?P<diamond>.+?)(?:["']?)\})"""
+    r"""|(?:\[(?:["']?)(?P<box>.+?)(?:["']?)\]))?$"""
+)
+"""A node's name and its shape.
+
+A diamond is a decision, a rectangle a state, and a rounded node a marker, so
+the shape alone states which kind a node is.
+"""
+ROUND = 1
+DIAMOND = 3
+BOX = 2
+"""The shape each bracket pair states: a marker, a decision and a state."""
 CLICK = re.compile(r'^\s*click\s+(\w+)\s+(?:href\s+)?"([^"]*)"')
 HEADING = re.compile(r"^# (\w+)\n")
 NEXT = "**Next.** "
@@ -242,6 +262,18 @@ class Edge:
     label: str | None
 
 
+QUESTION = "?"
+"""What a condition's name ends with, telling it from a state."""
+"""The name a transition node takes: lower case, so it reads as an edge.
+
+A diagram may draw a labelled transition as a node of its own between the two
+states it joins — `Gather -->|two halves| Weigh` drawn as
+`Gather --> two-halves --> Weigh` — and click that node to the section stating
+when the transition applies. The node's name is lower case and hyphenated, so
+a state, which is capitalised, is told apart from it.
+"""
+
+
 @dataclass(frozen=True)
 class Diagram:
     """The workflow the diagram form draws."""
@@ -250,17 +282,70 @@ class Diagram:
     edges: tuple[Edge, ...]
     terminals: frozenset[str]
     clicks: dict[str, str]
+    shapes: dict[str, int] = field(default_factory=dict)
+    """Each node's shape, as the group `SHAPE` captures its label in."""
+    labels: dict[str, str] = field(default_factory=dict)
+    """Each node's label, which states whether it is a condition."""
+
+    @property
+    def transitions(self) -> frozenset[str]:
+        """The nodes stating when an edge applies: a decision's escapes.
+
+        A decision is a diamond, and each edge out of it reaches a condition
+        whose name ends `?`, whose section states the criterion for that
+        escape. The condition is what a run reads, so the two together are the
+        routing the diagram states.
+        """
+        return frozenset(
+            name
+            for name in self.conditions
+            if any(edge.source == name for edge in self.edges)
+        )
+
+    @property
+    def conditions(self) -> frozenset[str]:
+        """Every node a decision points at, its escape criterion.
+
+        A decision asks its question, and each edge out of it reaches a
+        condition whose section states when that escape applies. The
+        condition is a plain box: the question mark belongs to the diamond,
+        and the box states a condition that is true for the path it begets.
+        """
+        escapes: set[str] = set()
+        for decision in self.decisions:
+            escapes |= {edge.target for edge in self.leaving(decision)}
+        return frozenset(
+            name
+            for name in escapes
+            if name not in {START, STOP} and self.shapes.get(name) != DIAMOND
+        )
+
+    @property
+    def decisions(self) -> frozenset[str]:
+        """Every node the diagram draws as a diamond, asking what it weighs."""
+        return frozenset(node for node in self.shapes if self.shapes[node] == DIAMOND)
+
+    def through(self, node: str) -> bool:
+        """Whether a node joins one state to another, one hop either side."""
+        return any(edge.target == node for edge in self.edges) and any(
+            edge.source == node for edge in self.edges
+        )
 
     @property
     def states(self) -> frozenset[str]:
-        """Every node of the diagram except the start and stop markers."""
+        """Every state of the diagram, its decisions and conditions excepted."""
         nodes = {edge.source for edge in self.edges} | {
             edge.target for edge in self.edges
         }
-        return frozenset(nodes - {START, STOP})
+        return frozenset(nodes - {START, STOP} - self.transitions - self.decisions)
 
     def leaving(self, state: str) -> tuple[Edge, ...]:
-        """The edges out of one state, the edge to the stop marker excepted."""
+        """The edges out of one node, the edge to the stop marker excepted.
+
+        A decision's edges reach its conditions, and each condition's own edge
+        reaches the state its escape enters, so the diagram's edges are read as
+        drawn and the walker follows them node by node.
+        """
         return tuple(
             edge for edge in self.edges if edge.source == state and edge.target != STOP
         )
@@ -334,6 +419,14 @@ class Workflow:
     diagram: Diagram
     sections: dict[str, dict[str, Section]]
     scenarios: tuple[Scenario, ...]
+    transitions: dict[str, Transition] = field(default_factory=dict)
+    """Each condition's criterion, for a workflow that draws its decisions."""
+
+    conditions: dict[str, Transition] = field(default_factory=dict)
+    """Each condition's criterion, keyed by its node's name."""
+
+    nested: tuple[str, ...] = ()
+    """Each criterion a nested chart states, read from the section holding it."""
 
     def form(self, form: str) -> Path:
         """The directory holding one form's source tree.
@@ -375,21 +468,57 @@ def mermaid(entry: Path) -> str:
     return blocks[0]
 
 
+def node_shape(text: str) -> tuple[str, int, str]:
+    """One node's name, the shape its brackets state, and its label.
+
+    Round brackets are a marker, braces a diamond and square brackets a
+    rectangle, which is what Mermaid draws for each.
+    """
+    if not (found := SHAPE.match(text.strip())):
+        raise CorpusError(f"no node reads as {text!r}")
+    name = found.group(1)
+    groups = found.groupdict()
+    if groups["round"] is not None:
+        return name, ROUND, groups["round"]
+    if groups["diamond"] is not None:
+        return name, DIAMOND, groups["diamond"]
+    return name, BOX, groups["box"] or ""
+
+
 def read_diagram(entry: Path) -> Diagram:
-    """The diagram's edges, start state, terminal states and clicks."""
+    """The diagram's edges, start state, terminal states, clicks and shapes."""
+    return read_diagram_text(mermaid(entry), entry.parent, str(entry))
+
+
+def shapes_nodes(edges: list[Edge]) -> set[str]:
+    """The nodes an edge leaves, so the one nothing leaves is the entry."""
+    return {edge.source for edge in edges}
+
+
+def read_diagram_text(
+    body: str, directory: Path | None = None, named: str = ""
+) -> Diagram:
+    """One diagram read from its own text, which is a nested chart's form."""
     edges: list[Edge] = []
     clicks: dict[str, str] = {}
-    for line in mermaid(entry).splitlines():
+    shapes: dict[str, int] = {}
+    labels: dict[str, str] = {}
+    NODE_SHAPE = re.compile(rf"{NODE}")
+    for line in body.splitlines():
         if edge := EDGE.match(line):
-            source, label, target = edge.groups()
+            source, label, target = edge.group(1), edge.group(2), edge.group(3)
             edges.append(Edge(source, target, label))
+            for match in NODE_SHAPE.finditer(line):
+                name, shape, stated = node_shape(match.group(0))
+                shapes.setdefault(name, shape)
+                labels.setdefault(name, stated)
         elif click := CLICK.match(line):
             clicks[click.group(1)] = click.group(2)
     starts = [edge.target for edge in edges if edge.source == START]
     if len(starts) != 1:
-        raise CorpusError(f"{entry}: {START} points at {len(starts)} states, not one")
+        raise CorpusError(f"{named}: {START} points at {len(starts)} states, not one")
     terminals = frozenset(edge.source for edge in edges if edge.target == STOP)
-    return Diagram(starts[0], tuple(edges), terminals, clicks)
+    return Diagram(starts[0], tuple(edges), terminals, clicks, shapes, labels)
 
 
 def labelled_rule(directory: Path, destination: str) -> str:
@@ -440,6 +569,45 @@ def parse_transition(
     raise CorpusError(f"no {form} transition reads as {text!r}")
 
 
+CONDITION = re.compile(r"^`inputs/([^`]+)` reads `([^`]*)`\.$", re.MULTILINE)
+FEWER_CONDITION = re.compile(
+    r"^`trace\.log` holds the line `(\w+)` fewer times than the number in "
+    r"`inputs/([^`]+)`\.$",
+    re.MULTILINE,
+)
+"""A transition section's statement of when its edge applies.
+
+A transition drawn as a node is clicked to a section holding one condition and
+nothing else, so the condition reads as a sentence about the inputs rather
+than as half of a sentence naming two labels.
+"""
+
+
+def read_condition(path: Path) -> Transition:
+    """One transition section's condition, and the edge it takes.
+
+    The section states when its transition applies, and the node it is clicked
+    from names the edge: a section naming no condition is the one edge out of
+    its state, taken though the diagram draws it as a transition node.
+    """
+    text = path.read_text()
+    body = HEADING.sub("", text, count=1).strip()
+    if not body:
+        return Transition(None, None, None)
+    if reads := CONDITION.search(body):
+        name, value = reads.groups()
+        return Transition(f"`inputs/{name}` reads `{value}`", None, None)
+    if fewer := FEWER_CONDITION.search(body):
+        state, name = fewer.groups()
+        return Transition(
+            f"`trace.log` holds the line `{state}` fewer times than the number "
+            f"in `inputs/{name}`",
+            None,
+            None,
+        )
+    raise CorpusError(f"{path} states no condition, and no absence of one")
+
+
 def read_section(form: str, path: Path, directory: Path) -> Section:
     """One state's document, split into its shared body and its transition."""
     text = path.read_text()
@@ -448,7 +616,7 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
         raise CorpusError(f"{path} opens with no state heading")
     body, marker, transition = text.rpartition(f"\n{NEXT}")
     if not marker:
-        raise CorpusError(f"{path} carries no {NEXT.strip()} paragraph")
+        body, transition = text, ""
     actions = ACTION.findall(body)
     if len(actions) != 1:
         raise CorpusError(f"{path} states {len(actions)} actions, not one")
@@ -457,8 +625,34 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
         path,
         body,
         actions[0],
-        parse_transition(form, transition.strip(), path.parent),
+        parse_transition(form, transition.strip(), path.parent) if marker else None,
     )
+
+
+def read_conditions(
+    diagram: Diagram, clicks: dict[str, str], root: Path
+) -> dict[str, Transition]:
+    """Each condition's criterion, read from the section it clicks.
+
+    A decision weighs something and each of its escapes is a condition whose
+    name ends `?`, clicked to the section stating when that escape applies.
+    The condition is read, not the decision: the diagram states what is
+    decided and the section states the criterion that decides it.
+    """
+    found: dict[str, Transition] = {}
+    for node in sorted(diagram.conditions):
+        destination = clicks.get(node)
+        if destination is None:
+            raise CorpusError(f"{node} is a condition naming no section")
+        document = destination.partition("#")[0] or f"{node}.md"
+        written = (root / document).resolve()
+        if not written.is_file():
+            raise CorpusError(f"{node} clicks {destination!r}, which names no document")
+        transition = read_condition(written)
+        if transition.condition is None:
+            raise CorpusError(f"{written} states no criterion for {node}")
+        found[node] = Transition(transition.condition, node, None)
+    return found
 
 
 def read_sections(form_directory: Path, form: str) -> dict[str, Section]:
@@ -514,17 +708,23 @@ def read_workflow(directory: Path) -> Workflow:
             if (directory / FORM_DIR[form] / ENTRY).is_file()
         )
     )
-    return Workflow(
+    diagram = read_diagram(drawn)
+    drawn_root = drawn.parent
+    workflow = Workflow(
         directory.name,
         directory,
-        read_diagram(drawn),
+        diagram,
         {
             form: read_sections(form_directory(directory, form), TRANSITION[form])
             for form in FORMS
             if form_directory(directory, form).is_dir()
         },
         read_scenarios(directory / SCENARIOS),
+        conditions=read_conditions(diagram, diagram.clicks, drawn_root)
+        if diagram.conditions
+        else {},
     )
+    return replace(workflow, nested=nested_conditions(workflow, drawn_root))
 
 
 def workflows(root: Path = WORKFLOWS) -> list[Workflow]:
@@ -611,7 +811,7 @@ def dispatched(
     """
     steps: list[tuple[bool, list[str]]] = []
     for line in body.splitlines():
-        if form == COMPILED_FORM:
+        if form in MARKED_FORMS:
             if COMPILED_STEP.match(line) is None:
                 continue
             named = LINK_TARGET.findall(line)
@@ -649,6 +849,53 @@ def dispatched(
             raise CorpusError(f"a set states one target: {line!r}")
         steps.append((together, targets))
     return steps
+
+
+def nested_inputs(workflow: Workflow) -> set[str]:
+    """The inputs a workflow's nested charts read, beside its own.
+
+    A dispatched section may carry a chart of its own, whose conditions read
+    inputs as the outer ones do. Those files are the run's too, so a scenario
+    states them beside the outer workflow's.
+    """
+    found: set[str] = set()
+    for condition in workflow.nested:
+        found.add(input_read(condition))
+    return found
+
+
+def nested_conditions(workflow: Workflow, root: Path) -> tuple[str, ...]:
+    """Every criterion a nested chart states, from the sections it clicks.
+
+    A dispatched section's body may draw a workflow of its own, with the same
+    diamonds and `?` conditions the outer diagram uses. Its conditions are read
+    as the outer ones are: each hovered node clicks a document stating one
+    criterion, resolved from the section that writes the chart.
+    """
+    found: list[str] = []
+    entry = root / ENTRY
+    for document in sorted(root.rglob("*.md")):
+        if document == entry:
+            continue
+        text = document.read_text(errors="replace")
+        for kind, body in FENCE.findall(text):
+            if kind != "mermaid" or "flowchart" not in body:
+                continue
+            try:
+                drawn = read_diagram_text(body, document.parent, str(document))
+            except CorpusError:
+                continue
+            for condition in sorted(drawn.conditions):
+                destination = drawn.clicks.get(condition)
+                if destination is None:
+                    continue
+                written = document.parent / destination.partition("#")[0]
+                if not written.is_file():
+                    continue
+                statement = read_condition(written)
+                if statement.condition is not None:
+                    found.append(statement.condition)
+    return tuple(found)
 
 
 def dispatch_walk(
@@ -710,6 +957,13 @@ def inputs_read(workflow: Workflow, form: str) -> set[str]:
     those sentences a form uses, so a form this workflow does not hold is
     read from the one writing the same sentences.
     """
+    if workflow.conditions:
+        found = {
+            input_read(condition.condition)
+            for condition in workflow.conditions.values()
+            if condition.condition is not None
+        }
+        return found | nested_inputs(workflow)
     written = form if form in workflow.sections else TRANSITION[form]
     return {
         input_read(section.transition.condition)
@@ -727,6 +981,8 @@ def successor(
     workflow: Workflow, form: str, state: str, inputs: dict[str, str], trace: list[str]
 ) -> str | None:
     """The state one form's section for a state says comes next, if any."""
+    if workflow.diagram.decisions:
+        return drawn_successor(workflow, state, inputs, trace)
     transition = sections_of(workflow, form)[state].transition
     if transition is None:
         return None
@@ -744,6 +1000,32 @@ def successor(
             f"{workflow.name}: {state} has {len(targets)} edges labelled {chosen!r}"
         )
     return targets[0]
+
+
+def drawn_successor(
+    workflow: Workflow, state: str, inputs: dict[str, str], trace: list[str]
+) -> str | None:
+    """The state the diagram's conditions choose out of one state.
+
+    A state's edge goes to a decision, a decision's edges go to its conditions,
+    and each condition states the criterion for its escape. The condition whose
+    criterion holds decides, and its own edge names the state reached. A state
+    whose edge reaches no decision takes that edge.
+    """
+    edges = workflow.diagram.leaving(state)
+    if not edges:
+        return None
+    for edge in edges:
+        if edge.target not in workflow.diagram.decisions:
+            return edge.target
+        for escape in workflow.diagram.leaving(edge.target):
+            condition = workflow.conditions.get(escape.target)
+            if condition is None:
+                return escape.target
+            if holds(condition.condition or "", inputs, trace):
+                reached = workflow.diagram.leaving(escape.target)
+                return reached[0].target if reached else None
+    raise CorpusError(f"{workflow.name}: no condition out of {state} holds")
 
 
 def walk(workflow: Workflow, form: str, inputs: dict[str, str]) -> tuple[str, ...]:

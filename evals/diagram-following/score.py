@@ -266,6 +266,11 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
     dispatch the scenario states happened, in its order, each together or
     returning as the scenario says.
 
+    A set states no order among its members: the scenario lists them in the
+    order it reads them, and a run may start them in any order so long as they
+    start together. Only the sets and the single dispatches are ordered
+    against each other.
+
     The three checks are read over the whole record in order, so a record
     failing two takes the earlier one: a missing dispatch is `undispatched`
     whatever the starts before it returned.
@@ -273,20 +278,56 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
     expected = scenario.trace
     if not expected:
         return None
-    found = iter(starts)
+    taken: set[int] = set()
     matched: list[tuple[Start, Dispatch]] = []
-    for due in expected:
-        match = next(
-            (start for start in found if names(start.target, due.section)), None
-        )
-        if match is None:
-            return Failure.UNDISPATCHED
-        matched.append((match, due))
-    if any(due.together and not start.together for start, due in matched):
-        return Failure.SEQUENTIAL_SET
+    cursor = 0
+    for unit in units(expected):
+        found: list[tuple[int, Start, Dispatch]] = []
+        for due in unit:
+            index = next(
+                (
+                    position
+                    for position in range(cursor, len(starts))
+                    if position not in taken
+                    and names(starts[position].target, due.section)
+                ),
+                None,
+            )
+            if index is None:
+                return Failure.UNDISPATCHED
+            found.append((index, starts[index], due))
+        matched.extend((start, due) for _, start, due in found)
+        cursor = max(index for index, _, _ in found) + 1
+        for index, _, _ in found:
+            taken.add(index)
+        if len(found) > 1:
+            # A set states no order, so its opener is whichever start came
+            # first: every member but one started beside another, and any
+            # second opener means the set was run one after another.
+            openers = [start for _, start, _ in found if not start.together]
+            if len(openers) != 1:
+                return Failure.SEQUENTIAL_SET
+        elif any(due.together for _, _, due in found):
+            return Failure.SEQUENTIAL_SET
     if any(start.returned != due.returned for start, due in matched):
         return Failure.UNRELAYED_QUESTION
     return None
+
+
+def units(expected: tuple[Dispatch, ...]) -> list[list[Dispatch]]:
+    """The dispatches a scenario states, a set gathered as one unit.
+
+    A dispatch marked `together` belongs to the set opened by the dispatch
+    above it, and a set states no order among its members, so the unit is
+    matched as a whole rather than in the order the scenario lists it.
+    """
+    found: list[list[Dispatch]] = []
+    for due in expected:
+        if due.together and found:
+            found[-1].append(due)
+        else:
+            found.append([due])
+    return found
 
 
 def score(

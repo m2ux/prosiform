@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Run pf in this directory and follow the guide it prints.
+description: Audit a change, gathering evidence in parallel and reporting a verdict.
 prosiform:
   root: "."
 ---
