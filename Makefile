@@ -68,7 +68,7 @@ EVAL_BUDGET_USD := 100
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render eval-diagrams
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render examples eval-diagrams
 
 check: lock-check lint format-check typecheck test harness authoring corpus smoke layout tables links vocabulary invocation conformance independence steps
 
@@ -125,6 +125,9 @@ authoring:
 
 render:
 	python3 checks/render.py
+
+examples:
+	$(UV_RUN) python scripts/render-example.py --build 'uv run --project $(CURDIR)/src --frozen pf'
 
 eval-diagrams:
 	$(UV_RUN) python evals/diagram-following/run.py --budget-usd $(EVAL_BUDGET_USD) $(ARGS)

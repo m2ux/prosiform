@@ -8,11 +8,9 @@ So the run names every heading in the bundle, and repoints each link at the name
 
 A destination is a fragment of the bundle, not of its source, so it is assigned over the whole bundle rather than per file. One section whose heading text is unique in the bundle needs no qualification, and a reference from one file heading to another is spelled like a reference within one.
 
-Two documents with the same heading text make the point, because the second has to be told apart from the first:
+Two documents with the same heading text make the point, because the second has to be told apart from the first.
 
-| Written | Compiled |
-| --- | --- |
-| **`SKILL.md`**<br>`# Entry`<br><br>`Read the [first procedure](a/guide.md#procedure) and the [second](b/guide.md#procedure).`<br><br>**`a/guide.md`**<br>`# Guide`<br><br>`## Procedure`<br><br>`Start here.`<br><br>**`b/guide.md`**<br>`# Guide`<br><br>`## Procedure`<br><br>`Start here too.` | `# Entry`<br><br>`Read the [first procedure](#procedure) and the [second](#procedure-1).`<br><br>`# Guide`<br><br>`### Procedure`<br><br>`Start here.`<br><br>`# Guide`<br><br>`### Procedure`<br><br>`Start here too.` |
+![SKILL.md, a/guide.md and b/guide.md on the left. On the right, the bundle: Entry linking to #procedure and #procedure-1, then two Guide headings each with a Procedure section.](images/destinations.svg)
 
 *Both links still reach the section they named. The second took the ordinal `1`, so it no longer collides with the first, and the run warned that two file headings read alike.*
 

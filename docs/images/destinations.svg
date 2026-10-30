@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="668" viewBox="0 0 2142 668" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="668" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="314" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
+<path d="M32 134 H1032" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">tmp8x8u_l0x/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">├─ a/</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">│  └─ guide.md</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">└─ b/</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">   └─ guide.md</text><rect x="32" y="416" width="1000" height="187" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="452" font-size="21" fill="#b1c6df" font-weight="400">SKILL.md</text>
+<path d="M32 470 H1032" stroke="#303b49"/>
+<text x="44" y="537" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="537" font-size="30" fill="#e6edf3" font-weight="500">Entry</text>
+<text x="70" y="585" font-size="20" fill="#58a6ff" font-weight="400">Read the first procedure and the second.</text><rect x="32" y="625" width="1000" height="241" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="661" font-size="21" fill="#b1c6df" font-weight="400">a/guide.md</text>
+<path d="M32 679 H1032" stroke="#303b49"/>
+<text x="44" y="746" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="746" font-size="30" fill="#e6edf3" font-weight="500">Guide</text>
+<text x="44" y="800" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="800" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="848" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text><rect x="32" y="888" width="1000" height="241" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="924" font-size="21" fill="#b1c6df" font-weight="400">b/guide.md</text>
+<path d="M32 942 H1032" stroke="#303b49"/>
+<text x="44" y="1009" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="1009" font-size="30" fill="#e6edf3" font-weight="500">Guide</text>
+<text x="44" y="1063" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1063" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="1111" font-size="20" fill="#e6edf3" font-weight="400">Start here too.</text><rect x="1110" y="80" width="1000" height="501" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">SKILL.bundles/SKILL.bundle.md</text>
+<path d="M1110 134 H2110" stroke="#303b49"/>
+<text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">Entry</text>
+<text x="1148" y="249" font-size="20" fill="#58a6ff" font-weight="400">Read the first procedure and the second.</text>
+<text x="1122" y="307" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="307" font-size="30" fill="#e6edf3" font-weight="500">Guide</text>
+<text x="1122" y="358" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="358" font-size="23" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="406" font-size="20" fill="#e6edf3" font-weight="400">Start here.</text>
+<text x="1122" y="464" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="464" font-size="30" fill="#e6edf3" font-weight="500">Guide</text>
+<text x="1122" y="515" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="515" font-size="23" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="563" font-size="20" fill="#e6edf3" font-weight="400">Start here too.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

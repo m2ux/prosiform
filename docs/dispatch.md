@@ -6,19 +6,13 @@ Sending it anyway would pad the bundle with instructions nobody is about to foll
 
 ## What it looks like
 
-One step of a procedure carries the mark. The run publishes two files: the entry's bundle, which names the second, and the second on its own.
+One step of a procedure carries the mark. The run opens three files, and publishes two bundles: the entry's, which names the second, and the second on its own.
 
-| Written, in `modes/review.md` | Compiled into `modes_review.bundle.md` |
-| --- | --- |
-| `## Procedure`<br><br>`1. Read the [Rules](../rules.md#tests).`<br>`2. Follow [⇉ Publish](../protocols/publish.md).` | `## Procedure`<br><br>`1. Read the [Rules](#tests).`<br>`2. Follow [Publish](#dispatch-publish).`<br><br>`### Dispatch Publish`<br><br>`Dispatch protocols_publish.bundle.md to a sub-agent, as [Dispatch](#dispatch) states.` |
+![The three source files on the left — modes/review.md, rules.md and protocols/publish.md — and on the right the two bundles the run wrote. modes_review.bundle.md opens with the Prosiform section and the Dispatch protocol, then Review Mode with its procedure, the dispatch sub-section naming protocols_publish.bundle.md, and the Tests section of rules.md. protocols_publish.bundle.md holds Publish alone.](images/dispatch.svg)
 
-And beside it, `protocols_publish.bundle.md`, compiled from `protocols/publish.md` alone:
+*Every panel is the build's own output: the left column is what the run read, the right what it wrote.*
 
-| Written, in `protocols/publish.md` | Compiled into `protocols_publish.bundle.md` |
-| --- | --- |
-| `# Publish`<br><br>`## Procedure`<br><br>`1. Commit the change.`<br>`2. Push the branch.` | `# Publish`<br><br>`## Procedure`<br><br>`1. Commit the change.`<br>`2. Push the branch.` |
-
-*The bundle keeping the link is unchanged apart from the mark and the sub-section, and `Publish` is compiled as if it had been asked for on its own.*
+The entry's bundle keeps the link and drops the mark; `Publish` is compiled as if it had been asked for on its own.
 
 That `#dispatch` needs a target, and the protocol it names is the bundle's first section. Every bundle that dispatches opens with it, in wording the profile fixes:
 

@@ -10,9 +10,7 @@ Guide                       ← the entry document's title
 
 A merged group is where this shows most: several files declaring one name share a heading, and their sections are pooled under it.
 
-| Written | Compiled |
-| --- | --- |
-| **`rules/tests.md`**<br>`---`<br>`prosiform:`<br>`  group: rules`<br>`  group-depth: 2`<br>`---`<br>`# Tests`<br><br>`## Tests`<br><br>`A change lands with a test that fails without it.`<br><br>**`rules/reviews.md`**<br>`---`<br>`prosiform:`<br>`  group: rules`<br>`  group-depth: 2`<br>`---`<br>`# Reviews`<br><br>`## Tests`<br><br>`A review lands with its findings recorded.` | `# Rules`<br><br>`## Overview`<br><br>`### Tests`<br><br>`### Reviews`<br><br>`## Tests`<br><br>`### Tests`<br><br>`A change lands with a test that fails without it.`<br><br>`### Reviews`<br><br>`A review lands with its findings recorded.` |
+![SKILL.md, rules/tests.md and rules/reviews.md on the left. On the right, one Rules heading with an Overview naming Tests and Reviews, then a pooled Tests section split into a Tests variant and a Reviews variant.](images/groups.svg)
 
 *One heading for the group, one subsection naming each member, and the `Tests` both files declare pooled into one section split by document.*
 

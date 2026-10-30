@@ -1,0 +1,41 @@
+{
+  "run": {
+    "entry": "SKILL.md",
+    "files": {
+      "SKILL.md": "# Work Planner\n\nFollow the [Review](modes/review.md) procedure.\n",
+      "modes/review.md": "---\nprosiform:\n  root: \"..\"\n---\n# Review Mode\n\nChecks a change against the [Rules](../rules.md#tests).\n\n## Procedure\n\n1. Read the [Rules](../rules.md#tests).\n2. Report the findings.\n",
+      "rules.md": "# Rules\n\n## Tests\n\nA change lands with a test that fails without it.\n"
+    }
+  },
+  "sections": {
+    "entry": "SKILL.md",
+    "files": {
+      "SKILL.md": "# Entry\n\nThe detail is in [Detail](rules.md#detail).\n",
+      "rules.md": "# Rules\n\n## Alpha\n\nAlpha's own instructions.\n\n## Beta\n\nBeta's own instructions.\n\n### Detail\n\nThe detail a reader may need.\n"
+    }
+  },
+  "groups": {
+    "entry": "SKILL.md",
+    "files": {
+      "SKILL.md": "# Entry\n\nFollow [Tests](rules/tests.md) and [Reviews](rules/reviews.md).\n",
+      "rules/tests.md": "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n# Tests\n\n## Tests\n\nA change lands with a test that fails without it.\n",
+      "rules/reviews.md": "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n# Reviews\n\n## Tests\n\nA review lands with its findings recorded.\n"
+    }
+  },
+  "destinations": {
+    "entry": "SKILL.md",
+    "files": {
+      "SKILL.md": "# Entry\n\nRead the [first procedure](a/guide.md#procedure) and the [second](b/guide.md#procedure).\n",
+      "a/guide.md": "# Guide\n\n## Procedure\n\nStart here.\n",
+      "b/guide.md": "# Guide\n\n## Procedure\n\nStart here too.\n"
+    }
+  },
+  "dispatch": {
+    "entry": "modes/review.md",
+    "files": {
+      "modes/review.md": "---\nprosiform:\n  root: \"..\"\n---\n# Review Mode\n\nChecks a change against the [Rules](../rules.md#tests) and hands delivery to a sub-agent.\n\n## Procedure\n\n1. Read the [Rules](../rules.md#tests).\n2. Follow [⇉ Publish](../protocols/publish.md).\n\n## Notes\n\nA review is not an approval.\n",
+      "rules.md": "# Rules\n\n## Tests\n\nA change lands with a test that fails without it.\n\n## Reviews\n\nA change lands reviewed by someone who did not write it.\n",
+      "protocols/publish.md": "---\nprosiform:\n  group: protocols\n  group-depth: 2\n---\n# Publish\n\n## Procedure\n\n1. Commit the change.\n2. Push the branch.\n"
+    }
+  }
+}
