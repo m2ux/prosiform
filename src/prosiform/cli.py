@@ -59,9 +59,11 @@ from prosiform.closure import (
     DISPATCH_MARK,
     DRIVE,
     PARALLEL_MARK,
+    UNSUBSTITUTED,
     Malformed,
     OutsideRoot,
     Reference,
+    Substitution,
     components,
     conflicting,
     identity,
@@ -231,6 +233,8 @@ CLEANUP_FAULT = "cleanup-refused"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 
 DECIMAL = re.compile(r"^[0-9]+$")
+
+SUBSTITUTION_PAIR = "="
 
 EXIT_STATUSES = """exit statuses:
   0  successful compilation, validation, or informational response
@@ -416,6 +420,34 @@ def budgets(options: argparse.Namespace) -> Limits:
     return Limits({budget: getattr(options, budget.dest) for budget in BUDGETS})
 
 
+def mock(value: str) -> tuple[Reference, Reference]:
+    """One `ORIGINAL=ALTERNATIVE` pair, each side read from the working directory.
+
+    Both sides are read by the grammar every other reference is read
+    by, with the parent bootstrap a positional entry permits, so a
+    substitute kept above the working directory is named as a
+    command-line reference names one. Neither side is matched against
+    the mapping: a substitute is material rather than another
+    indirection, and a value that is also a key is read from disk.
+    """
+    original, marked, alternative = value.partition(SUBSTITUTION_PAIR)
+    if not marked or not original or not alternative:
+        raise argparse.ArgumentTypeError(f"{value!r} is no ORIGINAL=ALTERNATIVE pair")
+    return entry(original), entry(alternative)
+
+
+def substitution(options: argparse.Namespace) -> Substitution:
+    """The mapping the command line names, by the identity each key normalized to.
+
+    Every key stands for one identity, so two spellings of one path name
+    one key and the section a key carries is part of what it names. The
+    sides were resolved while the grammar was read, before any source
+    was opened.
+    """
+    pairs = options.mock or ()
+    return Substitution({(one.path, one.fragment): other for one, other in pairs})
+
+
 def parser() -> Parser:
     """The command's grammar: every option the contract declares, and no other."""
     grammar = Parser(
@@ -436,6 +468,17 @@ def parser() -> Parser:
         dest="referrer",
         metavar="DOC",
         help="working-directory-relative document for fragment-only references",
+    )
+    grammar.add_argument(
+        "-m",
+        "--mock",
+        dest="mock",
+        metavar="ORIGINAL=ALTERNATIVE",
+        action="append",
+        type=mock,
+        help="redirect one reference to the document or section the run reads "
+        "instead, given once per pairing; both sides read from the working "
+        "directory; repeatable; default none",
     )
     grammar.add_argument(
         "-o",
@@ -522,7 +565,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
         for at, option in enumerate(token[1:], start=1):
             if option in "cCvh":
                 continue
-            if option in "rfogdxFBIOTLNE":
+            if option in "rfogdxFBIOTLNEm":
                 value = token[at + 1 :].removeprefix("=") or next(tokens, "")
                 if option == "d" and value in FORMATS:
                     selected = value
@@ -530,8 +573,14 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     return selected
 
 
-def entry(text: str) -> Reference:
-    """Normalize a positional reference with bounded relative-parent bootstrap."""
+def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
+    """Normalize a positional reference with bounded relative-parent bootstrap.
+
+    The mapping names what the reference resolves to instead, and is
+    read after the normalization: an entry reference is exempt from the
+    writing source's root, so the mapping applies to the identity the
+    reference normalized to rather than to anything a source decides.
+    """
     try:
         found = resolve(text, allow_parent=True)
     except Malformed as malformed:
@@ -553,7 +602,7 @@ def entry(text: str) -> Reference:
             remedy="name a document the source root carries",
             reference=text,
         )
-    return found
+    return substitution.substitute(found)
 
 
 def entered(
@@ -942,6 +991,7 @@ def required(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every dependency the selected content of one source carries.
 
@@ -990,7 +1040,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, source.root)
+            found = inside(path, use.destination, source.root, substitution)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1017,6 +1067,7 @@ def refusals_of_operators(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
     """Refuse a link whose operators state no one compilation the run can carry out.
 
@@ -1070,7 +1121,7 @@ def refusals_of_operators(
             )
         if not operators(use.opening):
             continue
-        target = resolvable(path, use.destination, source.root)
+        target = resolvable(path, use.destination, source.root, substitution)
         if not use.resource and target is not None:
             continue
         kind = "image" if use.resource else "link"
@@ -1094,6 +1145,7 @@ def withheld(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every target the selected content of one source withholds.
 
@@ -1117,7 +1169,9 @@ def withheld(
     for use in uses(tokens, selected):
         if use.resource:
             continue
-        found = withholding_target(path, use.destination, use.opening, source.root)
+        found = withholding_target(
+            path, use.destination, use.opening, source.root, substitution
+        )
         if found is None:
             continue
         at = location(path, source.line(use.line))
@@ -1130,6 +1184,7 @@ def dispatches(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Hop]:
     """Every dispatched link the selected content of one source carries.
 
@@ -1144,7 +1199,7 @@ def dispatches(
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
-        for link in written_in(path, source, tokens, region):
+        for link in written_in(path, source, tokens, region, substitution):
             if not link.text:
                 raise input_failure(
                     f"the link {link.opening!r} dispatches {link.written!r} with "
@@ -1191,6 +1246,7 @@ def traverse(
     referrer: Reference | None,
     requested: Sequence[Reference],
     limits: Limits,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[
     dict[str, Source],
     dict[str, list[Token]],
@@ -1296,13 +1352,21 @@ def traverse(
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
-            refusals_of_operators(path, read[path], parsed[path], chosen, reached)
-            for one in withheld(path, read[path], parsed[path], chosen, reached):
+            refusals_of_operators(
+                path, read[path], parsed[path], chosen, reached, substitution
+            )
+            for one in withheld(
+                path, read[path], parsed[path], chosen, reached, substitution
+            ):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
-            for link in dispatches(path, read[path], parsed[path], chosen, reached):
+            for link in dispatches(
+                path, read[path], parsed[path], chosen, reached, substitution
+            ):
                 dispatching.setdefault(link.name, link)
-            for one in required(path, read[path], parsed[path], chosen, reached):
+            for one in required(
+                path, read[path], parsed[path], chosen, reached, substitution
+            ):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
                     continue
@@ -1566,6 +1630,7 @@ def placement(
     selected: Mapping[str, list[Reference]],
     referrer: Reference | None,
     entries: Collection[Reference],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, list[Reference]]:
     """Each document the bundle carries, in the order a reference first names it.
 
@@ -1586,7 +1651,7 @@ def placement(
         path = order[at]
         at += 1
         chosen = selection(path, parsed[path], selected[path], entries)
-        for one in required(path, read[path], parsed[path], chosen, ()):
+        for one in required(path, read[path], parsed[path], chosen, (), substitution):
             if one.path in selected and one.path not in order:
                 order.append(one.path)
     return {path: selected[path] for path in order}
@@ -1601,6 +1666,7 @@ def assembled(
     assigned: dict[tuple[str, str | None], str] | None,
     inforce: Mapping[str, int],
     dispatching: Anchors | None = None,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -1633,6 +1699,7 @@ def assembled(
                     read[path].root,
                     path == parent,
                     dispatching,
+                    substitution,
                 )
             )
     for named, paths in merging.items():
@@ -1654,6 +1721,7 @@ def assembled(
                             read[path].root,
                             path == parent,
                             dispatching,
+                            substitution,
                         )
                         for path in paths
                     ],
@@ -1714,6 +1782,7 @@ def compose(
     found: Sequence[Reference],
     limits: Limits,
     bundle_file: Callable[[Target], str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
@@ -1744,13 +1813,24 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    selected = placement(read, parsed, selected, referrer, entries)
+    selected = placement(read, parsed, selected, referrer, entries, substitution)
     try:
         headed, placed = subsections(
-            assembled(read, parsed, defined, selected, entries, None, inforce),
+            assembled(
+                read,
+                parsed,
+                defined,
+                selected,
+                entries,
+                None,
+                inforce,
+                None,
+                substitution,
+            ),
             parsed,
             read,
             bundle_file,
+            substitution,
         )
         collisions(headed)
     except Refused as refusal:
@@ -1760,11 +1840,20 @@ def compose(
     dispatching = anchors(placed, assigned)
     groups, _ = subsections(
         assembled(
-            read, parsed, defined, selected, entries, targets, inforce, dispatching
+            read,
+            parsed,
+            defined,
+            selected,
+            entries,
+            targets,
+            inforce,
+            dispatching,
+            substitution,
         ),
         parsed,
         read,
         bundle_file,
+        substitution,
     )
     bundled = assemble(groups)
     try:
@@ -1777,6 +1866,7 @@ def compose(
             parsed,
             limits.of(NESTING),
             dispatching,
+            substitution,
         )
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
@@ -2109,17 +2199,23 @@ def compiled(
     requested: Sequence[Reference],
     options: argparse.Namespace,
     folder: Path,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
     Each bundle is read by one agent, so each starts from a fresh count
     of what it opens, reaches and publishes, and its expansion depth is
     counted from its own entry.
+
+    The mapping is the command line's and not the bundle's: a dispatched
+    target's own bundle is compiled under every rule an entry's is, and
+    the mapping is one of them, so a link inside a dispatched document
+    resolves the substitute the caller named.
     """
     limits = budgets(options)
     try:
         read, parsed, defined, captured, found, hops = traverse(
-            root, referrer, requested, limits
+            root, referrer, requested, limits, substitution
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
@@ -2130,7 +2226,15 @@ def compiled(
                 f"{str(held)!r}"
             )
     bundled, coinciding = compose(
-        read, parsed, defined, referrer, requested, found, limits, bundle_file
+        read,
+        parsed,
+        defined,
+        referrer,
+        requested,
+        found,
+        limits,
+        bundle_file,
+        substitution,
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -2159,6 +2263,7 @@ def dispatched_set(
     single: Collection[str],
     options: argparse.Namespace,
     folder: Path,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, Compiled]:
     """Every bundle the entry's dispatches reach, transitively, by target.
 
@@ -2173,7 +2278,7 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, None, [target], options, folder)
+        one = compiled(root, None, [target], options, folder, substitution)
         built[hop.name] = one
         pending.extend(one.hops)
     return built
@@ -2233,7 +2338,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             "-o - names standard output, which carries no bundle; -o names the "
             "folder the run's bundles are written under"
         )
-    requested = [entry(reference) for reference in options.references]
+    mapping = substitution(options)
+    requested = [entry(reference, mapping) for reference in options.references]
     if not options.referrer:
         for one in requested:
             if not one.path:
@@ -2243,16 +2349,16 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 )
 
     root = Path.cwd().resolve()
-    referring = entry(options.referrer) if options.referrer else None
+    referring = entry(options.referrer, mapping) if options.referrer else None
     if referring is not None:
         referring = replace(referring, chain=(identity(referring),))
     requested = entered(referring, requested)
 
     selected = selections(referring, requested)
     folder = Path(options.output).resolve() / f"{run_name(selected)}{RUN_FOLDER_SUFFIX}"
-    first = compiled(root, referring, requested, options, folder)
+    first = compiled(root, referring, requested, options, folder, mapping)
     single = {requested[0].chain[0]} if len(selected) == 1 else set()
-    built = dispatched_set(root, first, single, options, folder)
+    built = dispatched_set(root, first, single, options, folder, mapping)
 
     def onward(target: Reference) -> Sequence[Hop]:
         name = identity(target)
