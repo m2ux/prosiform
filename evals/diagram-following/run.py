@@ -91,7 +91,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO, Any
 
-from harness import HARNESSES, Claude, Cursor, harness_named
+from harness import HARNESSES, Harness, harness_named
 from report import (
     BASELINE,
     COMPLETED,
@@ -115,6 +115,8 @@ from score import (
 )
 from workflow import (
     AUTHORED_FORM,
+    BOOTSTRAP,
+    BOOTSTRAP_DIR,
     COMPILED_FORM,
     DIAGRAM,
     ENTRY,
@@ -122,6 +124,7 @@ from workflow import (
     LINKED_FORM,
     PROSE,
     ROOT,
+    SHELL_FORMS,
     CorpusError,
     Scenario,
     Workflow,
@@ -150,6 +153,7 @@ PROSE_BUNDLE = "prose"
 LINKED_TREE = "linked"
 COMPILED_SET = "compiled"
 AUTHORED_SET = "authored"
+BOOTSTRAP_SET = "bootstrap"
 FORMS = {
     BUNDLE: DIAGRAM,
     TREE: DIAGRAM,
@@ -157,8 +161,22 @@ FORMS = {
     LINKED_TREE: LINKED_FORM,
     COMPILED_SET: COMPILED_FORM,
     AUTHORED_SET: AUTHORED_FORM,
+    BOOTSTRAP_SET: BOOTSTRAP,
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
+BUILD = "build"
+BIN = "bin"
+SKILL = "SKILL.md"
+SKILL_HOME = Path(".claude") / "skills"
+"""Where an agent CLI discovers a skill, walked up from its workspace.
+
+A skill sits at `<root>/.claude/skills/<name>/SKILL.md`, and the session's
+workspace is the root it walks up from, so the skill is found without the
+instruction naming it.
+"""
+SKILL_FILES = (SKILL,)
+"""The files a bootstrap skill carries beside the documents it compiles."""
+"""The existing folder a bootstrapping session compiles into."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
@@ -293,7 +311,7 @@ def matrix(
     models: list[str],
     forms: list[str],
     repetitions: int,
-    harness: Claude | Cursor = HARNESSES["claude"],
+    harness: Harness = HARNESSES["claude"],
 ) -> list[Session]:
     """Every session a run starts when its budget allows, in start order.
 
@@ -310,13 +328,24 @@ def matrix(
         for scenario in workflow.scenarios
         for form in forms
         if FORMS[form] in workflow.forms
+        if runnable(form, harness)
         if observable(workflow, scenario, form, harness)
         for repetition in range(1, repetitions + 1)
     ]
 
 
+def runnable(form: str, harness: Harness) -> bool:
+    """Whether a harness can read this form at all.
+
+    A form whose material a session must compile needs a command to run, so a
+    harness without a shell cannot measure it: the cell would record a
+    refusal as the agent's failure.
+    """
+    return harness.shell or FORMS[form] not in SHELL_FORMS
+
+
 def observable(
-    workflow: Workflow, scenario: Scenario, form: str, harness: Claude | Cursor
+    workflow: Workflow, scenario: Scenario, form: str, harness: Harness
 ) -> bool:
     """Whether a scenario's trace is one this harness reports.
 
@@ -371,6 +400,12 @@ def prepare(
         for name, content in sets[(workflow.name, form)].items():
             written = ENTRY if name == ENTRY_BUNDLE.name else name
             (workspace / written).write_bytes(content)
+    elif form == BOOTSTRAP_SET:
+        placed = workspace / SKILL_HOME / workflow.name
+        placed.mkdir(parents=True)
+        shutil.copytree(workflow.directory / BOOTSTRAP_DIR, placed, dirs_exist_ok=True)
+        (workspace / BUILD).mkdir()
+        place_pf(workspace)
     else:
         shutil.copytree(workflow.form(FORMS[form]), workspace, dirs_exist_ok=True)
     (workspace / INPUTS).mkdir()
@@ -475,17 +510,25 @@ def start(
     workspace: Path,
     env: dict[str, str],
     timeout: float,
-    harness: Claude | Cursor,
+    harness: Harness,
 ) -> int | None:
     """Run one session in a fresh workspace, record it, and return its tokens."""
     records.mkdir(parents=True)
     workspace.mkdir(parents=True)
     try:
         prepare(workspace, workflow, scenario, session.form, sets)
+        if session.form == BOOTSTRAP_SET:
+            env = {**env, "PATH": f"{workspace / BIN}:{env.get('PATH', '')}"}
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
+            spoke = [*argv, prompt] if harness.prompt_on_argv else argv
             exit_status, stderr = converse(
-                argv, workspace, env, prompt, transcript, timeout
+                spoke,
+                workspace,
+                env,
+                "" if harness.prompt_on_argv else prompt,
+                transcript,
+                timeout,
             )
         duration = time.monotonic() - began
         if stderr:
@@ -494,11 +537,12 @@ def start(
         record_starts(records / TRANSCRIPT, records, harness)
         result = harness.result(records / TRANSCRIPT)
         ran = read_trace(records)
+        compiled = compiled_by(harness, records / TRANSCRIPT, session.form)
         verdict = (
             errored(workflow, scenario)
             if (result is not None and result.get("is_error"))
             or (result is None and not ran)
-            else score(workflow, scenario, records)
+            else score(workflow, scenario, records, compiled)
         )
     finally:
         shutil.rmtree(workspace)
@@ -517,6 +561,46 @@ def start(
     }
     (records / SESSION).write_text(json.dumps(record, indent=2) + "\n")
     return tokens
+
+
+def place_pf(workspace: Path) -> Path:
+    """Put the build under test where a bootstrapping session's shell finds it.
+
+    A session runs its own shell, whose path is the caller's and not this
+    run's, so the build is copied into a folder of the workspace's own and
+    that folder is named on the session's path. What a session compiles with
+    is therefore the build this run was configured with, not whatever `pf` the
+    host happens to hold.
+    """
+    found = shutil.which("pf")
+    if found is None:
+        raise CorpusError("no pf command is on the path to bundle a form with")
+    (workspace / BIN).mkdir()
+    placed = workspace / BIN / "pf"
+    shutil.copy2(found, placed)
+    placed.chmod(placed.stat().st_mode | 0o111)
+    return workspace / BIN
+
+
+def compiled_by(harness: Harness, transcript: Path, form: str) -> bool | None:
+    """Whether a session compiled its material, for a form that must.
+
+    A form outside the shell forms needs no compile, so nothing is asked. A
+    shell form's session is held to having run `pf`: a command whose first
+    word is `pf` or a path ending in `/pf`, since a command may be prefixed
+    by a directory or a wrapper.
+    """
+    if FORMS[form] not in SHELL_FORMS:
+        return None
+    commands = harness.commands(transcript)
+    if commands is None:
+        return None
+    for command in commands:
+        for part in command.replace("&&", ";").replace("|", ";").split(";"):
+            words = part.split()
+            if words and words[0].rsplit("/", 1)[-1] == "pf":
+                return True
+    return False
 
 
 def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
@@ -593,7 +677,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     """Run every session the budget allows and return the run's record."""
     harness = harness_named(arguments.harness)
     command = arguments.agent_command or harness.default_agent
-    agent = shlex.split(command)
+    agent = [str(Path(shlex.split(command)[0]).expanduser()), *shlex.split(command)[1:]]
     if not agent or shutil.which(agent[0]) is None:
         raise CorpusError(f"no agent command {command!r} is found")
     eval_root = arguments.eval_root.expanduser()
@@ -641,7 +725,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     run_directory = arguments.results / run_id
     run_directory.mkdir(parents=True)
     workspaces = eval_root / WORKSPACES / run_id
-    prompt = instruction(ENTRY)
+    prompts = {form: instruction(ENTRY, FORMS[form]) for form in forms}
     ledger = Ledger(arguments.budget_tokens, arguments.session_budget_tokens)
 
     def attempt(session: Session) -> bool:
@@ -657,8 +741,13 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                 session,
                 workflow,
                 scenario,
-                harness.argv(agent, session.model, ledger.session_cap),
-                prompt,
+                harness.argv(
+                    agent,
+                    session.model,
+                    ledger.session_cap,
+                    session.directory(workspaces),
+                ),
+                prompts[session.form],
                 sets,
                 session.directory(run_directory),
                 session.directory(workspaces),
