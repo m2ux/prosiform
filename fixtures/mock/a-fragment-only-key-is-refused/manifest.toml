@@ -1,0 +1,21 @@
+description = "A mapping key carrying no document, as a section alone does, is refused as invalid usage rather than resolved against a document the option does not name."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE",
+  "Exit status and JSON diagnostics — 2",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "#escalation=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["#escalation", "no document"]
+reference = "#escalation"

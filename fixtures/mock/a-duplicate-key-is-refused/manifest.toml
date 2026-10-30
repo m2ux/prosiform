@@ -1,0 +1,21 @@
+description = "Two mapping keys whose spellings normalize to one identity are refused as invalid usage, naming both spellings the author wrote rather than the one identity they share, before any source is read."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE",
+  "Exit status and JSON diagnostics — 2",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=a.md", "-m", "./rules.md=b.md", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["rules.md", "./rules.md", "one identity"]
+reference = "./rules.md"
