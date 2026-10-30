@@ -6,21 +6,25 @@
 
 This record holds the plan for I05:E09: a `-m ORIGINAL=ALTERNATIVE` invocation parameter that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It is the ninth epic of I05, the standing initiative for ad hoc feature enhancements.
 
-The epic is seven tasks. W01 puts the mapping at the resolution seam and threads it through every helper; W02 adds the option and its refusals; W03 makes a redirected entry derive its own output name, W04 emits the two warnings and W05 redirects withheld and dispatched targets, which run in parallel from W02; W06 scopes a key to one section; and W07 states the behaviour in the bundling rules and the design. Every behaviour a source tree can produce is proven by an end-to-end corpus fixture.
+The epic is eight tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 puts the mapping at the resolution seam and threads it through every helper; W02 adds the option and its two refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; and W07 treats the substitute as a source in its own right.
+
+Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Fourteen fixtures across a new `fixtures/mock/` family, and every one names the clause W00 lands.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
 | [Epic body](epic.md) | The reviewed epic body, its criteria and its work-breakdown rows |
+| [W00 work item](w00.md) | The design clause, the invocation rules and the pin |
 | [W01 work item](w01.md) | The mapping at the resolution seam |
 | [W02 work item](w02.md) | The option's grammar and refusals |
-| [W03 work item](w03.md) | The derived name of a redirected entry |
+| [W03 work item](w03.md) | The derived name of a redirected entry and referrer |
 | [W04 work item](w04.md) | The substitution warnings |
 | [W05 work item](w05.md) | Withheld and dispatched targets |
-| [W06 work item](w06.md) | Keys scoped to one section |
-| [W07 work item](w07.md) | The bundling rules and the design clause |
+| [W06 work item](w06.md) | Section keys and the end of chaining |
+| [W07 work item](w07.md) | The substitute as a source in its own right |
 | [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
+| [Fixture inventory](fixtures.md) | Every fixture the epic lands, and the row that lands it |
 
 ## Design
 
