@@ -929,7 +929,9 @@ def test_a_run_that_cannot_publish_reports_the_publication_failure_alone(
     root: Path, tmp_path: Path
 ) -> None:
     written(root, "guide.md", "# Guide\n\nBody.\n")
-    run = invoke("-d", "json", "-o", str(tmp_path / "absent"), "guide.md", cwd=root)
+    blocker = tmp_path / "file"
+    blocker.write_text("not a folder")
+    run = invoke("-d", "json", "-o", str(blocker / "under"), "guide.md", cwd=root)
     assert run.status == PUBLICATION_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
 
@@ -1271,11 +1273,14 @@ def test_a_failed_run_leaves_the_earlier_folder_alone(
     assert contents(earlier) == {"guide.bundle.md": b"earlier bytes\n"}
 
 
-def test_an_output_path_the_run_cannot_write_is_a_publication_failure(
+def test_an_output_path_the_run_cannot_make_is_a_publication_failure(
     root: Path, tmp_path: Path
 ) -> None:
+    """A folder the run cannot create is refused; one it can, it makes."""
     written(root, "guide.md", "# Guide\n")
-    run = invoke("-d", "json", "-o", str(tmp_path / "absent"), "guide.md", cwd=root)
+    blocker = tmp_path / "file"
+    blocker.write_text("not a folder")
+    run = invoke("-d", "json", "-o", str(blocker / "under"), "guide.md", cwd=root)
     assert run.status == PUBLICATION_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
 
@@ -1348,22 +1353,20 @@ def test_two_bundles_deriving_one_name_publish_nothing(
 
 
 @pytest.mark.parametrize("check", [False, True])
-def test_an_output_folder_that_does_not_exist_is_refused_before_any_write(
+def test_an_output_folder_that_does_not_exist_is_made_by_the_run(
     tmp_path: Path, check: bool
 ) -> None:
+    """The caller names the folder it wants; the run makes it rather than refusing."""
     bundles = bundle_set("# One\n")
-    with pytest.raises(Failure) as refused:
-        publication(
-            bundles,
-            tmp_path / "absent" / "run",
-            outputs(1024),
-            Reporter(StringIO()),
-            check,
-        )
-    assert refused.value.status == PUBLICATION_FAILURE
-    assert refused.value.diagnostic.code == PUBLICATION_FAILED
-    assert str(tmp_path / "absent") in refused.value.diagnostic.message
-    assert list(tmp_path.iterdir()) == []
+    publication(
+        bundles,
+        tmp_path / "absent" / "run",
+        outputs(1024),
+        Reporter(StringIO()),
+        check,
+    )
+    assert (tmp_path / "absent").is_dir()
+    assert (tmp_path / "absent" / "run").is_dir() == (not check)
 
 
 def test_a_set_is_published_whole_once_every_member_validates(tmp_path: Path) -> None:

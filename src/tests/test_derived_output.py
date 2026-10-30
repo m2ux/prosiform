@@ -231,14 +231,15 @@ def test_two_targets_deriving_one_name_are_refused_naming_both(
 
 
 @pytest.mark.parametrize("check", [False, True])
-def test_an_output_folder_that_does_not_exist_fails_the_check_as_the_run(
+def test_an_output_folder_that_does_not_exist_is_made_by_the_run(
     tmp_path: Path, check: bool
 ) -> None:
+    """A named folder the run can make is made, and a check makes it too."""
     written(tmp_path, "a.md", "# A\n")
     run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "-o", "zz", "a.md")
-    assert run.status == 3 and run.stdout == ""
-    assert [one["code"] for one in run.diagnostics()] == [cli.PUBLICATION_FAILED]
-    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
+    assert run.status == 0 and run.stdout == ""
+    assert (tmp_path / "zz").is_dir()
+    assert (tmp_path / "zz" / "a.bundles").is_dir() == (not check)
 
 
 def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
