@@ -8,16 +8,16 @@ For that entry, the leading frontmatter includes:
 
 ```yaml
 ---
-metadata:
-  prosiform-root: ".."
-  prosiform-group: modes
-  prosiform-group-depth: "2"
+prosiform:
+  root: ".."
+  group: modes
+  group-depth: 2
 ---
 ```
 
-`metadata.prosiform-root` is a nonempty relative directory-path string, interpreted from the containing Markdown file's directory. Here `..` identifies `work-planner`. A file in the root directory declares `"."`. The root field is independent of the optional paired group/depth fields. Absolute paths, home shortcuts, environment expansion and URL interpretations are outside the schema.
+`prosiform.root` is a nonempty relative directory-path string, interpreted from the containing Markdown file's directory. Here `..` identifies `work-planner`. A file in the root directory declares `"."`. The root field is independent of the optional paired group/depth fields. Absolute paths, home shortcuts, environment expansion and URL interpretations are outside the schema.
 
-The field belongs to each source file. Its resolved directory is the base for local Markdown paths authored in that file, including deferred targets. A linked file can declare a different root, such as a library directory. An absent declaration inherits the linking parent's effective root. A direct entry without a declaration uses its containing directory. There is no `-r` option or global-root agreement requirement. Fragment-only links still identify headings in their own source document.
+The field belongs to each source file. Its resolved directory is the base for local Markdown paths authored in that file, including deferred targets. A linked file can declare a different root, such as a library directory. An absent declaration uses the invocation working directory for every source, including linked files. There is no `-r` option or global-root agreement requirement. Fragment-only links still identify headings in their own source document.
 
 ## Derived Names
 
@@ -42,20 +42,20 @@ Use the same per-source captured metadata model for root, group and depth. The r
 
 Capture the positional entry under existing byte, aggregate and YAML nesting limits before following references. Store the effective per-source root with the captured source and preserve original locations, immutable metadata, rooted no-follow access and full-file consistency checks. Bind each dependency access to the root of the source that authored the link. The existing outside-root classification applies against that source's effective root, rather than a shared invocation root. A file may intentionally point its relative links into a library by declaring that library as its root.
 
-Canonical physical identity controls source-byte capture. Effective roots belong to traversal context: a shared file with no declaration can inherit different roots through different parents. Resolution caches must include that context; W06 defines deterministic deduplication and cycle behavior for these cases before W08 implements it. Explicit declarations resolve identically regardless of the caller. Preserve fragment-only self references, deferred-target validation and resources that the compiler does not open. Diagnostics and link chains must identify the actual source even when files sit under different declared roots.
+Canonical physical identity controls source-byte capture. Each source has one effective root within an invocation: its explicit file-relative declaration or the invocation working directory. A shared file reached through different parents therefore resolves its outgoing links identically. W06 defines deterministic deduplication and cycle behavior before W08 implements it. Preserve fragment-only self references, deferred-target validation and resources that the compiler does not open. Diagnostics and link chains must identify the actual source even when files sit under different declared roots.
 
 Check mode, captured-source/output overlap, limits, candidate validation and atomic publication retain their safeguards. Invalid roots and confinement failures receive stable contract diagnostics before implementation; differing valid roots are not a conflict. A source change after capture fails before publication.
 
 ## Delivery Layers And Consumers
 
-First define the contract, then extend the bounded metadata value, then implement per-source root resolution, then automatic output naming, then audit authoring and the corpus. Each runtime unit updates its own immediately affected consumers and tests, so every intermediate delivered build works end to end.
+First define the contract, then implement the top-level mapping and bounded root value, then implement per-source root resolution, then automatic output naming, then audit authoring and the corpus. Each runtime unit updates its own immediately affected consumers and tests, so every intermediate delivered build works end to end.
 
 The root-resolution unit migrates active entry fixtures and CLI consumers away from `-r`, including `-f` file resolution, installed-wheel smoke and diagram renderer invocations. The output unit migrates stdout-dependent consumers to explicit `-o -`. A caller can compile a section using `pf file.md#fragment`; source-authored Markdown paths use the declaring file's effective root.
 
-Freeze runtime content expectations at `93fe6b354a85e244f64e33af700a55aab4f26044`. Compare bundle content independently of the invocation and output destination. Annotating fixture entry roots must preserve body content and update physical-location expectations deliberately. Include absent/invalid roots, relative parent traversal, symlink refusal, different library roots, repeated physical targets, cycles, entry mutation during capture, raw byte limits and atomic failure cases.
+Freeze runtime content expectations at `93fe6b354a85e244f64e33af700a55aab4f26044`. Compare bundle content independently of the invocation and output destination. Annotating fixture entry roots must preserve body content and update physical-location expectations deliberately. Include absent roots on entries and linked files with a working directory distinct from their directories, invalid roots, relative parent traversal, symlink refusal, different library roots, repeated physical targets, cycles, entry mutation during capture, raw byte limits and atomic failure cases.
 
 The final audit checks all active guidance and representative sources. Authoring proposal #208 must teach per-file root declarations for intended standalone entries and linked library files and recommend hyphens instead of underscores. Implementing the authoring skill remains separate. The specification freeze consumes this extension's final audit. Contract PR #220 is merged; new contract work uses a successor review. Runtime PR #222 remains draft and is refreshed from actual subsequent task merges.
 
-## Metadata Compatibility
+## Frontmatter Schema
 
-The user confirmed strict [Agent Skills metadata compatibility](https://agentskills.io/specification#metadata-field): prefixed string fields under `metadata`, including `prosiform-root`, `prosiform-group` and `prosiform-group-depth`. Root inheritance applies only when the field is absent; malformed or empty values fail validation.
+Frontmatter contains a top-level `prosiform` mapping with full key names: `root`, `group` and `group-depth`. Root and group are strings; group-depth is an integer from 1 through 6, paired with group. An absent root uses the invocation working directory for every source, including linked files. Explicit roots resolve relative to the declaring file's directory. Empty or malformed values fail validation. The command is `pf`, with short operational flags such as `-o` and `-f`. This is a Prosiform frontmatter extension; strict Agent Skills schema compatibility is not a requirement.

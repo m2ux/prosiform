@@ -1,0 +1,816 @@
+
+### SRP-1
+
+Selecting one section carries that section and nothing else in its document.
+
+```console
+$ pf -o - 'modes/plan.md#outcomes'
+# Plan Mode
+
+Follow [Outcomes](#outcomes). The other sections are material that procedure references.
+
+## Outcomes
+
+- A scoped plan.
+W_ENTRY_DESTINATION: the entry reference 'Outcomes' resolves to the destination 'outcomes', which the bundle's entry line links it to
+  reference: Outcomes
+  resolved: outcomes
+
+[exit 0]
+```
+
+### SRP-2
+
+An unrelated sibling added to the same group leaves the bundle byte-identical. No output below is the observation.
+
+```console
+$ diff plan-before.bundle.md plan-after.bundle.md
+
+[exit 0: diff, not pf — 0 means the files agree]
+```
+
+### SRP-3
+
+A fragment naming a bullet's text resolves to nothing, so a bullet is not an addressable unit.
+
+```console
+$ pf -o - 'rules/bullets.md#prefer-plain-words'
+E_TARGET_NOT_FOUND: the reference 'rules/bullets.md#prefer-plain-words' names no heading of the document it selects from
+  reference: rules/bullets.md#prefer-plain-words
+  resolved: rules/bullets.md
+  chain: rules/bullets.md#prefer-plain-words
+  remedy: name a heading the document carries
+
+[exit 1]
+```
+
+### SRP-4
+
+The heading holding the bullets is the smallest unit a caller can select.
+
+```console
+$ pf -o - 'rules/bullets.md#style'
+Follow [Style](#style). The other sections are material that procedure references.
+
+# Rules/Bullets
+
+### Style
+
+- Prefer plain words.
+- Check every link.
+W_ENTRY_DESTINATION: the entry reference 'Style' resolves to the destination 'style', which the bundle's entry line links it to
+  reference: Style
+  resolved: style
+
+[exit 0]
+```
+
+### SRP-5
+
+A selected section still drags every document it links, so the unit is the section and its closure.
+
+```console
+$ pf -o - 'rules/common.md#wording'
+Follow [Wording](#wording). The other sections are material that procedure references.
+
+# Rules
+
+## Overview
+
+### Agents
+
+## Wording
+
+- Prefer plain words.
+
+Follow [Agents](#agents).
+
+## Check Every Link
+
+- Check every link.
+
+Select your harness:
+
+- If you are Claude, compile [Claude](rules/claude.md).
+- If you are Codex, compile [Codex](rules/codex.md).
+W_ENTRY_DESTINATION: the entry reference 'Wording' resolves to the destination 'wording', which the bundle's entry line links it to
+  reference: Wording
+  resolved: wording
+
+[exit 0]
+```
+
+### OCP-1
+
+A new mode joins the group by declaring it, with no existing file edited and no manifest to update.
+
+```console
+$ pf -o - modes/plan.md modes/refactor.md
+# Plan Mode
+
+Scopes work.
+
+Follow [Procedure](#procedure) and [Refactor](#refactor-1). The other sections are material those procedures reference.
+
+## Procedure
+
+### Plan
+
+1. Follow [the link rule](#check-every-link).
+2. Delegate delivery to [» Record Delivery](artifacts/delivery.md).
+
+### Refactor
+
+1. Restructure.
+
+## Outcomes
+
+- A scoped plan.
+
+## Overview
+
+### Refactor
+
+#### Refactor Mode
+
+Restructures code.
+
+# Rules
+
+## Check Every Link
+
+- Check every link.
+W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination 'procedure', which the bundle's entry line links it to
+  reference: Procedure
+  resolved: procedure
+W_ENTRY_DESTINATION: the entry reference 'Refactor' resolves to the destination 'refactor-1', which the bundle's entry line links it to
+  reference: Refactor
+  resolved: refactor-1
+
+[exit 0]
+```
+
+### OCP-2
+
+A new member whose heading depth differs is refused, so it must be reshaped to the group's existing depth.
+
+```console
+$ pf -o - modes/depth.md
+E_GROUP_DEPTH_CONFLICT: prosiform.group-depth for group 'rules' is 2; another member declares 3
+  remedy: use one depth for every contributing group member
+  location: rules/agents.md:5:16
+  related: rules/depth.md:5:16: prosiform.group-depth for group 'rules' is 3
+
+[exit 1]
+```
+
+### OCP-3
+
+A member declaring the dispatch text while its siblings declare none puts its own sentence in the bundle: the declaration is not additive.
+
+```console
+$ pf -o - modes/wording.md modes/plan.md
+# Wording Mode
+
+Follow [Plan](#plan-1) and [Procedure](#procedure). The other sections are material those procedures reference. Dispatch instead.
+
+## Procedure
+
+### Wording
+
+1. [» Delivery](artifacts/delivery.md)
+
+### Plan
+
+1. Follow [the link rule](#check-every-link).
+2. Delegate delivery to [» Record Delivery](artifacts/delivery.md).
+
+## Outcomes
+
+- A scoped plan.
+
+## Overview
+
+### Plan
+
+#### Plan Mode
+
+Scopes work.
+
+# Rules
+
+## Check Every Link
+
+- Check every link.
+W_ENTRY_DESTINATION: the entry reference 'Plan' resolves to the destination 'plan-1', which the bundle's entry line links it to
+  reference: Plan
+  resolved: plan-1
+W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination 'procedure', which the bundle's entry line links it to
+  reference: Procedure
+  resolved: procedure
+
+[exit 0]
+```
+
+### OCP-4
+
+Two members declaring different dispatch texts are refused, naming both locations.
+
+```console
+$ pf -o - modes/wording.md modes/wording2.md
+E_INVALID_CONVERSION_METADATA: prosiform.dispatch is 'Dispatch instead.'; another source declares 'Compile it elsewhere.'
+  remedy: declare one dispatch text for every contributing source
+  location: modes/wording.md:4:13
+  related: modes/wording2.md:4:13: prosiform.dispatch is 'Compile it elsewhere.'
+
+[exit 1]
+```
+
+### LSP-1
+
+One provider swapped for another at a different path, with the same heading set, differs only in its prose.
+
+```console
+$ diff strict.bundle.md loose.bundle.md
+17c17
+< - snake case in file names
+---
+> - camel case in function names
+
+[exit 1: diff, not pf — 0 means the files agree]
+```
+
+### LSP-2
+
+A provider that retitles a heading fails at the consumer's own line, with the chain and a remedy.
+
+```console
+$ pf -o - use-strict.md
+E_TARGET_NOT_FOUND: the reference 'strict/rules.md#naming' names no heading of the document it selects from
+  reference: strict/rules.md#naming
+  resolved: strict/rules.md
+  source: use-strict.md:7
+  chain: use-strict.md → strict/rules.md#naming
+  remedy: name a heading the document carries
+
+[exit 1]
+```
+
+### LSP-3
+
+The same provider relocated within its group keeps its destination, because the destination derives from the heading and not the path.
+
+```console
+$ diff strict.bundle.md moved.bundle.md
+
+[exit 0: diff, not pf — 0 means the files agree]
+```
+
+### LSP-4
+
+Outside a group the file heading states the filename, so a whole-document reference is named after the path.
+
+```console
+$ pf -o - use-whole-a.md
+# App
+
+1. Read [the guide](#plainstyle-guide).
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# Plain/Style-Guide
+
+## Naming
+
+- snake case in file names
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### LSP-5
+
+The same bytes under another filename give a whole-document reference another destination, so a file-named provider is substitutable only at the same path.
+
+```console
+$ pf -o - use-whole-b.md
+# App
+
+1. Read [the guide](#plainother-name).
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# Plain/Other-Name
+
+## Style Guide
+
+### Naming
+
+- snake case in file names
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### LSP-5b
+
+A fragment reference is unaffected by the filename, because a source fragment resolves against the provider's own headings.
+
+```console
+$ pf -o - use-plain-b.md
+# App
+
+1. [Style](#naming)
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# Plain/Other-Name
+
+## Style Guide
+
+### Naming
+
+- snake case in file names
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### LSP-6
+
+While the group holds one member, a whole-document reference resolves to the merged heading.
+
+```console
+$ pf -o - one.md
+# App
+
+1. Read [the rules](#rules).
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# G
+
+## Overview
+
+### Rules
+
+#### Rules A
+
+## Style
+
+- plain words
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### LSP-7
+
+Adding a second member repoints that same reference to a variant heading, so an addition is not address-preserving.
+
+```console
+$ pf -o - two.md
+# App
+
+1. Read [the rules](#a-rules).
+
+2. Read [the others](#b-rules).
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# G
+
+## Overview
+
+### A Rules
+
+#### Rules A
+
+### B Rules
+
+#### Rules B
+
+## Style
+
+### A Rules
+
+- plain words
+
+### B Rules
+
+- plain words too
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### LSP-8
+
+Two documents' same-named sections share one destination, so the review link lands on a heading whose first subsection is the plan's content.
+
+```console
+$ pf -o - entry.md
+# Entry
+
+The planning run is [plan.md](#procedure) and the review run is [review.md](#procedure).
+
+Follow [Entry](#entry). The other sections are material that procedure references.
+
+# Modes
+
+## Overview
+
+### Plan
+
+#### Plan Mode
+
+### Review
+
+#### Review Mode
+
+## Procedure
+
+### Plan
+
+Scope the work.
+
+### Review
+
+Review the work.
+W_ENTRY_DESTINATION: the entry reference 'Entry' resolves to the destination 'entry', which the bundle's entry line links it to
+  reference: Entry
+  resolved: entry
+
+[exit 0]
+```
+
+### ISP-1
+
+A deferred link carries its text, strips the mark and opens nothing: the target document contributes no headings.
+
+```console
+$ grep -n "Claude" full.bundle.md
+27:- If you are Claude, compile [Claude](rules/claude.md).
+
+$ grep -c "^# Claude Rules" full.bundle.md
+0
+
+[exit 1: grep, not pf — 1 means no line matched]
+```
+
+### ISP-2
+
+A dispatched link withholds its target exactly as a deferral does and publishes its mark, because the mark states who compiles the slot.
+
+```console
+$ grep -n "Record Delivery" plan.bundle.md
+10:2. Delegate delivery to [» Record Delivery](artifacts/delivery.md).
+
+$ grep -c "^# Record Delivery" plan.bundle.md
+0
+
+[exit 1: grep, not pf — 1 means no line matched]
+```
+
+### ISP-3
+
+stdout is the bundle alone and the entry destinations go to stderr as data, so a wrapper reads them without scraping Markdown.
+
+```console
+$ pf -o - modes/plan.md 2>/dev/null
+# Plan Mode
+
+Scopes work.
+
+Follow [Procedure](#procedure). The other sections are material that procedure references.
+
+## Procedure
+
+1. Follow [the link rule](#check-every-link).
+2. Delegate delivery to [» Record Delivery](artifacts/delivery.md).
+
+## Outcomes
+
+- A scoped plan.
+
+# Rules
+
+## Check Every Link
+
+- Check every link.
+
+[exit 0]
+```
+
+### ISP-4
+
+A withheld target that does not exist is refused, because a dispatch an agent will follow is one that can succeed.
+
+```console
+$ pf -c modes/missing.md
+E_TARGET_NOT_FOUND: the reference '../artifacts/gone.md' names no document under the allowed source root
+  reference: ../artifacts/gone.md
+  source: modes/missing.md:11
+  chain: modes/missing.md → artifacts/gone.md
+  remedy: name a document the source root carries
+
+[exit 1]
+```
+
+### ISP-5
+
+A consumer carries a document it never names, reached through one it does, so segregation cannot be enforced from outside the consumer.
+
+```console
+$ grep -n "Agents" modes/full.md
+(no output above: full.md never names agents.md)
+
+$ grep -c "^### Agents" full.bundle.md
+2
+
+[exit 0: grep, not pf — 1 means no line matched]
+```
+
+### DIP-1a
+
+Over a closure of compiled links the bundle is independent of the working directory, because every root is declared by its source. No output below is the observation.
+
+```console
+$ diff compiled-skill.bundle.md compiled-parent.bundle.md
+
+[exit 0: diff, not pf — 0 means the files agree]
+```
+
+### DIP-1b
+
+Over a closure holding withheld links, only those destinations move, because a withheld destination is deliberately working-directory-relative so a later invocation can be handed it.
+
+```console
+$ diff full-skill.bundle.md full-parent.bundle.md
+27,28c27,28
+< - If you are Claude, compile [Claude](skill/rules/claude.md).
+< - If you are Codex, compile [Codex](skill/rules/codex.md).
+---
+> - If you are Claude, compile [Claude](rules/claude.md).
+> - If you are Codex, compile [Codex](rules/codex.md).
+
+[exit 1: diff, not pf — 0 means the files agree]
+```
+
+### DIP-2
+
+The caller cannot retarget a dependency root: structure is source-owned and only operational flags are the caller's.
+
+```console
+$ pf -o - modes/plan.md -r .
+E_INVALID_USAGE: unrecognized arguments: -r .
+  remedy: run pf -h for usage
+
+[exit 2]
+```
+
+### DIP-3
+
+The caller cannot retarget a group for the same reason.
+
+```console
+$ pf -o - modes/plan.md -g other
+E_INVALID_USAGE: unrecognized arguments: -g other
+  remedy: run pf -h for usage
+
+[exit 2]
+```
+
+### DIP-4
+
+An indirection document is the only seam available: the consumer names a role and never names a provider.
+
+```console
+$ pf -o - app.md
+# App
+
+1. Follow [Lint](#role).
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# Provider-One
+
+## Naming
+
+- snake case
+
+# Role
+
+## Lint Role
+
+Follow [the provider](#provider-one).
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### DIP-5
+
+Repointing the role swaps the provider with no edit to the consumer.
+
+```console
+$ pf -o - app.md
+# App
+
+1. Follow [Lint](#role).
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# Provider-Two
+
+## Naming
+
+- camel case
+
+# Role
+
+## Lint Role
+
+Follow [the provider](#provider-two).
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### DIP-6
+
+Nothing enforces a layering direction: a provider that links its consumer drags the consumer's whole closure into the bundle.
+
+```console
+$ pf -o - app2.md
+# App Two
+
+1. Follow [Rule](#rule-links-up).
+
+Follow [App Two](#app-two). The other sections are material that procedure references.
+
+# App
+
+1. Follow [Lint](#role).
+
+# Provider-Two
+
+## Naming
+
+- camel case
+
+# Role
+
+## Lint Role
+
+Follow [the provider](#provider-two).
+
+# Rule-Links-Up
+
+## Rule
+
+### Naming
+
+Read [the caller](#app) before applying this.
+W_ENTRY_DESTINATION: the entry reference 'App Two' resolves to the destination 'app-two', which the bundle's entry line links it to
+  reference: App Two
+  resolved: app-two
+
+[exit 0]
+```
+
+### X-1
+
+Identical bytes reachable at two paths are two source identities, so both are emitted under their own headings.
+
+```console
+$ pf -o - app.md
+# App
+
+1. [A](#a)
+
+2. [B](#b)
+
+Follow [App](#app). The other sections are material that procedure references.
+
+# A
+
+## Shared Rule
+
+- Check every link.
+
+# B
+
+## Shared Rule
+
+- Check every link.
+W_ENTRY_DESTINATION: the entry reference 'App' resolves to the destination 'app', which the bundle's entry line links it to
+  reference: App
+  resolved: app
+
+[exit 0]
+```
+
+### X-2
+
+A bundle is not a source: offering one back as input is refused.
+
+```console
+$ pf -o - bundle.md
+E_GENERATED_INPUT: 'bundle.md' opens with the bundle entry declaration, so it is output offered as input
+  reference: Follow [App](#app). The other sections are material that procedure references.
+  source: bundle.md:7
+  chain: bundle.md
+  remedy: bundle the sources the document was built from
+
+[exit 1]
+```
+
+### X-3
+
+Raw HTML is outside the declared profile and is refused rather than copied.
+
+```console
+$ pf -o - html.md
+E_RAW_HTML: the raw HTML '<div>raw</div>' is outside the skill-markdown-v1 profile, which refuses it rather than copying it into the bundle
+  source: html.md:3
+  chain: html.md
+  remedy: write the content as Markdown
+
+[exit 1]
+```
+
+### X-4
+
+A heading a container carries is not a selectable section root.
+
+```console
+$ pf -o - 'container.md#in-list'
+E_NESTED_SECTION_TARGET: the reference 'container.md#in-list' names a heading a container carries, which is no selectable section root
+  reference: container.md#in-list
+  resolved: container.md
+  chain: container.md#in-list
+  remedy: name a heading the document carries at its own level
+
+[exit 1]
+```
+
+### X-5
+
+A mode citing no shared rule at all bundles cleanly, so completeness follows the links an author wrote.
+
+```console
+$ pf -o - modes/lone.md
+# Lone Mode
+
+Follow [Procedure](#procedure). The other sections are material that procedure references.
+
+## Procedure
+
+1. Do the work, citing no rule.
+
+## Outcomes
+
+- Work done.
+W_ENTRY_DESTINATION: the entry reference 'Procedure' resolves to the destination 'procedure', which the bundle's entry line links it to
+  reference: Procedure
+  resolved: procedure
+
+[exit 0]
+```
+
+### BASELINE-CORPUS
+
+The corpus the build under test is held to. Every behaviour above is conformant to this corpus, so where this report calls a behaviour intended, this run is the ground.
+
+```console
+corpus check: 260 fixture(s), 260 pass, 0 fail, 0 awaited, 0 unexpected pass
+
+[exit 0]
+```
+
+### BASELINE-BUILD
+
+The build these observations are of.
+
+```console
+$ pf -v ; git rev-parse HEAD
+pf 0.9.0 (skill-markdown-v1)
+bd3b06656d9d91a27fe1439daff2a189a938f39a
+
+[exit 0]
+```

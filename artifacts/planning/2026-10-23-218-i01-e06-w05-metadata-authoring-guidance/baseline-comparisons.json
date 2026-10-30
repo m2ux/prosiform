@@ -1,0 +1,188 @@
+{
+  "baseline": "cd3d8e635b8db500ceb7230b26209bdd37f637da",
+  "candidate": "ef1ce19dd93581320050130574ef570f83c0599f",
+  "comparisons": [
+    {
+      "fixture": "grouping/a-document-no-group-matches",
+      "exit_status": 0,
+      "bytes": 806,
+      "sha256": "0938c0b522b8b97e47b0e863fb1ed074a1f273915fefc31a60b9f96d7eea3a64",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-group-emitting-no-merged-section",
+      "exit_status": 0,
+      "bytes": 184,
+      "sha256": "d31f1f01de6717e862a26cc44eb70507dd5dd538dc06cb84653b97f33b82630f",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-member-carrying-one-heading-bundled-by-document",
+      "exit_status": 0,
+      "bytes": 244,
+      "sha256": "899796a92f05c28fd6be2eb8eaeb48573d90f55ec7a82443f54605147ab49d57",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-member-named-by-the-title-it-absorbs",
+      "exit_status": 0,
+      "bytes": 254,
+      "sha256": "f2025688a09633a9b479247acf028d4cb4ec34fab28eb5f13d708b31849359fd",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-pooled-subset-keeps-group-member-names",
+      "exit_status": 0,
+      "bytes": 358,
+      "sha256": "6caf708d9c505240e1d22580ba998f274d9c262feeaaab4b7a503fd7a5947823",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-reference-to-a-grouping-depth-heading",
+      "exit_status": 0,
+      "bytes": 454,
+      "sha256": "85bdc99d77f0912f74479cbd76c8e776b9c49c68b61544f5f885f08ab399246c",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-reference-to-a-member-carrying-one-heading",
+      "exit_status": 0,
+      "bytes": 203,
+      "sha256": "2c35f98fa479e1790fe90cc01dc534af26f3c639a213b70c69adf08153a12c18",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-rule-matching-no-document-in-the-closure",
+      "exit_status": 0,
+      "bytes": 135,
+      "sha256": "31e50433d0571ba390eb270ad59fbd20af668b31e666ec49768c60fc12742d99",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-section-shallower-than-the-grouping-depth",
+      "exit_status": 0,
+      "bytes": 339,
+      "sha256": "2e67d9efece90cc33feaf6b69463f04d1908b7a077272953e90a4daaa6636cca",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-variant-drops-the-group-word",
+      "exit_status": 0,
+      "bytes": 254,
+      "sha256": "e5557dcb2554f2dbb036766ad315934c14f9301a96bdb9de0577796026e2dbc9",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/a-whole-document-reference-to-a-member",
+      "exit_status": 0,
+      "bytes": 442,
+      "sha256": "6af49195ddb671e6ab95cc9920c185cdb4ee7c2fca8df6d07dac806875c515ea",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/an-entry-naming-a-member-carrying-one-heading",
+      "exit_status": 0,
+      "bytes": 236,
+      "sha256": "385032f21d2dfcf84bd428cfa19dd3a79d1ac421597477eb90e7f8312a5fae86",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/member-names-distinguished-after-formatting",
+      "exit_status": 0,
+      "bytes": 270,
+      "sha256": "90630f4a2da7c3c4bfc851c99666c94f7bed385ae1fb8d4ccb72c0b166286c15",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/members-of-one-stem-in-different-directories",
+      "exit_status": 0,
+      "bytes": 471,
+      "sha256": "dbf613c18cbaf90f97e60c4c73765cae3abaef606ff42362e82d3638e8a761c8",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/mixed-contributions-name-every-member",
+      "exit_status": 0,
+      "bytes": 208,
+      "sha256": "a6ee8bfe93c27fec21b943bb9f6becfa08416af6dbd93db9011031a8c69869df",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/one-entry-bundled-by-document",
+      "exit_status": 0,
+      "bytes": 602,
+      "sha256": "8876d24c1c23ee419966645a3b52d9826d7fec7570be5d7d632e38fbf69bacfd",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/one-entry-bundled-by-group",
+      "exit_status": 0,
+      "bytes": 582,
+      "sha256": "fb83d088307632e6bb9c953462289a16eb3c21d10b85bdc1ead146cfd0e3c1ba",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/one-entry-under-a-group",
+      "exit_status": 0,
+      "bytes": 741,
+      "sha256": "721bba575eb1d8a8585bb6b36378febef3d1c4bb2eacca30f47b1c4a943eed49",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/one-spelling-for-every-generated-heading",
+      "exit_status": 0,
+      "bytes": 583,
+      "sha256": "d576c62af467731508ec6af51df25b3513ae160913f407b343043d09557e6bc0",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/structural-ancestors-inside-a-merged-group",
+      "exit_status": 0,
+      "bytes": 351,
+      "sha256": "b512c0e6b97a10adb317d9b15ba86fe00674c0df5ae27bbda312a02bc0142e45",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/subheadings-name-every-member",
+      "exit_status": 0,
+      "bytes": 220,
+      "sha256": "be9100ec8f2ea182fcfb68af2995104fa6a1e7012b58726e79e54497f7e5b641",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/two-members-contributing-one-heading-text",
+      "exit_status": 0,
+      "bytes": 288,
+      "sha256": "4090c744511e5198d335422cfd62e1025f28540af2fdd176c9d7fcd0cd03c2fe",
+      "result": "pass"
+    },
+    {
+      "fixture": "grouping/variant-headings-distinguished-at-more-than-one-segment",
+      "exit_status": 0,
+      "bytes": 371,
+      "sha256": "bd4808b199956abf77cf6e5c39a00da3be8a781a7d0e7655afb8b26314d40b64",
+      "result": "pass"
+    },
+    {
+      "fixture": "delivery/an-entry-destination-under-a-grouping-rule",
+      "exit_status": 0,
+      "bytes": 263,
+      "sha256": "a152a6769220f48dffcdae3061d68f0c4f46c5caf444259439507c9eb9ed327a",
+      "result": "pass"
+    },
+    {
+      "fixture": "depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth",
+      "exit_status": 1,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": "pass"
+    },
+    {
+      "fixture": "usage-example/every-document-under-a-directory-merged",
+      "exit_status": 0,
+      "bytes": 9561,
+      "sha256": "eed5bfae33b05c1dc855ce75cf03e591451bf862a7d288977cbe5d0e091186e9",
+      "result": "pass"
+    }
+  ]
+}

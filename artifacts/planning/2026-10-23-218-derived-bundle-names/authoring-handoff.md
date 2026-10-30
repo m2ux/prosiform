@@ -22,7 +22,7 @@ Markdown that renders correctly can still omit required context or fail when com
 - Authored documents preserve the requested content and destination conventions without imposing agent-skill structure on ordinary Markdown.
 - The agent reports the tested entries, compiler identity and results, distinguishing successful compilation from unverified compatibility.
 
-- A missing root inherits the linking parent root; a direct entry defaults to its containing directory. Entries and linked files can declare their own link-resolution roots through `metadata.prosiform-root`, resolved relative to the file, so the agent can invoke `pf <file>` and resolve library references from the declaring file's root.
+- Every absent `prosiform.root` uses the invocation working directory, including linked files. Sources declare full `root`, `group` and `group-depth` keys under a top-level `prosiform` mapping; explicit roots resolve relative to the declaring file. The command is `pf <file>`, with short operational flags.
 - The skill advises hyphens rather than underscores in file and directory names and predicts entry-derived bundle filenames; combined selections supply an explicit output destination.
 
 ## Non-Goals
