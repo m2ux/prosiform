@@ -12,8 +12,7 @@ Only files are sources. A directory, a symbolic link, or a path that cannot be r
 
 Every source has an effective **root**, a directory that bounds which of its links the run will follow.
 
-- A source declaring `prosiform.root` takes the declaration, resolved from that source's own directory.
-- A source declaring none takes the invocation working directory, captured once at the start.
+An explicit root resolves from the declaring file's directory. Every absent root uses the invocation working directory, captured once at the start.
 
 The root bounds a link; it is not the base a link resolves from. Each path-bearing link resolves from the directory of the file that wrote it — the path a reader would follow in an editor — and the root then decides whether the result is inside. A link landing outside stays as the author wrote it and is never opened.
 
@@ -25,7 +24,7 @@ Leading YAML frontmatter is read for metadata and excluded from the body. It ope
 
 The block is one YAML 1.2 Core mapping. Duplicate keys, aliases, merge keys and custom tags are invalid. An opener with no closer fails the run.
 
-`prosiform` holds the conversion settings, and only these keys are read:
+`prosiform` holds the conversion settings. The only keys in `prosiform` are `root`, `group` and `group-depth`; a key outside them fails the run.
 
 | Key | Holds |
 | --- | --- |

@@ -38,15 +38,7 @@ A failing run writes no bundle and publishes nothing. A run validates every bund
 
 Each diagnostic carries a stable code, the source location or reference it concerns, the identity that reference resolved to where there is one, the chain of references that reached it, and a remedy where one can be stated accurately.
 
-| Exit | Meaning |
-| --- | --- |
-| `0` | successful compilation, validation, or an informational response |
-| `1` | input, dependency, policy, safety, or resource-limit failure |
-| `2` | invalid usage or option combination |
-| `3` | publication or delivery failure, a broken pipe among them |
-| `4` | unexpected internal error |
-
-Exit `4` names the run, not any document it read, so a caller reading it is not sent to look at its sources. Every failing outcome the contract names carries a code; a diagnostic without one reports a defect the contract does not define.
+The [exit statuses](../invocation.md#diagnostics) say what kind of failure a run reported. Exit `4` names the run, not any document it read, so a caller reading it is not sent to look at its sources. Every failing outcome the contract names carries a code; a diagnostic without one reports a defect the contract does not define.
 
 Warnings accompany a successful run and exit `0`. Each carries a `W_` code and states the condition that raised it.
 
@@ -56,20 +48,9 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 Each budget is a deterministic limit that fails the run rather than truncating a bundle. Every budget holds per bundle, because each bundle is read by one agent from its own entry.
 
-| Option | Counts |
-| --- | --- |
-| `-F` | distinct source documents opened |
-| `-B` | raw bytes in one source, frontmatter and byte-order mark included |
-| `-I` | raw source bytes, once per source |
-| `-O` | bytes of the complete bundle |
-| `-T` | distinct document and section targets discovered |
-| `-L` | authored link and image occurrences examined in selected content |
-| `-N` | Markdown container depth, and independently YAML collection depth |
-| `-E` | link hops from the nearest entry reference |
+The [options table](../invocation.md#options) names each budget and what it counts. Crossing one fails with a diagnostic naming the budget and the figure that crossed it.
 
-Crossing one fails with a diagnostic naming the budget and the figure that crossed it. The remedies are the same either way — restructure the sources or raise the number — so one code covers them all.
-
-Overrides are positive decimal integers. Zero does not mean unlimited.
+The remedies are the same either way — restructure the sources or raise the number — so one code covers them all. Overrides are positive decimal integers: zero does not mean unlimited.
 
 ## The corpus
 

@@ -20,7 +20,9 @@ Each dispatched target's bundle sits in the same folder under its own selection'
 
 A fragment-only entry derives its name from the document `-f` supplies. Roots and group names never rename an output. Parent segments above the working directory are kept as filename text, never joined into the output path.
 
-Two bundles deriving one name — `a/b.md` and `a_b.md` — fail the run before anything is written. Names use hyphens rather than underscores, so a separator written as `_` stays visible against an author's own hyphen.
+File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
+
+Two bundles deriving one name — `a/b.md` and `a_b.md` — fail the run before anything is written.
 
 ## Publication
 

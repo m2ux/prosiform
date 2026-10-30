@@ -61,9 +61,9 @@ prosiform:
 ---
 ```
 
-The only keys in `prosiform` are `root`, `group` and `group-depth`; unknown keys fail validation. An explicit root resolves from the declaring file's directory. Every absent root uses the working directory captured at invocation start. A root bounds a source's links and is not their base: each link resolves from the directory of the file that writes it. Contributing files declaring the same group must agree on depth.
+Contributing files declaring the same group must agree on depth.
 
-[Sources](docs/sources.md) states the frontmatter grammar, the metadata codes and the diagnostics they carry.
+[Sources](docs/sources.md) states the frontmatter grammar, the fields, the root's meaning and the metadata codes.
 
 ## Bundling
 
@@ -80,9 +80,9 @@ The bundle is arranged in file headings and groups, its headings take destinatio
 
 ## Output
 
-A run publishes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o DIR` names, which must exist, or under the working directory when `-o` is absent. A selection's name is its path relative to the working directory, without the Markdown suffix, with each separator written as `_`; a section adds `__` and the fragment. A run of several distinct selections joins their names with `+` in the order the command line first names each, and `.bundle.md` names the entry's bundle inside the folder. Each dispatched target's bundle sits in the same folder under its own selection's name. The folder is swapped in whole, so a reader sees one run's set or the one before it.
+A run publishes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o DIR` names, which must exist, or under the working directory when `-o` is absent. The folder is swapped in whole, so a reader sees one run's set or the one before it.
 
-File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename.
+File and directory names use hyphens rather than underscores. A path separator is written as `_` in the derived name, so a hyphen keeps a directory boundary visible in the filename.
 
 [Bundles](docs/bundles.md) states the derived names, publication and delivery in full.
 
