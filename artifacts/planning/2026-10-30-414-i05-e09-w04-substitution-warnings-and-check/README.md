@@ -12,6 +12,7 @@ The two warnings a substituted run emits. A bundle of stand-in material is the s
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | The two substitution warnings, the check-mode run and the codes' registration |
 
 ## Links
 
