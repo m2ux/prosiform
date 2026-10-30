@@ -1,6 +1,8 @@
 # References
 
-A **reference** is an authored link to a local document or section. The run classifies every reference the selected content carries, and the class decides what the bundle does with it.
+Following a link is the whole of what a bundler does. A procedure says "adhering to the rules file", and the question is what that link means for the output: does the rules file travel inside the bundle, or is the sentence left as written?
+
+Every link inside a source is a **reference**, and the run answers that question for each one before it compiles anything.
 
 ## Classification
 

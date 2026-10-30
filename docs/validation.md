@@ -1,6 +1,8 @@
 # Validation
 
-Bundling is a compile-and-check step, not a concatenation. Nothing is published until every bundle of the run has been built and every invariant holds.
+A bundle is handed to an agent that will follow it as if it were correct. If a link is broken, a section was silently dropped, or two headings ended up with the same name, the agent has no way to notice — it will simply act on the mistake.
+
+So the run checks its own work before anyone sees it, and publishes nothing unless every check passes. The check is called **validation**.
 
 ## The invariants
 

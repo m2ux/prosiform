@@ -1,6 +1,8 @@
 # Dispatch
 
-A **dispatch** hands part of the work to a sub-agent. The run does not carry the dispatched material in the bundle holding the link; it compiles that material as a bundle of its own, and the bundle holding the link says which one to follow.
+Not every link points at material for the reader of the bundle. A guide might say "for the review pass, follow the review procedure" — and the review belongs to a different agent, run at a different time, with its own context.
+
+Sending it anyway would pad the bundle with instructions nobody is about to follow. Leaving it out entirely would lose the procedure. A **dispatch** is the third option: the material is compiled as a bundle of its own, and the bundle that linked it says which one to hand over.
 
 ## What a dispatch changes
 

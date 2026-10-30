@@ -1,6 +1,8 @@
 # Destinations
 
-Every heading a bundle emits takes a **destination**: the fragment a Markdown renderer generates for it. Each compiled link is rewritten to the destination of the material it named.
+Copying a section into a bundle breaks every link that pointed at it, because the section is no longer where it was. Its heading is now somewhere else in a different document, and a reader clicking the link has to land on that heading.
+
+So the run names every heading in the bundle, and repoints each link at the name of what it used to reach. That name is a **destination**.
 
 ## The destination
 

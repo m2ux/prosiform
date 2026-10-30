@@ -1,10 +1,12 @@
 # Selection
 
-A run resolves what was asked for, and everything reachable from it, into one **selection** per region. Order and grouping are decided afterwards, from that selection.
+Following the links answers which files belong in the bundle. It does not yet answer what to take from each one, or where each piece goes.
+
+The command line asks for a document, or a section of one — that is the start, not the whole. Following its links adds more, which add more again, and two routes can arrive at the same section. The run settles all of that before arranging anything, and the settled result is the **selection**.
 
 ## Closure
 
-The run starts at the **entry references**, the arguments on the command line, and follows each dependency the selected content carries. It repeats until nothing new is reachable. The result is the **closure**.
+The run starts at the **entry references**, the arguments on the command line, and follows each dependency the selected content carries. It repeats until nothing new is reachable. The result is the **closure**: everything the bundle will contain.
 
 Fragment-only references resolve against their own source document wherever that source sits, including outside its own root. A link to a sibling section of the same document is an ordinary reference; it is not a self-reference unless it names the region it sits in.
 

@@ -1,10 +1,22 @@
 # Architecture
 
-Prosiform compiles linked Markdown. Give it a document or a section, and it returns that material and every local Markdown dependency it reaches, as one validated document.
+An instruction set for an AI agent is rarely one file. A `SKILL.md` links to a procedure, the procedure links to the rules that govern it, and the rules link onward to reference material. Anyone following that procedure — a person or an agent — has to chase the links to know what to do.
 
-An agent following a procedure otherwise resolves its links while it works. That puts retrieval inside the reasoning task: prerequisites are missed, reads run wider than the task needs, and a shared rule is copied into every document that wants it. Prosiform takes one fixed answer instead, computed once, before the agent reads anything.
+Prosiform chases them ahead of time. Given a document, or a section of one, it returns that text together with everything it links to, assembled as one Markdown file. That file is a **bundle**. A reader starts at the top and needs no further lookups.
 
-Each section below is the outline of one page, and the page is the account.
+The work of producing it is a **run**: read the files, follow the links, arrange the result, check it, write it out. This page names the parts of a run in the order they happen, and each section is the outline of a page that states one part in full.
+
+## The words on these pages
+
+Every term the contract uses has one meaning, defined once in the [glossary](glossary.md). These are the ones the rest of this page leans on.
+
+| Word | Means |
+| --- | --- |
+| **source** | one Markdown file the run reads |
+| **reference** | a link inside a source |
+| **section** | one heading and everything beneath it, up to the next heading of the same or a higher level |
+| **bundle** | the single Markdown file a run produces |
+| **run** | one invocation, which produces a folder of bundles |
 
 ```mermaid
 flowchart LR
@@ -19,48 +31,48 @@ flowchart LR
 
 ## Source
 
-A **source** is one local Markdown document the run opens. It is read once, held as bytes, and hashed, so the document that was validated is the document that was published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it.
+The run's raw material is Markdown files on disk. Each one it opens is a **source**, read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it.
 
 [Sources](sources.md) covers capture, roots, frontmatter and the Markdown profile.
 
 ## Reference
 
-A **reference** is an authored link, or a diagram's link, to a local document or section. Most references become **dependencies** and are bundled. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together.
+The links inside a source are what the run follows. Each is a **reference**. Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together.
 
 [References](references.md) covers each class, the operators, and what is never followed.
 
 ## Selection
 
-A reference selects a whole document or one **section**. The run follows references until nothing new is reachable, unions the selections so each region appears once, and orders the documents by where they were first named. A heading kept without its body preserves the outline of a partial selection.
+Following the links answers which files join the bundle. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and orders the documents by where they were first named.
 
 [Selection](selection.md) covers closure, consolidation and order.
 
 ## Hierarchy
 
-Every contributing source becomes one top-level division, headed by its title. Documents that declare one **group** in their metadata are merged under a single heading instead. Generated headings are written in title case, and source headings move down one level beneath them.
+A bundle is one Markdown document, so everything in it shares one heading tree. Every contributing source becomes one top-level division, headed by its title. Documents that declare one **group** in their metadata are merged under a single heading instead, and source headings move down a level beneath whichever heading they land under.
 
 [Hierarchy](hierarchy.md) covers file headings, grouping, variants and depth.
 
 ## Destination
 
-Every emitted heading takes a **destination**: the fragment a Markdown renderer generates for it. Each compiled link is rewritten to the destination of what it named, and nothing else is rewritten.
+A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a **destination** — the fragment a Markdown renderer generates for it — and each compiled link is rewritten to the destination of what it named. Nothing else is rewritten.
 
 [Destinations](destinations.md) covers slugs, ordinals and rewriting.
 
 ## Dispatch
 
-A dispatched target is compiled as a bundle of its own in the same run folder. The section that dispatches it gains a generated sub-section naming that bundle, and the bundle opens with a Prosiform section stating the protocol a sub-agent follows.
+Some material is meant for a different agent rather than for the reader of this bundle. A **dispatch** hands it over: the target is compiled as a bundle of its own in the same run folder, and the section that dispatched it says which bundle to follow.
 
 [Dispatch](dispatch.md) covers sub-sections, the protocol, depth and cycles.
 
 ## Bundle
 
-The run writes its bundles into one folder of its own, named for its entry, and swaps that folder in whole. A reader sees one run's output or the previous one, never a mixture. Nothing else in the output folder is touched.
+The run's output reaches disk as files. The run writes them into one folder of its own, named for its entry, and swaps that folder in whole, so a reader sees one run's output or the previous one, never a mixture. Nothing else in the output folder is touched.
 
 [Bundles](bundles.md) covers derived names, publication and delivery.
 
 ## Validation
 
-Nothing is published before every bundle of the run has been built and checked. A run that fails writes nothing and reports a diagnostic on standard error, with a stable code and an exit status that says what kind of failure it was.
+A bundle that is subtly wrong is worse than no bundle, because a reader has no way to notice. Nothing is therefore published before every bundle of the run has been built and checked. A run that fails writes nothing and reports a diagnostic on standard error, with a stable code and an exit status that says what kind of failure it was.
 
 [Validation](validation.md) covers the invariants, the diagnostics and the budgets.

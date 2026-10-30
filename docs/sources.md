@@ -1,10 +1,12 @@
 # Sources
 
-A **source** is one local Markdown document a run opens. Its bytes are captured once, and everything the run decides about it comes from those bytes.
+A run's raw material is Markdown files on disk: a skill's entry point, the procedures it links to, the rules those procedures cite. Every one of them is a **source**, and the run's answer can only be as good as the bytes it read.
+
+Each file is opened once, and everything the run decides about it is decided from that one reading: which of its links may be followed, which parts of it the bundle takes, and what its metadata declares.
 
 ## Capture
 
-The run opens each distinct source once and keeps its path, bytes, hash and metadata together. Before publication it rechecks each one. A source that changed, disappeared or now resolves elsewhere fails the run, because the bytes that were validated are no longer the bytes the path names.
+The run opens each distinct source once and keeps its path, bytes, hash and metadata together. Before publication it rechecks each one. A source that changed, disappeared or now resolves elsewhere fails the run, because the bytes that were validated are no longer the bytes the path names. A failed run writes nothing rather than publishing a bundle built from a file that has since moved.
 
 Only files are sources. A directory, a symbolic link, or a path that cannot be read fails the run rather than being worked around.
 

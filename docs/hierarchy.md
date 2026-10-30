@@ -1,6 +1,12 @@
 # Hierarchy
 
-A bundle is a Markdown document with one top-level heading per division. Everything a source contributes sits beneath the heading its division gives it.
+A bundle is one Markdown document, and a document is read from its headings. Whatever the run gathered has to arrive as a readable outline: one top-level heading per contributing document, and each document's own headings kept beneath it in the shape its author wrote them.
+
+```
+Guide                       ← the entry document's title
+  Procedure                 ← its own first section
+  Rules                     ← another contributing document
+```
 
 ## File headings
 
