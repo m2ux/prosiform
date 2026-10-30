@@ -12,8 +12,8 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
-searching files, with no MCP server and no skill. `acceptEdits` lets it
-change files only within its workspace.
+searching files and to starting a sub-agent, with no MCP server and no
+shell. `acceptEdits` lets it change files only within its workspace.
 
 Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
 eval's own Claude configuration directory, holding its login, settings and
@@ -37,10 +37,12 @@ session's place in the matrix and removed once its records are kept.
 
 Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
-agent printed; `stderr.log` when it printed any; the final workspace's
-`trace.log` and `actions/`; and `session.json`, holding the session's
-identity, exit status, duration, the stream's `result` message with its
-`usage` and `total_cost_usd`, and the scorer's verdict record. `run.json`
+agent printed; `stderr.log` when it printed any; `subagents.json`, the
+sub-agent starts the transcript records, in order, with what each returned;
+the final workspace's `trace.log` and `actions/`; and `session.json`,
+holding the session's identity, exit status, duration, the stream's
+`result` message with its `usage` and `total_cost_usd`, and the scorer's
+verdict record. `run.json`
 holds the run's date, options, recorded cost, the sessions it did not
 start and the run's state. Once `run.json` is written, `report.py` writes
 the run's report beside it, compared with the committed baseline.
@@ -103,8 +105,18 @@ from report import (
     names,
     write,
 )
-from score import ACTIONS, TRACE, Failure, Verdict, read_trace, score
+from score import (
+    ACTIONS,
+    TRACE,
+    Failure,
+    Verdict,
+    read_trace,
+    record_starts,
+    score,
+)
 from workflow import (
+    AUTHORED_FORM,
+    COMPILED_FORM,
     DIAGRAM,
     ENTRY,
     ENTRY_BUNDLE,
@@ -115,6 +127,7 @@ from workflow import (
     Scenario,
     Workflow,
     bundle,
+    bundled,
     instruction,
     workflows,
 )
@@ -143,16 +156,20 @@ BUNDLE = "bundle"
 TREE = "tree"
 PROSE_BUNDLE = "prose"
 LINKED_TREE = "linked"
+COMPILED_SET = "compiled"
+AUTHORED_SET = "authored"
 FORMS = {
     BUNDLE: DIAGRAM,
     TREE: DIAGRAM,
     PROSE_BUNDLE: PROSE,
     LINKED_TREE: LINKED_FORM,
+    COMPILED_SET: COMPILED_FORM,
+    AUTHORED_SET: AUTHORED_FORM,
 }
-BUNDLED = {BUNDLE, PROSE_BUNDLE}
+BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
 SUMMARY = ("run_id", "state", "sessions", "started", "cost_usd", "not_started")
 
-TOOLS = "Read,Write,Edit,Glob,Grep"
+TOOLS = "Read,Write,Edit,Glob,Grep,Task"
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
@@ -256,19 +273,25 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def matrix(
     corpus: list[Workflow], models: list[str], forms: list[str], repetitions: int
 ) -> list[Session]:
-    """Every session a run starts when its budget allows, in start order."""
+    """Every session a run starts when its budget allows, in start order.
+
+    A workflow gives a session only in the forms it is written in, so the
+    dispatch workflows take the two dispatch forms and the others take the
+    four forms they hold.
+    """
     return [
         Session(model, workflow.name, scenario.name, form, repetition)
         for model in models
         for workflow in corpus
         for scenario in workflow.scenarios
         for form in forms
+        if FORMS[form] in workflow.forms
         for repetition in range(1, repetitions + 1)
     ]
 
 
-def bundled(workflow: Workflow, form: str) -> bytes:
-    """One bundled form's entry bundle, as `pf` writes it."""
+def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
+    """One bundled form's bundle set, each bundle by the name `pf` gave it."""
     with tempfile.TemporaryDirectory() as output:
         built = bundle(workflow.form(FORMS[form]), Path(output))
         if built.returncode != 0 or built.stderr:
@@ -276,7 +299,10 @@ def bundled(workflow: Workflow, form: str) -> bytes:
                 f"{workflow.name}: pf bundled the {form} form with exit "
                 f"{built.returncode} and {built.stderr.decode()!r}"
             )
-        return (Path(output) / ENTRY_BUNDLE).read_bytes()
+        written = bundled(Path(output))
+        if not written:
+            raise CorpusError(f"{workflow.name}: pf bundled the {form} form to no file")
+        return {path.name: path.read_bytes() for path in written}
 
 
 def prepare(
@@ -284,11 +310,19 @@ def prepare(
     workflow: Workflow,
     scenario: Scenario,
     form: str,
-    bundles: dict[tuple[str, str], bytes],
+    sets: dict[tuple[str, str], dict[str, bytes]],
 ) -> None:
-    """Lay out a workspace with one form's material and a scenario's inputs."""
+    """Lay out a workspace with one form's material and a scenario's inputs.
+
+    A bundled form's entry bundle is the document the instruction names, and
+    every other bundle in its set is written beside it under the name `pf`
+    gave it, since a dispatching bundle names the bundles it hands to
+    sub-agents by that name.
+    """
     if form in BUNDLED:
-        (workspace / ENTRY).write_bytes(bundles[(workflow.name, form)])
+        for name, content in sets[(workflow.name, form)].items():
+            written = ENTRY if name == ENTRY_BUNDLE.name else name
+            (workspace / written).write_bytes(content)
     else:
         shutil.copytree(workflow.form(FORMS[form]), workspace, dirs_exist_ok=True)
     (workspace / INPUTS).mkdir()
@@ -497,7 +531,7 @@ def start(
     scenario: Scenario,
     argv: list[str],
     prompt: str,
-    bundles: dict[tuple[str, str], bytes],
+    sets: dict[tuple[str, str], dict[str, bytes]],
     records: Path,
     workspace: Path,
     env: dict[str, str],
@@ -507,7 +541,7 @@ def start(
     records.mkdir(parents=True)
     workspace.mkdir(parents=True)
     try:
-        prepare(workspace, workflow, scenario, session.form, bundles)
+        prepare(workspace, workflow, scenario, session.form, sets)
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
             exit_status, stderr = converse(
@@ -517,13 +551,14 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
+        record_starts(records / TRANSCRIPT, records)
         result = result_message(records / TRANSCRIPT)
         ran = read_trace(records)
         verdict = (
             errored(workflow, scenario)
             if (result is not None and result.get("is_error"))
             or (result is None and not ran)
-            else score(workflow, scenario, workspace)
+            else score(workflow, scenario, records)
         )
     finally:
         shutil.rmtree(workspace)
@@ -537,6 +572,7 @@ def start(
         "usage": result.get("usage") if result else None,
         "cost_usd": cost,
         "result": result,
+        "trace": [asdict(entry) for entry in scenario.trace],
         "verdict": verdict.record(),
     }
     (records / SESSION).write_text(json.dumps(record, indent=2) + "\n")
@@ -632,11 +668,11 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     if not set(forms) <= set(FORMS):
         raise CorpusError(f"the forms are {', '.join(FORMS)}, not {forms}")
     by_name = {workflow.name: workflow for workflow in corpus}
-    bundles = {
-        (workflow.name, form): bundled(workflow, form)
+    sets = {
+        (workflow.name, form): bundles_of(workflow, form)
         for workflow in corpus
         for form in forms
-        if form in BUNDLED
+        if form in BUNDLED and FORMS[form] in workflow.forms
     }
     sessions = matrix(corpus, names(arguments.models), forms, arguments.repetitions)
     covered = round(len(sessions) * arguments.session_budget_usd, 6)
@@ -669,7 +705,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                 scenario,
                 agent_argv(agent, session.model, ledger.session_cap),
                 prompt,
-                bundles,
+                sets,
                 session.directory(run_directory),
                 session.directory(workspaces),
                 env,
