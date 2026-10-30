@@ -15,6 +15,7 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 | [W01 work item](w01.md) | Dispatch scenarios in their compiled and authored-protocol forms |
 | [W02 work item](w02.md) | The sub-agent record and the scorer's dispatch checks |
 | [W03 work item](w03.md) | The first baseline of the dispatch scenarios |
+| [W04 work item](w04.md) | Each departure's class held across the dispatch corpus |
 
 ## Design
 
@@ -96,6 +97,8 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
 
 - **Delivery, 2026-10-29.**
   W02 merged into `i05/e07/main` as [#413](https://github.com/m2ux/prosiform/pull/413), merge commit `8905b2e3`, with AC3 ticked. Its session held six plan changes and applied none. The scorer reads a session's sub-agent starts from `subagents.json` written beside the trace and the cost, and the three dispatch classes are read after the completion check, so a trace that stopped short is still `unfinished`. No paid session ran and `EVAL_BUDGET_USD` is still USD 100.
+- **W04 raised, 2026-10-30.**
+  The paid infrastructure W03 needs is unavailable, so the epic takes a row that holds each dispatch class across the corpus with the stub agent instead. W04 depends on W02 and covers AC5, a criterion stating that every dispatch scenario in each form is classified by the class its departing stub agent states. It shares no pull request with W03: W04 is `make check` work that must land before the honest baseline is read, and W03 is a paid run against the same corpus, so pairing them would put a run that spends money behind a test that does not. The run W04 drives is a fixture run whose pass rates are correct by construction, so it writes no baseline and leaves AC4 to W03.
 
 ## Links
 
